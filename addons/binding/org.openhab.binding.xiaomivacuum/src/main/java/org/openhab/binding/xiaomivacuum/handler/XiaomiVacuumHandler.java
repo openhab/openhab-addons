@@ -342,8 +342,6 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             }
             return null;
         });
-        //TODO: Put status OFFLINE if any of the above throws an error
-        updateStatus(ThingStatus.ONLINE);
         return true;
     }
 
@@ -352,25 +350,31 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             return roboCom;
         }
         XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
-        String deviceID = configuration.deviceID;
+        String deviceId = configuration.deviceId;
         try {
-            if (deviceID != null && deviceID.length() == 8) {
-                logger.debug("Using vacuum device ID {}", deviceID);
-                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceID));
-                return roboCom;
+            if (deviceId != null && deviceId.length() == 8) {
+                logger.debug("Using vacuum device ID {}", deviceId);
+                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId));
+                byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
+                if (response.length > 0) {
+                    updateStatus(ThingStatus.ONLINE);
+                    return roboCom;
+                }
             } else {
                 logger.debug("No device ID defined. Retrieving vacuum device ID");
                 roboCom = new RoboCommunication(configuration.host, token, new byte[0]);
                 byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 Message roboResponse = new Message(response);
-                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceID()));
+                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceId()));
                 Configuration config = editConfiguration();
-                config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceID()));
+                config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceId()));
                 updateConfiguration(config);
-                logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceID()));
-                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceID());
+                logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceId()));
+                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId());
+                updateStatus(ThingStatus.ONLINE);
                 return roboCom;
             }
+            return null;
         } catch (IOException e) {
             disconnected(e.getMessage());
             return null;

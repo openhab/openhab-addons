@@ -43,7 +43,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
-    private static final int TIMEOUT = 2000;
+    private static final int TIMEOUT = 3000;
     private ScheduledFuture<?> roboDiscoveryJob;
 
     private final Logger logger = LoggerFactory.getLogger(VacuumDiscovery.class);
@@ -81,7 +81,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             logger.debug("Vacuum time stamp: {}, OH time {}, delta {}", msg.getTimestamp(), LocalDateTime.now(),
                     LocalDateTime.now().compareTo(msg.getTimestamp()));
             String token = Utils.getHex(msg.getChecksum());
-            String id = Utils.getHex(msg.getDeviceID());
+            String id = Utils.getHex(msg.getDeviceId());
             ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_VACUUM, id);
             logger.debug("Discovered Xiaomi Robot Vacuum {} at {}", id, i.getKey());
             if (token.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {
@@ -90,13 +90,15 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
                         id);
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
+                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_DID, id).withRepresentationProperty(id)
                         .withLabel("Xiaomi Robot Vacuum").build());
             } else {
                 logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_TOKEN, token)
-                        .withLabel("Xiaomi Robot Vacuum").build());
+                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_DID, id).withLabel("Xiaomi Robot Vacuum")
+                        .withRepresentationProperty(id).build());
             }
         }
     }
@@ -162,8 +164,8 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Start Xiaomi Robot Vaccum discovery");
+        logger.debug("Start Xiaomi Robot Vacuum discovery");
         discover();
-        logger.debug("Xiaomi Robot Vaccum discovery done");
+        logger.debug("Xiaomi Robot Vacuum discovery done");
     }
 }

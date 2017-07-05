@@ -82,16 +82,19 @@ public class RoboCommunication {
     }
 
     public byte[] comms(byte[] message, String ip) throws IOException {
-        try (DatagramSocket clientSocket = new DatagramSocket()) {
-            InetAddress ipAddress = InetAddress.getByName(ip);
-            logger.trace("Connection {}:{}", ip, clientSocket.getLocalPort());
+        InetAddress ipAddress = InetAddress.getByName(ip);
+        int p = ipAddress.getAddress()[3];
+        p += XiaomiVacuumBindingConstants.PORT;
+        try (DatagramSocket clientSocket = new DatagramSocket(p)) {
+            logger.debug("Connection {}:{}", ip, clientSocket.getLocalPort());
             byte[] sendData = new byte[MSG_BUFFER_SIZE];
             clientSocket.setSoTimeout(TIMEOUT);
+            // clientSocket.setReuseAddress(true);
             sendData = message;
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
                     XiaomiVacuumBindingConstants.PORT);
             clientSocket.send(sendPacket);
-            sendPacket.setData(new byte[1024]);
+            sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             clientSocket.receive(sendPacket);
             byte[] response = sendPacket.getData();
             clientSocket.close();

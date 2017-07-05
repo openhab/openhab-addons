@@ -17,6 +17,6 @@ package org.openhab.binding.xiaomivacuum;
 public final class XiaomiVacuumBindingConfiguration {
     public String host;
     public String token;
-    public String deviceID;
+    public String deviceId;
     public int refreshInterval;
 }
