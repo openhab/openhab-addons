@@ -1,17 +1,17 @@
 # Loxone Binding
 
-This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [OpenHAB](http://www.openhab.org/). Miniserver is represented as a [Thing](http://docs.openhab.org/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as OpenHAB channels.
+This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [openHAB](http://www.openhab.org/). Miniserver is represented as a [Thing](http://docs.openhab.org/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as openHAB channels.
 
 Binding has the Loxone-specific code separated in a .core package. This code does not depend on the openHAB framework and can be easily used to handle Loxone Miniservers in other Java applications.
 
 ## Features
-Following features are currently supported:
+The following features are currently supported:
 
   * [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
   * Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
   * Tagging of channels and [items](http://docs.openhab.org/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
   * Management of a Websocket connection to the Miniserver and updating Thing status accordingly
-  * Updates of OpenHAB channel's state in runtime according to control's state changes on the Miniserver
+  * Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
   * Passing channel commands to the Miniserver's controls
 
 ## Supported Things
@@ -28,7 +28,7 @@ Before a Miniserver Thing can go online, it must be configured with a user name 
 
 ## Channels
 
-This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one of more channels, depending on various states it has. Currently supported controls are presented in the table below.
+This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one or more channels, depending on various states it has. Currently supported controls are presented in the table below.
 
 |[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|Channel IDs|
 |----|----|----|----|----|----|
@@ -49,15 +49,40 @@ Channel ID is defined in the following way:
   * For other control's channels (currently no such controls): `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `channel-index >=1`
 
 
+Channel label is defined in the following way:
+
+  * For controls that belong to a room: `<Room name> / <Control name>` 
+  * For controls without a room: `<Control name>`
+
+## Items
+
+Items for Miniserver's controls can be created manually or automatically, depending on openHAB's `Item Linking/Simple Mode` setting. This setting can be modified in PaperUI under `Configuration/System` page and should be set to the desired value before Loxone Thing is created. Please consult [tutorial](http://docs.openhab.org/tutorials/beginner/configuration.html) for more details about item linking simple mode.
+
+
+When `Simple Mode` is enabled, openHAB will automatically build and link items for all channels created by the binding, one for each channel. Item label will be equal to the channel's label, allowing for a human-readable representation of the controls wherever there is a need to choose an item in a user interface, usually from a drop-down list (for example in HABPanel, IFTTT, Alexa).
+
+In case user wants to create items manually, they can be defined in `.items` file. Linking of an item to a particular Loxone control is done through passing channel ID to a {channel=...} value in the item definition. Examples:
+
+  * On-off switch with a tag recognizable by Alexa service, representing a Switch subcontrol (output) of a Miniserver's Lighting Controller:
+
+    `Switch Kitchen_Light "Kitchen Light" <switch> ["lighting"] {channel="loxone:miniserver:504E9420290F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E"}`
+
+  * Temperature of the Miniserver (on Loxone: Virtual Analog State functional block or InfoOnlyAnalog control}:
+
+    `Number Miniserver_Temp "Miniserver temperature: [%.1f °C]" <temperature> {channel="loxone:miniserver:504E9420290F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}`
+    
+  * Pushbutton switch representing a Miniserver's Virtual Input of pushbutton type (pushbutton realized by adding `autoupdate="false"` parameter):
+  
+    `Switch Reset_Lights "Switch all lights off" ["lighting"] {autoupdate="false",channel="loxone:miniserver:504E9420290F:0F2F2133-01AD-3282-FFFF201EB0C24B9E"}`
+
+
 ### Loxone and Amazon Alexa
 
-Your OpenHAB server can be exposed through [myopenHAB](http://www.myopenhab.org/) cloud service to  [Amazon Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) device with [openHAB skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L) enabled. To enable this service, please consult instructions available [here](https://community.openhab.org/t/official-alexa-smart-home-skill-for-openhab-2/23533).
+Your openHAB server can be exposed through [myopenHAB](http://www.myopenhab.org/) cloud service to  [Amazon Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) device with [openHAB skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L) enabled. To enable this service, please consult instructions available [here](https://community.openhab.org/t/official-alexa-smart-home-skill-for-openhab-2/23533).
 
 When creating a Miniserver Thing in the openHAB's Item Linking Simple Mode, Loxone binding will automatically create item tags required by Alexa, so that Miniserver's controls can be discovered by [Alexa smart home]( https://www.amazon.com/alexasmarthome) module. Tags will be created for switches, which belong to a category of "lighting" type. This will allow you to command Loxone controls with your voice.
 
 Alexa will recognize items by their labels, which will be equal to the corresponding control's name on the Miniserver. In case your controls are named in a way not directly suiting voice commands, you will need to manually add and link new items to the channels, and add proper tags as described in the above instructions.
-
-Please consult [tutorial](http://docs.openhab.org/tutorials/beginner/configuration.html) on what simple mode is and how to enable it.
 
 ## Thing Offline Reasons
 There can be following reasons why Miniserver status is `OFFLINE`:
@@ -103,13 +128,13 @@ Timeout values can be changed in advanced parameters section of the thing's conf
     * Time in seconds between failed Websocket connect attempt and another attempt to connect. Websocket connection is established before authentication and data transfer. It can usually fail due to unreachable Miniserver.
     * Range: 0-600 s, default: 10 s
 * _Response timeout_
-    * Time to wait for a response from Miniserver to a request sent from the binding. A request can be any of: websocket connect request, credentials hashing key request, configuration request, enabling of state updates (until initial states are received). If this time passed without the expecte reaction from the Miniserver, connection will be closed. A new connection attempt may be made, depending on the situation.
+    * Time to wait for a response from Miniserver to a request sent from the binding. A request can be any of: websocket connect request, credentials hashing key request, configuration request, enabling of state updates (until initial states are received). If this time passed without the expected reaction from the Miniserver, the connection will be closed. A new connection attempt may be made, depending on the situation.
     * Range: 0-60 s, default: 4 s
 * _Authentication error delay_
-    * Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out user for longer period of time due to too many failed login attempts. This time should allow administrator to fix authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which pass on another exactly same attempt.
+    * Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out the user for a longer period of time due to too many failed login attempts. This time should allow the administrator to fix the authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which are successful on a subsequent identical attempt.
     * Range: 0-3600 s, default: 60 s
 * _Communication error delay_
-    * Time in seconds between active connection close, as a result of communication error, and next connection attempt. This relates to all types of network communication issues, which can occur and cease to exist randomly to the binding. It is desired that the binding monitors the situation and brings things back to online as soon as Miniserver is accesible.
+    * Time in seconds between an active connection closes, as a result of a communication error, and next connection attempt. This relates to all types of network communication issues, which can occur and cease to exist randomly to the binding. It is desired that the binding monitors the situation and brings things back to online as soon as Miniserver is accessible.
     * Range: 0-3600 s, default: 30 s
 
 ### Sizes
@@ -122,4 +147,4 @@ Timeout values can be changed in advanced parameters section of the thing's conf
     * Range: 0-100 MB, default: 512 KB
 
 ## Limitations
-* As there is no push button item type in OpenHAB, Loxone's push button is an OpenHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to push button style, you have to create item manually with autoupdate=false parameter.
+* As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.

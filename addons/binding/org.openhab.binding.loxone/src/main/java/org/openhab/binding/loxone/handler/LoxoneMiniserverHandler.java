@@ -63,7 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Representation of a Loxone Miniserver. It is an OpenHAB {@link Thing}, which is used to communicate with
+ * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
  * objects (controls) configured in the Miniserver over {@link Channels}.
  *
  * @author Pawel Pieczul - Initial contribution
@@ -370,6 +370,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         }
 
         String controlName = control.getName();
+        if (controlName == null) {
+            // Each control on a Miniserver must have a name defined, but in case this is a subject
+            // of some malicious data attack, we'll prevent null pointer exception
+            controlName = "Undefined name";
+        }
 
         if (roomName != null) {
             label = roomName + " / " + controlName;
@@ -428,7 +433,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             double value = ((LxControlJalousie) control).getPosition();
             if (value >= 0 && value <= 1) {
                 // state UP or DOWN from Loxone indicates blinds are moving up or down
-                // state UP in OpenHAB means blinds are fully up (0%) and DOWN means fully down (100%)
+                // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
                 // so we will update only position and not up or down states
                 updateState(channelId, new PercentType((int) (value * 100)));
             }
@@ -471,7 +476,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * @param controlType
      *            type of Loxone control (e.g. switch, jalousie)
      * @param itemType
-     *            type of OpenHAB item
+     *            type of openHAB item
      * @param label
      *            label for the channel type
      * @param description
@@ -555,7 +560,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *            control to build the channel ID for
      * @param index
      *            index of a channel within control (0 for primary channel)
-     *            all indexes greater than 0 will have _index added to the channel ID
+     *            all indexes greater than 0 will have -index added to the channel ID
      * @return
      *         channel ID for the control and index
      */

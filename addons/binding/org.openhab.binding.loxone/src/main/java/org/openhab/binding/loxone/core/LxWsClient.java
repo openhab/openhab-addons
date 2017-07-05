@@ -424,7 +424,7 @@ class LxWsClient {
      * Start a timer to wait for a Miniserver response to an action sent from the binding.
      * When timer expires, connection is removed and server error is reported. Further connection attempt can be made
      * later by the upper layer.
-     * If a previous time is running, it will be stopped before a new timer is started.
+     * If a previous timer is running, it will be stopped before a new timer is started.
      */
     private void startResponseTimeout() {
         synchronized (state) {
@@ -499,11 +499,6 @@ class LxWsClient {
                     return;
                 }
 
-                if (timeout != null) {
-                    timeout.cancel(true);
-                    timeout = null;
-                }
-
                 WebSocketPolicy policy = session.getPolicy();
                 policy.setMaxBinaryMessageSize(maxBinMsgSize * 1024);
                 policy.setMaxTextMessageSize(maxTextMsgSize * 1024);
@@ -512,6 +507,8 @@ class LxWsClient {
                         policy.getMaxBinaryMessageSize(), policy.getMaxTextMessageSize());
                 this.session = session;
                 setClientState(ClientState.CONNECTED);
+
+                startResponseTimeout();
 
                 try {
                     sendString(CMD_GET_KEY);

@@ -361,8 +361,8 @@ public class LxServer {
     /**
      * Thread that performs and supervises communication with the Miniserver.
      * <p>
-     * It will try to maintain connection as long as possible, handling errors and interruptions. There are two reasons
-     * when this thread will terminate and stop connecting to the Miniserver:
+     * It will try to maintain the connection as long as possible, handling errors and interruptions. There are two
+     * reasons when this thread will terminate and stop connecting to the Miniserver:
      * when it receives close command from supervisor ({@link LxServer} or when Miniserver locks out user due to too
      * many unsuccessful login attempts.
      *

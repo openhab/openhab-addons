@@ -22,8 +22,7 @@ public class LoxoneBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MINISERVER = new ThingTypeUID(BINDING_ID, "miniserver");
 
-    // List of all Channel ids
-    public static final String CHANNEL_SWITCH_COMMAND = "command";
+    // Channel IDs are created dynamically in runtime
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";
