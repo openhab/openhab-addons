@@ -10,6 +10,10 @@
         <description>Button (macros)</description>
         <channels>
             <channel id="press" typeId="button_press" />
+            <channel id="activated" typeId="system.trigger">
+                 <label>Button Activated</label>
+                 <description>Indicates the activation of a Button (macro)</description>
+            </channel>
         </channels>
         <properties>
             <property name="name" />
