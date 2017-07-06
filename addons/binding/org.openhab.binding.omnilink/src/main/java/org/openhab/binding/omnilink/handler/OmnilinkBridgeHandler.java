@@ -364,6 +364,27 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.debug("childHandlerDisposed called with '{}', childThing '{}'", childHandler, childThing);
+        if (childHandler instanceof AreaHandler) {
+            int areaNumber = getNumberProperty(childThing);
+            areaThings.remove(areaNumber);
+        } else if (childHandler instanceof UnitHandler) {
+            int unitNumber = getNumberProperty(childThing);
+            unitThings.remove(unitNumber, childThing);
+        } else if (childHandler instanceof ZoneHandler) {
+            int zoneNumber = getNumberProperty(childThing);
+            zoneThings.remove(zoneNumber);
+        } else if (childHandler instanceof ButtonHandler) {
+            int buttonNumber = getNumberProperty(childThing);
+            buttonThings.remove(buttonNumber);
+        } else if (childHandler instanceof ThermostatHandler) {
+            int thermostatNumber = getNumberProperty(childThing);
+            thermostatThings.remove(thermostatNumber);
+        } else if (childHandler instanceof AudioZoneHandler) {
+            int audioZoneNumber = getNumberProperty(childThing);
+            audioZoneThings.remove(audioZoneNumber);
+        } else {
+            logger.warn("Did not remove childThing from maps: {}", childThing);
+        }
     }
 
     @Override

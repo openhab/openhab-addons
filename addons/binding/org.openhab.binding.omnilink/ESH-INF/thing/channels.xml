@@ -379,7 +379,7 @@
 		<label>System Mode</label>
 		<description>System Mode</description>
 		<category>Temperature</category>
-		<state pattern="%d°">
+		<state pattern="%d">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Heat</option>
