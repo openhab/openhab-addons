@@ -275,7 +275,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @Override
-    public void objectStausNotification(ObjectStatus objectStatus) {
+    public void objectStatusNotification(ObjectStatus objectStatus) {
         Status[] statuses = objectStatus.getStatuses();
         for (Status status : statuses) {
             if (status instanceof UnitStatus) {
