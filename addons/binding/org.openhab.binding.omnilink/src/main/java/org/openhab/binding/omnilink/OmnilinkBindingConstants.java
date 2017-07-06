@@ -66,8 +66,12 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ROOM_STATE = "state";
 
     public final static String CHANNEL_FLAGSWITCH = "switch";
-    public final static String CHANNEL_BUTTON_PRESS = "press";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
+
+    // buttons
+
+    public final static String CHANNEL_BUTTON_PRESS = "press";
+    public final static String CHANNEL_BUTTON_ACTIVATED = "activated";
 
     // thermostats
 
