@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
@@ -376,12 +378,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateThumbnail(String thumbnail) {
-        updateState(CHANNEL_THUMBNAIL, createState(thumbnail));
+        updateState(CHANNEL_THUMBNAIL, createImage(thumbnail));
     }
 
     @Override
     public void updateFanart(String fanart) {
-        updateState(CHANNEL_FANART, createState(fanart));
+        updateState(CHANNEL_FANART, createImage(fanart));
     }
 
     /**
@@ -392,6 +394,19 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             return UnDefType.UNDEF;
         } else {
             return new StringType(string);
+        }
+    }
+
+    /**
+     * Download the image from the URL and return it as {@link RawType}. If the given link does not resolve to an image,
+     * return {@link UnDefType#UNDEF}.
+     */
+    private State createImage(String url) {
+        RawType image = HttpUtil.downloadImage(url);
+        if (image != null) {
+            return image;
+        } else {
+            return UnDefType.UNDEF;
         }
     }
 

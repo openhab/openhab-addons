@@ -184,15 +184,15 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="thumbnail" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Image</item-type>
 		<label>Thumbnail</label>
-		<description>URL to the current thumbnail</description>
+		<description>The current thumbnail</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="fanart" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Image</item-type>
 		<label>Fanart</label>
-		<description>URL to the current fanart</description>
+		<description>The current fanart</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 </thing:thing-descriptions>
