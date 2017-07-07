@@ -29,5 +29,5 @@ Import-Package: org.openhab.binding.robonect,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.jetty.client,
- org.eclipse.jetty.http 
+ org.eclipse.jetty.http
 Require-Bundle: org.hamcrest

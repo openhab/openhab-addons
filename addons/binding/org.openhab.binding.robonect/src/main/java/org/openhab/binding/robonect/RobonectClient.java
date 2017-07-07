@@ -14,9 +14,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -201,8 +203,19 @@ public class RobonectClient {
             if (logger.isDebugEnabled()) {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
             }
-            String responseString = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
-                    .timeout(30000, TimeUnit.MILLISECONDS).send().getContentAsString();
+            ContentResponse response = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
+                                .timeout(30000, TimeUnit.MILLISECONDS).send();
+            String responseString = null;
+            
+            // jetty uses UTF-8 as default encoding. However, HTTP 1.1 specifies ISO_8859_1
+            if(StringUtils.isBlank(response.getEncoding())){
+                responseString = new String(response.getContent(), StandardCharsets.ISO_8859_1);
+            }else {
+                // currently v0.9e Robonect does not specifiy the encoding. But if later versions will
+                // add, it should work with the default method to get the content as string.
+                responseString = response.getContentAsString();
+            }
+            
             if (logger.isDebugEnabled()) {
                 logger.debug("Response body was: {} ", responseString);
             }

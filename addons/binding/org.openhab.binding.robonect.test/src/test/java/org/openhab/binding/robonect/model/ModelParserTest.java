@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.robonect.model;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,6 +68,14 @@ public class ModelParserTest {
         assertEquals("1493665200", mowerInfo.getTimer().getNext().getUnix());
         assertEquals(-76, mowerInfo.getWlan().getSignal());
         assertNull(mowerInfo.getError());
+    }
+    
+    @Test
+    public void shouldParseISOEncodedStatusModel() {
+        byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}".getBytes(
+                StandardCharsets.ISO_8859_1);
+        MowerInfo mowerInfo = parser.parse(new String(responseBytesISO88591, StandardCharsets.ISO_8859_1), MowerInfo.class);
+        assertEquals("Utanför arbetsområdet", mowerInfo.getError().getErrorMessage());
     }
     
     @Test
