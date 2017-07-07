@@ -395,7 +395,7 @@
 		<label>Fan Mode</label>
 		<description>Fan Mode</description>
 		<category>Temperature</category>
-		<state pattern="%d°">
+		<state pattern="%d">
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">On</option>
