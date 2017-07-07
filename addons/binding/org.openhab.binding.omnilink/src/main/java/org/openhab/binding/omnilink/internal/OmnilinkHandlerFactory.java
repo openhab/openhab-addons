@@ -103,7 +103,6 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
      */
     private void registerOmnilnkBridgeDiscoveryService(OmnilinkBridgeHandler bridgeHandler) {
         OmnilinkDiscoveryService discoveryService = new OmnilinkDiscoveryService(bridgeHandler);
-        discoveryService.activate();
 
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());

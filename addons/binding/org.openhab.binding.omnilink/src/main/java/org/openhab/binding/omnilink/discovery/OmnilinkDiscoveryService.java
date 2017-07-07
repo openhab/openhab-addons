@@ -47,18 +47,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         this.bridgeHandler = bridgeHandler;
     }
 
-    public void activate() {
-        bridgeHandler.registerDiscoveryService(this);
-    }
-
-    /**
-     * Deactivates the Discovery Service.
-     */
-    @Override
-    public void deactivate() {
-        bridgeHandler.unregisterDiscoveryService();
-    }
-
     @Override
     protected void startScan() {
         logger.debug("Starting scan");

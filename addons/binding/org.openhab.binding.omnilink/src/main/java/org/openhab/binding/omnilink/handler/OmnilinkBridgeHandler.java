@@ -1,7 +1,6 @@
 package org.openhab.binding.omnilink.handler;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
@@ -26,7 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
-import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,15 +53,11 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 public class OmnilinkBridgeHandler extends BaseBridgeHandler implements NotificationListener {
 
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
-    private OmnilinkDiscoveryService bridgeDiscoveryService;
     private Connection omniConnection;
-    private ListeningScheduledExecutorService listeningExecutor;
     private TemperatureFormat temperatureFormat;
     private DisconnectListener retryingDisconnectListener;
 
@@ -182,21 +176,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    public void registerDiscoveryService(OmnilinkDiscoveryService bridgeDiscoveryService) {
-        this.bridgeDiscoveryService = bridgeDiscoveryService;
-
-    }
-
-    public void unregisterDiscoveryService() {
-        this.bridgeDiscoveryService = null;
-
-    }
-
     @Override
     public void initialize() {
-        listeningExecutor = MoreExecutors.listeningDecorator(scheduler);
         makeOmnilinkConnection();
-
+        super.initialize();
     }
 
     private void makeOmnilinkConnection() {
@@ -270,7 +253,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @Override
-    public void objectStausNotification(ObjectStatus objectStatus) {
+    public void objectStatusNotification(ObjectStatus objectStatus) {
         Status[] statuses = objectStatus.getStatuses();
         for (Status status : statuses) {
             if (status instanceof UnitStatus) {
@@ -289,8 +272,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 // TODO we shuold check if this is a lumina system and return that if so
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
                         status.getNumber());
-                // logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
-                // AreaAlarmStatus.values()[areaStatus.getMode()]);
+                logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
                 if (theThing.isPresent()) {
                     ((AreaHandler) theThing.get().getHandler()).handleAreaEvent(areaStatus);
                 }
@@ -312,23 +294,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
 
-        }
-    }
-
-    /**
-     * Get the number property as an integer for the supplied childThing
-     *
-     * @param childThing item to extract the number property from.
-     * @return Number of the item.
-     */
-    private int getNumberProperty(Thing childThing) {
-        if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-            throw new IllegalArgumentException("childThing does not have required 'number' property");
-        }
-        if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-            return ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-        } else {
-            return Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
         }
     }
 
@@ -410,15 +375,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     public TemperatureFormat getTemperatureFormat() {
         return temperatureFormat;
-    }
-
-    private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
-            BridgeOfflineException, IOException, OmniNotConnectedException {
-        ObjectStatus val;
-        val = requestObjectStatus(Message.OBJ_TYPE_UNIT, 1,
-                omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity(), false);
-        return (UnitStatus[]) val.getStatuses();
-
     }
 
     @Override

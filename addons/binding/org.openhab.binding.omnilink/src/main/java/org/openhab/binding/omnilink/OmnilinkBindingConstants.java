@@ -58,11 +58,12 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ROOM_SWITCH = "switch";
     public final static String CHANNEL_ROOM_ON = "on";
     public final static String CHANNEL_ROOM_OFF = "off";
+
     public final static String CHANNEL_ROOM_SCENE_A = "scene_a";
     public final static String CHANNEL_ROOM_SCENE_B = "scene_b";
     public final static String CHANNEL_ROOM_SCENE_C = "scene_c";
     public final static String CHANNEL_ROOM_SCENE_D = "scene_d";
-    public final static String CHANNEL_ROOM_STATE = "room_state";
+    public final static String CHANNEL_ROOM_STATE = "state";
 
     public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";

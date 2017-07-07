@@ -2,7 +2,6 @@ package org.openhab.binding.omnilink.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -75,7 +74,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
                 return;
         }
 
-        if (!(command instanceof StringType)) {
+        if (!(command instanceof DecimalType)) {
             logger.debug("Command {} is not valid for channel {}, only StringType are accepted", command,
                     channelUID.getId());
             return;
@@ -83,7 +82,8 @@ public class AreaHandler extends AbstractOmnilinkHandler {
 
         logger.debug("Receievd mode {} on area {}", mode, areaNumber);
 
-        char[] code = command.toFullString().toCharArray();
+        // char[] code = command.toFullString().toCharArray();
+        char[] code = String.format("%04d", ((DecimalType) command).intValue()).toCharArray();
         if (code.length != 4) {
             logger.error("Invalid code length, code must be 4 digits");
         } else {
