@@ -5,6 +5,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -240,10 +241,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void handleUnitStatus(UnitStatus stat) {
-        Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT, stat.getNumber());
-        logger.debug("received status update for unit: " + stat.getNumber() + ", status: " + stat.getStatus());
-        if (theThing != null) {
-            ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
+        logger.debug("received status update for unit: {}, status: {}", stat.getNumber(), stat.getStatus());
+        Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, stat.getNumber());
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ROOM, stat.getNumber());
+        }
+
+        if (theThing.isPresent()) {
+            ((UnitHandler) theThing.get().getHandler()).handleUnitStatus(stat);
         }
     }
 
@@ -256,31 +261,35 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             } else if (status instanceof ZoneStatus) {
                 ZoneStatus stat = (ZoneStatus) status;
                 Integer number = new Integer(stat.getNumber());
-                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
-                logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
-                if (theThing != null) {
-                    ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
+                logger.debug("received status update for zone: {},status: {}", number, stat.getStatus());
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
+
+                if (theThing.isPresent()) {
+                    ((ZoneHandler) theThing.get().getHandler()).handleZoneStatus(stat);
                 }
             } else if (status instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) status;
                 // TODO we shuold check if this is a lumina system and return that if so
-                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA, status.getNumber());
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
+                        status.getNumber());
                 // logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
                 // AreaAlarmStatus.values()[areaStatus.getMode()]);
-                if (theThing != null) {
-                    ((AreaHandler) theThing.getHandler()).handleAreaEvent(areaStatus);
+                if (theThing.isPresent()) {
+                    ((AreaHandler) theThing.get().getHandler()).handleAreaEvent(areaStatus);
                 }
             } else if (status instanceof ExtendedThermostatStatus) {
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
-                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT, status.getNumber());
-                if (theThing != null) {
-                    ((ThermostatHandler) theThing.getHandler()).handleThermostatStatus(thermostatStatus);
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
+                        status.getNumber());
+                if (theThing.isPresent()) {
+                    ((ThermostatHandler) theThing.get().getHandler()).handleThermostatStatus(thermostatStatus);
                 }
             } else if (status instanceof AudioZoneStatus) {
                 AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
-                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE, status.getNumber());
-                if (theThing != null) {
-                    ((AudioZoneHandler) theThing.getHandler()).handleAudioZoneStatus(audioZoneStatus);
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
+                        status.getNumber());
+                if (theThing.isPresent()) {
+                    ((AudioZoneHandler) theThing.get().getHandler()).handleAudioZoneStatus(audioZoneStatus);
                 }
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
@@ -308,11 +317,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
             int number = event.getNotifications()[0];
             if (number > 0 && number <= 256) {
-                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON, number);
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON, number);
                 logger.debug("Detect button push: number={}, thing: {}", number, theThing);
-                if (theThing != null) {
-                    logger.debug("thing for button press is: {}", theThing.getUID());
-                    ((ButtonHandler) theThing.getHandler()).buttonPressed();
+                if (theThing.isPresent()) {
+                    logger.debug("thing for button press is: {}", theThing.get().getUID());
+                    ((ButtonHandler) theThing.get().getHandler()).buttonPressed();
                 } else {
                     logger.warn("Unhandled other event notification, type: {}, notification: {}",
                             event.getMessageType(), event.getNotifications());
@@ -389,8 +398,24 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    private Thing getChildThing(ThingTypeUID type, int number) {
-        return getThingByUID(new ThingUID(type, getThing().getUID(), Integer.toString(number)));
+    private Optional<Thing> getChildThing(ThingTypeUID type, int number) {
+        Bridge bridge = getThing();
+
+        List<Thing> things = bridge.getThings();
+        for (Thing thing : things) {
+            logger.debug("Thing type: {}", thing.getThingTypeUID());
+            if (type.equals(thing.getThingTypeUID())) {
+                if (getThingNumber(thing) == number) {
+                    return Optional.of(thing);
+                }
+            }
+            logger.debug("Thing: {}", thing);
+        }
+        return Optional.empty();
+    }
+
+    private int getThingNumber(Thing thing) {
+        return ((Number) thing.getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER)).intValue();
     }
 
 }
