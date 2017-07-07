@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -17,6 +19,32 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class SuplaHttpExecutor implements HttpExecutor {
     private final Logger logger = LoggerFactory.getLogger(SuplaHttpExecutor.class);
     private final SuplaCloudServer server;
+
+    // I'm feeling so dirty now....
+    // https://stackoverflow.com/a/39641592/1819402
+    static {
+        try {
+            Field methodsField = HttpURLConnection.class.getDeclaredField("methods");
+            methodsField.setAccessible(true);
+            // get the methods field modifiers
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            // bypass the "private" modifier
+            modifiersField.setAccessible(true);
+
+            // remove the "final" modifier
+            modifiersField.setInt(methodsField, methodsField.getModifiers() & ~Modifier.FINAL);
+
+         /* valid HTTP methods */
+            String[] methods = {
+                    "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE", "PATCH"
+            };
+            // set the new methods - including patch
+            methodsField.set(null, methods);
+
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
 
     public SuplaHttpExecutor(SuplaCloudServer server) {
         this.server = checkNotNull(server);
