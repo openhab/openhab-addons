@@ -240,7 +240,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             logger.debug("set device model: {}", device);
             ThingUID thingUID = getThingUID(device);
             Thing thing = getThing();
-            if (thing != null) {
+            if (thing != null && thingUID.equals(thing.getUID())) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
                 updateThingFromDevice(thing, device);
             }
