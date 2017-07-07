@@ -6,9 +6,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +18,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -64,15 +63,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private OmnilinkDiscoveryService bridgeDiscoveryService;
     private Connection omniConnection;
     private ListeningScheduledExecutorService listeningExecutor;
-    private Map<Integer, Thing> areaThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-    private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-    private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-    private Map<Integer, Thing> buttonThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-    private Map<Integer, Thing> thermostatThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-    private Map<Integer, Thing> audioZoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-
     private TemperatureFormat temperatureFormat;
-
     private DisconnectListener retryingDisconnectListener;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
@@ -266,9 +257,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void handleUnitStatus(UnitStatus stat) {
-        Integer number = stat.getNumber();
-        Thing theThing = unitThings.get(number);
-        logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
+        Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT, stat.getNumber());
+        logger.debug("received status update for unit: " + stat.getNumber() + ", status: " + stat.getStatus());
         if (theThing != null) {
             ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
         }
@@ -283,15 +273,15 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             } else if (status instanceof ZoneStatus) {
                 ZoneStatus stat = (ZoneStatus) status;
                 Integer number = new Integer(stat.getNumber());
-                Thing theThing = zoneThings.get(number);
+                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
                 logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
                 if (theThing != null) {
                     ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
                 }
             } else if (status instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) status;
-                Integer number = new Integer(areaStatus.getNumber());
-                Thing theThing = areaThings.get(number);
+                // TODO we shuold check if this is a lumina system and return that if so
+                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA, status.getNumber());
                 // logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
                 // AreaAlarmStatus.values()[areaStatus.getMode()]);
                 if (theThing != null) {
@@ -299,15 +289,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 }
             } else if (status instanceof ExtendedThermostatStatus) {
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
-                Integer number = new Integer(thermostatStatus.getNumber());
-                Thing theThing = thermostatThings.get(number);
+                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT, status.getNumber());
                 if (theThing != null) {
                     ((ThermostatHandler) theThing.getHandler()).handleThermostatStatus(thermostatStatus);
                 }
             } else if (status instanceof AudioZoneStatus) {
                 AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
-                Integer number = new Integer(audioZoneStatus.getNumber());
-                Thing theThing = audioZoneThings.get(number);
+                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE, status.getNumber());
                 if (theThing != null) {
                     ((AudioZoneHandler) theThing.getHandler()).handleAudioZoneStatus(audioZoneStatus);
                 }
@@ -315,32 +303,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
 
-        }
-    }
-
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        logger.debug("childHandlerInitialized called with '{}', childThing '{}'", childHandler, childThing);
-        if (childHandler instanceof AreaHandler) {
-            int areaNumber = getNumberProperty(childThing);
-            areaThings.put(areaNumber, childThing);
-        } else if (childHandler instanceof UnitHandler) {
-            int unitNumber = getNumberProperty(childThing);
-            unitThings.put(unitNumber, childThing);
-        } else if (childHandler instanceof ZoneHandler) {
-            int zoneNumber = getNumberProperty(childThing);
-            zoneThings.put(zoneNumber, childThing);
-        } else if (childHandler instanceof ButtonHandler) {
-            int buttonNumber = getNumberProperty(childThing);
-            buttonThings.put(buttonNumber, childThing);
-        } else if (childHandler instanceof ThermostatHandler) {
-            int thermostatNumber = getNumberProperty(childThing);
-            thermostatThings.put(thermostatNumber, childThing);
-        } else if (childHandler instanceof AudioZoneHandler) {
-            int audioZoneNumber = getNumberProperty(childThing);
-            audioZoneThings.put(audioZoneNumber, childThing);
-        } else {
-            logger.warn("Did not add childThing to a map: {}", childThing);
         }
     }
 
@@ -380,7 +342,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
             int number = event.getNotifications()[0];
             if (number > 0 && number <= 256) {
-                Thing theThing = buttonThings.get(number);
+                Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON, number);
                 logger.debug("Detect button push: number={}, thing: {}", number, theThing);
                 if (theThing != null) {
                     logger.debug("thing for button press is: {}", theThing.getUID());
@@ -469,4 +431,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.disconnect();
         }
     }
+
+    private Thing getChildThing(ThingTypeUID type, int number) {
+        return getThingByUID(new ThingUID(type, getThing().getUID(), Integer.toString(number)));
+    }
+
 }
