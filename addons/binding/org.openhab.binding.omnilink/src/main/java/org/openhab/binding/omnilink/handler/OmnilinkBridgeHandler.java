@@ -446,13 +446,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
-            logger.debug("Thing type: {}", thing.getThingTypeUID());
             if (type.equals(thing.getThingTypeUID())) {
                 if (getThingNumber(thing) == number) {
                     return Optional.of(thing);
                 }
             }
-            logger.debug("Thing: {}", thing);
         }
         return Optional.empty();
     }
