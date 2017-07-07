@@ -258,7 +258,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private void handleUnitStatus(UnitStatus stat) {
         Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT, stat.getNumber());
-        logger.debug("received status update for unit: " + stat.getNumber() + ", status: " + stat.getStatus());
+        logger.debug("received status update for unit: {}, status: {}", stat.getNumber(), stat.getStatus());
         if (theThing != null) {
             ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
         }
@@ -274,7 +274,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 ZoneStatus stat = (ZoneStatus) status;
                 Integer number = new Integer(stat.getNumber());
                 Thing theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
-                logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
+                logger.debug("received status update for zone: {},status: {}", number, stat.getStatus());
                 if (theThing != null) {
                     ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
                 }
