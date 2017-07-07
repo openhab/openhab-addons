@@ -272,8 +272,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 // TODO we shuold check if this is a lumina system and return that if so
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
                         status.getNumber());
-                // logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
-                // AreaAlarmStatus.values()[areaStatus.getMode()]);
+                logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
                 if (theThing.isPresent()) {
                     ((AreaHandler) theThing.get().getHandler()).handleAreaEvent(areaStatus);
                 }
