@@ -36,7 +36,7 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
 
     /**
      * Gets the configured number for a thing.
-     * 
+     *
      * @return Configured number for a thing.
      */
     protected int getThingNumber() {
