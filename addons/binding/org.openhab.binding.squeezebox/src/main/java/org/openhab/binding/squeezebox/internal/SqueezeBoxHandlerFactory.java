@@ -46,7 +46,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             SqueezeBoxServerHandler.SUPPORTED_THING_TYPES_UIDS, SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

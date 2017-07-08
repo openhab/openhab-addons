@@ -11,24 +11,15 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Parses a listBidcosInterfaces message and extracts the type and gateway address.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], Void> {
-    private String deviceInterface;
-    private boolean homegear;
     private String type;
     private String gatewayAddress;
     private String firmware;
-
-    public ListBidcosInterfacesParser(String deviceInterface, boolean homegear) {
-        this.deviceInterface = deviceInterface;
-        this.homegear = homegear;
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -38,12 +29,11 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], Void> 
             for (int i = 0; i < message.length; i++) {
                 Map<String, ?> mapMessage = (Map<String, ?>) message[i];
                 boolean isDefault = toBoolean(mapMessage.get("DEFAULT"));
-                String address = toString(mapMessage.get("ADDRESS"));
 
-                if ((homegear && isDefault) || StringUtils.equals(address, deviceInterface)) {
+                if (isDefault) {
                     type = toString(mapMessage.get("TYPE"));
                     firmware = toString(mapMessage.get("FIRMWARE_VERSION"));
-                    gatewayAddress = address;
+                    gatewayAddress = toString(mapMessage.get("ADDRESS"));
                 }
             }
         }

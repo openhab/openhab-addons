@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.NumberItem;
@@ -24,6 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Marc SAUVEUR - Initial contribution
  * @author Pauli Anttila
+ * @author Mike Jagdis - Support all available data from sensors
  */
 public class RFXComWindMessage extends RFXComBaseMessage {
 
@@ -57,16 +59,19 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.WIND_DIRECTION,
-            RFXComValueSelector.WIND_SPEED);
+            RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
     public double windDirection;
     public double windSpeed;
+    public double avgWindSpeed;
+    public double temperature;
+    public double chillTemperature;
     public byte signalLevel;
     public byte batteryLevel;
 
@@ -80,17 +85,16 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
-
-        str += super.toString();
-        str += ", Sub type = " + subType;
-        str += ", Device Id = " + getDeviceId();
-        str += ", Wind direction = " + windDirection;
-        str += ", Wind speed = " + windSpeed;
-        str += ", Signal level = " + signalLevel;
-        str += ", Battery level = " + batteryLevel;
-
-        return str;
+        return super.toString()
+            + ", Sub type = " + subType
+            + ", Device Id = " + getDeviceId()
+            + ", Wind direction = " + windDirection
+            + ", Wind gust = " + windSpeed
+            + ", Average wind speed = " + avgWindSpeed
+            + ", Temperature = " + temperature
+            + ", Chill temperature = " + chillTemperature
+            + ", Signal level = " + signalLevel
+            + ", Battery level = " + batteryLevel;
     }
 
     @Override
@@ -102,7 +106,25 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         windDirection = (short) ((data[6] & 0xFF) << 8 | (data[7] & 0xFF));
+
+        if (subType != SubType.WIND5) {
+            avgWindSpeed = (short) ((data[8] & 0xFF) << 8 | (data[9] & 0xFF)) * 0.1;
+        }
+
         windSpeed = (short) ((data[10] & 0xFF) << 8 | (data[11] & 0xFF)) * 0.1;
+
+        if (subType == SubType.WIND4) {
+            temperature = (short) ((data[12] & 0x7F) << 8 | (data[13] & 0xFF)) * 0.1;
+            if ((data[12] & 0x80) != 0) {
+                temperature = -temperature;
+            }
+
+            chillTemperature = (short) ((data[14] & 0x7F) << 8 | (data[15] & 0xFF)) * 0.1;
+            if ((data[14] & 0x80) != 0) {
+                chillTemperature = -chillTemperature;
+            }
+        }
+
         signalLevel = (byte) ((data[16] & 0xF0) >> 4);
         batteryLevel = (byte) (data[16] & 0x0F);
     }
@@ -118,13 +140,35 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         data[4] = (byte) ((sensorId & 0xFF00) >> 8);
         data[5] = (byte) (sensorId & 0x00FF);
 
-        short WindD = (short) Math.abs(windDirection);
-        data[6] = (byte) ((WindD >> 8) & 0xFF);
-        data[7] = (byte) (WindD & 0xFF);
+        short absWindDirection = (short) Math.abs(windDirection);
+        data[6] = (byte) ((absWindDirection >> 8) & 0xFF);
+        data[7] = (byte) (absWindDirection & 0xFF);
 
-        int WindS = (short) Math.abs(windSpeed) * 10;
-        data[10] = (byte) ((WindS >> 8) & 0xFF);
-        data[11] = (byte) (WindS & 0xFF);
+        if (subType != SubType.WIND5) {
+            int absAvgWindSpeedTimesTen = (short) Math.abs(avgWindSpeed) * 10;
+            data[8] = (byte) ((absAvgWindSpeedTimesTen >> 8) & 0xFF);
+            data[9] = (byte) (absAvgWindSpeedTimesTen & 0xFF);
+        }
+
+        int absWindSpeedTimesTen = (short) Math.abs(windSpeed) * 10;
+        data[10] = (byte) ((absWindSpeedTimesTen >> 8) & 0xFF);
+        data[11] = (byte) (absWindSpeedTimesTen & 0xFF);
+
+        if (subType == SubType.WIND4) {
+            int temp = (short) Math.abs(temperature) * 10;
+            data[12] = (byte) ((temp >> 8) & 0x7F);
+            data[13] = (byte) (temp & 0xFF);
+            if (temperature < 0) {
+                data[12] |= 0x80;
+            }
+
+            int chill = (short) Math.abs(chillTemperature) * 10;
+            data[14] = (byte) ((chill >> 8) & 0x7F);
+            data[15] = (byte) (chill & 0xFF);
+            if (chillTemperature < 0) {
+                data[14] |= 0x80;
+            }
+        }
 
         data[16] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
 
@@ -154,9 +198,22 @@ public class RFXComWindMessage extends RFXComBaseMessage {
             } else if (valueSelector == RFXComValueSelector.WIND_DIRECTION) {
 
                 state = new DecimalType(windDirection);
+
+            } else if (valueSelector == RFXComValueSelector.AVG_WIND_SPEED) {
+
+                state = new DecimalType(avgWindSpeed);
+
             } else if (valueSelector == RFXComValueSelector.WIND_SPEED) {
 
                 state = new DecimalType(windSpeed);
+
+            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+
+                state = new DecimalType(temperature);
+
+            } else if (valueSelector == RFXComValueSelector.CHILL_TEMPERATURE) {
+
+                state = new DecimalType(chillTemperature);
 
             } else {
                 throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
@@ -205,12 +262,12 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
 }

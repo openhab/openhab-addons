@@ -29,14 +29,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * KodiClientSocket implements the low level communication to kodi through websocket. Usually this communication is done
- * through port 9090
+ * KodiClientSocket implements the low level communication to kodi through
+ * websocket. Usually this communication is done through port 9090
  *
  * @author Paul Frank
  *
  */
 public class KodiClientSocket {
-    private static final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
+
+    private final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
@@ -63,8 +64,8 @@ public class KodiClientSocket {
     }
 
     /**
-     * Attempts to create a connection to the kodi host and begin listening
-     * for updates over the async http web socket
+     * Attempts to create a connection to the kodi host and begin listening for
+     * updates over the async http web socket
      *
      * @throws Exception
      */
@@ -139,14 +140,14 @@ public class KodiClientSocket {
             logger.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                logger.debug("Response received from server:" + json.toString());
+                logger.debug("Response received from server: {}", json);
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
                     commandLatch.countDown();
                 }
             } else {
-                logger.debug("Event received from server: {}", json.toString());
+                logger.debug("Event received from server: {}", json);
                 try {
                     if (eventHandler != null) {
                         scheduler.submit(new Runnable() {

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CometVisuApp {
 
-    private static final Logger logger = LoggerFactory.getLogger(CometVisuApp.class);
+    private final Logger logger = LoggerFactory.getLogger(CometVisuApp.class);
 
     protected HttpService httpService;
 
@@ -61,7 +61,7 @@ public class CometVisuApp {
 
     private PHProvider phpProvider;
 
-    static protected Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
+    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<>();
 
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
@@ -85,7 +85,7 @@ public class CometVisuApp {
         persistenceServices.remove(service.getId());
     }
 
-    static public Map<String, QueryablePersistenceService> getPersistenceServices() {
+    public static Map<String, QueryablePersistenceService> getPersistenceServices() {
         return persistenceServices;
     }
 

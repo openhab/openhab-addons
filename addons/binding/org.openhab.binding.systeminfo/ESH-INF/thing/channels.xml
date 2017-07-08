@@ -14,6 +14,7 @@
 			<channel id="available" typeId="available" />
 			<channel id="used" typeId="used" />
 			<channel id="availablePercent" typeId="availablePercent" />
+			<channel id="usedPercent" typeId="usedPercent" />
 		</channels>
 	</channel-group-type>
 
@@ -25,6 +26,7 @@
 			<channel id="available" typeId="available" />
 			<channel id="used" typeId="used" />
 			<channel id="availablePercent" typeId="availablePercent" />
+			<channel id="usedPercent" typeId="usedPercent" />
 		</channels>
 	</channel-group-type>
 
@@ -36,6 +38,7 @@
 			<channel id="available" typeId="available" />
 			<channel id="used" typeId="used" />
 			<channel id="availablePercent" typeId="availablePercent" />
+			<channel id="usedPercent" typeId="usedPercent" />
 			<channel id="name" typeId="name" />
 			<channel id="description" typeId="description" />
 			<channel id="type" typeId="type" />
@@ -61,8 +64,8 @@
 			<channel id="networkDisplayName" typeId="networkDisplayName" />
 			<channel id="dataSent" typeId="dataSent" />
 			<channel id="dataReceived" typeId="dataReceived" />
-			<channel id="packagesSent" typeId="packagesSent" />
-			<channel id="packagesReceived" typeId="packagesReceived" />
+			<channel id="packetsSent" typeId="packetsSent" />
+			<channel id="packetsReceived" typeId="packetsReceived" />
 			<channel id="mac" typeId="mac"></channel>
 		</channels>
 	</channel-group-type>
@@ -165,7 +168,15 @@
 	<channel-type id="availablePercent">
 		<item-type>Number</item-type>
 		<label>Available (%)</label>
-		<description>Available size in percents</description>
+		<description>Available size in percent</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="usedPercent">
+		<item-type>Number</item-type>
+		<label>Used (%)</label>
+		<description>Used size in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
@@ -253,7 +264,7 @@
 	<channel-type id="remainingCapacity">
 		<item-type>Number</item-type>
 		<label>Remaining capacity</label>
-		<description>Remaining capacity in percents</description>
+		<description>Remaining capacity in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
@@ -261,7 +272,7 @@
 	<channel-type id="load">
 		<item-type>Number</item-type>
 		<label>Load</label>
-		<description>Load in percents</description>
+		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
@@ -269,7 +280,7 @@
 	<channel-type id="load_process">
 		<item-type>Number</item-type>
 		<label>Load</label>
-		<description>Load in percents</description>
+		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority_process" />
 	</channel-type>
@@ -277,7 +288,7 @@
 	<channel-type id="loadAverage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Load average</label>
-		<description>Load in percents for the last 1,5 or 15 minutes</description>
+		<description>Load in percent for the last 1,5 or 15 minutes</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
@@ -346,18 +357,18 @@
 		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="packagesSent" advanced="true">
+	<channel-type id="packetsSent" advanced="true">
 		<item-type>Number</item-type>
-		<label>Packages sent</label>
-		<description>Number of packages sent</description>
+		<label>Packets sent</label>
+		<description>Number of packets sent</description>
 		<state readOnly="true" pattern="%d " />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="packagesReceived" advanced="true">
+	<channel-type id="packetsReceived" advanced="true">
 		<item-type>Number</item-type>
-		<label>Packages received</label>
-		<description>Number of packages received</description>
+		<label>Packets received</label>
+		<description>Number of packets received</description>
 		<state readOnly="true" pattern="%d " />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>

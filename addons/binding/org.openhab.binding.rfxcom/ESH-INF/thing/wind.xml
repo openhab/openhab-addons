@@ -15,8 +15,20 @@
 		<description>A Wind device.</description>
 
 		<channels>
-			<channel id="windSpeed" typeId="windspeed" />
+			<channel id="avgWindSpeed" typeId="windspeed">
+				<label>Average Wind Speed</label>
+				<description>Average wind speed in meters per second</description>
+			</channel>
+			<channel id="windSpeed" typeId="windspeed">
+				<label>Wind Gust</label>
+				<description>Wind gust in meters per second</description>
+			</channel>
 			<channel id="windDirection" typeId="winddirection" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="chillTemperature" typeId="temperature">
+				<label>Chill Temperature</label>
+				<description>Chill temperature in degree Celsius</description>
+			</channel>
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />

@@ -10,25 +10,25 @@ package org.openhab.binding.squeezebox.config;
 
 /**
  * Configuration of a server.
- * 
+ *
  * @author Dan Cunningham
  *
  */
 public class SqueezeBoxServerConfig {
-	/**
-	 * Server ip address
-	 */
-	public String ipAddress;
-	/**
-	 * Server web port for REST calls
-	 */
-	public int webport;
-	/**
-	 * Server cli port
-	 */
-	public int cliport;
-	/**
-	 * Language for TTS
-	 */
-	public String language;
+    /**
+     * Server ip address
+     */
+    public String ipAddress;
+    /**
+     * Server web port for REST calls
+     */
+    public int webport;
+    /**
+     * Server cli port
+     */
+    public int cliport;
+    /**
+     * Language for TTS
+     */
+    public String language;
 }

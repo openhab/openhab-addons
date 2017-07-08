@@ -46,7 +46,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
         super(timeout);
     }
 
-    private final static Logger logger = LoggerFactory.getLogger(TellstickDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(TellstickDiscoveryService.class);
 
     private List<TelldusBridgeHandler> telldusBridgeHandlers = new Vector<TelldusBridgeHandler>();
 

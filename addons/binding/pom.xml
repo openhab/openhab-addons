@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>pom</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -19,13 +19,14 @@
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
-    <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -48,11 +49,14 @@
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
+    <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
@@ -64,17 +68,22 @@
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
+    <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
+    <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wifiled</module>
+    <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>

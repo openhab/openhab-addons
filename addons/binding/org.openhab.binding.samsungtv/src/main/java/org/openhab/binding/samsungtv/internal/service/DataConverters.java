@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link DataConverters} provides utils for converting openhab commands to
+ * The {@link DataConverters} provides utils for converting openHAB commands to
  * Samsung TV specific values.
  *
  * @author Pauli Anttila - Initial contribution
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 public class DataConverters {
 
     /**
-     * Convert openhab command to int.
+     * Convert openHAB command to int.
      * 
      * @param command
      * @param min
@@ -56,7 +56,7 @@ public class DataConverters {
     }
 
     /**
-     * Convert openhab command to boolean.
+     * Convert openHAB command to boolean.
      * 
      * @param command
      * @return

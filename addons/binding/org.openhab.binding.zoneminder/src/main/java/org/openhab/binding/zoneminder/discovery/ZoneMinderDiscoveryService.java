@@ -27,6 +27,10 @@ import org.slf4j.LoggerFactory;
 
 import name.eskildsen.zoneminder.IZoneMinderMonitorData;
 
+/**
+ *
+ * @author Martin S. Eskildsen - Initial contribution
+ */
 public class ZoneMinderDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderDiscoveryService.class);
 

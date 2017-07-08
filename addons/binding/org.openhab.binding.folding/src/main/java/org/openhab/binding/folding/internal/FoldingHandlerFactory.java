@@ -29,7 +29,7 @@ import org.openhab.binding.folding.handler.SlotHandler;
  */
 public class FoldingHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(FoldingBindingConstants.THING_TYPE_CLIENT, FoldingBindingConstants.THING_TYPE_SLOT));
 
     @Override

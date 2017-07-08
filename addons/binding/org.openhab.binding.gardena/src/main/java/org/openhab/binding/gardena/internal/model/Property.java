@@ -11,6 +11,8 @@ package org.openhab.binding.gardena.internal.model;
 import java.util.Date;
 import java.util.List;
 
+import org.openhab.binding.gardena.internal.GardenaSmartCommandName;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -33,8 +35,8 @@ public class Property {
     public Property() {
     }
 
-    public Property(String name, String value) {
-        this.name = name;
+    public Property(GardenaSmartCommandName commandName, String value) {
+        this.name = commandName.toString().toLowerCase();
         this.value = value;
     }
 
@@ -50,6 +52,13 @@ public class Property {
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * Sets the value of the property.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

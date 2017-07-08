@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dscalarm"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="zone">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="envisalink" />
 			<bridge-type-ref id="it100" />
-            <bridge-type-ref id="tcpserver" />
+			<bridge-type-ref id="tcpserver" />
 		</supported-bridge-type-refs>
 
 		<label>DSC Alarm Zone</label>
@@ -47,49 +45,17 @@
 		</channels>
 
 		<config-description>
-
-			<parameter name="partitionNumber" type="integer" min="1"
-				max="8">
+			<parameter name="partitionNumber" type="integer" min="1" max="8">
 				<label>Partition Number</label>
 				<description>The Partition Number (1-8).</description>
 				<default>1</default>
 			</parameter>
 
-			<parameter name="zoneNumber" type="integer" required="true"
-				min="1" max="64">
+			<parameter name="zoneNumber" type="integer" required="true" min="1" max="64">
 				<label>Zone Number</label>
 				<description>The Zone Number (1-64).</description>
 			</parameter>
-
 		</config-description>
-
 	</thing-type>
-
-	<channel-type id="zone_status">
-		<item-type>Contact</item-type>
-		<label>Zone Status</label>
-		<description>Zone Status (Open/Closed)</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="message">
-		<item-type>String</item-type>
-		<label>Message</label>
-		<description>Message Received</description>
-		<state pattern="%s" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="bypass_mode">
-		<item-type>Switch</item-type>
-		<label>Bypass Mode</label>
-		<description>Bypass Mode (OFF=Armed, ON=Bypassed)</description>
-	</channel-type>
-
-	<channel-type id="status">
-		<item-type>Switch</item-type>
-		<label>Status</label>
-		<description>Status</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 </thing:thing-descriptions>

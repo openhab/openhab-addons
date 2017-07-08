@@ -15,6 +15,11 @@ package org.openhab.binding.russound.internal.rio.source;
  */
 public class RioSourceConfig {
     /**
+     * Constant defined for the "source" configuration field
+     */
+    public static final String Source = "source";
+
+    /**
      * ID of the source
      */
     private int source;

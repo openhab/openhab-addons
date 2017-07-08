@@ -50,7 +50,7 @@ import gnu.io.UnsupportedCommOperationException;
  * @author Chris Jackson - Initial contribution
  */
 public class MeteostickBridgeHandler extends BaseBridgeHandler {
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 

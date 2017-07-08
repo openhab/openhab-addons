@@ -17,42 +17,42 @@ package org.openhab.binding.atlona.internal.pro3;
 class AtlonaPro3Constants {
 
     // Properties
-    final static String PROPERTY_VERSION = "version";
-    final static String PROPERTY_TYPE = "type";
+    static final String PROPERTY_VERSION = "version";
+    static final String PROPERTY_TYPE = "type";
 
-    final static String GROUP_PRIMARY = "primary";
-    final static String GROUP_PORT = "port";
-    final static String GROUP_MIRROR = "mirror";
-    final static String GROUP_VOLUME = "volume";
+    static final String GROUP_PRIMARY = "primary";
+    static final String GROUP_PORT = "port";
+    static final String GROUP_MIRROR = "mirror";
+    static final String GROUP_VOLUME = "volume";
 
     // List of all Channel ids
-    final static String CHANNEL_POWER = "power";
-    final static String CHANNEL_PANELLOCK = "panellock";
-    final static String CHANNEL_IRENABLE = "irenable";
-    final static String CHANNEL_PRESETCMDS = "presetcmd";
-    final static String CHANNEL_MATRIXCMDS = "matrixcmd";
+    static final String CHANNEL_POWER = "power";
+    static final String CHANNEL_PANELLOCK = "panellock";
+    static final String CHANNEL_IRENABLE = "irenable";
+    static final String CHANNEL_PRESETCMDS = "presetcmd";
+    static final String CHANNEL_MATRIXCMDS = "matrixcmd";
 
-    final static String CHANNEL_PORTPOWER = "portpower";
-    final static String CHANNEL_PORTOUTPUT = "portoutput";
+    static final String CHANNEL_PORTPOWER = "portpower";
+    static final String CHANNEL_PORTOUTPUT = "portoutput";
 
-    final static String CHANNEL_PORTMIRROR = "portmirror";
-    final static String CHANNEL_PORTMIRRORENABLED = "portmirrorenabled";
+    static final String CHANNEL_PORTMIRROR = "portmirror";
+    static final String CHANNEL_PORTMIRRORENABLED = "portmirrorenabled";
 
-    final static String CHANNEL_VOLUME = "volume";
-    final static String CHANNEL_VOLUME_MUTE = "volumemute";
-    // final static String CHANNEL_RS232 = "rs232cmd";
+    static final String CHANNEL_VOLUME = "volume";
+    static final String CHANNEL_VOLUME_MUTE = "volumemute";
+    // static final String CHANNEL_RS232 = "rs232cmd";
 
-    final static String CONFIG_HOSTNAME = "hostname";
-    final static String CONFIG_OUTPUT = "output";
+    static final String CONFIG_HOSTNAME = "hostname";
+    static final String CONFIG_OUTPUT = "output";
 
     // Preset commands
-    final static String CMD_PRESETSAVE = "save";
-    final static String CMD_PRESETRECALL = "recall";
-    final static String CMD_PRESETCLEAR = "clear";
+    static final String CMD_PRESETSAVE = "save";
+    static final String CMD_PRESETRECALL = "recall";
+    static final String CMD_PRESETCLEAR = "clear";
 
     // Matrix commands
-    final static String CMD_MATRIXRESET = "resetmatrix";
-    final static String CMD_MATRIXRESETPORTS = "resetports";
-    final static String CMD_MATRIXPORTALL = "allports";
+    static final String CMD_MATRIXRESET = "resetmatrix";
+    static final String CMD_MATRIXRESETPORTS = "resetports";
+    static final String CMD_MATRIXPORTALL = "allports";
 
 }

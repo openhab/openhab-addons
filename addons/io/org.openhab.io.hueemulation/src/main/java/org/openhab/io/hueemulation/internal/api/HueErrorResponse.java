@@ -14,11 +14,11 @@ package org.openhab.io.hueemulation.internal.api;
  * @author Dan Cunningham
  */
 public class HueErrorResponse {
-    public final static int UNAUTHORIZED = 1;
-    public final static int NOT_AVAILABLE = 3;
-    public final static int METHOD_NOT_AVAILABLE = 4;
-    public final static int LINK_BUTTON_NOT_PRESSED = 101;
-    public final static int INTERNAL_ERROR = 901;
+    public static final int UNAUTHORIZED = 1;
+    public static final int NOT_AVAILABLE = 3;
+    public static final int METHOD_NOT_AVAILABLE = 4;
+    public static final int LINK_BUTTON_NOT_PRESSED = 101;
+    public static final int INTERNAL_ERROR = 901;
 
     public HueErrorMessage error;
 

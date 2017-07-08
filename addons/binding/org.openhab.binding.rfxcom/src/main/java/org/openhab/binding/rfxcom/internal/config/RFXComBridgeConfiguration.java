@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.rfxcom.internal.config;
 
+import org.openhab.binding.rfxcom.internal.connector.RFXComBaseConnector;
+
 /**
- * Configuration class for {@link RfxcomBinding} device.
+ * Configuration class for {@link RFXComBaseConnector} device.
  *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeConfiguration {
+    public static final String SERIAL_PORT = "serialPort";
+    public static final String BRIDGE_ID = "bridgeId";
 
     // Serial port for manual configuration
     public String serialPort;
@@ -28,6 +32,11 @@ public class RFXComBridgeConfiguration {
     public int port;
 
     public String transceiverType;
+
+    // Prevent unknown devices from being added to the inbox
+    public boolean disableDiscovery;
+
+    public int transmitPower;
 
     // Won't configure protocols to RFXCOM transceiver
     public boolean ignoreConfig;
@@ -59,4 +68,6 @@ public class RFXComBridgeConfiguration {
     public boolean enableAC;
     public boolean enableARC;
     public boolean enableX10;
+    public boolean enableHomeConfort;
+    public boolean enableKEELOQ;
 }
