@@ -22,4 +22,12 @@
             </parameter>
         </config-description>
     </thing-type>
+    
+    <!-- Code Channels -->
+    <channel-type id="code_name">
+        <item-type>String</item-type>
+        <label>Code Name</label>
+        <description>User Code Name</description>
+    </channel-type>
+    
 </thing:thing-descriptions>

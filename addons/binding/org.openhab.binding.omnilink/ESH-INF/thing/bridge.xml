@@ -45,5 +45,14 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+	
+	   
+    <!-- Controller Channels -->
+    <channel-type id="sysDate">
+        <item-type>DateTime</item-type>
+        <label>System Time</label>
+        <description>The date/time of omnilink last time received system status</description>
+        <!-- <state readOnly="true" /> pattern="%1$tF %1$tR" -->
+    </channel-type>
 </thing:thing-descriptions>
     

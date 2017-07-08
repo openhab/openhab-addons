@@ -26,4 +26,13 @@
             </parameter>
         </config-description>
     </thing-type>
+    
+    <!-- Button Channels -->
+    <channel-type id="button_press">
+        <item-type>Switch</item-type>
+        <label>Button Press</label>
+        <description>Button Press</description>
+        <category>Contact</category>
+        <state pattern="%s" />
+    </channel-type>
 </thing:thing-descriptions>

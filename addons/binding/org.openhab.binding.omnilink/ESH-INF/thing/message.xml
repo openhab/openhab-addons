@@ -22,4 +22,13 @@
             </parameter>
         </config-description>
     </thing-type>
+    
+    <!-- Message Channels -->
+    <channel-type id="message_name">
+        <item-type>String</item-type>
+        <label>Message Name</label>
+        <description>System Message Name</description>
+    </channel-type>
+
+    
 </thing:thing-descriptions>
