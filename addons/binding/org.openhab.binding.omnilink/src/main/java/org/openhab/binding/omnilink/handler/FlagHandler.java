@@ -53,7 +53,6 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
         } else if (command instanceof OnOffType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             try {
-
                 OmniLinkCmd omniLinkCmd = OnOffType.ON.equals(command) ? OmniLinkCmd.CMD_UNIT_ON
                         : OmniLinkCmd.CMD_UNIT_OFF;
                 getOmnilinkBridgeHander().sendOmnilinkCommand(omniLinkCmd.getNumber(), 0, flagID);
