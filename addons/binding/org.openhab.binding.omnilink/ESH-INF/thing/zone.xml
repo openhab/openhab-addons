@@ -33,4 +33,59 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	
+	<!-- Zone Channels -->
+    <channel-type id="zone_contact">
+        <item-type>Contact</item-type>
+        <label>Contact State</label>
+        <description>Contact state information</description>
+        <category>Contact</category>
+        <state pattern="%s" readOnly="true" />
+    </channel-type>
+    <channel-type id="zone_current_condition">
+        <item-type>Number</item-type>
+        <label>Current Condition</label>
+        <description>Current condition of a zone.</description>
+        <category>Contact</category>
+        <state pattern="%d" readOnly="true">
+            <options>
+                <option value="0">Secure</option>
+                <option value="1">Not Ready</option>
+                <option value="2">Trouble</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="zone_latched_alarm_status">
+        <item-type>Number</item-type>
+        <label>Latched Alarm Status</label>
+        <description>Latched alarm status of a zone.</description>
+        <category>Contact</category>
+        <state pattern="%d" readOnly="true">
+            <options>
+                <option value="0">Secure</option>
+                <option value="1">Tripped</option>
+                <option value="2">Reset, but previously tripped</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="zone_arming_status">
+        <item-type>Number</item-type>
+        <label>Arming Status</label>
+        <description>Arming status of a zone.</description>
+        <category>Contact</category>
+        <state pattern="%d" readOnly="true">
+            <options>
+                <option value="0">Disarmed</option>
+                <option value="1">Armed</option>
+                <option value="2">Bypassed by user</option>
+                <option value="3">Bypassed by system</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="zone_command">
+        <item-type>String</item-type>
+        <label>Zone Command</label>
+        <description>Sends a user code and command to the zone.</description>
+        <category>Alarm</category>
+    </channel-type>
 </thing:thing-descriptions>
