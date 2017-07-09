@@ -68,6 +68,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     private ExpiringCache<String> history;
 
     private RoboCommunication roboCom;
+    private int lastId;
 
     public XiaomiVacuumHandler(Thing thing) {
         super(thing);
@@ -142,7 +143,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
         scheduler.schedule(this::updateConnection, 0, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 5, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 1, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -253,7 +254,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     private boolean updateDnD() {
         JsonObject dndData = getResultHelper(dnd.getValue());
         if (dndData == null) {
-            disconnected("No valid Do not Disturb response");
+            disconnected("No valid Do Not Disturb response");
             return false;
         }
         logger.debug("Do not disturb data: {}", dndData.toString());
@@ -295,6 +296,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
 
     private void disconnected(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+        lastId = roboCom.getId();
         roboCom = null;
     }
 
@@ -342,10 +344,11 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             }
             return null;
         });
+        updateStatus(ThingStatus.ONLINE);
         return true;
     }
 
-    private RoboCommunication getConnection() {
+    private synchronized RoboCommunication getConnection() {
         if (roboCom != null) {
             return roboCom;
         }
@@ -354,15 +357,15 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         try {
             if (deviceId != null && deviceId.length() == 8) {
                 logger.debug("Using vacuum device ID {}", deviceId);
-                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId));
+                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
+                        lastId);
                 byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 if (response.length > 0) {
-                    updateStatus(ThingStatus.ONLINE);
                     return roboCom;
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving vacuum device ID");
-                roboCom = new RoboCommunication(configuration.host, token, new byte[0]);
+                roboCom = new RoboCommunication(configuration.host, token, new byte[0], lastId);
                 byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 Message roboResponse = new Message(response);
                 updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceId()));
@@ -370,8 +373,8 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
                 config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceId()));
                 updateConfiguration(config);
                 logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceId()));
-                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId());
-                updateStatus(ThingStatus.ONLINE);
+                lastId = roboCom.getId();
+                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
                 return roboCom;
             }
             return null;

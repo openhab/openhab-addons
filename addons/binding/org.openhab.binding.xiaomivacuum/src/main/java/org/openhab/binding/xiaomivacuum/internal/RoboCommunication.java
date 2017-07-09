@@ -38,10 +38,11 @@ public class RoboCommunication {
     private final byte[] deviceId;
     private AtomicInteger id = new AtomicInteger();
 
-    public RoboCommunication(String ip, byte[] token, byte[] did) {
+    public RoboCommunication(String ip, byte[] token, byte[] did, int id) {
         this.ip = ip;
         this.token = token;
         this.deviceId = did;
+        setId(id);
     }
 
     public String sendCommand(VacuumCommand command) throws RoboCryptoException, IOException {
@@ -82,10 +83,12 @@ public class RoboCommunication {
     }
 
     public byte[] comms(byte[] message, String ip) throws IOException {
+        // TODO: This is a hack to allow multiple vacuums with each own portChange this
         InetAddress ipAddress = InetAddress.getByName(ip);
         int p = ipAddress.getAddress()[3];
         p += XiaomiVacuumBindingConstants.PORT;
         try (DatagramSocket clientSocket = new DatagramSocket(p)) {
+            // TODO: Change this to trace level later onwards
             logger.debug("Connection {}:{}", ip, clientSocket.getLocalPort());
             byte[] sendData = new byte[MSG_BUFFER_SIZE];
             clientSocket.setSoTimeout(TIMEOUT);
@@ -103,5 +106,19 @@ public class RoboCommunication {
             logger.debug("Communication error for vacuum at {}: {}", ip, e.getMessage());
             return new byte[0];
         }
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id.incrementAndGet();
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id.set(id);
     }
 }

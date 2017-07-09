@@ -47,7 +47,11 @@ public enum VacuumCommand {
     LOG_UPLOAD_ENABLE("enable_log_upload"),
 
     SET_MODE("set_custom_mode"),
-    GET_MODE("get_custom_mode");
+    GET_MODE("get_custom_mode"),
+
+    REMOTE_START("app_rc_start"),
+    REMOTE_END("app_rc_end"),
+    REMOTE_MOVE("app_rc_move");
 
     private final String command;
 
