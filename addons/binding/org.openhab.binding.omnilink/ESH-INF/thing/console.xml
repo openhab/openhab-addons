@@ -37,7 +37,7 @@
         <label>Console Beep</label>
         <description>Console beep command</description>
         <category>Contact</category>
-        <state pattern="%d">
+        <state>
             <options>
                 <option value="0">Off</option>
                 <option value="1">Indefinitely</option>

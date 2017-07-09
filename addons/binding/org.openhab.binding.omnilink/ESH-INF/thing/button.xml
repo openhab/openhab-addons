@@ -33,6 +33,5 @@
         <label>Button Press</label>
         <description>Button Press</description>
         <category>Contact</category>
-        <state pattern="%s" />
     </channel-type>
 </thing:thing-descriptions>

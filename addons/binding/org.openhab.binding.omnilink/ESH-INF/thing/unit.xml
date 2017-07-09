@@ -210,7 +210,7 @@
         <item-type>Number</item-type>
         <label>Status</label>
         <description>Represents the numeric status of an unit object</description>
-        <state pattern="%d" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="unit_level">
         <item-type>Dimmer</item-type>
@@ -224,41 +224,36 @@
         <label>Load Switch</label>
         <description>Toggle Load</description>
         <category>Switch</category>
-        <state pattern="%s" />
     </channel-type>
     <channel-type id="scene_switch">
         <item-type>Switch</item-type>
         <label>On/Off</label>
         <description>Send On/Off to a Scene</description>
         <category>Switch</category>
-        <state pattern="%s" />
     </channel-type>
     <channel-type id="scene_on">
         <item-type>Switch</item-type>
         <label>On Scene</label>
         <description>Turn on On Scene</description>
         <category>Switch</category>
-        <state pattern="%s" />
     </channel-type>
     <channel-type id="scene_off">
         <item-type>Switch</item-type>
         <label>Off Scene</label>
         <description>Turn on Off Scene</description>
         <category>Switch</category>
-        <state pattern="%s" />
     </channel-type>
     <channel-type id="scene_toggle">
         <item-type>Switch</item-type>
         <label>Scene Toggle</label>
         <description>Scene Toggle</description>
         <category>Toggle</category>
-        <state pattern="%s" />
     </channel-type>
     <channel-type id="room_state">
         <item-type>Number</item-type>
         <label>State</label>
         <description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
-        <state pattern="%d">
+        <state>
             <options>
                 <option value="0">Off</option>
                 <option value="1">On</option>
@@ -280,7 +275,6 @@
         <label>On/Off</label>
         <description>Flag Switch information</description>
         <category>Switch</category>
-        <state pattern="%s" />
     </channel-type>
-	
+    
 </thing:thing-descriptions>

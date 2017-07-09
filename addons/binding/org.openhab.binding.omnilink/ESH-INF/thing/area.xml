@@ -109,63 +109,63 @@
         <label>Burglary Alarm</label>
         <description>Indicates if a Burglary Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_fire">
         <item-type>Switch</item-type>
         <label>Fire Alarm</label>
         <description>Indicates if a Fire Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_gas">
         <item-type>Switch</item-type>
         <label>Gas Alarm</label>
         <description>Indicates if a Gas Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_auxiliary">
         <item-type>Switch</item-type>
         <label>Auxiliary Alarm</label>
         <description>Indicates if a Auxiliary Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_freeze">
         <item-type>Switch</item-type>
         <label>Freeze Alarm</label>
         <description>Indicates if a Freeze Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_water">
         <item-type>Switch</item-type>
         <label>Water Alarm</label>
         <description>Indicates if a Water Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_duress">
         <item-type>Switch</item-type>
         <label>Duress Alarm</label>
         <description>Indicates if a Duress Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="area_alarm_temperature">
         <item-type>Switch</item-type>
         <label>Temperature Alarm</label>
         <description>Indicates if a Temperature Alarm is Active.</description>
         <category>Alarm</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="omni_area_mode">
         <item-type>Number</item-type>
         <label>Security Mode</label>
         <description>Represents the area security mode.</description>
         <category>Alarm</category>
-        <state pattern="%d" readOnly="true">
+        <state readOnly="true">
             <options>
                 <option value="0">Off</option>
                 <option value="1">Day</option>
@@ -194,7 +194,7 @@
         <label>Activate Keypad Emergency</label>
         <description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. </description>
         <category>Alarm</category>
-        <state pattern="%d">
+        <state>
             <options>
                 <option value="1">Burglary</option>
                 <option value="2">Fire</option>
@@ -207,7 +207,7 @@
         <label>Security Mode</label>
         <description>Represents the area security mode.</description>
         <category>Alarm</category>
-        <state pattern="%d" readOnly="true">
+        <state readOnly="true">
             <options>
                 <option value="1">Home</option>
                 <option value="2">Sleep</option>

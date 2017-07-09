@@ -40,14 +40,14 @@
         <label>Contact State</label>
         <description>Contact state information</description>
         <category>Contact</category>
-        <state pattern="%s" readOnly="true" />
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="zone_current_condition">
         <item-type>Number</item-type>
         <label>Current Condition</label>
         <description>Current condition of a zone.</description>
         <category>Contact</category>
-        <state pattern="%d" readOnly="true">
+        <state readOnly="true">
             <options>
                 <option value="0">Secure</option>
                 <option value="1">Not Ready</option>
@@ -60,7 +60,7 @@
         <label>Latched Alarm Status</label>
         <description>Latched alarm status of a zone.</description>
         <category>Contact</category>
-        <state pattern="%d" readOnly="true">
+        <state readOnly="true">
             <options>
                 <option value="0">Secure</option>
                 <option value="1">Tripped</option>
@@ -73,7 +73,7 @@
         <label>Arming Status</label>
         <description>Arming status of a zone.</description>
         <category>Contact</category>
-        <state pattern="%d" readOnly="true">
+        <state readOnly="true">
             <options>
                 <option value="0">Disarmed</option>
                 <option value="1">Armed</option>
