@@ -171,6 +171,7 @@ public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler impleme
 
     @Override
     public void noBridgeDetected() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                "Bridge did not respond or the bridge's MAC address does not match with your configuration!");
     }
 }
