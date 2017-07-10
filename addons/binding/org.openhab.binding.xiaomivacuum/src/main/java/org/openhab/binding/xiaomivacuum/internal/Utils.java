@@ -44,7 +44,7 @@ public final class Utils {
      * @param byte array
      * @return String equivalent to hex string
      **/
-    static final String HEXES = "0123456789ABCDEF";
+    private static final String HEXES = "0123456789ABCDEF";
 
     public static String getSpacedHex(byte[] raw) {
         if (raw == null) {

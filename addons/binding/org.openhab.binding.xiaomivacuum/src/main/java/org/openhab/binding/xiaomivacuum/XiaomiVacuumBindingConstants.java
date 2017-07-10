@@ -37,20 +37,19 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_FAN_POWER = "status#fan_power";
     public static final String CHANNEL_IN_CLEANING = "status#in_cleaning";
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
-    public static final String CHANNEL_MSG_SEQ = "status#msg_seq";
-    public static final String CHANNEL_MSG_VER = "status#msg_ver";
     public static final String CHANNEL_STATE = "status#state";
 
-    public static final String CHANNEL_VACUUM = "actions#vacuum";
-    public static final String CHANNEL_SPOT = "actions#spot_clean";
-    public static final String CHANNEL_RETURN = "actions#return";
-    public static final String CHANNEL_PAUSE = "actions#pause";
+    public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
 
-    public static final String CHANNEL_CONSUMABLE_MAIN = "consumables#main_brush_time";
-    public static final String CHANNEL_CONSUMABLE_SIDE = "consumables#side_brush_time";
-    public static final String CHANNEL_CONSUMABLE_FILTER = "consumables#filter_time";
-    public static final String CHANNEL_CONSUMABLE_SENSOR = "consumables#sensor_dirt_time";
+    public static final String CHANNEL_CONSUMABLE_MAIN_PERC = "consumables#main_brush_percent";
+    public static final String CHANNEL_CONSUMABLE_SIDE_PERC = "consumables#side_brush_percent";
+    public static final String CHANNEL_CONSUMABLE_FILTER_PERC = "consumables#filter_percent";
+    public static final String CHANNEL_CONSUMABLE_SENSOR_PERC = "consumables#sensor_dirt_percent";
+    public static final String CHANNEL_CONSUMABLE_MAIN_TIME = "consumables#main_brush_time";
+    public static final String CHANNEL_CONSUMABLE_SIDE_TIME = "consumables#side_brush_time";
+    public static final String CHANNEL_CONSUMABLE_FILTER_TIME = "consumables#filter_time";
+    public static final String CHANNEL_CONSUMABLE_SENSOR_TIME = "consumables#sensor_dirt_time";
 
     public static final String CHANNEL_DND_FUNCTION = "dnd#dnd_function";
     public static final String CHANNEL_DND_START = "dnd#dnd_start";

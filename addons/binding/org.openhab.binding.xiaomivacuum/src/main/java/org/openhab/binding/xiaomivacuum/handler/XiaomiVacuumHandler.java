@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,8 +29,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
+import org.openhab.binding.xiaomivacuum.internal.ConsumablesType;
 import org.openhab.binding.xiaomivacuum.internal.Message;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
 import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
@@ -86,30 +87,20 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             updateData();
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_VACUUM)) {
-            if (command instanceof OnOffType && command == OnOffType.ON) {
+        if (channelUID.getId().equals(CHANNEL_CONTROL)) {
+            if (command.equals("vacuum")) {
                 sendCommand(VacuumCommand.START_VACUUM);
-            } else if (channelUID.getId().equals(CHANNEL_VACUUM)) {
-                if (command instanceof OnOffType && command == OnOffType.OFF) {
-                    sendCommand(VacuumCommand.STOP_VACUUM);
-                }
-            }
-        }
-        if (channelUID.getId().equals(CHANNEL_SPOT)) {
-            if (command instanceof OnOffType && command == OnOffType.ON) {
+            } else if (command.equals("spot")) {
                 sendCommand(VacuumCommand.START_SPOT);
-            } else if (channelUID.getId().equals(CHANNEL_VACUUM)) {
-                if (command instanceof OnOffType && command == OnOffType.OFF) {
-                    sendCommand(VacuumCommand.STOP_VACUUM);
-                }
+            } else if (command.equals("pause")) {
+                sendCommand(VacuumCommand.PAUSE);
+            } else if (command.equals("dock")) {
+                sendCommand(VacuumCommand.STOP_VACUUM);
+                sendCommand(VacuumCommand.CHARGE);
+            } else {
+                logger.info("Command {} not recognised", command.toString());
             }
-        }
-        if (channelUID.getId().equals(CHANNEL_PAUSE) && command instanceof OnOffType && command == OnOffType.ON) {
-            sendCommand(VacuumCommand.PAUSE);
-        }
-        if (channelUID.getId().equals(CHANNEL_RETURN) && command instanceof OnOffType && command == OnOffType.ON) {
-            sendCommand(VacuumCommand.STOP_VACUUM);
-            sendCommand(VacuumCommand.CHARGE);
+            return;
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             updateState(CHANNEL_COMMAND, new StringType(sendCommand(command.toString())));
@@ -154,7 +145,10 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
-        roboCom = null;
+        if (roboCom != null) {
+            roboCom.close();
+            roboCom = null;
+        }
     }
 
     String sendCommand(VacuumCommand command) {
@@ -207,29 +201,48 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         updateState(CHANNEL_FAN_POWER, new DecimalType(statusData.get("fan_power").getAsBigDecimal()));
         updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
-        updateState(CHANNEL_MSG_SEQ, new DecimalType(statusData.get("msg_seq").getAsBigDecimal()));
-        updateState(CHANNEL_MSG_VER, new DecimalType(statusData.get("msg_ver").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-        if (state.equals(StatusType.CLEANING)) {
-            updateState(CHANNEL_VACUUM, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_VACUUM, OnOffType.OFF);
+        String control;
+        switch (state) {
+            case CLEANING:
+                control = "vacuum";
+                break;
+            case CHARGING:
+                control = "dock";
+                break;
+            case CHARGING_ERROR:
+                control = "dock";
+                break;
+            case DOCKING:
+                control = "dock";
+                break;
+            case FULL:
+                control = "dock";
+                break;
+            case IDLE:
+                control = "pause";
+                break;
+            case PAUSED:
+                control = "pause";
+                break;
+            case RETURNING:
+                control = "dock";
+                break;
+            case SLEEPING:
+                control = "pause";
+                break;
+            case SPOTCLEAN:
+                control = "spot";
+                break;
+            default:
+                control = "undef";
+                break;
         }
-        if (state.equals(StatusType.RETURNING)) {
-            updateState(CHANNEL_RETURN, OnOffType.ON);
+        if (control.equals("undef")) {
+            updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
         } else {
-            updateState(CHANNEL_RETURN, OnOffType.OFF);
-        }
-        if (state.equals(StatusType.SPOTCLEAN)) {
-            updateState(CHANNEL_SPOT, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_SPOT, OnOffType.OFF);
-        }
-        if (state.equals(StatusType.PAUSED)) {
-            updateState(CHANNEL_PAUSE, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_PAUSE, OnOffType.OFF);
+            updateState(CHANNEL_CONTROL, new StringType(control));
         }
         return true;
     }
@@ -240,14 +253,26 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             disconnected("No valid consumables response");
             return false;
         }
-        updateState(CHANNEL_CONSUMABLE_MAIN, new DecimalType(consumablesData.get("main_brush_work_time")
-                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-        updateState(CHANNEL_CONSUMABLE_SIDE, new DecimalType(consumablesData.get("side_brush_work_time")
-                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-        updateState(CHANNEL_CONSUMABLE_FILTER, new DecimalType(consumablesData.get("filter_work_time").getAsBigDecimal()
-                .divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-        updateState(CHANNEL_CONSUMABLE_SENSOR, new DecimalType(consumablesData.get("sensor_dirty_time")
-                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        int mainBrush = consumablesData.get("main_brush_work_time").getAsInt();
+        int sideBrush = consumablesData.get("side_brush_work_time").getAsInt();
+        int filter = consumablesData.get("filter_work_time").getAsInt();
+        int sensor = consumablesData.get("sensor_dirty_time").getAsInt();
+        updateState(CHANNEL_CONSUMABLE_MAIN_TIME,
+                new DecimalType(ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_SIDE_TIME,
+                new DecimalType(ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                new DecimalType(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER)));
+        updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                new DecimalType(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR)));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
+                new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         return true;
     }
 
@@ -374,6 +399,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
                 updateConfiguration(config);
                 logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceId()));
                 lastId = roboCom.getId();
+                roboCom.close();
                 roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
                 return roboCom;
             }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,14 +29,14 @@ import org.slf4j.LoggerFactory;
 public class RoboCommunication {
 
     private static final int MSG_BUFFER_SIZE = 1024;
-
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
 
     private final String ip;
     private final byte[] token;
     private final byte[] deviceId;
+    private DatagramSocket socket;
     private AtomicInteger id = new AtomicInteger();
 
     public RoboCommunication(String ip, byte[] token, byte[] did, int id) {
@@ -83,17 +84,12 @@ public class RoboCommunication {
         return decryptedResponse;
     }
 
-    public byte[] comms(byte[] message, String ip) throws IOException {
-        // TODO: This is a hack to allow multiple vacuums with each own portChange this
+    public synchronized byte[] comms(byte[] message, String ip) throws IOException {
         InetAddress ipAddress = InetAddress.getByName(ip);
-        int p = ipAddress.getAddress()[3];
-        p += XiaomiVacuumBindingConstants.PORT;
-        try (DatagramSocket clientSocket = new DatagramSocket()) {
-            // TODO: Change this to trace level later onwards
-            logger.debug("Connection {}:{}", ip, clientSocket.getLocalPort());
+        DatagramSocket clientSocket = getSocket();
+        try {
+            logger.trace("Connection {}:{}", ip, clientSocket.getLocalPort());
             byte[] sendData = new byte[MSG_BUFFER_SIZE];
-            clientSocket.setSoTimeout(TIMEOUT);
-            // clientSocket.setReuseAddress(true);
             sendData = message;
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
                     XiaomiVacuumBindingConstants.PORT);
@@ -101,11 +97,27 @@ public class RoboCommunication {
             sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             clientSocket.receive(sendPacket);
             byte[] response = sendPacket.getData();
-            clientSocket.close();
             return response;
         } catch (SocketTimeoutException e) {
             logger.debug("Communication error for vacuum at {}: {}", ip, e.getMessage());
+            clientSocket.close();
             return new byte[0];
+        }
+    }
+
+    private DatagramSocket getSocket() throws SocketException {
+        if (socket == null || socket.isClosed()) {
+            socket = new DatagramSocket();
+            socket.setSoTimeout(TIMEOUT);
+            return socket;
+        } else {
+            return socket;
+        }
+    }
+
+    public void close() {
+        if (socket != null) {
+            socket.close();
         }
     }
 

@@ -45,12 +45,8 @@
 	<channel-group-type id="actions">
 		<label>Action</label>
 		<channels>
-			<channel id="vacuum" typeId="vacuum" />
-			<channel id="spot_clean" typeId="spot_clean" />
-			<channel id="return" typeId="return" />
-			<channel id="pause" typeId="pause" />
+			<channel id="control" typeId="control" />
 			<channel id="commands" typeId="commands" />
-
 		</channels>
 	</channel-group-type>
 
@@ -65,14 +61,16 @@
 			<channel id="in_cleaning" typeId="in_cleaning" />
 			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="map_present" typeId="map_present" />
-			<channel id="msg_seq" typeId="msg_seq" />
-			<channel id="msg_ver" typeId="msg_ver" />
 			<channel id="state" typeId="state" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
 		<label>Consumables</label>
 		<channels>
+			<channel id="main_brush_percent" typeId="main_brush_percent" />
+			<channel id="side_brush_percent" typeId="side_brush_percent" />
+			<channel id="filter_percent" typeId="filter_percent" />
+			<channel id="sensor_dirt_percent" typeId="sensor_dirt_percent" />
 			<channel id="main_brush_time" typeId="main_brush_time" />
 			<channel id="side_brush_time" typeId="side_brush_time" />
 			<channel id="filter_time" typeId="filter_time" />
@@ -100,12 +98,12 @@
 	<channel-type id="clean_area">
 		<item-type>Number</item-type>
 		<label>Cleaning Area</label>
-		<state pattern="%.2d M2" readOnly="true" />
+		<state pattern="%.2f m²" readOnly="true" />
 	</channel-type>
 	<channel-type id="clean_time">
 		<item-type>Number</item-type>
 		<label>Cleaning Time</label>
-		<state pattern="%.2d min" readOnly="true" />
+		<state pattern="%.0f'" readOnly="true" />
 	</channel-type>
 	<channel-type id="dnd_enabled">
 		<item-type>Switch</item-type>
@@ -119,27 +117,22 @@
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
-		<state pattern="%.0d %%" readOnly="true" />
+		<state pattern="%.0f %%" readOnly="true" />
 	</channel-type>
-	<channel-type id="in_cleaning">
+	<channel-type id="in_cleaning" advanced="true">
 		<item-type>Number</item-type>
 		<label>in_cleaning</label>
-		<state pattern="%.0d" readOnly="true" />
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="map_present" advanced="true">
 		<item-type>Number</item-type>
 		<label>map_present</label>
 		<category>Energy</category>
-		<state pattern="%.0d" readOnly="true" />
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>
 		<label>msg_seq</label>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="msg_ver" advanced="true">
-		<item-type>Number</item-type>
-		<label>msg_ver</label>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="state">
@@ -149,43 +142,59 @@
 	</channel-type>
 
 	<!-- Consumables channels -->
-	<channel-type id="main_brush_time">
+	<channel-type id="main_brush_percent">
 		<item-type>Number</item-type>
-		<label>Main Brush Time</label>
-		<state pattern="%.2d min" readOnly="true" />
+		<label>Main Brush Remaining</label>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
-	<channel-type id="side_brush_time">
+	<channel-type id="side_brush_percent">
 		<item-type>Number</item-type>
-		<label>Side Brush Time</label>
-		<state pattern="%.2d min" readOnly="true" />
+		<label>Side Brush Remaining</label>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
-	<channel-type id="filter_time">
+	<channel-type id="filter_percent">
 		<item-type>Number</item-type>
-		<label>Filter Usage Time</label>
-		<state pattern="%.2d min" readOnly="true" />
+		<label>Filter Usage Remaining</label>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
-	<channel-type id="sensor_dirt_time">
+	<channel-type id="sensor_dirt_percent">
 		<item-type>Number</item-type>
-		<label>Sensor Dirt Time</label>
-		<state pattern="%.2d min" readOnly="true" />
+		<label>Sensor Dirt Remaining </label>
+		<state pattern="%.0f%%" readOnly="true" />
+	</channel-type>
+	<channel-type id="main_brush_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Main Brush hours till replacement</label>
+		<state pattern="%.0fh" readOnly="true" />
+	</channel-type>
+	<channel-type id="side_brush_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Side Brush hours till replacement</label>
+		<state pattern="%.0fh" readOnly="true" />
+	</channel-type>
+	<channel-type id="filter_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter hours till replacement</label>
+		<state pattern="%.0fh" readOnly="true" />
+	</channel-type>
+	<channel-type id="sensor_dirt_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sensor Dirt Time till cleaning</label>
+		<state pattern="%.0fh" readOnly="true" />
 	</channel-type>
 
 	<!-- actions -->
-	<channel-type id="vacuum">
-		<item-type>Switch</item-type>
-		<label>Vacuuming</label>
-	</channel-type>
-	<channel-type id="spot_clean">
-		<item-type>Switch</item-type>
-		<label>Spot Cleaning</label>
-	</channel-type>
-	<channel-type id="return">
-		<item-type>Switch</item-type>
-		<label>Return Base</label>
-	</channel-type>
-	<channel-type id="pause">
-		<item-type>Switch</item-type>
-		<label>Pause Cleaning</label>
+	<channel-type id="control">
+		<item-type>String</item-type>
+		<label>Control Vacuum</label>
+		<state>
+			<options>
+				<option value="vacuum">Vacuum</option>
+				<option value="spot">Spot Clean</option>
+				<option value="pause">Pause</option>
+				<option value="dock">Dock</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="commands" advanced="true">
 		<item-type>String</item-type>
@@ -215,11 +224,11 @@
 	<channel-type id="total_clean_area">
 		<item-type>Number</item-type>
 		<label>Total Cleaning Area</label>
-		<state pattern="%.2d m2" readOnly="true" />
+		<state pattern="%.1f m²" readOnly="true" />
 	</channel-type>
 	<channel-type id="total_clean_count">
 		<item-type>Number</item-type>
 		<label>Total Cleanings</label>
-		<state pattern="%.0d" readOnly="true" />
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

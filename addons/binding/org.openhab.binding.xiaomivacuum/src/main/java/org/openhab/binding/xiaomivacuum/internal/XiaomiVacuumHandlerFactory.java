@@ -31,14 +31,10 @@ public class XiaomiVacuumHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new XiaomiVacuumHandler(thing);
         }
-
         return null;
     }
-
 }

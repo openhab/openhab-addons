@@ -44,7 +44,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
-    private static final int TIMEOUT = 3000;
+    private static final int TIMEOUT = 10000;
     private ScheduledFuture<?> roboDiscoveryJob;
 
     private final Logger logger = LoggerFactory.getLogger(VacuumDiscovery.class);
