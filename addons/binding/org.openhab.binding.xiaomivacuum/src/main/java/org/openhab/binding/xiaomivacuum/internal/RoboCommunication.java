@@ -87,7 +87,7 @@ public class RoboCommunication {
         InetAddress ipAddress = InetAddress.getByName(ip);
         int p = ipAddress.getAddress()[3];
         p += XiaomiVacuumBindingConstants.PORT;
-        try (DatagramSocket clientSocket = new DatagramSocket(p)) {
+        try (DatagramSocket clientSocket = new DatagramSocket()) {
             // TODO: Change this to trace level later onwards
             logger.debug("Connection {}:{}", ip, clientSocket.getLocalPort());
             byte[] sendData = new byte[MSG_BUFFER_SIZE];

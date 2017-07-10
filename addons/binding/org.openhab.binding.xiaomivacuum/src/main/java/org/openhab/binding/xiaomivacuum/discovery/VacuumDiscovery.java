@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -90,15 +91,13 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
                         id);
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_DID, id).withRepresentationProperty(id)
-                        .withLabel("Xiaomi Robot Vacuum").build());
+                        .withRepresentationProperty(id).withLabel("Xiaomi Robot Vacuum").build());
             } else {
                 logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_TOKEN, token)
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_DID, id).withLabel("Xiaomi Robot Vacuum")
-                        .withRepresentationProperty(id).build());
+                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_TOKEN, token).withRepresentationProperty(id)
+                        .withLabel("Xiaomi Robot Vacuum").build());
             }
         }
     }
@@ -149,7 +148,15 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             sendPacket.setData(new byte[256]);
             while (true) {
                 clientSocket.receive(sendPacket);
-                responses.put(sendPacket.getAddress().getHostAddress(), sendPacket.getData());
+                byte[] messageBuf = Arrays.copyOfRange(sendPacket.getData(), sendPacket.getOffset(),
+                        sendPacket.getOffset() + sendPacket.getLength());
+                if (logger.isTraceEnabled()) {
+                    Message roboResponse = new Message(messageBuf);
+                    logger.trace("Discovery response received from {} DeviceID: {}\r\n{}",
+                            sendPacket.getAddress().getHostAddress(), Utils.getHex(roboResponse.getDeviceId()),
+                            roboResponse.toSting());
+                }
+                responses.put(sendPacket.getAddress().getHostAddress(), messageBuf);
             }
         } catch (Exception e) {
             logger.trace("Discovery on {} error: {}", ipAddress, e.getMessage());
