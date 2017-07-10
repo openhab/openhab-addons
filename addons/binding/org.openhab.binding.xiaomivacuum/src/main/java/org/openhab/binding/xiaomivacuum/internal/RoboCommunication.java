@@ -59,7 +59,8 @@ public class RoboCommunication {
         }
         String idString = "'id': " + Integer.toString(id.incrementAndGet());
         String fullCommand = "{'method': '" + command + "', " + params + idString + "}";
-        logger.debug("Send command: {} -> {} (token: {})", fullCommand, ip, new String(token));
+        logger.debug("Send command: {} -> {} (Device: {} token: {})", fullCommand, ip, Utils.getHex(deviceId),
+                Utils.getHex(token));
         return sendCommand(fullCommand, token, ip, deviceId);
     }
 
