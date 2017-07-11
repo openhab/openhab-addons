@@ -64,6 +64,8 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type | Description                                                                                            | Available on thing                                                                  |
 |-----------------|-----------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| mode            | String    | States the mode of the device (MANUAL/AUTOMATIC)                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 300, Comet DECT    |
+| locked          | Contact   | Device is locked for switching over external sources (OPEN/CLOSE)                                      | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 300, Comet DECT    |
 | temperature     | Number    | Actual measured temperature (in °C)                                                                    | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 300, Comet DECT |
 | energy          | Number    | Accumulated energy consumption (in kWh)                                                                | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                |
 | power           | Number    | Current power consumption (in W)                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                |
@@ -72,8 +74,9 @@ If correct credentials are set in the bridge configuration, connected AHA device
 | set_temp        | Number    | Set Temperature of heating thermostat (in °C)                                                          | FRITZ!DECT 300, Comet DECT                                                          |
 | eco_temp        | Number    | Eco Temperature of heating thermostat (in °C)                                                          | FRITZ!DECT 300, Comet DECT                                                          |
 | comfort_temp    | Number    | Comfort Temperature of heating thermostat (in °C)                                                      | FRITZ!DECT 300, Comet DECT                                                          |
+| radiator_mode   | String    | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST)                                                  | FRITZ!DECT 300, Comet DECT                                                          |
 | next_change     | DateTime  | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80 | FRITZ!DECT 300, Comet DECT                                                          |
-| next_tmep       | Number    | Next Set Temperature if scheduler is activated in the FRITZ!Box settings (in °C) - FRITZ!OS 6.80       | FRITZ!DECT 300, Comet DECT                                                          |
+| next_temp       | Number    | Next Set Temperature if scheduler is activated in the FRITZ!Box settings (in °C) - FRITZ!OS 6.80       | FRITZ!DECT 300, Comet DECT                                                          |
 | battery_low     | Switch    | Battery Level Low (ON/OFF) - FRITZ!OS 6.80                                                             | FRITZ!DECT 300, Comet DECT                                                          |
 
 
@@ -103,6 +106,7 @@ Group gCOMETDECT "Comet DECT heating thermostat" <temperature>
 
 Number COMETDECTActualTemp "Actual measured temperature [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:actual_temp" }
 Number COMETDECTSetTemp "Thermostat temperature setpoint [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:set_temp" }
+String COMETDECTRadiatorMode "Radiator mode [%s]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:radiator_mode" }
 Switch COMETDECTBattery "Battery low" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:battery_low" }
 ```
 
@@ -123,6 +127,7 @@ sitemap demo label="Main Menu"
 	Frame "Comet DECT heating thermostat" {
 		Text item=COMETDECTActualTemp icon="temperature"
 		Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
+		Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"]
 		Switch item=COMETDECTBattery icon="battery"
 	}
 }

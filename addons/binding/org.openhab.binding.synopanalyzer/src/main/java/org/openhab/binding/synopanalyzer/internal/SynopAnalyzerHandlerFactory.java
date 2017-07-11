@@ -36,13 +36,8 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_SYNOP)) {
-            return new SynopAnalyzerHandler(thing);
-        }
-
-        return null;
+        return thingTypeUID.equals(THING_SYNOP) ? new SynopAnalyzerHandler(thing) : null;
     }
 }

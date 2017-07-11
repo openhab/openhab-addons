@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.zoneminder;
 
+/**
+ *
+ * @author Martin S. Eskildsen - Initial contribution
+ */
 public class ZoneMinderProperties {
     public static final String PROPERTY_ID = "Id";
 

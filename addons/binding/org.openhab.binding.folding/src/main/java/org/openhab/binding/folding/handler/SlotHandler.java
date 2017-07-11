@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * Slot handlers. The Slot handler exposes the status of a slot, and allows
  * users to start / stop folding.
  *
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class SlotHandler extends BaseThingHandler implements SlotUpdateListener {
 
