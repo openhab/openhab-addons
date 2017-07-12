@@ -182,8 +182,11 @@ public class RobonectHandler extends BaseThingHandler {
     private void setMowerMode(Command command) throws InterruptedException {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
-        robonectClient.setMode(newMode);
-        refreshMowerInfo();
+        if(robonectClient.setMode(newMode).isSuccessful()){
+            updateState(CHANNEL_STATUS_MODE, new StringType(newMode.name()));
+        }else {
+            refreshMowerInfo();
+        }
     }
 
     private void setRemoteStartJobSetting(Command command) {
@@ -226,10 +229,12 @@ public class RobonectHandler extends BaseThingHandler {
         } else if (command == OnOffType.OFF && !currentlyStopped) {
             answer = robonectClient.stop();
         }
-        if (answer != null) {
+        if (answer.isSuccessful()) {
+            updateState(CHANNEL_MOWER_STATUS_STARTED, command);
+        } else{
             logErrorFromResponse(answer);
+            refreshMowerInfo();
         }
-        refreshMowerInfo();
     }
 
     private void updateName(StringType command) throws InterruptedException {
@@ -239,8 +244,8 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
         } else {
             logErrorFromResponse(name);
+            refreshMowerInfo();
         }
-        refreshMowerInfo();
     }
 
     private void refreshMowerInfo() throws InterruptedException {
