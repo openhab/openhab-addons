@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -77,32 +78,29 @@ public class HomematicThingHandler extends BaseThingHandler {
                     HmChannel channelZero = device.getChannel(0);
                     loadHomematicChannelValues(channelZero);
                     updateStatus(device);
-                    if (!device.isOffline()) {
-                        logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
+                    logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
 
-                        // update properties
-                        Map<String, String> properties = editProperties();
-                        setProperty(properties, channelZero, PROPERTY_BATTERY_TYPE,
-                                VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
-                        setProperty(properties, channelZero, Thing.PROPERTY_FIRMWARE_VERSION,
-                                VIRTUAL_DATAPOINT_NAME_FIRMWARE);
-                        setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
-                        setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
-                        updateProperties(properties);
+                    // update properties
+                    Map<String, String> properties = editProperties();
+                    setProperty(properties, channelZero, PROPERTY_BATTERY_TYPE, VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
+                    setProperty(properties, channelZero, Thing.PROPERTY_FIRMWARE_VERSION,
+                            VIRTUAL_DATAPOINT_NAME_FIRMWARE);
+                    setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
+                    setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
+                    updateProperties(properties);
 
-                        // update configurations
-                        Configuration config = editConfiguration();
-                        for (HmChannel channel : device.getChannels()) {
-                            for (HmDatapoint dp : channel.getDatapoints().values()) {
-                                if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                                    loadHomematicChannelValues(dp.getChannel());
-                                    config.put(MetadataUtils.getParameterName(dp),
-                                            dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
-                                }
+                    // update configurations
+                    Configuration config = editConfiguration();
+                    for (HmChannel channel : device.getChannels()) {
+                        for (HmDatapoint dp : channel.getDatapoints().values()) {
+                            if (dp.getParamsetType() == HmParamsetType.MASTER) {
+                                loadHomematicChannelValues(dp.getChannel());
+                                config.put(MetadataUtils.getParameterName(dp),
+                                        dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
                             }
                         }
-                        updateConfiguration(config);
                     }
+                    updateConfiguration(config);
                 } catch (HomematicClientException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 } catch (IOException ex) {
@@ -306,14 +304,6 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    /**
      * Returns true, if the channel is linked at least to one item.
      */
     private boolean isLinked(Channel channel) {
@@ -331,15 +321,16 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the Homematic gateway if the bridge is available.
      */
     private HomematicGateway getHomematicGateway() throws BridgeHandlerNotAvailableException {
-        if (getBridge() == null || getBridge().getHandler() == null
-                || ((HomematicBridgeHandler) getBridge().getHandler()).getGateway() == null) {
+        final Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null
+                || ((HomematicBridgeHandler) bridge.getHandler()).getGateway() == null) {
             if (thing.getStatus() != ThingStatus.INITIALIZING) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
             throw new BridgeHandlerNotAvailableException("BridgeHandler not yet available!");
         }
 
-        return ((HomematicBridgeHandler) getBridge().getHandler()).getGateway();
+        return ((HomematicBridgeHandler) bridge.getHandler()).getGateway();
     }
 
     /**
@@ -371,10 +362,11 @@ public class HomematicThingHandler extends BaseThingHandler {
                         try {
                             if (newValue != null) {
                                 if (newValue instanceof BigDecimal) {
+                                    final BigDecimal decimal = (BigDecimal) newValue;
                                     if (dp.isIntegerType()) {
-                                        newValue = ((BigDecimal) newValue).intValue();
+                                        newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
-                                        newValue = ((BigDecimal) newValue).doubleValue();
+                                        newValue = decimal.doubleValue();
                                     }
                                 }
                                 if (ObjectUtils.notEqual(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(),

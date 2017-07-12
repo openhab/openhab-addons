@@ -80,4 +80,9 @@ public interface HomematicGateway {
      */
     public void loadRssiValues() throws IOException;
 
+    /**
+     * Starts the connection and event tracker threads.
+     */
+    public void startWatchdogs();
+
 }

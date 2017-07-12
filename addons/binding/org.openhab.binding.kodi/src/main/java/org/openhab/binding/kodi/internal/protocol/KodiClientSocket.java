@@ -29,13 +29,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * KodiClientSocket implements the low level communication to kodi through websocket. Usually this communication is done
- * through port 9090
+ * KodiClientSocket implements the low level communication to kodi through
+ * websocket. Usually this communication is done through port 9090
  *
  * @author Paul Frank
  *
  */
 public class KodiClientSocket {
+
     private final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
@@ -63,8 +64,8 @@ public class KodiClientSocket {
     }
 
     /**
-     * Attempts to create a connection to the kodi host and begin listening
-     * for updates over the async http web socket
+     * Attempts to create a connection to the kodi host and begin listening for
+     * updates over the async http web socket
      *
      * @throws Exception
      */

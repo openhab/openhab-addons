@@ -10,6 +10,10 @@ package org.openhab.binding.homematic.type;
 
 import org.openhab.binding.homematic.internal.model.HmDevice;
 
+/**
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
 public interface HomematicTypeGenerator {
 
     /**

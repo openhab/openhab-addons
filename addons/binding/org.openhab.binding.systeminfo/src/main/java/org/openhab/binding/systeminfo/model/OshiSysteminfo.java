@@ -561,39 +561,59 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getProcessName(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        String name = process.getName();
-        return new StringType(name);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            String name = process.getName();
+            return new StringType(name);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
-        BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
-        return new DecimalType(cpuUsage);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
+            BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
+            return new DecimalType(cpuUsage);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        long memortInBytes = process.getResidentSetSize();
-        long memoryInMB = getSizeInMB(memortInBytes);
-        return new DecimalType(memoryInMB);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            long memortInBytes = process.getResidentSetSize();
+            long memoryInMB = getSizeInMB(memortInBytes);
+            return new DecimalType(memoryInMB);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public StringType getProcessPath(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        String path = process.getPath();
-        return new StringType(path);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            String path = process.getPath();
+            return new StringType(path);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        int threadCount = process.getThreadCount();
-        return new DecimalType(threadCount);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            int threadCount = process.getThreadCount();
+            return new DecimalType(threadCount);
+        } else {
+            return null;
+        }
     }
 
 }

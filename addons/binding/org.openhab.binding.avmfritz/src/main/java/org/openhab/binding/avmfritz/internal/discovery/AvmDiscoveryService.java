@@ -93,6 +93,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected synchronized void stopScan() {
+        logger.debug("stop scan on bridge {}", bridgeHandler.getThing().getUID());
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
@@ -140,6 +141,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         if (scanningJob != null && !scanningJob.isCancelled()) {
+            logger.debug("stop background scanning job");
             scanningJob.cancel(false);
             scanningJob = null;
         }

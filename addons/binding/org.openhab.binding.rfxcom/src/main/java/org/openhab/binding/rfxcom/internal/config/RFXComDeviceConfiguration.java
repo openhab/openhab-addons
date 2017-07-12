@@ -15,11 +15,15 @@ package org.openhab.binding.rfxcom.internal.config;
  */
 
 public class RFXComDeviceConfiguration {
+    public static final String DEVICE_ID_LABEL = "deviceId";
+    public static final String SUB_TYPE_LABEL = "subType";
+    public static final String PULSE_LABEL = "pulse";
+    public static final String ON_COMMAND_ID_LABEL = "onCommandId";
+    public static final String OFF_COMMAND_ID_LABEL = "offCommandId";
 
-    // Device Id
     public String deviceId;
-
-    // Sub Type
     public String subType;
-
+    public Integer pulse;
+    public Integer onCommandId;
+    public Integer offCommandId;
 }

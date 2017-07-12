@@ -18,8 +18,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * See {@link DevicelistModel}.
  *
- * @author Robert Bausdorf
- *
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Refactoring of temperature conversion from celsius to FRITZ!Box values
  *
  */
 @XmlRootElement(name = "temperature")
@@ -31,7 +31,7 @@ public class TemperatureModel {
     private BigDecimal offset;
 
     public BigDecimal getCelsius() {
-        return celsius != null ? celsius.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return celsius != null ? TEMP_FACTOR.multiply(celsius) : BigDecimal.ZERO;
     }
 
     public void setCelsius(BigDecimal celsius) {
@@ -39,7 +39,7 @@ public class TemperatureModel {
     }
 
     public BigDecimal getOffset() {
-        return offset != null ? offset.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return offset != null ? TEMP_FACTOR.multiply(offset) : BigDecimal.ZERO;
     }
 
     public void setOffset(BigDecimal offset) {
@@ -48,7 +48,6 @@ public class TemperatureModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("celsius", this.getCelsius()).append("offset", this.getOffset())
-                .toString();
+        return new ToStringBuilder(this).append("celsius", getCelsius()).append("offset", getOffset()).toString();
     }
 }

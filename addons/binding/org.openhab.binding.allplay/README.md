@@ -4,8 +4,8 @@ This binding integrates devices compatible with [Qualcomm AllPlay](https://www.q
 The binding uses native libraries for the AllJoyn framework. Libraries for the following platforms are already included in the binding:
 
 * Linux ARM
-* Linux x86 (32 bit)
-* Linux x86-64 (64 bit)
+* Linux x86 (32 bit, AllJoyn v16.04a)
+* Linux x86-64 (64 bit, AllJoyn v16.04a)
 * Windows x86 (32 bit, AllJoyn v16.04a)
 * Windows x86-64 (64 bit, AllJoyn v16.04a)
 

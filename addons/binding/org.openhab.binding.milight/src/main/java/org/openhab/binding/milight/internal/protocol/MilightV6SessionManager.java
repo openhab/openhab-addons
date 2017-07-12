@@ -114,6 +114,11 @@ public class MilightV6SessionManager implements Runnable {
     // The session timeout timer. Used for cancelling it if the handshake process progresses.
     private ScheduledFuture<?> checkHandshakeTimer = null;
 
+    // Usually we only send BROADCAST packets. If we know the IP address of the bridge though,
+    // we should try UNICAST packets before falling back to BROADCAST.
+    // This allows communication with the bridge even if it is in another subnet.
+    private InetAddress lastKnownIP;
+
     // Print out a lot of useful debug data for the session establishing
     private static final boolean DEBUG_SESSION = false;
 
@@ -129,13 +134,15 @@ public class MilightV6SessionManager implements Runnable {
      *            session manager object
      * @param scheduler A framework scheduler to create timeout events.
      * @param observer Get notifications of state changes
+     * @param lastKnownIP If you know the bridge IP address, provide it here. Null otherwise.
      */
     public MilightV6SessionManager(QueuedSend sendQueue, String bridgeId, ScheduledExecutorService scheduler,
-            ISessionState observer) {
+            ISessionState observer, InetAddress lastKnownIP) {
         this.sendQueue = sendQueue;
         this.bridgeId = bridgeId;
         this.scheduler = scheduler;
         this.observer = observer;
+        this.lastKnownIP = lastKnownIP;
         for (int i = 0; i < 6; ++i) {
             BRIDGE_MAC[i] = Integer.valueOf(bridgeId.substring(i * 2, i * 2 + 2), 16).byteValue();
         }
@@ -204,7 +211,7 @@ public class MilightV6SessionManager implements Runnable {
         for (Iterator<Map.Entry<Byte, Long>> it = used_sequence_no.entrySet().iterator(); it.hasNext();) {
             Map.Entry<Byte, Long> entry = it.next();
             if (entry.getValue() + 2000 < current) {
-                logger.error("Command not confirmed: {}", entry.getKey());
+                logger.warn("Command not confirmed: {}", entry.getKey());
                 it.remove();
             }
         }
@@ -239,19 +246,32 @@ public class MilightV6SessionManager implements Runnable {
      * as if the IP of a bridge has changed and the session got invalid because of that.
      *
      * A response will assign us session bytes.
+     *
+     * @throws InterruptedException
      */
-    private void send_search_for_broadcast() {
+    private void send_search_for_broadcast() throws InterruptedException {
         byte[] buf = new byte[1000];
 
         DatagramPacket p = new DatagramPacket(buf, buf.length);
         p.setPort(sendQueue.getPort());
         p.setData(search_for_packet());
+        if (lastKnownIP != null) {
+            p.setAddress(lastKnownIP);
+            try {
+                sendQueue.datagramSocket.send(p);
+                Thread.sleep(10);
+                sendQueue.datagramSocket.send(p);
+            } catch (IOException e) {
+                logger.warn("Could not send discover packet! {}", e.getLocalizedMessage());
+            }
+            return;
+        }
 
         Enumeration<NetworkInterface> enumNetworkInterfaces;
         try {
             enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException e1) {
-            logger.error("Could not enumerate network interfaces for sending the discover packet!");
+        } catch (SocketException socketException) {
+            logger.warn("Could not enumerate network interfaces for sending the discover packet!", socketException);
             return;
         }
         while (enumNetworkInterfaces.hasMoreElements()) {
@@ -270,8 +290,7 @@ public class MilightV6SessionManager implements Runnable {
                         Thread.sleep(10);
                         sendQueue.datagramSocket.send(p);
                     } catch (IOException e) {
-                        logger.error("Could not send discover packet! {}", e.getLocalizedMessage());
-                    } catch (InterruptedException e) {
+                        logger.warn("Could not send discovery packet! {}", e.getLocalizedMessage());
                     }
                 }
             }
@@ -314,8 +333,9 @@ public class MilightV6SessionManager implements Runnable {
      *
      * @param periodic_interval_ms How often this method is called in ms. This is used to determine if a session is
      *            still valid.
+     * @throws InterruptedException
      */
-    public void keep_alive(int periodic_interval_ms) {
+    public void keep_alive(int periodic_interval_ms) throws InterruptedException {
         if (lastSessionConfirmed != 0 && lastSessionConfirmed + 2 * periodic_interval_ms < System.currentTimeMillis()) {
             sessionState = SessionState.SESSION_INVALID;
             lastSessionConfirmed = 0;
@@ -331,8 +351,10 @@ public class MilightV6SessionManager implements Runnable {
     /**
      * The main state machine of the session handshake. This will start a timer
      * that will reset the handshake if we do not get a satisfying response in time.
+     *
+     * @throws InterruptedException
      */
-    private void session_handshake_process() {
+    private void session_handshake_process() throws InterruptedException {
         stop_timeout_timer();
 
         switch (sessionState) {
@@ -363,7 +385,10 @@ public class MilightV6SessionManager implements Runnable {
         checkHandshakeTimer = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                reset_registration_process();
+                try {
+                    reset_registration_process();
+                } catch (InterruptedException ignored) {
+                }
             }
         }, REG_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
@@ -376,10 +401,12 @@ public class MilightV6SessionManager implements Runnable {
 
     }
 
-    private void reset_registration_process() {
+    private void reset_registration_process() throws InterruptedException {
         if (sessionState != SessionState.SESSION_WAIT_FOR_BRIDGE) {
-            logger.error("Session registration aborted by timeout timer!");
+            logger.warn("Session registration aborted by timeout timer!");
         }
+        // One reason we failed, might be that a last known IP is not correct anymore.
+        lastKnownIP = null;
         sessionState = SessionState.SESSION_WAIT_FOR_BRIDGE;
         session_handshake_process();
     }
@@ -389,7 +416,7 @@ public class MilightV6SessionManager implements Runnable {
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
-        logger.error("{} ({}): {}", reason, bridgeId, s);
+        logger.info("{} ({}): {}", reason, bridgeId, s);
     }
 
     /**
@@ -492,10 +519,10 @@ public class MilightV6SessionManager implements Runnable {
                         used_sequence_no.remove(buffer[6]);
                         if (buffer[07] == 0) {
                             if (DEBUG_SESSION) {
-                                logger.debug("Confirmation received for command:{}", String.valueOf(buffer[6]));
+                                logger.debug("Confirmation received for command: {}", String.valueOf(buffer[6]));
                             }
                         } else {
-                            logger.info("Bridge reports an error for command:{}", String.valueOf(buffer[6]));
+                            logger.info("Bridge reports an invalid command: {}", String.valueOf(buffer[6]));
                         }
                         break;
                     // D8 00 00 00 07 (AC CF 23 F5 7A D4) 01
@@ -520,8 +547,9 @@ public class MilightV6SessionManager implements Runnable {
             }
         } catch (IOException e) {
             if (!willbeclosed) {
-                logger.error("{}", e.getLocalizedMessage());
+                logger.warn("Session Manager receive thread failed: {}", e.getLocalizedMessage(), e);
             }
+        } catch (InterruptedException ignored) {
         }
         if (DEBUG_SESSION) {
             logger.debug("MilightCommunicationV6 receive thread ready stopped");

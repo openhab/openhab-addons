@@ -90,7 +90,8 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             readerThread.interrupt();
             try {
                 readerThread.join();
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -117,6 +118,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
+        if (out == null) {
+            throw new IOException("Not connected sending messages is not possible");
+        }
+
         logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
         out.write(data);
         out.flush();

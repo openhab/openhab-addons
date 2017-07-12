@@ -35,8 +35,7 @@ public class Parser {
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
     private static final Pattern pattern = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
-    private static final Pattern volumePattern = Pattern.compile(
-            "^(0|front-left):( *[0-9]+ \\/)? *([0-9]+)% *\\/? *([0-9\\-, dB]+)?(1|front-right):( *[0-9]+ \\/)? *([0-9]+)% *\\/? *([0-9\\-, dB]+)?$");
+    private static final Pattern volumePattern = Pattern.compile("^([\\w\\-]+):( *[\\d]+ \\/)? *([\\d]+)% *\\/? *([\\d\\-., dB]+)?$");
     private static final Pattern fallBackPattern = Pattern
             .compile("^([0-9]+)([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
     private static final Pattern numberValuePattern = Pattern.compile("^([0-9]+).*$");
@@ -265,7 +264,7 @@ public class Parser {
                     source.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
                 }
                 if (properties.containsKey("monitor_of")) {
-                    source.setMonitorOf(client.getSink(Integer.valueOf(parseVolume(properties.get("monitor_of")))));
+                    source.setMonitorOf(client.getSink(Integer.valueOf(properties.get("monitor_of"))));
                 }
                 sources.add(source);
             }
@@ -341,9 +340,19 @@ public class Parser {
      * @return
      */
     private static int parseVolume(String vol) {
-        Matcher matcher = volumePattern.matcher(vol);
-        if (matcher.find()) {
-            return Math.round((Integer.valueOf(matcher.group(3)) + Integer.valueOf(matcher.group(7))) / 2);
+        int volumeTotal = 0;
+        int nChannels = 0;
+        for (String channel : vol.split(", ")) {
+            Matcher matcher = volumePattern.matcher(channel.trim());
+            if (matcher.find()) {
+                volumeTotal += Integer.valueOf(matcher.group(3));
+                nChannels++;
+            } else {
+                logger.debug("Unable to parse channel volume '{}'", channel);
+            }
+        }
+        if (nChannels > 0) {
+            return Math.round(volumeTotal / nChannels);
         }
         return 0;
     }

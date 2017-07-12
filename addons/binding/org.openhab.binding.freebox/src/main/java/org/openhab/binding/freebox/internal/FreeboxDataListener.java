@@ -8,7 +8,10 @@
  */
 package org.openhab.binding.freebox.internal;
 
+import java.util.List;
+
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 
 /**
@@ -27,6 +30,8 @@ public interface FreeboxDataListener {
      *            The Freebox server bridge.
      * @param hostsConfig
      *            The LAN data received from the Freebox server.
+     * @param airPlayDevices
+     *            The list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig);
+    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig, List<AirMediaReceiver> airPlayDevices);
 }
