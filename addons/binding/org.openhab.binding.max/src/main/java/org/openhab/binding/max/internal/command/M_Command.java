@@ -10,6 +10,7 @@ package org.openhab.binding.max.internal.command;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -109,7 +110,8 @@ public class M_Command extends CubeCommand {
                 for (RoomInformation room : rooms) {
                     if (room.getPosition() == roomPos) {
                         if (roomCount < MAX_GROUP_COUNT) {
-                            byte[] roomName = StringUtils.abbreviate(room.getName(), MAX_NAME_LENGTH).getBytes("UTF-8");
+                            byte[] roomName = StringUtils.abbreviate(room.getName(), MAX_NAME_LENGTH)
+                                    .getBytes(StandardCharsets.UTF_8);
                             byte[] nameLength = new byte[] { (byte) roomName.length };
                             byte[] rfAddress = Utils.hexStringToByteArray(room.getRFAddress());
                             message.write(roomPos.byteValue());
@@ -136,9 +138,10 @@ public class M_Command extends CubeCommand {
                 if (deviceCount > 0) {
                     byte[] deviceType = { (byte) di.getType().getValue() };
                     byte[] rfAddress = Utils.hexStringToByteArray(di.getRFAddress());
-                    byte[] deviceName = StringUtils.abbreviate(di.getName(), MAX_NAME_LENGTH).getBytes("UTF-8");
+                    byte[] deviceName = StringUtils.abbreviate(di.getName(), MAX_NAME_LENGTH)
+                            .getBytes(StandardCharsets.UTF_8);
                     byte[] nameLength = { (byte) deviceName.length };
-                    byte[] serialNumber = di.getSerialNumber().getBytes("UTF-8");
+                    byte[] serialNumber = di.getSerialNumber().getBytes(StandardCharsets.UTF_8);
                     byte[] roomId = { (byte) di.getRoomId() };
 
                     message.write(deviceType);

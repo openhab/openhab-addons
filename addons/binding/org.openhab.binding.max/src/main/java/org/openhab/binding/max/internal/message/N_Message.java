@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -40,7 +42,7 @@ public final class N_Message extends Message {
 
         if (msgPayload.length() > 0) {
             try {
-                decodedPayload = new String(Base64.decodeBase64(msgPayload), "UTF-8");
+                decodedPayload = new String(Base64.decodeBase64(msgPayload), StandardCharsets.UTF_8);
                 byte[] bytes = Base64.decodeBase64(msgPayload);
 
                 deviceType = DeviceType.create(bytes[0] & 0xFF);
@@ -48,7 +50,7 @@ public final class N_Message extends Message {
 
                 byte[] data = new byte[10];
                 System.arraycopy(bytes, 4, data, 0, 10);
-                serialnr = new String(data, "UTF-8");
+                serialnr = new String(data, StandardCharsets.UTF_8);
             } catch (Exception e) {
                 logger.debug("Exception occurred during parsing of N message: {}", e.getMessage(), e);
             }

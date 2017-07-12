@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,8 +18,6 @@ import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.slf4j.Logger;
-
-import com.google.common.base.Charsets;
 
 /**
  * The L message contains real time information about all MAX! devices.
@@ -38,7 +37,7 @@ public final class L_Message extends Message {
 
         final List<Device> devices = new ArrayList<Device>();
 
-        final byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(Charsets.UTF_8));
+        final byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(StandardCharsets.UTF_8));
 
         final MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 
@@ -55,7 +54,7 @@ public final class L_Message extends Message {
 
     public Collection<? extends Device> updateDevices(List<Device> devices, List<DeviceConfiguration> configurations) {
 
-        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(Charsets.UTF_8));
+        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(StandardCharsets.UTF_8));
 
         MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 

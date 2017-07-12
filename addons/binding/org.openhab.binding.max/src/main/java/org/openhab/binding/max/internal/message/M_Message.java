@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +19,6 @@ import org.openhab.binding.max.internal.device.DeviceType;
 import org.openhab.binding.max.internal.device.RoomInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 /**
  * The M message contains metadata about the MAX! Cube setup.
@@ -47,7 +46,7 @@ public final class M_Message extends Message {
             return;
         }
         try {
-            byte[] bytes = Base64.decodeBase64(tokens[2].getBytes(Charsets.UTF_8));
+            byte[] bytes = Base64.decodeBase64(tokens[2].getBytes(StandardCharsets.UTF_8));
 
             hasConfiguration = true;
             logger.trace("*** M_Message trace**** ");
@@ -72,7 +71,7 @@ public final class M_Message extends Message {
                 byte[] data = new byte[nameLength];
                 System.arraycopy(bytes, byteOffset, data, 0, nameLength);
                 byteOffset += nameLength;
-                String name = new String(data, "UTF-8");
+                String name = new String(data, StandardCharsets.UTF_8);
 
                 String rfAddress = Utils.toHex((bytes[byteOffset] & 0xff), (bytes[byteOffset + 1] & 0xff),
                         (bytes[byteOffset + 2] & 0xff));
@@ -102,7 +101,7 @@ public final class M_Message extends Message {
                 byte[] data = new byte[nameLength];
                 System.arraycopy(bytes, byteOffset, data, 0, nameLength);
                 byteOffset += nameLength;
-                String deviceName = new String(data, "UTF-8");
+                String deviceName = new String(data, StandardCharsets.UTF_8);
 
                 int roomId = bytes[byteOffset++] & 0xff;
                 devices.add(new DeviceInformation(deviceType, serialNumberBuilder.toString(), rfAddress, deviceName,

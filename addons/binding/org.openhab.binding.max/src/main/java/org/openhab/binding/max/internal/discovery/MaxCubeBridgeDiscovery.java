@@ -17,7 +17,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -118,7 +118,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                 // We have a response
                 final byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getOffset() + receivePacket.getLength());
-                final String message = new String(messageBuf, Charset.forName("UTF-8"));
+                final String message = new String(messageBuf, StandardCharsets.UTF_8);
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -181,7 +181,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         try (DatagramSocket bcSend = new DatagramSocket()) {
             bcSend.setBroadcast(true);
 
-            byte[] sendData = discoverString.getBytes("UTF-8");
+            byte[] sendData = discoverString.getBytes(StandardCharsets.UTF_8);
 
             // Broadcast the message over all the network interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();

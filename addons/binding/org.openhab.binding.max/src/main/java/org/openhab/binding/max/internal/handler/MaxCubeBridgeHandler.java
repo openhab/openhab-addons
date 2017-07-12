@@ -19,6 +19,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -95,9 +96,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** timeout on network connection **/
     private static final int NETWORK_TIMEOUT = 10000;
 
-    private List<Device> devices = new ArrayList<>();
+    private final List<Device> devices = new ArrayList<>();
     private List<RoomInformation> rooms;
-    private Set<String> lastActiveDevices = new HashSet<>();
+    private final Set<String> lastActiveDevices = new HashSet<>();
 
     /** MAX! Thermostat default off temperature */
     private static final DecimalType DEFAULT_OFF_TEMPERATURE = new DecimalType(4.5);
@@ -105,11 +106,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** MAX! Thermostat default on temperature */
     private static final DecimalType DEFAULT_ON_TEMPERATURE = new DecimalType(30.5);
 
-    private List<DeviceConfiguration> configurations = new ArrayList<>();
+    private final List<DeviceConfiguration> configurations = new ArrayList<>();
 
     /** maximum queue size that we're allowing */
     private static final int MAX_COMMANDS = 50;
-    private BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
+    private final BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
 
     private SendCommand lastCommandId;
 
@@ -127,8 +128,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     private static final int MAX_DUTY_CYCLE = 80;
-    private ReentrantLock dutyCycleLock = new ReentrantLock();
-    private Condition excessDutyCycle = dutyCycleLock.newCondition();
+    private final ReentrantLock dutyCycleLock = new ReentrantLock();
+    private final Condition excessDutyCycle = dutyCycleLock.newCondition();
 
     /**
      * Duty cycle of the cube
@@ -149,7 +150,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private boolean previousOnline;
 
-    private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
+    private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
     private final Runnable pollingRunnable = new Runnable() {
@@ -707,7 +708,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             Device di = getDevice(c_Message.getSerialNumber());
             if (di != null) {
                 di.setProperties(c_Message.getProperties());
-                ;
             }
         }
         if (exclusive == true) {
@@ -718,6 +718,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
                     }
                 } catch (NullPointerException e) {
+                    logger.warn("Unexpected NPE cought. Please report stacktrace", e);
                     // ignore
                 } catch (Exception e) {
                     logger.error("An exception occurred while calling the DeviceStatusListener", e);
@@ -973,8 +974,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         socket = new Socket(ipAddress, port);
         socket.setSoTimeout((NETWORK_TIMEOUT));
         logger.debug("Open new connection... to {} port {}", ipAddress, port);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-        writer = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
         requestCount = 0;
         return true;
     }

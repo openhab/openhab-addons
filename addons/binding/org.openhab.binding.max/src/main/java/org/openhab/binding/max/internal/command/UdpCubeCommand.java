@@ -15,7 +15,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +116,7 @@ public class UdpCubeCommand {
 
                 // We have a response
                 String message = new String(receivePacket.getData(), receivePacket.getOffset(),
-                        receivePacket.getLength(), Charset.forName("UTF-8"));
+                        receivePacket.getLength(), StandardCharsets.UTF_8);
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -131,22 +131,25 @@ public class UdpCubeCommand {
                     commandResponse.put("requestType", requestType);
 
                     if (requestType.equals("I")) {
-                        commandResponse.put("rfAddress", Utils.getHex(message.substring(21, 24).getBytes("UTF-8"))
-                                .replace(" ", "").toLowerCase());
-                        commandResponse.put("firmwareVersion",
-                                Utils.getHex(message.substring(24, 26).getBytes("UTF-8")).replace(" ", "."));
+                        commandResponse.put("rfAddress",
+                                Utils.getHex(message.substring(21, 24).getBytes(StandardCharsets.UTF_8))
+                                        .replace(" ", "").toLowerCase());
+                        commandResponse.put("firmwareVersion", Utils
+                                .getHex(message.substring(24, 26).getBytes(StandardCharsets.UTF_8)).replace(" ", "."));
                     } else {
                         // TODO: Further parsing of the other message types
-                        commandResponse.put("messageResponse", Utils.getHex(message.substring(24).getBytes("UTF-8")));
+                        commandResponse.put("messageResponse",
+                                Utils.getHex(message.substring(24).getBytes(StandardCharsets.UTF_8)));
                     }
 
                     commandRunning = false;
                     if (logger.isDebugEnabled()) {
-                        logger.debug("MAX! UDP response");
-                        for (Map.Entry<String, String> entry : commandResponse.entrySet()) {
-                            logger.debug("{}:{}{}", entry.getKey(), Strings.repeat(" ", 25 - entry.getKey().length()),
-                                    entry.getValue());
+                        final StringBuilder builder = new StringBuilder();
+                        for (final Map.Entry<String, String> entry : commandResponse.entrySet()) {
+                            builder.append(String.format("%s:%s%s\n", entry.getKey(),
+                                    Strings.repeat(" ", 25 - entry.getKey().length()), entry.getValue()));
                         }
+                        logger.debug("MAX! UDP response {}", builder);
                     }
                 }
             }
@@ -172,7 +175,7 @@ public class UdpCubeCommand {
             bcSend = new DatagramSocket();
             bcSend.setBroadcast(true);
 
-            byte[] sendData = commandString.getBytes("UTF-8");
+            byte[] sendData = commandString.getBytes(StandardCharsets.UTF_8);
 
             // Broadcast the message over all the network interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
