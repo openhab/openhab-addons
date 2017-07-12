@@ -69,21 +69,21 @@ public interface SysteminfoInterface {
     /**
      * Returns the system load average for the last minute.
      *
-     * @return the load as percentage value /0-100/ or null, if no information is available
+     * @return the load as a number of processes or null, if no information is available
      */
     public DecimalType getCpuLoad1();
 
     /**
      * Returns the system load average for the last 5 minutes.
      *
-     * @return the load as percentage value /0-100/ or null, if no information is available
+     * @return the load as number of processes or null, if no information is available
      */
     public DecimalType getCpuLoad5();
 
     /**
      * Returns the system load average for the last 15 minutes.
      *
-     * @return the load as percentage value /0-100/ or null, if no information is available
+     * @return the load as number of processes or null, if no information is available
      */
     public DecimalType getCpuLoad15();
 
