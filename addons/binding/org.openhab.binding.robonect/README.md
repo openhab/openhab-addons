@@ -76,25 +76,25 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 Items file `.items`
 ```
 String mowerName "Mower name" {robonect:mower:automower:mowerInfo#name"}
-Number mowerBattery "Mower battery [%d %%]" <energy> {robonect:mower:automower:mowerStatus#battery"}
-Number mowerHours "Mower operation hours [%d h]" <clock> {robonect:mower:automower:mowerStatus#hours"}
-Number mowerDuration "Duration of current mode" {robonect:mower:automower:mowerStatus#duration"}
-String mowerMode "Mower mode" {robonect:mower:automower:mowerStatus#mode"}
-Number mowerStatus "Mower Status [MAP(robonect_status.map):%s]" {robonect:mower:automower:mowerStatus#status"}
-Switch mowerStarted "Mower started" {robonect:mower:automower:mowerStatus#started"}
-String mowerTimerStatus "Mower timer status" {robonect:mower:automower:timer#status"}
-DateTime mowerNextTimer "Next timer [%1$td/%1$tm %1$tH:%1$tM]" <clock> {robonect:mower:automower:timer#nextTimer"}
-Number mowerWlanSignal "WLAN signal [%d dB ]" {robonect:mower:automower:wlan#signal"}
-String mowerJobAfterMode "Mode after job execution" {robonect:mower:automower:job#afterMode"}
-String mowerJobRemoteStart "Remote start on job execution" {robonect:mower:automower:job#remoteStart"}
-String mowerJobStart "Job start time" {robonect:mower:automower:job#start"}
-String mowerJobEnd "Job end time" {robonect:mower:automower:job#end"}
-Number mowerErrorCode "Error code" {robonect:mower:automower:error#code"}
-String mowerErrorMessage "Error message" {robonect:mower:automower:error#message"}
-DateTie mowerErrorDate "Error date [%1$td/%1$tm %1$tH:%1$tM]" {robonect:mower:automower:error#date"}
-String mowerRobonectSerial "Robonect serialnumber" {robonect:mower:automower:version#serial"}
-String mowerRobonectVersion "Robonect version" {robonect:mower:automower:version#version"}
-String mowerRobonectVersionComment "Robonect Version comment" {robonect:mower:automower:version#comment"}
+Number mowerBattery "Mower battery [%d %%]" <energy> {channel="robonect:mower:automower:mowerStatus#battery"}
+Number mowerHours "Mower operation hours [%d h]" <clock> {channel="robonect:mower:automower:mowerStatus#hours"}
+Number mowerDuration "Duration of current mode" {channel="robonect:mower:automower:mowerStatus#duration"}
+String mowerMode "Mower mode" {channel="robonect:mower:automower:mowerStatus#mode"}
+Number mowerStatus "Mower Status [MAP(robonect_status.map):%s]" {channel="robonect:mower:automower:mowerStatus#status"}
+Switch mowerStarted "Mower started" {channel="robonect:mower:automower:mowerStatus#started"}
+String mowerTimerStatus "Mower timer status" {channel="robonect:mower:automower:timer#status"}
+DateTime mowerNextTimer "Next timer [%1$td/%1$tm %1$tH:%1$tM]" <clock> {channel="robonect:mower:automower:timer#nextTimer"}
+Number mowerWlanSignal "WLAN signal [%d dB ]" {channel="robonect:mower:automower:wlan#signal"}
+String mowerJobAfterMode "Mode after job execution" {channel="robonect:mower:automower:job#afterMode"}
+String mowerJobRemoteStart "Remote start on job execution" {channel="robonect:mower:automower:job#remoteStart"}
+String mowerJobStart "Job start time" {channel="robonect:mower:automower:job#start"}
+String mowerJobEnd "Job end time" {channel="robonect:mower:automower:job#end"}
+Number mowerErrorCode "Error code" {channel="robonect:mower:automower:error#code"}
+String mowerErrorMessage "Error message" {channel="robonect:mower:automower:error#message"}
+DateTie mowerErrorDate "Error date [%1$td/%1$tm %1$tH:%1$tM]" {channel="robonect:mower:automower:error#date"}
+String mowerRobonectSerial "Robonect serialnumber" {channel="robonect:mower:automower:version#serial"}
+String mowerRobonectVersion "Robonect version" {channel="robonect:mower:automower:version#version"}
+String mowerRobonectVersionComment "Robonect Version comment" {channel="robonect:mower:automower:version#comment"}
 ```
 
 Map transformation for mower status (`robonect_status.map`)
