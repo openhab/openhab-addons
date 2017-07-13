@@ -36,7 +36,7 @@ public class TankerkoenigBindingConstants {
     public static final String CHANNEL_DIESEL = "diesel";
     public static final String CHANNEL_E10 = "e10";
     public static final String CHANNEL_E5 = "e5";
-
+    public static final String CHANNEL_HOLIDAY = "holiday";
     // config
     public static final String CONFIG_LOCATION_ID = "locationid";
     public static final String CONFIG_API_KEY = "apikey";

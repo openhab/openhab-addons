@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.tankerkoenig.handler;
 
+import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.CHANNEL_HOLIDAY;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -51,6 +53,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private boolean modeOpeningTime;
     private String userAgent;
+    private boolean isHoliday;
     private final TankerkoenigService service = new TankerkoenigService();
 
     private Map<String, LittleStation> stationMap;
@@ -66,7 +69,19 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no code needed.
+        try {
+            if (channelUID.getId().contentEquals(CHANNEL_HOLIDAY)) {
+                logger.debug("HandleCommand recieved: {}", channelUID.getId());
+                if (command.toString() == "OFF") {
+                    isHoliday = false;
+                } else {
+                    isHoliday = true;
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error in HandleCommand: {}", e);
+            isHoliday = false;
+        }
     }
 
     @Override
@@ -237,6 +252,10 @@ public class WebserviceHandler extends BaseBridgeHandler {
                         DayOfWeek weekday = today.getDayOfWeek();
                         logger.debug("Checking day: {}", day);
                         logger.debug("Todays weekday: {}", weekday);
+                        if (isHoliday) {
+                            weekday = DayOfWeek.SUNDAY;
+                            logger.debug("Today is a holiday using : {}", weekday);
+                        }
                         // if Daily, further checking not needed!
                         if (day.contains("täglich")) {
                             logger.debug("Found a setting for daily opening times.");
