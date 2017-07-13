@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.NotAuthorizedException;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
@@ -37,7 +39,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     /**
      * Name of a Squeeze Server
      */
-    private static String MODEL_NAME = "Logitech Media Server";
+    private static String modelName = "Logitech Media Server";
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
@@ -60,8 +62,11 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
             try {
                 cliPort = HttpUtils.getCliPort(host, webPort);
+            } catch (NotAuthorizedException e) {
+                logger.debug("Not authorized to query CLI port from Squeeze Server. Setting CLI to default of 9090");
+                cliPort = 9090;
             } catch (Exception e) {
-                logger.debug("Could not get cli port", e);
+                logger.debug("Could not get cli port: {}", e.getMessage(), e);
                 return null;
             }
 
@@ -86,7 +91,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     public ThingUID getThingUID(RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getFriendlyName() != null) {
-                if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
+                if (device.getDetails().getModelDetails().getModelName().contains(modelName)) {
                     logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),
                             device.getIdentity().getUdn().getIdentifierString());
                     return new ThingUID(SQUEEZEBOXSERVER_THING_TYPE,

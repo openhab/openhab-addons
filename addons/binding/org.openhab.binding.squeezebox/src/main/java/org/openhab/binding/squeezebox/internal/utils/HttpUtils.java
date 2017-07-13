@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.NotAuthorizedException;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -33,7 +35,7 @@ import com.google.gson.JsonParser;
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static int TIMEOUT = 5000;
+    private static int timeout = 5000;
     private static HttpClient client = new HttpClient();
     /**
      * JSON request to get the CLI port from a Squeeze Server
@@ -47,7 +49,7 @@ public class HttpUtils {
      * @param timeout
      * @return
      */
-    public static String post(String url, String postData) throws Exception {
+    public static String post(String url, String postData) throws Exception, NotAuthorizedException {
         if (!client.isStarted()) {
             client.start();
         }
@@ -56,14 +58,20 @@ public class HttpUtils {
         ContentResponse response = client.newRequest(url)
                 .method(HttpMethod.POST)
                 .content(new StringContentProvider(postData))
-                .timeout(TIMEOUT, TimeUnit.MILLISECONDS)
+                .timeout(timeout, TimeUnit.MILLISECONDS)
                 .send();
 
         int statusCode = response.getStatus();
 
+        if (statusCode == HttpStatus.UNAUTHORIZED_401) {
+            String statusLine = response.getStatus() + " " + response.getReason();
+            logger.error("Received '{}' from squeeze server", statusLine);
+            throw new NotAuthorizedException("Unauthorized: " + statusLine);
+        }
+
         if (statusCode != HttpStatus.OK_200) {
             String statusLine = response.getStatus() + " " + response.getReason();
-            logger.error("Method failed: {}", statusLine);
+            logger.error("HTTP POST method failed: {}", statusLine);
             throw new Exception("Method failed: " + statusLine);
         }
 

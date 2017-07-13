@@ -28,6 +28,15 @@
 				<description>Language to use when using Google speech</description>
 				<default>en</default>
 			</parameter>
+			<parameter name="userId" type="text" required="false">
+				<label>User Id</label>
+				<description>User ID used to login to Squeeze Server</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Password</label>
+				<description>Password used to login to Squeeze Server</description>
+				<context>password</context>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

@@ -12,6 +12,7 @@ package org.openhab.binding.squeezebox.config;
  * Configuration of a server.
  *
  * @author Dan Cunningham
+ * @author Mark Hilbush Added user ID and password
  *
  */
 public class SqueezeBoxServerConfig {
@@ -31,4 +32,12 @@ public class SqueezeBoxServerConfig {
      * Language for TTS
      */
     public String language;
+    /*
+     * User ID (when authentication enabled in LMS)
+     */
+    public String userId;
+    /*
+     * User ID (when authentication enabled in LMS)
+     */
+    public String password;
 }
