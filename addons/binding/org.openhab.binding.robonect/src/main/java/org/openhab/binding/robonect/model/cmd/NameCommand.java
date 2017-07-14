@@ -10,6 +10,7 @@ package org.openhab.binding.robonect.model.cmd;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class NameCommand implements Command {
             return baseURL + "?cmd=name";
         } else {
             try {
-                return baseURL + "?cmd=name&name=" + URLEncoder.encode(newName, "UTF-8");
+                return baseURL + "?cmd=name&name=" + URLEncoder.encode(newName, StandardCharsets.ISO_8859_1.displayName());
             } catch (UnsupportedEncodingException e) {
                 logger.error( "Could not encode name {} ",newName, e);
                 return baseURL + "?cmd=name";
