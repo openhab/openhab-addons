@@ -29,8 +29,15 @@ public class RFXComStreamReader extends Thread {
 
     private RFXComBaseConnector connector;
 
-    RFXComStreamReader(RFXComBaseConnector connector) {
+    private class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+        public void uncaughtException(Thread thread, Throwable throwable) {
+            logger.error("Connector died: ", throwable);
+        }
+    }
+
+    public RFXComStreamReader(RFXComBaseConnector connector, InputStream in) {
         this.connector = connector;
+        setUncaughtExceptionHandler(new ExceptionHandler());
     }
 
     @Override
