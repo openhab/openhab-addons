@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="actiongroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Somfy Action Group</label>
+		<channels>
+			<channel id="trigger" typeId="trigger"></channel>
+		</channels>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+    
+    <channel-type id="trigger">
+        <item-type>Switch</item-type>
+        <label>Somfy Action Group Trigger</label>
+        <description>Trigger of the action group</description>
+        <state readOnly="false"></state>
+    </channel-type>
+</thing:thing-descriptions>
