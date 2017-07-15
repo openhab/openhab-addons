@@ -29,7 +29,7 @@ public class XiaomiDiscoverySocket extends XiaomiSocket {
     private final Logger logger = LoggerFactory.getLogger(XiaomiDiscoverySocket.class);
 
     public XiaomiDiscoverySocket() {
-        super(0);
+        super();
     }
 
     /**
