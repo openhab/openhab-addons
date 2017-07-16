@@ -23,11 +23,20 @@ Next add the sensor and configure the channel number.
 
 ### meteostick_bridge Configuration Options
 
-| Option | Description                                                                                |
-|--------|--------------------------------------------------------------------------------------------|
-| port   | Sets the serial port to be used for the stick                                              |
-| mode   | Sets the operating mode 0 = USA, 1 = Europe, 2 = Australia, 3 = FineOffset, 5= New Zealand |
+| Option | Description                                        |
+|--------|----------------------------------------------------|
+| port   | Sets the serial port to be used for the stick      |
+| mode   | Sets the mode (frequency band)                     |
 
+Set mode to one of the following depending on your region:
+
+| Mode  | Description             |
+|-------|-------------------------|
+| 1     | US                      |
+| 2     | Europe                  |
+| 3     | Fine Offset (US)        |
+| 4     | Fine Offset (Europe)    |
+| 5     | New Zealand             |
 
 ### meteostick_davis_iss Configuration Options
 
