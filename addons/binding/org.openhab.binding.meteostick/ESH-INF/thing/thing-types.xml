@@ -21,7 +21,10 @@
 				<options>
 					<option value="0">North America (915MHz)</option>
 					<option value="1">Europe (868MHz)</option>
-					<option value="2">Australia (915MHz)</option>
+					<option value="2">Australia</option>
+					<option value="3">Fine Offset (915MHz)</option>
+					<option value="4">Fine Offset (868MHz)</option>
+					<option value="5">New Zealand</option>
 				</options>
 				<default>1</default>
 			</parameter>
