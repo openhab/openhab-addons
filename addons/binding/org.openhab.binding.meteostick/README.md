@@ -23,10 +23,10 @@ Next add the sensor and configure the channel number.
 
 ### meteostick_bridge Configuration Options
 
-| Option | Description                                                                |
-|--------|----------------------------------------------------------------------------|
-| port   | Sets the serial port to be used for the stick                              |
-| mode   | Sets the operating mode 0 = USA, 1 = Europe, 2 = Australia. 3 = FineOffset |
+| Option | Description                                                                                |
+|--------|--------------------------------------------------------------------------------------------|
+| port   | Sets the serial port to be used for the stick                                              |
+| mode   | Sets the operating mode 0 = USA, 1 = Europe, 2 = Australia, 3 = FineOffset, 5= New Zealand |
 
 
 ### meteostick_davis_iss Configuration Options
@@ -70,6 +70,6 @@ in the previous hour is the rainfall for each hour of the day and is updated on 
 Things can be defined in the .thing file as follows
 
 ```
-meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60" mode="1" ]
+meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
 meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1 ]
 ```
