@@ -36,3 +36,22 @@
 <!--   http://docs.openhab.org/developers/development/bindings.html#static-code-analysis -->
 <!-- - Did you sign-off your work: -->
 <!--   http://docs.openhab.org/developers/contributing/contributing#sign-your-work -->
+
+<!-- TESTING -->
+
+<!-- Please give a few sentences describing the overall goals of the pull request. -->
+<!-- Your Pull Request will be automatically built and available in the following folder: -->
+<!-- https://openhab.jfrog.io/openhab/libs-pullrequest-local/org/openhab/ -->
+
+<!-- It's a good practice to add an URL to your built JAR in this Pull Request description, -->
+<!-- so it's easier for the community to test your Add-on. -->
+
+<!-- If your Pull Request contains a new binding, it will likely wait some time -->
+<!-- before it's reviewed and processed by Maintainers. -->
+
+<!-- That said, consider submitting your Add-on in the Eclipse IoT Marketplace -->
+<!-- See this thread for more info: -->
+<!-- https://community.openhab.org/t/distributing-bindings-through-the-iot-marketplace/24491 -->
+
+<!-- Don't forget to submit a thread about your Add-on in the openHAB Community: -->
+<!-- https://community.openhab.org/c/add-ons -->
