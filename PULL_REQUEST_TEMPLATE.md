@@ -39,7 +39,6 @@
 
 <!-- TESTING -->
 
-<!-- Please give a few sentences describing the overall goals of the pull request. -->
 <!-- Your Pull Request will be automatically built and available in the following folder: -->
 <!-- https://openhab.jfrog.io/openhab/libs-pullrequest-local/org/openhab/ -->
 
