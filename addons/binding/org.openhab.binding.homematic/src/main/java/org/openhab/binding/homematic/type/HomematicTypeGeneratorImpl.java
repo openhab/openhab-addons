@@ -321,7 +321,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         try {
             return new URI(String.format("%s:%s", CONFIG_DESCRIPTION_URI_THING, UidUtils.generateThingTypeUID(device)));
         } catch (URISyntaxException ex) {
-            logger.warn("Can't create configDescriptionURI for device type " + device.getType());
+            logger.warn("Can't create configDescriptionURI for device type {}", device.getType());
             return null;
         }
     }
