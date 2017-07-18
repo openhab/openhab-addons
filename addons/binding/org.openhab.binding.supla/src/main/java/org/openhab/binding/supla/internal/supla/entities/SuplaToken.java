@@ -1,43 +1,42 @@
 package org.openhab.binding.supla.internal.supla.entities;
 
-import java.time.LocalDateTime;
-
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("ALL")
 public final class SuplaToken {
-    private final String token;
-    private final int validTimeInSeconds;
-    private final LocalDateTime createDate;
+    private final String accessToken;
+    private final int expiresIn;
+    private final String tokenType;
+    private final String scope;
+    private final String refreshToken;
 
-    public SuplaToken(String token, int validTimeInSeconds, LocalDateTime createDate) {
-        checkNotNull(token);
-        checkArgument(!token.isEmpty());
-        checkArgument(validTimeInSeconds > 0, validTimeInSeconds);
-        this.token = token;
-        this.validTimeInSeconds = validTimeInSeconds;
-        this.createDate = checkNotNull(createDate);
+    public SuplaToken(String accessToken, int expiresIn, String tokenType, String scope, String refreshToken) {
+        this.accessToken = requireNonNull(accessToken);
+        checkArgument(expiresIn >= 1, "expires_in need to be grater than 0! Has " + expiresIn);
+        this.expiresIn = expiresIn;
+        this.tokenType = requireNonNull(tokenType);
+        this.scope = requireNonNull(scope);
+        this.refreshToken = requireNonNull(refreshToken);
     }
 
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public int getValidTimeInSeconds() {
-        return validTimeInSeconds;
+    public int getExpiresIn() {
+        return expiresIn;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public String getTokenType() {
+        return tokenType;
     }
 
-    public boolean isValid(LocalDateTime time) {
-        return createDate.plusSeconds(validTimeInSeconds).isAfter(time);
+    public String getScope() {
+        return scope;
     }
 
-    public boolean isValid() {
-        return isValid(LocalDateTime.now());
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     @Override
@@ -45,26 +44,28 @@ public final class SuplaToken {
         if (this == o) return true;
         if (!(o instanceof SuplaToken)) return false;
 
-        SuplaToken suplaToken1 = (SuplaToken) o;
+        SuplaToken that = (SuplaToken) o;
 
-        if (validTimeInSeconds != suplaToken1.validTimeInSeconds) return false;
-        if (!token.equals(suplaToken1.token)) return false;
-        if (!createDate.equals(suplaToken1.createDate)) return false;
-
-        return true;
+        if (expiresIn != that.expiresIn) return false;
+        if (!accessToken.equals(that.accessToken)) return false;
+        if (!tokenType.equals(that.tokenType)) return false;
+        if (!scope.equals(that.scope)) return false;
+        return refreshToken.equals(that.refreshToken);
     }
 
     @Override
     public int hashCode() {
-        return token.hashCode();
+        return accessToken.hashCode();
     }
 
     @Override
     public String toString() {
         return "SuplaToken{" +
-                "token='" + token + '\'' +
-                ", validTimeInSeconds=" + validTimeInSeconds +
-                ", createDate=" + createDate +
+                "accessToken='" + accessToken + '\'' +
+                ", expiresIn=" + expiresIn +
+                ", tokenType='" + tokenType + '\'' +
+                ", scope='" + scope + '\'' +
+                ", refreshToken='" + refreshToken + '\'' +
                 '}';
     }
 }
