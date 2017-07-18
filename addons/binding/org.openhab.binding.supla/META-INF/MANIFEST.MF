@@ -33,6 +33,12 @@ Import-Package:
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.util.ssl,
+ org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.runners,
  com.google.gson
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.supla,
