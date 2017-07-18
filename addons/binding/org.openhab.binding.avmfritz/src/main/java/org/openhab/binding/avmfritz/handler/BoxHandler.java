@@ -13,8 +13,6 @@ import static org.openhab.binding.avmfritz.BindingConstants.*;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for a FRITZ!Box device. Handles polling of values from AHA devices.
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  *
@@ -60,8 +58,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     private final Logger logger = LoggerFactory.getLogger(BoxHandler.class);
 
     /**
-     * the refresh interval which is used to poll values from the fritzaha.
-     * server (optional, defaults to 15 s)
+     * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
     private long refreshInterval = 15;
     /**
@@ -69,13 +66,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     private FritzahaWebInterface connection;
     /**
-     * Holder for last data received from the box.
-     */
-    private Map<String, DeviceModel> deviceList;
-    /**
      * Job which will do the FRITZ!Box polling
      */
-    private DeviceListPolling pollingRunnable;
+    private final DeviceListPolling pollingRunnable;
     /**
      * Schedule for polling
      */
@@ -88,7 +81,6 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     public BoxHandler(Bridge bridge) {
         super(bridge);
-        this.deviceList = new TreeMap<String, DeviceModel>();
         this.pollingRunnable = new DeviceListPolling(this);
     }
 
@@ -140,7 +132,6 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     public void addDeviceList(DeviceModel device) {
         try {
             logger.debug("set device model: {}", device);
-            deviceList.put(device.getIdentifier(), device);
             ThingUID thingUID = getThingUID(device);
             Thing thing = getThingByUID(thingUID);
             if (thing != null) {

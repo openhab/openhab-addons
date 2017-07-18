@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
@@ -45,8 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DeviceHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * Handler for a FRITZ! device. Handles commands , which are sent to one of the channels.
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
@@ -58,34 +56,38 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     /**
-     * Ip of PL546E in standalone mode
+     * IP of FRITZ!Powerline 546E in standalone mode
      */
     private String soloIp;
     /**
-     * the refresh interval which is used to poll values from the FRITZ!Box web
-     * interface server (optional, defaults to 15 s)
+     * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
-    protected long refreshInterval = 15;
+    private long refreshInterval = 15;
     /**
      * Interface object for querying the FRITZ!Box web interface
      */
-    protected FritzahaWebInterface connection;
+    private FritzahaWebInterface connection;
     /**
-     * Job which will do the FRITZ!Box polling
+     * Job which will do the FRITZ! device polling
      */
-    private DeviceListPolling pollingRunnable;
+    private final DeviceListPolling pollingRunnable;
     /**
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
 
+    /**
+     * Constructor
+     *
+     * @param thing Thing object representing a FRITZ! device
+     */
     public DeviceHandler(Thing thing) {
         super(thing);
         this.pollingRunnable = new DeviceListPolling(this);
     }
 
     /**
-     * Initializes the bridge.
+     * Initializes the thing.
      */
     @Override
     public void initialize() {

@@ -65,6 +65,9 @@ public abstract class XiaomiSocket {
      */
     public XiaomiSocket(int port) {
         this.port = port;
+    }
+
+    public void intialize() {
         setupSocket();
         runReceiveThread();
     }
@@ -110,8 +113,7 @@ public abstract class XiaomiSocket {
             getListeners().add(listener);
         }
         if (getSocket() == null) {
-            setupSocket();
-            runReceiveThread();
+            intialize();
         }
     }
 
