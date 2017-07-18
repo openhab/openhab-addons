@@ -40,17 +40,17 @@ Please keep the following in mind:
 
 # TESTING
 
-Your Pull Request will be automatically built and available in the following folder:
+Your Pull Request will be automatically built and available under the following folder:
 https://openhab.jfrog.io/openhab/libs-pullrequest-local/org/openhab/
 
 It's a good practice to add an URL to your built JAR in this Pull Request description,
 so it's easier for the community to test your Add-on.
-If your Pull Request contains a new binding, it will likely wait some time
+If your Pull Request contains a new binding, it will likely take some time
 before it's reviewed and processed by maintainers.
 That said, consider submitting your Add-on in the Eclipse IoT Marketplace
 See this thread for more info:
-https://community.openhab.org/t/distributing-bindings-through-the-iot-marketplace/24491
+https://community.openhab.org/t/24491
 
-Don't forget to submit a thread about your Add-on in the openHAB Community:
+Don't forget to submit a thread about your Add-on in the openHAB community:
 https://community.openhab.org/c/add-ons 
 -->
