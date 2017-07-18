@@ -40,4 +40,9 @@ public final class OAuthApiHttpExecutor implements HttpExecutor {
     public Response patch(Request request, Body body) {
         return httpExecutor.patch(buildOAuthRequest(request), body);
     }
+
+    @Override
+    public void close() {
+        httpExecutor.close();
+    }
 }
