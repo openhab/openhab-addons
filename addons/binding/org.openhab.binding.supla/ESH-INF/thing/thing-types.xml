@@ -17,6 +17,10 @@
 		<config-description>
 			<parameter name="supla-io-device-id" type="integer" required="true">
 				<label>ID</label>
+				<description><![CDATA[
+					The best way to find ID of all devices is to send GET request to URL <i>/api/iodevices</i>.<b>
+					Remember to send <i>Authorization: Bearer {token}</i> header.
+				]]></description>
 			</parameter>
 		</config-description>
 	</thing-type>
