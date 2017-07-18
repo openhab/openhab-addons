@@ -10,12 +10,12 @@ package org.openhab.binding.supla.internal.http;
 
 
 public interface HttpExecutor extends AutoCloseable {
-    Response get(Request request);
+    Response get(Request request) throws HttpException;
 
-    Response post(Request request, Body body);
+    Response post(Request request, Body body) throws HttpException;
 
-    Response patch(Request request, Body body);
+    Response patch(Request request, Body body) throws HttpException;
 
     @Override
-    void close();
+    void close() throws HttpException;
 }

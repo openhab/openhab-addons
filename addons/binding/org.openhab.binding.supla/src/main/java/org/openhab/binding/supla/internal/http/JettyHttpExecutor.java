@@ -48,22 +48,26 @@ public final class JettyHttpExecutor implements HttpExecutor, AutoCloseable {
         return jetty;
     }
     private Response noBodyRequest(Request request, String method) {
-        return invoke(common(request, method));
+        try {
+            return invoke(common(request, method));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new HttpException(request, e);
+        }
     }
 
     private Response bodyRequest(Request request, String method, Body body) {
         final org.eclipse.jetty.client.api.Request jetty = common(request, method)
                 .content(new BytesContentProvider(body.buildBytesToSend()), "application/json; charset=UTF-8");
-        return invoke(jetty);
+        try {
+            return invoke(jetty);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new HttpException(request, e);
+        }
     }
 
-    private Response invoke(org.eclipse.jetty.client.api.Request request) {
-        try {
-            final ContentResponse response = request.send();
-            return new Response(response.getStatus(), response.getContentAsString());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    private Response invoke(org.eclipse.jetty.client.api.Request request) throws InterruptedException, ExecutionException, TimeoutException {
+        final ContentResponse response = request.send();
+        return new Response(response.getStatus(), response.getContentAsString());
     }
 
     @Override
@@ -86,7 +90,7 @@ public final class JettyHttpExecutor implements HttpExecutor, AutoCloseable {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new HttpException("Exception occurred when stopping http client!", e);
         }
     }
 
