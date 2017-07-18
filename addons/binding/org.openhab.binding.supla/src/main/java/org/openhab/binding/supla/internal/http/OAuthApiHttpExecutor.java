@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.supla.internal.server.http;
+package org.openhab.binding.supla.internal.http;
 
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.openhab.binding.supla.internal.server.http.CommonHeaders.authorizationHeader;
+import static org.openhab.binding.supla.internal.http.CommonHeaders.authorizationHeader;
 
 public final class OAuthApiHttpExecutor implements HttpExecutor {
     private final HttpExecutor httpExecutor;

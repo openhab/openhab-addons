@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.supla.internal.server.http;
+package org.openhab.binding.supla.internal.http;
 
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 

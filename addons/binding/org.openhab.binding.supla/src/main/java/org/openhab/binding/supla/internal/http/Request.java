@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.supla.internal.server.http;
+package org.openhab.binding.supla.internal.http;
 
 import com.google.common.collect.ImmutableList;
 
@@ -15,7 +15,6 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.ImmutableList.of;
 
 public final class Request {
     private final String path;
@@ -33,7 +32,7 @@ public final class Request {
     }
 
     public Request(String path, Header header) {
-        this(path, of(header));
+        this(path, ImmutableList.of(header));
     }
 
     public String getPath() {

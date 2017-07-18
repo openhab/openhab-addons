@@ -10,10 +10,10 @@ package org.openhab.binding.supla.internal.supla.api;
 
 import com.google.gson.reflect.TypeToken;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.http.HttpExecutor;
+import org.openhab.binding.supla.internal.http.Request;
+import org.openhab.binding.supla.internal.http.Response;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
-import org.openhab.binding.supla.internal.server.http.HttpExecutor;
-import org.openhab.binding.supla.internal.server.http.Request;
-import org.openhab.binding.supla.internal.server.http.Response;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
