@@ -9,6 +9,7 @@
 package org.openhab.binding.supla.internal.supla.api;
 
 import com.google.common.collect.ImmutableMap;
+import org.openhab.binding.supla.internal.api.TokenException;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.http.*;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
@@ -43,12 +44,12 @@ public final class SuplaTokenManager implements TokenManager {
     }
 
     @Override
-    public SuplaToken obtainToken() {
+    public SuplaToken obtainToken()  throws TokenException {
         final Response response = httpExecutor.post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body);
         if (response.success()) {
             return jsonMapper.to(SuplaToken.class, response.getResponse());
         } else {
-            throw new RuntimeException("Got error " + response.getStatusCode() + " while obtaining token for server " + server + "!");
+            throw new TokenException(response, server);
         }
     }
 }
