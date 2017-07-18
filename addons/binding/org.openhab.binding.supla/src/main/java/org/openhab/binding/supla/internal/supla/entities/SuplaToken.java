@@ -69,4 +69,3 @@ public final class SuplaToken {
                 '}';
     }
 }
-
