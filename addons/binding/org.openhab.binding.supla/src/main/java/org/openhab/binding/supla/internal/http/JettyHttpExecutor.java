@@ -36,7 +36,7 @@ public final class JettyHttpExecutor implements HttpExecutor, AutoCloseable {
         try {
             httpClient.start();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new HttpException("Exception occurred when starting http client", e);
         }
     }
 
