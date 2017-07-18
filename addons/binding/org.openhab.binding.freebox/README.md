@@ -147,7 +147,7 @@ sudo rm /freeboxECC.crt /freeboxRSA.crt
 
 You'll have to authorise openHAB to connect to your Freebox. Here is the process described :
 
-**Step 1** At binding startup, if no suplaToken is recorded in the Freebox Server (bridge) configuration, the following message
+**Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the following message
 will be displayed in the OSGi console :
 
 ```
