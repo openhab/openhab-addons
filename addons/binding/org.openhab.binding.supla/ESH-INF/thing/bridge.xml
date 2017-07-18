@@ -30,12 +30,10 @@
 				<label>Password</label>
 				<context>password</context>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" min="10" max="600" unit="s">
 				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds.</description>
 				<default>30</default>
-				<max>600</max>
-				<min>10</min>
 			</parameter>
 		</config-description>
 
