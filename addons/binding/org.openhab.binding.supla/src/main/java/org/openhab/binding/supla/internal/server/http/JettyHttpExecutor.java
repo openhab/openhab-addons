@@ -74,8 +74,12 @@ public final class JettyHttpExecutor implements HttpExecutor, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        httpClient.stop();
+    public void close() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String buildUrl(Request request) {
