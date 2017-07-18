@@ -11,8 +11,8 @@ import org.openhab.binding.supla.internal.commands.CommandExecutorFactoryImpl;
 import org.openhab.binding.supla.internal.mappers.GsonMapper;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
+import org.openhab.binding.supla.internal.server.http.JettyHttpExecutor;
 import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
-import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.supla.api.SuplaChannelManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaServerInfoManager;
@@ -72,7 +72,7 @@ public final class ApplicationContext {
     }
 
     public HttpExecutor getHttpExecutor() {
-        final HttpExecutor httpExecutor = get(this.httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
+        final HttpExecutor httpExecutor = get(this.httpExecutor, () -> new JettyHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
         if (httpExecutor instanceof OAuthApiHttpExecutor) {
             return httpExecutor;
         } else {
@@ -81,7 +81,7 @@ public final class ApplicationContext {
     }
 
     public HttpExecutor getNoOAuthHttpExecutor() {
-        return get(noOAuthHttpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.noOAuthHttpExecutor = x);
+        return get(noOAuthHttpExecutor, () -> new JettyHttpExecutor(suplaCloudServer), x -> this.noOAuthHttpExecutor = x);
     }
 
     public void setHttpExecutor(HttpExecutor httpExecutor) {
