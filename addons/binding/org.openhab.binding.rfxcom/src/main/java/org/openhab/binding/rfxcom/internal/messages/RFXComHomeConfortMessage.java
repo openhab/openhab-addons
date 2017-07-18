@@ -106,8 +106,6 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
         return super.toString()
             + ", Sub type = " + subType
             + ", Device Id = " + getDeviceId()
-            + ", House code = " + houseCode
-            + ", Unit code = " + unitCode
             + ", Command = " + command
             + ", Signal level = " + signalLevel;
     }
