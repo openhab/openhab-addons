@@ -10,6 +10,11 @@ package org.openhab.binding.supla;
 
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 
+/**
+ * This class contains configuration of SuplaBridge taken from user
+ *
+ * @author Martin Grześlowski - initial contributor
+ */
 public final class SuplaCloudConfiguration {
     public String server;
     public String clientId;

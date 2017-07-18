@@ -34,6 +34,11 @@ import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.SCHEDULED_THREAD_POOL_NAME;
 
+/**
+ * This is handler for SuplaBridge things
+ *
+ * @author Martin Grześlowski - initial contributor
+ */
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private static final long REFRESH_THREAD_DELAY_IN_SECONDS = 10;
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);

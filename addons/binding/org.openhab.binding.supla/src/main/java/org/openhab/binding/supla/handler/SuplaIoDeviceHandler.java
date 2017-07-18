@@ -41,6 +41,13 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
+/**
+ * This is handler for all Supla devices.
+ *
+ * Channels are created at runtime after connecting to Supla Cloud
+ *
+ * @author Martin Grześlowski - initial contributor
+ */
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private static final int MAX_RETRIES = 20;
     private static final long WAIT_IN_MILLISECONDS = SECONDS.toMillis(1);
