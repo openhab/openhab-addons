@@ -6,9 +6,9 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import java.util.Optional;
 
 public interface ChannelManager {
-    void turnOn(SuplaChannel channel);
+    boolean turnOn(SuplaChannel channel);
 
-    void turnOff(SuplaChannel channel);
+    boolean turnOff(SuplaChannel channel);
 
     Optional<SuplaChannelStatus> obtainChannelStatus(SuplaChannel channel);
 }

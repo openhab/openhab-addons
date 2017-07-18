@@ -31,13 +31,13 @@ public final class SuplaChannelManager implements ChannelManager {
     }
 
     @Override
-    public void turnOn(SuplaChannel channel) {
-        turn(channel.getId(), TURN_ON_PARAMS);
+    public boolean turnOn(SuplaChannel channel) {
+        return turn(channel.getId(), TURN_ON_PARAMS).success();
     }
 
     @Override
-    public void turnOff(SuplaChannel channel) {
-        turn(channel.getId(), TURN_OFF_PARAMS);
+    public boolean turnOff(SuplaChannel channel) {
+        return turn(channel.getId(), TURN_OFF_PARAMS).success();
     }
 
     private Response turn(long id, Map<String, String> paramsMap) {
