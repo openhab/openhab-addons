@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for undecoded messages.
@@ -64,10 +65,6 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         private final int subType;
 
         SubType(int subType) {
-            this.subType = subType;
-        }
-
-        SubType(byte subType) {
             this.subType = subType;
         }
 
@@ -189,7 +186,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         try {
             return SubType.values()[Integer.parseInt(subType)];
         } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 
