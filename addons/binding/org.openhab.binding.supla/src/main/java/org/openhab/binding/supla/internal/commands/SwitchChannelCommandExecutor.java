@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 
 class SwitchChannelCommandExecutor implements CommandExecutor {
@@ -30,9 +31,15 @@ class SwitchChannelCommandExecutor implements CommandExecutor {
         if (command instanceof OnOffType) {
             final OnOffType switchCommand = (OnOffType) command;
             if(switchCommand == ON) {
-                channelManager.turnOn(suplaChannel);
+                final boolean turnOn = channelManager.turnOn(suplaChannel);
+                if(!turnOn) {
+                    updateState.accept(OFF);
+                }
             } else {
-                channelManager.turnOff(suplaChannel);
+                final boolean turnOff = channelManager.turnOff(suplaChannel);
+                if(!turnOff) {
+                    updateState.accept(ON);
+                }
             }
         } else if (command instanceof RefreshType) {
             channelManager.obtainChannelStatus(suplaChannel)
@@ -44,6 +51,6 @@ class SwitchChannelCommandExecutor implements CommandExecutor {
     }
 
     private OnOffType getState(SuplaChannelStatus status) {
-        return status.isEnabled() ? OnOffType.ON : OnOffType.OFF;
+        return status.isEnabled() ? ON : OFF;
     }
 }
