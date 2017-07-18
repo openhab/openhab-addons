@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder.create;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 public final class ChannelBuilderImpl implements ChannelBuilder {
@@ -24,19 +25,27 @@ public final class ChannelBuilderImpl implements ChannelBuilder {
     @Override
     public Optional<Map.Entry<Channel, SuplaChannel>> buildChannel(ThingUID thingUID, SuplaChannel suplaChannel) {
         if (RELAY_CHANNEL_TYPE.equals(suplaChannel.getType().getName())) {
-            if (LIGHT_CHANNEL_FUNCTION.equals(suplaChannel.getFunction().getName())) {
-                final ChannelUID channelUID = new ChannelUID(thingUID, LIGHT_CHANNEL_ID);
-                final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, LIGHT_CHANNEL_ID);
-                final Channel channel = org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder .create(channelUID, "Switch")
-                        .withType(channelTypeUID)
-                        .build();
-                return Optional.of(new Entry(channel, suplaChannel));
-            } else {
-                // TODO return switch-channel
-            }
+            final String channelId = findChannelId(suplaChannel);
+
+            final ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+            final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+            final Channel channel = create(channelUID, "Switch")
+                    .withType(channelTypeUID)
+                    .build();
+            return Optional.of(new Entry(channel, suplaChannel));
         }
 
         return Optional.empty();
+    }
+
+    private static String findChannelId(SuplaChannel suplaChannel) {
+        final String channelId;
+        if (LIGHT_CHANNEL_FUNCTION.equals(suplaChannel.getFunction().getName())) {
+            channelId = LIGHT_CHANNEL_ID;
+        } else {
+            channelId = SWITCH_CHANNEL_ID;
+        }
+        return channelId;
     }
 
     private static class Entry implements Map.Entry<Channel, SuplaChannel> {
