@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.supla.internal.http;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -67,6 +68,6 @@ public final class Request {
 
     @Override
     public String toString() {
-        return "Request{" + "path='" + path + '\'' + ", headers=" + headers + '}';
+        return "Request{" + "path='" + path + '\'' + ", headers=[" + Joiner.on(", ").join(headers)+ "]}";
     }
 }
