@@ -20,6 +20,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ZoneStateChangeEvent;
 
 public class ZoneHandler extends AbstractOmnilinkHandler {
     private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
@@ -149,5 +150,11 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_CURRENT_CONDITION, new DecimalType(current));
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_LATCHED_ALARM_STATUS, new DecimalType(latched));
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_ARMING_STATUS, new DecimalType(arming));
+    }
+
+    public void handleZoneStateChangeEvent(ZoneStateChangeEvent event) {
+        ChannelUID activateChannel = new ChannelUID(getThing().getUID(),
+                OmnilinkBindingConstants.TRIGGER_CHANNEL_ZONE_STATE_EVENT);
+        triggerChannel(activateChannel, event.isOn() ? "ON" : "OFF");
     }
 }

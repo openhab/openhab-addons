@@ -15,6 +15,13 @@
                 <label>ALL Console Beep</label>
                 <description>Send console beep command to all consoles</description>
             </channel>
+            <channel id="phone_line_event" typeId="phone_line_event" />
+            <channel id="ac_power_event" typeId="ac_power_event" />
+            <channel id="battery_event" typeId=""battery_event"" />
+            <channel id="dcm_event" typeId="dcm_event" />
+            <channel id="energy_cost_event" typeId="energy_cost_event" />
+            <channel id="camera_trigger_event" typeId="camera_trigger_event" />
+            <channel id="access_control_reader_event" typeId="access_control_reader_event" />
 		</channels>
 		<properties>
 			<property name="modelNumber" />
@@ -53,6 +60,105 @@
         <label>System Time</label>
         <description>The date/time of omnilink last time received system status</description>
         <!-- <state readOnly="true" /> pattern="%1$tF %1$tR" -->
+    </channel-type>
+    <channel-type id="phone_line_event">
+        <kind>trigger</kind>
+        <label>Phone Line Event</label>
+        <description>Event sent when the phone line changes state</description>
+        <event>
+            <options>
+                <option value="ON_HOOK">On Hook</option>
+                <option value="OFF_HOOK">Off Hook</option>
+                <option value="DEAD">Dead</option>
+                <option value="RING">Ring</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="ac_power_event">
+        <kind>trigger</kind>
+        <label>AC Power Event</label>
+        <description>Event sent when AC trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="OFF">Off</option>
+                <option value="RESTORED">Restored</option>
+            </options>
+        </event>
+    </channel-type>
+    <channel-type id="battery_event">
+        <kind>trigger</kind>
+        <label>Battery Event</label>
+        <description>Event sent when battery trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="LOW">Low</option>
+                <option value="OK">OK</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="dcm_event">
+        <kind>trigger</kind>
+        <label>DCM Event</label>
+        <description>Event sent when digital communicator trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="TROUBLE">Trouble</option>
+                <option value="OK">OK</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="energy_cost_event">
+        <kind>trigger</kind>
+        <label>Energy Cost Event</label>
+        <description>Event sent when the cost of energy changes</description>
+        <event>
+            <options>
+                <option value="LOW">Trouble</option>
+                <option value="MID">Mid</option>
+                <option value="HIGH">High</option>
+                <option value="CRITCAL">Critical</option>
+            </options>
+        </event>
+    </channel-type>
+    <channel-type id="camera_trigger_event">
+        <kind>trigger</kind>
+        <label>Camera Trigger Event</label>
+        <description>Event sent when a camera trigger is detected</description>
+        <event>
+            <options>
+                <option value="1">Camera 1</option>
+                <option value="2">Camera 2</option>
+                <option value="3">Camera 3</option>
+                <option value="4">Camera 4</option>
+                <option value="5">Camera 5</option>
+                <option value="6">Camera 6</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="access_control_reader_event">
+        <kind>trigger</kind>
+        <label>Access Control Reader Event</label>
+        <description>Event sent when a access control reader event occurs</description>
+        <event>
+            <options>
+                <option value="1">Reader 1</option>
+                <option value="2">Reader 2</option>
+                <option value="3">Reader 3</option>
+                <option value="4">Reader 4</option>
+                <option value="5">Reader 5</option>
+                <option value="6">Reader 6</option>
+                <option value="7">Reader 7</option>
+                <option value="8">Reader 8</option>
+                <option value="9">Reader 9</option>
+                <option value="10">Reader 10</option>
+                <option value="11">Reader 11</option>
+                <option value="12">Reader 12</option>
+                <option value="13">Reader 13</option>
+                <option value="14">Reader 14</option>
+                <option value="15">Reader 15</option>
+                <option value="16">Reader 16</option>
+            </options>
+        </event>
     </channel-type>
 </thing:thing-descriptions>
     

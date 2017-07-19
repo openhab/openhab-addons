@@ -16,6 +16,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
 
 public class AreaHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
@@ -159,5 +160,11 @@ public class AreaHandler extends AbstractOmnilinkHandler {
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing area:", e);
         }
+    }
+
+    public void handleAllOnOffEvent(AllOnOffEvent event) {
+        ChannelUID activateChannel = new ChannelUID(getThing().getUID(),
+                OmnilinkBindingConstants.TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT);
+        triggerChannel(activateChannel, event.isOn() ? "ON" : "OFF");
     }
 }

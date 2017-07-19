@@ -47,14 +47,16 @@
 				<label>Arm Night Delayed Command</label>
 				<description>Send a 4 digit user code to arm the system to night delayed</description>
 			</channel>
+			<!-- <channel id="alarm_event" typeId="omni_alarm_event" /> -->
+			<channel id="all_on_off_Event" typeId="all_on_off_Event"/>
 		</channels>
 		<properties>
 			<property name="name" />
 		</properties>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
-				<label>Zone Number</label>
-				<description>Zone Number</description>
+				<label>Area Number</label>
+				<description>Area Number</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -91,14 +93,16 @@
 				<label>Set System to Special</label>
 				<description>Send a 4 digit user code to set the system to special</description>
 			</channel>
+			<!--<channel id="alarm_event" typeId="lumina_alarm_event" />  -->
+			<channel id="all_on_off_Event" typeId="all_on_off_Event"/>
 		</channels>
 		<properties>
 			<property name="name" />
 		</properties>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
-				<label>Zone Number</label>
-				<description>Zone Number</description>
+				<label>Area Number</label>
+				<description>Area Number</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -224,5 +228,44 @@
             </options>
         </state>
     </channel-type>
-
+<!--     <channel-type id="omni_alarm_event">
+        <kind>trigger</kind>
+        <label>Alarm Event</label>
+        <description>Event sent when a alarm state occurs</description>
+        <event>
+            <options>
+                <option value="1">Burglary</option>
+                <option value="2">Fire</option>
+                <option value="3">Gas</option>
+                <option value="4">Auxiliary</option>
+                <option value="5">Freeze</option>
+                <option value="6">Water</option>
+                <option value="7">Duress</option>
+                <option value="8">Temperature</option>
+            </options>
+        </event>
+    </channel-type>
+    <channel-type id="lumina_alarm_event">
+        <kind>trigger</kind>
+        <label>Alarm Event</label>
+        <description>Event sent when a alarm state occurs</description>
+        <event>
+            <options>
+                <option value="5">Freeze</option>
+                <option value="6">Water</option>
+                <option value="8">Temperature</option>
+            </options>
+        </event>
+    </channel-type> -->
+     <channel-type id="all_on_off_Event">
+        <kind>trigger</kind>
+        <label>All On Off Event</label>
+        <description>Event sent when a all on or off event occurs</description>
+        <event>
+            <options>
+                <option value="OFF">Off</option>
+                <option value="ON">On</option>
+            </options>
+        </event>
+    </channel-type>
 </thing:thing-descriptions>
