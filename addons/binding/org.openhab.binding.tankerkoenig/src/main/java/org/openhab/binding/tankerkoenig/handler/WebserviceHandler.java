@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.tankerkoenig.handler;
 
-import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.CHANNEL_HOLIDAY;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -21,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -69,18 +68,9 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            if (channelUID.getId().contentEquals(CHANNEL_HOLIDAY)) {
-                logger.debug("HandleCommand recieved: {}", channelUID.getId());
-                if (command.toString() == "OFF") {
-                    isHoliday = false;
-                } else {
-                    isHoliday = true;
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Error in HandleCommand: {}", e);
-            isHoliday = false;
+        if (channelUID.getId().equals(TankerkoenigBindingConstants.CHANNEL_HOLIDAY)) {
+            logger.debug("HandleCommand recieved: {}", channelUID.getId());
+            isHoliday = (command == OnOffType.ON);
         }
     }
 
