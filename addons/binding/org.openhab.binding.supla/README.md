@@ -1,35 +1,20 @@
-# <bindingName> Binding
+# Supla Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding provides integration with Supla Cloud (https://cloud.supla.org), either web version or Raspberry PI version. 
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+Note: **Remember about turning on RESTful API!**
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+Right now supported are only Supla _relay_ things - everything that can be turned on/off. Other devices may be supported 
+in future but right now I don't have any physical devices for tests.
+
+This binding was tested with _Zamel ROW-01_ https://supla.zamel.pl/en/.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+After adding _Supla Bridge_ all _Supla Devices_ that belongs to this server will be discovered. There is no need for manual 
+importing things into OpenHAB.
 
 ## Thing Configuration
 
@@ -39,15 +24,22 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Right now there is only support for 2 types of channels: *light-channel* and *switch-channel*.
+ 
+ *switch-channel* is used when device has channel of type ```TYPE_RELAY``` (from Supla REST). *light-channel* is specialized
+ version of *switch-channel* and it is used when channel function is ```FNC_LIGHTSWITCH```.
+ 
+ There is plan to create more channel types, but right now I don't have any physical devices to test.  
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+## Turning on REST API
 
-## Full Example
+Log in into your Supla Cloud account (create if not done yet). Then go to _Account_ and click **RESTful API**
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+![Turn RESTfulApi](doc/turn-rest-api.PNG "Click RESTful API")
 
-## Any custom content here!
+After that please click button to enable API. After that you should see something similar to this:
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+![RESTfulApi](doc/rest-api-view.PNG "RESTful API")
+
+Take this values to create new _Supla Bridge_ and discover all your _Supla Devices_.
 
