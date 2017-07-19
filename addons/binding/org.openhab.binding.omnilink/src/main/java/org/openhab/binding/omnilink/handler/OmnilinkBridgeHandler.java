@@ -250,7 +250,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (theThing.isPresent() == false) {
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ROOM, stat.getNumber());
         }
-
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, stat.getNumber());
+        }
         if (theThing.isPresent()) {
             ((UnitHandler) theThing.get().getHandler()).handleUnitStatus(stat);
         }
