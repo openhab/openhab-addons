@@ -17,7 +17,7 @@
             </channel>
             <channel id="phone_line_event" typeId="phone_line_event" />
             <channel id="ac_power_event" typeId="ac_power_event" />
-            <channel id="battery_event" typeId=""battery_event"" />
+            <channel id="battery_event" typeId="battery_event" />
             <channel id="dcm_event" typeId="dcm_event" />
             <channel id="energy_cost_event" typeId="energy_cost_event" />
             <channel id="camera_trigger_event" typeId="camera_trigger_event" />

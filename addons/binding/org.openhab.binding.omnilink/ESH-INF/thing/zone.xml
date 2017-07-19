@@ -21,7 +21,7 @@
 				<label>Restore Zone</label>
 				<description>Send a 4 digit user code to restore the zone</description>
 			</channel>
-			<channel id="state_event" typeId="zone_state_event"
+			<channel id="state_event" typeId="zone_state_event"/>
 		</channels>
 		<properties>
 			<property name="name" />
