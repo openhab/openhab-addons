@@ -11,7 +11,7 @@
 			<parameter name="apikey" type="text" required="true">
 				<label>API-Key</label>
 				<description>API-Key. Necessary registration under https://creativecommons.tankerkoenig.de</description>
-				<default />
+				<default></default>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true" min="10">
 				<label>Refresh Time</label>
