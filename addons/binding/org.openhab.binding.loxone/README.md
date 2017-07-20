@@ -14,77 +14,42 @@ The following features are currently supported:
   * Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
   * Passing channel commands to the Miniserver's controls
 
-## Supported Things
+## Things
 
 This binding supports [Loxone Miniservers](https://www.loxone.com/enen/products/miniserver-extensions/) for accessing controls that are configured in their UI.
 
-Thing ID is defined in the following way: `loxone:miniserver:<serial>`, where `<serial>` is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
+Thing ID, for automatically discovered Miniservers, is defined in the following way: `loxone:miniserver:<serial>`, where `<serial>` is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
 
-## Discovery
+### Discovery
 
 [Loxone Miniservers](https://www.loxone.com/enen/products/miniserver-extensions/) are automatically discovered by the binding and put in the Inbox. [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) is performed using [UPnP](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) protocol.
 
 Before a Miniserver Thing can go online, it must be configured with a user name and a password of an account available on the Miniserver. Please set them manually in Thing configuration after you add a new Miniserver Thing from your Inbox.
 
-## Channels
+### Manual configuration
 
-This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one or more channels, depending on various states it has. Currently supported controls are presented in the table below.
+As an alternative to the automatic discovery process, Miniservers can be configured manually, through an entry in [.things file](http://docs.openhab.org/configuration/things.html#defining-things-using-files). The entry should have the following syntax:
 
-|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|Channel IDs|
-|----|----|----|----|----|----|
-|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlyanalog:<uuid>`<br> This channel type is created dynamically for each control, because control contains custom display format string|`loxone:miniserver:<serial>:<uuid>`|
-|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`| `loxone:miniserver:<serial>:<uuid>`|
-|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|`loxone:miniserver:<serial>:<uuid>`
-|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|`loxone:miniserver:<serial>:<uuid>`|
-|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
-|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|`loxone:miniserver:<serial>:<uuid>`
-|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
-|TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|`loxone:miniserver:<serial>:text`|`loxone:miniserver:<serial>:<uuid>`|
+`loxone:miniserver:<thing-id> [ user="<user>", password="<password>", host="<host>", port=<port>, ... ]`
 
-If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
+Where:
 
-Channel ID is defined in the following way: 
+  * `<thing-id>` is a unique ID for your Miniserver (you can but do not have to use Miniserver's MAC address here)
+  * `<user>` and `<password>` are the credentials used to log into the Miniserver
+  * `<host>` is a host name or IP of the Miniserver
+  * `<port>` is a port of web services on the Miniserver (please notice that port, as a number, is not surrounded by quotation marks, while the other values described above are)
+  * `...` are optional advanced parameters - please refer to _Advanced parameters_ section at the end of this instruction for a list of available options
 
-  * For primary control's channel: `loxone:miniserver:<serial>:<control-UUID>`
-  * For other control's channels (currently no such controls): `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `channel-index >=1`
+Example 1 - minimal required configuration:
 
+        loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="loxone.local", port=80 ]
 
-Channel label is defined in the following way:
+Example 2 - additionally keep alive period is set to 2 minutes and Websocket maximum binary message size to 8MB:
 
-  * For controls that belong to a room: `<Room name> / <Control name>` 
-  * For controls without a room: `<Control name>`
+        loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.210", port=80, keepAlivePeriod=120, maxBinMsgSize=8192 ]
 
-## Items
+### Thing Offline Reasons
 
-Items for Miniserver's controls can be created manually or automatically, depending on openHAB's `Item Linking/Simple Mode` setting. This setting can be modified in PaperUI under `Configuration/System` page and should be set to the desired value before Loxone Thing is created. Please consult [tutorial](http://docs.openhab.org/tutorials/beginner/configuration.html) for more details about item linking simple mode.
-
-
-When `Simple Mode` is enabled, openHAB will automatically build and link items for all channels created by the binding, one for each channel. Item label will be equal to the channel's label, allowing for a human-readable representation of the controls wherever there is a need to choose an item in a user interface, usually from a drop-down list (for example in HABPanel, IFTTT, Alexa).
-
-In case user wants to create items manually, they can be defined in `.items` file. Linking of an item to a particular Loxone control is done through passing channel ID to a {channel=...} value in the item definition. Examples:
-
-  * On-off switch with a tag recognizable by Alexa service, representing a Switch subcontrol (output) of a Miniserver's Lighting Controller:
-
-    `Switch Kitchen_Light "Kitchen Light" <switch> ["lighting"] {channel="loxone:miniserver:504E9420290F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E"}`
-
-  * Temperature of the Miniserver (on Loxone: Virtual Analog State functional block or InfoOnlyAnalog control}:
-
-    `Number Miniserver_Temp "Miniserver temperature: [%.1f °C]" <temperature> {channel="loxone:miniserver:504E9420290F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}`
-    
-  * Pushbutton switch representing a Miniserver's Virtual Input of pushbutton type (pushbutton realized by adding `autoupdate="false"` parameter):
-  
-    `Switch Reset_Lights "Switch all lights off" ["lighting"] {autoupdate="false",channel="loxone:miniserver:504E9420290F:0F2F2133-01AD-3282-FFFF201EB0C24B9E"}`
-
-
-### Loxone and Amazon Alexa
-
-Your openHAB server can be exposed through [myopenHAB](http://www.myopenhab.org/) cloud service to  [Amazon Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) device with [openHAB skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L) enabled. To enable this service, please consult instructions available [here](https://community.openhab.org/t/official-alexa-smart-home-skill-for-openhab-2/23533).
-
-When creating a Miniserver Thing in the openHAB's Item Linking Simple Mode, Loxone binding will automatically create item tags required by Alexa, so that Miniserver's controls can be discovered by [Alexa smart home]( https://www.amazon.com/alexasmarthome) module. Tags will be created for switches, which belong to a category of "lighting" type. This will allow you to command Loxone controls with your voice.
-
-Alexa will recognize items by their labels, which will be equal to the corresponding control's name on the Miniserver. In case your controls are named in a way not directly suiting voice commands, you will need to manually add and link new items to the channels, and add proper tags as described in the above instructions.
-
-## Thing Offline Reasons
 There can be following reasons why Miniserver status is `OFFLINE`:
 
 * __Configuration Error__
@@ -110,41 +75,171 @@ There can be following reasons why Miniserver status is `OFFLINE`:
     * _Other_
         * An exception occured and its details will be displayed
 
+
+## Channels
+
+This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one or more channels, depending on various states it has. Currently supported controls are presented in the table below.
+
+|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|
+|----|----|----|----|----|
+|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlyanalog:<uuid>`<br> This channel type is created dynamically for each control, because control contains custom display format string|
+|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`|
+|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|
+|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|
+|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|
+|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|`
+|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
+|TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|`loxone:miniserver:<serial>:text`|
+
+If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
+
+Channel ID is defined in the following way: 
+
+  * For primary control's channel: `loxone:miniserver:<serial>:<control-UUID>`
+  * For other control's channels (currently no such controls): `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `channel-index >=1`
+
+
+Channel label is defined in the following way:
+
+  * For controls that belong to a room: `<Room name> / <Control name>` 
+  * For controls without a room: `<Control name>`
+
+## Items
+
+Items for Miniserver's controls can be created manually or automatically, depending on openHAB's `Item Linking/Simple Mode` setting. This setting can be modified in PaperUI under `Configuration/System` page and should be set to the desired value before Loxone Thing is created. Please consult [tutorial](http://docs.openhab.org/tutorials/beginner/configuration.html) for more details about item linking simple mode.
+
+
+When `Simple Mode` is enabled, openHAB will automatically build and link items for all channels created by the binding, one for each channel. Item label will be equal to the channel's label, allowing for a human-readable representation of the controls wherever there is a need to choose an item in a user interface, usually from a drop-down list (for example in HABPanel, IFTTT, Alexa).
+
+In case user wants to create items manually, they can be defined in [.items file](http://docs.openhab.org/configuration/items.html#item-definition-and-syntax). Linking of an item to a particular Loxone control is done through passing channel ID to a `{channel=...}` assignment in the item definition. Examples:
+
+  * On-off switch with a tag recognizable by Alexa service, representing a Switch subcontrol (output) of a Miniserver's Lighting Controller:
+
+    `Switch Kitchen_Light "Kitchen Light" <switch> ["lighting"] {channel="loxone:miniserver:504E9420290F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E"}`
+
+  * Temperature of the Miniserver (on Loxone: Virtual Analog State functional block or InfoOnlyAnalog control}:
+
+    `Number Miniserver_Temp "Miniserver temperature: [%.1f °C]" <temperature> {channel="loxone:miniserver:504E9420290F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}`
+    
+  * Pushbutton switch representing a Miniserver's Virtual Input of pushbutton type (pushbutton realized by adding `autoupdate="false"` parameter):
+  
+    `Switch Reset_Lights "Switch all lights off" ["lighting"] {autoupdate="false",channel="loxone:miniserver:504E9420290F:0F2F2133-01AD-3282-FFFF201EB0C24B9E"}`
+
+
+### Loxone and Amazon Alexa
+
+Your openHAB server can be exposed through [myopenHAB](http://www.myopenhab.org/) cloud service to  [Amazon Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) device with [openHAB skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L) enabled. To enable this service, please consult instructions available [here](https://community.openhab.org/t/official-alexa-smart-home-skill-for-openhab-2/23533).
+
+When creating a Miniserver Thing in the openHAB's Item Linking Simple Mode, Loxone binding will automatically create item tags required by Alexa, so that Miniserver's controls can be discovered by [Alexa smart home]( https://www.amazon.com/alexasmarthome) module. Tags will be created for switches, which belong to a category of "lighting" type. This will allow you to command Loxone controls with your voice.
+
+Alexa will recognize items by their labels, which will be equal to the corresponding control's name on the Miniserver. In case your controls are named in a way not directly suiting voice commands, you will need to manually add and link new items to the channels, and add proper tags as described in the above instructions.
+
 ## Advanced Parameters
+
+This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. PaperUI) or in a .things file. If a parameter is not explicitly defined, binding will use its default value.
+
+To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
+
+        keepAlivePeriod=120
 
 ### Timeouts
 
 Timeout values control various parts of Websocket connection management. They can be tuned, when abnormal behavior of the binding is observed, which can be attributed to timing.
+<br>
 
-Timeout values can be changed in advanced parameters section of the thing's configuration page.
-
-* _First connection delay_
-    * Time in seconds between binding initialization with all necessary parameters and first connection attempt.
-    * Range: 0-120 s, default: 1 s
-* _Period between connection keep-alive messages_
-    * Time in seconds between sending two consecutive keep-alive messages, in order to inform Miniserver about active connection and prevent it from disconnecting.
-    * Range: 1-600 s, default: 240 s (4 minutes, Miniserver default connection timeout is 5 minutes)
-* _Connect error delay_
-    * Time in seconds between failed Websocket connect attempt and another attempt to connect. Websocket connection is established before authentication and data transfer. It can usually fail due to unreachable Miniserver.
-    * Range: 0-600 s, default: 10 s
-* _Response timeout_
-    * Time to wait for a response from Miniserver to a request sent from the binding. A request can be any of: websocket connect request, credentials hashing key request, configuration request, enabling of state updates (until initial states are received). If this time passed without the expected reaction from the Miniserver, the connection will be closed. A new connection attempt may be made, depending on the situation.
-    * Range: 0-60 s, default: 4 s
-* _Authentication error delay_
-    * Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out the user for a longer period of time due to too many failed login attempts. This time should allow the administrator to fix the authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which are successful on a subsequent identical attempt.
-    * Range: 0-3600 s, default: 60 s
-* _Communication error delay_
-    * Time in seconds between an active connection closes, as a result of a communication error, and next connection attempt. This relates to all types of network communication issues, which can occur and cease to exist randomly to the binding. It is desired that the binding monitors the situation and brings things back to online as soon as Miniserver is accessible.
-    * Range: 0-3600 s, default: 30 s
+| ID              | Name                                          | Range    | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|-----------------|-----------------------------------------------|----------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `firstConDelay`   | First connection delay                        | 0-120 s  | 1 s     | Time in seconds between binding initialization with all necessary parameters and first connection attempt.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `keepAlivePeriod` | Period between connection keep-alive messages | 1-600 s  | 240 s   | Time in seconds between sending two consecutive keep-alive messages, in order to inform Miniserver about active connection and prevent it from disconnecting. Miniserver default connection timeout is 5 minutes, so default is set to 4 minutes.                                                                                                                                                                                                                                                                                                                                                                       |
+| `connectErrDelay` | Connect error delay                           | 0-600 s  | 10 s    | Time in seconds between failed Websocket connect attempt and another attempt to connect. Websocket connection is established before authentication and data transfer. It can usually fail due to unreachable Miniserver.                                                                                                                                                                                                                                                                                                                                                                                                |
+| `responseTimeout` | Response timeout                              | 0-60 s   | 4 s     | Time to wait for a response from Miniserver to a request sent from the binding. A request can be any of: websocket connect request, credentials hashing key request, configuration request, enabling of state updates (until initial states are received). If this time passed without the expected reaction from the Miniserver, the connection will be closed. A new connection attempt may be made, depending on the situation.                                                                                                                                                                                      |
+| `userErrorDelay`  | Authentication error delay                    | 0-3600 s | 60 s    | Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out the user for a longer period of time due to too many failed login attempts. This time should allow the administrator to fix the authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which are successful on a subsequent identical attempt. |
+| `comErrorDelay`   | Communication error delay                     | 0-3600 s | 30 s    | Time in seconds between an active connection closes, as a result of a communication error, and next connection attempt. This relates to all types of network communication issues, which can occur and cease to exist randomly to the binding. It is desired that the binding monitors the situation and brings things back to online as soon as Miniserver is accessible.                                                                                                                                                                                                                                              |
 
 ### Sizes
 
-* _Maximum binary message size (kB)_
-    * For Websocket client, a maximum size of a binary message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long binary messages received, you may need to adjust this parameter.
-    * Range: 0-100 MB, default: 3 MB
-* _Maximum text message size (kB)_
-    * For Websocket client, a maximum size of a text message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long text messages received, you may need to adjust this parameter.
-    * Range: 0-100 MB, default: 512 KB
+| ID             | Name                             | Range    | Default     | Description                                                                                                                                                                                                                                      |
+|----------------|----------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `maxBinMsgSize`  | Maximum binary message size (kB) | 0-100 MB | 3072 (3 MB) | For Websocket client, a maximum size of a binary message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long binary messages received, you may need to adjust this parameter. |
+| `maxTextMsgSize` | Maximum text message size (kB)   | 0-100 MB | 512 KB      | For Websocket client, a maximum size of a text message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long text messages received, you may need to adjust this parameter.     |
 
 ## Limitations
-* As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
+
+  * As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
+
+## Automatic Configuration Example
+
+The simplest and quickest way of configuring a Loxone Miniserver with openHAB is to use automatic configuration features available in openHAB2 and PaperUI:
+
+  * Make sure your Miniserver is up and running and on the same network segment as openHAB server.
+  * Add Loxone binding from the available `Add-ons`.
+  * In `Configuration/System` page, set `Item Linking` to `Simple Mode` (don't forget to save your choice).
+  * Add your Miniserver Thing from the `Inbox`, after automatic discovery is performed by the framework during binding initialization.
+  * Configure your Miniserver by editing Miniserver Thing in `Configuration/Things` page and providing user name and password.
+  * Miniserver Thing should go online. Channels and Items will be automatically created and configured.
+  * On the `Control` page, you can test Miniserver Items and iteract with them.
+  * As the user interface, you may use [HABPanel](http://docs.openhab.org/addons/uis/habpanel/readme.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
+
+## Manual Configuration Example
+
+A more advanced setup requires manual creation and editing of openHAB configuration files, according to the instructions provided in [configuration user guide](http://docs.openhab.org/configuration/index.html).
+In this example we will manually configure:
+
+  * A Miniserver with serial number 504F2414780F, available at IP 192.168.0.220 and with web services port 80
+  * A Miniserver's user named "kryten" and password "jmc2017"
+  * Items for:
+      * Temperature of the Miniserver - a Virtual Analog State functional block
+      * State of a garage door - a Virtual Digital State funtional block (ON=door open, OFF=door closed)
+      * Kitchen lights switch - a Switch Subcontrol at the AI1 output of a Lighting Controller functional block (with a tag recognizable by Alexa service)
+      * Pushbutton to switch all lights off - a Virtual Input of Pushbutton type functional block (pushbutton realized by adding `autoupdate="false"` parameter)
+      * Kitchen blinds - a Jalousie functional block
+      * Lighting scene - a Lighting Controller functional block
+      * Output valve selection for garden watering - 8x Radio Button functional block, where only one valve can be open at a time
+      * A text displaying current alarm's state - a State functional block
+
+### things/loxone.things:
+
+```
+loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80 ]
+```
+
+### items/loxone.items:
+
+```
+// Type       ID              Label                                  Icon          Tags         Settings
+
+Number        Miniserver_Temp "Miniserver temperature: [%.1f °C]"    <temperature>              {channel="loxone:miniserver:504F2414780F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}
+Switch        Garage_Door     "Garage door [MAP(garagedoor.map):%s]" <garagedoor>               {channel="loxone:miniserver:504F2414780F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}
+Switch        Kitchen_Lights  "Kitchen Lights"                       <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E_AI1"}
+Switch        Reset_Lights    "Switch all lights off"                <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0F2F2133-01AD-3282-FFFF201EB0C24B9E",autoupdate="false"}
+Rollershutter Kitchen_Blinds  "Kitchen blinds"                       <blinds>                   {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF204EB3C24B9E"}
+Number        Light_Scene     "Lighting scene"                       <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE403FB0C34B9E"}
+Number        Garden_Valve    "Garden watering section"              <garden>                   {channel="loxone:miniserver:504F2414780F:0FC5E0DF-0355-6AAD-FFFE403FB0C34B9E"}
+String        Alarm_State     "Alarm state [%s]"                     <alarm>                    {channel="loxone:miniserver:504F2414780F:0F2E2134-017D-3E82-FFFF433FB4A34B9E"}
+```
+
+### sitemaps/loxone.sitemap:
+
+```
+sitemap loxone label="Loxone Example Menu"
+{
+    Frame label="Demo Controls" {
+        Text      item=Miniserver_Temp
+        Text      item=Garage_Door
+        Switch    item=Kitchen_Lights
+        Switch    item=Reset_Lights
+        Switch    item=Kitchen_Blinds
+        Selection item=Light_Scene mappings=[0="All off", 1="My scene 1", 2="My scene 2", 9="All on"]
+        Setpoint  item=Garden_Valve minValue=0 maxValue=8 step=1
+        Text      item=Alarm_State
+    }
+}
+```
+
+### transform/garagedoor.map:
+
+```
+OFF=Closed
+ON=Open
+-=Unknown
+```
