@@ -47,6 +47,7 @@ import com.nwpi.synop.SynopShip;
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Mark Herwege - Correction for timezone treatment
  */
 public class SynopAnalyzerHandler extends BaseThingHandler {
 
@@ -61,6 +62,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     public SynopAnalyzerHandler(Thing thing) {
         super(thing);
+        SYNOP_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -83,7 +85,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         String message = "";
 
         for (int backInTime = 0; backInTime < 24 && !message.startsWith(configuration.stationId); backInTime++) {
-            observationTime.roll(Calendar.HOUR, false);
+            observationTime.add(Calendar.HOUR, -1);
 
             String url = forgeURL(observationTime);
 
