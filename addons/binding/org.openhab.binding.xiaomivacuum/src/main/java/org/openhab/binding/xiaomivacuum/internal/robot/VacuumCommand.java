@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.xiaomivacuum.internal;
+package org.openhab.binding.xiaomivacuum.internal.robot;
 
 /**
  * The {@link VacuumCommand} contains all known commands for the Xiaomi vacuum

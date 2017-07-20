@@ -11,10 +11,6 @@ package org.openhab.binding.xiaomivacuum.handler;
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,14 +28,15 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
-import org.openhab.binding.xiaomivacuum.internal.ConsumablesType;
 import org.openhab.binding.xiaomivacuum.internal.Message;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
 import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
-import org.openhab.binding.xiaomivacuum.internal.StatusType;
 import org.openhab.binding.xiaomivacuum.internal.Utils;
-import org.openhab.binding.xiaomivacuum.internal.VacuumCommand;
-import org.openhab.binding.xiaomivacuum.internal.VacuumErrorType;
+import org.openhab.binding.xiaomivacuum.internal.robot.ConsumablesType;
+import org.openhab.binding.xiaomivacuum.internal.robot.FanModeType;
+import org.openhab.binding.xiaomivacuum.internal.robot.StatusType;
+import org.openhab.binding.xiaomivacuum.internal.robot.VacuumCommand;
+import org.openhab.binding.xiaomivacuum.internal.robot.VacuumErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,18 +85,31 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             return;
         }
         if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            if (command.equals("vacuum")) {
+            if (command.toString().equals("vacuum")) {
                 sendCommand(VacuumCommand.START_VACUUM);
-            } else if (command.equals("spot")) {
+            } else if (command.toString().equals("spot")) {
                 sendCommand(VacuumCommand.START_SPOT);
-            } else if (command.equals("pause")) {
+            } else if (command.toString().equals("pause")) {
                 sendCommand(VacuumCommand.PAUSE);
-            } else if (command.equals("dock")) {
+            } else if (command.toString().equals("dock")) {
                 sendCommand(VacuumCommand.STOP_VACUUM);
                 sendCommand(VacuumCommand.CHARGE);
             } else {
                 logger.info("Command {} not recognised", command.toString());
             }
+            updateVacuumStatus();
+            return;
+        }
+        if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
+            sendCommand(VacuumCommand.SET_MODE, command.toString());
+            updateVacuumStatus();
+            return;
+        }
+        if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
+            if (Integer.valueOf(command.toString()) > 0) {
+                sendCommand(VacuumCommand.SET_MODE, command.toString());
+            }
+            updateVacuumStatus();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
@@ -152,8 +162,12 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     String sendCommand(VacuumCommand command) {
+        return sendCommand(command, "");
+    }
+
+    String sendCommand(VacuumCommand command, String params) {
         try {
-            return roboCom.sendCommand(command);
+            return roboCom.sendCommand(command, params);
         } catch (RoboCryptoException | IOException e) {
             disconnected(e.getMessage());
         }
@@ -193,12 +207,15 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
         updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
         updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
-        updateState(CHANNEL_CLEAN_TIME, new DecimalType(
-                statusData.get("clean_time").getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        updateState(CHANNEL_CLEAN_TIME,
+                new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
         updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
         updateState(CHANNEL_ERROR_CODE,
                 new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
-        updateState(CHANNEL_FAN_POWER, new DecimalType(statusData.get("fan_power").getAsBigDecimal()));
+        int fanLevel = statusData.get("fan_power").getAsInt();
+        FanModeType fanpower = FanModeType.getType(fanLevel);
+        updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
+        updateState(CHANNEL_FAN_CONTROL, new DecimalType(fanpower.getId()));
         updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
@@ -299,7 +316,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
         logger.trace("Cleaning history data: {},{}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
-                new StringType(LocalTime.MIN.plus(Duration.ofMinutes(historyData.get(1).getAsLong())).toString()));
+                new DecimalType(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong())));
         updateState(CHANNEL_HISTORY_TOTALAREA, new DecimalType(historyData.get(1).getAsDouble() / 1000000D));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
         return true;

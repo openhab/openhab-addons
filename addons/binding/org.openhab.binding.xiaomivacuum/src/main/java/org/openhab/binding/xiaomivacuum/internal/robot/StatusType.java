@@ -6,25 +6,37 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.xiaomivacuum.internal;
+package org.openhab.binding.xiaomivacuum.internal.robot;
 
 /**
  * List of Errors
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public enum FanModeType {
+public enum StatusType {
 
-    SILENT(38, "Silent"),
-    STANDARD(60, "Standard"),
-    POWER(77, "Power"),
-    FULL(90, "Full"),
-    UNKNOWN(-1, "Unknown");
+    UNKNOWN(0, "Unknown"),
+    INITIATING(1, "Initiating"),
+    SLEEPING(2, "Sleeping"),
+    IDLE(3, "Idle"),
+    UNKNOWN4(4, "Unknown Status 4"),
+    CLEANING(5, "Cleaning"),
+    RETURNING(6, "Returning Dock"),
+    UNKNOWN7(7, "Unknown Status 7"),
+    CHARGING(8, "Charging"),
+    CHARGING_ERROR(9, "Charging Error"),
+    PAUSED(10, "Paused"),
+    SPOTCLEAN(11, "Spot cleaning"),
+    ERROR(12, "In Error"),
+    SHUTTING_DOWN(13, "Shutting Down"),
+    UPDATING(14, "Updating"),
+    DOCKING(15, "Docking"),
+    FULL(100, "Full");
 
     private final int id;
     private final String description;
 
-    FanModeType(int id, String description) {
+    StatusType(int id, String description) {
         this.id = id;
         this.description = description;
     }
@@ -33,8 +45,8 @@ public enum FanModeType {
         return id;
     }
 
-    public static FanModeType getType(int value) {
-        for (FanModeType st : FanModeType.values()) {
+    public static StatusType getType(int value) {
+        for (StatusType st : StatusType.values()) {
             if (st.getId() == value) {
                 return st;
             }

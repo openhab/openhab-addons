@@ -41,6 +41,7 @@ public final class XiaomiVacuumBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_FAN_CONTROL = "actions#fan";
 
     public static final String CHANNEL_CONSUMABLE_MAIN_PERC = "consumables#main_brush_percent";
     public static final String CHANNEL_CONSUMABLE_SIDE_PERC = "consumables#side_brush_percent";

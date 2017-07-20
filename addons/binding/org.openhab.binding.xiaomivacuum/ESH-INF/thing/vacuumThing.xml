@@ -47,6 +47,7 @@
 		<channels>
 			<channel id="control" typeId="control" />
 			<channel id="commands" typeId="commands" />
+			<channel id="fan" typeId="fan" />
 		</channels>
 	</channel-group-type>
 
@@ -117,7 +118,7 @@
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
-		<state pattern="%.0f %%" readOnly="true" />
+		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false" />
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
 		<item-type>Number</item-type>
@@ -200,6 +201,19 @@
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 	</channel-type>
+	<channel-type id="fan">
+		<item-type>Number</item-type>
+		<label>Control Fan Level</label>
+		<state min="-1" max="99" step="1" readOnly="false">
+			<options>
+				<option value="38">Silent</option>
+				<option value="60">Standard</option>
+				<option value="77">Power</option>
+				<option value="90">Full</option>
+				<option value="-1">Custom</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<!-- DND Setting -->
 	<channel-type id="dnd_function">
@@ -217,9 +231,10 @@
 
 	<!-- Clean History -->
 	<channel-type id="total_clean_time">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Total Cleaning Time</label>
-		<state pattern="%s" readOnly="true" />
+		<description>Total Cleaning Time in minutes</description>
+		<state pattern="%.0f'" readOnly="true" />
 	</channel-type>
 	<channel-type id="total_clean_area">
 		<item-type>Number</item-type>

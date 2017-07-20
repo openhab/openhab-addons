@@ -18,6 +18,7 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
+import org.openhab.binding.xiaomivacuum.internal.robot.VacuumCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
