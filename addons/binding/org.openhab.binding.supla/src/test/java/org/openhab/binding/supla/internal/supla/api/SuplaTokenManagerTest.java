@@ -39,6 +39,8 @@ public class SuplaTokenManagerTest extends SuplaTest {
 
         // then
         verify(httpExecutor).post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body);
+
+        throw new RuntimeException("Just checking if test is run. This should always fail and stop maven from building artifact");
     }
 
     private JsonBody createJsonBody() {
