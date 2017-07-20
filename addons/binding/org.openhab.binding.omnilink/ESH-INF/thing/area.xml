@@ -184,10 +184,10 @@
         </state>
     </channel-type>
     <channel-type id="area_command">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Security Command</label>
-        <description>Sends a user code and command to the area.</description>
-        <category>Alarm</category>
+        <description>Sends a 4 digit user code to activate the area command</description>
+        <category>Alarm</category>      
     </channel-type>
     <channel-type id="omni_activate_keypad_emergency">
         <item-type>Number</item-type>
