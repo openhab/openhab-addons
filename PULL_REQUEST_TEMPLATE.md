@@ -2,7 +2,7 @@
 Thanks for contributing to the openHAB project!
 Please describe the goal and effect of your PR here.
 Pay attention to the below notes and to *the guidelines* for this repository.
-Feel free to delete any comment lines in the template (starting with "<!--").
+Feel free to delete any comment sections in the template (starting with "<!--").
 -->
 
 <!-- TITLE -->
