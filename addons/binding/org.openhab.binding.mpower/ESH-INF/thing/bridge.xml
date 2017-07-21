@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mpower" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="mpower">
+		<label>Ubiquiti mPower</label>
+		<description>This bridge represents a mPower device.</description>
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username (default set to "ubnt")</description>
+				<required>true</required>
+				<default>ubnt</default>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password (default set to "ubnt")</description>
+				<required>true</required>
+				<default>ubnt</default>
+			</parameter>
+			<parameter name="host" type="text">
+				<label>Hostname/IP</label>
+				<description>The hostname or IP</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10000">
+				<label>Refresh intervall</label>
+				<description>Refresh intervall in ms (defaults to 20.000ms). Minimum is 10.000ms</description>
+				<required>false</required>
+				<default>20000</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
