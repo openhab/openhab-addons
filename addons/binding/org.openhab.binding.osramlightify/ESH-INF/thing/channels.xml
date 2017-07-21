@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="osramlightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Controls the color and brightness of the light. Can also be used to switch the light on and off.</description>
+		<category>Color</category>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Controls the brightness of the light. Can also be used to switch the light on and off.</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<!-- Everyone uses dimmers for white temperature so we have to have one too -->
+	<channel-type id="temperature">
+		<item-type>Dimmer</item-type>
+		<label>White Temperature (%)</label>
+		<description>White temperature from 0% (most yellow - lowest Kelvin) to 100% (most blue - highest Kelvin). The minimum and maximum Kelvin supported by this particular light can be configured in the thing's parameters. Commands on this channel auo-generate matching commands on the K temperature channel and vice-versa.</description>
+		<category>Temperature</category>
+	</channel-type>
+
+
+	<!-- But that does not mean we can only do that. The handler integrates the two channels. -->
+	<channel-type id="absTemperature">
+		<item-type>Number</item-type>
+		<label>White Temperature (K)</label>
+		<description>White temperature in Kelvin. The minimum and maximum Kelvin supported by this particular light can be configured in the thing's parameters. Commands on this channel auo-generate matching commands on the % temperature channel and vice-versa.</description>
+		<category>Temperature</category>
+		<!-- The range is just the maximum the protocol could support. The maximum here
+		     is particularly silly. The real range is defined by the thing's parameters.
+		-->
+		<state min="1000" max="10000" pattern="%d K"/>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the device on and off.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

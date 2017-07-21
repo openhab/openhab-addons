@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="osramlightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>OSRAM/Sylvania Lightify Gateway</label>
+		<description>An OSRAM/Sylvania Lightify gateway</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Hostname / Network Address</label>
+				<description>Optional hostname or network address of the gateway device. The binding will ALWAYS attempt to use any address discovered via mDNS first but if mDNS does not work in your environment you may configure a static address here as a fallback.</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<default>0.3</default>
+				<label>Transition Time</label>
+				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="transitionToOffTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<default>0.3</default>
+				<label>Transition To Off Time</label>
+				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="whiteTemperatureMin" type="integer" min="1000" max="10000">
+				<default>1900</default>
+				<label>Minimum white temperature</label>
+				<description>Default minimum white temperature in Kelvin for devices unless otherwise specified.</description>
+			</parameter>
+
+			<parameter name="whiteTemperatureMax" type="integer" min="1000" max="10000">
+				<default>6500</default>
+				<label>Maximum white temperature</label>
+				<description>Default maximum white temperature in Kelvin for devices unless otherwise specified.</description>
+			</parameter>
+
+			<parameter name="minPollInterval" type="decimal" min="0.05" required="true">
+				<label>Minimum polling interval (seconds to 3 d.p. minimum is 0.01s or 10ms)</label>
+				<description>The minimum interval between polls of the gateway for changes to device states or pairings. If changes are seen that have not been initiate by openHAB the polling interval is set to this value. Each poll that does not find changes doubles the polling interval until it reaches the maximum polling interval.</description>
+				<default>0.1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="maxPollInterval" type="decimal" min="0.0" required="true">
+				<label>Maximum polling interval (seconds to 3 d.p.)</label>
+				<description>The maximum interval between polls of the gateway for changes to device states or pairings. Setting this too low effectively means "as fast as possible" and will keep your cpu busy. It is recommended not to go below 0.5s unless you really need to track changes being made externally at high speed.</description>
+				<default>5.0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

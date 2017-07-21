@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="osramlightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rgbw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>RGBW Light</label>
+		<description>A light that can change color, white temperature and brightness. Brightness may be changed even in white mode via a dimmer item on the color channel.</description>
+
+		<channels>
+			<channel id="color" typeId="color" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="absTemperature" typeId="absTemperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<label>Transition Time</label>
+				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="transitionToOffTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<label>Transition To Off Time</label>
+				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="whiteTemperatureMin" type="integer" min="1000" max="10000">
+				<default>1900</default>
+				<label>Minimum white temperature</label>
+				<description>Minimum white temperature in Kelvin supported by this device.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="whiteTemperatureMax" type="integer" min="1000" max="10000">
+				<default>6500</default>
+				<label>Maximum white temperature</label>
+				<description>Maximum white temperature in Kelvin supported by this device.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
