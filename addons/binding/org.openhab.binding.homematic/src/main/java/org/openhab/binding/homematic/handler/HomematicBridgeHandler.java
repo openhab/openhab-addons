@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.discovery.HomematicDeviceDiscoveryService;
@@ -228,10 +227,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private void updateThing(HmDevice device) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
         if (hmThing != null && hmThing.getHandler() != null) {
-            ThingHandler thingHandler = hmThing.getHandler();
+            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             thingHandler.thingUpdated(hmThing);
             for (Channel channel : hmThing.getChannels()) {
-                thingHandler.channelLinked(channel.getUID());
+                thingHandler.handleRefresh(channel.getUID());
             }
         }
     }
