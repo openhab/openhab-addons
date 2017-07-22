@@ -27,6 +27,7 @@ import static org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver.bytesToHe
  *
  * @author Osman Basha - Initial contribution
  * @author Stefan Endrullis
+ * @author Ries van Twisk
  */
 public abstract class AbstractWiFiLEDDriver {
 
@@ -55,6 +56,11 @@ public abstract class AbstractWiFiLEDDriver {
         this.port = port;
         this.protocol = protocol;
     }
+
+    /**
+     * Allow to cleanup the driver
+     */
+    public abstract void shutdown();
 
     public abstract void setColor(HSBType color) throws IOException;
 
