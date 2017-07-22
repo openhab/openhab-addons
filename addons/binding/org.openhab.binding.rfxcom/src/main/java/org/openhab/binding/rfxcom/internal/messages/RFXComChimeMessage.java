@@ -8,19 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -28,7 +23,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis
  */
-public class RFXComChimeMessage extends RFXComBaseMessage {
+public class RFXComChimeMessage extends RFXComDeviceMessageImpl {
 
     public enum SubType {
         BYRONSX(0),
@@ -61,10 +56,9 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     public SubType subType;
     public int sensorId;
     public int chimeSound;
-    public byte signalLevel;
 
     public RFXComChimeMessage() {
-        packetType = PacketType.CHIME;
+        super(PacketType.CHIME);
     }
 
     public RFXComChimeMessage(byte[] data) throws RFXComException {
@@ -113,7 +107,7 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
         byte[] data = new byte[8];
 
         data[0] = 0x07;
-        data[1] = packetType.toByte();
+        data[1] = getPacketType().toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
 
@@ -144,22 +138,16 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-
-        switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_CHIME_SOUND:
-                return new DecimalType(chimeSound);
-
-            default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_CHIME_SOUND.equals(channelId)) {
+            return new DecimalType(chimeSound);
+        } else {
+            return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -169,24 +157,20 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-
-        switch (channelId) {
-            case CHANNEL_CHIME_SOUND:
-                if (type instanceof DecimalType) {
-                    chimeSound = ((DecimalType) type).intValue();
-                } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
-                }
-                break;
-
-            default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_CHIME_SOUND.equals(channelId)) {
+            if (type instanceof DecimalType) {
+                chimeSound = ((DecimalType) type).intValue();
+            } else {
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+            }
+        } else {
+            throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

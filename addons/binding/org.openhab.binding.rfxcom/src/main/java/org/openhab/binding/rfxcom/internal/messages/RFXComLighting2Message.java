@@ -12,14 +12,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,11 +20,11 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -39,7 +32,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComLighting2Message extends RFXComBaseMessage {
+public class RFXComLighting2Message extends RFXComDeviceMessageImpl {
 
     public enum SubType {
         AC(0),
@@ -102,11 +95,10 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     public byte unitCode;
     public Commands command;
     public byte dimmingLevel;
-    public byte signalLevel;
     public boolean group;
 
     public RFXComLighting2Message() {
-        packetType = PacketType.LIGHTING2;
+        super(PacketType.LIGHTING2);
     }
 
     public RFXComLighting2Message(byte[] data) throws RFXComException {
@@ -199,12 +191,9 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
             case CHANNEL_DIMMING_LEVEL:
                 return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
 
@@ -221,7 +210,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
                     case SET_GROUP_LEVEL:
                     case SET_LEVEL:
                     default:
-                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
             case CHANNEL_CONTACT:
@@ -237,16 +226,16 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
                     case SET_GROUP_LEVEL:
                     case SET_LEVEL:
                     default:
-                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -269,7 +258,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_COMMAND:
@@ -283,7 +272,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
 
                     dimmingLevel = 0;
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -305,17 +294,17 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
                     dimmingLevel = 5;
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

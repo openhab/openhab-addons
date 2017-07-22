@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.List;
-
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
@@ -22,7 +20,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
-
     private byte[] data = new byte[14];
 
     public RFXComInterfaceControlMessage(RFXComInterfaceMessage.TransceiverType transceiverType,
@@ -79,7 +76,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     public RFXComInterfaceControlMessage(byte[] data) throws RFXComException {
         // We should never receive control messages
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -89,31 +86,11 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 }

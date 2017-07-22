@@ -33,7 +33,7 @@ public class RFXComTestHelper {
         assertEquals("Wrong packet type", packetType.toByte(), binaryMessage[1]);
     }
 
-    static void checkDiscoveryResult(RFXComLighting4Message msg, String deviceId, Integer pulse, String subType,
+    static void checkDiscoveryResult(RFXComDeviceMessage msg, String deviceId, Integer pulse, String subType,
             int offCommand, int onCommand) throws RFXComException {
         String thingUID = "homeduino:rfxcom:fssfsd:thing";
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(new ThingUID(thingUID));
@@ -51,7 +51,7 @@ public class RFXComTestHelper {
         assertEquals("Off command", offCommand, properties.get("offCommandId"));
     }
 
-    static int getActualIntValue(RFXComLighting4Message msg, String channelId) throws RFXComException {
+    static int getActualIntValue(RFXComDeviceMessage msg, String channelId) throws RFXComException {
         return ((DecimalType) msg.convertToState(channelId)).intValue();
     }
 }

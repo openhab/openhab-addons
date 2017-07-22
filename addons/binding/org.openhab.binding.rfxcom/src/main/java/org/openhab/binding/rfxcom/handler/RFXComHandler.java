@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.handler;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
-import java.util.List;
-
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -30,8 +29,8 @@ import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
 import org.slf4j.Logger;
@@ -51,7 +50,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     private RFXComBridgeHandler bridgeHandler;
     private RFXComDeviceConfiguration config;
 
-    public RFXComHandler(Thing thing) {
+    public RFXComHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -132,12 +131,11 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     }
 
     @Override
-    public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message) {
+    public void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) {
         try {
             String id = message.getDeviceId();
             if (config.deviceId.equals(id)) {
-                RFXComBaseMessage msg = (RFXComBaseMessage) message;
-                String receivedId = PACKET_TYPE_THING_TYPE_UID_MAP.get(msg.packetType).getId();
+                String receivedId = PACKET_TYPE_THING_TYPE_UID_MAP.get(message.getPacketType()).getId();
                 logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
                 if (receivedId.equals(getThing().getThingTypeUID().getId())) {
@@ -147,29 +145,15 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         String channelId = channel.getUID().getId();
 
                         try {
-                            switch (channelId) {
-                                case CHANNEL_BATTERY_LEVEL:
-                                    updateState(channelId, convertBatteryLevelToSystemWideLevel(
-                                            message.convertToState(channelId)));
-                                    break;
-
-                                case CHANNEL_LOW_BATTERY:
+                            if (channelId.equals( CHANNEL_LOW_BATTERY)) {
                                     updateState(channelId,
-                                            isLowBattery(message.convertToState(channelId)));
-                                    break;
-
-                                case CHANNEL_SIGNAL_LEVEL:
+                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                    } else {
                                     updateState(channelId,
-                                            convertSignalLevelToSystemWideLevel(message.convertToState(channelId)));
-                                    break;
-
-                                    default:
-                                        updateState(channelId, message.convertToState(channelId));
-                                        break;
-                                }
-                            } catch (RFXComException e) {
-                                logger.trace("{} does not handle {}", channelId, message);
-
+                                            message.convertToState(channelId));
+                            }
+                        } catch (RFXComException e) {
+                            logger.trace("{} does not handle {}", channelId, message);
                         }
                     }
                 }
@@ -177,75 +161,6 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         } catch (Exception e) {
             logger.error("Error occurred during message receiving", e);
         }
-    }
-
-    /**
-     * Convert internal signal level (0-15) to system wide signal level (0-4).
-     *
-     * @param signalLevel Internal signal level
-     * @return Signal level in system wide level
-     */
-    private State convertSignalLevelToSystemWideLevel(State signalLevel) {
-
-        int level = ((DecimalType) signalLevel).intValue();
-        int newLevel;
-
-        /*
-         * RFXCOM signal levels are always between 0-15.
-         *
-         * Use switch case to make level adaption easier in future if needed.
-         *
-         * BigDecimal level =
-         * ((DecimalType)signalLevel).toBigDecimal().divide(new BigDecimal(4));
-         * return new DecimalType(level.setScale(0, RoundingMode.HALF_UP));
-         */
-
-        switch (level) {
-            case 0:
-            case 1:
-                newLevel = 0;
-                break;
-
-            case 2:
-            case 3:
-            case 4:
-                newLevel = 1;
-                break;
-
-            case 5:
-            case 6:
-            case 7:
-                newLevel = 2;
-                break;
-
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                newLevel = 3;
-                break;
-
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            default:
-                newLevel = 4;
-        }
-
-        return new DecimalType(newLevel);
-    }
-
-    /**
-     * Convert internal battery level (0-9) to system wide battery level (0-100%).
-     *
-     * @param batteryLevel Internal battery level
-     * @return Battery level in system wide level
-     */
-    private State convertBatteryLevelToSystemWideLevel(State batteryLevel) {
-        int level = ((DecimalType) batteryLevel).intValue();
-        level = (level + 1) * 10;
-        return new DecimalType(level);
     }
 
     /**

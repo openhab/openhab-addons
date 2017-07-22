@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -21,11 +16,11 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -35,7 +30,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Pauli Anttila - Ported from OpenHAB1
  * @author Mike Jagdis - Added venetian support and sun+wind detector
  */
-public class RFXComRfyMessage extends RFXComBaseMessage {
+public class RFXComRfyMessage extends RFXComDeviceMessageImpl {
 
     public enum Commands {
         STOP(0x00),
@@ -103,15 +98,12 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     public int unitId;
     public byte unitCode;
     public Commands command;
-    public byte signalLevel; // maximum 0xF
 
     public RFXComRfyMessage() {
-        packetType = PacketType.RFY;
-
+        super(PacketType.RFY);
     }
 
     public RFXComRfyMessage(byte[] data) throws RFXComException {
-
         encodeMessage(data);
     }
 
@@ -162,22 +154,19 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
             case CHANNEL_COMMAND:
                 return (command == Commands.DOWN ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -193,7 +182,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_SHUTTER:
@@ -207,7 +196,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                     this.command = RFXComRfyMessage.Commands.STOP;
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -216,7 +205,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                     this.command = Commands.PROGRAM;
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Can't convert " + type + " to Command");
                 }
                 break;
 
@@ -226,7 +215,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                             : Commands.DISABLE_SUN_DETECTOR);
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Can't convert " + type + " to Command");
                 }
                 break;
 
@@ -241,17 +230,17 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                     this.command = (type == IncreaseDecreaseType.INCREASE ? Commands.DOWN_LONG : Commands.UP_LONG);
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Can't convert " + type + " to Command");
                 }
                 break;
 
             default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

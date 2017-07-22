@@ -9,19 +9,15 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
-import java.util.List;
 
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -30,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComSecurity2Message extends RFXComBaseMessage {
+public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
 
     public enum SubType {
         RAW_CLASSIC_KEELOQ(0),
@@ -62,8 +58,6 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     public SubType subType;
     public int sensorId;
     public int buttonStatus;
-    public byte batteryLevel;
-    public byte signalLevel;
 
     private final int BUTTON_0_BIT = 0x02;
     private final int BUTTON_1_BIT = 0x04;
@@ -71,7 +65,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     private final int BUTTON_3_BIT = 0x01;
 
     public RFXComSecurity2Message() {
-        packetType = PacketType.SECURITY2;
+        super(PacketType.SECURITY2);
     }
 
     public RFXComSecurity2Message(byte[] data) throws RFXComException {
@@ -127,7 +121,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_CONTACT:
@@ -142,19 +136,13 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
             case CHANNEL_CONTACT_3:
                 return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_BATTERY_LEVEL:
-                return new DecimalType(batteryLevel);
-
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -164,7 +152,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_CONTACT:
@@ -176,7 +164,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
                     }
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -189,7 +177,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
                     }
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -202,7 +190,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
                     }
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -215,17 +203,17 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
                     }
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

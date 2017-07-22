@@ -8,24 +8,22 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_BBQ_TEMPERATURE;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_FOOD_TEMPERATURE;
 
 /**
  * RFXCOM data class for BBQ temperature message.
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
+public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage {
 
     public enum SubType {
         BBQ1(1); // Maverick ET-732
@@ -51,12 +49,6 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.FOOD_TEMPERATURE, RFXComValueSelector.BBQ_TEMPERATURE,
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public double foodTemperature;
@@ -65,7 +57,7 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
     public byte batteryLevel;
 
     public RFXComBBQTemperatureMessage() {
-        packetType = PacketType.BBQ;
+        super(PacketType.BBQ);
     }
 
     public RFXComBBQTemperatureMessage(byte[] data) throws RFXComException {
@@ -141,59 +133,33 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
-        State state;
-
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else if (valueSelector == RFXComValueSelector.FOOD_TEMPERATURE) {
-
-                state = new DecimalType(foodTemperature);
-
-            } else if (valueSelector == RFXComValueSelector.BBQ_TEMPERATURE) {
-
-                state = new DecimalType(bbqTemperature);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_FOOD_TEMPERATURE.equals(channelId)) {
+            return new DecimalType(foodTemperature);
+        } else if (CHANNEL_BBQ_TEMPERATURE.equals(channelId)) {
+            return new DecimalType(bbqTemperature);
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            return super.convertToState(channelId);
         }
-
-        return state;
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setSubType(Object subType)  {
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setDeviceId(String deviceId) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
@@ -206,15 +172,5 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }

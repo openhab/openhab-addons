@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -20,6 +15,7 @@ import org.eclipse.smarthome.core.types.Type;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -28,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant
  * @since 1.9.0
  */
-public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
+public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage {
     private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
 
     public enum SubType {
@@ -62,11 +58,9 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     public double channel2Amps;
     public double channel3Amps;
     public double totalUsage;
-    public byte signalLevel;
-    public byte batteryLevel;
 
     public RFXComCurrentEnergyMessage() {
-        packetType = PacketType.CURRENT_ENERGY;
+        super(PacketType.CURRENT_ENERGY);
     }
 
     public RFXComCurrentEnergyMessage(byte[] data) throws RFXComException {
@@ -148,15 +142,9 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_BATTERY_LEVEL:
-                return new DecimalType(batteryLevel);
-
             case CHANNEL_CHANNEL1_AMPS:
                 return new DecimalType(channel1Amps);
 
@@ -170,7 +158,7 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
                 return new DecimalType(totalUsage);
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
@@ -180,17 +168,17 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setDeviceId(String deviceId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;
@@ -206,7 +194,7 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = (SubType) subType;
     }
 }

@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -21,6 +16,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -29,7 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant - OpenHAB1 version
  * @author Mike Jagdis - Initial contribution, OpenHAB2 version
  */
-public class RFXComUVMessage extends RFXComBaseMessage {
+public class RFXComUVMessage extends RFXComBatteryDeviceMessage {
 
     public enum SubType {
         UV1(1), // UVN128, UV138
@@ -61,11 +57,9 @@ public class RFXComUVMessage extends RFXComBaseMessage {
     public int sensorId;
     public double uv;
     public double temperature;
-    public byte signalLevel;
-    public byte batteryLevel;
 
     public RFXComUVMessage() {
-        packetType = PacketType.UV;
+        super(PacketType.UV);
     }
 
     public RFXComUVMessage(byte[] data) throws RFXComException {
@@ -85,7 +79,6 @@ public class RFXComUVMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -134,15 +127,8 @@ public class RFXComUVMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_BATTERY_LEVEL:
-                return new DecimalType(batteryLevel);
-
             case CHANNEL_UV:
                 return new DecimalType(uv);
 
@@ -150,28 +136,27 @@ public class RFXComUVMessage extends RFXComBaseMessage {
                 return (subType == SubType.UV3 ? new DecimalType(temperature) : UnDefType.UNDEF);
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setSubType(Object subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

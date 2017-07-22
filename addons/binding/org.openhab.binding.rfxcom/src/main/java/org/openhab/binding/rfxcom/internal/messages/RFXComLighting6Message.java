@@ -8,12 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -23,6 +17,7 @@ import org.eclipse.smarthome.core.types.Type;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -31,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComLighting6Message extends RFXComBaseMessage {
+public class RFXComLighting6Message extends RFXComDeviceMessageImpl {
 
     public enum SubType {
         BLYSS(0);
@@ -89,14 +84,12 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     public char groupCode;
     public byte unitCode;
     public Commands command;
-    public byte signalLevel;
 
     public RFXComLighting6Message() {
-        packetType = PacketType.LIGHTING6;
+        super(PacketType.LIGHTING6);
     }
 
     public RFXComLighting6Message(byte[] data) throws RFXComException {
-
         encodeMessage(data);
     }
 
@@ -155,12 +148,9 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
             case CHANNEL_COMMAND:
                 switch (command) {
                     case OFF:
@@ -172,7 +162,7 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
                         return OnOffType.ON;
 
                     default:
-                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
             case CHANNEL_CONTACT:
@@ -186,16 +176,16 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
                         return OpenClosedType.OPEN;
 
                     default:
-                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -212,7 +202,7 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_COMMAND:
@@ -220,18 +210,18 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
 
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

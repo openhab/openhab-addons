@@ -8,20 +8,15 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -29,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComHomeConfortMessage extends RFXComBaseMessage {
+public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
 
     public enum SubType {
         TEL_010(0);
@@ -87,10 +82,9 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
     public char houseCode;
     public byte unitCode;
     public Commands command;
-    public byte signalLevel;
 
     public RFXComHomeConfortMessage() {
-        packetType = PacketType.HOME_CONFORT;
+        super(PacketType.HOME_CONFORT);
     }
 
     public RFXComHomeConfortMessage(byte[] data) throws RFXComException {
@@ -108,7 +102,6 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -150,22 +143,16 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-
-        switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_COMMAND:
-                return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
-
-            default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        if (channelId.equals(CHANNEL_COMMAND)) {
+            return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
+        } else {
+            return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -183,30 +170,27 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_COMMAND.equals(channelId)) {
+            if (type instanceof OnOffType) {
+                if (unitCode == 0) {
+                    command = (type == OnOffType.ON ? Commands.GROUP_ON : Commands.GROUP_OFF);
 
-        switch (channelId) {
-            case CHANNEL_COMMAND:
-                if (type instanceof OnOffType) {
-                    if (unitCode == 0) {
-                        command = (type == OnOffType.ON ? Commands.GROUP_ON : Commands.GROUP_OFF);
-
-                    } else {
-                        command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
-                    }
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                 }
-                break;
+            } else {
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+            }
 
-            default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+        } else {
+            throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
 
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

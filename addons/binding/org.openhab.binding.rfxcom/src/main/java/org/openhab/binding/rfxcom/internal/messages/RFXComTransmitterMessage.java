@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.List;
-
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -81,7 +79,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     public Response response;
 
     public RFXComTransmitterMessage() {
-        packetType = PacketType.TRANSMITTER_MESSAGE;
+        super(PacketType.TRANSMITTER_MESSAGE);
     }
 
     public RFXComTransmitterMessage(byte[] data) throws RFXComException {
@@ -107,7 +105,6 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -116,7 +113,6 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[5];
 
         data[0] = 0x04;
@@ -129,38 +125,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 }

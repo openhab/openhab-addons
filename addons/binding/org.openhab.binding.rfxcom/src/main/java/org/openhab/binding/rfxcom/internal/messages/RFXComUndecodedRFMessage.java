@@ -11,12 +11,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.UNDECODED_RF_MESSAGE;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -25,6 +22,7 @@ import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -34,7 +32,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author James Hewitt-Thomas
  * @since 1.9.0
  */
-public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
+public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
 
     public enum SubType {
         AC(0x00),
@@ -84,11 +82,11 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         }
     }
 
-    public SubType subType = SubType.UNKNOWN;
+    public SubType subType;
     public byte[] rawPayload = new byte[0];
 
     public RFXComUndecodedRFMessage() {
-        packetType = UNDECODED_RF_MESSAGE;
+        super(UNDECODED_RF_MESSAGE);
     }
 
     public RFXComUndecodedRFMessage(byte[] message) throws RFXComException {
@@ -137,7 +135,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_RAW_MESSAGE:
@@ -147,27 +145,27 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
                 return new StringType(DatatypeConverter.printHexBinary(rawPayload));
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                throw new RFXComUnsupportedChannelException("Nothing relevant for " + channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setSubType(Object subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

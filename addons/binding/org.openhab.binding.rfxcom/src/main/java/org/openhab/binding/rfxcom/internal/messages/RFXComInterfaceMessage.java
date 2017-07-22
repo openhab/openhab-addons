@@ -9,7 +9,6 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -36,10 +35,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         private final int subType;
 
         SubType(int subType) {
-            this.subType = subType;
-        }
-
-        SubType(byte subType) {
             this.subType = subType;
         }
 
@@ -111,10 +106,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.type = type;
         }
 
-        TransceiverType(byte type) {
-            this.type = type;
-        }
-
         public byte toByte() {
             return (byte) type;
         }
@@ -140,10 +131,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         private final int type;
 
         FirmwareType(int type) {
-            this.type = type;
-        }
-
-        FirmwareType(byte type) {
             this.type = type;
         }
 
@@ -301,7 +288,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             enableARCPackets = (data[9] & 0x02) != 0;
             enableX10Packets = (data[9] & 0x01) != 0;
 
-            /**
+            /*
              * Different firmware versions have slightly different message formats.
              * The firmware version numbering is unique to each hardware version
              * but the location of the hardware version in the message is one of
@@ -353,42 +340,11 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 }

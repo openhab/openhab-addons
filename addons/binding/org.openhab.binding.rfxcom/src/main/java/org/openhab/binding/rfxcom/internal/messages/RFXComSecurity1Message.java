@@ -8,26 +8,16 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.DateTimeItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.StringItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -37,7 +27,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author David Kalff - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComSecurity1Message extends RFXComBaseMessage {
+public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage {
 
     public enum SubType {
         X10_SECURITY(0),
@@ -191,13 +181,11 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     public SubType subType;
     public int sensorId;
     public Status status;
-    public byte batteryLevel;
-    public byte signalLevel;
     public Contact contact;
     public Motion motion;
 
     public RFXComSecurity1Message() {
-        packetType = PacketType.SECURITY1;
+        super(PacketType.SECURITY1);
     }
 
     public RFXComSecurity1Message(byte[] data) throws RFXComException {
@@ -258,7 +246,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_MOTION:
@@ -268,7 +256,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
                     case NO_MOTION:
                         return OnOffType.OFF;
                     default:
-                        throw new RFXComException("Can't convert " + status + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + status + " for " + channelId);
                 }
 
             case CHANNEL_CONTACT:
@@ -282,25 +270,19 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
                     case ALARM_DELAYED:
                         return OpenClosedType.OPEN;
                     default:
-                        throw new RFXComException("Can't convert " + status + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException("Can't convert " + status + " for " + channelId);
                 }
 
             case CHANNEL_STATUS:
                 return new StringType(status.toString());
 
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_BATTERY_LEVEL:
-                return new DecimalType(batteryLevel);
-
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
+    public void setSubType(Object subType) {
         this.subType = ((SubType) subType);
     }
 
@@ -310,7 +292,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_COMMAND:
@@ -318,7 +300,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
                     status = (type == OnOffType.ON ? Status.ARM_AWAY_DELAYED : Status.DISARM);
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
@@ -327,17 +309,17 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
                     status = Status.valueOf(type.toString());
 
                 } else {
-                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

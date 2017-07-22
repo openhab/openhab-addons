@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 
 /**
  * This interface defines interface which every message class should implement.
@@ -21,14 +22,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * @author Pauli Anttila - Initial contribution
  */
 public interface RFXComMessage {
-
-    /**
-     * Procedure for present class information in string format. Used for
-     * logging purposes.
-     *
-     */
-    @Override
-    String toString();
 
     /**
      * Procedure for encode raw data.
@@ -46,26 +39,10 @@ public interface RFXComMessage {
     byte[] decodeMessage() throws RFXComException;
 
     /**
-     * Procedure for converting RFXCOM value to openHAB state.
-     *
-     * @param valueSelector
-     *
-     * @return openHAB state.
-     */
-    State convertToState(String channelId) throws RFXComException;
-
-    /**
      * Procedure for converting openHAB state to RFXCOM object.
      *
      */
-    void convertFromState(String channelId, Type type) throws RFXComException;
-
-    /**
-     * Procedure to get device id.
-     *
-     * @return device Id.
-     */
-    String getDeviceId() throws RFXComException;
+    void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException;
 
     /**
      * Procedure to pass configuration to a message

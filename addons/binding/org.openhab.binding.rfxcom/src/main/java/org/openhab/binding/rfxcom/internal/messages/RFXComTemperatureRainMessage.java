@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -20,6 +15,7 @@ import org.eclipse.smarthome.core.types.Type;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -29,7 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Martin van Wingerden - ported to openHAB 2.0
  * @since 1.9.0
  */
-public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
+public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
 
     public enum SubType {
         WS1200(1);
@@ -59,11 +55,9 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     public int sensorId;
     public double temperature;
     public double rainTotal;
-    public byte signalLevel;
-    public byte batteryLevel;
 
     public RFXComTemperatureRainMessage() {
-        packetType = PacketType.TEMPERATURE_RAIN;
+        super(PacketType.TEMPERATURE_RAIN);
     }
 
     public RFXComTemperatureRainMessage(byte[] data) throws RFXComException {
@@ -132,15 +126,9 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
-            case CHANNEL_SIGNAL_LEVEL:
-                return new DecimalType(signalLevel);
-
-            case CHANNEL_BATTERY_LEVEL:
-                return new DecimalType(batteryLevel);
-
             case CHANNEL_TEMPERATURE:
                 return new DecimalType(temperature);
 
@@ -148,17 +136,17 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
                 return new DecimalType(rainTotal);
 
             default:
-                throw new RFXComException("Nothing relevant for " + channelId);
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
+    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;
@@ -174,12 +162,12 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setSubType(Object subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 }
