@@ -26,10 +26,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
+import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
-import org.openhab.binding.homematic.internal.communicator.HomematicGatewayListener;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.type.UidUtils;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayListener {
+public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayAdapter {
     private final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     private static SimplePortPool portPool = new SimplePortPool();
@@ -248,6 +249,19 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 thingHandler.updateDatapointState(dp);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+            return thingHandler.getChannelConfig(dp);
+        }
+        return new HmDatapointConfig();
     }
 
     /**

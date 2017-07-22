@@ -318,6 +318,15 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Returns the channel config for the given datapoint.
+     */
+    protected HmDatapointConfig getChannelConfig(HmDatapoint dp) {
+        ChannelUID channelUid = UidUtils.generateChannelUID(dp, getThing().getUID());
+        Channel channel = getThing().getChannel(channelUid.getId());
+        return channel != null ? getChannelConfig(channel, dp) : new HmDatapointConfig();
+    }
+
+    /**
      * Returns the config for a channel.
      */
     private HmDatapointConfig getChannelConfig(Channel channel, HmDatapoint dp) {
