@@ -55,7 +55,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
         public void run() {
             try {
                 Refresh();
-            } catch (Throwable t) {
+            } catch (RuntimeException t) {
                 logger.error("An unexpected error occurred: {}", t.getMessage(), t);
             }
         }
@@ -70,24 +70,24 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 synchronized (client) {
                     client.Connect();
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException ignore) {
                 return false;
             }
             return true;
         }
     };
 
-    private S7Client client = null;
-
-    public S7BridgeHandler(Bridge bridge) {
-        super(bridge);
-    }
-
+    private S7Client client;
     private long maxRefreshDuration = 0;
     private long totalRefreshDuration = 0;
     private int refreshDurationCount = 0;
     private long nextStateUpdate = System.currentTimeMillis();
-    private long startupInhibit;
+
+    private int nReadError = 0;
+
+    public S7BridgeHandler(Bridge bridge) {
+        super(bridge);
+    }
 
     protected void Refresh() {
         long startMillis = System.currentTimeMillis();
@@ -112,32 +112,8 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                     if (S7BaseThingHandler.class.isInstance(handler)) {
                         S7BaseThingHandler s7handler = (S7BaseThingHandler) handler;
                         s7handler.ProcessNewData(data);
-                    } else if (handler != null) {
-                        logger.warn("Unknown thing type in S7 bridge : {}:{}", handler.getClass().getSimpleName(),
-                                handler.getClass().getSuperclass().getSimpleName());
                     }
                 }
-                /*
-                 * long refreshDuration = System.currentTimeMillis() - startMillis;
-                 * totalRefreshDuration += refreshDuration;
-                 * refreshDurationCount++;
-                 *
-                 * if (nextStateUpdate <= System.currentTimeMillis()) {
-                 * nextStateUpdate = Math.max(System.currentTimeMillis(), nextStateUpdate + 5000);
-                 *
-                 * updateState(CHANNEL_REFRESH_DURATION, new org.eclipse.smarthome.core.library.types.DecimalType(
-                 * totalRefreshDuration / refreshDurationCount));
-                 *
-                 * totalRefreshDuration = 0;
-                 * refreshDurationCount = 0;
-                 * }
-                 *
-                 * if (maxRefreshDuration < refreshDuration) {
-                 * maxRefreshDuration = refreshDuration;
-                 * updateState(CHANNEL_MAX_REFRESH_DURATION,
-                 * new org.eclipse.smarthome.core.library.types.DecimalType(maxRefreshDuration));
-                 * }
-                 */
             }
         }
 
@@ -153,10 +129,6 @@ public class S7BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /*
-         * if (channelUID.getId().equals(CHANNEL_LAMP)) {
-         * }
-         */
     }
 
     @Override
@@ -250,18 +222,15 @@ public class S7BridgeHandler extends BaseBridgeHandler {
             if (pollingIntervalConfig != null) {
                 pollingInterval = ((BigDecimal) pollingIntervalConfig).intValue();
             } else {
-                logger.info("Polling interval not configured for this S7 client. Using default value: {}s",
+                logger.debug("Polling interval not configured for this S7 client. Using default value: {}s",
                         pollingInterval);
             }
         } catch (NumberFormatException ex) {
             logger.info("Wrong configuration value for polling interval. Using default value: {}s", pollingInterval);
         }
 
-        startupInhibit = System.currentTimeMillis() + 5000;
-        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 1, pollingInterval, TimeUnit.MILLISECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 5000, pollingInterval, TimeUnit.MILLISECONDS);
     }
-
-    private int nReadError = 0;
 
     private Hashtable<Integer, byte[]> ReadData() {
         final int PALength = 64;
@@ -281,7 +250,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPA, dataPA);
                 nReadError = 0;
             } else {
-                logger.error(S7Client.ErrorText(client.LastError));
+                logger.debug(S7Client.ErrorText(client.LastError));
                 nReadError++;
             }
 
@@ -289,7 +258,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPE, dataPE);
                 nReadError = 0;
             } else {
-                logger.error(S7Client.ErrorText(client.LastError));
+                logger.debug(S7Client.ErrorText(client.LastError));
                 nReadError++;
             }
 
@@ -297,7 +266,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaDB, dataDB);
                 nReadError = 0;
             } else {
-                logger.error(S7Client.ErrorText(client.LastError));
+                logger.debug(S7Client.ErrorText(client.LastError));
                 nReadError++;
             }
 
@@ -305,7 +274,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaMK, dataMK);
                 nReadError = 0;
             } else {
-                logger.error(S7Client.ErrorText(client.LastError));
+                logger.debug(S7Client.ErrorText(client.LastError));
                 nReadError++;
             }
         }
@@ -334,18 +303,17 @@ public class S7BridgeHandler extends BaseBridgeHandler {
     private void onConnectionEstablished() {
         if (!runningState || initializingState) {
             runningState = true;
-            logger.info("Connection to S7 PLC {} established.", getConfig().get(HOST));
+            logger.debug("Connection to S7 PLC {} established.", getConfig().get(HOST));
 
             updateStatus(ThingStatus.ONLINE);
 
-            logger.info("S7 bridge {} now online.", getConfig().get(HOST));
+            logger.debug("S7 bridge {} now online.", getConfig().get(HOST));
         }
     }
 
     private void onConnectionLost() {
         if (runningState || initializingState) {
             runningState = false;
-            logger.info("Connection to S7 PLC {} lost. Trying to reconnect in 5 seconds.", getConfig().get(HOST));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     S7Client.ErrorText(client.LastError));
 
@@ -356,7 +324,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
                         }
 
                         if (client == null) {
@@ -368,11 +336,5 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 }
             }.start();
         }
-    }
-
-    @Override
-    public void thingUpdated(Thing thing) {
-        // TODO Auto-generated method stub
-        super.thingUpdated(thing);
     }
 }

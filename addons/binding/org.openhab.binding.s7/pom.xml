@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab.binding</groupId>
-    <artifactId>pom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <groupId>org.openhab.bundles</groupId>
+    <artifactId>binding</artifactId>
+    <version>2.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.binding</groupId>
   <artifactId>org.openhab.binding.s7</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.1</version>
 
   <name>S7 Binding</name>
   <packaging>eclipse-plugin</packaging>

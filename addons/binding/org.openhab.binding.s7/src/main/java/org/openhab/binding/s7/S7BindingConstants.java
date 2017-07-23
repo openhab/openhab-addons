@@ -22,16 +22,16 @@ public class S7BindingConstants {
     public static final String BINDING_ID = "s7";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
-    public final static ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
-    public final static ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
-    public final static ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushbutton");
-    public final static ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
+    public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
+    public static final ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
+    public static final ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushbutton");
+    public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
 
     // List of all Channel ids
-    public final static String CHANNEL_REFRESH_DURATION = "refreshDuration";
-    public final static String CHANNEL_MAX_REFRESH_DURATION = "maxRefreshDuration";
-    public final static String CHANNEL_STATE = "state";
+    public static final String CHANNEL_REFRESH_DURATION = "refreshDuration";
+    public static final String CHANNEL_MAX_REFRESH_DURATION = "maxRefreshDuration";
+    public static final String CHANNEL_STATE = "state";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

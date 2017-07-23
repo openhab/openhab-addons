@@ -20,7 +20,7 @@
         <config-description>
             <parameter name="accessMode" type="text">
                 <label>Access mode</label>
-                <description>Access mode of the thing.</description>
+                <description>Define how to get and manipulate the thing's state.</description>
                 <limitToOptions>true</limitToOptions>
                 <advanced>true</advanced>
                 <default>ToggleMode</default>
@@ -33,7 +33,7 @@
             </parameter>
             <parameter name="inputDBArea" type="integer">
                 <label>Input DB Area</label>
-                <description>The DB area of the toggle switch.</description>
+                <description>The DB area of the switch. (Not used if access mode is read only)</description>
                 <limitToOptions>true</limitToOptions>
                 <options>
                     <option value="129">Area PE</option>
@@ -45,12 +45,12 @@
             </parameter>
             <parameter name="inputAddress" type="integer" max="96">
                 <label>Input Address</label>
-                <description>The input address of the toggle switch.</description>
+                <description>The input address of the switch. (Not used if access mode is read only)</description>
                 <required>true</required>
             </parameter>
             <parameter name="outputDBArea" type="integer">
                 <label>Output DB Area</label>
-                <description>The DB area of the output.</description>
+                <description>The DB area of the output. (Not used if access mode is push button)</description>
                 <limitToOptions>true</limitToOptions>
                 <options>
                     <option value="129">Area PE</option>
@@ -62,7 +62,7 @@
             </parameter>
             <parameter name="outputAddress" type="integer" max="96">
                 <label>Output Address</label>
-                <description>The input address of the toggle switch.</description>
+                <description>The output address of the toggle switch. (Not used if access mode is push button)</description>
                 <required>true</required>
             </parameter>
         </config-description>

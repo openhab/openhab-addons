@@ -14,6 +14,7 @@ import java.util.Dictionary;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,7 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 import Moka7.S7;
 
 /**
- * The {@link S7Handler} is responsible for handling commands, which are
+ * The {@link S7ThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Laurent Sibilla - Initial contribution
@@ -39,15 +39,19 @@ public class S7ThingHandler extends S7BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(S7ThingHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_LIGHT, THING_TYPE_CONTACT,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_LIGHT, THING_TYPE_CONTACT,
             THING_TYPE_PUSHBUTTON, THING_TYPE_SWITCH);
+
+    private static final long TAP_OFF_DELAY = 100;
+    private static final long TAP_ON_DELAY = 250;
+
+    private boolean lastState = false;
+    private long lastUpdate = 0;
+    private long updateTimeout = 5000;
 
     public S7ThingHandler(Thing thing) {
         super(thing);
     }
-
-    private long tapOffDelay = 100;
-    private long tapOnDelay = 250;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -72,9 +76,9 @@ public class S7ThingHandler extends S7BaseThingHandler {
                                 switch ((String) getConfig().get(ACCESS_MODE)) {
                                     case MODE_TOGGLE:
                                         bridge.setBit(Area, Address, false);
-                                        Thread.sleep(tapOffDelay);
+                                        Thread.sleep(TAP_OFF_DELAY);
                                         bridge.setBit(Area, Address, true);
-                                        Thread.sleep(tapOnDelay);
+                                        Thread.sleep(TAP_ON_DELAY);
                                         bridge.setBit(Area, Address, false);
                                         break;
                                     case MODE_READ_WRITE:
@@ -83,7 +87,7 @@ public class S7ThingHandler extends S7BaseThingHandler {
                                     case MODE_PUSHBUTTON:
                                         bridge.setBit(Area, Address, true);
                                         updateState(CHANNEL_STATE, OnOffType.ON);
-                                        Thread.sleep(tapOnDelay);
+                                        Thread.sleep(TAP_ON_DELAY);
                                         bridge.setBit(Area, Address, false);
                                         updateState(CHANNEL_STATE, OnOffType.OFF);
                                         break;
@@ -91,12 +95,12 @@ public class S7ThingHandler extends S7BaseThingHandler {
                             } catch (InterruptedException e) {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Could not toggle state of " + getThing().getLabel() + ".");
-                                e.printStackTrace();
+                                logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
                             }
                         }
                     };
 
-                    t.start();
+                    super.scheduler.execute(t);
                 }
             }
         }
@@ -107,18 +111,14 @@ public class S7ThingHandler extends S7BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private boolean lastState = false;
-    private long lastUpdate = 0;
-    private long updateTimeout = 5000;
-
     @Override
-    public void ProcessNewData(Dictionary<Integer, byte[]> data) {
-        super.ProcessNewData(data);
+    public void processNewData(Dictionary<Integer, byte[]> data) {
+        super.processNewData(data);
 
         if (this.getThing().getThingTypeUID() != THING_TYPE_PUSHBUTTON
                 && this.getThing().getStatus() == ThingStatus.ONLINE) {
-            int Area = 0;
-            int Address = 0;
+            int area = 0;
+            int address = 0;
             byte[] buffer = null;
 
             BigDecimal value = (java.math.BigDecimal) getConfig().get(OUTPUT_DBAREA);
@@ -127,7 +127,7 @@ public class S7ThingHandler extends S7BaseThingHandler {
                         "Cannot retrieve output DB Area.");
                 return;
             }
-            Area = value.intValue();
+            area = value.intValue();
 
             value = (java.math.BigDecimal) getConfig().get(OUTPUT_ADDRESS);
             if (value == null) {
@@ -135,58 +135,43 @@ public class S7ThingHandler extends S7BaseThingHandler {
                         "Cannot retrieve output address.");
                 return;
             }
-            Address = value.intValue();
+            address = value.intValue();
 
-            buffer = data.get(Area);
+            buffer = data.get(area);
 
             if (buffer != null) {
-                if (Address < 0) {
+                if (address < 0) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Invalid output address : negative");
-                } else if (buffer.length < Address / 8) {
+                } else if (buffer.length < address / 8) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Invalid output address : out of bound.");
                 } else {
-                    boolean isOn = S7.GetBitAt(buffer, Address / 8, Address % 8);
+                    boolean isOn = S7.GetBitAt(buffer, address / 8, address % 8);
 
                     if (isOn != lastState || lastUpdate + this.updateTimeout < System.currentTimeMillis()) {
                         lastState = isOn;
                         lastUpdate = System.currentTimeMillis();
 
-                        State newState = null;
                         Channel channel = this.thing.getChannel(CHANNEL_STATE);
 
                         if (channel != null) {
                             switch (channel.getAcceptedItemType()) {
                                 case "Switch":
-                                    newState = isOn ? org.eclipse.smarthome.core.library.types.OnOffType.ON
-                                            : org.eclipse.smarthome.core.library.types.OnOffType.OFF;
+                                    updateState(CHANNEL_STATE, isOn ? OnOffType.ON : OnOffType.OFF);
                                     break;
                                 case "Contact":
-                                    newState = isOn ? org.eclipse.smarthome.core.library.types.OpenClosedType.CLOSED
-                                            : org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN;
+                                    updateState(CHANNEL_STATE, isOn ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                                     break;
                                 default:
                                     logger.warn("New state received but unknown channel type: {}",
                                             channel.getAcceptedItemType());
                                     break;
                             }
-
-                            if (newState != null) {
-                                updateState(CHANNEL_STATE, newState);
-                            }
                         }
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public void thingUpdated(Thing thing) {
-        // TODO Auto-generated method stub
-        super.thingUpdated(thing);
-
-        logger.info("Thing \"{}\" updated.", this.getThing().getLabel());
     }
 }
