@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Patrick Boos - Initial contribution
  * @author Kuba Wolanin - Renamed labels
  * @author Dieter Schmidt - Refactor
+ * @author Daniel Walters - Add Xiaomi Aqara Temperature, Humidity & Pressure sensor and Xiaomi Aqara Door/Window sensor
  */
 public class ModelMapper {
 
@@ -42,8 +43,10 @@ public class ModelMapper {
         THING_MAP.put("magnet", THING_TYPE_SENSOR_MAGNET);
         THING_MAP.put("motion", THING_TYPE_SENSOR_MOTION);
         THING_MAP.put("natgas", THING_TYPE_SENSOR_GAS);
+        THING_MAP.put("sensor_magnet.aq2", THING_TYPE_SENSOR_AQARA_MAGNET);
         THING_MAP.put("smoke", THING_TYPE_SENSOR_SMOKE);
         THING_MAP.put("switch", THING_TYPE_SENSOR_SWITCH);
+        THING_MAP.put("weather.v1", THING_TYPE_SENSOR_AQARA_WEATHER_V1);
 
         LABEL_MAP.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
         LABEL_MAP.put("gateway", "Xiaomi Mi Smart Home Gateway");
@@ -59,8 +62,10 @@ public class ModelMapper {
         LABEL_MAP.put("magnet", "Xiaomi Door/Window Sensor");
         LABEL_MAP.put("motion", "Xiaomi Mi Motion Sensor");
         LABEL_MAP.put("natgas", "New, yet unconfirmed device");
+        LABEL_MAP.put("sensor_magnet.aq2", "Xiaomi Aqara Door/Window Sensor");
         LABEL_MAP.put("smoke", "New, yet unconfirmed device");
         LABEL_MAP.put("switch", "Xiaomi Mi Wireless Switch");
+        LABEL_MAP.put("weather.v1", "Xiaomi Aqara Temperature, Humidity & Pressure Sensor");
     }
 
     public static ThingTypeUID getThingTypeForModel(String model) {

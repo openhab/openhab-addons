@@ -41,14 +41,16 @@ import com.google.gson.JsonSyntaxException;
  * @author Dieter Schmidt - Added cube rotation, heartbeat and voltage handling, configurable window and motion delay,
  *         Aqara
  *         switches
+ * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  */
 public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiItemUpdateListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY,
-            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_MAGNET,
-            THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA1, THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS,
-            THING_TYPE_SENSOR_SMOKE, THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG,
-            THING_TYPE_ACTOR_AQARA_ZERO1, THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
+            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1, THING_TYPE_SENSOR_MOTION,
+            THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_MAGNET, THING_TYPE_SENSOR_CUBE,
+            THING_TYPE_SENSOR_AQARA1, THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE,
+            THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG, THING_TYPE_ACTOR_AQARA_ZERO1,
+            THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
 
     private static final long ONLINE_TIMEOUT_MILLIS = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -104,6 +106,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void onItemUpdate(String sid, String command, JsonObject message) {
         if (getItemId() != null && getItemId().equals(sid)) {
+            updateThingStatus();
             logger.debug("Item got update: {}", message);
             try {
                 JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
@@ -111,7 +114,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             } catch (JsonSyntaxException e) {
                 logger.warn("Unable to parse message as valid JSON: {}", message);
             }
-            updateThingStatus();
+
         }
     }
 
