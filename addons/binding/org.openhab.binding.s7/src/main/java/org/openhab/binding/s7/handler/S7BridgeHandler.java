@@ -67,7 +67,9 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 // That's why we do an HTTP access instead
 
                 // If there is no connection, this line will fail
-                client.Connect();
+                synchronized (client) {
+                    client.Connect();
+                }
             } catch (Exception e) {
                 return false;
             }
@@ -274,36 +276,38 @@ public class S7BridgeHandler extends BaseBridgeHandler {
         byte[] dataDB = new byte[DBLength];
         byte[] dataMK = new byte[MKLength];
 
-        if (client.ReadArea(S7.S7AreaPA, 1, 0, PALength, dataPA) == 0) {
-            data.put(S7.S7AreaPA, dataPA);
-            nReadError = 0;
-        } else {
-            logger.error(S7Client.ErrorText(client.LastError));
-            nReadError++;
-        }
+        synchronized (client) {
+            if (client.ReadArea(S7.S7AreaPA, 1, 0, PALength, dataPA) == 0) {
+                data.put(S7.S7AreaPA, dataPA);
+                nReadError = 0;
+            } else {
+                logger.error(S7Client.ErrorText(client.LastError));
+                nReadError++;
+            }
 
-        if (client.ReadArea(S7.S7AreaPE, 1, 0, PELength, dataPE) == 0) {
-            data.put(S7.S7AreaPE, dataPE);
-            nReadError = 0;
-        } else {
-            logger.error(S7Client.ErrorText(client.LastError));
-            nReadError++;
-        }
+            if (client.ReadArea(S7.S7AreaPE, 1, 0, PELength, dataPE) == 0) {
+                data.put(S7.S7AreaPE, dataPE);
+                nReadError = 0;
+            } else {
+                logger.error(S7Client.ErrorText(client.LastError));
+                nReadError++;
+            }
 
-        if (client.ReadArea(S7.S7AreaDB, 1, 0, DBLength, dataDB) == 0) {
-            data.put(S7.S7AreaDB, dataDB);
-            nReadError = 0;
-        } else {
-            logger.error(S7Client.ErrorText(client.LastError));
-            nReadError++;
-        }
+            if (client.ReadArea(S7.S7AreaDB, 1, 0, DBLength, dataDB) == 0) {
+                data.put(S7.S7AreaDB, dataDB);
+                nReadError = 0;
+            } else {
+                logger.error(S7Client.ErrorText(client.LastError));
+                nReadError++;
+            }
 
-        if (client.ReadArea(S7.S7AreaMK, 1, 0, MKLength, dataMK) == 0) {
-            data.put(S7.S7AreaMK, dataMK);
-            nReadError = 0;
-        } else {
-            logger.error(S7Client.ErrorText(client.LastError));
-            nReadError++;
+            if (client.ReadArea(S7.S7AreaMK, 1, 0, MKLength, dataMK) == 0) {
+                data.put(S7.S7AreaMK, dataMK);
+                nReadError = 0;
+            } else {
+                logger.error(S7Client.ErrorText(client.LastError));
+                nReadError++;
+            }
         }
 
         if (nReadError == 20) {
