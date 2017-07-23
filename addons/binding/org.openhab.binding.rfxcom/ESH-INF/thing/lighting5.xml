@@ -31,17 +31,22 @@
 				<label>Sub Type</label>
 				<description>Specifies device sub type.</description>
 				<options>
-					<option value="LIGHTWAVERF">LightwaveRF, Siemens</option>
-					<option value="EMW100">EMW100 GAO/Everflourish</option>
-					<option value="BBSB_NEW">BBSB new types</option>
-					<option value="MDREMOTE">MDREMOTE LED dimmer</option>
-					<option value="CONRAD_RSL2">Conrad RSL2</option>
-					<option value="LIVOLO">Livolo Dimmer or On/Off 1-3</option>
-					<option value="RGB_TRC02">RGB TRC02 (2 batt)</option>
 					<option value="AOKE">Aoke Relay</option>
-					<option value="RGB_TRC02_2">RGB TRC02_2 (3 batt)</option>
+					<option value="AVANTEK">Avantek</option>
+					<option value="BBSB_NEW">BBSB new types</option>
+					<option value="CONRAD_RSL2">Conrad RSL2</option>
+					<option value="EMW100">EMW100 GAO/Everflourish</option>
 					<option value="EURODOMEST">Eurodomest</option>
+					<option value="IT">IT</option>
+					<option value="KANGTAI">Kangtai, Cotech</option>
+					<option value="LIGHTWAVERF">LightwaveRF, Siemens</option>
+					<option value="LIVOLO">Livolo Dimmer or On/Off 1-3</option>
 					<option value="LIVOLO_APPLIANCE">Livolo Appliance On/Off 1-10</option>
+					<option value="MDREMOTE">MDREMOTE LED dimmer v106</option>
+					<option value="MDREMOTE_107">MDREMOTE v107</option>
+					<option value="MDREMOTE_108">MDREMOTE v108, EKAB-10KRF</option>
+					<option value="RGB_TRC02">RGB TRC02 (2 batt)</option>
+					<option value="RGB_TRC02_2">RGB TRC02_2 (3 batt)</option>
 				</options>
 			</parameter>
 		</config-description>

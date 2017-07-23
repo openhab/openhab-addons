@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,10 +23,10 @@ import javax.net.ssl.HttpsURLConnection;
  * @author Chris Graham - Initial contribution
  */
 public class Http {
-    private final static String HTTP_GET = "GET";
-    private final static String HTTP_POST = "POST";
-    private final static int HTTP_OK_CODE = 200;
-    private final static String USER_AGENT = "Mozilla/5.0";
+    private static final String HTTP_GET = "GET";
+    private static final String HTTP_POST = "POST";
+    private static final int HTTP_OK_CODE = 200;
+    private static final String USER_AGENT = "Mozilla/5.0";
 
     /**
      * Given a URL and a set parameters, send a HTTP GET request to the URL location created by the URL and parameters.
@@ -58,7 +58,7 @@ public class Http {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -99,7 +99,7 @@ public class Http {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);

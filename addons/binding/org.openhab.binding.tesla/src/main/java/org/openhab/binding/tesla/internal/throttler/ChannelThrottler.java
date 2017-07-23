@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,11 +13,11 @@ import java.util.concurrent.Future;
 /**
  * The {@link ChannelThrottler} defines the interface for to submit tasks to a
  * throttler
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public interface ChannelThrottler {
-	Future<?> submit(Runnable task);
+    Future<?> submit(Runnable task);
 
-	Future<?> submit(Object channelKey, Runnable task);
+    Future<?> submit(Object channelKey, Runnable task);
 }

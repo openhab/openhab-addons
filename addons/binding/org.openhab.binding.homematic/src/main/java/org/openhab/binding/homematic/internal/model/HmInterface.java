@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,8 @@ public enum HmInterface {
     RF,
     WIRED,
     HMIP,
-    CUXD;
+    CUXD,
+    GROUP;
 
     /**
      * Returns the full name of the interface.
@@ -32,6 +33,8 @@ public enum HmInterface {
                 return "HmIP-RF";
             case CUXD:
                 return "CUxD";
+            case GROUP:
+                return "Group";
         }
         return null;
     }

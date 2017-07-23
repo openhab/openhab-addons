@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import static org.junit.Assert.assertEquals;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN2;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN1;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN2;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Test for RFXCom-binding
@@ -27,7 +25,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.Sub
 public class RFXComRainMessageTest {
 
     @Test
-    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+    public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B550217B6000000004D3C69";
         byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
         RFXComRainMessage msg = (RFXComRainMessage) RFXComMessageFactory.createMessage(message);

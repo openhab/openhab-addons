@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import org.tellstick.device.TellstickController;
  */
 public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
     static boolean initilized = false;
@@ -95,11 +95,10 @@ public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
             Map<String, Object> properties = new HashMap<>(2);
             ThingUID uid = new ThingUID(TellstickBindingConstants.TELLDUSCOREBRIDGE_THING_TYPE,
                     Integer.toString(controller.getId()));
-            if (uid != null) {
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(controller.getType().name() + ": " + controller.getName()).build();
-                thingDiscovered(result);
-            }
+            thingDiscovered(DiscoveryResultBuilder.create(uid)
+                    .withProperties(properties)
+                    .withLabel(controller.getType().name() + ": " + controller.getName())
+                    .build());
         }
     }
 

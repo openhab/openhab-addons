@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import com.google.common.collect.Lists;
  */
 public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(SAMSUNG_TV_THING_TYPE);
 
     private UpnpIOService upnpIOService;

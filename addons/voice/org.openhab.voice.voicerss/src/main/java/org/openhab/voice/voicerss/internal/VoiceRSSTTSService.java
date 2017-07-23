@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * This is a TTS service implementation for using VoiceRSS TTS service.
  *
  * @author Jochen Hiller - Initial contribution and API
+ * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
 public class VoiceRSSTTSService implements TTSService {
 
@@ -120,11 +121,11 @@ public class VoiceRSSTTSService implements TTSService {
         // only a default voice
         try {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
-                    voice.getLocale().toLanguageTag(), requestedFormat.getCodec());
+                    voice.getLocale().toLanguageTag(), getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
             }
-            AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile);
+            AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
             return audioStream;
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -164,22 +165,42 @@ public class VoiceRSSTTSService implements TTSService {
         return audioFormats;
     }
 
-    /**
-     * Up to now only MP3 supported.
-     */
-    private final AudioFormat getAudioFormat(String format) {
-        // MP3 format
-        if (AudioFormat.CODEC_MP3.equals(format)) {
-            // we use by default: MP3, 44khz_16bit_mono
-            Boolean bigEndian = null; // not used here
-            Integer bitDepth = 16;
-            Integer bitRate = null;
-            Long frequency = 44000L;
+    private final AudioFormat getAudioFormat(String apiFormat) {
+        Boolean bigEndian = null;
+        Integer bitDepth = 16;
+        Integer bitRate = null;
+        Long frequency = 44100L;
+
+        if ("MP3".equals(apiFormat)) {
+            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
+            bitRate = 64000;
 
             return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
                     frequency);
+        } else if ("OGG".equals(apiFormat)) {
+            // we use by default: OGG, 44khz_16bit_mono
+
+            return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
+                    frequency);
+        } else if ("AAC".equals(apiFormat)) {
+            // we use by default: AAC, 44khz_16bit_mono
+
+            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, bigEndian, bitDepth, bitRate,
+                    frequency);
         } else {
-            throw new RuntimeException("Audio format " + format + "not yet supported");
+            throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
+        }
+    }
+
+    private final String getApiAudioFormat(AudioFormat format) {
+        if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
+            return "MP3";
+        } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
+            return "OGG";
+        } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
+            return "AAC";
+        } else {
+            throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
     }
 

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="coolmasternet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="controller">
+		<label>CoolMasterNet Controller</label>
+		<description>A CoolMasterNet Controller (connected to one or more HVAC systems)</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<context>network_address</context>
+				<description>The IP address / FQDN of the CoolMasterNet unit</description>
+				<default></default>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port of ASCII interface of CoolMasterNet unit.</description>
+				<default>10102</default>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="refresh" type="integer">
+				<label>Refresh frequency</label>
+				<description>Frequency to poll the controller for updates, in seconds. Defaults to every 5 seconds.</description>
+				<default>5</default>
+				<required>false</required>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="hvac">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>HVAC System</label>
+		<description>HVAC System connected to a controller (unique UID)</description>
+
+		<channels>
+			<channel id="on" typeId="power" />
+			<channel id="mode" typeId="hvac_mode" />
+			<channel id="fan" typeId="fan_speed" />
+			<channel id="set_temp" typeId="temperature_setpoint" />
+			<channel id="current_temp" typeId="temperature_readback" />
+			<channel id="louvre" typeId="louvre_angle" />
+		</channels>
+
+		<config-description>
+			<parameter name="uid" type="text">
+				<label>HVAC Unit ID</label>
+				<description>Unit ID of the HVAC Unit to control. Example: L1.100.</description>
+				<default>L1.100</default>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Is the HVAC unit powered on?</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="hvac_mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>HVAC unit operation mode</description>
+		<state>
+			<options>
+				<!-- Note: The value fields here map directly to coolmasternet commands -->
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+				<option value="auto">Auto</option>
+				<option value="dry">Dry</option>
+				<option value="fan">Fan Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature_setpoint" advanced="true">
+		<item-type>Number</item-type>
+		<label>Set Temperature</label>
+		<description>Temperature thermostat setpoint</description>
+		<category>Temperature</category>
+		<state min="10" max="40" step="0.5" pattern="%d °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="temperature_readback" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Current system ambient temperature</description>
+		<category>Temperature</category>
+		<state min="10" max="40" step="0.5" pattern="%d °C" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fan_speed">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<state>
+			<options>
+				<option value="l">Low</option>
+				<option value="m">Medium</option>
+				<option value="h">High</option>
+				<option value="t">Top</option>
+				<option value="a">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="louvre_angle">
+		<item-type>String</item-type>
+		<label>Louvre Position</label>
+		<state>
+			<options>
+				<option value="0">No Control</option>
+				<option value="a">Auto Swing</option>
+				<option value="h">Horizontal</option>
+				<option value="3">30 degrees</option>
+				<option value="4">45 degrees</option>
+				<option value="6">60 degrees</option>
+				<option value="v">Vertical</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

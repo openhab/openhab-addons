@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.autelis.internal;
 
-import static org.openhab.binding.autelis.AutelisBindingConstants.*;
+import static org.openhab.binding.autelis.AutelisBindingConstants.POOLCONTROL_THING_TYPE_UID;
 
 import java.util.Collections;
 import java.util.Set;
@@ -23,28 +23,28 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 /**
  * The {@link AutelisHandlerFactory} is responsible for creating things and
  * thing handlers.
- * 
+ *
  * @author Dan Cunningham - Initial contribution
  */
 public class AutelisHandlerFactory extends BaseThingHandlerFactory {
 
-	private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-			.singleton(POOLCONTROL_THING_TYPE_UID);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(POOLCONTROL_THING_TYPE_UID);
 
-	@Override
-	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-	}
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-	@Override
-	protected ThingHandler createHandler(Thing thing) {
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
 
-		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (thingTypeUID.equals(POOLCONTROL_THING_TYPE_UID)) {
-			return new AutelisHandler(thing);
-		}
+        if (thingTypeUID.equals(POOLCONTROL_THING_TYPE_UID)) {
+            return new AutelisHandler(thing);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

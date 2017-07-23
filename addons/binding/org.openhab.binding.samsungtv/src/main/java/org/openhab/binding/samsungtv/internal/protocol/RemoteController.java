@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -67,7 +67,7 @@ public class RemoteController {
 
     /**
      * Create and initialize remote controller instance.
-     * 
+     *
      * @param host Host name of the Samsung TV.
      * @param port TCP port of the remote controller protocol.
      * @param appName Application name used to send key codes.
@@ -82,7 +82,7 @@ public class RemoteController {
 
     /**
      * Open Connection to Samsung TV.
-     * 
+     *
      * @throws RemoteControllerException
      */
     public void openConnection() throws RemoteControllerException {
@@ -99,26 +99,26 @@ public class RemoteController {
 
         try {
             /* @formatter:off
-			 *
-			 * offset value and description
-			 * ------ ---------------------
-			 * 0x00   0x00 - datagram type?
-			 * 0x01   0x0013 - string length (little endian)
-			 * 0x03   "iphone.iapp.samsung" - string content
-			 * 0x16   0x0038 - payload size (little endian)
-			 * 0x18   payload
-			 *
-			 * Payload starts with 2 bytes: 0x64 and 0x00, then comes 3 strings
-			 * encoded with base64 algorithm. Every string is preceded by
-			 * 2-bytes field containing encoded string length.
-			 *
-			 * These three strings are as follow:
-			 *
-			 * remote control device IP, unique ID – value to distinguish
-			 * controllers, name – it will be displayed as controller name.
-			 *
-			 * @formatter:on
-			 */
+            *
+            * offset value and description
+            * ------ ---------------------
+            * 0x00   0x00 - datagram type?
+            * 0x01   0x0013 - string length (little endian)
+            * 0x03   "iphone.iapp.samsung" - string content
+            * 0x16   0x0038 - payload size (little endian)
+            * 0x18   payload
+            *
+            * Payload starts with 2 bytes: 0x64 and 0x00, then comes 3 strings
+            * encoded with base64 algorithm. Every string is preceded by
+            * 2-bytes field containing encoded string length.
+            *
+            * These three strings are as follow:
+            *
+            * remote control device IP, unique ID – value to distinguish
+            * controllers, name – it will be displayed as controller name.
+            *
+            * @formatter:on
+            */
 
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
@@ -130,17 +130,17 @@ public class RemoteController {
             try {
 
                 /* @formatter:off
-				 *
-				 * offset value and description
-				 * ------ ---------------------
-				 * 0x00   don't know, it it always 0x00 or 0x02
-				 * 0x01   0x000c - string length (little endian)
-				 * 0x03   "iapp.samsung" - string content
-				 * 0x0f   0x0006 - payload size (little endian)
-				 * 0x11   payload
-				 *
-				 * @formatter:on
-				 */
+                *
+                * offset value and description
+                * ------ ---------------------
+                * 0x00   don't know, it it always 0x00 or 0x02
+                * 0x01   0x000c - string length (little endian)
+                * 0x03   "iapp.samsung" - string content
+                * 0x0f   0x0006 - payload size (little endian)
+                * 0x11   payload
+                *
+                * @formatter:on
+                */
 
                 InputStream in = socket.getInputStream();
                 reader = new InputStreamReader(in);
@@ -180,7 +180,7 @@ public class RemoteController {
 
     /**
      * Close connection to Samsung TV.
-     * 
+     *
      * @throws RemoteControllerException
      */
     public void closeConnection() throws RemoteControllerException {
@@ -193,7 +193,7 @@ public class RemoteController {
 
     /**
      * Send key code to Samsung TV.
-     * 
+     *
      * @param key Key code to send.
      * @throws RemoteControllerException
      */
@@ -221,7 +221,7 @@ public class RemoteController {
 
     /**
      * Send sequence of key codes to Samsung TV.
-     * 
+     *
      * @param keys List of key codes to send.
      * @throws RemoteControllerException
      */
@@ -231,7 +231,7 @@ public class RemoteController {
 
     /**
      * Send sequence of key codes to Samsung TV.
-     * 
+     *
      * @param keys List of key codes to send.
      * @param sleepInMs Sleep between key code sending in milliseconds.
      * @throws RemoteControllerException
@@ -283,9 +283,9 @@ public class RemoteController {
          * Payload starts with 2 bytes: 0x64 and 0x00, then comes 3 strings
          * encoded with base64 algorithm. Every string is preceded by 2-bytes
          * field containing encoded string length.
-         * 
+         *
          * These three strings are as follow:
-         * 
+         *
          * remote control device IP, unique ID – value to distinguish
          * controllers, name – it will be displayed as controller name.
          */
@@ -331,20 +331,20 @@ public class RemoteController {
     }
 
     private void sendKeyData(KeyCode key) throws RemoteControllerException {
-        logger.debug("Sending key code " + key.getValue());
+        logger.debug("Sending key code {}", key.getValue());
 
         /* @formatter:off
-		 *
-		 * offset value and description
-		 * ------ ---------------------
-		 * 0x00   always 0x00
-		 * 0x01   0x0013 - string length (little endian)
-		 * 0x03   "iphone.iapp.samsung" - string content
-		 * 0x16   0x0011 - payload size (little endian)
-		 * 0x18   payload
-		 *
-		 * @formatter:on
-		 */
+         *
+         * offset value and description
+         * ------ ---------------------
+         * 0x00   always 0x00
+         * 0x01   0x0013 - string length (little endian)
+         * 0x03   "iphone.iapp.samsung" - string content
+         * 0x16   0x0011 - payload size (little endian)
+         * 0x18   payload
+         *
+         * @formatter:on
+         */
         try {
             writer.append((char) 0x00);
             writeString(writer, APP_STRING);
@@ -365,17 +365,17 @@ public class RemoteController {
 
     private String createKeyDataPayload(KeyCode key) throws IOException {
         /* @formatter:off
-		 *
-		 * Payload:
-		 *
-		 * offset value and description
-		 * ------ ---------------------
-		 * 0x18   three 0x00 bytes
-		 * 0x1b   0x000c - key code size (little endian)
-		 * 0x1d   key code encoded as base64 string
-		 *
-		 * @formatter:on
-		 */
+        *
+        * Payload:
+        *
+        * offset value and description
+        * ------ ---------------------
+        * 0x18   three 0x00 bytes
+        * 0x1b   0x000c - key code size (little endian)
+        * 0x1d   key code encoded as base64 string
+        *
+        * @formatter:on
+        */
 
         StringWriter writer = new StringWriter();
         writer.append((char) 0x00);

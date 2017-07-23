@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,11 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+
 /**
  * Base class for RFXCOM data classes. All other data classes should extend this class.
  *
@@ -17,7 +22,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public abstract class RFXComBaseMessage implements RFXComMessage {
 
-    public final static String ID_DELIMITER = ".";
+    public static final String ID_DELIMITER = ".";
 
     public enum PacketType {
         INTERFACE_CONTROL(0),
@@ -35,12 +40,17 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         CURTAIN1(24),
         BLINDS1(25),
         RFY(26),
+        HOME_CONFORT(27),
+        EDISIO(28),
         SECURITY1(32),
+        SECURITY2(33),
         CAMERA1(40),
         REMOTE_CONTROL(48),
         THERMOSTAT1(64),
         THERMOSTAT2(65),
         THERMOSTAT3(66),
+        THERMOSTAT4(67),
+        RADIATOR1(72),
         BBQ1(78),
         TEMPERATURE_RAIN(79),
         TEMPERATURE(80),
@@ -59,12 +69,11 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         WEIGHT(93),
         GAS(94),
         WATER(95),
+        CARTELECTRONIC(96),
         RFXSENSOR(112),
         RFXMETER(113),
         FS20(114),
-        IO_LINES(128),
-
-        UNKNOWN(255);
+        IO_LINES(128);
 
         private final int packetType;
 
@@ -72,44 +81,40 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
             this.packetType = packetType;
         }
 
-        PacketType(byte packetType) {
-            this.packetType = packetType;
-        }
-
         public byte toByte() {
             return (byte) packetType;
         }
 
-        public static PacketType fromByte(int input) {
+        public static PacketType fromByte(int input) throws RFXComUnsupportedValueException {
             for (PacketType packetType : PacketType.values()) {
                 if (packetType.packetType == input) {
                     return packetType;
                 }
             }
 
-            return PacketType.UNKNOWN;
+            throw new RFXComUnsupportedValueException(PacketType.class, input);
         }
 
     }
 
     public byte[] rawMessage;
-    public PacketType packetType = PacketType.UNKNOWN;
-    public byte packetId = 0;
-    public byte subType = 0;
-    public byte seqNbr = 0;
-    public byte id1 = 0;
-    public byte id2 = 0;
+    public PacketType packetType;
+    public byte packetId;
+    public byte subType;
+    public byte seqNbr;
+    public byte id1;
+    public byte id2;
 
     public RFXComBaseMessage() {
 
     }
 
-    public RFXComBaseMessage(byte[] data) {
+    public RFXComBaseMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         rawMessage = data;
 
@@ -143,5 +148,40 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     @Override
     public String getDeviceId() {
         return id1 + ID_DELIMITER + id2;
+    }
+
+    /**
+     * Procedure for converting sub type as string to sub type object.
+     *
+     * @return sub type object.
+     */
+    abstract Object convertSubType(String subType) throws RFXComException;
+
+    /**
+     * Procedure to set sub type.
+     *
+     */
+    abstract void setSubType(Object subType) throws RFXComException;
+
+    /**
+     * Procedure to set device id.
+     *
+     */
+    abstract void setDeviceId(String deviceId) throws RFXComException;
+
+    @Override
+    public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
+        this.setSubType(this.convertSubType(config.subType));
+        this.setDeviceId(config.deviceId);
+    }
+
+    public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
+        String subTypeString = convertSubType(String.valueOf(subType)).toString();
+        String label = packetType + "-" + getDeviceId();
+
+        discoveryResultBuilder
+                .withLabel(label)
+                .withProperty(RFXComDeviceConfiguration.DEVICE_ID_LABEL, getDeviceId())
+                .withProperty(RFXComDeviceConfiguration.SUB_TYPE_LABEL, subTypeString);
     }
 }

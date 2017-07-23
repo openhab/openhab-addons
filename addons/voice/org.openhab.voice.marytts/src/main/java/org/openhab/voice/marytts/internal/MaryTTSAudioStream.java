@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -89,7 +89,7 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
         byte format = 0x10; // PCM
         byte bits = 16;
         byte channel = 1;
-        int srate = 48000;
+        long srate = (this.audioFormat != null) ? this.audioFormat.getFrequency() : 48000l;
         long rawLength = length - 36;
         long bitrate = srate * channel * bits;
 

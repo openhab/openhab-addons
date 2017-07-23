@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,18 +40,24 @@ public enum DeviceType {
     SMOKE("DevSmoke"),
     TEMPERATURE("DevTemperature"),
     TEMP_HYGRO("DevTempHygro"),
-    THERMOSTAT("DevThermostat"),
+    THERMOSTAT("DevThermostat", "curmode", "curtemp"),
     UV("DevUV"),
     WIND("DevWind");
 
     private final String apiString;
+    private final String[] requiredLinks;
 
-    DeviceType(String apiString) {
+    DeviceType(String apiString, String... requiredLinks) {
         this.apiString = apiString;
+        this.requiredLinks = requiredLinks;
     }
 
     public String getApiString() {
         return apiString;
+    }
+
+    public String[] getRequiredLinks() {
+        return requiredLinks;
     }
 
     public static DeviceType forApiString(String apiString) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,7 +41,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         extends AbstractNetatmoThingHandler<X> {
 
     protected NADeviceAdapter<?> device;
-    private static Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
     private ScheduledFuture<?> refreshJob;
 
     public NetatmoDeviceHandler(Thing thing, Class<X> configurationClass) {
@@ -83,7 +83,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         }
     }
 
-    abstract protected NADeviceAdapter<?> updateReadings(String equipmentId);
+    protected abstract NADeviceAdapter<?> updateReadings(String equipmentId);
 
     @Override
     protected void updateChannels(String equipmentId) {
@@ -108,8 +108,12 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
                 return ChannelTypeUtils.toDateTimeType(device.getLastStatusStore());
             case CHANNEL_LOCATION:
                 NAPlace place = device.getPlace();
-                return new PointType(new DecimalType(place.getLocation().get(1)),
-                        new DecimalType(place.getLocation().get(0)), new DecimalType(place.getAltitude()));
+                PointType point = new PointType(new DecimalType(place.getLocation().get(1)),
+                        new DecimalType(place.getLocation().get(0)));
+                if (place.getAltitude() != null) {
+                    point.setAltitude(new DecimalType(place.getAltitude()));
+                }
+                return point;
             case CHANNEL_WIFI_STATUS:
                 Integer wifiStatus = device.getWifiStatus();
                 return new DecimalType(getSignalStrength(wifiStatus));

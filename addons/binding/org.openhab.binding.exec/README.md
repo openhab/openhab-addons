@@ -8,22 +8,30 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 ## Binding Configuration
 
-The binding does not require any specific configuration
+The binding does not require any specific configuration.
 
-Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root
+Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root.
 
 ## Thing Configuration
 
-The command Thing requires the command to execute on the shell, and optionally one can specify a transformation to apply on the execution result, an interval, in seconds, the command will be repeatedly executed, a time-out, in seconds, the execution of the command will time out, and lastly, a boolean parameter to make the command execute immediately every time the state of the input channel has changed. For each command a separate Thing has to be defined
+The `command` Thing requires the command to execute on the shell. Optionally one can specify:
+
+- a transformation to apply on the execution result, 
+- an interval, in seconds, the command will be repeatedly executed, 
+- a time-out, in seconds, the execution of the command will time out, and lastly, 
+- a boolean parameter to make the command execute immediately every time the state of the input channel has changed. 
+
+For each command a separate Thing has to be defined.
 
 ```
 Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5, autorun=false]
 ```
 
-```command``` itseld can be enhanced using the well known syntax of the java.util.Formatter class. The following parameters are automatically added:
+```command``` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
+The following parameters are automatically added:
 
-the current date (as java.util.Date, example: %1$tY-%1$tm-%1$td)
-the current State of the input channel (see below, example: %2$s)
+- the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
+- the current State of the input channel (see below, example: `%2$s`)
 
 ## Channels
 
@@ -39,14 +47,14 @@ All Things support the following channels:
 
 ## Full Example
 
-demo.Things:
+**demo.things**
 
 ```
 Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5]
 Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2$s", transform="REGEX((.*?))"]
 ```
 
-demo.items:
+**demo.items**
 
 ```
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"} 

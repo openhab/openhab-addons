@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
+>
+    <config-description uri="binding:zway:zwayServer">
+		<parameter-group name="openhab">
+		    <label>openHAB</label>
+		    <description>The Z-Way server requires this information to notify the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
+		</parameter-group>
+
+		<parameter-group name="zwayServer">
+            <label>Z-Way server</label>
+            <description>The configuration of the Z-Way server. Except for the username and password all the information detected during the discovery.</description>
+        </parameter-group>
+
+		<parameter-group name="binding">
+            <label>Options</label>
+            <description>These settings affect functions of the binding.</description>
+        </parameter-group>
+
+		<parameter name="openHABAlias" groupName="openhab" type="text" required="false">
+		    <label>Alias</label>
+		    <description>Alias used in openHAB connector. By default, the alias is generated.</description>
+		</parameter>
+
+		<parameter name="openHABIpAddress" groupName="openhab" type="text">
+            <context>network-address</context>
+            <label>IP address</label>
+            <description>The IP address or hostname of the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
+            <default>localhost</default>
+        </parameter>
+
+        <parameter name="openHABPort" groupName="openhab" type="integer" required="false" min="0" max="65335">
+            <label>Port</label>
+            <description>The port of the openHAB server.</description>
+            <default>8080</default>
+        </parameter>
+
+        <parameter name="openHABProtocol" groupName="openhab" type="text" required="false">
+            <label>Protocol</label>
+            <description>Protocol to connect to the openHAB server (http or https).</description>
+            <default>http</default>
+            <options>
+                <option value="http">HTTP</option>
+                <option value="https">HTTPS</option>
+            </options>
+        </parameter>
+
+		<parameter name="zwayServerIpAddress" groupName="zwayServer" type="text">
+		    <context>network-address</context>
+		    <label>IP address</label>
+		    <description>The IP address or hostname of the Z-Way server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
+		    <default>localhost</default>
+		</parameter>
+
+		<parameter name="zwayServerPort" groupName="zwayServer" type="integer" required="false" min="0" max="65335">
+		    <label>Port</label>
+		    <description>The port of the Z-Way server</description>
+		    <default>8083</default>
+		</parameter>
+
+		<parameter name="zwayServerProtocol" groupName="zwayServer" type="text" required="false">
+		    <label>Protocol</label>
+		    <description>Protocol to connect to the Z-Way server (http or https)</description>
+		    <default>http</default>
+		    <options>
+		        <option value="http">HTTP</option>
+		        <option value="https">HTTPS</option>
+		    </options>
+		</parameter>
+
+		<parameter name="zwayServerUsername" groupName="zwayServer" type="text">
+		    <label>Username</label>
+		    <description>Username to access the Z-Way server.</description>
+		    <default>admin</default>
+		</parameter>
+
+		<parameter name="zwayServerPassword" groupName="zwayServer" type="text" required="true">
+		    <context>password</context>
+		    <label>Password</label>
+		    <description>Password to access the Z-Way server.</description>
+		</parameter>
+
+		<parameter name="pollingInterval" groupName="binding" type="integer" required="false" min="60" max="3600" unit="s">
+		    <label>Polling Interval</label>
+		    <description>Refresh device states and registration from Z-Way server.</description>
+		    <unitLabel>Seconds</unitLabel>
+		    <default>3600</default>
+		</parameter>
+
+		<parameter name="observerMechanismEnabled" groupName="binding" type="boolean" required="false">
+            <label>Observer mechanism enabled</label>
+            <description>The observer functionality is responsible for the item registration as observer in Z-Way. Attention: if disable this option, you have to setup an other synchronization mechanism like MQTT.</description>
+            <default>true</default>
+        </parameter>
+    </config-description>
+
+</config-description:config-descriptions>

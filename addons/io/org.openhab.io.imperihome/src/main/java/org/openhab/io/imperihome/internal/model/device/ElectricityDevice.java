@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
     private static final String LINK_KWH = "kwh";
 
     public ElectricityDevice(Item item) {
-        super(DeviceType.ELECTRICITY, item, null);
+        super(DeviceType.ELECTRICITY, item, "W");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
 
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
 
-        if (getLinks().containsKey(LINK_WATTS)) {
+        if (getLinks().containsKey(LINK_WATTS) || getUnit().equalsIgnoreCase(LINK_KWH)) {
             addParam(new NumericValueParam(ParamType.KWH, getUnit(), value));
         } else if (getLinks().isEmpty() || getLinks().containsKey(LINK_KWH)) {
             addParam(new NumericValueParam(ParamType.WATTS, getUnit(), value));

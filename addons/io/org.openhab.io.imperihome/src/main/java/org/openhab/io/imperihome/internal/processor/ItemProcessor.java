@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.io.imperihome.internal.ImperiHomeConfig;
 import org.openhab.io.imperihome.internal.action.ActionRegistry;
 import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 import org.openhab.io.imperihome.internal.model.device.AbstractNumericValueDevice;
@@ -42,12 +43,16 @@ import org.openhab.io.imperihome.internal.model.device.PressureDevice;
 import org.openhab.io.imperihome.internal.model.device.RainDevice;
 import org.openhab.io.imperihome.internal.model.device.RgbLightDevice;
 import org.openhab.io.imperihome.internal.model.device.SceneDevice;
+import org.openhab.io.imperihome.internal.model.device.ShutterDevice;
 import org.openhab.io.imperihome.internal.model.device.SwitchDevice;
 import org.openhab.io.imperihome.internal.model.device.TempHygroDevice;
 import org.openhab.io.imperihome.internal.model.device.TemperatureDevice;
+import org.openhab.io.imperihome.internal.model.device.ThermostatDevice;
 import org.openhab.io.imperihome.internal.model.device.TrippableDevice;
 import org.openhab.io.imperihome.internal.model.device.UvDevice;
 import org.openhab.io.imperihome.internal.model.device.WindDevice;
+import org.openhab.io.imperihome.internal.model.param.DeviceParam;
+import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,11 +72,14 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     private final ItemRegistry itemRegistry;
     private final DeviceRegistry deviceRegistry;
     private final ActionRegistry actionRegistry;
+    private final ImperiHomeConfig config;
 
-    public ItemProcessor(ItemRegistry itemRegistry, DeviceRegistry deviceRegistry, ActionRegistry actionRegistry) {
+    public ItemProcessor(ItemRegistry itemRegistry, DeviceRegistry deviceRegistry, ActionRegistry actionRegistry,
+            ImperiHomeConfig config) {
         this.itemRegistry = itemRegistry;
         this.deviceRegistry = deviceRegistry;
         this.actionRegistry = actionRegistry;
+        this.config = config;
 
         allItemsChanged(null);
         itemRegistry.addRegistryChangeListener(this);
@@ -81,11 +89,11 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         itemRegistry.removeRegistryChangeListener(this);
 
         // Destroy all Devices (unregisters state listeners)
-        for (Item item : itemRegistry.getItems()) {
-            String deviceId = getDeviceId(item);
-            if (deviceRegistry.hasDevice(deviceId)) {
-                deviceRegistry.remove(deviceId).destroy();
+        synchronized (deviceRegistry) {
+            for (AbstractDevice device : deviceRegistry) {
+                device.destroy();
             }
+            deviceRegistry.clear();
         }
     }
 
@@ -104,18 +112,41 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                 device.setInverted(isInverted(issTags));
                 device.setActionRegistry(actionRegistry);
 
+                setIcon(device, issTags);
                 setDeviceRoom(device, issTags);
                 setDeviceLinks(device, item, issTags);
                 setMapping(device, item, issTags);
                 setUnit(device, issTags);
 
+                device.processCustomTags(issTags);
+
                 // Set initial state
+                logger.debug("Setting initial state of {} to {}", device, item.getState());
                 device.stateUpdated(item, item.getState());
 
                 logger.debug("Item parsed to device: {}", device);
-                deviceRegistry.add(device);
+                synchronized (deviceRegistry) {
+                    deviceRegistry.add(device);
+                }
             }
         }
+    }
+
+    private void setIcon(AbstractDevice device, Map<TagType, List<String>> issTags) {
+        if (!issTags.containsKey(TagType.ICON)) {
+            return;
+        }
+
+        String icon = issTags.get(TagType.ICON).get(0);
+        if (!icon.toLowerCase().startsWith("http")) {
+            if (StringUtils.isEmpty(config.getRootUrl())) {
+                logger.error("Can't set icon; 'openhab.rootUrl' not set in configuration");
+                return;
+            }
+            icon = config.getRootUrl() + "icon/" + icon;
+        }
+
+        device.addParam(new DeviceParam(ParamType.DEFAULT_ICON, icon));
     }
 
     private AbstractDevice getDeviceInstance(DeviceType deviceType, Item item) {
@@ -156,6 +187,10 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                 return new WindDevice(item);
             case LOCK:
                 return new LockDevice(item);
+            case SHUTTER:
+                return new ShutterDevice(item);
+            case THERMOSTAT:
+                return new ThermostatDevice(item);
             case CO2_ALERT:
             case SMOKE:
             case DOOR:
@@ -177,7 +212,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         if (StringUtils.isNotBlank(item.getLabel())) {
             String label = item.getLabel().trim();
             if (label.matches("\\[.*\\]$")) {
-                label = label.substring(0, label.indexOf("["));
+                label = label.substring(0, label.indexOf('['));
             }
             return label;
         }
@@ -211,6 +246,13 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                     device.addLink(parts[0].toLowerCase().trim(), parts[1].trim());
                 } else {
                     logger.error("Item has incorrect link format (should be 'iss:link:<type>:<item>'): {}", item);
+                }
+            }
+
+            // Check required links
+            for (String requiredLink : device.getType().getRequiredLinks()) {
+                if (!device.getLinks().containsKey(requiredLink)) {
+                    logger.error("Item doesn't contain required link {} for {}: {}", requiredLink, device.getType().getApiString(), item);
                 }
             }
         }
@@ -298,13 +340,13 @@ public class ItemProcessor implements ItemRegistryChangeListener {
             if (tag.startsWith(PREFIX_ISS)) {
                 String issTag = tag.substring(PREFIX_ISS.length());
                 for (TagType tagType : TagType.values()) {
-                    if (issTag.startsWith(tagType.getPrefix() + ":")) {
+                    if (issTag.startsWith(tagType.getPrefix() + ':')) {
                         String tagValue = issTag.substring(tagType.getPrefix().length() + 1);
                         if (!tags.containsKey(tagType)) {
                             tags.put(tagType, new LinkedList<String>());
                         } else if (!tagType.isMultiValue()) {
-                            logger.error("Found multiple values for tag " + tagType.getPrefix()
-                                    + " - only first value is used");
+                            logger.error("Found multiple values for tag {} - only first value is used",
+                                    tagType.getPrefix());
                         }
                         tags.get(tagType).add(tagValue);
                         break;
@@ -332,14 +374,22 @@ public class ItemProcessor implements ItemRegistryChangeListener {
      */
     private void removeItem(String itemName) {
         String deviceId = getDeviceId(itemName);
-        if (deviceRegistry.hasDevice(deviceId)) {
+
+        AbstractDevice device;
+        synchronized (deviceRegistry) {
+            device = deviceRegistry.remove(deviceId);
+        }
+
+        if (device != null) {
             logger.debug("Removing Device from ISS registry for Item: {}", itemName);
-            deviceRegistry.remove(deviceId).destroy();
+            device.destroy();
         }
     }
 
     /**
      * Generates an unique device ID for the given item.
+     * @param item Item to get device ID for.
+     * @return Device ID.
      */
     public static String getDeviceId(Item item) {
         return getDeviceId(item.getName());
@@ -347,6 +397,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Generates an unique device ID for the given item name.
+     * @param itemName Item name.
+     * @return Device ID.
      */
     public static String getDeviceId(String itemName) {
         return DigestUtil.sha1(itemName);
@@ -354,36 +406,43 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     @Override
     public void added(Item item) {
+        logger.debug("Processing item added event");
         parseItem(item);
     }
 
     @Override
     public void removed(Item item) {
+        logger.debug("Processing item removed event");
         removeItem(item);
     }
 
     @Override
     public void updated(Item oldItem, Item newItem) {
+        logger.debug("Processing item updated event");
         removeItem(oldItem);
         parseItem(newItem);
     }
 
     @Override
     public void allItemsChanged(Collection<String> oldItems) {
-        if (oldItems != null) {
-            for (String oldItem : oldItems) {
-                removeItem(oldItem);
+        synchronized (deviceRegistry) {
+            logger.debug("Processing allItemsChanged event");
+
+            if (oldItems != null) {
+                for (String oldItem : oldItems) {
+                    removeItem(oldItem);
+                }
             }
-        }
 
-        if (deviceRegistry.hasDevices()) {
-            logger.warn("There are still Devices left after processing all Items from allItemsChanged(): "
-                    + deviceRegistry.getDevices());
-            deviceRegistry.clear();
-        }
+            if (deviceRegistry.hasDevices()) {
+                logger.warn("There are still Devices left after processing all Items from allItemsChanged(): {}",
+                        deviceRegistry.getDevices());
+                deviceRegistry.clear();
+            }
 
-        for (Item item : itemRegistry.getItems()) {
-            parseItem(item);
+            for (Item item : itemRegistry.getItems()) {
+                parseItem(item);
+            }
         }
     }
 
