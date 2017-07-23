@@ -14,11 +14,7 @@
     </parent>
 
     <properties>
-        <bundle.symbolicName>org.openhab.binding.rfxcom.test</bundle.symbolicName>
-        <bundle.namespace>org.openhab.binding.rfxcom.test</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <build>

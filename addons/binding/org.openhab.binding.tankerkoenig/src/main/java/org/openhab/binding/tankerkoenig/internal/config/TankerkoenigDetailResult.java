@@ -9,6 +9,8 @@
 
 package org.openhab.binding.tankerkoenig.internal.config;
 
+import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+
 /***
  * The {@link TankerkoenigDetailResult} class is the representing java model for the json result of the tankerkoenig.de
  * details request
@@ -24,6 +26,7 @@ public class TankerkoenigDetailResult {
     private boolean wholeDay;
     private OpeningTimes openingTimes;
     private LittleStation littleStation;
+    private String message;
 
     public boolean isOk() {
         return ok;
@@ -44,6 +47,7 @@ public class TankerkoenigDetailResult {
     public static TankerkoenigDetailResult emptyResult() {
         TankerkoenigDetailResult emptyResult = new TankerkoenigDetailResult();
         emptyResult.setOk(false);
+        emptyResult.setMessage(TankerkoenigBindingConstants.NO_VALID_RESPONSE);
         return emptyResult;
     }
 
@@ -61,5 +65,13 @@ public class TankerkoenigDetailResult {
 
     public void setOpeningTimes(OpeningTimes openingTimes) {
         this.openingTimes = openingTimes;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

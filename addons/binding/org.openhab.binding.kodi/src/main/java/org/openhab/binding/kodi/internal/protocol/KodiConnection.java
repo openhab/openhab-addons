@@ -120,7 +120,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", "-1");
+        params.addProperty("speed", -2);
         socket.callMethod("Player.SetSpeed", params);
 
         updatePlayerStatus();
@@ -131,7 +131,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", "2");
+        params.addProperty("speed", 2);
         socket.callMethod("Player.SetSpeed", params);
 
         updatePlayerStatus();

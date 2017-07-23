@@ -98,6 +98,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         }
         logger.debug("Init socket on Port: {}", port);
         socket = new XiaomiBridgeSocket(port);
+        socket.intialize();
         socket.registerListener(this);
 
         scheduler.schedule(() -> {

@@ -58,6 +58,7 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         socket = (socket == null) ? new XiaomiDiscoverySocket() : socket;
+        socket.intialize();
         logger.debug("Start scan for bridges");
         socket.registerListener(this);
         discoverGateways();

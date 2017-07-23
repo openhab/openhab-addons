@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
+import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -62,16 +63,14 @@ import java.util.concurrent.TimeUnit;
 public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpontaneousEventListener, AudioSink {
 
     private static final String MEDIA_PLAYER = "CC1AD845";
-
-    private static AudioFormat mp3 = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, null,
-            null, null);
-    private static AudioFormat wav = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null,
-            null, null, null);
-    private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
+    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
+    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     static {
-        supportedFormats.add(wav);
-        supportedFormats.add(mp3);
+        SUPPORTED_FORMATS.add(AudioFormat.MP3);
+        SUPPORTED_FORMATS.add(AudioFormat.WAV);
+
+        SUPPORTED_STREAMS.add(AudioStream.class);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -386,7 +385,8 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     }
 
     @Override
-    public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
+    public void process(AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         String url;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
@@ -407,8 +407,8 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                 return;
             }
         }
-        String mimeType =
-            Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg" : "audio/wav";
+        String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
+                : "audio/wav";
         playMedia("Notification", url, mimeType);
     }
 
@@ -421,11 +421,12 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                     logger.debug("Application launched: {}", app);
                 }
                 if (url != null) {
-                    /* If the current track is paused, launching a new request results in nothing happening, therefore
-                    resume current track */
+                    /*
+                     * If the current track is paused, launching a new request results in nothing happening, therefore
+                     * resume current track
+                     */
                     MediaStatus ms = chromecast.getMediaStatus();
-                    if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState
-                            && url.equals(ms.media.url)) {
+                    if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState && url.equals(ms.media.url)) {
                         logger.debug("Current stream paused, resuming");
                         chromecast.play();
                     } else {
@@ -444,7 +445,12 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return supportedFormats;
+        return SUPPORTED_FORMATS;
+    }
+
+    @Override
+    public Set<Class<? extends AudioStream>> getSupportedStreams() {
+        return SUPPORTED_STREAMS;
     }
 
     @Override

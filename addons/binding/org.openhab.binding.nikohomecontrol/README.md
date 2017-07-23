@@ -8,6 +8,9 @@ It has also been confirmed to work with the Niko Home Control Connected Controll
 
 The binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control programming software.
 
+Supported actions are types are switches, dimmers and rollershutters.
+Niko Home Control alarm and notice messages are retrieved and made available in the binding.
+
 ## Supported Things
 
 The Niko Home Control Controller is represented as a bridge in the binding.
@@ -90,6 +93,8 @@ For thing type `dimmer` the supported channel is `brightness`. OnOff, IncreaseDe
 
 For thing type `blind` the supported channel is `rollershutter`. UpDown, StopMove and Percent command types are supported.
 
+The bridge has two trigger channels `alarm` and `notice`. It can be used as a trigger to rules. The event message is the alarm or notice text coming from Niko Home Control.
+
 
 ## Limitations
 
@@ -134,4 +139,18 @@ Switch item=LivingRoom
 Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
 Rollershutter item=Kitchen
+```
+
+Example trigger rule:
+
+```
+rule "example trigger rule"
+when
+    Channel 'nikohomecontrol:bridge:nhc1:alarm' triggered or
+    Channel 'nikohomecontrol:bridge:nhc1:notice' triggered
+then
+    var message = receivedEvent.getEvent()
+    logInfo("nhcTriggerExample", "Message: {}", message)
+    ...
+end
 ```

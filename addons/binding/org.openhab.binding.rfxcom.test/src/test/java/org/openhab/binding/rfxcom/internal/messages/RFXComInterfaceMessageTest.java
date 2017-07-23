@@ -48,8 +48,8 @@ public class RFXComInterfaceMessageTest {
     }
 
     @Test
-    public void testResetBecauseOfUnknownMessage() throws RFXComException {
-        testMessage("0D01FF190053E2000C2701020000", UNKNOWN_COMMAND, 25, RESET, true);
+    public void testRespondOnUnknownMessage() throws RFXComException {
+        testMessage("0D01FF190053E2000C2701020000", UNKNOWN_COMMAND, 25, UNSUPPORTED_COMMAND, true);
     }
 
     @Test
