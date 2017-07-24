@@ -39,7 +39,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     /**
      * Name of a Squeeze Server
      */
-    private static final String MODELNAME = "Logitech Media Server";
+    private static final String MODEL_NAME = "Logitech Media Server";
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
@@ -91,7 +91,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     public ThingUID getThingUID(RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getFriendlyName() != null) {
-                if (device.getDetails().getModelDetails().getModelName().contains(MODELNAME)) {
+                if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
                     logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),
                             device.getIdentity().getUdn().getIdentifierString());
                     return new ThingUID(SQUEEZEBOXSERVER_THING_TYPE,
