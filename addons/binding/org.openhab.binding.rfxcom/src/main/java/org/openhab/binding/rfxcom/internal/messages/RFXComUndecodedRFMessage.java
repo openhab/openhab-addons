@@ -101,13 +101,9 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
 
     @Override
     public String toString() {
+        String str = super.toString();
 
-        String str = "";
-
-        str += super.toString();
-        str += "\n - Sub type = " + subType;
-        str += "\n - Id = " + getDeviceId();
-        str += "\n - Message = " + DatatypeConverter.printHexBinary(rawMessage);
+        str += ", Sub type = " + subType;
 
         return str;
     }
