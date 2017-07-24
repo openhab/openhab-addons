@@ -61,12 +61,12 @@ public class S7ThingHandler extends S7BaseThingHandler {
 
                 if (setOn != lastState) {
                     lastUpdate = System.currentTimeMillis();
-                    logger.info("Prepare setting S7 lamp {} to {}.", getThing().getLabel(), setOn);
+                    logger.debug("Prepare setting S7 lamp {} to {}.", getThing().getLabel(), setOn);
 
                     Thread t = new Thread() {
                         @Override
                         public void run() {
-                            logger.info("Setting S7 lamp {} to {}.", getThing().getLabel(), setOn);
+                            logger.debug("Setting S7 lamp {} to {}.", getThing().getLabel(), setOn);
 
                             try {
                                 S7BridgeHandler bridge = (S7BridgeHandler) getBridge().getHandler();
@@ -115,8 +115,9 @@ public class S7ThingHandler extends S7BaseThingHandler {
     public void processNewData(Dictionary<Integer, byte[]> data) {
         super.processNewData(data);
 
-        if (this.getThing().getThingTypeUID() != THING_TYPE_PUSHBUTTON
-                && this.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (this.getThing().getStatus() == ThingStatus.ONLINE
+                && !this.getThing().getThingTypeUID().equals(THING_TYPE_PUSHBUTTON)
+                && !getConfig().get(ACCESS_MODE).equals(MODE_PUSHBUTTON)) {
             int area = 0;
             int address = 0;
             byte[] buffer = null;
@@ -124,7 +125,8 @@ public class S7ThingHandler extends S7BaseThingHandler {
             BigDecimal value = (java.math.BigDecimal) getConfig().get(OUTPUT_DBAREA);
             if (value == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Cannot retrieve output DB Area.");
+                        "Cannot retrieve output DB Area for thing of access mode " + getConfig().get(ACCESS_MODE)
+                                + ".");
                 return;
             }
             area = value.intValue();

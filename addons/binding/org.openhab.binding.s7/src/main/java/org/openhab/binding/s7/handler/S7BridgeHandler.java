@@ -111,7 +111,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
 
                     if (S7BaseThingHandler.class.isInstance(handler)) {
                         S7BaseThingHandler s7handler = (S7BaseThingHandler) handler;
-                        s7handler.ProcessNewData(data);
+                        s7handler.processNewData(data);
                     }
                 }
             }
@@ -279,9 +279,8 @@ public class S7BridgeHandler extends BaseBridgeHandler {
             }
         }
 
-        if (nReadError == 20) {
-            this.destroyClient();
-            this.createClient();
+        if (nReadError == 10) {
+            onConnectionLost();
         }
 
         return data;
@@ -314,27 +313,31 @@ public class S7BridgeHandler extends BaseBridgeHandler {
     private void onConnectionLost() {
         if (runningState || initializingState) {
             runningState = false;
+            if (client != null) {
+                destroyClient();
+            }
+
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     S7Client.ErrorText(client.LastError));
 
-            new Thread() {
+            super.scheduler.schedule(new Thread() {
                 @Override
                 public void run() {
                     while (!client.Connected) {
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
-                        }
-
                         if (client == null) {
                             createClient();
                         } else if (!client.Connected) {
                             connectClient();
                         }
+
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
+                        }
                     }
                 }
-            }.start();
+            }, 2000, TimeUnit.MILLISECONDS);
         }
     }
 }
