@@ -18,7 +18,7 @@ The following parameters can be defined:
 * ```server``` (The OpenHab bridge)
   * ```ipAddress```: The IP address of the PLC.
   * ```localTSAP``` and ```remoteTSAP```: Defines the endpoints. For more details, see the [details](http://snap7.sourceforge.net/plc_connection.html) on Snap7 website. 
-  * pollingInterval: Defines the delay between reading PLC
+  * ```pollingInterval```: Defines the delay between reading PLC
 * ```switch```, ```light```, ```contact``` or ```pushbutton``` (The OpenHab things)
   * ```accessMode```: Defines the access mode to the things
     * ```ToggleMode```: Means that a pulse is sent to the input area/address to toggle the thing state.
