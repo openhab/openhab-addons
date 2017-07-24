@@ -9,14 +9,15 @@
 package org.openhab.binding.homematic.internal.communicator;
 
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 
 /**
- * Listener with methods called from events within the {@link HomematicGateway} class.
+ * Adapter with methods called from events within the {@link HomematicGateway} class.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public interface HomematicGatewayListener {
+public interface HomematicGatewayAdapter {
 
     /**
      * Called when a datapoint has been updated.
@@ -62,4 +63,10 @@ public interface HomematicGatewayListener {
      * Called when the connection is resumed to the gateway.
      */
     public void onConnectionResumed();
+
+    /**
+     * Returns the configuration of a datapoint.
+     */
+    public HmDatapointConfig getDatapointConfig(HmDatapoint dp);
+
 }

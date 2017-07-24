@@ -131,9 +131,16 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        handleRefresh(channelUID);
+    }
+
+    /**
+     * Updates the state of the given channel.
+     */
+    protected void handleRefresh(ChannelUID channelUID) {
         try {
             if (thing.getStatus() == ThingStatus.ONLINE) {
-                logger.debug("Channel linked '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
+                logger.debug("Updating channel '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
                 updateChannelState(channelUID);
             }
         } catch (Exception ex) {
@@ -308,6 +315,15 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     private boolean isLinked(Channel channel) {
         return channel != null && super.isLinked(channel.getUID().getId());
+    }
+
+    /**
+     * Returns the channel config for the given datapoint.
+     */
+    protected HmDatapointConfig getChannelConfig(HmDatapoint dp) {
+        ChannelUID channelUid = UidUtils.generateChannelUID(dp, getThing().getUID());
+        Channel channel = getThing().getChannel(channelUid.getId());
+        return channel != null ? getChannelConfig(channel, dp) : new HmDatapointConfig();
     }
 
     /**
