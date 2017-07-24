@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.NotAuthorizedException;
-
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
@@ -25,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
+import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxNotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Discovers a SqueezeServer on the network using UPNP
  *
  * @author Dan Cunningham
+ * @author Mark Hilbush - Add support for LMS authentication
  *
  */
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
@@ -39,7 +39,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     /**
      * Name of a Squeeze Server
      */
-    private static String modelName = "Logitech Media Server";
+    private static final String MODELNAME = "Logitech Media Server";
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
@@ -62,7 +62,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
             try {
                 cliPort = HttpUtils.getCliPort(host, webPort);
-            } catch (NotAuthorizedException e) {
+            } catch (SqueezeBoxNotAuthorizedException e) {
                 logger.debug("Not authorized to query CLI port from Squeeze Server. Setting CLI to default of 9090");
                 cliPort = 9090;
             } catch (Exception e) {
@@ -91,7 +91,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     public ThingUID getThingUID(RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getFriendlyName() != null) {
-                if (device.getDetails().getModelDetails().getModelName().contains(modelName)) {
+                if (device.getDetails().getModelDetails().getModelName().contains(MODELNAME)) {
                     logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),
                             device.getIdentity().getUdn().getIdentifierString());
                     return new ThingUID(SQUEEZEBOXSERVER_THING_TYPE,

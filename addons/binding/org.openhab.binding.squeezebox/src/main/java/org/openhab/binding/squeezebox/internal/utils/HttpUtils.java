@@ -12,8 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.NotAuthorizedException;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -31,11 +29,12 @@ import com.google.gson.JsonParser;
  *
  * @author Dan Cunningham
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
+ * @author Mark Hilbush - Add support for LMS authentication
  */
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static int timeout = 5000;
+    private static final int TIMEOUT = 5000;
     private static HttpClient client = new HttpClient();
     /**
      * JSON request to get the CLI port from a Squeeze Server
@@ -49,7 +48,7 @@ public class HttpUtils {
      * @param timeout
      * @return
      */
-    public static String post(String url, String postData) throws Exception, NotAuthorizedException {
+    public static String post(String url, String postData) throws Exception, SqueezeBoxNotAuthorizedException {
         if (!client.isStarted()) {
             client.start();
         }
@@ -58,7 +57,7 @@ public class HttpUtils {
         ContentResponse response = client.newRequest(url)
                 .method(HttpMethod.POST)
                 .content(new StringContentProvider(postData))
-                .timeout(timeout, TimeUnit.MILLISECONDS)
+                .timeout(TIMEOUT, TimeUnit.MILLISECONDS)
                 .send();
 
         int statusCode = response.getStatus();
@@ -66,7 +65,7 @@ public class HttpUtils {
         if (statusCode == HttpStatus.UNAUTHORIZED_401) {
             String statusLine = response.getStatus() + " " + response.getReason();
             logger.error("Received '{}' from squeeze server", statusLine);
-            throw new NotAuthorizedException("Unauthorized: " + statusLine);
+            throw new SqueezeBoxNotAuthorizedException("Unauthorized: " + statusLine);
         }
 
         if (statusCode != HttpStatus.OK_200) {
