@@ -10,10 +10,10 @@
 			<description>Delays transmission of a command to the Homematic gateway, duplicate commands are filtered out (in seconds)</description>
 			<default>0.0</default>
 		</parameter>
-        <parameter name="receiveDelay" type="decimal" min="0.0" max="86400.0">
-            <label>Receive Delay</label>
-            <description>Delays a received event from the Homematic gateway, duplicate events are filtered out (in seconds)</description>
-            <default>0.0</default>
-        </parameter>
+		<parameter name="receiveDelay" type="decimal" min="0.0" max="86400.0">
+			<label>Receive Delay</label>
+			<description>Delays a received event from the Homematic gateway, duplicate events are filtered out (in seconds)</description>
+			<default>0.0</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
