@@ -310,7 +310,8 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
              * firmware version and pray. This condition below is taken from the
              * openhab1-addons binding.
              */
-            if ((firmwareVersion >= 95 && firmwareVersion <= 100) || (firmwareVersion >= 195 && firmwareVersion <= 200) || (firmwareVersion >= 251)) {
+            if ((firmwareVersion >= 95 && firmwareVersion <= 100) || (firmwareVersion >= 195 && firmwareVersion <= 200)
+                    || (firmwareVersion >= 251)) {
                 enableHomeConfortPackets = (data[10] & 0x02) != 0;
                 enableKEELOQPackets = (data[10] & 0x01) != 0;
 

@@ -249,7 +249,8 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 
             case SUN_WIND_DETECTOR:
                 if (type instanceof OnOffType) {
-                    this.command = (type == OnOffType.ON ? Commands.ENABLE_SUN_WIND_DETECTOR : Commands.DISABLE_SUN_DETECTOR);
+                    this.command = (type == OnOffType.ON ? Commands.ENABLE_SUN_WIND_DETECTOR
+                            : Commands.DISABLE_SUN_DETECTOR);
 
                 } else {
                     throw new NumberFormatException("Can't convert " + type + " to Command");

@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
+import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
@@ -26,8 +26,8 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     private byte[] data = new byte[14];
 
-
-    public RFXComInterfaceControlMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration) {
+    public RFXComInterfaceControlMessage(RFXComInterfaceMessage.TransceiverType transceiverType,
+            RFXComBridgeConfiguration configuration) {
         data[0] = 0x0D;
         data[1] = RFXComBaseMessage.PacketType.INTERFACE_CONTROL.toByte();
         data[2] = 0;

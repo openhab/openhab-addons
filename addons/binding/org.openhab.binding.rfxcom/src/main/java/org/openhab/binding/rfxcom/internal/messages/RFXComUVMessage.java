@@ -56,8 +56,8 @@ public class RFXComUVMessage extends RFXComBaseMessage {
     }
 
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL,
-            RFXComValueSelector.UV, RFXComValueSelector.TEMPERATURE);
+            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.UV,
+            RFXComValueSelector.TEMPERATURE);
 
     private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
