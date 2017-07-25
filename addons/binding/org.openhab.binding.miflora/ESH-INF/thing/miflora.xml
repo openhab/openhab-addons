@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miflora" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- This thing represents a Mi Flora plug that goes into the plant pot  . -->
+	<thing-type id="flora">
+		<label>Flora Sensor</label>
+		<description>Flora sensor for the miflora binding</description>
+
+		<channel-groups>
+			<channel-group typeId="descriptors" id="descriptors"/>
+			<channel-group typeId="measurements" id="measurements"/>
+			<channel-group typeId="thresholds" id="thresholds"/>
+		</channel-groups>
+
+		<properties>
+			<property name="bluetoothAddress">Bluetooth Address</property>
+			<property name="mqttTopic">MQTT Topic</property>
+			<property name="refreshInterval">refresh Interval</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:miflora:config" />
+	</thing-type>
+
+</thing:thing-descriptions>

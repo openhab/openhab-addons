@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:miflora:config">
+
+		<!-- TODO address definition could come from ESH core -->
+		<parameter name="bluetoothAddress" type="text">
+			<label>Bluetooth Address</label>
+			<description>Address of the plug, can be found by scanning the network.</description>
+		</parameter>
+
+		<!-- TODO topic definition could come from ESH core -->
+		<parameter name="mqttTopic" type="text">
+			<label>MQTT Topic</label>
+			<description>Topic(s) into which the plant data will be written into.</description>
+		</parameter>
+
+		<parameter name="refreshInterval" type="integer" min="1" max="86400">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for Mi Flora data in seconds.</description>
+			<default>3600</default>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

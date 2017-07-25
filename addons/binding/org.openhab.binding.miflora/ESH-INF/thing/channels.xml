@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miflora"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Groups to better manage link display -->
+	<channel-group-type id="descriptors">
+		<label>Descriptors</label>
+		<description>Plant descriptors like name, etc.</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="measurements">
+		<label>Measurements</label>
+		<description>Measurements as fetched from the API</description>
+		<channels>
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="luminance" typeId="luminance"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="moisture" typeId="moisture"/>
+			<channel id="fertility" typeId="fertility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="thresholds">
+		<label>Thresholds</label>
+		<description>Alert Thresholds for Measurements</description>
+		<channels>
+			<channel id="low-moisture-level" typeId="low-moisture-level"/>
+			<channel id="high-moisture-level" typeId="high-moisture-level"/>
+			<channel id="low-fertility-level" typeId="low-fertility-level"/>
+			<channel id="high-fertility-level" typeId="high-fertility-level"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- The channels themselves -->
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the plant</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>Current battery level</description>
+		<category>Battery</category>
+		<state readOnly="true" pattern="%.1f"/>				
+	</channel-type>
+
+	<channel-type id="luminance">
+		<item-type>Number</item-type>
+		<label>Luminance</label>
+		<description>Current luminance in Lux</description>
+		<category>Luminance</category>
+		<state readOnly="true" pattern="%.1f lx"/>				
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="moisture">
+		<item-type>Number</item-type>
+		<label>Moisture</label>
+		<description>Current moisture in %</description>
+		<category>Moisture</category>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="low-moisture-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>Low Moisture</label>
+		<description>Alert Level for low moisture in %</description>
+		<category>Moisture</category>
+		<state readOnly="false" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="high-moisture-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>High Moisture</label>
+		<description>Alert Level for high moisture in %</description>
+		<category>Moisture</category>
+		<state readOnly="false" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="fertility">
+		<item-type>Number</item-type>
+		<label>Fertility</label>
+		<description>Soil fertility (via electrical conductivity)</description>
+		<category>Fertiliy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="low-fertility-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>Low Fertility</label>
+		<description>Alert Level for low soil fertility</description>
+		<category>Fertiliy</category>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="high-fertility-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>High Fertility</label>
+		<description>Alert Level for high soil fertility</description>
+		<category>Fertiliy</category>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+</thing:thing-descriptions>
