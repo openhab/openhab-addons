@@ -251,7 +251,9 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPA, dataPA);
                 nReadError = 0;
             } else {
-                logger.debug(S7Client.ErrorText(client.LastError));
+                if (logger.isDebugEnabled()) {
+                    logger.debug(S7Client.ErrorText(client.LastError));
+                }
                 nReadError++;
             }
 
@@ -259,7 +261,9 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPE, dataPE);
                 nReadError = 0;
             } else {
-                logger.debug(S7Client.ErrorText(client.LastError));
+                if (logger.isDebugEnabled()) {
+                    logger.debug(S7Client.ErrorText(client.LastError));
+                }
                 nReadError++;
             }
 
@@ -267,7 +271,9 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaDB, dataDB);
                 nReadError = 0;
             } else {
-                logger.debug(S7Client.ErrorText(client.LastError));
+                if (logger.isDebugEnabled()) {
+                    logger.debug(S7Client.ErrorText(client.LastError));
+                }
                 nReadError++;
             }
 
@@ -275,7 +281,9 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaMK, dataMK);
                 nReadError = 0;
             } else {
-                logger.debug(S7Client.ErrorText(client.LastError));
+                if (logger.isDebugEnabled()) {
+                    logger.debug(S7Client.ErrorText(client.LastError));
+                }
                 nReadError++;
             }
         }
