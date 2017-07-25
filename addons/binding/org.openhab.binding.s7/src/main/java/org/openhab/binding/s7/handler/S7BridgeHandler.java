@@ -251,9 +251,6 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPA, dataPA);
                 nReadError = 0;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(S7Client.ErrorText(client.LastError));
-                }
                 nReadError++;
             }
 
@@ -261,9 +258,6 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaPE, dataPE);
                 nReadError = 0;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(S7Client.ErrorText(client.LastError));
-                }
                 nReadError++;
             }
 
@@ -271,9 +265,6 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaDB, dataDB);
                 nReadError = 0;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(S7Client.ErrorText(client.LastError));
-                }
                 nReadError++;
             }
 
@@ -281,9 +272,6 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                 data.put(S7.S7AreaMK, dataMK);
                 nReadError = 0;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(S7Client.ErrorText(client.LastError));
-                }
                 nReadError++;
             }
         }
@@ -322,17 +310,19 @@ public class S7BridgeHandler extends BaseBridgeHandler {
     private void onConnectionLost() {
         if (runningState || initializingState) {
             runningState = false;
-            if (client != null) {
-                destroyClient();
-            }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    S7Client.ErrorText(client.LastError));
+            if (client != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        S7Client.ErrorText(client.LastError));
+                destroyClient();
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
 
             super.scheduler.schedule(new Thread() {
                 @Override
                 public void run() {
-                    while (!client.Connected) {
+                    while (client == null || !client.Connected) {
                         if (client == null) {
                             createClient();
                         } else if (!client.Connected) {
