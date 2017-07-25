@@ -59,12 +59,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DEVICE);
 
     // S7 client this bridge belongs to
-    private volatile PLCLogoClient client = null;
-    private Set<PLCBlockHandler> handlers = new HashSet<PLCBlockHandler>();
+    private volatile PLCLogoClient client;
+    private Set<PLCBlockHandler> handlers = new HashSet<>();
     private PLCLogoBridgeConfiguration config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
     private Calendar rtc = Calendar.getInstance();
-    private ScheduledFuture<?> rtcJob = null;
+    private ScheduledFuture<?> rtcJob;
     private final Runnable rtcReader = new Runnable() {
         // Buffer for diagnostic data
         private final byte[] data = { 0, 0, 0, 0, 0, 0, 0 };
@@ -151,15 +151,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     };
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
     public PLCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} on channel {}", command, channelUID);
@@ -277,9 +274,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initialize LOGO! bridge handler.");
@@ -322,9 +316,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Dispose LOGO! bridge handler.");
@@ -363,9 +354,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
@@ -383,9 +371,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof PLCBlockHandler) {
@@ -421,9 +406,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         return rtc;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);

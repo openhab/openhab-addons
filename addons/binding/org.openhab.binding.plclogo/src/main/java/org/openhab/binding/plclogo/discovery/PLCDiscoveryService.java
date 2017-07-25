@@ -57,7 +57,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     private static final int CONNECTION_TIMEOUT = 500;
     private TreeSet<String> addresses = new TreeSet<String>();
 
-    private ExecutorService executor = null;
+    private ExecutorService executor;
 
     private class Runner implements Runnable {
         private final ReentrantLock lock = new ReentrantLock();
@@ -68,9 +68,6 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
             this.host = address;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void run() {
             // gets every ip which can be assigned on the given network
@@ -123,15 +120,12 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
     public PLCDiscoveryService() {
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startScan() {
         if (executor != null) {
@@ -166,9 +160,6 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         stopScan();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected synchronized void stopScan() {
         logger.debug("Stop scan for LOGO! bridge");

@@ -54,15 +54,12 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
     private long oldValue = Long.MAX_VALUE;
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
     public PLCAnalogBlockHandler(Thing thing) {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         final Thing thing = getThing();
@@ -113,9 +110,6 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Dispose LOGO! {} analog handler.", config.getBlockName());
@@ -124,9 +118,6 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         oldValue = Long.MAX_VALUE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setData(final byte[] data) {
         final Thing thing = getThing();
@@ -178,17 +169,11 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getBlockName() {
         return config.getBlockName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PLCLogoDataType getBlockDataType() {
         final String kind = config.getBlockKind();
@@ -210,9 +195,6 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         return config.getType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
@@ -221,9 +203,6 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int getAddress(final String name) {
         int address = -1;
@@ -248,9 +227,6 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         return address;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int getBit(final String name) {
         logger.debug("Get bit of {} LOGO! for block {} .", getLogoFamily(), name);

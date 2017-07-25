@@ -50,13 +50,13 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
     private PLCLogoDigitalConfiguration config = getConfigAs(PLCLogoDigitalConfiguration.class);
     private int oldValue = Integer.MAX_VALUE;
 
+    /**
+     * Constructor.
+     */
     public PLCDigitalBlockHandler(Thing thing) {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         final Thing thing = getThing();
@@ -107,9 +107,6 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Dispose LOGO! {} digital handler.", config.getBlockName());
@@ -118,9 +115,6 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
         oldValue = Integer.MAX_VALUE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setData(final byte[] data) {
         final Thing thing = getThing();
@@ -156,25 +150,16 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getBlockName() {
         return config.getBlockName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PLCLogoDataType getBlockDataType() {
         return config.isBlockValid() ? PLCLogoDataType.BIT : PLCLogoDataType.INVALID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
@@ -183,9 +168,6 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int getAddress(final String name) {
         int address = -1;
@@ -210,9 +192,6 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
         return address;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int getBit(final String name) {
         int bit = -1;

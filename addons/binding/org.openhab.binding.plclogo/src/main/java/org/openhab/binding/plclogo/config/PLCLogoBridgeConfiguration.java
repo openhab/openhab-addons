@@ -19,14 +19,11 @@ import org.openhab.binding.plclogo.PLCLogoBindingConstants;
  */
 public class PLCLogoBridgeConfiguration {
 
-    private String address = null;
-    private String family = null;
-    private String localTSAP = null;
-    private String remoteTSAP = null;
+    private String address;
+    private String family;
+    private String localTSAP;
+    private String remoteTSAP;
     private Integer refresh = 100;
-
-    public PLCLogoBridgeConfiguration() {
-    }
 
     /**
      * Get configured Siemens LOGO! device IP address.

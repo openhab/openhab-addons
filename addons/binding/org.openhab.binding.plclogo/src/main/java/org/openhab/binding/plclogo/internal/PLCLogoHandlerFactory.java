@@ -41,17 +41,11 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ANALOG);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {

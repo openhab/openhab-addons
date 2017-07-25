@@ -40,23 +40,17 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
     private int bit = -1;
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
     public PLCBlockHandler(Thing thing) {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         getBridge().getHandler().handleCommand(channelUID, command);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initialize LOGO! common block handler.");
@@ -83,9 +77,6 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Dispose LOGO! common block handler.");
@@ -157,9 +148,6 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
         return handler.getLogoFamily();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);

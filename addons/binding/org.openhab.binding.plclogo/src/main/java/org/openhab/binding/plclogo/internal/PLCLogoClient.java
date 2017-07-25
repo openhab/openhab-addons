@@ -21,18 +21,10 @@ import Moka7.S7Client;
  */
 public class PLCLogoClient extends S7Client {
 
+    private static final int MAX_RETRY_NUMBER = 10;
     private final Logger logger = LoggerFactory.getLogger(PLCLogoClient.class);
 
     private String address;
-
-    private static final int MAX_RETRY_NUMBER = 10;
-
-    /**
-     * Constructor.
-     */
-    public PLCLogoClient() {
-        super();
-    }
 
     /**
      * Connects a client to a PLC
