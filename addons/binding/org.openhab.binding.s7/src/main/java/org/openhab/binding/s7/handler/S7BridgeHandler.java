@@ -332,7 +332,7 @@ public class S7BridgeHandler extends BaseBridgeHandler {
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException e) {
-                            logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
+                            logger.warn("{}: {}", e.getMessage(), e.getStackTrace().toString());
                         }
                     }
                 }

@@ -96,7 +96,7 @@ public class S7ThingHandler extends S7BaseThingHandler {
                             } catch (InterruptedException e) {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Could not toggle state of " + getThing().getLabel() + ".");
-                                logger.warn(e.getMessage() + ": " + e.getStackTrace().toString());
+                                logger.warn("{}: {}", e.getMessage(), e.getStackTrace().toString());
                             }
                         }
                     };
