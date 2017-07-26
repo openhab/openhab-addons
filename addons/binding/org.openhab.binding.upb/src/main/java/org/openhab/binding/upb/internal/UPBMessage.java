@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016, openHAB.org and others.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -119,7 +119,7 @@ public class UPBMessage {
         NONE;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UPBMessage.class);
+    private final Logger logger = LoggerFactory.getLogger(UPBMessage.class);
 
     private static HashMap<Integer, Command> commandMap = new HashMap<>();
 
@@ -187,7 +187,7 @@ public class UPBMessage {
                 }
             }
         } catch (Exception e) {
-            logger.error("Attempted to parse invalid message: {}", commandString, e);
+            LoggerFactory.getLogger(UPBMessage.class).error("Attempted to parse invalid message: {}", commandString, e);
         }
 
         return command;

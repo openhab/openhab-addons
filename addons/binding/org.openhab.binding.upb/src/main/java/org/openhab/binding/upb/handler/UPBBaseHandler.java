@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,12 +29,12 @@ import org.slf4j.LoggerFactory;
  * Base implementation for handling commands sent to UPB things.
  *
  * @author Chris Van Orman
- * @since 2.0.0
+ * @since 2.2.0
  *
  */
 public abstract class UPBBaseHandler extends BaseThingHandler implements UPBMessageListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(UPBBaseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(UPBBaseHandler.class);
 
     private StateConverter stateConverter = new StateConverter();
     private UPBMessageSender messageSender;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016, openHAB.org and others.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,14 +34,13 @@ public class UPBWriter {
      */
     private static long ACK_TIMEOUT = 1000;
 
-    private static final Logger logger = LoggerFactory.getLogger(UPBWriter.class);
+    private final Logger logger = LoggerFactory.getLogger(UPBWriter.class);
 
     /**
      * Asynchronous queue for writing data to the UPB modem.
      */
-    // private ExecutorService executor = Executors.newSingleThreadExecutor();
     private ExecutorService executor = new ThreadPoolExecutor(0, 1, 1000, TimeUnit.MILLISECONDS,
-            new PriorityBlockingQueue<Runnable>());;
+            new PriorityBlockingQueue<Runnable>());
 
     /**
      * The UPB modem's OutputStream.
@@ -112,7 +111,7 @@ public class UPBWriter {
     /**
      * {@link Runnable} implementation used to write data to the UPB modem.
      *
-     * @author cvanorman
+     * @author Chris Van Orman
      *
      */
     private class Message implements Runnable, Listener {

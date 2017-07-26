@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +16,7 @@ import org.openhab.binding.upb.UPBBindingConstants;
  * {@link UPBBindingConstants#THING_TYPE_SWITCH}.
  *
  * @author Chris Van Orman
- * @since 2.0.0
+ * @since 2.2.0
  */
 public class DeviceHandler extends UPBBaseHandler {
 
