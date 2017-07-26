@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onkyo.internal;
 
-import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
+import static org.openhab.binding.onkyo.OnkyoBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -65,7 +65,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_ONKYOAV) || thingTypeUID.equals(THING_TYPE_ONKYO_UNSUPPORTED)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl();
             OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, audioHTTPServer, callbackUrl);
             if (callbackUrl != null) {

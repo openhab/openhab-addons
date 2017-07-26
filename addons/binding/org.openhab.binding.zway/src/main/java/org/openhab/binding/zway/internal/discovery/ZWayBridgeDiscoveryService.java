@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static int SEARCH_TIME = 240;
+    private static final int SEARCH_TIME = 240;
 
     public ZWayBridgeDiscoveryService() {
         super(ZWayBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
@@ -76,7 +76,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (SocketException e) {
-            logger.warn("Error occured while searching Z-Way servers ({})", e.getMessage());
+            logger.warn("Error occurred while searching Z-Way servers ({})", e.getMessage());
         }
     }
 

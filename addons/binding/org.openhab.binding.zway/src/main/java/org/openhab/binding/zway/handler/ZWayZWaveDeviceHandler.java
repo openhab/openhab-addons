@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.zway.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +37,9 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_DEVICE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZWayZWaveDeviceConfiguration mConfig = null;
 
@@ -106,13 +109,13 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                             addCommandClassThermostatModeAsChannel(modes, mConfig.getNodeId());
                         }
 
-                        // starts polling job and register all linked items
+                        // Starts polling job and register all linked items
                         completeInitialization();
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
-                            logger.error(((Exception) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else if (t instanceof Error) {
-                            logger.error(((Error) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else {
                             logger.error("Unexpected error");
                         }
@@ -183,5 +186,34 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         }
 
         super.dispose();
+    }
+
+    @Override
+    protected void refreshLastUpdate() {
+        logger.debug("Refresh last update for Z-Wave device");
+
+        // Check Z-Way bridge handler
+        ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
+        if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Z-Way bridge handler not found or not ONLINE.");
+            return;
+        }
+
+        // Load and check Z-Wave device from Z-Way server (Z-Wave API)
+        ZWaveDevice zwaveDevice = zwayBridgeHandler.getZWayApi().getZWaveDevice(mConfig.getNodeId());
+        if (zwaveDevice == null) {
+            logger.debug("Z-Wave device not found.");
+            return;
+        }
+
+        Calendar lastUpdateOfDevice = Calendar.getInstance();
+        lastUpdateOfDevice.setTimeInMillis(new Long(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
+
+        if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
+            lastUpdate = lastUpdateOfDevice;
+        }
+
+        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        updateProperty(DEVICE_PROP_LAST_UPDATE, formatter.format(lastUpdate.getTime()));
     }
 }

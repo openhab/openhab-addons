@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,15 @@
  */
 package org.openhab.binding.russound.internal.rio.source;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -17,9 +24,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.russound.internal.net.SocketSession;
-import org.openhab.binding.russound.internal.rio.AbstractBridgeHandler;
+import org.openhab.binding.russound.internal.rio.AbstractRioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.AbstractThingHandler;
 import org.openhab.binding.russound.internal.rio.RioConstants;
-import org.openhab.binding.russound.internal.rio.RioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.RioNamedHandler;
 import org.openhab.binding.russound.internal.rio.StatefulHandlerCallback;
 import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
 import org.slf4j.Logger;
@@ -31,22 +39,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts
  */
-public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
+public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> implements RioNamedHandler {
     // Logger
-    private Logger logger = LoggerFactory.getLogger(RioSourceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RioSourceHandler.class);
 
     /**
      * The source identifier for this instance (1-12)
      */
-    private int _source;
+    private final AtomicInteger source = new AtomicInteger(0);
 
     /**
-     * Constructs the handler from the {@link Bridge}
-     *
-     * @param bridge a non-null {@link Bridge} the handler is for
+     * The source name
      */
-    public RioSourceHandler(Bridge bridge) {
-        super(bridge);
+    private final AtomicReference<String> sourceName = new AtomicReference<String>(null);
+
+    /**
+     * Constructs the handler from the {@link Thing}
+     *
+     * @param thing a non-null {@link Thing} the handler is for
+     */
+    public RioSourceHandler(Thing thing) {
+        super(thing);
     }
 
     /**
@@ -54,8 +67,20 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
      *
      * @return the source identifier
      */
-    public int getSource() {
-        return _source;
+    @Override
+    public int getId() {
+        return source.get();
+    }
+
+    /**
+     * Returns the source name for this instance
+     *
+     * @return the source name
+     */
+    @Override
+    public String getName() {
+        final String name = sourceName.get();
+        return StringUtils.isEmpty(name) ? ("Source " + getId()) : name;
     }
 
     /**
@@ -87,7 +112,22 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
             return;
         }
 
-        logger.debug("There are no channels that allow commands");
+        if (id.equals(RioConstants.CHANNEL_SOURCEBANKS)) {
+            if (command instanceof StringType) {
+                // Remove any state for this channel to ensure it's recreated/sent again
+                // (clears any bad or deleted favorites information from the channel)
+                ((StatefulHandlerCallback) getProtocolHandler().getCallback())
+                        .removeState(RioConstants.CHANNEL_SOURCEBANKS);
+
+                // schedule the returned callback in the future (to allow the channel to process and to allow russound
+                // to process (before re-retrieving information)
+                scheduler.schedule(getProtocolHandler().setBanks(command.toString()), 250, TimeUnit.MILLISECONDS);
+            } else {
+                logger.debug("Received a BANKS channel command with a non StringType: {}", command);
+            }
+        } else {
+            logger.debug("Unknown/Unsupported Channel id: {}", id);
+        }
     }
 
     /**
@@ -110,6 +150,8 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
 
         if (id.equals(RioConstants.CHANNEL_SOURCENAME)) {
             getProtocolHandler().refreshSourceName();
+        } else if (id.startsWith(RioConstants.CHANNEL_SOURCETYPE)) {
+            getProtocolHandler().refreshSourceType();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCECOMPOSERNAME)) {
             getProtocolHandler().refreshSourceComposerName();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCECHANNEL)) {
@@ -123,8 +165,6 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCEALBUMNAME)) {
             getProtocolHandler().refreshSourceAlbumName();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCECOVERARTURL)) {
-            getProtocolHandler().refreshSourceCoverArtUrl();
-        } else if (id.startsWith(RioConstants.CHANNEL_SOURCECOVERART)) {
             getProtocolHandler().refreshSourceCoverArtUrl();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCEPLAYLISTNAME)) {
             getProtocolHandler().refreshSourcePlaylistName();
@@ -148,6 +188,8 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
             getProtocolHandler().refreshSourceRadioText3();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCERADIOTEXT4)) {
             getProtocolHandler().refreshSourceRadioText4();
+        } else if (id.equals(RioConstants.CHANNEL_SOURCEBANKS)) {
+            getProtocolHandler().refreshBanks();
 
         } else {
             // Can't refresh any others...
@@ -192,12 +234,13 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
             return;
         }
 
-        _source = config.getSource();
-        if (_source < 1 || _source > 12) {
+        final int configSource = config.getSource();
+        if (configSource < 1 || configSource > 12) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Source must be between 1 and 12: " + config.getSource());
+                    "Source must be between 1 and 12: " + configSource);
             return;
         }
+        source.set(configSource);
 
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
@@ -207,8 +250,8 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
         }
 
         try {
-            setProtocolHandler(
-                    new RioSourceProtocol(_source, socketSession, new StatefulHandlerCallback(new RioHandlerCallback() {
+            setProtocolHandler(new RioSourceProtocol(configSource, socketSession,
+                    new StatefulHandlerCallback(new AbstractRioHandlerCallback() {
                         @Override
                         public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
                             updateStatus(status, detail, msg);
@@ -216,7 +259,14 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
 
                         @Override
                         public void stateChanged(String channelId, State state) {
-                            updateState(channelId, state);
+                            if (channelId.equals(RioConstants.CHANNEL_SOURCENAME)) {
+                                sourceName.set(state.toString());
+                            }
+
+                            if (state != null) {
+                                updateState(channelId, state);
+                                fireStateUpdated(channelId, state);
+                            }
                         }
 
                         @Override
@@ -226,11 +276,9 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
                     })));
 
             updateStatus(ThingStatus.ONLINE);
-            getProtocolHandler().watchSource(true);
-            getProtocolHandler().refreshSourceIpAddress(); // need to manually get this
+            getProtocolHandler().postOnline();
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
         }
     }
-
 }

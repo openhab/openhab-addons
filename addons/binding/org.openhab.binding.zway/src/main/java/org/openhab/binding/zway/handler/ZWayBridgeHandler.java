@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -72,9 +72,9 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BridgePolling bridgePolling;
     private ScheduledFuture<?> pollingJob;
@@ -139,9 +139,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -262,7 +262,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 Configuration config = editConfiguration();
                 if (config != null) {
                     Integer shortUnixTimestamp = (int) (System.currentTimeMillis() / 1000L);
-                    logger.debug("OpenHAB alias generated: {}", shortUnixTimestamp.toString());
+                    logger.debug("openHAB alias generated: {}", shortUnixTimestamp.toString());
                     config.put(BRIDGE_CONFIG_OPENHAB_ALIAS, shortUnixTimestamp.toString());
                     updateConfiguration(config);
 
@@ -274,14 +274,14 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                             "Can't generate openHAB alias (editable configuration not available)");
                 }
             } else {
-                logger.debug("OpenHAB alias manually set");
+                logger.debug("openHAB alias manually set");
             }
 
             if (mConfig.getOpenHabAlias() != null) {
                 logger.debug("Configuration complete: {}", mConfig);
 
                 mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
-                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), this);
+                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);
 
                 // Start an extra thread, because it takes sometimes more
                 // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
@@ -420,11 +420,11 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
                         Instance updatedInstance = mZWayApi.putInstance(instance);
                         if (updatedInstance != null) {
-                            logger.debug("OpenHAB server successfully removed from openHAB Connector");
+                            logger.debug("openHAB server successfully removed from openHAB Connector");
 
                             refreshOpenConnector();
                         } else {
-                            logger.warn("OpenHAB Connector configuration update failed");
+                            logger.warn("openHAB Connector configuration update failed");
                         }
                     } // else - update not necessary, no changes
                 } else {
@@ -433,24 +433,24 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
                         Instance updatedInstance = mZWayApi.putInstance(instance);
                         if (updatedInstance != null) {
-                            logger.info("OpenHAB server successfully configured in openHAB Connector");
+                            logger.info("openHAB server successfully configured in openHAB Connector");
 
                             refreshOpenConnector();
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                    "OpenHAB Connector configuration update failed");
+                                    "openHAB Connector configuration update failed");
 
-                            logger.warn("OpenHAB Connector configuration update failed");
+                            logger.warn("openHAB Connector configuration update failed");
                         }
                     } // else - update not necessary, no changes
                 }
             } else {
                 if (!deleteOpenHabServer) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "OpenHAB Connector doesn't exist in Z-Way server");
+                            "openHAB Connector doesn't exist in Z-Way server");
                 } // else - error has no impact on the binding
 
-                logger.warn("OpenHAB Connector doesn't exist in Z-Way server");
+                logger.warn("openHAB Connector doesn't exist in Z-Way server");
             }
         } else {
             if (!deleteOpenHabServer) {
@@ -621,7 +621,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     }
 
     @Override
-    public void postDeviceResponse(Device device) {
+    public void putDeviceResponse(Device device) {
     }
 
     @Override
@@ -718,6 +718,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         if (invalidateApiState) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
+    }
+
+    @Override
+    public void message(int code, String message) {
     }
 
     @Override

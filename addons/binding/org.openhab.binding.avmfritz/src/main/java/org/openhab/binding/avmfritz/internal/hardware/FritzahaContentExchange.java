@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
     /**
      * logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Callback to execute on complete response
@@ -39,7 +39,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
 
     /**
      * Constructor
-     * 
+     *
      * @param callback Callback which execute method has to be called.
      */
     public FritzahaContentExchange(FritzAhaCallback callback) {
@@ -59,7 +59,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
      */
     @Override
     public void onFailure(Response response, Throwable failure) {
-        logger.debug(failure.getLocalizedMessage());
+        logger.debug("{}", failure.getLocalizedMessage());
     }
 
     /**
@@ -67,7 +67,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
      */
     @Override
     public void onComplete(Result result) {
-        logger.debug("response complete: " + this.getContentAsString());
+        logger.debug("response complete: {}", this.getContentAsString());
         this.callback.execute(result.getResponse().getStatus(), this.getContentAsString());
     }
 }

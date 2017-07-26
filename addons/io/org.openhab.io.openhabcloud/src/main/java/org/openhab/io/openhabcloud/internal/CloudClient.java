@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,9 @@ package org.openhab.io.openhabcloud.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public class CloudClient {
     /*
      * Logger for this class
      */
-    private static Logger logger = LoggerFactory.getLogger(CloudClient.class);
+    private Logger logger = LoggerFactory.getLogger(CloudClient.class);
     /*
      * This constant defines maximum number of HTTP connections per peer
      * address for HTTP client which performs local connections to openHAB
@@ -124,6 +126,11 @@ public class CloudClient {
     private Socket socket;
 
     /*
+     * The protocol of the openHAB-cloud URL.
+     */
+    private String protocol = "https";
+
+    /*
      * This variable holds instance of CloudClientListener which provides callbacks to communicate
      * certain events from the openHAB Cloud back to openHAB
      */
@@ -161,8 +168,12 @@ public class CloudClient {
     public void connect() {
         try {
             socket = IO.socket(baseURL);
+            URL parsed = new URL(baseURL);
+            protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
+        } catch (MalformedURLException e) {
+            logger.error("Error parsing baseURL to get protocol, assuming https. Error: {}", e.getMessage());
         }
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -201,7 +212,7 @@ public class CloudClient {
         }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                logger.error("Socket.IO error: " + args[0]);
+                logger.error("Socket.IO error: {}", args[0]);
             }
         }).on("request", new Emitter.Listener() {
             @Override
@@ -267,7 +278,7 @@ public class CloudClient {
      */
 
     public void onError(IOException error) {
-        logger.error(error.getMessage());
+        logger.error("{}", error.getMessage());
     }
 
     /**
@@ -275,7 +286,7 @@ public class CloudClient {
      */
 
     public void onEvent(String event, JSONObject data) {
-        logger.debug("on(): " + event);
+        logger.debug("on(): {}", event);
         if ("command".equals(event)) {
             handleCommandEvent(data);
             return;
@@ -304,7 +315,7 @@ public class CloudClient {
             String requestBody = data.getString("body");
             // Get JSONObject for request headers
             JSONObject requestHeadersJson = data.getJSONObject("headers");
-            logger.debug(requestHeadersJson.toString());
+            logger.debug("{}", requestHeadersJson.toString());
             // Get JSONObject for request query parameters
             JSONObject requestQueryJson = data.getJSONObject("query");
             // Create URI builder with base request URI of openHAB and path from request
@@ -327,10 +338,15 @@ public class CloudClient {
             // All preparations which are common for different methods are done
             // Now perform the request to openHAB
             // If method is GET
-            logger.debug("Request method is " + requestMethod);
+            logger.debug("Request method is {}", requestMethod);
             Request request = jettyClient.newRequest(requestUri);
             setRequestHeaders(request, requestHeadersJson);
-            request.header("X-Forwarded-Proto", "https");
+            String proto = protocol;
+            if (data.has("protocol")) {
+                proto = data.getString("protocol");
+            }
+            request.header("X-Forwarded-Proto", proto);
+
             if (requestMethod.equals("GET")) {
                 request.method(HttpMethod.GET);
             } else if (requestMethod.equals("POST")) {
@@ -341,7 +357,7 @@ public class CloudClient {
                 request.content(new BytesContentProvider(requestBody.getBytes()));
             } else {
                 // TODO: Reject unsupported methods
-                logger.error("Unsupported request method " + requestMethod);
+                logger.error("Unsupported request method {}", requestMethod);
                 return;
             }
             ResponseListener listener = new ResponseListener(requestId);
@@ -350,11 +366,11 @@ public class CloudClient {
             // running requests to be able to cancel it if needed
             runningRequests.put(requestId, request);
         } catch (JSONException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -367,7 +383,7 @@ public class CloudClient {
             String headerValue;
             try {
                 headerValue = requestHeadersJson.getString(headerName);
-                logger.debug("Jetty set header " + headerName + " = " + headerValue);
+                logger.debug("Jetty set header {} = {}", headerName, headerValue);
                 if (!headerName.equalsIgnoreCase("Content-Length")) {
                     request.header(headerName, headerValue);
                 }
@@ -388,7 +404,7 @@ public class CloudClient {
                 runningRequests.remove(requestId);
             }
         } catch (JSONException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -401,7 +417,7 @@ public class CloudClient {
                     this.listener.sendCommand(itemName, data.getString("command"));
                 }
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         } else {
             logger.warn("Received command from openHAB Cloud for item '{}', which is not exposed.", itemName);
@@ -427,7 +443,7 @@ public class CloudClient {
                 notificationMessage.put("severity", severity);
                 socket.emit("notification", notificationMessage);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         } else {
             logger.debug("No connection, notification is not sent");
@@ -451,7 +467,7 @@ public class CloudClient {
                 notificationMessage.put("severity", severity);
                 socket.emit("lognotification", notificationMessage);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         } else {
             logger.debug("No connection, notification is not sent");
@@ -475,7 +491,7 @@ public class CloudClient {
                 notificationMessage.put("severity", severity);
                 socket.emit("broadcastnotification", notificationMessage);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         } else {
             logger.debug("No connection, notification is not sent");
@@ -498,7 +514,7 @@ public class CloudClient {
                 itemUpdateMessage.put("itemStatus", itemState);
                 socket.emit("itemupdate", itemUpdateMessage);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         } else {
             logger.debug("No connection, Item update is not sent");
@@ -520,7 +536,7 @@ public class CloudClient {
         try {
             jettyClient.stop();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
         socket.disconnect();
     }
@@ -569,8 +585,8 @@ public class CloudClient {
             runningRequests.remove(mRequestId);
             if (result.isFailed() && result.getResponse().getStatus() != HttpStatus.OK_200) {
                 logger.warn("Jetty request {} failed: {}", mRequestId, result.getFailure().getMessage());
-                logger.warn(result.getRequestFailure().getMessage());
-                logger.warn(result.getResponseFailure().getMessage());
+                logger.warn("{}", result.getRequestFailure().getMessage());
+                logger.warn("{}", result.getResponseFailure().getMessage());
             }
 
             /**
@@ -588,7 +604,7 @@ public class CloudClient {
                         socket.emit("responseFinished", responseJson);
                         logger.debug("Finished responding to request {}", mRequestId);
                     } catch (JSONException e) {
-                        logger.error(e.getMessage());
+                        logger.error("{}", e.getMessage());
                     }
                 }
             }, 1, TimeUnit.MILLISECONDS);
@@ -596,20 +612,20 @@ public class CloudClient {
 
         @Override
         public synchronized void onFailure(Request request, Throwable failure) {
-            logger.error(failure.getMessage());
+            logger.error("{}", failure.getMessage());
             JSONObject responseJson = new JSONObject();
             try {
                 responseJson.put("id", mRequestId);
                 responseJson.put("responseStatusText", "openHAB connection error: " + failure.getMessage());
                 socket.emit("responseError", responseJson);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         }
 
         @Override
         public void onContent(Response response, ByteBuffer content) {
-            logger.debug("Jetty received response content of size " + String.valueOf(content.remaining()));
+            logger.debug("Jetty received response content of size {}", String.valueOf(content.remaining()));
             JSONObject responseJson = new JSONObject();
             try {
                 responseJson.put("id", mRequestId);
@@ -617,7 +633,7 @@ public class CloudClient {
                 socket.emit("responseContentBinary", responseJson);
                 logger.debug("Sent content to request {}", mRequestId);
             } catch (JSONException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         }
 
@@ -634,9 +650,9 @@ public class CloudClient {
                     responseJson.put("responseStatusText", "OK");
                     socket.emit("responseHeader", responseJson);
                     logger.debug("Sent headers to request {}", mRequestId);
-                    logger.debug(responseJson.toString());
+                    logger.debug("{}", responseJson.toString());
                 } catch (JSONException e) {
-                    logger.error(e.getMessage());
+                    logger.error("{}", e.getMessage());
                 }
             } else {
                 // We should not send headers for the second time...

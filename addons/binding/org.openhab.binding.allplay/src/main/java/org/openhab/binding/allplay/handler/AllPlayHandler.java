@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.allplay.AllPlayBindingConstants;
-import org.openhab.binding.allplay.internal.CommonSpeakerProperties;
+import org.openhab.binding.allplay.internal.AllPlayBindingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class AllPlayHandler extends BaseThingHandler
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandler.class);
     private final AllPlay allPlay;
-    private final CommonSpeakerProperties speakerProperties;
+    private final AllPlayBindingProperties bindingProperties;
     private Speaker speaker;
     private VolumeRange volumeRange;
 
@@ -77,10 +77,10 @@ public class AllPlayHandler extends BaseThingHandler
     private ScheduledFuture<?> reconnectionJob;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(ALLPLAY_THREADPOOL_NAME);
 
-    public AllPlayHandler(Thing thing, AllPlay allPlay, CommonSpeakerProperties properties) {
+    public AllPlayHandler(Thing thing, AllPlay allPlay, AllPlayBindingProperties properties) {
         super(thing);
         this.allPlay = allPlay;
-        this.speakerProperties = properties;
+        this.bindingProperties = properties;
     }
 
     @Override
@@ -114,6 +114,10 @@ public class AllPlayHandler extends BaseThingHandler
         logger.debug("Speaker announcement received for speaker {}. Own id is {}", speaker, getDeviceId());
         if (isHandledSpeaker(speaker)) {
             logger.debug("Speaker announcement received for handled speaker {}", speaker);
+            if (this.speaker != null) {
+                // Make sure to disconnect first in case the speaker is re-announced
+                disconnectFromSpeaker(this.speaker);
+            }
             this.speaker = speaker;
             cancelReconnectionJob();
             try {
@@ -177,12 +181,18 @@ public class AllPlayHandler extends BaseThingHandler
         if (speaker != null) {
             logger.debug("Disconnecting from speaker {}", speaker);
             cancelReconnectionJob();
-            speaker.removeSpeakerChangedListener(this);
-            speaker.removeSpeakerConnectionListener(this);
             allPlay.removeSpeakerAnnouncedListener(this);
-            speaker.disconnect();
+            disconnectFromSpeaker(speaker);
         }
         super.dispose();
+    }
+
+    private void disconnectFromSpeaker(Speaker speaker) {
+        speaker.removeSpeakerChangedListener(this);
+        speaker.removeSpeakerConnectionListener(this);
+        if (speaker.isConnected()) {
+            speaker.disconnect();
+        }
     }
 
     @Override
@@ -205,6 +215,9 @@ public class AllPlayHandler extends BaseThingHandler
         switch (channelId) {
             case CONTROL:
                 handleControlCommand(command);
+                break;
+            case INPUT:
+                speaker.input().setInput(command.toString());
                 break;
             case LOOP_MODE:
                 speaker.setLoopMode(LoopMode.parse(command.toString()));
@@ -243,6 +256,9 @@ public class AllPlayHandler extends BaseThingHandler
             case CONTROL:
                 updatePlayState(speaker.getPlayState());
                 break;
+            case INPUT:
+                onInputChanged(speaker.input().getActiveInput());
+                break;
             case LOOP_MODE:
                 onLoopModeChanged(speaker.getLoopMode());
                 break;
@@ -280,9 +296,9 @@ public class AllPlayHandler extends BaseThingHandler
             }
         } else if (command instanceof RewindFastforwardType) {
             if (command == RewindFastforwardType.FASTFORWARD) {
-                changeTrackPosition(speakerProperties.getFastForwardSkipTimeInSec() * 1000);
+                changeTrackPosition(bindingProperties.getFastForwardSkipTimeInSec() * 1000);
             } else if (command == RewindFastforwardType.REWIND) {
-                changeTrackPosition(-speakerProperties.getRewindSkipTimeInSec() * 1000);
+                changeTrackPosition(-bindingProperties.getRewindSkipTimeInSec() * 1000);
             }
         } else {
             logger.warn("Unknown control command: {}", command);
@@ -302,7 +318,13 @@ public class AllPlayHandler extends BaseThingHandler
         speaker.setPosition(currentPosition + positionOffsetInMs);
     }
 
-    private void handleVolumeCommand(Command command) throws SpeakerException {
+    /**
+     * Uses the given {@link Command} to change the volume of the speaker.
+     *
+     * @param command The {@link Command} with the new volume
+     * @throws SpeakerException Exception if the volume change failed
+     */
+    public void handleVolumeCommand(Command command) throws SpeakerException {
         if (command instanceof PercentType) {
             speaker.volume().setVolume(convertPercentToAbsoluteVolume((PercentType) command));
         } else if (command instanceof IncreaseDecreaseType) {
@@ -371,6 +393,12 @@ public class AllPlayHandler extends BaseThingHandler
         updateState(ZONE_ID, new StringType(zoneId));
     }
 
+    @Override
+    public void onInputChanged(String input) {
+        logger.debug("{}: Input changed to {}", speaker.getName(), input);
+        updateState(INPUT, new StringType(input));
+    }
+
     private void updatePlayState(PlayState playState) {
         logger.debug("{}: PlayState changed to {}", speaker.getName(), playState);
         updateState(PLAY_STATE, new StringType(playState.getState().toString()));
@@ -412,7 +440,7 @@ public class AllPlayHandler extends BaseThingHandler
         } catch (SpeakerException e) {
             logger.warn("Unable to update current user data: {}", e.getMessage(), e);
         }
-        logger.debug("MediaType: " + currentItem.getMediaType());
+        logger.debug("MediaType: {}", currentItem.getMediaType());
     }
 
     private void updateDuration(long durationInMs) {
@@ -432,6 +460,33 @@ public class AllPlayHandler extends BaseThingHandler
             }
         } catch (Exception e) {
             logger.warn("Error getting cover art", e);
+        }
+    }
+
+    /**
+     * Starts streaming the audio at the given URL.
+     *
+     * @param url The URL to stream
+     * @throws SpeakerException Exception if the URL could not be streamed
+     */
+    public void playUrl(String url) throws SpeakerException {
+        if (isSpeakerReady()) {
+            speaker.playItem(url);
+        } else {
+            throw new SpeakerException(
+                    "Cannot play audio stream, speaker " + speaker + " is not discovered/connected!");
+        }
+    }
+
+    /**
+     * @return The current volume of the speaker
+     * @throws SpeakerException Exception if the volume could not be retrieved
+     */
+    public PercentType getVolume() throws SpeakerException {
+        if (isSpeakerReady()) {
+            return convertAbsoluteVolumeToPercent(speaker.volume().getVolume());
+        } else {
+            throw new SpeakerException("Cannot get volume, speaker " + speaker + " is not discovered/connected!");
         }
     }
 
@@ -511,5 +566,4 @@ public class AllPlayHandler extends BaseThingHandler
             reconnectionJob.cancel(true);
         }
     }
-
 }

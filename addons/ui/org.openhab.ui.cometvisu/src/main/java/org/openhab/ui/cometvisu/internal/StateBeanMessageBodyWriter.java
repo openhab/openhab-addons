@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,8 +36,6 @@ import org.openhab.ui.cometvisu.backend.beans.StateBean;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
-
-    // private static final Logger logger = LoggerFactory.getLogger(StateBeanMessageBodyWriter.class);
 
     @Override
     public long getSize(Object arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {

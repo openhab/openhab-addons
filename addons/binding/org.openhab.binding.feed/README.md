@@ -1,6 +1,6 @@
 # Feed Binding
 
-This binding allows you to integrate feeds in the OpenHAB environment.
+This binding allows you to integrate feeds in the openHAB environment.
 The Feed binding downloads the content, tracks for changes, and displays information like feed author, feed title and description, number of entries, last update date.
 
 It can be used in combination with openHAB rules to trigger events on feed change.
@@ -32,16 +32,16 @@ No binding configuration required.
 
 The binding supports following channels
 
-| Channel Type ID | Item Type    | Description  | 
-|------------------|------------------------|--------------|----------------- |------------- |
-| latest-title | String       | Contains the title of the last feed entry. |
-| latest-description | String       | Contains the description of last feed entry. |
-| latest-date | DateTime       | Contains the published date of the last feed entry. |
-| author | String       | The name of the feed author, if author is present |
-| title | String       | The title of the feed |
-| description | String       | Description of the feed |
-| last-update | DateTime       | The last update date of the feed |
-| number-of-entries | Number       | Number of entries in the feed |
+| Channel Type ID    | Item Type | Description                                         |
+|--------------------|-----------|-----------------------------------------------------|
+| latest-title       | String    | Contains the title of the last feed entry.          |
+| latest-description | String    | Contains the description of last feed entry.        |
+| latest-date        | DateTime  | Contains the published date of the last feed entry. |
+| author             | String    | The name of the feed author, if author is present   |
+| title              | String    | The title of the feed                               |
+| description        | String    | Description of the feed                             |
+| last-update        | DateTime  | The last update date of the feed                    |
+| number-of-entries  | Number    | Number of entries in the feed                       |
 
 ## Full Example
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -73,6 +73,7 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
             logger.info("Created a DiscoveryResult for Freebox Server {} on IP {}", thingUID, ip);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(FreeboxServerConfiguration.FQDN, ip + ":" + service.getPort());
+            properties.put(FreeboxServerConfiguration.USE_ONLY_HTTP, "true");
             if (service.getPropertyString("device_type") != null) {
                 properties.put(Thing.PROPERTY_HARDWARE_VERSION, service.getPropertyString("device_type"));
             }

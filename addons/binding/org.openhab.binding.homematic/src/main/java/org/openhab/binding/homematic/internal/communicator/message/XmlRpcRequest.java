@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.homematic.internal.communicator.message;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -27,7 +26,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class XmlRpcRequest implements RpcRequest {
+public class XmlRpcRequest implements RpcRequest<String> {
 
     public enum TYPE {
         REQUEST,
@@ -62,12 +61,16 @@ public class XmlRpcRequest implements RpcRequest {
      * {@inheritDoc}
      */
     @Override
-    public byte[] createMessage() {
-        try {
-            return toString().getBytes("ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex.getMessage(), ex);
-        }
+    public String createMessage() {
+        return toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMethodName() {
+        return methodName;
     }
 
     /**

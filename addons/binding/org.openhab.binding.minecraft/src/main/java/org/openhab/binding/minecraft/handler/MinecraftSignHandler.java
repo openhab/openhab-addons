@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,9 +20,15 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
 import org.openhab.binding.minecraft.config.SignConfig;
+import org.openhab.binding.minecraft.message.OHMessage;
 import org.openhab.binding.minecraft.message.data.SignData;
+import org.openhab.binding.minecraft.message.data.commands.SignCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 import rx.Observable;
 import rx.Subscription;
@@ -40,6 +46,8 @@ public class MinecraftSignHandler extends BaseThingHandler {
     private MinecraftServerHandler bridgeHandler;
     private Subscription signSubscription;
     private SignConfig config;
+
+    private Gson gson = new GsonBuilder().create();
 
     public MinecraftSignHandler(Thing thing) {
         super(thing);
@@ -66,6 +74,10 @@ public class MinecraftSignHandler extends BaseThingHandler {
         if (!signSubscription.isUnsubscribed()) {
             signSubscription.unsubscribe();
         }
+    }
+
+    private String getSignName() {
+        return config.getName();
     }
 
     private void hookupListeners(MinecraftServerHandler bridgeHandler) {
@@ -114,7 +126,25 @@ public class MinecraftSignHandler extends BaseThingHandler {
         updateState(channelUID, state);
     }
 
+    /**
+     * Send a sign command to server.
+     *
+     * @param type the type of command to send
+     * @param signName the sign that the command targets
+     * @param value the value related to command
+     */
+    private void sendSignCommand(String type, String signName, String value) {
+        SignCommandData signCommand = new SignCommandData(type, signName, value);
+        JsonElement serializedCommand = gson.toJsonTree(signCommand);
+        bridgeHandler.sendMessage(new OHMessage(OHMessage.MESSAGE_TYPE_SIGN_COMMANDS, serializedCommand));
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        switch (channelUID.getId()) {
+            case MinecraftBindingConstants.CHANNEL_SIGN_ACTIVE:
+                Boolean activeState = command == OnOffType.ON ? true : false;
+                sendSignCommand(SignCommandData.COMMAND_SIGN_ACTIVE, getSignName(), activeState.toString());
+        }
     }
 }

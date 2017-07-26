@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,11 +43,11 @@ public class HomekitAccessoryUpdater {
         }
         ItemKey itemKey = new ItemKey(item, key);
         if (subscriptionsByName.containsKey(itemKey)) {
-            logger.error("Received duplicate subscription on " + item.getName());
+            logger.error("Received duplicate subscription on {}", item.getName());
         }
         subscriptionsByName.compute(itemKey, (k, v) -> {
             if (v != null) {
-                logger.error("Received duplicate subscription on " + item.getName());
+                logger.error("Received duplicate subscription on {}", item.getName());
                 unsubscribe(item, key);
             }
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
@@ -74,10 +74,10 @@ public class HomekitAccessoryUpdater {
     private static interface Subscription extends StateChangeListener {
 
         @Override
-        public abstract void stateChanged(Item item, State oldState, State newState);
+        void stateChanged(Item item, State oldState, State newState);
 
         @Override
-        default public void stateUpdated(Item item, State state) {
+        default void stateUpdated(Item item, State state) {
             // Do nothing on non-change update
         }
     }
@@ -102,23 +102,30 @@ public class HomekitAccessoryUpdater {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             ItemKey other = (ItemKey) obj;
             if (item == null) {
-                if (other.item != null)
+                if (other.item != null) {
                     return false;
-            } else if (!item.equals(other.item))
+                }
+            } else if (!item.equals(other.item)) {
                 return false;
+            }
             if (key == null) {
-                if (other.key != null)
+                if (other.key != null) {
                     return false;
-            } else if (!key.equals(other.key))
+                }
+            } else if (!key.equals(other.key)) {
                 return false;
+            }
             return true;
         }
     }

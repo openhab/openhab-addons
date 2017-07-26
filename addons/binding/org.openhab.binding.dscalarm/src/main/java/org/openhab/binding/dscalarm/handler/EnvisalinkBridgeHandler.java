@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -101,8 +101,8 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.debug("openConnection(): Connecting to Envisalink ");
 
             tcpSocket = new Socket();
-            SocketAddress TPIsocketAddress = new InetSocketAddress(ipAddress, tcpPort);
-            tcpSocket.connect(TPIsocketAddress, connectionTimeout);
+            SocketAddress tpiSocketAddress = new InetSocketAddress(ipAddress, tcpPort);
+            tcpSocket.connect(tpiSocketAddress, connectionTimeout);
             tcpOutput = new OutputStreamWriter(tcpSocket.getOutputStream(), "US-ASCII");
             tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 
@@ -189,9 +189,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
-            logger.error("closeConnection(): Unable to close connection - {}" + ioException.getMessage());
+            logger.error("closeConnection(): Unable to close connection - {}", ioException.getMessage());
         } catch (Exception exception) {
-            logger.error("closeConnection(): Error closing connection - {}" + exception.getMessage());
+            logger.error("closeConnection(): Error closing connection - {}", exception.getMessage());
         }
     }
 

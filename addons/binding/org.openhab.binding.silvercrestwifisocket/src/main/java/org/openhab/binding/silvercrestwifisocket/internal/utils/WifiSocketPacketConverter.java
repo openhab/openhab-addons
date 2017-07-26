@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -111,8 +111,8 @@ public class WifiSocketPacketConverter {
             bEncrypted = this.silvercrestEncryptCipher.doFinal(inputByte);
             int encryptDataLength = bEncrypted.length;
 
-            logger.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
-            logger.trace("Decrypted data={" + byteArrayToHexString(bEncrypted) + "}");
+            logger.trace("Encrypted data={{}}", byteArrayToHexString(inputByte));
+            logger.trace("Decrypted data={{}}", byteArrayToHexString(bEncrypted));
             String cryptedCommand = byteArrayToHexString(bEncrypted);
 
             String packetString = REQUEST_PREFIX + LOCK_STATUS + requestPacket.getMacAddress()
@@ -160,7 +160,7 @@ public class WifiSocketPacketConverter {
             throws PacketIntegrityErrorException, NotOneResponsePacketException {
 
         if (!Pattern.matches(RESPONSE_PREFIX + REGEX_HEXADECIMAL_PAIRS, hexPacket)) {
-            logger.trace("The packet received is not one response! \nPacket:[" + hexPacket + "]");
+            logger.trace("The packet received is not one response! \nPacket:[{}]", hexPacket);
             throw new NotOneResponsePacketException("The packet received is not one response.");
         }
 
@@ -223,8 +223,8 @@ public class WifiSocketPacketConverter {
         byte[] bDecrypted;
         try {
             bDecrypted = this.silvercrestDecryptCipher.doFinal(inputByte);
-            logger.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
-            logger.trace("Decrypted data={" + byteArrayToHexString(bDecrypted) + "}");
+            logger.trace("Encrypted data={{}}", byteArrayToHexString(inputByte));
+            logger.trace("Decrypted data={{}}", byteArrayToHexString(bDecrypted));
             return byteArrayToHexString(bDecrypted);
         } catch (Exception e) {
             logger.trace("Problem decrypting the input data. Bad reception?");

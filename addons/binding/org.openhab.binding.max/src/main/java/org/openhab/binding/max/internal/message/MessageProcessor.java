@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,9 +43,9 @@ public class MessageProcessor {
     /**
      * <pre>
      * If more that one single line is required to create a message
-     * 	  	numberOfRequiredLines holds the number of required messages to complete
-     * 		receivedLines holds the lines received so far
-     * 		currentMessageType indicates which message type is currently on stack
+     *    numberOfRequiredLines holds the number of required messages to complete
+     *    receivedLines holds the lines received so far
+     *    currentMessageType indicates which message type is currently on stack
      * </pre>
      */
     private Integer numberOfRequiredLines = null;

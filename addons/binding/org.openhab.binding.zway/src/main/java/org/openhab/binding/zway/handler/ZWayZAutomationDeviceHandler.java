@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.zway.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.THING_TYPE_VIRTUAL_DEVICE;
+import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,9 +35,9 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZWayZAutomationDeviceConfiguration mConfig = null;
 
@@ -68,7 +71,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
 
                             addDeviceAsChannel(device);
 
-                            // starts polling job and register all linked items
+                            // Starts polling job and register all linked items
                             completeInitialization();
                         } else {
                             logger.warn("Initializing Z-Way device handler failed (virtual device not found): {}",
@@ -79,9 +82,9 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
 
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
-                            logger.error(((Exception) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else if (t instanceof Error) {
-                            logger.error(((Error) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else {
                             logger.error("Unexpected error");
                         }
@@ -152,5 +155,37 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
         }
 
         super.dispose();
+    }
+
+    @Override
+    protected void refreshLastUpdate() {
+        logger.debug("Refresh last update for virtual device");
+
+        // Check Z-Way bridge handler
+        ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
+        if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Z-Way bridge handler not found or not ONLINE.");
+            return;
+        }
+
+        // Load and check device from Z-Way server
+        DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+        if (deviceList != null) {
+            Device device = deviceList.getDeviceById(mConfig.getDeviceId());
+            if (device == null) {
+                logger.debug("ZAutomation device not found.");
+                return;
+            }
+
+            Calendar lastUpdateOfDevice = Calendar.getInstance();
+            lastUpdateOfDevice.setTimeInMillis(new Long(device.getUpdateTime()) * 1000);
+
+            if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
+                lastUpdate = lastUpdateOfDevice;
+            }
+
+            DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+            updateProperty(DEVICE_PROP_LAST_UPDATE, formatter.format(lastUpdate.getTime()));
+        }
     }
 }

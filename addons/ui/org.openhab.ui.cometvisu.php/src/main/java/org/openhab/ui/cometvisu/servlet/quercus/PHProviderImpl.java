@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -60,13 +60,14 @@ import com.caucho.vfs.WriteStream;
  */
 public class PHProviderImpl implements PHProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
     private static final L10N L = new L10N(PHProviderImpl.class);
 
     protected QuercusEngine engine;
     protected String defaultUserDir;
     protected ServletContext _servletContext;
 
+    @Override
     public void createQuercusEngine() {
         this.engine = new QuercusEngine();
     }
@@ -99,7 +100,7 @@ public class PHProviderImpl implements PHProvider {
         Path pwd = new FilePath(path);
         Path webInfDir = pwd;
 
-        logger.debug("initial pwd " + pwd);
+        logger.debug("initial pwd {}", pwd);
         engine.getQuercus().setPwd(pwd);
         engine.getQuercus().setWebInfDir(webInfDir);
 
@@ -132,7 +133,7 @@ public class PHProviderImpl implements PHProvider {
 
         try {
             Path path = getPath(file, req);
-            logger.debug("phpService path: " + path);
+            logger.debug("phpService path: {}", path);
 
             QuercusPage page;
 
@@ -140,7 +141,7 @@ public class PHProviderImpl implements PHProvider {
                 page = engine.getQuercus().parse(path);
             } catch (FileNotFoundException e) {
                 // php/2001
-                logger.debug(e.toString(), e);
+                logger.debug("{}", e.toString(), e);
 
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
@@ -163,7 +164,7 @@ public class PHProviderImpl implements PHProvider {
 
             // php/815d
             env.setPwd(path.getParent());
-            logger.debug("setting user dir to " + path.getParent().getNativePath());
+            logger.debug("setting user dir to {}", path.getParent().getNativePath());
             System.setProperty("user.dir", path.getParent().getNativePath());
             quercus.setServletContext(new QuercusServletContextImpl(_servletContext));
 
@@ -210,12 +211,12 @@ public class PHProviderImpl implements PHProvider {
             } catch (QuercusErrorException e) {
                 throw e;
             } catch (QuercusLineRuntimeException e) {
-                logger.debug(e.toString(), e);
+                logger.debug("{}", e.toString(), e);
 
                 ws.println(e.getMessage());
                 // return;
             } catch (QuercusValueException e) {
-                logger.debug(e.toString(), e);
+                logger.debug("{}", e.toString(), e);
 
                 ws.println(e.toString());
 
@@ -247,13 +248,13 @@ public class PHProviderImpl implements PHProvider {
             }
         } catch (com.caucho.quercus.QuercusDieException e) {
             // normal exit
-            logger.trace(e.getMessage(), e);
+            logger.trace("{}", e.getMessage(), e);
         } catch (QuercusExitException e) {
             // normal exit
-            logger.trace(e.getMessage(), e);
+            logger.trace("{}", e.getMessage(), e);
         } catch (QuercusErrorException e) {
             // error exit
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

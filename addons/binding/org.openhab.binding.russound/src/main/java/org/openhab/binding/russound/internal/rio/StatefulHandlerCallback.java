@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,31 +28,31 @@ import org.eclipse.smarthome.core.types.State;
 public class StatefulHandlerCallback implements RioHandlerCallback {
 
     /** The wrapped callback */
-    private final RioHandlerCallback _wrappedCallback;
+    private final RioHandlerCallback wrappedCallback;
 
     /** The state by channel id */
-    private final Map<String, State> _state = new ConcurrentHashMap<String, State>();
+    private final Map<String, State> state = new ConcurrentHashMap<String, State>();
 
-    private final Lock _statusLock = new ReentrantLock();
-    private ThingStatus _lastThingStatus = null;
-    private ThingStatusDetail _lastThingStatusDetail = null;
+    private final Lock statusLock = new ReentrantLock();
+    private ThingStatus lastThingStatus = null;
+    private ThingStatusDetail lastThingStatusDetail = null;
 
     /**
      * Create the callback from the other {@link RioHandlerCallback}
      *
      * @param wrappedCallback a non-null {@link RioHandlerCallback}
-     * @throws NullPointerException if wrappedCallback is null
+     * @throws IllegalArgumentException if wrappedCallback is null
      */
     public StatefulHandlerCallback(RioHandlerCallback wrappedCallback) {
         if (wrappedCallback == null) {
-            throw new NullPointerException("wrappedCallback cannot be null");
+            throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
-        _wrappedCallback = wrappedCallback;
+        this.wrappedCallback = wrappedCallback;
     }
 
     /**
-     * Overrides the status changed to simply call the {@link #_wrappedCallback}
+     * Overrides the status changed to simply call the {@link #wrappedCallback}
      *
      * @param status the new status
      * @param detail the new detail
@@ -60,51 +60,52 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      */
     @Override
     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-        _statusLock.lock();
+        statusLock.lock();
         try {
             // Simply return we match the last status change (prevents loops if changing to the same status)
-            if (status == _lastThingStatus && detail == _lastThingStatusDetail) {
+            if (status == lastThingStatus && detail == lastThingStatusDetail) {
                 return;
             }
 
-            _lastThingStatus = status;
-            _lastThingStatusDetail = detail;
+            lastThingStatus = status;
+            lastThingStatusDetail = detail;
         } finally {
-            _statusLock.unlock();
+            statusLock.unlock();
         }
+
         // If we got this far - call the underlying one
-        _wrappedCallback.statusChanged(status, detail, msg);
+        wrappedCallback.statusChanged(status, detail, msg);
 
     }
 
     /**
      * Overrides the state changed to determine if the state is new or changed and then
-     * to call the {@link #_wrappedCallback} if it has
+     * to call the {@link #wrappedCallback} if it has
      *
      * @param channelId the channel id that changed
-     * @param state the new state
+     * @param newState the new state
      */
     @Override
-    public void stateChanged(String channelId, State state) {
+    public void stateChanged(String channelId, State newState) {
         if (StringUtils.isEmpty(channelId)) {
             return;
         }
 
-        final State oldState = _state.get(channelId);
+        final State oldState = state.get(channelId);
 
         // If both null OR the same value (enums), nothing changed
-        if (oldState == state) {
+        if (oldState == newState) {
             return;
         }
 
         // If they are equal - nothing changed
-        if (oldState != null && oldState.equals(state)) {
+        if (oldState != null && oldState.equals(newState)) {
             return;
         }
 
         // Something changed - save the new state and call the underlying wrapped
-        _state.put(channelId, state);
-        _wrappedCallback.stateChanged(channelId, state);
+        state.put(channelId, newState);
+        wrappedCallback.stateChanged(channelId, newState);
 
     }
 
@@ -118,18 +119,39 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
         if (StringUtils.isEmpty(channelId)) {
             return;
         }
-        _state.remove(channelId);
+        state.remove(channelId);
     }
 
     /**
-     * Overrides the set property to simply call the {@link #_wrappedCallback}
+     * Overrides the set property to simply call the {@link #wrappedCallback}
      *
      * @param propertyName a non-null, non-empty property name
      * @param propertyValue a non-null, possibly empty property value
      */
     @Override
     public void setProperty(String propertyName, String propertyValue) {
-        _wrappedCallback.setProperty(propertyName, propertyValue);
+        wrappedCallback.setProperty(propertyName, propertyValue);
 
+    }
+
+    /**
+     * Returns teh current state for the property
+     *
+     * @param propertyName a possibly null, possibly empty property name
+     * @return the {@link State} for the property or null if not found (or property name is null/empty)
+     */
+    public State getProperty(String propertyName) {
+        return state.get(propertyName);
+    }
+
+    @Override
+    public void addListener(String channelId, RioHandlerCallbackListener listener) {
+        wrappedCallback.addListener(channelId, listener);
+
+    }
+
+    @Override
+    public void removeListener(String channelId, RioHandlerCallbackListener listener) {
+        wrappedCallback.removeListener(channelId, listener);
     }
 }

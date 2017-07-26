@@ -27,12 +27,12 @@
 				<label>adapterID</label>
 				<description>The ID of the adapter.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" min="60"
+				max="600">
+				<context>refresh</context>
 				<label>refreshInterval</label>
 				<description>Refreshtime in seconds.</description>
 				<default>300</default>
-				<max>600</max>
-				<min>60</min>
 			</parameter>
 		</config-description>
 

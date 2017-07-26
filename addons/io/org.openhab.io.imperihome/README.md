@@ -5,18 +5,43 @@ It creates a REST service at _/imperihome/iss_ that implements the [ImperiHome S
 
 ## Installation
 
-The ImperiHome integration service can be installed through the Paper UI. Navigate to Extensions &gt; Misc and click Install.
+The ImperiHome integration service can be installed through the Paper UI. Navigate to Add-ons &gt; Misc and click Install.
+
+<a name="configuration"></a>
 
 ## Configuration
 
-The service itself has no configuration. ImperiHome on the other hand must be configured to connect to your openHAB instance.
+### openHAB Add-on
+
+To configure the ImperiHome integration add-on in openHAB, create a _imperihome.cfg_ file in the _conf/services_ directory. The following configuration options can be used:
+ 
+**System ID**
+
+The ImperiHome integration service identifies itself to ImperiHome using a system ID. By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option. 
+
+```
+system.id=my-openhab-123
+```
+
+*Warning*: the system ID can not contain the underscore character (_). 
+
+**Root URL**
+
+Root URL of your openHAB installation. Should point to the openHAB welcome page. This option is currently only required when using the custom icon tag. 
+
+```
+openhab.rootUrl=http://myserver.example.org:7070/
+```
+
+### ImperiHome
+
+ImperiHome must be configured to connect to your openHAB instance.
 
 Start ImperiHome, open the menu and go to My Systems. Add a new system (+) and choose 'ImperiHome Standard System' as the object type. Now enter the URL to your openHAB instance
- as Local URL, followed by _/imperihome/iss_. For example, if your OH instance is running at _http://192.168.1.10:8080/_, the Local URL would be _http://192.168.1.10:8080/imperihome/iss_. 
+ as Local URL, followed by _/imperihome/iss_. For example, if your openHAB instance is running at _http://192.168.1.10:8080/_, the Local URL would be _http://192.168.1.10:8080/imperihome/iss_. 
 
-If you have port forwarding or similar set up to access your OH form the internet, you can also fill the Remote URL in the same way. For example: 
-_http://my-openhab-url.dyndns.org:8080/imperihome/iss_. Please be aware that this service provides no authentication mechanism, so anyone could use the API to control your 
-system when accessible from the internet.
+If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way. For example: 
+_http://my-openhab-url.dyndns.org:8080/imperihome/iss_. <b>Warning</b>: this service provides no authentication mechanism, so anyone could use the API to control your system when accessible from the internet. Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](http://docs.openhab.org/installation/security.html)).  
 
 Click Next to let ImperiHome validate the URL. After validation succeeded the system is added and you can continue to configure your Items for use in ImperiHome.
 
@@ -132,6 +157,19 @@ _Example_:
 iss:invert:true
 ```
 
+### Tag: _icon_
+
+Sets a custom icon to be shown in ImperiHome. You can use all icon names that are also available for use in your sitemaps, including custom icons.
+To use this tag you must set the openHAB root URL in your [configuration](#configuration).
+
+_Required_: no<br>
+_Default_: none<br>
+_Example_: 
+
+```
+iss:icon:sofa
+```
+
 <a name="deviceTypes"></a> 
 
 ## Device types
@@ -172,7 +210,7 @@ the Item types you can use them on are listed.
         <td>DevDimmer</td>
         <td>Dimmable light</td>
         <td>Yes</td>
-        <td>Dimmer</td>
+        <td>Dimmer, Number</td>
         <td>energy</td>
     </tr>
     <tr>
@@ -290,8 +328,8 @@ the Item types you can use them on are listed.
     <tr>
         <td>DevShutter</td>
         <td>Shutter actuator</td>
-        <td>No</td>
-        <td></td>
+        <td>Yes</td>
+        <td>Dimmer, Number</td>
         <td>-</td>
     </tr>
     <tr>
@@ -324,10 +362,10 @@ the Item types you can use them on are listed.
     </tr>
     <tr>
         <td>DevThermostat</td>
-        <td>Thermostat</td>
-        <td>No</td>
-        <td></td>
-        <td>-</td>
+        <td>Thermostat <sup>(2)</sup></td>
+        <td>Yes</td>
+        <td>Number</td>
+        <td>curmode, curtemp</td>
     </tr>
     <tr>
         <td>DevUV</td>
@@ -345,7 +383,9 @@ the Item types you can use them on are listed.
     </tr>
 </table>
 
-<sup>(1)</sup> When using a String Item for trippable devices, any non-empty value other than 'ok' will set the device to tripped. This makes it compatible with the Nest Protect binding.  
+<sup>(1)</sup> When using a String Item for trippable devices, any non-empty value other than 'ok' will set the device to tripped. This makes it compatible with the Nest Protect binding.
+  
+<sup>(2)</sup> Thermostat devices require additional tags. See [Thermostat](#thermostat) for details.
 
 <a name="deviceLinks"></a> 
 
@@ -358,8 +398,7 @@ The _link_ tag refers to the name of the Item it should link to. The item must b
 ### Switch energy consumption
 
 ImperiHome allows you to show the current energy consumption for a _DevDimmer_, _DevRGBLight_ and _DevSwitch_.
-This example links the _MyLightEnergy_ Number Item to the _MyLight_ Switch Item, 
-so the _DevSwitch_ device will also report the energy consumption value to ImperiHome:
+This example links the _MyLightEnergy_ Number Item to the _MyLight_ Switch Item, so the _DevSwitch_ device will also report the energy consumption value to ImperiHome:
 
 ```
 Switch  MyLight        "My Light"                  ["iss:type:DevSwitch", "iss:link:energy:MyLight_Energy"] { channel="zwave:device:1:node14:switch_binary1" }
@@ -368,8 +407,7 @@ Number  MyLightEnergy  "My Light Usage [%.1f W]"   ["iss:type:DevElectricity"]  
 
 ### Total energy consumption
 
-The _DevElectricity_ devices main value is the current consumption in Watts. To add the total consumption in KWh, link your electricity device to
-a generic sensor device containing the total energy consumption value:
+The _DevElectricity_ devices main value is the current consumption in Watts. To add the total consumption in KWh, link your electricity device to a generic sensor device containing the total energy consumption value:
 
 ```
 Number  MyLight_Energy        "My Light Usage [%.1f W]"          ["iss:type:DevElectricity", "iss:link:kwh:MyLight_Total_Energy"]  { channel="zwave:device:1:node14:meter_watts1" }
@@ -394,8 +432,7 @@ Number  MyHum   "Humidity [%d%%]"       ["iss:type:DevTempHygro", "iss:link:temp
 
 ### Rain accumulation
 
-The _DevRain_ devices main value is the current instant rain value (default in mm per hour). To add the total rain accumulation value, link your rain device to
-a generic sensor device:
+The _DevRain_ devices main value is the current instant rain value (default in mm per hour). To add the total rain accumulation value, link your rain device to a generic sensor device:
 
 ```
 Number  RainCurrent       "Rain current [%.1f mm/h]"     ["iss:type:DevRain", "iss:link:accum:RainAccumulation"]  { channel="..." }
@@ -404,13 +441,26 @@ Number  RainAccumulation  "Rain accumulation [%.1f mm]"  ["iss:type:DevGenericSe
 
 ### Wind direction
 
-The _DevWind_ devices main value is the current wind speed (default in km per hour). To add the wind direction value (default in degrees), link your wind device to
-a generic sensor device:
+The _DevWind_ devices main value is the current wind speed (default in km per hour). To add the wind direction value (default in degrees), link your wind device to a generic sensor device:
 
 ```
 Number  WindSpeed      "Wind speed [%.1f km/h]"   ["iss:type:DevWind", "iss:link:direction:WindDirection"]  { channel="..." }
 Number  WindDirection  "Wind direction [%d deg]"  ["iss:type:DevGenericSensor", "iss:unit:deg"]             { channel="..." }
 ```
+
+<a name="thermostat"></a> 
+
+### Thermostat
+
+The _DevThermostat_ combines a setpoint, current temperature and mode in one ImperiHome device. To accomplish this using openHAB items, it uses a _curtemp_ and _curmode_ link and a few additional tags. 
+ 
+ ```
+ Number Thermos_Setpoint   "Thermostat"      ["iss:room:Test", "iss:type:DevThermostat", "iss:step:0.5", "iss:minVal:15", "iss:maxVal:24", "iss:modes:Home,Away,Comfort,Sleeping", "iss:link:curmode:Thermos_Mode", "iss:link:curtemp:Thermos_Temp"] { channel="..." }
+ Number Thermos_Temp       "Thermos temp"    ["iss:room:Test", "iss:type:DevTemperature", "iss:unit:K"]  { channel="..." }
+ String Thermos_Mode       "Thermos mode"    ["iss:room:Test", "iss:type:DevGenericSensor"]              { channel="..." }
+ ```
+ 
+ The main _DevThermostat_ device must be the Item holding the setpoint. Using tags, this device specifies the minimum and maximum setpoint value, the setpoint step and the available modes. The two links specify what Items contain the current temperature and current mode. If you want to use a custom unit, set the _unit_ tag on the current temperature device.
 
 ## Items example
 

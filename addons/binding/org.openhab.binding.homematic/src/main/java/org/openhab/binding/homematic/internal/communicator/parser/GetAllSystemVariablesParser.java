@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,10 +37,15 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void>
         Map<String, ?> mapMessage = (Map<String, ?>) message[0];
         for (String variableName : mapMessage.keySet()) {
             Object value = mapMessage.get(variableName);
-            HmDatapoint dpVariable = new HmDatapoint(variableName, variableName, guessType(value), value, false,
-                    HmParamsetType.VALUES);
-            dpVariable.setInfo(variableName);
-            channel.addDatapoint(dpVariable);
+            HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, variableName);
+            if (dp != null) {
+                dp.setValue(value);
+            } else {
+                HmDatapoint dpVariable = new HmDatapoint(variableName, variableName, guessType(value), value, false,
+                        HmParamsetType.VALUES);
+                dpVariable.setInfo(variableName);
+                channel.addDatapoint(dpVariable);
+            }
         }
         return null;
     }

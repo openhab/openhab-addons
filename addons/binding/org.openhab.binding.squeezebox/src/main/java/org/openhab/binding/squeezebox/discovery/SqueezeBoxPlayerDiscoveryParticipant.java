@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,14 +32,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dan Cunningham
  * @author Mark Hilbush - added method to cancel request player job, and to set thing properties
+ * @author Mark Hilbush - Added duration channel
  *
  */
 public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryService
         implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerDiscoveryParticipant.class);
 
-    private final static int TIMEOUT = 60;
-    private final static int TTL = 60;
+    private static final int TIMEOUT = 60;
+    private static final int TTL = 60;
 
     private SqueezeBoxServerHandler squeezeBoxServerHandler;
     private ScheduledFuture<?> requestPlayerJob;
@@ -112,7 +113,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
                 squeezeBoxServerHandler.requestPlayers();
             }
         };
-        
+
         logger.debug("request player job scheduled to run every {} seconds", TTL);
         requestPlayerJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
     }
@@ -140,6 +141,10 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void currentPlayingTimeEvent(String mac, int time) {
+    }
+
+    @Override
+    public void durationEvent(String mac, int duration) {
     }
 
     @Override

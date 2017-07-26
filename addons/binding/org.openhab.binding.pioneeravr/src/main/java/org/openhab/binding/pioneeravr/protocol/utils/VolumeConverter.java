@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,10 @@ package org.openhab.binding.pioneeravr.protocol.utils;
 
 import java.text.DecimalFormat;
 
+/**
+ *
+ * @author Antoine Besnard - Initial contribution
+ */
 public final class VolumeConverter {
 
     private static final String IP_CONTROL_VOLUME_FORMAT = "000";
@@ -22,7 +26,7 @@ public final class VolumeConverter {
 
     /**
      * Return the double value of the volume from the value received in the IpControl response.
-     * 
+     *
      * @param ipControlVolume
      * @return the volume in Db
      */
@@ -33,7 +37,7 @@ public final class VolumeConverter {
 
     /**
      * Return the string parameter to send to the AVR based on the given volume.
-     * 
+     *
      * @param volumeDb
      * @return the volume for IpControlRequest
      */
@@ -44,7 +48,7 @@ public final class VolumeConverter {
 
     /**
      * Return the String parameter to send to the AVR based on the given persentage of the max volume level.
-     * 
+     *
      * @param volumePercent
      * @return the volume for IpControlRequest
      */
@@ -55,7 +59,7 @@ public final class VolumeConverter {
 
     /**
      * Return the percentage of the max volume levelfrom the value received in the IpControl response.
-     * 
+     *
      * @param ipControlVolume
      * @return the volume percentage
      */
@@ -66,7 +70,7 @@ public final class VolumeConverter {
 
     /**
      * Format the given double value to an IpControl volume.
-     * 
+     *
      * @param ipControlVolume
      * @return
      */

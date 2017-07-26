@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -25,10 +26,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
+import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
-import org.openhab.binding.homematic.internal.communicator.HomematicGatewayListener;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.type.UidUtils;
@@ -41,8 +43,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayListener {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
+public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayAdapter {
+    private final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     private static SimplePortPool portPool = new SimplePortPool();
 
@@ -63,32 +65,38 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void initialize() {
-        try {
-            String id = getThing().getUID().getId();
-            config = createHomematicConfig();
+        config = createHomematicConfig();
+        registerDeviceDiscoveryService();
+        final HomematicBridgeHandler instance = this;
+        scheduler.execute(new Runnable() {
 
-            gateway = HomematicGatewayFactory.createGateway(id, config, this);
-            gateway.initialize();
+            @Override
+            public void run() {
+                try {
+                    String id = getThing().getUID().getId();
+                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                    gateway.initialize();
 
-            registerDeviceDiscoveryService();
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
                     discoveryService.startScan(null);
                     discoveryService.waitForScanFinishing();
                     updateStatus(ThingStatus.ONLINE);
-                    for (Thing hmThing : getThing().getThings()) {
-                        hmThing.getHandler().thingUpdated(hmThing);
+                    if (!config.getGatewayInfo().isHomegear()) {
+                        try {
+                            gateway.loadRssiValues();
+                        } catch (IOException ex) {
+                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                            logger.error("{}", ex.getMessage(), ex);
+                        }
                     }
+                    gateway.startWatchdogs();
+                } catch (IOException ex) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                    dispose();
+                    scheduleReinitialize();
                 }
-            });
+            }
+        });
 
-        } catch (IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            dispose();
-            scheduleReinitialize();
-        }
     }
 
     /**
@@ -160,7 +168,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             try {
                 gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
             } catch (HomematicClientException e) {
-                ((HomematicThingHandler) hmThing.getHandler()).updateStatus(ThingStatus.OFFLINE);
+                if (hmThing.getHandler() != null) {
+                    ((HomematicThingHandler) hmThing.getHandler()).handleRemoval();
+                }
             }
         }
     }
@@ -183,7 +193,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         } else {
             portPool.setInUse(homematicConfig.getBinCallbackPort());
         }
-        logger.debug(homematicConfig.toString());
+        logger.debug("{}", homematicConfig);
         return homematicConfig;
     }
 
@@ -215,10 +225,14 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     /**
      * Updates the thing for the given Homematic device.
      */
-    public void updateThing(HmDevice device) {
+    private void updateThing(HmDevice device) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
-        if (hmThing != null) {
-            hmThing.getHandler().thingUpdated(hmThing);
+        if (hmThing != null && hmThing.getHandler() != null) {
+            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+            thingHandler.thingUpdated(hmThing);
+            for (Channel channel : hmThing.getChannels()) {
+                thingHandler.handleRefresh(channel.getUID());
+            }
         }
     }
 
@@ -228,10 +242,26 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     @Override
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
-        if (hmThing != null) {
-            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
-            thingHandler.updateDatapointState(dp);
+        if (hmThing != null && hmThing.getHandler() != null) {
+            final ThingStatus status = hmThing.getStatus();
+            if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
+                HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+                thingHandler.updateDatapointState(dp);
+            }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+            return thingHandler.getChannelConfig(dp);
+        }
+        return new HmDatapointConfig();
     }
 
     /**
@@ -293,10 +323,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void reloadDeviceValues(HmDevice device) {
+        updateThing(device);
         if (device.isGatewayExtras()) {
             typeGenerator.generate(device);
         }
-        updateThing(device);
     }
 
     /**
@@ -309,7 +339,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
                 gateway.triggerDeviceValuesReload(device);
             } catch (HomematicClientException ex) {
-                logger.warn(ex.getMessage());
+                logger.warn("{}", ex.getMessage());
             }
         }
     }

@@ -169,7 +169,7 @@
     </channel-type>
     
     <channel-type id="switchMultilevel">
-        <item-type>Number</item-type>
+        <item-type>Dimmer</item-type>
         <label>Switch multilevel</label>
         <description>This channel represents a universal channel if no further device information is available.</description>
         <state readOnly="false" />
@@ -181,8 +181,6 @@
         <description>This channel represents the rgbw switch device type from Z-Way.</description>
         <category>ColorLight</category>
     </channel-type>
-            
-    <!-- TODO: SwitchToggle ? -->    
     
     <channel-type id="thermostatMode">
         <item-type>Switch</item-type>
@@ -207,7 +205,12 @@
         <state readOnly="false" />
     </channel-type>
     
-    <!-- TODO: ToggleButton -->
+    <channel-type id="sensorDiscrete">
+        <item-type>Number</item-type>
+        <label>Sensor discrete</label>
+        <description>This channel represents a two-digit value. The first digit is the button/scene number and the second digit points to action/keyAttribute (have a look at http://z-wave.sigmadesigns.com/wp-content/uploads/2016/08/SDS12657-12-Z-Wave-Command-Class-Specification-A-M.pdf, p. 153).</description>
+        <state readOnly="true" />
+    </channel-type>
     
     <channel-type id="thermostatModeCC">
         <item-type>Number</item-type>
@@ -216,7 +219,7 @@
         <category>Temperature</category>
         <state readOnly="false" />
     </channel-type>
-    
+        
     <!-- Special channel types -->
     
     <channel-type id="actions">

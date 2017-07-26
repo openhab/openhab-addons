@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,18 +23,17 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 public final class N_Message extends Message {
+    private final Logger logger = LoggerFactory.getLogger(N_Message.class);
 
     private String decodedPayload;
     private DeviceType deviceType = null;
     private String rfAddress = null;
     private String serialnr = null;
 
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
-
     /**
      * The {@link: N_Message} contains information about a newly discovered Device
      *
-     * @param String with raw message
+     * @param raw String with raw message
      */
     public N_Message(String raw) {
         super(raw);

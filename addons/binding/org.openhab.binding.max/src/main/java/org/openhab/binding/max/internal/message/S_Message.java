@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,12 +20,11 @@ import org.slf4j.LoggerFactory;
  * @since 1.6.0
  */
 public final class S_Message extends Message {
+    private final Logger logger = LoggerFactory.getLogger(S_Message.class);
 
     private int dutyCycle;
     private int freeMemorySlots;
     private boolean commandDiscarded = false;
-
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public S_Message(String raw) {
         super(raw);
@@ -35,7 +34,7 @@ public final class S_Message extends Message {
         if (tokens.length == 3) {
             try {
                 dutyCycle = Integer.parseInt(tokens[0], 16);
-                commandDiscarded = tokens[1] == "1";
+                commandDiscarded = tokens[1].contentEquals("1");
                 freeMemorySlots = Integer.parseInt(tokens[2], 16);
             } catch (Exception e) {
                 logger.debug("Exception occurred during parsing of S message: {}", e.getMessage(), e);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,20 +8,31 @@
  */
 package org.openhab.binding.russound.internal.rio.controller;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.rio.AbstractBridgeHandler;
+import org.openhab.binding.russound.internal.rio.AbstractRioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.RioConstants;
 import org.openhab.binding.russound.internal.rio.RioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.RioHandlerCallbackListener;
+import org.openhab.binding.russound.internal.rio.RioNamedHandler;
 import org.openhab.binding.russound.internal.rio.StatefulHandlerCallback;
+import org.openhab.binding.russound.internal.rio.models.GsonUtilities;
 import org.openhab.binding.russound.internal.rio.source.RioSourceHandler;
 import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
 import org.openhab.binding.russound.internal.rio.zone.RioZoneHandler;
+
+import com.google.gson.Gson;
 
 /**
  * The bridge handler for a Russound Controller. A controller provides access to sources ({@link RioSourceHandler}) and
@@ -30,11 +41,27 @@ import org.openhab.binding.russound.internal.rio.zone.RioZoneHandler;
  *
  * @author Tim Roberts
  */
-public class RioControllerHandler extends AbstractBridgeHandler<RioControllerProtocol> {
+public class RioControllerHandler extends AbstractBridgeHandler<RioControllerProtocol> implements RioNamedHandler {
     /**
      * The controller identifier of this instance (between 1-6)
      */
-    private int _controller;
+    private final AtomicInteger controller = new AtomicInteger(0);
+
+    /**
+     * {@link Gson} used for JSON operations
+     */
+    private final Gson gson = GsonUtilities.createGson();
+
+    /**
+     * Callback listener to use when zone name changes - will call {@link #refreshNamedHandler(Gson, Class, String)} to
+     * refresh the {@link RioConstants#CHANNEL_CTLZONES} channel
+     */
+    private final RioHandlerCallbackListener handlerCallbackListener = new RioHandlerCallbackListener() {
+        @Override
+        public void stateUpdate(String channelId, State state) {
+            refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
+        }
+    };
 
     /**
      * Constructs the handler from the {@link Bridge}
@@ -51,19 +78,46 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
      *
      * @return the controller identifier
      */
-    public int getController() {
-        return _controller;
+    @Override
+    public int getId() {
+        return controller.get();
+    }
+
+    /**
+     * Returns the controller name
+     *
+     * @return a non-empty, non-null controller name
+     */
+    @Override
+    public String getName() {
+        return "Controller " + getId();
     }
 
     /**
      * {@inheritDoc}
      *
-     * Handles commands to specific channels - this handler has no channels to handle and
-     * is a NOP
+     * Handles commands to specific channels. The only command this handles is a {@link RefreshType} and that's handled
+     * by {{@link #handleRefresh(String)}
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands to implement
+        if (command instanceof RefreshType) {
+            handleRefresh(channelUID.getId());
+            return;
+        }
+    }
+
+    /**
+     * Method that handles the {@link RefreshType} command specifically.
+     *
+     * @param id a non-null, possibly empty channel id to refresh
+     */
+    private void handleRefresh(String id) {
+        if (id.equals(RioConstants.CHANNEL_CTLZONES)) {
+            refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
+        } else {
+            // Can't refresh any others...
+        }
     }
 
     /**
@@ -104,12 +158,13 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
             return;
         }
 
-        _controller = config.getController();
-        if (_controller < 1 || _controller > 8) {
+        final int configController = config.getController();
+        if (configController < 1 || configController > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Controller must be between 1 and 8: " + _controller);
+                    "Controller must be between 1 and 8: " + configController);
             return;
         }
+        controller.set(configController);
 
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
@@ -122,8 +177,8 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
             getProtocolHandler().dispose();
         }
 
-        setProtocolHandler(new RioControllerProtocol(_controller, socketSession,
-                new StatefulHandlerCallback(new RioHandlerCallback() {
+        setProtocolHandler(new RioControllerProtocol(configController, socketSession,
+                new StatefulHandlerCallback(new AbstractRioHandlerCallback() {
                     @Override
                     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
                         updateStatus(status, detail, msg);
@@ -132,6 +187,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                        fireStateUpdated(channelId, state);
                     }
 
                     @Override
@@ -141,8 +197,49 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
                 })));
 
         updateStatus(ThingStatus.ONLINE);
-        getProtocolHandler().refreshControllerType();
-        getProtocolHandler().refreshControllerIpAddress();
-        getProtocolHandler().refreshControllerMacAddress();
+        getProtocolHandler().postOnline();
+
+        refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
+
+    }
+
+    /**
+     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the zone names
+     */
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        childChanged(childHandler, true);
+    }
+
+    /**
+     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the zone names
+     */
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        childChanged(childHandler, false);
+    }
+
+    /**
+     * Helper method to recreate the {@link RioConstants#CHANNEL_CTLZONES} channel
+     *
+     * @param childHandler a non-null child handler that changed
+     * @param added true if the handler was added, false otherwise
+     * @throw IllegalArgumentException if childHandler is null
+     */
+    private void childChanged(ThingHandler childHandler, boolean added) {
+        if (childHandler == null) {
+            throw new IllegalArgumentException("childHandler cannot be null");
+        }
+        if (childHandler instanceof RioZoneHandler) {
+            final RioHandlerCallback callback = ((RioZoneHandler) childHandler).getCallback();
+            if (callback != null) {
+                if (added) {
+                    callback.addListener(RioConstants.CHANNEL_ZONENAME, handlerCallbackListener);
+                } else {
+                    callback.removeListener(RioConstants.CHANNEL_ZONENAME, handlerCallbackListener);
+                }
+            }
+            refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
+        }
     }
 }
