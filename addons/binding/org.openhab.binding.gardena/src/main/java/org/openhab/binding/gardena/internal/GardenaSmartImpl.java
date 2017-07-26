@@ -370,7 +370,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         settingCommand.setValue(value);
 
         stopRefreshThread(false);
-        logger.info(gson.toJson(new SettingCommandWrapper(settingCommand)));
         executeRequest(HttpMethod.PUT, getSettingUrl(setting), new SettingCommandWrapper(settingCommand),
                 NoResult.class);
         startRefreshThread();
