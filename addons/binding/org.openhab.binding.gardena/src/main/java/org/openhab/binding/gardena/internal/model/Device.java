@@ -34,6 +34,7 @@ public class Device {
     @SerializedName("scheduled_events")
     private List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
     private transient Location location;
+    private List<Setting> settings = new ArrayList<Setting>();
 
     /**
      * Returns the id of the device.
@@ -108,6 +109,22 @@ public class Device {
             }
         }
         throw new GardenaException("Ability '" + name + "' not found in device '" + this.name + "'");
+    }
+
+    public List<Setting> getSettings() {
+        return settings;
+    }
+
+    /**
+     * Returns the setting with the specified name.
+     */
+    public Setting getSetting(String name) throws GardenaException {
+        for (Setting setting : settings) {
+            if (setting.getName().equals(name)) {
+                return setting;
+            }
+        }
+        throw new GardenaException("Setting '" + name + "' not found in device '" + this.name + "'");
     }
 
     /**

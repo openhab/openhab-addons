@@ -491,256 +491,287 @@
 		<state pattern="%d lx" readOnly="true" />
 	</channel-type>
 
-    <!-- ############################### Pressure Pump ############################### -->
+	<!-- ############################### Pressure Pump ############################### -->
 
-    <thing-type id="electronic_pressure_pump">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="account" />
-        </supported-bridge-type-refs>
+	<thing-type id="electronic_pressure_pump">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
 
-        <label>Gardena Smart Pressure Pump</label>
-        <description>Represents a Gardena Pressure Pump</description>
+		<label>Gardena Smart Pressure Pump</label>
+		<description>Represents a Gardena Pressure Pump</description>
 
-        <channel-groups>
-            <channel-group id="device_info" typeId="deviceInfo" />
-            <channel-group id="radio" typeId="radio" />
+		<channel-groups>
+			<channel-group id="device_info" typeId="deviceInfo" />
+			<channel-group id="radio" typeId="radio" />
 
-            <channel-group id="outlet_temperature" typeId="outletTemperature" />
-            <channel-group id="pump" typeId="pump" />
-            <channel-group id="outlet_pressure" typeId="outletPressure" />
-            <channel-group id="flow" typeId="flow" />
-            <channel-group id="manual_watering" typeId="manualWatering"/>
-            <channel-group id="scheduling" typeId="scheduling"/>
-         </channel-groups>
-        <properties>
-            <!-- device info -->
-            <property name="manufacturer" />
-            <property name="product" />
-            <property name="serialNumber" />
-            <property name="sgtin" />
-            <property name="version" />
-            <property name="category" />
-        </properties>
-    </thing-type>
+			<channel-group id="outlet_temperature" typeId="outletTemperature" />
+			<channel-group id="pump" typeId="pump" />
+			<channel-group id="outlet_pressure" typeId="outletPressure" />
+			<channel-group id="flow" typeId="flow" />
+			<channel-group id="manual_watering" typeId="manualWatering" />
+			<channel-group id="scheduling" typeId="scheduling" />
+		</channel-groups>
 
-    <channel-group-type id="outletTemperature">
-        <label>Outlet Temperature</label>
-        <description>The outlet temperature</description>
-        <channels>
-            <channel id="temperature" typeId="temperature" />
-            <channel id="temperature_min" typeId="temperature">
-                <label>Minimum Temperature</label>
-                <description>The minimum outlet temperature</description>
-            </channel>
-            <channel id="temperature_max" typeId="temperature">
-                <label>Maximum Temperature</label>
-                <description>The maximum outlet temperature</description>
-            </channel>
-            <channel id="frost_warning" typeId="frostWarning" />
-        </channels>
-    </channel-group-type>
+		<properties>
+			<!-- device info -->
+			<property name="manufacturer" />
+			<property name="product" />
+			<property name="serialNumber" />
+			<property name="sgtin" />
+			<property name="version" />
+			<property name="category" />
+		</properties>
 
-    <channel-group-type id="pump">
-        <label>Pump</label>
-        <description>The pump</description>
-        <channels>
-            <channel id="mode" typeId="pumpMode" />
-            <channel id="pump_on_off" typeId="pumpOnOff" />
-            <channel id="turn_on_pressure" typeId="turnOnPressure" />
-            <channel id="operating_mode" typeId="operatingMode" />
-            <channel id="error" typeId="counter">
-                <label>Error Counter</label>
-            </channel>
-            <channel id="operating_days" typeId="counter">
-                <label>Operating Days Counter</label>
-            </channel>
-            <channel id="error1_count" typeId="counter">
-                <label>Error 1 Counter</label>
-            </channel>
-            <channel id="error2_count" typeId="counter">
-                <label>Error 2 Counter</label>
-            </channel>
-            <channel id="error3_count" typeId="counter">
-                <label>Error 3 Counter</label>
-            </channel>
-            <channel id="error4_count" typeId="counter">
-                <label>Error 4 Counter</label>
-            </channel>
-        </channels>
-    </channel-group-type>
+		<config-description>
+			<parameter name="leakage_detection" type="text">
+				<label>Leakage Detection</label>
+				<options>
+					<option value="watering">Watering</option>
+					<option value="washing_machine">Washing machine</option>
+					<option value="domestic_water_supply">Domestic water supply</option>
+					<option value="off">Off</option>
+				</options>
+			</parameter>
+			<parameter name="operating_mode" type="text">
+				<label>Operating Mode</label>
+				<options>
+					<option value="scheduled">Scheduled</option>
+					<option value="automatic">Automatic</option>
+				</options>
+			</parameter>
+			<parameter name="turn_on_pressure" type="text">
+				<label>Turn on pressure</label>
+				<options>
+					<option value="2.0">2.0</option>
+					<option value="2.2">2.2</option>
+					<option value="2.4">2.4</option>
+					<option value="2.6">2.6</option>
+					<option value="2.8">2.8</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-type id="pumpMode">
-        <item-type>String</item-type>
-        <label>Mode</label>
-        <description>The mode</description>
-        <state readOnly="true">
-            <options>
-                <option value="off">Off</option>
-                <option value="auto">Auto</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-group-type id="outletTemperature">
+		<label>Outlet Temperature</label>
+		<description>The outlet temperature</description>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="temperature_min" typeId="temperature">
+				<label>Minimum Temperature</label>
+				<description>The minimum outlet temperature</description>
+			</channel>
+			<channel id="temperature_max" typeId="temperature">
+				<label>Maximum Temperature</label>
+				<description>The maximum outlet temperature</description>
+			</channel>
+			<channel id="frost_warning" typeId="frostWarning" />
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="pumpOnOff">
-        <item-type>String</item-type>
-        <label>Pump</label>
-        <description>Pump</description>
-        <state readOnly="true">
-            <options>
-                <option value="off">Off</option>
-                <option value="on">On</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-group-type id="pump">
+		<label>Pump</label>
+		<description>The pump</description>
+		<channels>
+			<channel id="mode" typeId="pumpMode" />
+			<channel id="pump_on_off" typeId="pumpOnOff" />
+			<channel id="turn_on_pressure" typeId="turnOnPressure" />
+			<channel id="operating_mode" typeId="operatingMode" />
+			<channel id="error" typeId="counter">
+				<label>Error Counter</label>
+			</channel>
+			<channel id="operating_days" typeId="counter">
+				<label>Operating Days Counter</label>
+			</channel>
+			<channel id="error1_count" typeId="counter">
+				<label>Error 1 Counter</label>
+			</channel>
+			<channel id="error2_count" typeId="counter">
+				<label>Error 2 Counter</label>
+			</channel>
+			<channel id="error3_count" typeId="counter">
+				<label>Error 3 Counter</label>
+			</channel>
+			<channel id="error4_count" typeId="counter">
+				<label>Error 4 Counter</label>
+			</channel>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="turnOnPressure">
-        <item-type>Number</item-type>
-        <label>Turn on pressure</label>
-        <description>Turn on pressure</description>
-        <state readOnly="true" pattern="%d bar">
-            <options>
-                <option value="2.0">2.0</option>
-                <option value="2.2">2.2</option>
-                <option value="2.4">2.4</option>
-                <option value="2.6">2.6</option>
-                <option value="2.8">2.8</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="pumpMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="off">Off</option>
+				<option value="auto">Auto</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="operatingMode">
-        <item-type>String</item-type>
-        <label>Operating Mode</label>
-        <description>The operating mode</description>
-        <state readOnly="true">
-            <options>
-                <option value="scheduled">Scheduled</option>
-                <option value="automatic">Automatic</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="pumpOnOff">
+		<item-type>Switch</item-type>
+		<label>Pump</label>
+		<description>Pump</description>
+	</channel-type>
 
-    <channel-type id="counter" advanced="true">
-        <item-type>Number</item-type>
-        <label>Counter</label>
-        <description>Counter</description>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="turnOnPressure">
+		<item-type>Number</item-type>
+		<label>Turn on pressure</label>
+		<description>Turn on pressure</description>
+		<state readOnly="true" pattern="%d bar">
+			<options>
+				<option value="2.0">2.0</option>
+				<option value="2.2">2.2</option>
+				<option value="2.4">2.4</option>
+				<option value="2.6">2.6</option>
+				<option value="2.8">2.8</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-group-type id="outletPressure">
-        <label>Outlet Pressure</label>
-        <description>The outlet pressure</description>
-        <channels>
-            <channel id="outlet_pressure" typeId="outletPressure" />
-            <channel id="outlet_pressure_max" typeId="outletPressure">
-                <label>Outlet pressure Maximum</label>
-                <description>The maximum outlet pressure</description>
-            </channel>
-        </channels>
-    </channel-group-type>
+	<channel-type id="operatingMode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>The operating mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="scheduled">Scheduled</option>
+				<option value="automatic">Automatic</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="outletPressure" advanced="true">
-        <item-type>Number</item-type>
-        <label>Outlet Pressure</label>
-        <description>The outlet pressure</description>
-        <state readOnly="true" pattern="%d bar"/>
-    </channel-type>
+	<channel-type id="counter" advanced="true">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<description>Counter</description>
+		<state readOnly="true" />
+	</channel-type>
 
-    <channel-group-type id="flow">
-        <label>Flow</label>
-        <description>The flow</description>
-        <channels>
-            <channel id="flow_rate" typeId="flowRate" />
-            <channel id="flow_since_last_reset" typeId="flow">
-		        <label>Flow Since Last Reset</label>
-		        <description>The flow since last reset</description>
-            </channel>
-            <channel id="flow_total" typeId="flow">
-		        <label>Total Flow</label>
-		        <description>The total flow</description>
-            </channel>
-            <channel id="dripping_alert" typeId="drippingAlert" />
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="outletPressure">
+		<label>Outlet Pressure</label>
+		<description>The outlet pressure</description>
+		<channels>
+			<channel id="outlet_pressure" typeId="outletPressure" />
+			<channel id="outlet_pressure_max" typeId="outletPressure">
+				<label>Outlet pressure Maximum</label>
+				<description>The maximum outlet pressure</description>
+			</channel>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="flowRate" advanced="true">
-        <item-type>Number</item-type>
-        <label>Flow Rate</label>
-        <description>The flow rate</description>
-        <state readOnly="true" pattern="%d l/h"/>
-    </channel-type>
+	<channel-type id="outletPressure">
+		<item-type>Number</item-type>
+		<label>Outlet Pressure</label>
+		<description>The outlet pressure</description>
+		<state readOnly="true" pattern="%d bar" />
+	</channel-type>
 
-    <channel-type id="flow" advanced="true">
-        <item-type>Number</item-type>
-        <label>Flow</label>
-        <description>The flow</description>
-        <state readOnly="true" pattern="%d m3"/>
-    </channel-type>
+	<channel-group-type id="flow">
+		<label>Flow</label>
+		<description>The flow</description>
+		<channels>
+			<channel id="flow_rate" typeId="flowRate" />
+			<channel id="flow_since_last_reset" typeId="flow">
+				<label>Flow Since Last Reset</label>
+				<description>The flow since last reset</description>
+			</channel>
+			<channel id="flow_total" typeId="flow">
+				<label>Total Flow</label>
+				<description>The total flow</description>
+			</channel>
+			<channel id="dripping_alert" typeId="drippingAlert" />
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="drippingAlert">
-        <item-type>String</item-type>
-        <label>Dripping Alert</label>
-        <description>The dripping alert</description>
-        <state readOnly="true">
-            <options>
-                <option value="sixty">Sixty</option>
-                <option value="two">Two</option>
-                <option value="off">Off</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="flowRate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Flow Rate</label>
+		<description>The flow rate</description>
+		<state readOnly="true" pattern="%d l/h" />
+	</channel-type>
 
-    <channel-group-type id="manualWatering">
-        <label>Manual Watering</label>
-        <description>Manual Watering</description>
-        <channels>
-            <channel id="manual_watering_timer" typeId="manualWateringTimer" />
-            <channel id="last_manual_override_time" typeId="lastManualOverrideTime" />
-        </channels>
-    </channel-group-type>
+	<channel-type id="flow" advanced="true">
+		<item-type>Number</item-type>
+		<label>Flow</label>
+		<description>The flow</description>
+		<state readOnly="true" pattern="%d m3" />
+	</channel-type>
 
-    <channel-type id="manualWateringTimer" advanced="true">
-        <item-type>Number</item-type>
-        <label>Manual Watering Timer</label>
-        <description>The manual watering timer</description>
-        <state readOnly="true" pattern="%d sec"/>
-    </channel-type>
+	<channel-type id="drippingAlert">
+		<item-type>String</item-type>
+		<label>Dripping Alert</label>
+		<description>The dripping alert</description>
+		<state readOnly="true">
+			<options>
+				<option value="sixty">Sixty</option>
+				<option value="two">Two</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="lastManualOverrideTime" advanced="true">
-        <item-type>Number</item-type>
-        <label>Last Manual Override Timer</label>
-        <description>The last manual override timer</description>
-        <state readOnly="true" pattern="%d min"/>
-    </channel-type>
+	<channel-group-type id="manualWatering">
+		<label>Manual Watering</label>
+		<description>Manual Watering</description>
+		<channels>
+			<channel id="manual_watering_timer" typeId="manualWateringTimer" />
+			<channel id="last_manual_override_time" typeId="lastManualOverrideTime" />
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="scheduling">
-        <label>Manual Watering</label>
-        <description>Manual Watering</description>
-        <channels>
-            <channel id="scheduled_watering_end" typeId="scheduledWatering">
-		        <label>Scheduled Watering End</label>
-		        <description>The scheduled watering end</description>
-            </channel>
-            <channel id="scheduled_watering_next_start" typeId="scheduledWatering">
-                <label>Scheduled Watering Next Start</label>
-                <description>The scheduled watering next start</description>
-            </channel>
-            <channel id="adaptive_scheduling_last_decision" typeId="adaptiveSchedulingLastDecision"/>
-        </channels>
-    </channel-group-type>
+	<channel-type id="manualWateringTimer" advanced="true">
+		<item-type>Number</item-type>
+		<label>Manual Watering Timer</label>
+		<description>The manual watering timer</description>
+		<state readOnly="true" pattern="%d sec" />
+	</channel-type>
 
-    <channel-type id="adaptiveSchedulingLastDecision" advanced="true">
-        <item-type>String</item-type>
-        <label>Adaptive Scheduling Last Decision</label>
-        <description>The adaptive scheduling last decision</description>
-        <state readOnly="true">
-            <options>
-                <option value="undefined">Undefined</option>
-                <option value="watered_sensor_timeout">watered_sensor_timeout</option>
-                <option value="skipped">skipped</option>
-                <option value="watered">watered</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="lastManualOverrideTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Manual Override Timer</label>
+		<description>The last manual override timer</description>
+		<state readOnly="true" pattern="%d min" />
+	</channel-type>
+
+	<channel-group-type id="scheduling">
+		<label>Manual Watering</label>
+		<description>Manual Watering</description>
+		<channels>
+			<channel id="scheduled_watering_end" typeId="scheduledWatering">
+				<label>Scheduled Watering End</label>
+				<description>The scheduled watering end</description>
+			</channel>
+			<channel id="scheduled_watering_next_start" typeId="scheduledWatering">
+				<label>Scheduled Watering Next Start</label>
+				<description>The scheduled watering next start</description>
+			</channel>
+			<channel id="adaptive_scheduling_last_decision" typeId="adaptiveSchedulingLastDecision" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="scheduledWatering" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Scheduled Watering</label>
+		<description>The scheduled watering</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="adaptiveSchedulingLastDecision" advanced="true">
+		<item-type>String</item-type>
+		<label>Adaptive Scheduling Last Decision</label>
+		<description>The adaptive scheduling last decision</description>
+		<state readOnly="true">
+			<options>
+				<option value="undefined">Undefined</option>
+				<option value="watered_sensor_timeout">watered_sensor_timeout</option>
+				<option value="skipped">skipped</option>
+				<option value="watered">watered</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>

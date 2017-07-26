@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -44,6 +45,7 @@ import org.openhab.binding.gardena.internal.model.NoResult;
 import org.openhab.binding.gardena.internal.model.Property;
 import org.openhab.binding.gardena.internal.model.Session;
 import org.openhab.binding.gardena.internal.model.SessionWrapper;
+import org.openhab.binding.gardena.internal.model.Setting;
 import org.openhab.binding.gardena.internal.model.command.Command;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilFurtherNoticeCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilNextTimerCommand;
@@ -53,6 +55,8 @@ import org.openhab.binding.gardena.internal.model.command.SensorMeasureAmbientTe
 import org.openhab.binding.gardena.internal.model.command.SensorMeasureLightCommand;
 import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilHumidityCommand;
 import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilTemperatureCommand;
+import org.openhab.binding.gardena.internal.model.command.SettingCommand;
+import org.openhab.binding.gardena.internal.model.command.SettingCommandWrapper;
 import org.openhab.binding.gardena.internal.model.command.WateringCancelOverrideCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringManualOverrideCommand;
 import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
@@ -72,12 +76,14 @@ import com.google.gson.GsonBuilder;
 public class GardenaSmartImpl implements GardenaSmart {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
 
+    public static final String DEVICE_CATEGORY_PUMP = "electronic_pressure_pump";
     private static final String ABILITY_MOWER = "mower";
     private static final String ABILITY_OUTLET = "outlet";
     private static final String ABILITY_HUMIDITY = "humidity";
     private static final String ABILITY_LIGHT = "light";
     private static final String ABILITY_AMBIENT_TEMPERATURE = "ambient_temperature";
     private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
+    private static final String ABILITY_PUMP_ON_OFF = "pump_on_off";
 
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
 
@@ -92,6 +98,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String URL_DEVICES = URL + "/sg-1/devices/?locationId=";
     private static final String URL_COMMAND = URL + "/sg-1/devices/%s/abilities/%s/command?locationId=%s";
     private static final String URL_PROPERTY = URL + "/sg-1/devices/%s/abilities/%s/properties/%s?locationId=%s";
+    private static final String URL_SETTING = URL + "/sg-1/devices/%s/settings/%s?locationId=%s";
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create();
     private HttpClient httpClient;
@@ -242,7 +249,17 @@ public class GardenaSmartImpl implements GardenaSmart {
                 ability.setDevice(device);
                 for (Property property : ability.getProperties()) {
                     property.setAbility(ability);
+
+                    // special conversion for pump, convert on/off to boolean
+                    if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)
+                            && property.getName().equals(ABILITY_PUMP_ON_OFF)) {
+                        property.setValue(String.valueOf(StringUtils.equalsIgnoreCase("on", property.getValue())));
+                    }
+
                 }
+            }
+            for (Setting setting : device.getSettings()) {
+                setting.setDevice(device);
             }
 
             if (DEVICE_CATEGORY_MOWER.equals(device.getCategory())) {
@@ -344,6 +361,22 @@ public class GardenaSmartImpl implements GardenaSmart {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sendSetting(Setting setting, Object value) throws GardenaException {
+        SettingCommand settingCommand = new SettingCommand(setting.getName());
+        settingCommand.setDeviceId(setting.getDevice().getId());
+        settingCommand.setValue(value);
+
+        stopRefreshThread(false);
+        logger.info(gson.toJson(new SettingCommandWrapper(settingCommand)));
+        executeRequest(HttpMethod.PUT, getSettingUrl(setting), new SettingCommandWrapper(settingCommand),
+                NoResult.class);
+        startRefreshThread();
+    }
+
+    /**
      * Returns the command url.
      */
     private String getCommandUrl(Device device, Ability ability) throws GardenaException {
@@ -351,10 +384,19 @@ public class GardenaSmartImpl implements GardenaSmart {
     }
 
     /**
+     * Returns the settings url.
+     */
+    private String getSettingUrl(Setting setting) {
+        Device device = setting.getDevice();
+        return String.format(URL_SETTING, device.getId(), setting.getId(), device.getLocation().getId());
+    }
+
+    /**
      * Communicates with Gardena Smart Home and parses the result.
      */
     private synchronized <T> T executeRequest(HttpMethod method, String url, Object contentObject, Class<T> result)
             throws GardenaException {
+
         try {
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request:  {}", method, url);
