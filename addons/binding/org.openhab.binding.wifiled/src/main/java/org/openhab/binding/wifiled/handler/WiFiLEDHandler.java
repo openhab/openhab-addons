@@ -205,8 +205,8 @@ public class WiFiLEDHandler extends BaseThingHandler {
 
         try {
             LEDStateDTO ledState = driver.getLEDStateDTO();
-            HSBType color = new HSBType(ledState.getHue(), ledState.getSaturation(), ledState.getBrightness());
-            updateState(WiFiLEDBindingConstants.CHANNEL_POWER, ledState.power);
+            HSBType color = ledState.getHSB();
+            updateState(WiFiLEDBindingConstants.CHANNEL_POWER, ledState.getPower());
             updateState(WiFiLEDBindingConstants.CHANNEL_COLOR, color);
             updateState(WiFiLEDBindingConstants.CHANNEL_WHITE, ledState.getWhite());
             updateState(WiFiLEDBindingConstants.CHANNEL_PROGRAM, ledState.getProgram());
