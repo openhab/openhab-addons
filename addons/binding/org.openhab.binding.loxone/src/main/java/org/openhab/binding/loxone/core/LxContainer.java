@@ -22,7 +22,7 @@ import java.util.Set;
 public class LxContainer {
     private LxUuid uuid;
     private String name;
-    private Set<LxControl> controls = new HashSet<LxControl>();
+    private Set<LxControl> controls = new HashSet<>();
 
     /**
      * Create a new container with given uuid and name

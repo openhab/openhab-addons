@@ -65,9 +65,9 @@ public class LxControlLightController extends LxControl implements LxControlStat
     private static final String CMD_PREVIOUS_SCENE = "minus";
     private static final int SCENE_ALL_ON = 9;
 
-    private Map<String, String> sceneNames = new TreeMap<String, String>();
+    private Map<String, String> sceneNames = new TreeMap<>();
     private boolean newSceneNames = false;
-    private int movementScene = -1;
+    private Integer movementScene;
 
     /**
      * Create lighting controller object.
@@ -129,7 +129,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 }
             }
         }
-        List<LxUuid> toRemove = new ArrayList<LxUuid>(subControls.size());
+        List<LxUuid> toRemove = new ArrayList<>(subControls.size());
         for (LxControl control : subControls.values()) {
             if (!control.uuid.getUpdate()) {
                 toRemove.add(control.uuid);
@@ -149,7 +149,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -212,23 +212,26 @@ public class LxControlLightController extends LxControl implements LxControlStat
      * Get current active scene
      *
      * @return
-     *         number of the active scene (0-9, 0-all off, 9-all on) or -1 if error
+     *         number of the active scene (0-9, 0-all off, 9-all on) or null if error
      */
-    public int getCurrentScene() {
+    public Integer getCurrentScene() {
         LxControlState state = getState(STATE_ACTIVE_SCENE);
         if (state != null) {
-            return (int) state.getValue();
+            Double value = state.getValue();
+            if (value != null) {
+                return value.intValue();
+            }
         }
-        return -1;
+        return null;
     }
 
     /**
      * Get scene designated as 'movement'
      *
      * @return
-     *         number of the movement scene (0-9, 0-all off, 9-all on) or -1 if undefined
+     *         number of the movement scene (0-9, 0-all off, 9-all on) or null if undefined
      */
-    public int getMovementScene() {
+    public Integer getMovementScene() {
         return movementScene;
     }
 

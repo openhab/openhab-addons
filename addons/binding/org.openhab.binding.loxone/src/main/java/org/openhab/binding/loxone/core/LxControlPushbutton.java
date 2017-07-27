@@ -57,7 +57,7 @@ public class LxControlPushbutton extends LxControlSwitch {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**

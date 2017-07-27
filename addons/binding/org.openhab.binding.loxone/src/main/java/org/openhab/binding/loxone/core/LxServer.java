@@ -55,71 +55,38 @@ public class LxServer {
     // Configuration
     private final InetAddress host;
     private final int port;
-    private final String user, password;
-    private String miniserverName = "", projectName = "", location = "", serial = "", cloudAddress = "";
-    @SuppressWarnings("unused")
-    private String roomTitle, categoryTitle;
-    private int firstConDelay = 1, connectErrDelay = 10, userErrorDelay = 60, comErrorDelay = 30;
+    private final String user;
+    private final String password;
+
+    private String miniserverName = "";
+    private String projectName = "";
+    private String location = "";
+    private String serial = "";
+    private String cloudAddress = "";
+
+    private int firstConDelay = 1;
+    private int connectErrDelay = 10;
+    private int userErrorDelay = 60;
+    private int comErrorDelay = 30;
 
     // Data structures
-    private Set<LxUuid> uuids = new HashSet<LxUuid>();
-    private Map<LxUuid, LxControl> controls = new HashMap<LxUuid, LxControl>();
-    private Map<LxUuid, LxContainer> rooms = new HashMap<LxUuid, LxContainer>();
-    private Map<LxUuid, LxCategory> categories = new HashMap<LxUuid, LxCategory>();
-    private Map<LxUuid, LxControlState> states = new HashMap<LxUuid, LxControlState>();
-    private List<LxServerListener> listeners = new ArrayList<LxServerListener>();
+    private Set<LxUuid> uuids = new HashSet<>();
+    private Map<LxUuid, LxControl> controls = new HashMap<>();
+    private Map<LxUuid, LxContainer> rooms = new HashMap<>();
+    private Map<LxUuid, LxCategory> categories = new HashMap<>();
+    private Map<LxUuid, LxControlState> states = new HashMap<>();
+    private List<LxServerListener> listeners = new ArrayList<>();
 
     // Services
     private boolean running = true;
     private LxWsClient socketClient;
-    private Thread monitorThread = null;
-    private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<LxServerEvent>();
+    private Thread monitorThread;
+    private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
 
     private Logger logger = LoggerFactory.getLogger(LxServer.class);
 
     private int debugId;
     private static AtomicInteger staticDebugId = new AtomicInteger(1);
-
-    /**
-     * Reasons why Miniserver may be not reachable
-     *
-     * @author Pawel Pieczul - initial commit
-     *
-     */
-    public enum OfflineReason {
-        /**
-         * No reason at all - should be reachable
-         */
-        NONE,
-        /**
-         * User name or password incorrect or user not authorized
-         */
-        UNAUTHORIZED,
-        /**
-         * Too many failed login attempts and server's temporary ban of the user
-         */
-        TOO_MANY_FAILED_LOGIN_ATTEMPTS,
-        /**
-         * Communication error with the Miniserv
-         */
-        COMMUNICATION_ERROR,
-        /**
-         * Timeout of user authentication procedure
-         */
-        AUTHENTICATION_TIMEOUT,
-        /**
-         * No activity from Miniserver's client
-         */
-        IDLE_TIMEOUT,
-        /**
-         * Internal error, sign of something wrong with the program
-         */
-        INTERNAL_ERROR,
-        /**
-         * Connection attempt failed (before authentication)
-         */
-        CONNECT_FAILED
-    }
 
     /**
      * Creates a new instance of Loxone Miniserver with provided host address and credentials.
@@ -163,7 +130,7 @@ public class LxServer {
             logger.debug("[{}] Server stop", debugId);
             synchronized (monitorThread) {
                 if (queue != null) {
-                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, OfflineReason.NONE, null);
+                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
                     try {
                         queue.put(event);
                         monitorThread.notify();
@@ -408,7 +375,7 @@ public class LxServer {
                     try {
                         LxServerEvent wsMsg = queue.take();
                         EventType event = wsMsg.getEvent();
-                        logger.trace("[{}] Server received event: {}", debugId, event.toString());
+                        logger.trace("[{}] Server received event: {}", debugId, event);
 
                         switch (event) {
                             case RECEIVED_CONFIG:
@@ -430,14 +397,14 @@ public class LxServer {
                                     LxControl control = state.getControl();
                                     if (control != null) {
                                         logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
-                                                update.getUuid().toString(), control.getName(), state.getName(),
-                                                update.getValue(), update.getText());
+                                                update.getUuid(), control.getName(), state.getName(), update.getValue(),
+                                                update.getText());
                                         for (LxServerListener listener : listeners) {
                                             listener.onControlStateUpdate(control);
                                         }
                                     } else {
                                         logger.debug("[{}] State update {} ({}) of unknown control", debugId,
-                                                update.getUuid().toString(), state.getName());
+                                                update.getUuid(), state.getName());
                                     }
                                 }
                                 break;
@@ -447,21 +414,20 @@ public class LxServer {
                                 }
                                 break;
                             case SERVER_OFFLINE:
-                                OfflineReason reason = wsMsg.getOfflineReason();
+                                LxOfflineReason reason = wsMsg.getOfflineReason();
                                 String details = null;
                                 if (wsMsg.getObject() instanceof String) {
                                     details = (String) wsMsg.getObject();
                                 }
-                                logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason.toString(),
-                                        details);
+                                logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason, details);
 
-                                if (reason == OfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS) {
+                                if (reason == LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS) {
                                     // assume credentials are wrong, do not re-attempt connections
                                     // close thread and expect a new LxServer object will have to be re-created
                                     // with corrected configuration
                                     running = false;
                                 } else {
-                                    if (reason == OfflineReason.UNAUTHORIZED) {
+                                    if (reason == LxOfflineReason.UNAUTHORIZED) {
                                         waitTime = userErrorDelay * 1000;
                                     } else {
                                         waitTime = comErrorDelay * 1000;
@@ -517,8 +483,6 @@ public class LxServer {
             projectName = buildName(config.msInfo.projectName);
             location = buildName(config.msInfo.location);
             serial = buildName(config.msInfo.serialNr);
-            roomTitle = buildName(config.msInfo.roomTitle);
-            categoryTitle = buildName(config.msInfo.catTitle);
             cloudAddress = buildName(config.msInfo.remoteUrl);
         } else {
             logger.warn("[{}] missing global configuration msInfo on Loxone", debugId);
@@ -544,7 +508,7 @@ public class LxServer {
                 try {
                     addOrUpdateControl(ctrl);
                 } catch (Exception e) {
-                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e.toString());
+                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
                 }
             }
         }

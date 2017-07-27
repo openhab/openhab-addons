@@ -38,13 +38,8 @@ import com.google.common.collect.Sets;
  * @author Pawel Pieczul - Initial contribution
  */
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
-
-    @SuppressWarnings("unused")
-    private UpnpIOService upnpIOService;
-    @SuppressWarnings("unused")
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
-    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>();
-    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
+    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
@@ -68,20 +63,17 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
     protected synchronized void removeHandler(ThingHandler thingHandler) {
     }
 
+    // The following methods are required by the UPnP service and are referenced in OSGI-INF/LoxoneHandlerFactory.xml
     protected void setUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = upnpIOService;
     }
 
     protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = null;
     }
 
     protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
     }
 
     protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = null;
     }
 
     @Override
@@ -131,7 +123,7 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
     }
 
     public void removeChannelType(ChannelTypeUID id) {
-        List<ChannelType> removes = new ArrayList<ChannelType>();
+        List<ChannelType> removes = new ArrayList<>();
         for (ChannelType c : channelTypes) {
             if (c.getUID().getAsString().equals(id.getAsString())) {
                 removes.add(c);
@@ -141,7 +133,7 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
     }
 
     public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<ChannelType>();
+        List<ChannelType> removes = new ArrayList<>();
         for (ChannelType c : channelTypes) {
             if (c.getUID().getAsString().startsWith(uid.getAsString())) {
                 removes.add(c);

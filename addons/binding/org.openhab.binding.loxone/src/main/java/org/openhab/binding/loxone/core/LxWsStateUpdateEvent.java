@@ -20,9 +20,9 @@ import java.nio.ByteOrder;
 class LxWsStateUpdateEvent {
     private LxUuid uuid;
     @SuppressWarnings("unused")
-    private LxUuid iconUuid = null;
-    private double value = -1;
-    private String text = null;
+    private LxUuid iconUuid;
+    private Double value;
+    private String text;
     private int size = 0;
 
     /**
@@ -36,11 +36,6 @@ class LxWsStateUpdateEvent {
      *            offset in buffer where event is expected
      */
     LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
-
-        if (data.length - offset < 24) {
-            throw new IndexOutOfBoundsException();
-        }
-
         uuid = new LxUuid(data, offset);
         offset += 16;
 
@@ -50,47 +45,14 @@ class LxWsStateUpdateEvent {
             return;
         }
 
-        if (data.length - offset < 20) {
-            throw new IndexOutOfBoundsException();
-        }
-
         iconUuid = new LxUuid(data, offset);
         offset += 16;
 
         int textLen = ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
         offset += 4;
 
-        if (data.length - offset < textLen) {
-            throw new IndexOutOfBoundsException();
-        }
         text = new String(data, offset, textLen);
         size = 36 + (textLen % 4 > 0 ? textLen + 4 - (textLen % 4) : textLen);
-    }
-
-    /**
-     * Create new state update event from parameters - version for value states
-     *
-     * @param uuid
-     *            UUID of the state to update
-     * @param value
-     *            value of the state
-     */
-    LxWsStateUpdateEvent(LxUuid uuid, double value) {
-        this.uuid = uuid;
-        this.value = value;
-    }
-
-    /**
-     * Create new state update event from parameters - version for text states
-     *
-     * @param uuid
-     *            UUID of the state to update
-     * @param text
-     *            text value of the state
-     */
-    LxWsStateUpdateEvent(LxUuid uuid, String text) {
-        this.uuid = uuid;
-        this.text = text;
     }
 
     /**
@@ -107,9 +69,9 @@ class LxWsStateUpdateEvent {
      * Get current value of this state
      *
      * @return
-     *         current value of the state
+     *         current value of the state or null if state has no value
      */
-    double getValue() {
+    Double getValue() {
         return value;
     }
 

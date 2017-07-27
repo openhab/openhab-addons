@@ -27,10 +27,10 @@ import java.util.List;
 class LxControlState {
     private LxUuid uuid;
     private String name;
-    private double value = -1;
-    private String textValue = null;
+    private Double value;
+    private String textValue;
     private LxControl control;
-    private List<LxControlStateListener> listeners = new ArrayList<LxControlStateListener>();
+    private List<LxControlStateListener> listeners = new ArrayList<>();
 
     /**
      * Create a control state object.
@@ -57,18 +57,17 @@ class LxControlState {
      * @param textValue
      *            current state's text value to set
      */
-    void setValue(double value, String textValue) {
+    void setValue(Double value, String textValue) {
         boolean changed = false;
 
         uuid.setUpdate(true);
 
-        if (this.value != value) {
+        if (value != null && !value.equals(this.value)) {
             this.value = value;
             changed = true;
         }
 
-        if ((textValue != null && this.textValue != null && !textValue.equals(this.textValue))
-                || (textValue != this.textValue)) {
+        if (textValue != null && !textValue.equals(this.textValue)) {
             this.textValue = textValue;
             changed = true;
         }
@@ -96,7 +95,7 @@ class LxControlState {
      * @return
      *         current state's value
      */
-    double getValue() {
+    Double getValue() {
         return value;
     }
 

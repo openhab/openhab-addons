@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.core;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A JSON response to a call to send a command to Miniserver's control at
  * http://miniserver/jdev/sps/io/{uuid}/{command}.
@@ -18,11 +20,14 @@ package org.openhab.binding.loxone.core;
  *
  */
 class LxJsonResponse {
-    LxJsonLL LL;
 
-    class LxJsonLL {
+    class LxJsonSubResponse {
         String control;
         String value;
-        int Code;
+        @SerializedName("Code")
+        int code;
     }
+
+    @SerializedName("LL")
+    LxJsonSubResponse subResponse;
 }

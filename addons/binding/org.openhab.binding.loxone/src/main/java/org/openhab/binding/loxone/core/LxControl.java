@@ -31,15 +31,15 @@ import com.google.gson.JsonElement;
  */
 public abstract class LxControl {
     private String name;
-    private String typeName = null;
+    private String typeName;
     private LxContainer room;
     private LxCategory category;
-    private Map<String, LxControlState> states = new HashMap<String, LxControlState>();
+    private Map<String, LxControlState> states = new HashMap<>();
 
     LxUuid uuid;
     LxWsClient socketClient;
     Logger logger = LoggerFactory.getLogger(LxControl.class);
-    Map<LxUuid, LxControl> subControls = new HashMap<LxUuid, LxControl>();
+    Map<LxUuid, LxControl> subControls = new HashMap<>();
 
     /**
      * Create a Miniserver's control object.
@@ -177,6 +177,14 @@ public abstract class LxControl {
     }
 
     /**
+     * Hash code of the control is equal to its UUID's hash code
+     */
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    /**
      * Update Miniserver's control in runtime.
      *
      * @param json
@@ -223,7 +231,7 @@ public abstract class LxControl {
                         logger.trace("New state for LxControl {}: {}", json.type, name);
                         state = new LxControlState(id, name, this);
                     } else {
-                        logger.trace("Existing state for LxControl{} : {}", json.type, name);
+                        logger.trace("Existing state for LxControl {}: {}", json.type, name);
                         state.getUuid().setUpdate(true);
                         state.setName(name);
                     }

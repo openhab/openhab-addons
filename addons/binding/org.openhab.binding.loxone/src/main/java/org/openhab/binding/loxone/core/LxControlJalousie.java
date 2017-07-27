@@ -96,7 +96,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     private static final String CMD_STOP = "Stop";
 
-    private double targetPosition = -1;
+    private Double targetPosition;
 
     /**
      * Create jalousie control object.
@@ -130,7 +130,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -181,9 +181,9 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      * @throws IOException
      *             when something went wrong with communication
      */
-    public void moveToPosition(double position) throws IOException {
-        double currentPosition = getPosition();
-        if (currentPosition >= 0 && currentPosition <= 1) {
+    public void moveToPosition(Double position) throws IOException {
+        Double currentPosition = getPosition();
+        if (currentPosition != null && currentPosition >= 0 && currentPosition <= 1) {
             if (currentPosition > position) {
                 logger.debug("Moving jalousie up from {} to {}", currentPosition, position);
                 targetPosition = position;
@@ -200,14 +200,14 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      * Get current position of the rollershutter (jalousie)
      *
      * @return
-     *         a floating point number from range 0-fully closed to 1-fully open
+     *         a floating point number from range 0-fully closed to 1-fully open or null if position not available
      */
-    public double getPosition() {
+    public Double getPosition() {
         LxControlState state = getState(LxControlJalousie.STATE_POSITION);
         if (state != null) {
             return state.getValue();
         }
-        return -1;
+        return null;
     }
 
     /**
@@ -216,19 +216,24 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
     @Override
     public void onStateChange(LxControlState state) {
         // check position changes
-        if (state.getName().equals(STATE_POSITION) && targetPosition > 0 && targetPosition < 1) {
+        if (state.getName().equals(STATE_POSITION) && targetPosition != null && targetPosition > 0
+                && targetPosition < 1) {
             // see in which direction jalousie is moving
             LxControlState up = getState(STATE_UP);
             LxControlState down = getState(STATE_DOWN);
             if (up != null && down != null) {
-                double currentPosition = state.getValue();
-                if (((up.getValue() == 1) && (currentPosition < targetPosition))
-                        || ((down.getValue() == 1) && (currentPosition > targetPosition))) {
-                    targetPosition = -1;
-                    try {
-                        stop();
-                    } catch (IOException e) {
-                        logger.debug("Error stopping jalousie when meeting target position.");
+                Double currentPosition = state.getValue();
+                Double upValue = up.getValue();
+                Double downValue = down.getValue();
+                if (currentPosition != null && upValue != null && downValue != null) {
+                    if (((upValue == 1) && (currentPosition <= targetPosition))
+                            || ((downValue == 1) && (currentPosition >= targetPosition))) {
+                        targetPosition = null;
+                        try {
+                            stop();
+                        } catch (IOException e) {
+                            logger.debug("Error stopping jalousie when meeting target position.");
+                        }
                     }
                 }
             }

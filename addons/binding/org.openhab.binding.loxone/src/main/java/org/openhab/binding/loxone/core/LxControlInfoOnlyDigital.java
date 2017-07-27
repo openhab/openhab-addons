@@ -29,8 +29,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
      */
     private static final String STATE_ACTIVE = "active";
 
-    private String textOn = null;
-    private String textOff = null;
+    private String textOn;
+    private String textOff;
 
     /**
      * Create InfoOnlyDigital control object.
@@ -64,7 +64,7 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -76,10 +76,13 @@ public class LxControlInfoOnlyDigital extends LxControl {
     public String getFormattedValue() {
         LxControlState state = getState(STATE_ACTIVE);
         if (state != null) {
-            if (state.getValue() == 0) {
-                return textOff;
-            } else if (state.getValue() == 1) {
-                return textOn;
+            Double value = state.getValue();
+            if (value != null) {
+                if (value == 0) {
+                    return textOff;
+                } else if (value == 1) {
+                    return textOn;
+                }
             }
         }
         return null;
@@ -91,11 +94,11 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * @return
      *         1 for ON, 0 for OFF and -1 if current value is not available
      */
-    public double getValue() {
+    public Double getValue() {
         LxControlState state = getState(STATE_ACTIVE);
         if (state != null) {
             return state.getValue();
         }
-        return -1;
+        return null;
     }
 }

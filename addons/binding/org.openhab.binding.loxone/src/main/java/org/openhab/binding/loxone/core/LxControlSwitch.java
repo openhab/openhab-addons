@@ -72,7 +72,7 @@ public class LxControlSwitch extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -105,11 +105,11 @@ public class LxControlSwitch extends LxControl {
      * @return
      *         0 - switch off, 1 - switch on
      */
-    public double getState() {
+    public Double getState() {
         LxControlState state = getState(STATE_ACTIVE);
         if (state != null) {
             return state.getValue();
         }
-        return -1;
+        return null;
     }
 }

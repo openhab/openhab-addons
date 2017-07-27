@@ -36,7 +36,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.openhab.binding.loxone.core.LxServer.OfflineReason;
+import org.openhab.binding.loxone.core.LxJsonResponse.LxJsonSubResponse;
 import org.openhab.binding.loxone.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +63,9 @@ class LxWsClient {
     private int maxBinMsgSize = 3 * 1024; // 3 MB
     private int maxTextMsgSize = 512; // 512 KB
 
-    private ScheduledFuture<?> timeout = null;
-    private LxWebSocket socket = null;
-    private WebSocketClient wsClient = null;
+    private ScheduledFuture<?> timeout;
+    private LxWebSocket socket;
+    private WebSocketClient wsClient;
     private BlockingQueue<LxServerEvent> queue;
     private ClientState state = ClientState.IDLE;
     private Logger logger = LoggerFactory.getLogger(LxWsClient.class);
@@ -176,9 +176,6 @@ class LxWsClient {
          *            offset in bytes at which header is expected
          */
         LxWsBinaryHeader(byte[] buffer, int offset) throws IndexOutOfBoundsException {
-            if (buffer.length - offset != 8) {
-                throw new IndexOutOfBoundsException();
-            }
             if (buffer[offset] != 0x03) {
                 return;
             }
@@ -252,7 +249,7 @@ class LxWsClient {
     boolean connect() {
         logger.trace("[{}] connect() websocket", debugId);
         if (state != ClientState.IDLE) {
-            close("Attempt to connect a websocket in non-idle state: " + state.toString());
+            close("Attempt to connect a websocket in non-idle state: " + state);
             return false;
         }
 
@@ -353,7 +350,7 @@ class LxWsClient {
      * @param reasonText
      *            reason text (description) for server going offline
      */
-    private void notifyAndClose(OfflineReason reasonCode, String reasonText) {
+    private void notifyAndClose(LxOfflineReason reasonCode, String reasonText) {
         notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reasonText);
         close(reasonText);
     }
@@ -416,7 +413,7 @@ class LxWsClient {
      *            new state to set
      */
     private void setClientState(LxWsClient.ClientState state) {
-        logger.debug("[{}] changing client state to: {}", debugId, state.toString());
+        logger.debug("[{}] changing client state to: {}", debugId, state);
         this.state = state;
     }
 
@@ -434,7 +431,7 @@ class LxWsClient {
                 public void run() {
                     synchronized (state) {
                         logger.debug("[{}] Miniserver response timeout", debugId);
-                        notifyMaster(EventType.SERVER_OFFLINE, OfflineReason.COMMUNICATION_ERROR,
+                        notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.COMMUNICATION_ERROR,
                                 "Miniserver response timeout occured");
                         disconnect();
                     }
@@ -447,7 +444,7 @@ class LxWsClient {
      * Stops scheduled timeout waiting for a Miniserver response
      */
     private void stopResponseTimeout() {
-        logger.trace("[{}] stopping response timeout in state {}", debugId, state.toString());
+        logger.trace("[{}] stopping response timeout in state {}", debugId, state);
         synchronized (state) {
             if (timeout != null) {
                 timeout.cancel(true);
@@ -466,9 +463,9 @@ class LxWsClient {
      * @param object
      *            additional data for the event (text message for OFFLINE event, data for state changes)
      */
-    private void notifyMaster(EventType event, OfflineReason reason, Object object) {
+    private void notifyMaster(EventType event, LxOfflineReason reason, Object object) {
         if (reason == null) {
-            reason = OfflineReason.NONE;
+            reason = LxOfflineReason.NONE;
         }
         LxServerEvent sync = new LxServerEvent(event, reason, object);
         try {
@@ -487,15 +484,15 @@ class LxWsClient {
     @WebSocket
     public class LxWebSocket {
         Session session;
-        private ScheduledFuture<?> keepAlive = null;
-        private LxWsBinaryHeader header = null;
+        Gson gson = new Gson();
+        private ScheduledFuture<?> keepAlive;
+        private LxWsBinaryHeader header;
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
             synchronized (state) {
                 if (state != ClientState.CONNECTING) {
-                    logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId,
-                            state.toString());
+                    logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state);
                     return;
                 }
 
@@ -513,11 +510,11 @@ class LxWsClient {
                 try {
                     sendString(CMD_GET_KEY);
                 } catch (IOException e) {
-                    notifyAndClose(OfflineReason.COMMUNICATION_ERROR,
+                    notifyAndClose(LxOfflineReason.COMMUNICATION_ERROR,
                             "Message send failure on recently connected websocket");
                 }
             }
-            keepAlive = SCHEDULER.scheduleAtFixedRate(new Runnable() {
+            keepAlive = SCHEDULER.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (state) {
@@ -540,19 +537,19 @@ class LxWsClient {
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
             synchronized (state) {
-                logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId,
-                        state.toString(), statusCode, reason);
+                logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId, state,
+                        statusCode, reason);
                 stopKeepAlive();
                 if (state == ClientState.CLOSING) {
                     session = null;
                 } else if (state != ClientState.IDLE) {
-                    OfflineReason reasonCode;
+                    LxOfflineReason reasonCode;
                     if (statusCode == 1001) {
-                        reasonCode = OfflineReason.IDLE_TIMEOUT;
+                        reasonCode = LxOfflineReason.IDLE_TIMEOUT;
                     } else if (statusCode == 4003) {
-                        reasonCode = OfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
+                        reasonCode = LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
                     } else {
-                        reasonCode = OfflineReason.COMMUNICATION_ERROR;
+                        reasonCode = LxOfflineReason.COMMUNICATION_ERROR;
                     }
                     notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reason);
                 }
@@ -636,7 +633,7 @@ class LxWsClient {
                 if (trace.length() > 100) {
                     trace = msg.substring(0, 100);
                 }
-                logger.trace("[{}] received message in state {}: {}", debugId, state.toString(), trace);
+                logger.trace("[{}] received message in state {}: {}", debugId, state, trace);
             }
             synchronized (state) {
                 try {
@@ -644,42 +641,55 @@ class LxWsClient {
                     switch (state) {
                         case IDLE:
                         case CONNECTING:
-                            logger.debug("[{}] Unexpected message received by websocket in state {}", debugId,
-                                    state.toString());
+                            logger.debug("[{}] Unexpected message received by websocket in state {}", debugId, state);
                             break;
                         case CONNECTED:
                             // expecting a key to hash credentials
-                            resp = new Gson().fromJson(msg, LxJsonResponse.class);
-                            if (resp.LL.Code == 420) {
-                                notifyAndClose(OfflineReason.AUTHENTICATION_TIMEOUT,
-                                        "Timeout on authentication procedure, response : " + resp.LL.value);
-                            } else if (resp.LL.control.equals(CMD_GET_KEY) && resp.LL.Code == 200) {
-                                String credentials = hashCredentials(resp.LL.value);
-                                if (credentials != null) {
-                                    sendString(CMD_AUTHENTICATE + credentials);
-                                    setClientState(ClientState.AUTHENTICATING);
-                                    startResponseTimeout();
-                                } else {
-                                    notifyAndClose(OfflineReason.INTERNAL_ERROR, "Error creating credentials");
+                            resp = gson.fromJson(msg, LxJsonResponse.class);
+                            if (resp != null) {
+                                LxJsonSubResponse subResp = resp.subResponse;
+                                if (subResp != null) {
+                                    if (subResp.code == 420) {
+                                        notifyAndClose(LxOfflineReason.AUTHENTICATION_TIMEOUT,
+                                                "Timeout on authentication procedure, response : " + subResp.value);
+                                    } else if (subResp.control != null && subResp.control.equals(CMD_GET_KEY)
+                                            && subResp.code == 200) {
+                                        String credentials = hashCredentials(subResp.value);
+                                        if (credentials != null) {
+                                            sendString(CMD_AUTHENTICATE + credentials);
+                                            setClientState(ClientState.AUTHENTICATING);
+                                            startResponseTimeout();
+                                        } else {
+                                            notifyAndClose(LxOfflineReason.INTERNAL_ERROR,
+                                                    "Error creating credentials");
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case AUTHENTICATING:
-                            resp = new Gson().fromJson(msg, LxJsonResponse.class);
-                            if (resp.LL.Code == 401) {
-                                notifyAndClose(OfflineReason.UNAUTHORIZED, "Websocket credentials unauthorized.");
-                            } else if (resp.LL.Code == 420) {
-                                notifyAndClose(OfflineReason.AUTHENTICATION_TIMEOUT,
-                                        "Timeout on authentication procedure, response : " + resp.LL.value);
-                            } else if (resp.LL.Code == 200) {
-                                logger.debug("[{}] Websocket authentication successfull.", debugId);
-                                sendString(CMD_GET_APP_CONFIG);
-                                setClientState(ClientState.UPDATING_CONFIGURATION);
-                                startResponseTimeout();
+                            resp = gson.fromJson(msg, LxJsonResponse.class);
+                            if (resp != null) {
+                                LxJsonSubResponse subResp = resp.subResponse;
+                                if (subResp != null) {
+                                    int code = subResp.code;
+                                    if (code == 401) {
+                                        notifyAndClose(LxOfflineReason.UNAUTHORIZED,
+                                                "Websocket credentials unauthorized.");
+                                    } else if (code == 420) {
+                                        notifyAndClose(LxOfflineReason.AUTHENTICATION_TIMEOUT,
+                                                "Timeout on authentication procedure, response : " + subResp.value);
+                                    } else if (code == 200) {
+                                        logger.debug("[{}] Websocket authentication successfull.", debugId);
+                                        sendString(CMD_GET_APP_CONFIG);
+                                        setClientState(ClientState.UPDATING_CONFIGURATION);
+                                        startResponseTimeout();
+                                    }
+                                }
                             }
                             break;
                         case UPDATING_CONFIGURATION:
-                            LxJsonApp3 config = new Gson().fromJson(msg, LxJsonApp3.class);
+                            LxJsonApp3 config = gson.fromJson(msg, LxJsonApp3.class);
                             if (config != null) {
                                 logger.debug("[{}] Received configuration from server", debugId);
                                 notifyMaster(EventType.RECEIVED_CONFIG, null, config);
@@ -688,7 +698,8 @@ class LxWsClient {
                                 startResponseTimeout();
                                 notifyMaster(EventType.SERVER_ONLINE, null, null);
                             } else {
-                                notifyAndClose(OfflineReason.INTERNAL_ERROR, "Error processing received configuration");
+                                notifyAndClose(LxOfflineReason.INTERNAL_ERROR,
+                                        "Error processing received configuration");
                             }
                             break;
                         case RUNNING:
@@ -697,7 +708,7 @@ class LxWsClient {
                             break;
                     }
                 } catch (IOException e) {
-                    notifyAndClose(OfflineReason.COMMUNICATION_ERROR,
+                    notifyAndClose(LxOfflineReason.COMMUNICATION_ERROR,
                             "Communication error when processing message : " + e.getMessage());
                 }
             }
@@ -707,7 +718,7 @@ class LxWsClient {
          * Stops keep alive thread and ceases sending keep alive messages to the Miniserver
          */
         private void stopKeepAlive() {
-            logger.trace("[{}] stopping keepalives in state {}", debugId, state.toString());
+            logger.trace("[{}] stopping keepalives in state {}", debugId, state);
             if (keepAlive != null) {
                 keepAlive.cancel(true);
                 keepAlive = null;
@@ -729,7 +740,7 @@ class LxWsClient {
                     logger.debug("[{}] sending command: {}", debugId, string);
                     session.getRemote().sendString(string);
                 } else {
-                    logger.debug("[{}] NOT sending command, state {}: {}", debugId, state.toString(), string);
+                    logger.debug("[{}] NOT sending command, state {}: {}", debugId, state, string);
                 }
             }
         }

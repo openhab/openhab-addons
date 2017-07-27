@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    @SuppressWarnings("unused")
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverDiscoveryParticipant.class);
 
     @Override
@@ -56,6 +55,7 @@ public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryPartic
             String label = details.getFriendlyName() + " @ " + host;
             int port = details.getPresentationURI().getPort();
 
+            logger.debug("Creating discovery result for serial {} label {} port {}", serial, label, port);
             properties.put(LoxoneBindingConstants.MINISERVER_PARAM_HOST, host);
             properties.put(LoxoneBindingConstants.MINISERVER_PARAM_PORT, port);
 

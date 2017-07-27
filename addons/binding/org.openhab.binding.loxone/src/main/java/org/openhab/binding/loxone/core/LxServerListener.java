@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.loxone.core;
 
-import org.openhab.binding.loxone.core.LxServer.OfflineReason;
-
 /**
  * Interface to get notifications about {@link LxServer} asynchronous events.
  * These events are triggered by messages received from Miniserver over websocket connection or the state of the
@@ -27,7 +25,7 @@ public interface LxServerListener {
      *            server object that can be queried for new configuration of the Miniserver
      *
      */
-    public void onNewConfig(LxServer server);
+    void onNewConfig(LxServer server);
 
     /**
      * Called by {@link LxServer} thread when Loxone Miniserver goes online and communication channel is established and
@@ -35,7 +33,7 @@ public interface LxServerListener {
      * to send commands and
      * receive state updates.
      */
-    public void onServerGoesOnline();
+    void onServerGoesOnline();
 
     /**
      * Called by {@link LxServer} thread when Loxone Miniserver goes offline and communication channel is broken.
@@ -45,7 +43,7 @@ public interface LxServerListener {
      * @param details
      *            details describing the disconnection reason
      */
-    public void onServerGoesOffline(OfflineReason reason, String details);
+    void onServerGoesOffline(LxOfflineReason reason, String details);
 
     /**
      * Called by {@link LxServer} thread when a state of a control is updated on the Loxone Miniserver
@@ -53,6 +51,6 @@ public interface LxServerListener {
      * @param control
      *            control object, which state changed
      */
-    public void onControlStateUpdate(LxControl control);
+    void onControlStateUpdate(LxControl control);
 
 }

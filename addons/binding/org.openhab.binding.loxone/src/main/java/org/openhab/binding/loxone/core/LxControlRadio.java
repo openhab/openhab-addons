@@ -61,9 +61,9 @@ public class LxControlRadio extends LxControl {
     LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
         if (json.details.outputs != null) {
-            outputs = new TreeMap<String, String>(json.details.outputs);
+            outputs = new TreeMap<>(json.details.outputs);
         } else {
-            outputs = new TreeMap<String, String>();
+            outputs = new TreeMap<>();
         }
         if (json.details != null && json.details.allOff != null) {
             outputs.put("0", json.details.allOff);
@@ -79,7 +79,7 @@ public class LxControlRadio extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -104,14 +104,17 @@ public class LxControlRadio extends LxControl {
      * Get current active output of a radio-button control
      *
      * @return
-     *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or -1 if error occured
+     *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or null if error occured
      */
-    public int getActiveOutput() {
+    public Integer getActiveOutput() {
         LxControlState state = getState(STATE_ACTIVE_OUTPUT);
         if (state != null) {
-            return (int) state.getValue();
+            Double value = state.getValue();
+            if (value != null) {
+                return value.intValue();
+            }
         }
-        return -1;
+        return null;
     }
 
     /**

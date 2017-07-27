@@ -56,6 +56,7 @@ import org.openhab.binding.loxone.core.LxControlPushbutton;
 import org.openhab.binding.loxone.core.LxControlRadio;
 import org.openhab.binding.loxone.core.LxControlSwitch;
 import org.openhab.binding.loxone.core.LxControlTextState;
+import org.openhab.binding.loxone.core.LxOfflineReason;
 import org.openhab.binding.loxone.core.LxServer;
 import org.openhab.binding.loxone.core.LxServerListener;
 import org.openhab.binding.loxone.internal.LoxoneHandlerFactory;
@@ -72,11 +73,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
 
-    private LxServer server = null;
+    private LxServer server;
     private LoxoneHandlerFactory factory;
     private ChannelTypeUID switchTypeId, roSwitchTypeId, rollerTypeId, infoTypeId;
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
-    private Map<ChannelUID, LxControl> controls = new HashMap<ChannelUID, LxControl>();
+    private Map<ChannelUID, LxControl> controls = new HashMap<>();
 
     /**
      * Create {@link LoxoneMiniserverHandler} object
@@ -102,11 +103,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
         LxControl control = getControlFromChannelUID(channelUID);
         if (control == null) {
-            logger.error("Received command {} from unknown control.", command.toString());
+            logger.error("Received command {} from unknown control.", command);
             return;
         }
 
-        logger.debug("Control '{}' received command: {}", control.getName(), command.toString());
+        logger.debug("Control '{}' received command: {}", control.getName(), command);
 
         try {
             if (command instanceof RefreshType) {
@@ -179,7 +180,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 return;
             }
 
-            logger.debug("Incompatible operation on control {}", control.getUuid().toString());
+            logger.debug("Incompatible operation on control {}", control.getUuid());
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -241,7 +242,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             thing.setLocation(server.getLocation());
         }
 
-        ArrayList<Channel> channels = new ArrayList<Channel>();
+        ArrayList<Channel> channels = new ArrayList<>();
         ThingBuilder builder = editThing();
         controls.clear();
 
@@ -282,8 +283,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     @Override
-    public void onServerGoesOffline(LxServer.OfflineReason reason, String details) {
-        logger.debug("Server goes offline: {}, {}", reason.toString(), details);
+    public void onServerGoesOffline(LxOfflineReason reason, String details) {
+        logger.debug("Server goes offline: {}, {}", reason, details);
 
         switch (reason) {
             case AUTHENTICATION_TIMEOUT:
@@ -352,14 +353,13 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      */
     private List<Channel> createChannelsForControl(LxControl control) {
 
-        logger.trace("Creating channels for control: {}, {}", control.getClass().getSimpleName(),
-                control.getUuid().toString());
+        logger.trace("Creating channels for control: {}, {}", control.getClass().getSimpleName(), control.getUuid());
 
         String label;
         String controlUuid = control.getUuid().toString();
         ChannelUID id = getChannelIdForControl(control, 0);
 
-        List<Channel> channels = new ArrayList<Channel>();
+        List<Channel> channels = new ArrayList<>();
 
         LxCategory category = control.getCategory();
 
@@ -423,33 +423,40 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         ChannelUID channelId = getChannelIdForControl(control, 0);
 
         if (control instanceof LxControlSwitch) {
-            double value = ((LxControlSwitch) control).getState();
-            if (value == 1.0) {
-                updateState(channelId, OnOffType.ON);
-            } else if (value == 0) {
-                updateState(channelId, OnOffType.OFF);
+            Double value = ((LxControlSwitch) control).getState();
+            if (value != null) {
+                if (value == 1.0) {
+                    updateState(channelId, OnOffType.ON);
+                } else if (value == 0) {
+                    updateState(channelId, OnOffType.OFF);
+                }
             }
         } else if (control instanceof LxControlJalousie) {
-            double value = ((LxControlJalousie) control).getPosition();
-            if (value >= 0 && value <= 1) {
+            Double value = ((LxControlJalousie) control).getPosition();
+            if (value != null && value >= 0 && value <= 1) {
                 // state UP or DOWN from Loxone indicates blinds are moving up or down
                 // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
                 // so we will update only position and not up or down states
                 updateState(channelId, new PercentType((int) (value * 100)));
             }
         } else if (control instanceof LxControlInfoOnlyDigital) {
-            double value = ((LxControlInfoOnlyDigital) control).getValue();
-            if (value == 0) {
-                updateState(channelId, OnOffType.OFF);
-            } else if (value == 1.0) {
-                updateState(channelId, OnOffType.ON);
+            Double value = ((LxControlInfoOnlyDigital) control).getValue();
+            if (value != null) {
+                if (value == 0) {
+                    updateState(channelId, OnOffType.OFF);
+                } else if (value == 1.0) {
+                    updateState(channelId, OnOffType.ON);
+                }
             }
         } else if (control instanceof LxControlInfoOnlyAnalog) {
-            updateState(channelId, new DecimalType(((LxControlInfoOnlyAnalog) control).getValue()));
+            Double value = ((LxControlInfoOnlyAnalog) control).getValue();
+            if (value != null) {
+                updateState(channelId, new DecimalType(value));
+            }
         } else if (control instanceof LxControlLightController) {
             LxControlLightController controller = (LxControlLightController) control;
-            int value = controller.getCurrentScene();
-            if (value >= 0 && value < LxControlLightController.NUM_OF_SCENES) {
+            Integer value = controller.getCurrentScene();
+            if (value != null && value >= 0 && value < LxControlLightController.NUM_OF_SCENES) {
                 updateState(channelId, new DecimalType(value));
             }
             if (controller.sceneNamesUpdated()) {
@@ -457,8 +464,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             }
         } else if (control instanceof LxControlRadio) {
             LxControlRadio radio = (LxControlRadio) control;
-            int output = radio.getActiveOutput();
-            if (output >= 0 && output <= LxControlRadio.MAX_RADIO_OUTPUTS) {
+            Integer output = radio.getActiveOutput();
+            if (output != null && output >= 0 && output <= LxControlRadio.MAX_RADIO_OUTPUTS) {
                 updateState(channelId, new DecimalType(output));
             }
         } else if (control instanceof LxControlTextState) {
@@ -531,7 +538,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      */
     private StateDescription buildStateDescription(String format, boolean readOnly, Map<String, String> options,
             int lastOption) {
-        List<StateOption> optionsList = new ArrayList<StateOption>();
+        List<StateOption> optionsList = new ArrayList<>();
         if (options != null) {
             for (Map.Entry<String, String> entry : options.entrySet()) {
                 optionsList.add(new StateOption(entry.getKey(), entry.getValue()));

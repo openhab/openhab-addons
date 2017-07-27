@@ -69,7 +69,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.toLowerCase().equals(TYPE_NAME);
+        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -81,7 +81,10 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     public String getFormattedValue() {
         LxControlState state = getState(STATE_VALUE);
         if (state != null) {
-            return String.format(format, state.getValue());
+            Double value = state.getValue();
+            if (value != null) {
+                return String.format(format, value);
+            }
         }
         return null;
     }
@@ -100,13 +103,13 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      * Obtain current value of an analog virtual state, expressed as a number
      *
      * @return
-     *         value of the state or zero if current value is not compatible with this control
+     *         value of the state or null if current value is not compatible with this control
      */
-    public double getValue() {
+    public Double getValue() {
         LxControlState state = getState(STATE_VALUE);
         if (state != null) {
             return state.getValue();
         }
-        return 0;
+        return null;
     }
 }
