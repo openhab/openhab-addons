@@ -120,7 +120,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 subControl.cat = json.cat;
                 LxUuid uuid = new LxUuid(subControl.uuidAction);
                 if (subControls.containsKey(uuid)) {
-                    subControls.get(uuid).update(json, room, category);
+                    subControls.get(uuid).update(subControl, room, category);
                 } else {
                     LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
                     if (control != null) {
