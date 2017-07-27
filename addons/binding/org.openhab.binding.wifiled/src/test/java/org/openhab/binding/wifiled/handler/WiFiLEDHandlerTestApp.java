@@ -33,8 +33,8 @@ public class WiFiLEDHandlerTestApp {
 		System.out.println("start");
 
 		driver = fadingDriver ?
-			new FadingWiFiLEDDriver(ip, port, protocol, 0, 1) :
-			new ClassicWiFiLEDDriver(ip, port, protocol);
+				new FadingWiFiLEDDriver(ip, port, protocol, 0, 1) :
+				new ClassicWiFiLEDDriver(ip, port, protocol);
 
 		System.out.println("driver created");
 
