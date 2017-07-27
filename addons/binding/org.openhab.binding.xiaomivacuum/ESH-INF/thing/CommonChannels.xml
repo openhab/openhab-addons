@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xiaomivacuum" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="network" advanced="true">
+		<label>Network</label>
+		<channels>
+			<channel id="ssid" typeId="ssid" />
+			<channel id="bssid" typeId="bssid" />
+			<channel id="rssi" typeId="rssi" />
+			<channel id="life" typeId="life" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Network channels -->
+	<channel-type id="ssid" advanced="true">
+		<item-type>String</item-type>
+		<label>SSID</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="bssid" advanced="true">
+		<item-type>String</item-type>
+		<label>BSSID</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="life" advanced="true">
+		<item-type>Number</item-type>
+		<label>Life</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Common Actions channels-->
+	<channel-type id="commands" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute Command</label>
+	</channel-type>
+</thing:thing-descriptions>

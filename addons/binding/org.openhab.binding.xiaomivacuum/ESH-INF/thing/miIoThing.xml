@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xiaomivacuum" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="unknown">
+		<label>Xiaomi MiIO device</label>
+
+		<channel-groups>
+			<channel-group id="network" typeId="network" />
+			<channel-group id="actions" typeId="miioactions" />
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Xiaomi</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:miio:config" />
+
+	</thing-type>
+
+	<channel-group-type id="miioactions">
+		<label>Actions</label>
+		<channels>
+			<channel id="commands" typeId="commands" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

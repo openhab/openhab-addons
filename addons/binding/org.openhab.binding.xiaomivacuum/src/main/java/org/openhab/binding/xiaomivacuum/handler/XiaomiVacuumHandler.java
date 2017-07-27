@@ -11,27 +11,18 @@ package org.openhab.binding.xiaomivacuum.handler;
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
-import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
-import org.openhab.binding.xiaomivacuum.internal.Message;
-import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
 import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
-import org.openhab.binding.xiaomivacuum.internal.Utils;
 import org.openhab.binding.xiaomivacuum.internal.robot.ConsumablesType;
 import org.openhab.binding.xiaomivacuum.internal.robot.FanModeType;
 import org.openhab.binding.xiaomivacuum.internal.robot.StatusType;
@@ -42,8 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link XiaomiVacuumHandler} is responsible for handling commands, which are
@@ -51,31 +40,21 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class XiaomiVacuumHandler extends BaseThingHandler {
+public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiVacuumHandler.class);
 
-    private ScheduledFuture<?> pollingJob;
-
-    private JsonParser parser;
-    private byte[] token;
-
-    private final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
 
-    private RoboCommunication roboCom;
-    private int lastId;
-
     public XiaomiVacuumHandler(Thing thing) {
         super(thing);
-        parser = new JsonParser();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (roboCom == null) {
+        if (getConnection() == null) {
             logger.debug("Vacuum {} not online. Command {} ignored", getThing().getUID(), command.toString());
             return;
         }
@@ -118,37 +97,6 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Initializing Xiaomi Robot Vacuum handler '{}'", getThing().getUID());
-
-        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
-        boolean tokenFailed = false;
-        String tokenSting = configuration.token;
-        switch (tokenSting.length()) {
-            case 32:
-                if (tokenSting.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {
-                    tokenFailed = true;
-                } else {
-                    token = Utils.hexStringToByteArray(tokenSting);
-                }
-                break;
-            case 16:
-                token = tokenSting.getBytes();
-                break;
-            default:
-                tokenFailed = true;
-        }
-        if (tokenFailed) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
-            return;
-        }
-        scheduler.schedule(this::updateConnection, 0, TimeUnit.SECONDS);
-        int pollingPeriod = configuration.refreshInterval;
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 1, pollingPeriod, TimeUnit.SECONDS);
-        logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
-    }
-
-    @Override
     public void dispose() {
         logger.debug("Disposing XiaomiVacuum handler '{}'", getThing().getUID());
         if (pollingJob != null) {
@@ -161,46 +109,8 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
     }
 
-    String sendCommand(VacuumCommand command) {
-        return sendCommand(command, "");
-    }
-
-    String sendCommand(VacuumCommand command, String params) {
-        try {
-            return roboCom.sendCommand(command, params);
-        } catch (RoboCryptoException | IOException e) {
-            disconnected(e.getMessage());
-        }
-        return null;
-    }
-
-    /**
-     * This is used to execute arbitrary commands by sending to the commands channel. Command parameters to be added
-     * between
-     * [] brackets. This to allow for unimplemented commands to be executed (e.g. get detailed historical cleaning
-     * records)
-     *
-     * @param command to be executed
-     * @return vacuum response
-     */
-    private String sendCommand(String command) {
-        try {
-            command = command.trim();
-            String param = "";
-            int loc = command.indexOf("[");
-            if (loc > 0) {
-                param = command.substring(loc + 1, command.length() - 1).trim();
-                command = command.substring(0, loc).trim();
-            }
-            return roboCom.sendCommand(command, param);
-        } catch (RoboCryptoException | IOException e) {
-            disconnected(e.getMessage());
-        }
-        return null;
-    }
-
     private boolean updateVacuumStatus() {
-        JsonObject statusData = getResultHelper(status.getValue());
+        JsonObject statusData = getJsonResultHelper(status.getValue());
         if (statusData == null) {
             disconnected("No valid status response");
             return false;
@@ -265,7 +175,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private boolean updateConsumables() {
-        JsonObject consumablesData = getResultHelper(consumables.getValue());
+        JsonObject consumablesData = getJsonResultHelper(consumables.getValue());
         if (consumablesData == null) {
             disconnected("No valid consumables response");
             return false;
@@ -294,7 +204,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private boolean updateDnD() {
-        JsonObject dndData = getResultHelper(dnd.getValue());
+        JsonObject dndData = getJsonResultHelper(dnd.getValue());
         if (dndData == null) {
             disconnected("No valid Do Not Disturb response");
             return false;
@@ -309,7 +219,12 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private boolean updateHistory() {
-        JsonArray historyData = ((JsonObject) parser.parse(history.getValue())).getAsJsonArray("result");
+        String historyString = history.getValue();
+        if (historyString == null) {
+            disconnected("No valid Clean History response");
+            return false;
+        }
+        JsonArray historyData = ((JsonObject) parser.parse(historyString)).getAsJsonArray("result");
         if (historyData == null) {
             disconnected("No valid Clean History response");
             return false;
@@ -322,13 +237,14 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         return true;
     }
 
-    private synchronized void updateData() {
+    @Override
+    protected synchronized void updateData() {
         logger.debug("Update vacuum status '{}'", getThing().getUID().toString());
         if (!hasConnection()) {
             return;
         }
         try {
-            if (updateVacuumStatus() && updateConsumables() && updateDnD() && updateHistory()) {
+            if (updateNetwork() && updateVacuumStatus() && updateConsumables() && updateDnD() && updateHistory()) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (Exception e) {
@@ -336,20 +252,8 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void disconnected(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
-        lastId = roboCom.getId();
-        roboCom = null;
-    }
-
-    private boolean hasConnection() {
-        if (roboCom != null) {
-            return true;
-        }
-        return updateConnection();
-    }
-
-    private boolean updateConnection() {
+    @Override
+    protected boolean initializeData() {
         this.roboCom = getConnection();
         if (roboCom == null) {
             return false;
@@ -386,60 +290,31 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             }
             return null;
         });
+        network = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                return sendCommand(VacuumCommand.MIIO_INFO);
+            } catch (Exception e) {
+                logger.debug("Error during network status refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
         updateStatus(ThingStatus.ONLINE);
         return true;
     }
 
-    private synchronized RoboCommunication getConnection() {
-        if (roboCom != null) {
-            return roboCom;
-        }
-        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
-        String deviceId = configuration.deviceId;
-        try {
-            if (deviceId != null && deviceId.length() == 8) {
-                logger.debug("Using vacuum device ID {}", deviceId);
-                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
-                        lastId);
-                byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
-                if (response.length > 0) {
-                    return roboCom;
-                }
-            } else {
-                logger.debug("No device ID defined. Retrieving vacuum device ID");
-                roboCom = new RoboCommunication(configuration.host, token, new byte[0], lastId);
-                byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
-                Message roboResponse = new Message(response);
-                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceId()));
-                Configuration config = editConfiguration();
-                config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceId()));
-                updateConfiguration(config);
-                logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceId()));
-                lastId = roboCom.getId();
-                roboCom.close();
-                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
-                return roboCom;
-            }
-            return null;
-        } catch (IOException e) {
-            disconnected(e.getMessage());
-            return null;
-        }
+    @Override
+    protected String sendCommand(VacuumCommand command) {
+        return sendCommand(command, "");
     }
 
-    private JsonObject getResultHelper(String res) {
+    @Override
+    protected String sendCommand(VacuumCommand command, String params) {
         try {
-            JsonObject result;
-            JsonObject vacuumResponse = (JsonObject) parser.parse(res);
-            result = vacuumResponse.getAsJsonArray("result").get(0).getAsJsonObject();
-            logger.debug("Response ID:     '{}'", vacuumResponse.get("id").getAsString());
-            logger.debug("Response Result: '{}'", result);
-            return result;
-        } catch (JsonSyntaxException e) {
-            logger.debug("Could not parse result from response: '{}'", res);
-        } catch (NullPointerException e) {
-            logger.debug("Empty response received.");
+            return roboCom.sendCommand(command, params);
+        } catch (RoboCryptoException | IOException e) {
+            disconnected(e.getMessage());
         }
         return null;
     }
+
 }

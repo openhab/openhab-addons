@@ -8,10 +8,11 @@
  */
 package org.openhab.binding.xiaomivacuum;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link XiaomiVacuumBindingConstants} class defines common constants, which are
@@ -24,9 +25,11 @@ public final class XiaomiVacuumBindingConstants {
     public static final String BINDING_ID = "xiaomivacuum";
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "unknown");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VACUUM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VACUUM,
+            THING_TYPE_MIIO);
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -42,6 +45,11 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
+
+    public static final String CHANNEL_SSID = "network#ssid";
+    public static final String CHANNEL_BSSID = "network#bssid";
+    public static final String CHANNEL_RSSI = "network#rssi";
+    public static final String CHANNEL_LIFE = "network#life";
 
     public static final String CHANNEL_CONSUMABLE_MAIN_PERC = "consumables#main_brush_percent";
     public static final String CHANNEL_CONSUMABLE_SIDE_PERC = "consumables#side_brush_percent";

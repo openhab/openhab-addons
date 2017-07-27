@@ -15,6 +15,8 @@ package org.openhab.binding.xiaomivacuum.internal.robot;
  */
 public enum VacuumCommand {
 
+    MIIO_INFO("miIO.info"),
+
     START_VACUUM("app_start"),
     STOP_VACUUM("app_stop"),
     START_SPOT("app_spot"),

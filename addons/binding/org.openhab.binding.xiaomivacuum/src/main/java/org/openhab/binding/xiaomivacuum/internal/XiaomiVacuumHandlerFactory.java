@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.xiaomivacuum.handler.XiaomiMiioHandler;
 import org.openhab.binding.xiaomivacuum.handler.XiaomiVacuumHandler;
 
 /**
@@ -34,6 +35,9 @@ public class XiaomiVacuumHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new XiaomiVacuumHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_MIIO)) {
+            return new XiaomiMiioHandler(thing);
         }
         return null;
     }
