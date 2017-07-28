@@ -383,12 +383,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         sendFastUpdateMessage(new InformationRequestMessage(macAddress));
 
         // Measurements take 2 seconds to become stable
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                sendFastUpdateMessage(new PowerInformationRequestMessage(macAddress));
-            }
-        }, 2, TimeUnit.SECONDS);
+        scheduler.schedule(() -> sendFastUpdateMessage(new PowerInformationRequestMessage(macAddress)), 2,
+                TimeUnit.SECONDS);
     }
 
     private void handlePowerBufferResponse(PowerBufferResponseMessage message) {

@@ -59,7 +59,7 @@
     </channel-type>
 
     <channel-type id="realtimeclock" advanced="true">
-        <item-type>String</item-type>
+        <item-type>DateTime</item-type>
         <label>Real-time clock</label>
         <description>Time as indicated by the real-time internal clock of the Circle+</description>
         <state readOnly="true"></state>
