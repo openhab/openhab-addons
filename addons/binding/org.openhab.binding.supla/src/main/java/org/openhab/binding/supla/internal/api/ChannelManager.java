@@ -13,6 +13,11 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 
 import java.util.Optional;
 
+/**
+ * ChannelManager allows to change state of channels on Supla Cloud
+ *
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface ChannelManager {
     boolean turnOn(SuplaChannel channel);
 
