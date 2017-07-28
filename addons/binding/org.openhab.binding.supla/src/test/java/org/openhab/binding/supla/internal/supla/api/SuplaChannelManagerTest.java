@@ -99,5 +99,4 @@ public class SuplaChannelManagerTest extends SuplaTest {
         verify(httpExecutor).get(request);
         assertThat(status).isEmpty();
     }
-
 }
