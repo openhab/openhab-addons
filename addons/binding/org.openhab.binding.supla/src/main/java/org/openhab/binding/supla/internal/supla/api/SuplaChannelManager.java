@@ -17,8 +17,6 @@ import org.openhab.binding.supla.internal.http.Response;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class SuplaChannelManager implements ChannelManager {
     private static final Map<String, String> TURN_ON_PARAMS = ImmutableMap.<String, String>builder().put("action", "turn-on").build();
     private static final Map<String, String> TURN_OFF_PARAMS = ImmutableMap.<String, String>builder().put("action", "turn-off").build();
-    private final Logger logger = LoggerFactory.getLogger(SuplaChannelManager.class);
 
     private final HttpExecutor httpExecutor;
     private final JsonMapper jsonMapper;
