@@ -1,6 +1,7 @@
 package org.openhab.binding.supla.internal.supla.api;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -19,17 +20,23 @@ import static org.openhab.binding.supla.internal.http.CommonHeaders.CONTENT_TYPE
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaTokenManagerTest extends SuplaTest {
 
+    private SuplaTokenManager manager;
+
     @Mock
     private HttpExecutor httpExecutor;
 
     @Mock
     private JsonMapper jsonMapper;
 
+    @Before
+    public void init() {
+        manager = new SuplaTokenManager(jsonMapper, httpExecutor, server);
+    }
+
     @Test
     public void shouldDoHttpRequestForOathTokenWhenObtainingToken() {
 
         // given
-        final SuplaTokenManager manager = new SuplaTokenManager(jsonMapper, httpExecutor, server);
         final JsonBody body = createJsonBody();
         given(httpExecutor.post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body))
                 .willReturn(new Response(200, ""));
