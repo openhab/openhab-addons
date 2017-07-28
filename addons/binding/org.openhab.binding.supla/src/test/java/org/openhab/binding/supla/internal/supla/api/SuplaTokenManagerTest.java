@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openhab.binding.supla.SuplaTest;
+import org.openhab.binding.supla.internal.api.TokenException;
 import org.openhab.binding.supla.internal.http.HttpExecutor;
 import org.openhab.binding.supla.internal.http.JsonBody;
 import org.openhab.binding.supla.internal.http.Request;
@@ -14,6 +15,7 @@ import org.openhab.binding.supla.internal.http.Response;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
 
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.internal.http.CommonHeaders.CONTENT_TYPE_JSON;
@@ -65,6 +67,20 @@ public class SuplaTokenManagerTest extends SuplaTest {
         verify(jsonMapper).to(SuplaToken.class, response);
     }
 
+    @Test(expected = TokenException.class)
+    public void shouldThrowTokenExceptionIfResponseWasNotSuccess() {
+
+        // given
+        final JsonBody body = createJsonBody();
+        given(httpExecutor.post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body))
+                .willReturn(new Response(500, ""));
+
+        // when
+        manager.obtainToken();
+
+        // then
+        fail("Should throw TokenException");
+    }
 
     private JsonBody createJsonBody() {
         return new JsonBody(ImmutableMap.<String, String>builder()
