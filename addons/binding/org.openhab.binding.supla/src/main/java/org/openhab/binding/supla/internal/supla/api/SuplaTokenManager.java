@@ -34,7 +34,7 @@ public final class SuplaTokenManager implements TokenManager {
 
     public SuplaTokenManager(JsonMapper jsonMapper, HttpExecutor httpExecutor, SuplaCloudServer server) {
         this.jsonMapper = checkNotNull(jsonMapper);
-        this.httpExecutor = httpExecutor;
+        this.httpExecutor = checkNotNull(httpExecutor);
         this.server = checkNotNull(server);
         body = new JsonBody(ImmutableMap.<String, String>builder()
                 .put("client_id", server.getClientId())
