@@ -34,6 +34,21 @@ public abstract class Body {
     public abstract byte[] buildBytesToSend();
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Body)) return false;
+
+        Body body1 = (Body) o;
+
+        return body.equals(body1.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return body.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Body{" +
                 "body=" + body +
