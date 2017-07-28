@@ -11,6 +11,9 @@ package org.openhab.binding.supla.internal.supla.entities;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaToken {
     private final String accessToken;
     private final int expiresIn;

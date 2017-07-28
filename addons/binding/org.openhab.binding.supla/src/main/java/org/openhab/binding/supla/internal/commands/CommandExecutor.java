@@ -13,6 +13,9 @@ import org.eclipse.smarthome.core.types.State;
 
 import java.util.function.Consumer;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface CommandExecutor {
     void execute(Consumer<? super State> updateState, Command command);
 }

@@ -26,6 +26,9 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaIoDevicesManager implements IoDevicesManager {
     private static final Type MAP_TYPE = new TypeToken<Map<String, List<SuplaIoDevice>>>() {
     }.getType();

@@ -22,6 +22,9 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaServerInfoManager implements ServerInfoManager {
     private static final Type MAP_TYPE = new TypeToken<Map<String, SuplaServerInfo>>() {
     }.getType();

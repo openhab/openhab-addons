@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.supla.internal.http;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class Response {
     private final int statusCode;
     private final String response;

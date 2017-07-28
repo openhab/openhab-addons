@@ -25,6 +25,9 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaChannelManager implements ChannelManager {
     private static final Map<String, String> TURN_ON_PARAMS = ImmutableMap.<String, String>builder().put("action", "turn-on").build();
     private static final Map<String, String> TURN_OFF_PARAMS = ImmutableMap.<String, String>builder().put("action", "turn-off").build();

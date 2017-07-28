@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 import static org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder.create;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class ChannelBuilderImpl implements ChannelBuilder {
 
     @Override

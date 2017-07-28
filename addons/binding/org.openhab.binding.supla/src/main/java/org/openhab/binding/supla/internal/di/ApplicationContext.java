@@ -32,6 +32,9 @@ import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class ApplicationContext {
 
     private final SuplaCloudServer suplaCloudServer;

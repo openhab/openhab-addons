@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.supla.internal.supla.entities;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaDate {
     private final long date;
     private final String ipV4;

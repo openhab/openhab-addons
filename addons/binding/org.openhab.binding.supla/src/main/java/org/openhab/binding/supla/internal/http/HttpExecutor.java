@@ -9,6 +9,9 @@
 package org.openhab.binding.supla.internal.http;
 
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface HttpExecutor extends AutoCloseable {
     Response get(Request request) throws HttpException;
 

@@ -20,6 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class JettyHttpExecutor implements HttpExecutor, AutoCloseable {
     private static final String GET = "GET";
     private static final String POST = "POST";

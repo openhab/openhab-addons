@@ -13,6 +13,9 @@ import java.util.Arrays;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaCloudServer {
     private final String server;
     private final String clientId;

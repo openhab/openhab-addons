@@ -11,6 +11,9 @@ package org.openhab.binding.supla.internal.http;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class Header {
     private final String key;
     private final String value;

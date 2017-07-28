@@ -13,6 +13,9 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 
 import java.util.Optional;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface CommandExecutorFactory {
     Optional<CommandExecutor> findCommand(SuplaChannel suplaChannel, ChannelUID channelUID);
 }

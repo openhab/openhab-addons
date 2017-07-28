@@ -14,6 +14,9 @@ import com.google.common.collect.ImmutableSortedSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaIoDevice {
     private final long id;
     private final long locationId;

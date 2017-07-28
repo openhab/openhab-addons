@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.supla.internal.supla.entities;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaChannelStatus {
     private final boolean connected;
     private final boolean enabled;

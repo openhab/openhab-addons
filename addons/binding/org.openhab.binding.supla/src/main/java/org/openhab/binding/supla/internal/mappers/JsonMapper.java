@@ -11,6 +11,9 @@ package org.openhab.binding.supla.internal.mappers;
 
 import java.lang.reflect.Type;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface JsonMapper {
     String map(Object o);
 

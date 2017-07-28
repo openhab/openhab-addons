@@ -10,6 +10,9 @@ package org.openhab.binding.supla.internal.http;
 
 import static java.lang.String.format;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 final class HttpException extends RuntimeException {
     HttpException(String message, Throwable cause) {
         super(message, cause);

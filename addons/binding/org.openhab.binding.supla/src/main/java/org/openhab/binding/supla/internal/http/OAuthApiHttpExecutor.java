@@ -17,6 +17,9 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openhab.binding.supla.internal.http.CommonHeaders.authorizationHeader;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class OAuthApiHttpExecutor implements HttpExecutor {
     private final HttpExecutor httpExecutor;
     private final TokenManager tokenManager;

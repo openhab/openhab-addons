@@ -24,6 +24,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 class SwitchChannelCommandExecutor implements CommandExecutor {
     private final Logger logger = LoggerFactory.getLogger(SwitchChannelCommandExecutor.class);
     private final ChannelManager channelManager;

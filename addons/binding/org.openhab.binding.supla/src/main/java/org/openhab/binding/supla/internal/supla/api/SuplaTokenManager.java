@@ -22,6 +22,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openhab.binding.supla.internal.http.CommonHeaders.CONTENT_TYPE_JSON;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class SuplaTokenManager implements TokenManager {
     private final Logger logger = LoggerFactory.getLogger(SuplaTokenManager.class);
     private final JsonMapper jsonMapper;

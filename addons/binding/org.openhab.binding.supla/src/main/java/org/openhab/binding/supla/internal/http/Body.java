@@ -12,6 +12,9 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public abstract class Body {
     protected final Map<String, String> body;
 

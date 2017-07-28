@@ -15,6 +15,9 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class JsonBody extends Body {
     private final JsonMapper mapper;
 

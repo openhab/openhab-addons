@@ -13,6 +13,9 @@ import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Type;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public final class GsonMapper implements JsonMapper {
     private final Gson gson;
 

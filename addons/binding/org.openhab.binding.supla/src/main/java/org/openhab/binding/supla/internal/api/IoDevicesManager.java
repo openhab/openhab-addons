@@ -13,6 +13,9 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface IoDevicesManager {
     List<SuplaIoDevice> obtainIoDevices();
 

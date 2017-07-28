@@ -16,6 +16,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public interface ChannelBuilder {
     Map<Channel, SuplaChannel> buildChannels(ThingUID thing, Collection<SuplaChannel> channel);
 

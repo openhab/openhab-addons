@@ -13,6 +13,9 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 
 import static java.lang.String.format;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public class TokenException extends RuntimeException {
     public TokenException(Response response, SuplaCloudServer server) {
         super(format("Got error %s while obtaining token for server %s!", response.getStatusCode(), server.getServer()));
