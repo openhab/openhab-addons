@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
+import org.eclipse.smarthome.core.audio.utils.AudioStreamUtils;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
@@ -84,11 +85,9 @@ public class SqueezeBoxAudioSink implements AudioSink {
             url = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, STREAM_TIMEOUT).toString();
 
             if (AudioFormat.WAV.isCompatible(format)) {
-                // TODO add FileAudioStream.EXTENSION_SEPARATOR
-                url += FileAudioStream.WAV_EXTENSION;
+                url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.WAV_EXTENSION;
             } else if (AudioFormat.MP3.isCompatible(format)) {
-                // TODO add FileAudioStream.EXTENSION_SEPARATOR
-                url += FileAudioStream.MP3_EXTENSION;
+                url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.MP3_EXTENSION;
             }
 
             // Form the URL for streaming the notification from the OH2 web server
