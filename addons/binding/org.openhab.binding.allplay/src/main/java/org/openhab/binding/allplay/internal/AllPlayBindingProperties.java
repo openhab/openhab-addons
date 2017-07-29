@@ -17,25 +17,34 @@ import java.util.Dictionary;
  */
 public class AllPlayBindingProperties {
 
-    private final Integer rewindSkipTimeInSec;
-    private final Integer fastForwardSkipTimeInSec;
+    private final double rewindSkipTimeInSec;
+    private final double fastForwardSkipTimeInSec;
     private final String callbackUrl;
 
     private static final String REWIND_SKIP_TIME_PROPERTY = "rewindSkipTimeInSec";
+    private static final double REWIND_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String FAST_FORWARD_SKIP_TIME_PROPERTY = "fastForwardSkipTimeInSec";
+    private static final double FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String CALLBACK_URL = "callbackUrl";
 
     public AllPlayBindingProperties(Dictionary<String, Object> properties) {
-        rewindSkipTimeInSec = (Integer) properties.get(REWIND_SKIP_TIME_PROPERTY);
-        fastForwardSkipTimeInSec = (Integer) properties.get(FAST_FORWARD_SKIP_TIME_PROPERTY);
+
+        rewindSkipTimeInSec = getDoubleProperty(properties, REWIND_SKIP_TIME_PROPERTY, REWIND_SKIP_TIME_DEFAULT_VALUE);
+        fastForwardSkipTimeInSec = getDoubleProperty(properties, FAST_FORWARD_SKIP_TIME_PROPERTY,
+                FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE);
         callbackUrl = (String) properties.get(CALLBACK_URL);
     }
 
-    public int getRewindSkipTimeInSec() {
+    private double getDoubleProperty(Dictionary<String, Object> properties, String propertyKey, double defaultValue) {
+        String value = (String) properties.get(propertyKey);
+        return value != null ? Double.parseDouble(value) : defaultValue;
+    }
+
+    public double getRewindSkipTimeInSec() {
         return rewindSkipTimeInSec;
     }
 
-    public int getFastForwardSkipTimeInSec() {
+    public double getFastForwardSkipTimeInSec() {
         return fastForwardSkipTimeInSec;
     }
 

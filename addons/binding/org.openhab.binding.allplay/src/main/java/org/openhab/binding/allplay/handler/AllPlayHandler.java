@@ -296,9 +296,9 @@ public class AllPlayHandler extends BaseThingHandler
             }
         } else if (command instanceof RewindFastforwardType) {
             if (command == RewindFastforwardType.FASTFORWARD) {
-                changeTrackPosition(bindingProperties.getFastForwardSkipTimeInSec() * 1000);
+                changeTrackPosition((long) (bindingProperties.getFastForwardSkipTimeInSec() * 1000));
             } else if (command == RewindFastforwardType.REWIND) {
-                changeTrackPosition(-bindingProperties.getRewindSkipTimeInSec() * 1000);
+                changeTrackPosition((long) (-bindingProperties.getRewindSkipTimeInSec() * 1000));
             }
         } else {
             logger.warn("Unknown control command: {}", command);
