@@ -24,6 +24,9 @@ public class SomfyTahomaBindingConstants {
     // Bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
+    // Gateway
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+
     // Rollershutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
@@ -37,7 +40,7 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_ONOFF = new ThingTypeUID(BINDING_ID, "onoff");
 
     // List of all Channel ids
-    // Bridge
+    // Gateway
     public static final String VERSION = "version";
 
     // Roller shutter
@@ -52,9 +55,14 @@ public class SomfyTahomaBindingConstants {
 
     //Constants
     final public static String TAHOMA_URL = "https://www.tahomalink.com/enduser-mobile-web/externalAPI/json/";
+    final public static String SETUP_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/setup/gateways/";
     final public static String DELETE_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/exec/current/setup/";
     final public static String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
     final public static String UNAUTHORIZED = "Server returned HTTP response code: 401";
     final public static int TYPE_PERCENT = 1;
     final public static int TYPE_ONOFF = 3;
+    final public static String COMMAND_MY = "my";
+    final public static String COMMAND_SET_CLOSURE = "setClosure";
+    final public static String COMMAND_UP = "up";
+    final public static String COMMAND_DOWN = "down";
 }

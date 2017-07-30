@@ -3,21 +3,22 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="onoff">
+	<thing-type id="gateway">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Somfy On/Off Switch</label>
+		<label>Somfy Tahoma Gateway</label>
 		<channels>
-			<channel id="switch" typeId="switch"></channel>
+			<channel id="version" typeId="version"></channel>
 		</channels>
-		<config-description-ref uri="thing-type:somfytahoma:device"/>
+		<config-description-ref uri="thing-type:somfytahoma:gateway"/>
 	</thing-type>
-    
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Somfy Switch</label>
-		<description>A switch bound to you Tahoma box (zwave/enocean/rts)</description>
-		<state readOnly="false"></state>
+
+	<!-- Gateway firmware version -->
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>Somfy Tahoma Firmware Version</label>
+		<description>Version channel for SomfyTahoma Binding</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

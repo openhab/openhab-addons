@@ -34,7 +34,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_ROLLERSHUTTER, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -54,6 +54,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing);
             registerItemDiscoveryService(handler);
             return handler;
+        }
+        if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
+            return new SomfyTahomaGatewayHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER)) {
             return new SomfyTahomaRollerShutterHandler(thing);

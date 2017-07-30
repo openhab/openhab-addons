@@ -7,6 +7,7 @@ Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.gson,
+ org.apache.commons.lang,
  org.openhab.binding.somfytahoma,
  org.openhab.binding.somfytahoma.handler,
  org.eclipse.smarthome.config.core,

@@ -14,10 +14,10 @@
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
     
-    <channel-type id="trigger">
-        <item-type>Switch</item-type>
-        <label>Somfy Action Group Trigger</label>
-        <description>Trigger of the action group</description>
-        <state readOnly="false"></state>
-    </channel-type>
+	<channel-type id="trigger">
+		<item-type>Switch</item-type>
+		<label>Somfy Action Group Trigger</label>
+		<description>Trigger of the action group</description>
+		<state readOnly="false"></state>
+	</channel-type>
 </thing:thing-descriptions>

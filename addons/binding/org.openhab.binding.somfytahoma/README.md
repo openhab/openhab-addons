@@ -1,10 +1,12 @@
 # Somfy Tahoma Binding
+
 This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotique/maison-connectee-tahoma) home automation system.
 
 ## Supported Things
 
 Currently supports these things
-- bridge (Somfy Tahoma bridge, which can discover roller shutters, awnings, switches and action groups)
+- bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
+- gateways (Somfy Tahoma gateway - getting firmware version)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
@@ -32,7 +34,9 @@ Please see the example below.
 
 ## Channels
 
-A bridge exposes this read only channel:
+A bridge does not expose and channel.
+
+Gateways expose this read only channel:
 - version (this is a firmware version of your Tahoma device)
 
 Roller shutters and awnings expose these channels:
@@ -54,6 +58,7 @@ A on/off thing has this channel:
 .things file
 ```
 Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=30 ] {
+    Thing gateway 1214-4519-8041 "Tahoma gateway" [ id="1214-4519-8041" ]
     Thing rollershutter 31da8dac-8e09-455a-bc7a-6ed70f740001 "Bedroom" [ url="io://0204-1234-8041/6825356" ]
     Thing rollershutter 87bf0403-a45d-4037-b874-28f4ece30004 "Living room" [ url="io://0204-1234-8041/3832644" ]
     Thing rollershutter 68bee082-63ab-421d-9830-3ea561601234 "Hall" [ url="io://0204-1234-8041/4873641" ]
@@ -66,6 +71,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
 ```
 .items file
 ```
+String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }
 Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
 Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:position"}
 Rollershutter RollerShutterLiving "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control" }

@@ -14,11 +14,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.somfytahoma.model.SomfyTahomaDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.CONTROL;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.POSITION;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaRollerShutterHandler} is responsible for handling commands,
@@ -33,10 +33,6 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
     public SomfyTahomaRollerShutterHandler(Thing thing) {
         super(thing);
     }
-
-    SomfyTahomaBridgeHandler bridge = null;
-
-
 
     @Override
     public String getStateName() {
@@ -53,22 +49,22 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
         String url = getThing().getConfiguration().get("url").toString();
         if (command.equals(RefreshType.REFRESH)) {
             //sometimes refresh is sent sooner than bridge initialized...
-            if(bridge != null) {
-                bridge.updateChannelState(this, channelUID, url);
+            if(getBridgeHandler() != null) {
+                getBridgeHandler().updateChannelState(this, channelUID, url);
             }
         } else {
             String cmd = getTahomaCommand(command.toString());
             //Check if the rollershutter is not moving
-            String executionId = bridge.getCurrentExecutions(url);
+            String executionId = getBridgeHandler().getCurrentExecutions(url);
             if (executionId != null) {
                 //STOP command should be interpreted if rollershutter moving
                 //otherwise do nothing
-                if (cmd.equals("my")) {
-                    bridge.cancelExecution(executionId);
+                if (cmd.equals(COMMAND_MY)) {
+                    getBridgeHandler().cancelExecution(executionId);
                 }
             } else {
-                String param = cmd.equals("setClosure") ? "[" + command.toString() + "]" : "[]";
-                bridge.sendCommand(url, cmd, param);
+                String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
+                getBridgeHandler().sendCommand(url, cmd, param);
             }
         }
 
@@ -76,7 +72,6 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
 
     @Override
     public void initialize() {
-        bridge = (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -84,14 +79,18 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
 
         switch (command) {
             case "DOWN":
-                return "down";
+                return COMMAND_DOWN;
             case "UP":
-                return "up";
+                return COMMAND_UP;
             case "STOP":
-                return "my";
+                return COMMAND_MY;
             default:
-                return "setClosure";
+                return COMMAND_SET_CLOSURE;
         }
+    }
+
+    private SomfyTahomaBridgeHandler getBridgeHandler() {
+        return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
     }
 
 }

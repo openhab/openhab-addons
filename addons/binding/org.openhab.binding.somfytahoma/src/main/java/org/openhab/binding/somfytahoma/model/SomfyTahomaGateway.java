@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,25 +8,16 @@
  */
 package org.openhab.binding.somfytahoma.model;
 
-import java.util.ArrayList;
-
 /**
- * The {@link SomfyTahomaSetup} holds information about devices bound
+ * The {@link SomfyTahomaGateway} holds information about a gateway bound
  * to TahomaLink account.
- *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaSetup {
+public class SomfyTahomaGateway {
 
-    private ArrayList<SomfyTahomaDevice> devices;
+    private String gatewayId;
 
-    private ArrayList<SomfyTahomaGateway> gateways;
-
-    public ArrayList<SomfyTahomaDevice> getDevices() {
-        return devices;
-    }
-
-    public ArrayList<SomfyTahomaGateway> getGateways() {
-        return gateways;
+    public String getGatewayId() {
+        return gatewayId;
     }
 }

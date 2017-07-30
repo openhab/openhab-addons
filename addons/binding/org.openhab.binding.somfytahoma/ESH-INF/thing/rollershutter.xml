@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="rollershutter">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
+	<thing-type id="rollershutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
         </supported-bridge-type-refs>
-        <label>Somfy Rollershutter</label>
-        <channels>
-            <channel id="position" typeId="position"></channel>
-            <channel id="control" typeId="control"></channel>
-        </channels>
-        <config-description-ref uri="thing-type:somfytahoma:device"/>
-    </thing-type>
+		<label>Somfy Rollershutter</label>
+		<channels>
+			<channel id="position" typeId="position"></channel>
+			<channel id="control" typeId="control"></channel>
+		</channels>
+	<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
 
-    <channel-type id="position">
-        <item-type>Dimmer</item-type>
-        <label>Somfy Roller Shutter Position</label>
-        <description>Position of the roller shutter (only for IO devices)</description>
-        <state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-    </channel-type>
-    <channel-type id="control">
-        <item-type>Rollershutter</item-type>
-        <label>Somfy Roller Shutter Control</label>
-        <description>Rollershutter control (UP, DOWN, MY/STOP)</description>
-        <state readOnly="false"></state>
-    </channel-type>
+	<channel-type id="position">
+		<item-type>Dimmer</item-type>
+		<label>Somfy Roller Shutter Position</label>
+		<description>Position of the roller shutter (only for IO devices)</description>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="control">
+		<item-type>Rollershutter</item-type>
+		<label>Somfy Roller Shutter Control</label>
+		<description>Rollershutter control (UP, DOWN, MY/STOP)</description>
+		<state readOnly="false"></state>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -38,9 +38,7 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
         super(thing);
     }
 
-    SomfyTahomaBridgeHandler bridge = null;
-
-    Gson gson = new Gson();
+    private Gson gson = new Gson();
 
     @Override
     public String getStateName() {
@@ -52,7 +50,7 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
         if (channelUID.getId().equals(TRIGGER) && command instanceof OnOffType) {
             if ("ON".equals(command.toString())) {
                 String url = getThing().getConfiguration().get("url").toString();
-                ArrayList<SomfyTahomaAction> actions = bridge.getTahomaActions(url);
+                ArrayList<SomfyTahomaAction> actions = getBridgeHandler().getTahomaActions(url);
                 for (SomfyTahomaAction action : actions) {
                     sendCommand(action);
                 }
@@ -62,9 +60,6 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        bridge = (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -72,8 +67,12 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
 
         for (SomfyTahomaCommand command : action.getCommands()) {
             logger.debug("Sending to device {} command {} params {}", action.getDeviceURL(), command.getName(), gson.toJson(command.getParameters()));
-            bridge.sendCommand(action.getDeviceURL(), command.getName(), gson.toJson(command.getParameters()));
+            getBridgeHandler().sendCommand(action.getDeviceURL(), command.getName(), gson.toJson(command.getParameters()));
         }
+    }
+
+    private SomfyTahomaBridgeHandler getBridgeHandler() {
+        return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
     }
 
 }

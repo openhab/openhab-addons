@@ -46,7 +46,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return new HashSet<>(Arrays.asList(THING_TYPE_ROLLERSHUTTER, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
+        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
     }
 
     @Override
@@ -102,6 +102,21 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             thingDiscovered(
                     DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_ONOFF).withProperties(properties)
                             .withRepresentationProperty("url").withLabel(label)
+                            .withBridge(bridge.getThing().getUID()).build());
+        }
+    }
+
+    public void gatewayDiscovered(String id) {
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put("id", id);
+
+        ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, bridge.getThing().getUID(), id);
+
+        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
+            logger.debug("Detected a gateway with id: {}", id);
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY).withProperties(properties)
+                            .withRepresentationProperty("id").withLabel("Somfy Tahoma Gateway")
                             .withBridge(bridge.getThing().getUID()).build());
         }
     }

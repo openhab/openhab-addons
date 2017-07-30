@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:somfytahoma:device">
-        <parameter name="url" type="text">
-            <label>SomfyTahoma device URL</label>
-            <description>The identifier of this Somfy device</description>
-            <required>true</required>
-            <advanced>true</advanced>
+	<config-description uri="thing-type:somfytahoma:device">
+		<parameter name="url" type="text">
+			<label>Somfy Tahoma device URL</label>
+			<description>The identifier of this Somfy device</description>
+			<required>true</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:somfytahoma:gateway">
+		<parameter name="id" type="text">
+			<label>Somfy Tahoma gateway ID</label>
+			<description>The identifier of this Somfy gateway</description>
+			<required>true</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:somfytahoma:bridge">
+		<parameter name="email" type="text">
+			<label>Email Address</label>
+			<description>Email address for TahomaLink portal</description>
+			<required>true</required>
         </parameter>
-    </config-description>
 
-    <config-description uri="bridge-type:somfytahoma:bridge">
-            <parameter name="email" type="text">
-                <label>Email Address</label>
-                <description>Email address for TahomaLink portal</description>
-                <required>true</required>
-            </parameter>
+		<parameter name="password" type="text">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password for TahomaLink portal</description>
+			<required>true</required>
+		</parameter>
 
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password</label>
-                <description>Password for TahomaLink portal</description>
-                <required>true</required>
-            </parameter>
-
-            <parameter name="refresh" type="integer" required="false">
-                <label>Refresh refresh</label>
-                <description>Specifies the refresh of thing states in seconds</description>
-                <default>30</default>
-            </parameter>
-    </config-description>
+		<parameter name="refresh" type="integer" required="false">
+			<label>Refresh refresh</label>
+			<description>Specifies the refresh of thing states in seconds</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>
