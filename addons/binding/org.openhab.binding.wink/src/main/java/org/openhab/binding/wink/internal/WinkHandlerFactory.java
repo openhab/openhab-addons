@@ -21,7 +21,7 @@ import org.openhab.binding.wink.handler.BinarySwitchHandler;
 import org.openhab.binding.wink.handler.LightBulbHandler;
 import org.openhab.binding.wink.handler.LockHandler;
 import org.openhab.binding.wink.handler.RemoteHandler;
-import org.openhab.binding.wink.handler.WinkHub2Handler;
+import org.openhab.binding.wink.handler.WinkHub2BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.info("Checking if the factory supports {}", thingTypeUID.toString());
+        logger.debug("Checking if the factory supports {}", thingTypeUID.toString());
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
                 || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
@@ -54,7 +54,7 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WINK_HUB_2)) {
-            return new WinkHub2Handler((Bridge) thing);
+            return new WinkHub2BridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
             return new LightBulbHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_REMOTE)) {
