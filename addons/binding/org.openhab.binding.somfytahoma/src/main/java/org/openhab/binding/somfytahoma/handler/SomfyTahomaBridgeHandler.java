@@ -556,7 +556,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
         String version = getTahomaVersion(id);
         for(Channel channel : thing.getChannels()) {
-            if(channel.getChannelTypeUID().equals(VERSION)) {
+            if(channel.getUID().getId().equals(VERSION)) {
                 logger.info("Updating channel version!");
                 updateState(channel.getUID(), new StringType(version));
             }

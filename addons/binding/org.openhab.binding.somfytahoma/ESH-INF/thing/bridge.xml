@@ -9,7 +9,6 @@
 		<label>Somfy Tahoma Bridge</label>
 		<description>Somfy Tahoma bridge enabling communication with Somfy devices</description>
 
-		<channels/>
 		<config-description-ref uri="bridge-type:somfytahoma:bridge"/>
 	</bridge-type>
 
