@@ -10,14 +10,38 @@
 		<description>Omni Area</description>
 		<channels>
 			<channel id="activate_keypad_emergency" typeId="omni_activate_keypad_emergency" />
-			<channel id="alarm_burglary" typeId="area_alarm_burglary" />
-			<channel id="alarm_fire" typeId="area_alarm_fire" />
-			<channel id="alarm_gas" typeId="area_alarm_gas" />
-			<channel id="alarm_auxiliary" typeId="area_alarm_auxiliary" />
-			<channel id="alarm_freeze" typeId="area_alarm_freeze" />
-			<channel id="alarm_water" typeId="area_alarm_water" />
-			<channel id="alarm_duress" typeId="area_alarm_duress" />
-			<channel id="alarm_temperature" typeId="area_alarm_temperature" />
+			<channel id="alarm_burglary" typeId="area_alarm">
+				<label>Burglary Alarm</label>
+				<description>Indicates if a Burglary Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_fire" typeId="area_alarm">
+				<label>Fire Alarm</label>
+				<description>Indicates if a Fire Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_gas" typeId="area_alarm">
+				<label>Gas Alarm</label>
+				<description>Indicates if a Gas Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_auxiliary" typeId="area_alarm">
+				<label>Auxiliary Alarm</label>
+				<description>Indicates if a Auxiliary Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_freeze" typeId="area_alarm">
+				<label>Freeze Alarm</label>
+				<description>Indicates if a Freeze Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_water" typeId="area_alarm">
+				<label>Water Alarm</label>
+				<description>Indicates if a Water Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_duress" typeId="area_alarm">
+				<label>Duress Alarm</label>
+				<description>Indicates if a Duress Alarm is Active.</description>
+			</channel>
+			<channel id="alarm_temperature" typeId="area_alarm">
+				<label>Temperature Alarm</label>
+				<description>Indicates if a Temperature Alarm is Active.</description>
+			</channel>
 			<channel id="mode" typeId="omni_area_mode" />
 			<channel id="disarm" typeId="area_command">
 				<label>Disarm Command</label>
@@ -102,127 +126,78 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<!-- Area channels -->
-    <channel-type id="area_alarm_burglary">
-        <item-type>Switch</item-type>
-        <label>Burglary Alarm</label>
-        <description>Indicates if a Burglary Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_fire">
-        <item-type>Switch</item-type>
-        <label>Fire Alarm</label>
-        <description>Indicates if a Fire Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_gas">
-        <item-type>Switch</item-type>
-        <label>Gas Alarm</label>
-        <description>Indicates if a Gas Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_auxiliary">
-        <item-type>Switch</item-type>
-        <label>Auxiliary Alarm</label>
-        <description>Indicates if a Auxiliary Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_freeze">
-        <item-type>Switch</item-type>
-        <label>Freeze Alarm</label>
-        <description>Indicates if a Freeze Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_water">
-        <item-type>Switch</item-type>
-        <label>Water Alarm</label>
-        <description>Indicates if a Water Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_duress">
-        <item-type>Switch</item-type>
-        <label>Duress Alarm</label>
-        <description>Indicates if a Duress Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="area_alarm_temperature">
-        <item-type>Switch</item-type>
-        <label>Temperature Alarm</label>
-        <description>Indicates if a Temperature Alarm is Active.</description>
-        <category>Alarm</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="omni_area_mode">
-        <item-type>Number</item-type>
-        <label>Security Mode</label>
-        <description>Represents the area security mode.</description>
-        <category>Alarm</category>
-        <state readOnly="true">
-            <options>
-                <option value="0">Off</option>
-                <option value="1">Day</option>
-                <option value="2">Night</option>
-                <option value="3">Away</option>
-                <option value="4">Vacation</option>
-                <option value="5">Day Instant</option>
-                <option value="6">Night Delayed</option>
-                <option value="9">Arming Day</option>
-                <option value="10">Arming Night</option>
-                <option value="11">Arming Away</option>
-                <option value="12">Arming Vacation</option>
-                <option value="13">Arming Day Instant</option>
-                <option value="14">Arming Night Delayed</option>
-            </options>
-        </state>
-    </channel-type>
-    <channel-type id="area_command">
-        <item-type>String</item-type>
-        <label>Security Command</label>
-        <description>Sends a 4 digit user code to activate the area command</description>
-        <category>Alarm</category>      
-    </channel-type>
-    <channel-type id="omni_activate_keypad_emergency">
-        <item-type>Number</item-type>
-        <label>Activate Keypad Emergency</label>
-        <description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. </description>
-        <category>Alarm</category>
-        <state>
-            <options>
-                <option value="1">Burglary</option>
-                <option value="2">Fire</option>
-                <option value="3">Auxiliary</option>
-            </options>
-        </state>
-    </channel-type>
-    <channel-type id="lumina_area_mode">
-        <item-type>Number</item-type>
-        <label>Security Mode</label>
-        <description>Represents the area security mode.</description>
-        <category>Alarm</category>
-        <state readOnly="true">
-            <options>
-                <option value="1">Home</option>
-                <option value="2">Sleep</option>
-                <option value="3">Away</option>
-                <option value="4">Vacation</option>
-                <option value="5">Party</option>
-                <option value="6">Special</option>
-                <option value="9">Setting Home</option>
-                <option value="10">Setting Sleep</option>
-                <option value="11">Setting Away</option>
-                <option value="12">Setting Vacation</option>
-                <option value="13">Setting Party</option>
-                <option value="14">Setting Special</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="area_alarm">
+		<item-type>Switch</item-type>
+		<label>Area Alarm</label>
+		<description>Indicates if an Alarm is Active.</description>
+		<category>Alarm</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="omni_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Day</option>
+				<option value="2">Night</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Day Instant</option>
+				<option value="6">Night Delayed</option>
+				<option value="9">Arming Day</option>
+				<option value="10">Arming Night</option>
+				<option value="11">Arming Away</option>
+				<option value="12">Arming Vacation</option>
+				<option value="13">Arming Day Instant</option>
+				<option value="14">Arming Night Delayed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="area_command">
+		<item-type>String</item-type>
+		<label>Security Command</label>
+		<description>Sends a 4 digit user code to activate the area command</description>
+		<category>Alarm</category>
+	</channel-type>
+	<channel-type id="omni_activate_keypad_emergency">
+		<item-type>Number</item-type>
+		<label>Activate Keypad Emergency</label>
+		<description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. </description>
+		<category>Alarm</category>
+		<state>
+			<options>
+				<option value="1">Burglary</option>
+				<option value="2">Fire</option>
+				<option value="3">Auxiliary</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="lumina_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="1">Home</option>
+				<option value="2">Sleep</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Party</option>
+				<option value="6">Special</option>
+				<option value="9">Setting Home</option>
+				<option value="10">Setting Sleep</option>
+				<option value="11">Setting Away</option>
+				<option value="12">Setting Vacation</option>
+				<option value="13">Setting Party</option>
+				<option value="14">Setting Special</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
