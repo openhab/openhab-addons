@@ -74,7 +74,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
             this.channelUID = new ChannelUID(getThing().getUID(), channelId);
             this.connection = MqttConnection.fromConfiguration(config, this);
             this.topicParser = new TopicParser(config.getBaseTopic());
-
         }
 
         protected NodePropertiesList getProperties() {
@@ -157,7 +156,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         public synchronized void init() throws MqttException {
             isReadonly = getProperties().isPropertySettable(ESH_VALUE_TOPIC);
             super.init();
-
         }
 
         private void updateChannelType() {
@@ -184,9 +182,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
         @Override
         public void onHandleCommand(Command command) {
-            if (command == RefreshType.REFRESH) {
-
-            } else {
+            if (command != RefreshType.REFRESH) {
                 if (isReadonly) {
                     logger.warn("Node '{}' received command '{}' but is readonly", getNodeId(), command);
                 } else {
@@ -220,11 +216,10 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
                 State state = transformToState(message);
                 updateState(getChannelUID(), state);
             }
-
         }
 
         private State transformToState(String message) {
-            State result = null;
+            State result;
             if (StringUtils.equals(itemType, "Switch")) {
                 boolean on = StringUtils.equalsAnyIgnoreCase(message, "1", "ON", "TRUE");
                 result = on ? OnOffType.ON : OnOffType.OFF;
@@ -258,19 +253,16 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
         public DefaultNodeHandler(String nodeId, HomieConfiguration config) throws MqttException {
             super(nodeId, config, "");
-
         }
 
         @Override
         protected void onMqttMessage(HomieTopic topic, String message) {
             logger.warn("Handling non ESH Homie Nodes is not implemented yet");
-
         }
 
         @Override
         protected void onHandleCommand(Command command) {
             logger.warn("Handling non ESH Homie Nodes is not implemented yet");
-
         }
 
     }
@@ -297,7 +289,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         this.mqttconnection = MqttConnection.fromConfiguration(config, this);
         this.typeProvider = provider;
         topicParser = new TopicParser(mqttconnection.getBasetopic());
-
     }
 
     @Override
@@ -326,7 +317,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         } catch (MqttException e) {
             logger.error("Error subscribing for MQTT topics", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error subscribing MQTT" + e.toString());
+                    "Error subscribing MQTT" + e.getMessage());
         }
     }
 
@@ -371,7 +362,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         } catch (ParseException e) {
             logger.info("Topic cannot be handled", e);
         }
-
     }
 
     private void updateInternalChannelState(String topicSuffix, String message) {
@@ -403,7 +393,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         if (!processedAtLeastOnce) {
             logger.warn("Topic '{}' with message '{}' was not processed", topicSuffix, message);
         }
-
     }
 
     private State castToState(Channel channel, String message) {

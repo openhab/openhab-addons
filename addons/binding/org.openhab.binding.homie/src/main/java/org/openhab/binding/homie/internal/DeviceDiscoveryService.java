@@ -26,6 +26,12 @@ import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Discovery Service for discovering Homie Devices
+ * 
+ * @author Michael Kolb - Initial contribution
+ *
+ */
 public class DeviceDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);

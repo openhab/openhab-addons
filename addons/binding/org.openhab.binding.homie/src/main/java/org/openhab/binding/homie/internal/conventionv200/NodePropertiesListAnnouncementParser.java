@@ -21,7 +21,13 @@ import java.util.regex.Pattern;
  */
 public class NodePropertiesListAnnouncementParser {
 
+    /**
+     * RegEx Pattern Matchgroup name for property
+     */
     protected final static String MATCHGROUP_PROPERTYNAME_NAME = "propname";
+    /**
+     * RegEx Pattern Matchgroup name for settable attribute
+     */
     protected final static String MATCHGROUP_SETTABLE_NAME = "settable";
 
     public final static String PATTERN_NODE_PROPERTY_TYPE_PAYLOAD = String.format("((?<%s>%s)(:(?<%s>settable))?)",

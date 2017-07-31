@@ -15,6 +15,12 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
+/**
+ *
+ * Provider for channels of type Homie
+ *
+ * @author Michael Kolb - Initial contribution
+ */
 public interface HomieChannelTypeProvider extends ChannelTypeProvider {
 
     public void addChannelType(ChannelTypeUID uid, boolean readOnly);

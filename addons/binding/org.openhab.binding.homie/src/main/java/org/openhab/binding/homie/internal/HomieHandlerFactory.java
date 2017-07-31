@@ -70,8 +70,7 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for {}", thing);
 
-            HomieDeviceHandler handler = new HomieDeviceHandler(thing, provider, configuration);
-            return handler;
+            return new HomieDeviceHandler(thing, provider, configuration);
         }
         return null;
     }

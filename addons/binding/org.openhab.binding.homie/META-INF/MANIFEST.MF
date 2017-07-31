@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Homie Binding
 Bundle-SymbolicName: org.openhab.binding.homie;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,lib/org.eclipse.paho.client.mqttv3-1.1.0.jar,lib/commons-lang3-3.5.jar
 Import-Package: 

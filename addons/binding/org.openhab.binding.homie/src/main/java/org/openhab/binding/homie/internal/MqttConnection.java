@@ -24,6 +24,13 @@ import org.openhab.binding.homie.internal.conventionv200.HomieConventions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class that handles the MQTT Connection stuff
+ * 
+ * @author Michael Kolb - Initial contribution
+ *
+ *
+ */
 public class MqttConnection {
     private static final int PUBLISH_QOS = 2;
     private static final int SUBSCRIBE_QOS = 2;

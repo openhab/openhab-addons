@@ -10,6 +10,12 @@ package org.openhab.binding.homie.internal;
 
 import java.util.Dictionary;
 
+/**
+ * Class that holds the OpenHAB Homie Configuration
+ * 
+ * @author Michael Kolb - Initial contribution
+ *
+ */
 public class HomieConfiguration {
 
     private String baseTopic;

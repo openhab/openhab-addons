@@ -41,7 +41,7 @@ public class HomieBindingConstants {
     /**
      * MQTT ClientID Prefix
      */
-    public final static String MQTT_CLIENTID = "homieOpenhab2Binding";
+    public final static String MQTT_CLIENTID = "openHAB-homie-binding";
 
     /**
      * Homie Device property key for homie specification version

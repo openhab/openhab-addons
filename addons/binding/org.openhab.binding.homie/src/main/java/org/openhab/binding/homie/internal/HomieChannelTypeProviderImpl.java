@@ -34,6 +34,12 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
 
+/**
+ * Implementation of a Homie Channel Provider
+ * 
+ * @author Michael Kolb - Initial contribution
+ *
+ */
 public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
 
     private final Map<ChannelTypeUID, ChannelType> types = new HashMap<>();
@@ -66,14 +72,14 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
         String itemType = "String";
         URI configDescriptionURI = null;
         ChannelKind kind = ChannelKind.STATE;
-        BigDecimal state_min = null;
-        BigDecimal state_max = null;
-        BigDecimal state_step = null;
-        String state_pattern = null;
-        boolean state_readOnly = readOnly;
-        List<StateOption> state_options = Collections.emptyList();
-        StateDescription state = new StateDescription(state_min, state_max, state_step, state_pattern, state_readOnly,
-                state_options);
+        BigDecimal stateMin = null;
+        BigDecimal stateMax = null;
+        BigDecimal stateStep = null;
+        String statePattern = null;
+        boolean stateReadOnly = readOnly;
+        List<StateOption> stateOptions = Collections.emptyList();
+        StateDescription state = new StateDescription(stateMin, stateMax, stateStep, statePattern, stateReadOnly,
+                stateOptions);
         Set<String> tags = Collections.emptySet();
         String label = uid.getId();
         String category = "";
@@ -98,12 +104,12 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
     @Override
     public void addChannelToGroup(ChannelUID channelId, ChannelTypeUID channelTypeUid,
             ChannelGroupTypeUID channelGroupId) {
-        ChannelGroupType chGrp = getChannelGroupType(channelGroupId, null);
+        ChannelGroupType channelGroupType = getChannelGroupType(channelGroupId, null);
         ChannelDefinition chDef = new ChannelDefinition(channelId.getId(), channelTypeUid);
-        List<ChannelDefinition> channelDefinitions = new LinkedList<>(chGrp.getChannelDefinitions());
+        List<ChannelDefinition> channelDefinitions = new LinkedList<>(channelGroupType.getChannelDefinitions());
         channelDefinitions.add(chDef);
-        ChannelGroupType newGroup = new ChannelGroupType(chGrp.getUID(), chGrp.isAdvanced(), chGrp.getLabel(),
-                chGrp.getDescription(), channelDefinitions);
+        ChannelGroupType newGroup = new ChannelGroupType(channelGroupType.getUID(), channelGroupType.isAdvanced(),
+                channelGroupType.getLabel(), channelGroupType.getDescription(), channelDefinitions);
         groups.put(channelGroupId, newGroup);
 
     }
@@ -117,14 +123,11 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
         String description = "";
         URI configDescriptionURI = null;
         ChannelKind kind = ChannelKind.STATE;
-        BigDecimal state_min = min;
-        BigDecimal state_max = max;
-        BigDecimal state_step = step;
-        String state_pattern = "%s " + unit;
-        boolean state_readOnly = isReadonly;
-        List<StateOption> state_options = Collections.emptyList();
-        StateDescription state = new StateDescription(state_min, state_max, state_step, state_pattern, state_readOnly,
-                state_options);
+
+        String statePattern = "%s " + unit;
+        boolean stateReadOnly = isReadonly;
+        List<StateOption> stateOptions = Collections.emptyList();
+        StateDescription state = new StateDescription(min, max, step, statePattern, stateReadOnly, stateOptions);
         Set<String> tags = Collections.emptySet();
         String label = uid.getId();
         boolean advanced = false;
