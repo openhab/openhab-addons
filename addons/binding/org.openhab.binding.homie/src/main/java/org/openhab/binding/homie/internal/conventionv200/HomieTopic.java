@@ -99,6 +99,11 @@ public class HomieTopic {
                 && internalPropertyName.endsWith(HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX);
     }
 
+    /**
+     * Check if this is a property announcement
+     * 
+     * @return
+     */
     public boolean isNodePropertyAnnouncement() {
         return isNodeProperty() && isInternalProperty()
                 && internalPropertyName.endsWith(HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX);

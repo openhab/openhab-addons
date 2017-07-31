@@ -1,6 +1,6 @@
 # Homie Binding
 
-This is the binding for devices that complie with the [Homie MQTT Convention](https://github.com/marvinroger/homie). This binding allows you to integrate all devices, as long as they complie with the specification.
+This is the binding for devices that comply with the [Homie MQTT Convention](https://github.com/marvinroger/homie). This binding allows you to integrate all devices, as long as they comply with the specification.
 
 ## Naming definition
 

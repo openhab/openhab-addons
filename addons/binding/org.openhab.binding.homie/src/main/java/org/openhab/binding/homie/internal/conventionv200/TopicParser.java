@@ -67,7 +67,7 @@ public class TopicParser {
     public HomieTopic parse(String topic) throws ParseException {
         Matcher m = pattern.matcher(topic);
         if (!m.matches()) {
-            throw new ParseException("Topic '" + topic + "' is does not complie to homie specification 2.0.0", 0);
+            throw new ParseException("Topic '" + topic + "' does not comply to homie specification 2.0.0", 0);
         }
         return new HomieTopic(m);
     }
