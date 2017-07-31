@@ -102,7 +102,8 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         boolean tokenPassed = true;
         switch (tokenSting.length()) {
             case 32:
-                if (tokenSting.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {
+                if (tokenSting.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+                        || tokenSting.equals("00000000000000000000000000000000")) {
                     tokenPassed = false;
                 } else {
                     token = Utils.hexStringToByteArray(tokenSting);
@@ -206,6 +207,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
         try {
             lastId = roboCom.getId();
+            lastId += 10;
         } catch (Exception e) {
             // Ignore
         }
@@ -226,27 +228,32 @@ public class XiaomiMiioHandler extends BaseThingHandler {
                         lastId);
                 byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 if (response.length > 0) {
+                    Message roboResponse = new Message(response);
+                    logger.debug("Ping response from device {} at {}.", Utils.getHex(roboResponse.getDeviceId()),
+                            configuration.host);
                     return roboCom;
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving MiIO device ID");
-                RoboCommunication tolkenCom = new RoboCommunication(configuration.host, token, new byte[0], lastId);
-                byte[] response = tolkenCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
+                RoboCommunication idCom = new RoboCommunication(configuration.host, token, new byte[0], lastId);
+                byte[] response = idCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 Message roboResponse = new Message(response);
                 updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceId()));
                 Configuration config = editConfiguration();
                 config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceId()));
                 updateConfiguration(config);
                 logger.debug("Using retrieved MiIO device ID {}", Utils.getHex(roboResponse.getDeviceId()));
-                lastId = tolkenCom.getId();
-                tolkenCom.close();
+                lastId = idCom.getId();
+                idCom.close();
                 if (tolkenCheckPass(configuration.token)) {
                     roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
                     return roboCom;
                 }
             }
+            logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
             return null;
         } catch (IOException e) {
+            logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
             disconnected(e.getMessage());
             return null;
         }

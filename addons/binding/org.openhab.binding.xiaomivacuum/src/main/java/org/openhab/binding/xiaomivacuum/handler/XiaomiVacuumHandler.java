@@ -244,7 +244,8 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
             return;
         }
         try {
-            if (updateNetwork() && updateVacuumStatus() && updateConsumables() && updateDnD() && updateHistory()) {
+            if (((updateNetwork() ? 1 : 0) + (updateVacuumStatus() ? 1 : 0) + (updateConsumables() ? 1 : 0)
+                    + (updateDnD() ? 1 : 0) + (updateHistory() ? 1 : 0)) > 0) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (Exception e) {
