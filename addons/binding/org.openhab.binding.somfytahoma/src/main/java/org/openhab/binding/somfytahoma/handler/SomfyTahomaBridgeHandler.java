@@ -214,8 +214,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             url = TAHOMA_URL + "getActionGroups";
             String urlParameters = "";
 
-            byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-            InputStream response = sendDataToTahomaWithCookie(url, postData);
+            InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
 
             return readResponse(response);
 
@@ -240,8 +239,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             url = TAHOMA_URL + "getSetup";
             String urlParameters = "";
 
-            byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-            InputStream response = sendDataToTahomaWithCookie(url, postData);
+            InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
 
             String line = readResponse(response);
 
@@ -287,9 +285,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             url = TAHOMA_URL + "getStates";
             String urlParameters = "[{\"deviceURL\": \"" + deviceUrl + "\", \"states\": [{\"name\": \"" + handler.getStateName() + "\"}]}]";
 
-            byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-
-            InputStream response = sendDataToTahomaWithCookie(url, postData);
+            InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
             String line = readResponse(response);
 
             SomfyTahomaStatesResponse data = gson.fromJson(line, SomfyTahomaStatesResponse.class);
@@ -409,17 +405,17 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return connection.getInputStream();
     }
 
-    public InputStream sendDataToTahomaWithCookie(String url, byte[] postData) throws Exception {
+    public InputStream sendDataToTahomaWithCookie(String url, String postData) throws Exception {
         logger.trace("Sending POST to Tahoma to url: {} with data: {}", url, postData);
         URL cookieUrl = new URL(url);
         HttpsURLConnection connection = (HttpsURLConnection) cookieUrl.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
         setConnectionDefaults(connection);
-        connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
+        connection.setRequestProperty("Content-Length", Integer.toString(postData.length()));
         connection.setRequestProperty("Cookie", cookie);
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-            wr.write(postData);
+            wr.write(postData.getBytes(StandardCharsets.UTF_8));
         }
 
         return connection.getInputStream();
@@ -453,9 +449,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
             String urlParameters = "{\"actions\": [{\"deviceURL\": \"" + io + "\", \"commands\": [{ \"name\": \"" + command + "\", \"parameters\": " + params + "}]}]}";
             logger.debug("Sending apply: {}", urlParameters);
-            byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 
-            InputStream response = sendDataToTahomaWithCookie(url, postData);
+            InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
             String line = readResponse(response);
 
             SomfyTahomaApplyResponse data = gson.fromJson(line, SomfyTahomaApplyResponse.class);
@@ -484,11 +479,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
         try {
             url = TAHOMA_URL + "getCurrentExecutions";
-
             String urlParameters = "";
-            byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 
-            InputStream response = sendDataToTahomaWithCookie(url, postData);
+            InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
             String line = readResponse(response);
 
             SomfyTahomaExecutionsResponse data = gson.fromJson(line, SomfyTahomaExecutionsResponse.class);
