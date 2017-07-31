@@ -60,7 +60,6 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     @Override
     public void initialize() {
         logger.debug("Initializing MeteoStick handler.");
-        super.initialize();
 
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
         logger.debug("Initializing MeteoStick handler - Channel {}.", channel);

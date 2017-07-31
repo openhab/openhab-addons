@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -59,7 +60,7 @@ public class MinecraftServerHandler extends BaseBridgeHandler {
         config = getConfigAs(ServerConfig.class);
         logger.info("Initializing MinecraftHandler");
         connectToServer();
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**

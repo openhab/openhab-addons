@@ -70,7 +70,6 @@ public class AirQualityHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Air Quality handler.");
-        super.initialize();
 
         AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
         logger.debug("config apikey = (omitted from logging)");
@@ -95,6 +94,7 @@ public class AirQualityHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
+            updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);

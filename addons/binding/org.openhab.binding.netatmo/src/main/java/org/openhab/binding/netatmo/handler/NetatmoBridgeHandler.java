@@ -70,7 +70,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 return;
             }
         }
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
