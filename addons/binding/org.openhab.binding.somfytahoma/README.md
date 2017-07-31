@@ -34,10 +34,10 @@ Please see the example below.
 
 ## Channels
 
-A bridge does not expose and channel.
+A bridge does not expose any channel.
 
 Gateways expose this read only channel:
-- version (this is a firmware version of your Tahoma device)
+- version (this is a firmware version of your Tahoma gateway)
 
 Roller shutters and awnings expose these channels:
 - position (a percentual position of the roller shutter, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
