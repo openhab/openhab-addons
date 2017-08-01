@@ -20,12 +20,14 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.openhab.binding.supla.internal.http.Response.NOT_FOUND;
+import static org.openhab.binding.supla.internal.http.Response.OK;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaIoDevicesManagerTest extends SuplaTest {
 
     private SuplaIoDevicesManager manager;
-    @Mock private HttpExecutor httpExecutor;
+    @Mock
+    private HttpExecutor httpExecutor;
     private final JsonMapper jsonMapper = new GsonMapper();
 
     @Before
@@ -40,7 +42,7 @@ public class SuplaIoDevicesManagerTest extends SuplaTest {
         final SuplaIoDevice device1 = randomSuplaIoDevice();
         final SuplaIoDevice device2 = randomSuplaIoDevice();
 
-        final String json = "{\"iodevices\": ["+jsonMapper.map(device1)+", "+jsonMapper.map(device2)+"]}";
+        final String json = "{\"iodevices\": [" + jsonMapper.map(device1) + ", " + jsonMapper.map(device2) + "]}";
         given(httpExecutor.get(new Request("/iodevices"))).willReturn(new Response(200, json));
 
         // when
@@ -77,6 +79,33 @@ public class SuplaIoDevicesManagerTest extends SuplaTest {
 
         // then
         assertThat(suplaIoDevice).isEmpty();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenListIsEmpty() {
+
+        // given
+        final int id = 101;
+        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(OK, "[]"));
+
+        // when
+        manager.obtainIoDevice(id);
+
+        // then
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenInListAreMoreThaOneDevices() {
+
+        // given
+        final int id = 101;
+        final String json = "[{\"id\":" + id + ", \"channels\": []}, {\"id\":" + (id + 1) + ", \"channels\": []}]";
+        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(OK, "[]"));
+
+        // when
+        manager.obtainIoDevice(id);
+
+        // then
     }
 
     private SuplaIoDevice randomSuplaIoDevice() {

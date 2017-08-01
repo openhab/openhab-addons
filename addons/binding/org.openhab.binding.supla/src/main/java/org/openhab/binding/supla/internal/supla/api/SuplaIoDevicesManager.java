@@ -63,8 +63,6 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
         }
         final List<SuplaIoDevice> list = jsonMapper.to(LIST_TYPE, response.getResponse());
         switch (list.size()) {
-            case 0:
-                return Optional.empty();
             case 1:
                 return Optional.of(list.get(0));
             default:
