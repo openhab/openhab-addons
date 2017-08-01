@@ -11,6 +11,7 @@ package org.openhab.binding.netatmo.handler.station;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
@@ -56,14 +57,26 @@ public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
                 return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
             case CHANNEL_TEMPERATURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
+            case CHANNEL_MIN_TEMP:
+                return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
+            case CHANNEL_MAX_TEMP:
+                return ChannelTypeUtils.toDecimalType(dashboardData.getMaxTemp());
+            case CHANNEL_TEMP_TREND:
+                return new StringType(dashboardData.getTempTrend());
             case CHANNEL_NOISE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getNoise());
             case CHANNEL_PRESSURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getPressure());
+            case CHANNEL_PRESS_TREND:
+                return new StringType(dashboardData.getPressureTrend());
             case CHANNEL_ABSOLUTE_PRESSURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getAbsolutePressure());
             case CHANNEL_TIMEUTC:
                 return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
+            case CHANNEL_DATE_MIN_TEMP:
+                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMinTemp());
+            case CHANNEL_DATE_MAX_TEMP:
+                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
             case CHANNEL_HUMIDITY:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
             case CHANNEL_HUMIDEX:

@@ -27,6 +27,24 @@
         </state>
     </channel-type>
     
+    <channel-type id="minTemp" advanced="true">
+        <item-type>Number</item-type>
+        <label>Min Temp</label>
+        <description>Minimum Temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="maxTemp" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max Temp</label>
+        <description>Maximum Temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>        
+    
     <channel-type id="temperatureTrend" advanced="true">
         <item-type>String</item-type>
         <label>Temp Trend</label>
@@ -102,6 +120,33 @@
         <item-type>DateTime</item-type>
         <label>Last Plug Seen</label>
         <description>Last Plug Seen</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="dateMinTemp" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Date Min Temp</label>
+        <description>Date when minimum temperature was reached</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="dateMaxTemp" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Date Max Temp</label>
+        <description>Date when maximum temperature was reached</description>
+        <state readOnly="true"/>
+    </channel-type>        
+    
+    <channel-type id="lastBilan" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Available Bilan</label>
+        <description>Month of the last available thermostat bilan</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="connectedBoiler" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Plug Connected Boiler</label>
         <state readOnly="true"/>
     </channel-type>
     

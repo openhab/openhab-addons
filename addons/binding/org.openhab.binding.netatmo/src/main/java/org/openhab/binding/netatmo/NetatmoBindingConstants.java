@@ -52,10 +52,10 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LOCATION = "Location";
     public static final String CHANNEL_BOILER_ON = "BoilerOn";
     public static final String CHANNEL_BOILER_OFF = "BoilerOff";
-    public static final String CHANNEL_DATE_MAX_TEMP = "date_max_temp";
-    public static final String CHANNEL_DATE_MIN_TEMP = "date_min_temp";
-    public static final String CHANNEL_MAX_TEMP = "min_temp";
-    public static final String CHANNEL_MIN_TEMP = "max_temp";
+    public static final String CHANNEL_DATE_MAX_TEMP = "DateMaxTemp";
+    public static final String CHANNEL_DATE_MIN_TEMP = "DateMinTemp";
+    public static final String CHANNEL_MAX_TEMP = "MaxTemp";
+    public static final String CHANNEL_MIN_TEMP = "MinTemp";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "AbsolutePressure";
     public static final String CHANNEL_CO2 = "Co2";
     public static final String CHANNEL_NOISE = "Noise";
@@ -82,6 +82,9 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_TEMP = "Sp_Temperature";
     public static final String CHANNEL_THERM_RELAY = "ThermRelayCmd";
     public static final String CHANNEL_THERM_ORIENTATION = "ThermOrientation";
+    public static final String CHANNEL_CONNECTED_BOILER = "ConnectedBoiler";
+    public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
+    public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
     // Module Properties
     public static final String PROPERTY_BATTERY_MIN = "batteryMin";
