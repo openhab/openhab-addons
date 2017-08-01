@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import org.openhab.binding.osramlightify.internal.LightifyTransmitQueueSender;
 
+/**
+ * @author Mike Jagdis - Initial contribution
+ */
 public final class LightifyTransmitQueue<T> {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyTransmitQueue.class);

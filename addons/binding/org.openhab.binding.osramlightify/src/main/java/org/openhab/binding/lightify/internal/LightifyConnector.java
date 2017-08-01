@@ -42,6 +42,9 @@ import org.openhab.binding.osramlightify.internal.messages.LightifyListPairedDev
 import org.openhab.binding.osramlightify.internal.LightifyTransmitQueue;
 import org.openhab.binding.osramlightify.internal.LightifyTransmitQueueSender;
 
+/**
+ * @author Mike Jagdis - Initial contribution
+ */
 public final class LightifyConnector extends Thread implements LightifyTransmitQueueSender<LightifyMessage> {
 
     /**

@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.osramlightify.internal;
 
+/**
+ * @author Mike Jagdis - Initial contribution
+ */
 interface LightifyTransmitQueueSender<T extends Object> {
 
     /** Perform the actual sending of a message.
