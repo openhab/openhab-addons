@@ -97,7 +97,7 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateVacuumStatus() {
         JsonObject statusData = getJsonResultHelper(status.getValue());
         if (statusData == null) {
-            disconnected("No valid status response");
+            disconnectedNoResponse();
             return false;
         }
         updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
@@ -162,7 +162,7 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateConsumables() {
         JsonObject consumablesData = getJsonResultHelper(consumables.getValue());
         if (consumablesData == null) {
-            disconnected("No valid consumables response");
+            disconnectedNoResponse();
             return false;
         }
         int mainBrush = consumablesData.get("main_brush_work_time").getAsInt();
@@ -191,7 +191,7 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateDnD() {
         JsonObject dndData = getJsonResultHelper(dnd.getValue());
         if (dndData == null) {
-            disconnected("No valid Do Not Disturb response");
+            disconnectedNoResponse();
             return false;
         }
         logger.debug("Do not disturb data: {}", dndData.toString());
@@ -206,12 +206,12 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateHistory() {
         String historyString = history.getValue();
         if (historyString == null) {
-            disconnected("No valid Clean History response");
+            disconnectedNoResponse();
             return false;
         }
         JsonArray historyData = ((JsonObject) parser.parse(historyString)).getAsJsonArray("result");
         if (historyData == null) {
-            disconnected("No valid Clean History response");
+            disconnectedNoResponse();
             return false;
         }
         logger.trace("Cleaning history data: {},{}", historyData.toString());
@@ -242,8 +242,10 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     protected boolean initializeData() {
         this.roboCom = getConnection();
         if (roboCom == null) {
+            updateStatus(ThingStatus.OFFLINE);
             return false;
         }
+        updateStatus(ThingStatus.ONLINE);
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             try {
                 return sendCommand(VacuumCommand.GET_STATUS);
@@ -284,7 +286,6 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
             }
             return null;
         });
-        updateStatus(ThingStatus.ONLINE);
         return true;
     }
 }

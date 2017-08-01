@@ -66,15 +66,19 @@ public class RoboCommunication {
         return sendCommand(fullCommand, token, ip, deviceId);
     }
 
-    private String sendCommand(String command, byte[] token, String ip, byte[] serial)
+    private String sendCommand(String command, byte[] token, String ip, byte[] deviceId)
             throws RoboCryptoException, IOException {
         byte[] encr;
         encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
-        byte[] sendMsg = Message.createMsgData(encr, token, serial);
+        byte[] sendMsg = Message.createMsgData(encr, token, deviceId);
         byte[] response = comms(sendMsg, ip);
         if (response.length == 0) {
-            logger.debug("len {}", response.length);
-            logger.debug("No response from vacuum for command {}.\r\n{}", command, (new Message(sendMsg)).toSting());
+            if (logger.isTraceEnabled()) {
+                logger.trace("No response from device {} at {} for command {}.\r\n{}", Utils.getHex(deviceId), ip,
+                        command, (new Message(sendMsg)).toSting());
+            } else {
+                logger.debug("No response from device {} at {} for command {}.", Utils.getHex(deviceId), ip, command);
+            }
             return null;
         }
         Message roboResponse = new Message(response);

@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
 import org.openhab.binding.xiaomivacuum.internal.Message;
+import org.openhab.binding.xiaomivacuum.internal.MiIoDevices;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
 import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
 import org.openhab.binding.xiaomivacuum.internal.Utils;
@@ -52,7 +53,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiMiioHandler.class);
 
     protected ScheduledFuture<?> pollingJob;
-
+    protected XiaomiVacuumBindingConfiguration configuration;
     protected JsonParser parser;
     protected byte[] token;
 
@@ -87,7 +88,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MiIO device handler '{}'", getThing().getUID());
-        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
+        configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
         if (!tolkenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
@@ -139,7 +140,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
 
     protected String sendCommand(VacuumCommand command, String params) {
         try {
-            return roboCom.sendCommand(command, params);
+            return getConnection().sendCommand(command, params);
         } catch (RoboCryptoException | IOException e) {
             disconnected(e.getMessage());
         }
@@ -205,6 +206,10 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         return initializeData();
     }
 
+    protected void disconnectedNoResponse() {
+        disconnected("No Response from device");
+    }
+
     protected void disconnected(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
         try {
@@ -220,9 +225,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         if (roboCom != null) {
             return roboCom;
         }
-        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
         String deviceId = configuration.deviceId;
-
         try {
             if (deviceId != null && deviceId.length() == 8 && tolkenCheckPass(configuration.token)) {
                 logger.debug("Ping MiIO device {} at {}", deviceId, configuration.host);
@@ -248,6 +251,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
                 logger.debug("Using retrieved MiIO device ID {}", Utils.getHex(roboResponse.getDeviceId()));
                 lastId = idCom.getId();
                 idCom.close();
+                configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
                 if (tolkenCheckPass(configuration.token)) {
                     roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
                     return roboCom;
@@ -268,6 +272,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE);
             return false;
         }
+        updateStatus(ThingStatus.ONLINE);
         network = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             try {
                 return sendCommand(VacuumCommand.MIIO_INFO);
@@ -276,7 +281,6 @@ public class XiaomiMiioHandler extends BaseThingHandler {
             }
             return null;
         });
-        updateStatus(ThingStatus.ONLINE);
         return true;
     }
 
@@ -286,10 +290,12 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         logger.debug("MiIO Device Data {}", miIoData);
         JsonObject result = ((JsonObject) parser.parse(miIoData)).getAsJsonObject("result").getAsJsonObject();
         Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_MODEL_ID, result.get("model").getAsString());
+        String model = result.get("model").getAsString();
+        properties.put(Thing.PROPERTY_MODEL_ID, model);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, result.get("fw_ver").getAsString());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.get("hw_ver").getAsString());
         updateProperties(properties);
+        logger.debug("MiIO Device model {} identified as: {}", model, MiIoDevices.getType(model).toString());
         return true;
     }
 
@@ -308,7 +314,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
         } catch (JsonSyntaxException e) {
             logger.debug("Could not parse result from response: '{}'", res);
         } catch (NullPointerException e) {
-            logger.debug("Empty response received.");
+            logger.trace("Empty response received.");
         }
         return null;
     }

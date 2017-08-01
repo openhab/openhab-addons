@@ -27,6 +27,7 @@ public final class XiaomiVacuumBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "unknown");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
+    public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VACUUM,
             THING_TYPE_MIIO);
