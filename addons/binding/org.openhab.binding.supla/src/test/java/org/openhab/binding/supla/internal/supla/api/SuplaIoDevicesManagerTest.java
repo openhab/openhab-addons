@@ -100,7 +100,7 @@ public class SuplaIoDevicesManagerTest extends SuplaTest {
         // given
         final int id = 101;
         final String json = "[{\"id\":" + id + ", \"channels\": []}, {\"id\":" + (id + 1) + ", \"channels\": []}]";
-        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(OK, "[]"));
+        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(OK, json));
 
         // when
         manager.obtainIoDevice(id);
