@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static org.openhab.binding.supla.internal.http.Response.NOT_FOUND;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -57,6 +58,9 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
     public Optional<SuplaIoDevice> obtainIoDevice(long id) {
         logger.trace("SuplaIoDevicesManager.obtainIoDevice({})", id);
         final Response response = httpExecutor.get(new Request("/iodevices/" + id));
+        if(response.getStatusCode() == NOT_FOUND) {
+            return Optional.empty();
+        }
         final List<SuplaIoDevice> list = jsonMapper.to(LIST_TYPE, response.getResponse());
         switch (list.size()) {
             case 0:

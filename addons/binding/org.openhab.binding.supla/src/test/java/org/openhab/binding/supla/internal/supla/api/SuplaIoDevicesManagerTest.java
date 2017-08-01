@@ -19,6 +19,7 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.openhab.binding.supla.internal.http.Response.NOT_FOUND;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaIoDevicesManagerTest extends SuplaTest {
@@ -62,6 +63,20 @@ public class SuplaIoDevicesManagerTest extends SuplaTest {
 
         // then
         assertThat(suplaIoDevice).contains(new SuplaIoDevice(id, 0, false, null, null, null, null, null, null, 0, null));
+    }
+
+    @Test
+    public void shouldReturnEmptyWhenHttpExecutorReturn404() {
+
+        // given
+        final int id = 101;
+        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(NOT_FOUND, ""));
+
+        // when
+        final Optional<SuplaIoDevice> suplaIoDevice = manager.obtainIoDevice(id);
+
+        // then
+        assertThat(suplaIoDevice).isEmpty();
     }
 
     private SuplaIoDevice randomSuplaIoDevice() {

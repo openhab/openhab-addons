@@ -12,6 +12,8 @@ package org.openhab.binding.supla.internal.http;
  * @author Martin Grzeslowski - Initial contribution
  */
 public final class Response {
+    public static final int NOT_FOUND = 404;
+
     private final int statusCode;
     private final String response;
 
