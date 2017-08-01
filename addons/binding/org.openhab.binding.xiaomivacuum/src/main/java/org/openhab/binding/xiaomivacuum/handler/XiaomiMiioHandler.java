@@ -11,6 +11,7 @@ package org.openhab.binding.xiaomivacuum.handler;
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -126,6 +127,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
             pollingJob = null;
         }
         if (roboCom != null) {
+            lastId = roboCom.getId();
             roboCom.close();
             roboCom = null;
         }
@@ -223,14 +225,15 @@ public class XiaomiMiioHandler extends BaseThingHandler {
 
         try {
             if (deviceId != null && deviceId.length() == 8 && tolkenCheckPass(configuration.token)) {
-                logger.debug("Using vacuum device ID {}", deviceId);
+                logger.debug("Ping MiIO device {} at {}", deviceId, configuration.host);
                 roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
                         lastId);
                 byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 if (response.length > 0) {
                     Message roboResponse = new Message(response);
-                    logger.debug("Ping response from device {} at {}.", Utils.getHex(roboResponse.getDeviceId()),
-                            configuration.host);
+                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
+                            Utils.getHex(roboResponse.getDeviceId()), configuration.host, roboResponse.getTimestamp(),
+                            LocalDateTime.now(), LocalDateTime.now().compareTo(roboResponse.getTimestamp()));
                     return roboCom;
                 }
             } else {
@@ -253,7 +256,7 @@ public class XiaomiMiioHandler extends BaseThingHandler {
             logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
             return null;
         } catch (IOException e) {
-            logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
+            logger.debug("Could not connect to {} at {}", getThing().getUID().toString(), configuration.host);
             disconnected(e.getMessage());
             return null;
         }

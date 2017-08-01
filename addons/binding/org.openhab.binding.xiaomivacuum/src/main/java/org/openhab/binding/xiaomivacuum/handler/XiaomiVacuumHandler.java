@@ -10,7 +10,6 @@ package org.openhab.binding.xiaomivacuum.handler;
 
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -22,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
 import org.openhab.binding.xiaomivacuum.internal.robot.ConsumablesType;
 import org.openhab.binding.xiaomivacuum.internal.robot.FanModeType;
 import org.openhab.binding.xiaomivacuum.internal.robot.StatusType;
@@ -93,19 +91,6 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             updateState(CHANNEL_COMMAND, new StringType(sendCommand(command.toString())));
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Disposing XiaomiVacuum handler '{}'", getThing().getUID());
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
-        if (roboCom != null) {
-            roboCom.close();
-            roboCom = null;
         }
     }
 
@@ -302,20 +287,4 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
         updateStatus(ThingStatus.ONLINE);
         return true;
     }
-
-    @Override
-    protected String sendCommand(VacuumCommand command) {
-        return sendCommand(command, "");
-    }
-
-    @Override
-    protected String sendCommand(VacuumCommand command, String params) {
-        try {
-            return roboCom.sendCommand(command, params);
-        } catch (RoboCryptoException | IOException e) {
-            disconnected(e.getMessage());
-        }
-        return null;
-    }
-
 }
