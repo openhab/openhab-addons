@@ -61,7 +61,8 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.WIND_DIRECTION,
-            RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED);
+            RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED, RFXComValueSelector.TEMPERATURE,
+            RFXComValueSelector.CHILL_TEMPERATURE);
 
     private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
