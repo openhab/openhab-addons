@@ -61,12 +61,16 @@ public class LockHandler extends WinkBaseThingHandler {
 
     @Override
     protected void updateDeviceState(IWinkDevice device) {
-        if (device.getCurrentState().get("locked").equals("true")) {
-            logger.debug("LOCKSTATE is ON");
-            updateState(CHANNEL_LOCKSTATE, OnOffType.ON);
-        } else {
-            logger.debug("LOCKSTATE is OFF");
-            updateState(CHANNEL_LOCKSTATE, OnOffType.OFF);
+        String desired = device.getDesiredState().get("locked");
+        String current = device.getCurrentState().get("locked");
+        if (desired == null || desired.equals(current)) {
+            if (current.equals("true")) {
+                logger.debug("LOCKSTATE is ON");
+                updateState(CHANNEL_LOCKSTATE, OnOffType.ON);
+            } else {
+                logger.debug("LOCKSTATE is OFF");
+                updateState(CHANNEL_LOCKSTATE, OnOffType.OFF);
+            }
         }
     }
 
