@@ -187,9 +187,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         super.initialize();
     }
 
-    @SuppressWarnings("null")
     private void makeOmnilinkConnection() {
-
         Retryer<Void> retryer = RetryerBuilder.<Void> newBuilder().retryIfExceptionOfType(IOException.class)
                 .withWaitStrategy(WaitStrategies.exponentialWait(100, 5, TimeUnit.MINUTES))
                 .withStopStrategy(StopStrategies.neverStop()).build();
