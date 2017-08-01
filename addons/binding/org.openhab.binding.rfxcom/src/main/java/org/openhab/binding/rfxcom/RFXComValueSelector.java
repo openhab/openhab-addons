@@ -38,6 +38,8 @@ public enum RFXComValueSelector {
     DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
     UV(RFXComBindingConstants.CHANNEL_UV, NumberItem.class),
     TEMPERATURE(RFXComBindingConstants.CHANNEL_TEMPERATURE, NumberItem.class),
+    FOOD_TEMPERATURE(RFXComBindingConstants.CHANNEL_FOOD_TEMPERATURE, NumberItem.class),
+    BBQ_TEMPERATURE(RFXComBindingConstants.CHANNEL_BBQ_TEMPERATURE, NumberItem.class),
     HUMIDITY(RFXComBindingConstants.CHANNEL_HUMIDITY, NumberItem.class),
     HUMIDITY_STATUS(RFXComBindingConstants.CHANNEL_HUMIDITY_STATUS, StringItem.class),
     BATTERY_LEVEL(RFXComBindingConstants.CHANNEL_BATTERY_LEVEL, NumberItem.class),

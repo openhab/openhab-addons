@@ -66,6 +66,8 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
     public static final String CHANNEL_UV = "uv";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_FOOD_TEMPERATURE = "foodTemperature";
+    public static final String CHANNEL_BBQ_TEMPERATURE = "bbqTemperature";
     public static final String CHANNEL_CHILL_TEMPERATURE = "chillTemperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_STATUS = "humidityStatus";
@@ -164,7 +166,7 @@ public class RFXComBindingConstants {
     public static final Map<PacketType, ThingTypeUID> PACKET_TYPE_THING_TYPE_UID_MAP = ImmutableMap
             .<PacketType, ThingTypeUID> builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
-            .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
+            .put(PacketType.BBQ, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)
             .put(PacketType.CAMERA1, RFXComBindingConstants.THING_TYPE_CAMERA1)
             .put(PacketType.CHIME, RFXComBindingConstants.THING_TYPE_CHIME)
