@@ -18,6 +18,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class AreaHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
 

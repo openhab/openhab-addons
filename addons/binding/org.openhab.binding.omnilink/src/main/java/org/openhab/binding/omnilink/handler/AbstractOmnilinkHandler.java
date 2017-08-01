@@ -6,6 +6,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
 
     public AbstractOmnilinkHandler(Thing thing) {

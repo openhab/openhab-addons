@@ -2,6 +2,11 @@ package org.openhab.binding.omnilink.handler;
 
 import com.digitaldan.jomnilinkII.MessageUtils;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public enum TemperatureFormat {
     CELSIUS(2) {
         @Override

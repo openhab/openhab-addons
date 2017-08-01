@@ -13,6 +13,12 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.google.common.collect.AbstractIterator;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ * @param <T>
+ */
 class ObjectPropertyRequest<T extends ObjectProperties> implements Iterable<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRequest.class);

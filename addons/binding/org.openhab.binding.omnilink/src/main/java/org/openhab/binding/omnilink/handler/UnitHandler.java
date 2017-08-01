@@ -4,6 +4,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public interface UnitHandler extends ThingHandler {
 
     public static final int UNIT_OFF = 0;

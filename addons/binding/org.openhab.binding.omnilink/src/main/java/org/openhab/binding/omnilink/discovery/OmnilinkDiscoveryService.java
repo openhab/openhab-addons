@@ -31,6 +31,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;

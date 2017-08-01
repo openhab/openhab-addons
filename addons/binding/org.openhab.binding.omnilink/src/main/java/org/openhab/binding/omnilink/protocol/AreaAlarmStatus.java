@@ -1,5 +1,10 @@
 package org.openhab.binding.omnilink.protocol;
 
+/**
+ *
+ * @author craigh
+ *
+ */
 public enum AreaAlarmStatus {
 
     OFF(0, "Off"),

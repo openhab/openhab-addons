@@ -21,6 +21,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
     private final static Map<Type, OmniLinkCmd> sCommandMappingMap = ImmutableMap.<Type, OmniLinkCmd> of(
@@ -84,7 +89,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
         State newState = PercentType.valueOf(Integer.toString(level));
 
-        logger.debug("handle Unit Status Change to: " + newState);
+        logger.debug("handle Unit Status Change to: {}", newState);
         updateState(OmnilinkBindingConstants.CHANNEL_UNIT_LEVEL, newState);
 
     }

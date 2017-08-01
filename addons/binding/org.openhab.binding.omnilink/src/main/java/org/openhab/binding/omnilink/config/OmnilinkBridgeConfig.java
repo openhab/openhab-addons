@@ -1,5 +1,10 @@
 package org.openhab.binding.omnilink.config;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class OmnilinkBridgeConfig {
 
     private String key1;
