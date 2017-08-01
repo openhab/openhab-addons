@@ -31,7 +31,7 @@ public class Response implements AvrResponse {
      */
     public enum ResponseType implements AvrResponse.RepsonseType {
         POWER_STATE("[0-2]", "PWR", "APR", "BPR"),
-        VOLUME_LEVEL("[0-9]{3}", "VOL", "ZV", "YV"),
+        VOLUME_LEVEL("[0-9]{2,3}", "VOL", "ZV", "YV"),
         MUTE_STATE("[0-1]", "MUT", "Z2MUT", "Z3MUT"),
         INPUT_SOURCE_CHANNEL("[0-9]{2}", "FN", "Z2F", "Z3F"),
         DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL");
