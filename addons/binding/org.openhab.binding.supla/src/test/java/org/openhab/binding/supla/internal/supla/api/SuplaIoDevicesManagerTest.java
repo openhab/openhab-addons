@@ -10,14 +10,12 @@ import org.openhab.binding.supla.SuplaTest;
 import org.openhab.binding.supla.internal.http.HttpExecutor;
 import org.openhab.binding.supla.internal.http.Request;
 import org.openhab.binding.supla.internal.http.Response;
+import org.openhab.binding.supla.internal.mappers.GsonMapper;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -50,6 +48,23 @@ public class SuplaIoDevicesManagerTest extends SuplaTest {
 
         // then
         assertThat(suplaIoDevices).isEqualTo(devices);
+    }
+
+    @Test
+    public void shouldReturnIoDeviceWhenHttpExecutorReturnsOneInstance() {
+
+        // given
+        SuplaIoDevicesManager manager = new SuplaIoDevicesManager(httpExecutor, new GsonMapper());
+
+        final int id = 100;
+        final String json = "[{\"id\":" + id + ", \"channels\": []}]";
+        given(httpExecutor.get(new Request("/iodevices/" + id))).willReturn(new Response(200, json));
+
+        // when
+        final Optional<SuplaIoDevice> suplaIoDevice = manager.obtainIoDevice(id);
+
+        // then
+        assertThat(suplaIoDevice).contains(new SuplaIoDevice(id, 0, false, null, null, null, null, null, null, 0, null));
     }
 
     private SuplaIoDevice randomSuplaIoDevice() {
