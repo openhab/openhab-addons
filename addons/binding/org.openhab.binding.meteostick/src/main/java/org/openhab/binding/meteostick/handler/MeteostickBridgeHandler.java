@@ -76,7 +76,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing MeteoStick Bridge handler.");
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         Configuration config = getThing().getConfiguration();
 
