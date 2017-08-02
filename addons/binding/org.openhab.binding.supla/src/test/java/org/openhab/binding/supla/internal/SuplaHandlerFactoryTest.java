@@ -4,6 +4,7 @@ package org.openhab.binding.supla.internal;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,5 +82,19 @@ public class SuplaHandlerFactoryTest {
                 eq(DiscoveryService.class.getName()),
                 any(SuplaDiscoveryService.class),
                 eq(new Hashtable<>()));
+    }
+
+    @Test
+    public void shouldReturnNullIfDontKnowThingType() {
+
+        // given
+        given(thing.getThingTypeUID()).willReturn(new ThingTypeUID("uuid:seg2"));
+
+        // when
+        final ThingHandler handler = factory.createHandler(thing);
+
+        // then
+        assertThat(handler).isNull();
+
     }
 }
