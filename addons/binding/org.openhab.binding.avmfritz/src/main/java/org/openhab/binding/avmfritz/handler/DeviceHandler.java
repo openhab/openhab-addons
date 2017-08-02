@@ -147,15 +147,8 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} for channel {}", channelUID.getIdWithoutGroup(), command);
-        FritzahaWebInterface fritzBox = null;
-        if (!getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
-            Bridge bridge = getBridge();
-            if (bridge != null && bridge.getHandler() instanceof BoxHandler) {
-                fritzBox = ((BoxHandler) bridge.getHandler()).getWebInterface();
-            }
-        } else {
-            fritzBox = getWebInterface();
-        }
+        final FritzahaWebInterface fritzBox = PL546E_STANDALONE_THING_TYPE.equals(getThing().getThingTypeUID())
+                ? getWebInterface() : ((BoxHandler) getBridge().getHandler()).getWebInterface();
         String ain = getThing().getConfiguration().get(THING_AIN).toString();
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_TEMP:
