@@ -128,6 +128,18 @@ public class OAuthApiHttpExecutorTest extends SuplaTest {
         verify(httpExecutor).patch(new Request("/api/path", ImmutableList.of(authorizationHeader(token))), body);
     }
 
+    @Test
+    public void shouldInvokeCloseMethodOnHttpExecutor() {
+
+        // given
+
+        // when
+        oAuthApiHttpExecutor.close();
+
+        // then
+        verify(httpExecutor).close();
+    }
+
     private SuplaToken randomToken() {
         return new SuplaToken("acc", 100, "token type", "sc", "re");
     }
