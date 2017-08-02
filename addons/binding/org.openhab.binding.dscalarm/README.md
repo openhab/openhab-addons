@@ -71,6 +71,7 @@ Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ]
 ```
 
 ## Channels
+
 DSC Alarm things support a variety of channels as seen below in the following table:
 
 <table>
