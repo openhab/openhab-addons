@@ -125,7 +125,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
 
     @Override
     public FritzahaWebInterface getWebInterface() {
-        return this.connection;
+        return connection;
     }
 
     @Override
@@ -259,15 +259,11 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * Start the polling.
      */
     private synchronized void onUpdate() {
-        if (this.getThing() != null) {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("start polling job at intervall {}", refreshInterval);
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
-            } else {
-                logger.debug("pollingJob active");
-            }
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            logger.debug("start polling job at intervall {}", refreshInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
         } else {
-            logger.warn("bridge is null");
+            logger.debug("pollingJob active");
         }
     }
 
