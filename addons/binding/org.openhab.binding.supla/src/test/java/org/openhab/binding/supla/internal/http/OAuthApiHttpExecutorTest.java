@@ -92,6 +92,42 @@ public class OAuthApiHttpExecutorTest extends SuplaTest {
         verify(httpExecutor).post(new Request("/api/path", ImmutableList.of(authorizationHeader(token))), body);
     }
 
+    @Test
+    public void shouldPassPatchRequestToHttpExecutor() {
+
+        // given
+        final Header h1 = new Header("k", "v");
+        final Header h2 = new Header("k1", "v1");
+        final Request request = new Request("/path", ImmutableList.of(h1, h2));
+
+        final Body body = randomBody();
+
+        final SuplaToken token = randomToken();
+        given(tokenManager.obtainToken()).willReturn(token);
+
+        // when
+        oAuthApiHttpExecutor.patch(request, body);
+
+        // then
+        verify(httpExecutor).patch(new Request("/api/path", ImmutableList.of(h1, h2, authorizationHeader(token))), body);
+    }
+
+    @Test
+    public void shouldPassPatchRequestToHttpExecutorWithoutHeaders() {
+
+        // given
+        final Request request = new Request("/path");
+        final Body body = randomBody();
+        final SuplaToken token = randomToken();
+        given(tokenManager.obtainToken()).willReturn(token);
+
+        // when
+        oAuthApiHttpExecutor.patch(request, body);
+
+        // then
+        verify(httpExecutor).patch(new Request("/api/path", ImmutableList.of(authorizationHeader(token))), body);
+    }
+
     private SuplaToken randomToken() {
         return new SuplaToken("acc", 100, "token type", "sc", "re");
     }
