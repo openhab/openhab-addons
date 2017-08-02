@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
 import org.openhab.binding.supla.handler.SuplaIoDeviceHandler;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,5 +61,12 @@ public final class SuplaHandlerFactory extends BaseThingHandlerFactory {
 
         SuplaDiscoveryService discoveryService = new SuplaDiscoveryService(bridgeHandler);
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
+    }
+
+    /**
+     * This method is only for tests!
+     */
+    void setBundleContext(BundleContext context) {
+        this.bundleContext = context;
     }
 }
