@@ -28,4 +28,8 @@
 
 * Map on/off to soft on/off (i.e. brightness changes) if transition time is non-zero as normal on/off commands do not allow a transition time.
 
-* Is it possible to multiple outstanding requests if they are for different devices? If we have multiple connections?
+* Is it possible to have multiple outstanding requests if they are for different devices? If we have multiple connections?
+
+* Address the conflict issue noted in LightifyDeviceState by adding a config option to disable doing state updates for colour and temperature (and possibly luminance since it is tied to colour?). This means the item state is definitive and devices are assumed to just go along with it as best they can. It does, however, prevent tracking of changes made by external agents such as the Lightify app.
+  * When a thing goes online we need to look for linked items and command the device into a matching state.
+  * Q: how will we know whether we should be in colour or white mode?

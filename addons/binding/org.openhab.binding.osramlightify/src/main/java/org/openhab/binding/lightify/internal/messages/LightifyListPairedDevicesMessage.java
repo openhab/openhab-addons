@@ -95,7 +95,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             Thing thing = bridgeHandler.getThingByUID(thingUID);
 
             String firmwareVersion = decodeHex(data, 4);
-            data.get(); // reachability
+            state.reachable = ((int) data.get() & 0xff);
             data.getShort(); // groupNumber
             state.power = ((int) data.get() & 0xff);
             state.luminance = ((int) data.get() & 0xff);
@@ -105,8 +105,10 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             state.b = ((int) data.get() & 0xff);
             state.a = ((int) data.get() & 0xff);
             String deviceName = decodeName(data);
-            data.getInt(); // unknown1 - for paired but offline devices this is 0x07DD or 2013. For online it is 0.
-            data.getInt(); // unknown2
+            state.timeSinceSeen = data.getInt();
+            state.joining = data.getInt();
+
+            logger.trace("{}: {}", deviceAddress, state);
 
             if (thing != null && state.received(bridgeHandler, thing, deviceAddress)) {
                 changes = true;

@@ -36,6 +36,7 @@ public final class LightifyDeviceState {
     private static final Logger logger = LoggerFactory.getLogger(LightifyDeviceState.class);
 
     /* The state as given in a {@link LightifyListPairedDevicesMessage} response. */
+    public int reachable;
     public int power;
     public int luminance;
     public int temperature;
@@ -43,6 +44,8 @@ public final class LightifyDeviceState {
     public int g;
     public int b;
     public int a;
+    public int timeSinceSeen; // in units of 5mins
+    public int joining;
 
     public synchronized boolean received(LightifyBridgeHandler bridgeHandler, Thing thing, String deviceAddress) {
         LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
@@ -59,6 +62,7 @@ public final class LightifyDeviceState {
         int aDelta = a - state.a;
 
         // Set the new values.
+        state.reachable = reachable;
         state.power = power;
         state.luminance = luminance;
         state.temperature = temperature;
@@ -66,15 +70,39 @@ public final class LightifyDeviceState {
         state.g = g;
         state.b = b;
         state.a = a;
+        state.timeSinceSeen = timeSinceSeen;
+        state.joining = joining;
 
-        if (thing.getStatus() == ThingStatus.OFFLINE) {
-            fullRefresh(bridgeHandler, thingHandler);
-            thingHandler.setOnline();
+        ThingStatus thingStatus = thing.getStatus();
 
-        } else if (powerDelta != 0 || luminanceDelta != 0 || temperatureDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
+        if (state.reachable == 2) {
+            if (thingStatus != ThingStatus.ONLINE) {
+                logger.debug("{}: ONLINE", deviceAddress);
+                thingHandler.setOnline();
+                powerDelta = 1; // causes a full refresh below
+            }
+        } else if (state.timeSinceSeen != 0) {
+            if (thingStatus != ThingStatus.OFFLINE) {
+                logger.debug("{}: OFFLINE", deviceAddress);
+                thingHandler.setStatus(ThingStatus.OFFLINE);
+            }
+        }
+
+        if (thingStatus == ThingStatus.ONLINE
+        && (powerDelta != 0 || luminanceDelta != 0 || temperatureDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0)) {
             logger.debug("{}: {}", deviceAddress, state);
 
             // Let the thing's channels know about the new state.
+
+            // FIXME: this is problematical. The ZLL spec says that an implementation (i.e. device)
+            // responds to a colour change command by setting the closest colour supported by the
+            // hardware. If there are multiple things linked to the same item they may not agree
+            // on what colour has been set and the item itself may behave somewhat erratically.
+            // On the other hand, if we do not do this then we are unable to track colour changes
+            // made to devices via external means such as by the Lightify app.
+            // Similar problems exist with temperature. Just because one device can't do a given
+            // temperature and clips to its limit does not mean other linked devices are clipped.
+            // Nor can a temperature% be assumed to represent the same thing if the range varies.
 
             if (powerDelta > 0) {
                 fullRefresh(bridgeHandler, thingHandler);
@@ -132,12 +160,15 @@ public final class LightifyDeviceState {
     }
 
     public String toString() {
-        return " power=" + (power != 0 ? "true" : "false")
+        return "reachable=" + reachable
+            + " power=" + (power != 0 ? "true" : "false")
             + " luminance=" + (luminance & 0xff)
             + " temperature=" + (temperature & 0xffff)
             + " r=" + r
             + " g=" + g
             + " b=" + b
-            + " a=" + a;
+            + " a=" + a
+            + " time since seen=" + timeSinceSeen * 5 + "mins"
+            + " joining=" + joining;
     }
 }

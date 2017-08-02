@@ -72,9 +72,9 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
     public void initialize() {
         thingUpdated(getThing());
 
-        // N.B. We do not go online here. We go online when we are seen in a
+        // N.B. We do not go online or offline here. We do that when we are seen in a
         // list paired/group response for a bridge.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -177,6 +177,14 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // If the thing is not online then there is no point passing the command on
+        // to the gateway. At best the gateway will just discard it, at worst the
+        // gateway's send queue will be clogged until the command times out (that
+        // could be as much as 7.680s on the ZigBee side as per the ZLL spec).
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
         String deviceAddress = getThing().getProperties().get(PROPERTY_IEEE_ADDRESS);
 
         if (command instanceof RefreshType) {
