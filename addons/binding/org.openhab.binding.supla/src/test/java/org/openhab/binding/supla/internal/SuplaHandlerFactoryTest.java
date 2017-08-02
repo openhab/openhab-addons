@@ -6,6 +6,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,6 +37,13 @@ public class SuplaHandlerFactoryTest {
     @Mock private Thing thing;
     @Mock private Bridge bridge;
 
+    @Before
+    public void init() {
+        factory.setBundleContext(bundleContext);
+        given(bundleContext.getBundle()).willReturn(bundle);
+        given(bundle.getBundleId()).willReturn(1L);
+    }
+
     @Test
     public void shouldCreateHandlerForSuplaIoDevice() {
 
@@ -54,9 +62,6 @@ public class SuplaHandlerFactoryTest {
 
         // given
         given(bridge.getThingTypeUID()).willReturn(BRIDGE_THING_TYPE);
-        factory.setBundleContext(bundleContext);
-        given(bundleContext.getBundle()).willReturn(bundle);
-        given(bundle.getBundleId()).willReturn(1L);
 
         // when
         final ThingHandler handler = factory.createHandler(bridge);
@@ -70,9 +75,6 @@ public class SuplaHandlerFactoryTest {
 
         // given
         given(bridge.getThingTypeUID()).willReturn(BRIDGE_THING_TYPE);
-        factory.setBundleContext(bundleContext);
-        given(bundleContext.getBundle()).willReturn(bundle);
-        given(bundle.getBundleId()).willReturn(1L);
 
         // when
         factory.createHandler(bridge);
