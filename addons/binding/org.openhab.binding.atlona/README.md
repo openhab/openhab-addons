@@ -176,6 +176,7 @@ As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I've 
 - a bug in the firmware will sometimes cause memory presets to disappear after a reboot
 
 As of firmware 1.6.8 (rev 14),
+
 - The "clearX" command has been fixed and works now.
 - The number of presets have increased to 10
 - If telnet mode is enabled, you must use the admin username/password to issue a matrixreset 
