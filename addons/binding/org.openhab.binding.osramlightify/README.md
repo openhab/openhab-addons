@@ -32,7 +32,7 @@ This binding supports OSRAM Lightify gateways along with lights and power switch
 
 Both of these show a probed white range of 1801K - 6622K. It isn't clear whether we see the actual ZigBee limits or some gateway concept of what lights should be capable of. No attempt has been made to verify the range via external measurement.
 
-The PAR16s exhibit somewhat choppy colour transitions and, in some cases, significant steps. This is probably due to having fewer LEDs internally and thus struggling to handle mixes with lower component levels relative to the other(s). To be fair the quoted Ra is 80 so no one is claiming high accuracy and it does all fit into a standard size PAR16/GU10 package. The fully saturated primary and secondary colours are satisfyingly bold.
+The PAR16s exhibit somewhat choppy colour transitions and, in some cases, significant steps. This is probably due to having fewer LEDs internally and thus struggling to handle mixes with lower component levels relative to the other(s). To be fair the quoted Ra is 80 so no one is claiming high accuracy and it does all fit into a standard size PAR16/GU10 package. The fully saturated primary and secondary colours are satisfyingly bold, with the exception of yellow which seems pretty much unobtainable.
 
 
 ## Features
