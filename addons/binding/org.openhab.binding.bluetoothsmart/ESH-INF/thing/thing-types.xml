@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetoothsmart"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="adapter">
+        <label>Bluetooth Adapter</label>
+        <description>Bluetooth Adapter</description>
+        <channels>
+            <channel id="ready" typeId="ready"/>
+            <channel id="powered" typeId="powered"/>
+            <channel id="powered-control" typeId="powered-control"/>
+            <channel id="discovering" typeId="discovering"/>
+            <channel id="discovering-control" typeId="discovering-control"/>
+            <channel id="last-updated" typeId="last-updated"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="generic">
+        <label>Generic Bluetooth device</label>
+        <description>Generic Bluetooth device</description>
+        <channels>
+            <channel id="ready" typeId="ready"/>
+            <channel id="online" typeId="online"/>
+            <channel id="online-timeout" typeId="online-timeout"/>
+            <channel id="blocked" typeId="blocked"/>
+            <channel id="blocked-control" typeId="blocked-control"/>
+            <channel id="rssi" typeId="rssi"/>
+            <channel id="last-updated" typeId="last-updated"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="ble">
+        <label>BLE enabled Bluetooth device</label>
+        <description>BLE enabled Bluetooth device</description>
+
+        <channels>
+            <channel id="ready" typeId="ready"/>
+            <channel id="online" typeId="online"/>
+            <channel id="online-timeout" typeId="online-timeout"/>
+            <channel id="blocked" typeId="blocked"/>
+            <channel id="blocked-control" typeId="blocked-control"/>
+            <channel id="connected" typeId="connected"/>
+            <channel id="connection-control" typeId="connection-control"/>
+            <channel id="rssi" typeId="rssi"/>
+            <channel id="last-updated" typeId="last-updated"/>
+        </channels>
+
+        <config-description>
+        </config-description>
+
+    </thing-type>
+
+    <channel-type id="ready">
+        <item-type>Switch</item-type>
+        <label>Ready</label>
+        <description>Indicates whether bluetooth adapter/device is ready for interaction</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="connected">
+        <item-type>Switch</item-type>
+        <label>Connected</label>
+        <description>Indicates whether device is connected</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="connection-control">
+        <item-type>Switch</item-type>
+        <label>Connection control</label>
+        <description>Controls whether device is connected</description>
+    </channel-type>
+
+    <channel-type id="online">
+        <item-type>Switch</item-type>
+        <label>Online</label>
+        <description>Indicates whether device is in range</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="rssi">
+        <item-type>Number</item-type>
+        <label>RSSI</label>
+        <description>Received signal strength indicator</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="last-updated">
+        <item-type>DateTime</item-type>
+        <label>Last updated</label>
+        <description>Date and time of the last activity</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="powered">
+        <item-type>Switch</item-type>
+        <label>Powered</label>
+        <description>Indicates whether bluetooth adapter is powered</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="powered-control">
+        <item-type>Switch</item-type>
+        <label>Powered control</label>
+        <description>Controls whether bluetooth adapter is powered</description>
+    </channel-type>
+
+    <channel-type id="discovering">
+        <item-type>Switch</item-type>
+        <label>Discovering</label>
+        <description>Indicates whether bluetooth adapter is in discovering state</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="discovering-control">
+        <item-type>Switch</item-type>
+        <label>Discovering control</label>
+        <description>Controls whether bluetooth adapter is in discovering state</description>
+    </channel-type>
+
+    <channel-type id="blocked">
+        <item-type>Switch</item-type>
+        <label>Blocked</label>
+        <description>Indicates whether device is blocked</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="blocked-control">
+        <item-type>Switch</item-type>
+        <label>Blocked control</label>
+        <description>Controls whether device is blocked</description>
+    </channel-type>
+
+    <channel-type id="online-timeout">
+        <item-type>Number</item-type>
+        <label>Online timeout</label>
+        <description>Bluetooth devices not showing any activity are considered to be offline after exceeding this timeout (seconds)</description>
+    </channel-type>
+
+</thing:thing-descriptions>

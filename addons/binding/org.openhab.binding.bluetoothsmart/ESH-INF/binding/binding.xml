@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="bluetoothsmart"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>BluetoothSmart Binding</name>
+    <description><![CDATA[
+        A binding for Bluetooth devices.<br/>
+        Supports the following features:<br/>
+        <ul>
+            <li>Automatic discovery of Bluetooth adapters and devices</li>
+            <li>Managing Bluetooth adapters (multiple adapters supported)</li>
+            <li>Monitoring availability of Bluetooth devices (whether they are in range of bluetooth adapters)</li>
+            <li>Comprehensive support for BLE enabled (Bluetooth Smart) Bluetooth devices. Mapping Bluetooth GATT services/characteristics/fields into openhab channels.</li>
+            <li>Robustness in maintaining connectivity (automatic connection recovery)</li>
+        </ul>
+            ]]>
+    </description>
+    <author>Vlad Kolotov</author>
+
+    <config-description>
+        <parameter name="gatt_extension_folder" type="text">
+            <label>GATT services and characteristics extension folder</label>
+            <description><![CDATA[
+                A folder on the system disk which contains your custom definitions for GATT services and characteristics for automatic recognition of GATT characteristic fields.<br/>
+                See more: https://github.com/sputnikdev/bluetooth-gatt-parser<br/>
+                Example: /home/pi/.bluetooth_smart]]></description>
+            <required>false</required>
+        </parameter>
+        <parameter name="update_rate" type="integer" min="1" max="60">
+            <label>Update rate of bluetooth devices</label>
+            <description>How often Bluetooth devices are checked/updated (seconds)?</description>
+            <default>10</default>
+            <required>false</required>
+        </parameter>
+        <parameter name="initial_online_timeout" type="integer" min="0">
+            <label>Initial online timeout</label>
+            <description>Bluetooth devices not showing any activity are considered to be offline after exceeding this timeout (seconds). Can be customized for each Bluetooth device.</description>
+            <default>35</default>
+        </parameter>
+        <parameter name="initial_connection_control" type="boolean">
+            <label>Initial connection control</label>
+            <description>If enabled, connection is kept on for newly added Bluetooth devices, otherwise off. Can be customized for each Bluetooth device.</description>
+            <default>true</default>
+        </parameter>
+    </config-description>
+
+</binding:binding>
