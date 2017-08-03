@@ -107,7 +107,7 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        byte[] data = new byte[9];
+        byte[] data = new byte[11];
 
         data[0] = 0x0A;
         data[1] = RFXComBaseMessage.PacketType.BBQ.toByte();
@@ -124,10 +124,10 @@ public class RFXComBBQTemperatureMessage extends RFXComBaseMessage {
         }
 
         temp = (short) Math.abs(bbqTemperature);
-        data[6] = (byte) ((temp >> 8) & 0x7F);
-        data[7] = (byte) (temp & 0xFF);
+        data[8] = (byte) ((temp >> 8) & 0x7F);
+        data[9] = (byte) (temp & 0xFF);
         if (bbqTemperature < 0) {
-            data[6] |= 0x80;
+            data[8] |= 0x80;
         }
 
         data[10] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
