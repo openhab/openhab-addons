@@ -77,7 +77,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         executionJob = scheduler.scheduleWithFixedDelay(() -> {
             updateSynopChannels();
         }, 1, configuration.refreshInterval, TimeUnit.MINUTES);
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
     }
 

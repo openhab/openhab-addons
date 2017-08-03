@@ -58,7 +58,7 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
         buildMeasurableChannelList();
         configuration = getConfigAs(configurationClass);
 
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void buildMeasurableChannelList() {
