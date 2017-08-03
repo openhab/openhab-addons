@@ -13,10 +13,10 @@ mvn -s ../archetype-settings.xml archetype:generate -N \
   -DarchetypeVersion=0.9.0-SNAPSHOT \
   -DgroupId=org.openhab.binding \
   -DartifactId=org.openhab.binding.$id.test \
-  -Dpackage=org.openhab.binding.$id.test \
+  -Dpackage=org.openhab.binding.$id \
   -Dversion=2.2.0-SNAPSHOT \
-  -DbindingId=$id.test \
-  -DbindingIdCamelCase=$camelcaseId.test \
+  -DbindingId=$id \
+  -DbindingIdCamelCase=$camelcaseId \
   -DvendorName=openHAB \
   -Dnamespace=org.openhab
 
