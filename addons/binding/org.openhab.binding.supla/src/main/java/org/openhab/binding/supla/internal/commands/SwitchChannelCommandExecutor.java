@@ -44,11 +44,13 @@ class SwitchChannelCommandExecutor implements CommandExecutor {
             if(switchCommand == ON) {
                 final boolean turnOn = channelManager.turnOn(suplaChannel);
                 if(!turnOn) {
+                    logger.debug("Turning ON channel {} was not successful!", suplaChannel);
                     updateState.accept(OFF);
                 }
             } else {
                 final boolean turnOff = channelManager.turnOff(suplaChannel);
                 if(!turnOff) {
+                    logger.debug("Turning OFF channel {} was not successful!", suplaChannel);
                     updateState.accept(ON);
                 }
             }
