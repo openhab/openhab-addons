@@ -50,13 +50,11 @@ public final class ChannelBuilderImpl implements ChannelBuilder {
     }
 
     private static String findChannelId(SuplaChannel suplaChannel) {
-        final String channelId;
         if (LIGHT_CHANNEL_FUNCTION.equals(suplaChannel.getFunction().getName())) {
-            channelId = LIGHT_CHANNEL_ID;
+            return LIGHT_CHANNEL_ID;
         } else {
-            channelId = SWITCH_CHANNEL_ID;
+            return SWITCH_CHANNEL_ID;
         }
-        return channelId;
     }
 
     private static class Entry implements Map.Entry<Channel, SuplaChannel> {
