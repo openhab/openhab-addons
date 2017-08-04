@@ -1,5 +1,7 @@
 package org.openhab.binding.supla.internal.commands;
 
+import com.google.common.collect.Lists;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.junit.Before;
@@ -11,6 +13,7 @@ import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -156,6 +159,25 @@ public class SwitchChannelCommandExecutorTest {
 
         // when
         executor.execute(updateState, command);
+
+        // then
+        verifyNoMoreInteractions(channelManager);
+        verifyNoMoreInteractions(updateState);
+    }
+
+    @Test
+    public void shouldDoNothingOnUnKnownCommand() {
+
+        // given
+        Consumer<State> updateState = mock(Consumer.class);
+        List<Command> unknownCommands = Lists.newArrayList(new DateTimeType(), new StringListType(),
+                StopMoveType.MOVE, StopMoveType.STOP, RewindFastforwardType.REWIND, RewindFastforwardType.FASTFORWARD,
+                new PointType(), PlayPauseType.PLAY, PlayPauseType.PAUSE, PercentType.ZERO, PercentType.HUNDRED,
+                OpenClosedType.OPEN, OpenClosedType.CLOSED, NextPreviousType.NEXT, NextPreviousType.PREVIOUS,
+                IncreaseDecreaseType.INCREASE, IncreaseDecreaseType.DECREASE);
+
+        // when
+        unknownCommands.forEach(command -> executor.execute(updateState, command));
 
         // then
         verifyNoMoreInteractions(channelManager);
