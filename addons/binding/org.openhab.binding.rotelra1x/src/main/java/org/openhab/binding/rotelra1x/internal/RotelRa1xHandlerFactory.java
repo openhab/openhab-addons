@@ -27,7 +27,7 @@ import org.openhab.binding.rotelra1x.handler.RotelRa1xHandler;
  */
 public class RotelRa1xHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

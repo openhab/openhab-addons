@@ -42,7 +42,7 @@ import gnu.io.UnsupportedCommOperationException;
  */
 public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
-    private final static int BAUD = 115200;
+    private static final int BAUD = 115200;
     private int maximumVolume = 0;
     private RXTXPort serialPort;
 

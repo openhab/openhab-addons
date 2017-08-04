@@ -20,6 +20,6 @@ public class RotelRa1xBindingConstants {
 
     public static final String BINDING_ID = "rotelra1x";
 
-    public final static ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amp");
+    public static final ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amp");
 
 }
