@@ -41,7 +41,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID
  */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("UnnecessaryLocalVariable")
-public class SuplaIoDeviceHandlerTest extends SuplaTest {
+public class SuplaIoDeviceHandlerInitializeTest extends SuplaTest {
     private final long ioDeviceId = 100L;
 
     @InjectMocks
