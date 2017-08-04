@@ -88,4 +88,34 @@ public class SwitchChannelCommandExecutorTest {
         // then
         verify(updateState).accept(OFF);
     }
+
+    @Test
+    public void shouldHandleOnCommand() {
+
+        // given
+        Consumer<State> updateState = state -> {
+        };
+        Command command = ON;
+
+        // when
+        executor.execute(updateState, command);
+
+        // then
+        verify(channelManager).turnOn(channel);
+    }
+
+    @Test
+    public void shouldHandleOffCommand() {
+
+        // given
+        Consumer<State> updateState = state -> {
+        };
+        Command command = OFF;
+
+        // when
+        executor.execute(updateState, command);
+
+        // then
+        verify(channelManager).turnOff(channel);
+    }
 }
