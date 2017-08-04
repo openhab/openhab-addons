@@ -149,5 +149,4 @@ public class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             }
         }
     }
-
 }
