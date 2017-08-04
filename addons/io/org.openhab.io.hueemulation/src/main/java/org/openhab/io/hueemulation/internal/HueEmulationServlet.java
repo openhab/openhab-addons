@@ -19,11 +19,13 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -65,7 +67,8 @@ import com.google.gson.stream.JsonWriter;
 /**
  * Emulates A Hue compatible HTTP API server
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial Contribution
+ * @author Kai Kreuzer - Improved resource handling to avoid leaks
  *
  */
 @SuppressWarnings("serial")
@@ -151,8 +154,7 @@ public class HueEmulationServlet extends HttpServlet {
         String ip = obj != null ? (String) obj : null;
 
         obj = config.get(CONFIG_DISCOVERY_HTTP_PORT);
-        webPort = obj == null ? Integer.parseInt(System.getProperty("org.osgi.service.http.port"))
-                : Integer.parseInt((String) obj);
+        webPort = obj == null ? Integer.getInteger("org.osgi.service.http.port") : Integer.parseInt((String) obj);
         try {
             disco = new HueEmulationUpnpServer(PATH + "/description.xml", getUDN(), webPort, ip);
             disco.start();
@@ -222,101 +224,100 @@ public class HueEmulationServlet extends HttpServlet {
         // everything is JSON from here
         resp.setContentType(APPLICATION_JSON);
 
-        // request for API key
-        if (path.equals(PATH) || path.equals(PATH + "/")) {
-            if (pairingEnabled) {
-                apiConfig(req, resp);
-            } else {
-                apiServerError(req, resp, HueErrorResponse.UNAUTHORIZED,
-                        "Not Authorized. Pair button must be pressed to add users.");
-            }
-            return;
-        }
-
-        // All other API requests
-        String[] pathParts = path.replace("/api/", "").split("/");
-
-        if (pathParts.length > 0) {
-            String userName = pathParts[0];
-
-            /**
-             * Some devices (Amazon Echo) seem to rely on the bridge to add an unknown user if pairing is on
-             * instead of using the configApi method
-             */
-            if (pairingEnabled) {
-                addUser(userName);
-            } else if (!authorizeUser(userName)) {
-                apiServerError(req, resp, HueErrorResponse.UNAUTHORIZED, "Not Authorized");
+        try (PrintWriter out = resp.getWriter()) {
+            // request for API key
+            if (path.equals(PATH) || path.equals(PATH + "/")) {
+                if (pairingEnabled) {
+                    apiConfig(req, out);
+                } else {
+                    apiServerError(req, out, HueErrorResponse.UNAUTHORIZED,
+                            "Not Authorized. Pair button must be pressed to add users.");
+                }
                 return;
             }
 
-            if (pathParts.length == 1) {
+            // All other API requests
+            String[] pathParts = path.replace("/api/", "").split("/");
+
+            if (pathParts.length > 0) {
+                String userName = pathParts[0];
+
                 /**
-                 * /api/{username}
+                 * Some devices (Amazon Echo) seem to rely on the bridge to add an unknown user if pairing is on
+                 * instead of using the configApi method
                  */
-                apiDataStore(req, resp);
-            } else {
-                String function = pathParts[1];
-                if ("lights".equals(function)) {
-                    switch (pathParts.length) {
-                        case 2:
-                            /**
-                             * /api/{username}/lights
-                             */
-                            apiLights(req, resp);
-                            break;
-                        case 3:
-                            /**
-                             * /api/{username}/lights/{id}
-                             */
-                            apiLight(pathParts[2], req, resp);
-                            break;
-                        case 4:
-                            /**
-                             * /api/{username}/lights/{id}/state
-                             */
-                            apiState(pathParts[2], req, resp);
-                            break;
-                        default:
-                            break;
-                    }
-                } else if ("groups".equals(function)) {
-                    switch (pathParts.length) {
-                        case 2:
-                            /**
-                             * /api/{username}/group
-                             */
-                            emptyResponse(req, resp);
-                            break;
-                        case 3:
-                            /**
-                             * /api/{username}/group/{id}
-                             */
-                            if ("0".equals(pathParts[2])) {
-                                apiGroupZero(req, resp);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                if (pairingEnabled) {
+                    addUser(userName);
+                } else if (!authorizeUser(userName)) {
+                    apiServerError(req, out, HueErrorResponse.UNAUTHORIZED, "Not Authorized");
+                    return;
+                }
+
+                if (pathParts.length == 1) {
+                    /**
+                     * /api/{username}
+                     */
+                    apiDataStore(req, resp);
                 } else {
-                    apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "Hue resource not available");
+                    String function = pathParts[1];
+                    if ("lights".equals(function)) {
+                        switch (pathParts.length) {
+                            case 2:
+                                /**
+                                 * /api/{username}/lights
+                                 */
+                                apiLights(req, out);
+                                break;
+                            case 3:
+                                /**
+                                 * /api/{username}/lights/{id}
+                                 */
+                                apiLight(pathParts[2], req, out);
+                                break;
+                            case 4:
+                                /**
+                                 * /api/{username}/lights/{id}/state
+                                 */
+                                apiState(pathParts[2], req, out);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else if ("groups".equals(function)) {
+                        switch (pathParts.length) {
+                            case 2:
+                                /**
+                                 * /api/{username}/group
+                                 */
+                                emptyResponse(req, out);
+                                break;
+                            case 3:
+                                /**
+                                 * /api/{username}/group/{id}
+                                 */
+                                if ("0".equals(pathParts[2])) {
+                                    apiGroupZero(req, out);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "Hue resource not available");
+                    }
                 }
             }
+        } catch (IOException e) {
+
         }
     }
 
     /**
      * Hue API call to set the state of a light
-     *
-     * @param id
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    private void apiState(String id, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void apiState(String id, HttpServletRequest req, PrintWriter out) throws IOException {
         if (!req.getMethod().equals(METHOD_PUT)) {
-            apiServerError(req, resp, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only PUT allowed for this resource");
+            apiServerError(req, out, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only PUT allowed for this resource");
             return;
         }
         try {
@@ -350,81 +351,54 @@ public class HueEmulationServlet extends HttpServlet {
             if (command != null) {
                 logger.debug("sending {} to {}", command, item.getName());
                 eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
-                PrintWriter out = resp.getWriter();
                 out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
-                out.close();
             } else {
                 logger.error("Item {} does not accept Decimal, ON/OFF or String types", item.getName());
-                apiServerError(req, resp, HueErrorResponse.INTERNAL_ERROR,
+                apiServerError(req, out, HueErrorResponse.INTERNAL_ERROR,
                         "The Hue device does not respond to that command");
             }
         } catch (ItemNotFoundException e) {
             logger.debug("Item not found: {}", id);
-            apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "The Hue device could not be found");
+            apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "The Hue device could not be found");
         }
     }
 
     /**
      * Hue API call to get the state of a single light
-     *
-     * @param id
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    private void apiLight(String id, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            HueDevice device = getHueDevices().get(new Integer(id));
-            if (device == null) {
-                throw new Exception("Could not find light for id " + id);
-            }
-            PrintWriter out = resp.getWriter();
+    private void apiLight(String id, HttpServletRequest req, PrintWriter out) throws IOException {
+        HueDevice device = getHueDevices().get(new Integer(id));
+
+        if (device == null) {
+            logger.error("\"Could not find light for id {}. ", id);
+            apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "Light " + id + " does not exist.");
+            return;
+        } else {
             out.write(gson.toJson(device));
-            out.close();
-        } catch (Exception e) {
-            logger.error("error getting light: ", e);
-            apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, e.getMessage());
         }
     }
 
     /**
      * Hue API call to get a listing of all lights
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    public void apiLights(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter out = resp.getWriter();
-        // out.write(gson.toJson(getHueDeviceNames()));
+    public void apiLights(HttpServletRequest req, PrintWriter out) throws IOException {
         out.write(gson.toJson(getHueDevices()));
-        out.close();
     }
 
     /**
      * Hue API call to get a listing of Group 0
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    public void apiGroupZero(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter out = resp.getWriter();
+    public void apiGroupZero(HttpServletRequest req, PrintWriter out) throws IOException {
         List<String> lights = new LinkedList<String>();
         for (Integer key : deviceMap.keySet()) {
             lights.add(key.toString());
         }
         HueState action = new HueState();
         out.write(gson.toJson(new HueGroup("Group 0", lights.toArray(new String[0]), action)));
-        out.close();
     }
 
     /**
      * HUE API call to get the Data Store of the bridge (only lights supported for now)
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
      */
     public void apiDataStore(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
@@ -435,17 +409,12 @@ public class HueEmulationServlet extends HttpServlet {
 
     /**
      * Hue API call to configure a user
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    public void apiConfig(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void apiConfig(HttpServletRequest req, PrintWriter out) throws IOException {
         if (!req.getMethod().equals(METHOD_POST)) {
-            apiServerError(req, resp, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only POST allowed for this resource");
+            apiServerError(req, out, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only POST allowed for this resource");
             return;
         }
-        PrintWriter out = resp.getWriter();
 
         HueCreateUser user = gson.fromJson(req.getReader(), HueCreateUser.class);
         logger.debug("Create user: {}", user.devicetype);
@@ -460,32 +429,19 @@ public class HueEmulationServlet extends HttpServlet {
 
     /**
      * Hue API error response
-     *
-     * @param req
-     * @param resp
-     * @param error
-     * @param description
-     * @throws IOException
      */
-    public void apiServerError(HttpServletRequest req, HttpServletResponse resp, int error, String description)
+    public void apiServerError(HttpServletRequest req, PrintWriter out, int error, String description)
             throws IOException {
         logger.debug("apiServerError {} {}", error, description);
-        PrintWriter out = resp.getWriter();
         HueErrorResponse e = new HueErrorResponse(error, req.getRequestURI(), description);
         out.write(gson.toJson(e));
     }
 
     /**
      * Returns a empty ("{}") JSON response
-     *
-     * @param req
-     * @param resp
-     * @throws IOException
      */
-    public void emptyResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter out = resp.getWriter();
+    public void emptyResponse(HttpServletRequest req, PrintWriter out) throws IOException {
         out.write("{}");
-        out.close();
     }
 
     /**
@@ -506,19 +462,15 @@ public class HueEmulationServlet extends HttpServlet {
 
         String formattedXML = String.format(xmlDoc, address.getHostAddress(), webPort, getUDN());
         resp.setContentType(APPLICATION_XML);
-        PrintWriter out = resp.getWriter();
-        out.write(formattedXML);
-        out.close();
+        try (PrintWriter out = resp.getWriter()) {
+            out.write(formattedXML);
+        }
     }
 
     /**
      * Converts an Item to a HueDevice
-     *
-     * @param item
-     * @return
-     *         HueDevice
      */
-    private HueDevice itemToDevice(Item item) {
+    private HueDevice itemToDevice(Item item, Integer key) {
         State itemState = item.getState();
         HueState hueState;
         if (itemState instanceof HSBType) {
@@ -534,14 +486,12 @@ public class HueEmulationServlet extends HttpServlet {
             hueState = new HueState((short) 0);
         }
 
-        HueDevice d = new HueDevice(hueState, item.getLabel(), item.getName());
+        HueDevice d = new HueDevice(hueState, item.getLabel(), key);
         return d;
     }
 
     /**
      * Gets and syncs all items tagged for voice.
-     *
-     * @return
      */
     private synchronized TreeMap<Integer, HueDevice> getHueDevices() {
         TreeMap<Integer, HueDevice> returnMap = new TreeMap<Integer, HueDevice>();
@@ -559,8 +509,7 @@ public class HueEmulationServlet extends HttpServlet {
                         // hue devices are assigned a numeric number starting with 1, if a device is
                         // removed that number is not used again. Not sure how high this id can get
                         // not worrying about it here
-                        Integer next = deviceMap.size() == 0 ? new Integer(1)
-                                : new Integer(deviceMap.lastKey().intValue() + 1);
+                        Integer next = deviceMap.size() == 0 ? 1 : new Integer(deviceMap.lastKey().intValue() + 1);
                         deviceMap.put(next, item.getName());
                         modified = true;
                     }
@@ -569,18 +518,25 @@ public class HueEmulationServlet extends HttpServlet {
             }
         }
 
+        Set<Integer> keysToRemove = new HashSet<>();
+
         // clean up removed entries
-        for (String itemName : deviceMap.values()) {
+        for (Map.Entry<Integer, String> entry : deviceMap.entrySet()) {
+            String itemName = entry.getValue();
             if (!taggedItems.containsKey(itemName)) {
-                deviceMap.remove(itemName);
+                keysToRemove.add(entry.getKey());
                 modified = true;
             }
+        }
+
+        for (Integer key : keysToRemove) {
+            deviceMap.remove(key);
         }
 
         // for each entry, lookup the item and convert it to a hue device
         for (Integer key : deviceMap.keySet()) {
             try {
-                returnMap.put(key, itemToDevice(itemRegistry.getItem(deviceMap.get(key))));
+                returnMap.put(key, itemToDevice(itemRegistry.getItem(deviceMap.get(key)), key));
             } catch (ItemNotFoundException e) {
                 logger.warn("Could not find item", e);
             }
@@ -603,10 +559,6 @@ public class HueEmulationServlet extends HttpServlet {
 
     /**
      * Checks if the username exists in our user list
-     *
-     * @param userName
-     * @return
-     * @throws IOException
      */
     private boolean authorizeUser(String userName) throws IOException {
         return userNames.contains(userName);
@@ -614,9 +566,6 @@ public class HueEmulationServlet extends HttpServlet {
 
     /**
      * Adds a username to the user file
-     *
-     * @param userName
-     * @throws IOException
      */
     private synchronized void addUser(String userName) throws IOException {
         if (!userNames.contains(userName)) {
@@ -666,8 +615,6 @@ public class HueEmulationServlet extends HttpServlet {
 
     /**
      * Sets Hue API Headers
-     *
-     * @param response
      */
     private void setHeaders(HttpServletResponse response) {
         response.setCharacterEncoding(CHARSET);
