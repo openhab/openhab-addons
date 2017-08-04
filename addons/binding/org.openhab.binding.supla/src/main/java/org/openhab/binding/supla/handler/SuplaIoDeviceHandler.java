@@ -10,7 +10,10 @@ package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
@@ -108,24 +111,14 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                     applicationContext.getIoDevicesManager());
             if (suplaIoDevice.isPresent()) {
                 setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                boolean enabled = refreshDeviceStatus(suplaIoDevice.get());
+                refreshDeviceStatus(suplaIoDevice.get());
                 bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
-                if (!enabled) {
-                    // thing is offline
-                    return;
-                }
-            } else {
-                // configuration is not good
-                return;
             }
         } else {
             updateStatus(UNKNOWN, CONFIGURATION_ERROR,
                     format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
                             this.bridgeHandler.getThing().getUID()));
-            return;
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private Optional<ApplicationContext> getApplicationContextWithRetries() {

@@ -138,6 +138,18 @@ public class SuplaIoDeviceHandlerTest extends SuplaTest {
     }
 
     @Test
+    public void shouldUpdateStatusToOnlineAfterInitilizingThing() throws Exception {
+
+        // given
+
+        // when
+        handler.initialize();
+
+        // then
+        verifyStatusUpdate(handler.getThing(), ONLINE, ThingStatusDetail.NONE, null);
+    }
+
+    @Test
     public void shouldSubmitRunnableToThreadPoolToInitialize() {
 
         // given
