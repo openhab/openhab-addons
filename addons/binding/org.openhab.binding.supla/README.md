@@ -16,12 +16,6 @@ This binding was tested with _Zamel ROW-01_ https://supla.zamel.pl/en/.
 After adding _Supla Bridge_ all _Supla Devices_ that belongs to this server will be discovered. There is no need for manual 
 importing things into OpenHAB.
 
-## Thing Configuration
-
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
-
 ## Channels
 
 Right now there is only support for 2 types of channels: *light-channel* and *switch-channel*.
