@@ -27,9 +27,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static org.eclipse.smarthome.core.thing.ThingStatus.UNKNOWN;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_PENDING;
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -285,10 +286,42 @@ public class SuplaIoDeviceHandlerTest extends SuplaTest {
         verify(bridgeHandler).unregisterSuplaIoDeviceManagerHandler(handler);
     }
 
+    @Test
+    public void shouldUpdateStatusToOfflineIfDeviceIsDisabled() throws Exception {
+
+        // given
+        SuplaIoDevice ioDevice = new SuplaIoDevice(ioDeviceId, 1, false, "nameee", "commme",
+                null, null, "guiggg", "ver", 1, channels);
+
+        given(ioDevicesManager.obtainIoDevice(ioDeviceId)).willReturn(Optional.of(ioDevice));
+
+        // when
+        handler.initialize();
+
+        // then
+        verifyStatusUpdate(
+                handler.getThing(),
+                OFFLINE,
+                NONE,
+                "Device was disabled in Supla Cloud. If you want to enable it check https://cloud.supla.org/");
+        verifyNeverStatusUpdate(handler.getThing(), ONLINE, ThingStatusDetail.NONE, null);
+    }
+
     private void verifyStatusUpdate(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        verifyStatusUpdate(thing, status, statusDetail, description);
+    }
+
+    private void verifyStatusUpdate(Thing thing, ThingStatus status, ThingStatusDetail statusDetail, String description) {
         ThingStatusInfoBuilder statusBuilder = ThingStatusInfoBuilder.create(status, statusDetail);
         ThingStatusInfo statusInfo = statusBuilder.withDescription(description).build();
 
         verify(callback).statusUpdated(thing, statusInfo);
+    }
+
+    private void verifyNeverStatusUpdate(Thing thing, ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        ThingStatusInfoBuilder statusBuilder = ThingStatusInfoBuilder.create(status, statusDetail);
+        ThingStatusInfo statusInfo = statusBuilder.withDescription(description).build();
+
+        verify(callback, never()).statusUpdated(thing, statusInfo);
     }
 }

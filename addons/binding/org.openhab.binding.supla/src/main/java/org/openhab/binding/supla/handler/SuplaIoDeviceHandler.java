@@ -108,8 +108,12 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                     applicationContext.getIoDevicesManager());
             if (suplaIoDevice.isPresent()) {
                 setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                refreshDeviceStatus(suplaIoDevice.get());
+                boolean enabled = refreshDeviceStatus(suplaIoDevice.get());
                 bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
+                if (!enabled) {
+                    // thing is offline
+                    return;
+                }
             } else {
                 // configuration is not good
                 return;
