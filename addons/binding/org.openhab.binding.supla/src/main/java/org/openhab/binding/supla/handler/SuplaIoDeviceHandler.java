@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -60,6 +61,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private final ThreadPool threadPool;
+    private final AtomicBoolean initilized = new AtomicBoolean();
     private SuplaCloudBridgeHandler bridgeHandler;
     private ApplicationContext applicationContext;
     private Map<Channel, SuplaChannel> suplaChannelChannelMap;
@@ -75,6 +77,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!initilized.get()) return;
         Optional<SuplaChannel> suplaChannel = findSuplaChannel(channelUID);
         if (suplaChannel.isPresent()) {
             applicationContext.getCommandExecutorFactory().findCommand(suplaChannel.get(), channelUID)
@@ -124,6 +127,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                     format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
                             this.bridgeHandler.getThing().getUID()));
         }
+        initilized.set(true);
     }
 
     private Optional<ApplicationContext> getApplicationContextWithRetries() {
