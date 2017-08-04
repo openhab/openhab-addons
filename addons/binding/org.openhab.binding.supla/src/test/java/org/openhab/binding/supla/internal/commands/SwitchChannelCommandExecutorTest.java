@@ -18,8 +18,7 @@ import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -145,5 +144,21 @@ public class SwitchChannelCommandExecutorTest {
 
         // then
         verify(updateState).accept(ON);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void shouldDoNothingOnNullCommand() {
+
+        // given
+        Consumer<State> updateState = mock(Consumer.class);
+        Command command = null;
+
+        // when
+        executor.execute(updateState, command);
+
+        // then
+        verifyNoMoreInteractions(channelManager);
+        verifyNoMoreInteractions(updateState);
     }
 }

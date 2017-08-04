@@ -57,7 +57,8 @@ class SwitchChannelCommandExecutor implements CommandExecutor {
                     .map(this::getState)
                     .ifPresent(updateState);
         } else {
-            logger.debug("Don't know how to handle {} for {}", command.getClass().getSimpleName(), this.getClass().getSimpleName());
+            final String simpleName = command != null ? command.getClass().getSimpleName() : "null";
+            logger.debug("Don't know how to handle {} for {}", simpleName, this.getClass().getSimpleName());
         }
     }
 
