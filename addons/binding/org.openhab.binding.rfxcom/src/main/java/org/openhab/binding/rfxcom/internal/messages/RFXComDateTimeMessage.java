@@ -211,9 +211,9 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
 
         // try to find sub type by number
         try {
-            return RFXComBlinds1Message.SubType.fromByte(Integer.parseInt(subType));
+            return SubType.fromByte(Integer.parseInt(subType));
         } catch (NumberFormatException e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

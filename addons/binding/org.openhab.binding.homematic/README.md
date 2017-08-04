@@ -143,19 +143,35 @@ Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 }
 ```
 
-The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type.
+The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type. This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
 ```
 
-This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
+As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
 ```
 
-As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
+All channels have two configs:
+* **delay**: delays transmission of a command **to** the Homematic gateway, duplicate commands are filtered out
+* **receiveDelay**: delays a received event **from** the Homematic gateway, duplicate events are filtered out (OH 2.2)
+
+The receiveDelay is handy for dimmers and rollershutters for example. If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached. If you set the ```receiveDelay``` to some seconds, these events are filtered out and only the last position is distributed to openHab. The disadvantage is of course, that all events for this channel are delayed. 
+
+```
+  Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
+      Channels:
+          Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
+              delay = 0,
+              receiveDelay = 4
+          ]
+  }
+```
+
+The Type is the device type, channel number and lowercase channel name separated with a underscore.
 
 ### Items
 

@@ -23,8 +23,8 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  */
 public class HomegearGateway extends AbstractHomematicGateway {
 
-    protected HomegearGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
-        super(id, config, eventListener);
+    protected HomegearGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter) {
+        super(id, config, gatewayAdapter);
     }
 
     /**

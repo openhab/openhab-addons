@@ -12,10 +12,13 @@ import static org.openhab.binding.synopanalyzer.SynopAnalyzerBindingConstants.*;
 import static org.openhab.binding.synopanalyzer.internal.UnitUtils.*;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -47,17 +50,18 @@ import com.nwpi.synop.SynopShip;
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Mark Herwege - Correction for timezone treatment
  */
 public class SynopAnalyzerHandler extends BaseThingHandler {
 
-    private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?";
+    private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=";
     private static final int REQUEST_TIMEOUT = 5000;
-    private static final SimpleDateFormat SYNOP_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHH00");
+    private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
 
     private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private ScheduledFuture<?> executionJob;
-    protected SynopAnalyzerConfiguration configuration;
+    private SynopAnalyzerConfiguration configuration;
 
     public SynopAnalyzerHandler(Thing thing) {
         super(thing);
@@ -73,51 +77,41 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         executionJob = scheduler.scheduleWithFixedDelay(() -> {
             updateSynopChannels();
         }, 1, configuration.refreshInterval, TimeUnit.MINUTES);
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
     }
 
     private Synop getLastAvailableSynop() {
         logger.debug("Retrieving last Synop message");
-        Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        String message = "";
 
-        for (int backInTime = 0; backInTime < 24 && !message.startsWith(configuration.stationId); backInTime++) {
-            observationTime.roll(Calendar.HOUR, false);
-
-            String url = forgeURL(observationTime);
-
-            try {
-                message = HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
+        String url = forgeURL();
+        try {
+            String answer = HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
+            List<String> messages = Arrays.asList(answer.split("\n"));
+            if (!messages.isEmpty()) {
+                String message = messages.get(messages.size() - 1);
                 logger.debug(message);
-            } catch (IOException e) {
-                logger.warn("Synop request timedout : {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
-                return null;
+                if (message.startsWith(configuration.stationId)) {
+                    logger.debug("Valid Synop message received");
+
+                    List<String> messageParts = Arrays.asList(message.split(","));
+                    String synopMessage = messageParts.get(messageParts.size() - 1);
+
+                    return createSynopObject(synopMessage);
+                }
             }
-
+            logger.warn("No valid Synop found for last 24h");
+        } catch (IOException e) {
+            logger.warn("Synop request timedout : {}", e.getMessage());
         }
-
-        if (message.startsWith(configuration.stationId)) {
-            logger.debug("Valid Synop message received");
-            updateStatus(ThingStatus.ONLINE);
-
-            String[] messageParts = message.split(",");
-            String synopMessage = messageParts[messageParts.length - 1];
-
-            Synop synopObject = createSynopObject(synopMessage);
-            return synopObject;
-        } else {
-            logger.warn("No valid Synop for last 24h");
-            updateStatus(ThingStatus.OFFLINE);
-            return null;
-        }
+        return null;
     }
 
     private void updateSynopChannels() {
         logger.debug("Updating device channels");
 
         Synop synop = getLastAvailableSynop();
+        updateStatus(synop != null ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         if (synop != null) {
             getThing().getChannels().forEach(channel -> {
                 String channelId = channel.getUID().getId();
@@ -194,11 +188,12 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         }
     }
 
-    private String forgeURL(Calendar currentTime) {
-        String beginDate = SYNOP_DATE_FORMAT.format(currentTime.getTime());
+    private String forgeURL() {
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
+        String beginDate = SYNOP_DATE_FORMAT.format(utc);
 
-        StringBuilder url = new StringBuilder().append(OGIMET_SYNOP_PATH).append("block=")
-                .append(configuration.stationId).append("&begin=").append(beginDate);
+        StringBuilder url = new StringBuilder().append(OGIMET_SYNOP_PATH).append(configuration.stationId)
+                .append("&begin=").append(beginDate);
 
         return url.toString();
     }

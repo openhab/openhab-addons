@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  * sent to one of the channels.
  *
  * @author Osman Basha - Initial contribution
+ * @author Ries van Twisk
  */
 public class WiFiLEDHandler extends BaseThingHandler {
 
@@ -92,6 +93,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+        driver.shutdown();
         driver = null;
     }
 

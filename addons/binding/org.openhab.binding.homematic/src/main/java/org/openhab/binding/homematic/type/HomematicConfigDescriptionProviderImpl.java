@@ -44,7 +44,7 @@ public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDe
      */
     @Override
     public void addConfigDescription(ConfigDescription configDescription) {
-        configDescriptionsByURI.put(configDescription.getURI(), configDescription);
+        configDescriptionsByURI.put(configDescription.getUID(), configDescription);
     }
 
 }

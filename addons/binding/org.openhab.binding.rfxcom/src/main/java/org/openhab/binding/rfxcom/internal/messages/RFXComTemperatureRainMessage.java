@@ -78,12 +78,12 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     @Override
     public String toString() {
         String str = super.toString();
-        str += ", - Sub type = " + subType;
-        str += ", - Id = " + sensorId;
-        str += ", - Temperature = " + temperature;
-        str += ", - Rain total = " + rainTotal;
-        str += ", - Signal level = " + signalLevel;
-        str += ", - Battery level = " + batteryLevel;
+        str += ", Sub type = " + subType;
+        str += ", Device Id = " + sensorId;
+        str += ", Temperature = " + temperature;
+        str += ", Rain total = " + rainTotal;
+        str += ", Signal level = " + signalLevel;
+        str += ", Battery level = " + batteryLevel;
 
         return str;
     }

@@ -225,6 +225,8 @@ public final class NikoHomeControlCommunication {
                 cmdExecuteActions(((NhcMessageMap) nhcMessageGson).getData());
             } else if ("listactions".equals(event)) {
                 eventListActions(((NhcMessageListMap) nhcMessageGson).getData());
+            } else if ("getalarms".equals(event)) {
+                eventGetAlarms(((NhcMessageMap) nhcMessageGson).getData());
             } else {
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
@@ -365,6 +367,23 @@ public final class NikoHomeControlCommunication {
             Integer state = Integer.valueOf(action.get("value1"));
             logger.debug("Niko Home Control: event execute action {} with state {}", id, state);
             this.actions.get(id).setState(state);
+        }
+    }
+
+    private void eventGetAlarms(Map<String, String> data) {
+        Integer type = Integer.valueOf(data.get("type"));
+        String alarmText = data.get("text");
+        switch (type) {
+            case 0:
+                logger.debug("Niko Home Control: alarm - {}", alarmText);
+                bridgeCallBack.triggerAlarm(alarmText);
+                break;
+            case 1:
+                logger.debug("Niko Home Control: notice - {}", alarmText);
+                bridgeCallBack.triggerNotice(alarmText);
+                break;
+            default:
+                logger.debug("Niko Home Control: unexpected message type {}", type);
         }
     }
 
