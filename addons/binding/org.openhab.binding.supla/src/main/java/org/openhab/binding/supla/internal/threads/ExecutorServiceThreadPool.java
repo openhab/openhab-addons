@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
-public class ExecutorServiceThreadPool implements ThreadPool {
+public final class ExecutorServiceThreadPool implements ThreadPool {
     private final ExecutorService executorService;
 
     public ExecutorServiceThreadPool(ExecutorService executorService) {
