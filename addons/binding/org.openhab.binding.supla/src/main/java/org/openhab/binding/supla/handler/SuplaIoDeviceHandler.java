@@ -49,7 +49,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 /**
  * This is handler for all Supla devices.
- *
+ * <p>
  * Channels are created at runtime after connecting to Supla Cloud
  *
  * @author Martin Grześlowski - initial contributor
@@ -91,6 +91,8 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private Optional<SuplaChannel> findSuplaChannel(ChannelUID channelUID) {
         return suplaChannelChannelMap.entrySet()
                 .stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getKey().getUID() != null)
                 .filter(entry -> entry.getKey().getUID().equals(channelUID))
                 .map(Map.Entry::getValue)
                 .findFirst();
