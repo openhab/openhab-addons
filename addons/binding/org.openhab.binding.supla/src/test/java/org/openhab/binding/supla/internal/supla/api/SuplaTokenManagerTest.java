@@ -20,6 +20,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.internal.http.CommonHeaders.CONTENT_TYPE_JSON;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaTokenManagerTest extends SuplaTest {
 

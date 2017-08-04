@@ -4,6 +4,9 @@ import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public class ExecutorServiceThreadPool implements ThreadPool {
     private final ExecutorService executorService;
 

@@ -23,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaChannelManagerTest extends SuplaTest {
     private SuplaChannelManager manager;

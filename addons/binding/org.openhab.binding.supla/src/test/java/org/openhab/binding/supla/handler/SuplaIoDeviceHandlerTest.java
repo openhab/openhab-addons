@@ -35,6 +35,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("UnnecessaryLocalVariable")
 public class SuplaIoDeviceHandlerTest extends SuplaTest {

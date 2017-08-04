@@ -27,6 +27,9 @@ import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.SuplaBindingConstants.BRIDGE_THING_TYPE;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_THING_TYPE;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaHandlerFactoryTest {
     private final SuplaHandlerFactory factory = new SuplaHandlerFactory();

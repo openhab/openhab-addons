@@ -22,6 +22,9 @@ import static org.mockito.BDDMockito.given;
 import static org.openhab.binding.supla.internal.http.Response.NOT_FOUND;
 import static org.openhab.binding.supla.internal.http.Response.OK;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SuplaIoDevicesManagerTest extends SuplaTest {
 
