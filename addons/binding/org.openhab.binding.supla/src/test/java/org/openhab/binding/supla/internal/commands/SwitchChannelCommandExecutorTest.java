@@ -161,8 +161,8 @@ public class SwitchChannelCommandExecutorTest {
         executor.execute(updateState, command);
 
         // then
-        verifyNoMoreInteractions(channelManager);
-        verifyNoMoreInteractions(updateState);
+        verifyZeroInteractions(channelManager);
+        verifyZeroInteractions(updateState);
     }
 
     @Test
@@ -180,7 +180,7 @@ public class SwitchChannelCommandExecutorTest {
         unknownCommands.forEach(command -> executor.execute(updateState, command));
 
         // then
-        verifyNoMoreInteractions(channelManager);
-        verifyNoMoreInteractions(updateState);
+        verifyZeroInteractions(channelManager);
+        verifyZeroInteractions(updateState);
     }
 }
