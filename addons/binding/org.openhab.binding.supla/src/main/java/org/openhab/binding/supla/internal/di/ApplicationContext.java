@@ -36,6 +36,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Martin Grzeslowski - Initial contribution
  */
 public final class ApplicationContext {
+    public interface Builder {
+        ApplicationContext build(SuplaCloudServer server);
+    }
 
     private final SuplaCloudServer suplaCloudServer;
 

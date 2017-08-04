@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,8 @@ import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
+import org.openhab.binding.supla.internal.threads.ExecutorServiceThreadPool;
+import org.openhab.binding.supla.internal.threads.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
@@ -53,12 +56,18 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private static final long WAIT_IN_MILLISECONDS = SECONDS.toMillis(1);
 
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
+    private final ThreadPool threadPool;
     private SuplaCloudBridgeHandler bridgeHandler;
     private ApplicationContext applicationContext;
     private Map<Channel, SuplaChannel> suplaChannelChannelMap;
 
     public SuplaIoDeviceHandler(Thing thing) {
+        this(thing, new ExecutorServiceThreadPool(ThreadPoolManager.getPool(THREAD_POOL_NAME)));
+    }
+
+    private SuplaIoDeviceHandler(Thing thing, ThreadPool threadPool) {
         super(thing);
+        this.threadPool = requireNonNull(threadPool);
     }
 
     @Override
@@ -87,7 +96,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         if (bridgeHandler.isPresent()) {
             this.bridgeHandler = bridgeHandler.get();
             updateStatus(UNKNOWN, CONFIGURATION_PENDING, "Thing is being configured asynchronously");
-            ThreadPoolManager.getPool(THREAD_POOL_NAME).submit(this::internalInitialize);
+            threadPool.submit(this::internalInitialize);
         }
     }
 

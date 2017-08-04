@@ -28,6 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
@@ -39,18 +40,24 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SCHEDULED_THREAD_P
  *
  * @author Martin Grześlowski - initial contributor
  */
-public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
+public class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private static final long REFRESH_THREAD_DELAY_IN_SECONDS = 10;
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);
 
     private final ReadWriteLock handlersLock = new ReentrantReadWriteLock();
     private final Set<SuplaIoDeviceHandler> handlers = new HashSet<>();
+    private final ApplicationContext.Builder applicationContextBuilder;
     private SuplaCloudConfiguration configuration;
     private ApplicationContext applicationContext;
     private ScheduledExecutorService scheduledPool;
 
-    public SuplaCloudBridgeHandler(Bridge bridge) {
+    public SuplaCloudBridgeHandler(Bridge bridge, ApplicationContext.Builder applicationContextBuilder) {
         super(bridge);
+        this.applicationContextBuilder = requireNonNull(applicationContextBuilder);
+    }
+
+    public SuplaCloudBridgeHandler(Bridge bridge) {
+        this(bridge, ApplicationContext::new);
     }
 
     @Override
@@ -97,7 +104,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing SuplaCloudBridgeHandler");
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
-        final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
+        final ApplicationContext applicationContext = applicationContextBuilder.build(configuration.toSuplaCloudServer());
         final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
         if(!suplaServerInfo.isPresent()) {
             updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
