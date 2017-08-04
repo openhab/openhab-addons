@@ -89,8 +89,11 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private Optional<SuplaChannel> findSuplaChannel(ChannelUID channelUID) {
-        return suplaChannelChannelMap.entrySet().stream().filter(entry -> entry.getKey().getUID().equals(channelUID))
-                .map(Map.Entry::getValue).findFirst();
+        return suplaChannelChannelMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().getUID().equals(channelUID))
+                .map(Map.Entry::getValue)
+                .findFirst();
     }
 
     @Override
