@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
-@SuppressWarnings({"UnnecessaryLocalVariable", "Duplicates", "WeakerAccess"})
+@SuppressWarnings({"UnnecessaryLocalVariable", "Duplicates", "WeakerAccess", "unchecked"})
 @RunWith(MockitoJUnitRunner.class)
 public class SwitchChannelCommandExecutorTest {
     SwitchChannelCommandExecutor executor;
@@ -53,7 +53,6 @@ public class SwitchChannelCommandExecutorTest {
         verify(channelManager).obtainChannelStatus(channel);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldRefreshChannelWithOnCommand() {
 
@@ -71,7 +70,6 @@ public class SwitchChannelCommandExecutorTest {
         verify(updateState).accept(ON);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldRefreshChannelWithOffCommand() {
 
@@ -117,5 +115,35 @@ public class SwitchChannelCommandExecutorTest {
 
         // then
         verify(channelManager).turnOff(channel);
+    }
+
+    @Test
+    public void shouldUpdateStateWithOffValueWhenThereWasAnErrorDuringChannelUpdate() {
+
+        // given
+        Consumer<State> updateState = mock(Consumer.class);
+        Command command = ON;
+        given(channelManager.turnOn(channel)).willReturn(false);
+
+        // when
+        executor.execute(updateState, command);
+
+        // then
+        verify(updateState).accept(OFF);
+    }
+
+    @Test
+    public void shouldUpdateStateWithOnValueWhenThereWasAnErrorDuringChannelUpdate() {
+
+        // given
+        Consumer<State> updateState = mock(Consumer.class);
+        Command command = OFF;
+        given(channelManager.turnOff(channel)).willReturn(false);
+
+        // when
+        executor.execute(updateState, command);
+
+        // then
+        verify(updateState).accept(ON);
     }
 }
