@@ -116,8 +116,7 @@
 				<label>Set System to Special</label>
 				<description>Send a 4 digit user code to set the system to special</description>
 			</channel>
-			<!--<channel id="alarm_event" typeId="lumina_alarm_event" />  -->
-			<channel id="all_on_off_Event" typeId="all_on_off_Event"/>
+			<channel id="all_on_off_event" typeId="all_on_off_event"/>
 		</channels>
 		<properties>
 			<property name="name" />
