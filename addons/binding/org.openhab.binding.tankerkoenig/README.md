@@ -89,7 +89,7 @@ The further price-updates for all Stations are scheduled by the Webservice using
 
 -The Station(s) and Webservice stay OFFLINE
 
-Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhabbinding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
+Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhab.binding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
 
 ```
  2017-06-25 16:02:12.679 [DEBUG] [ig.internal.data.TankerkoenigService] - getTankerkoenigDetailResult IOException: 
