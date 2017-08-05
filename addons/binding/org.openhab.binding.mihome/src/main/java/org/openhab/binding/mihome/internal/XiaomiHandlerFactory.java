@@ -48,6 +48,7 @@ import com.google.common.collect.Sets;
  *
  * @author Patrick Boos - Initial contribution
  * @author Dieter Schmidt - Refactor, add devices
+ * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  */
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
@@ -128,6 +129,10 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiAqaraActorSwitch2Handler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ACTOR_CURTAIN)) {
             return new XiaomiActorCurtainHandler(thing);
+        } else if (THING_TYPE_SENSOR_AQARA_WEATHER_V1.equals(thingTypeUID)) {
+            return new XiaomiSensorHtHandler(thing);
+        } else if (THING_TYPE_SENSOR_AQARA_MAGNET.equals(thingTypeUID)) {
+            return new XiaomiSensorMagnetHandler(thing);
         } else {
             return null;
         }
