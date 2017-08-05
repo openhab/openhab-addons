@@ -25,7 +25,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final String BINDING_ID = "xiaomivacuum";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "unknown");
+    public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "generic");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 

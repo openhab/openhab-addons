@@ -15,6 +15,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -87,7 +88,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
             String token = Utils.getHex(msg.getChecksum());
             String id = Utils.getHex(msg.getDeviceId());
 
-            ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_VACUUM, id);
+            ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_MIIO, id);
             // TODO: placeholder entries. Here test for MiIO things to determine as what thingType it needs to be added
             if (discoveryServiceCallback.getExistingDiscoveryResult(uid) != null) {
                 logger.debug("Thing {} was already in discovery Inbox", uid.toString());
@@ -102,13 +103,13 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
                         id);
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
-                        .withRepresentationProperty(id).withLabel("Xiaomi Robot Vacuum").build());
+                        .withRepresentationProperty(id).withLabel("Discovered Xiaomi Mi IO Device").build());
             } else {
                 logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_TOKEN, token).withRepresentationProperty(id)
-                        .withLabel("Xiaomi Robot Vacuum").build());
+                        .withLabel("Discovered Xiaomi Mi IO Device").build());
             }
         }
     }
@@ -178,7 +179,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return XiaomiVacuumBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+        return Collections.singleton(XiaomiVacuumBindingConstants.THING_TYPE_MIIO);
     }
 
     @Override

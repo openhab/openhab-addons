@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class RoboCommunication {
 
     private static final int MSG_BUFFER_SIZE = 1024;
-    private static final int TIMEOUT = 10000;
+    private static final int TIMEOUT = 15000;
 
     private final Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
 

@@ -36,7 +36,9 @@ public enum MiIoDevices {
     YEELIGHT_M1("yeelink.light.mono1", "Yeelight White Bulb", XiaomiVacuumBindingConstants.THING_TYPE_UNSUPPORTED),
     YEELIGHT_C1("yeelink.light.color1", "Yeelight Color Bulb", XiaomiVacuumBindingConstants.THING_TYPE_UNSUPPORTED),
     TOOTHBRUSH("soocare.toothbrush.x3", "Mi Toothbrush", XiaomiVacuumBindingConstants.THING_TYPE_UNSUPPORTED),
-    UNKNOWN("unknown", "Unknown MiIO Device", XiaomiVacuumBindingConstants.THING_TYPE_MIIO);
+    PHILIPS("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2",
+            XiaomiVacuumBindingConstants.THING_TYPE_UNSUPPORTED),
+    UNKNOWN("unknown", "Unknown Mi IO Device", XiaomiVacuumBindingConstants.THING_TYPE_UNSUPPORTED);
 
     private final String model;
     private final String description;

@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>Xiaomi Robot Vacuum Binding</name>
-	<description>Binding for Xiaomi Robot Vacuum</description>
+	<name>Xiaomi Mi IO Binding</name>
+	<description>Binding for Xiaomi Mi Io device like Mi Robot Vacuum</description>
 	<author>Marcel Verpaalen</author>
 
 </binding:binding>

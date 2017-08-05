@@ -38,7 +38,7 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class XiaomiVacuumHandler extends XiaomiMiioHandler {
+public class XiaomiVacuumHandler extends XiaomiMiIoHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiVacuumHandler.class);
 
     private ExpiringCache<String> status;
@@ -162,7 +162,6 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateConsumables() {
         JsonObject consumablesData = getJsonResultHelper(consumables.getValue());
         if (consumablesData == null) {
-            disconnectedNoResponse();
             return false;
         }
         int mainBrush = consumablesData.get("main_brush_work_time").getAsInt();
@@ -191,7 +190,6 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateDnD() {
         JsonObject dndData = getJsonResultHelper(dnd.getValue());
         if (dndData == null) {
-            disconnectedNoResponse();
             return false;
         }
         logger.debug("Do not disturb data: {}", dndData.toString());
@@ -206,12 +204,10 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
     private boolean updateHistory() {
         String historyString = history.getValue();
         if (historyString == null) {
-            disconnectedNoResponse();
             return false;
         }
         JsonArray historyData = ((JsonObject) parser.parse(historyString)).getAsJsonArray("result");
         if (historyData == null) {
-            disconnectedNoResponse();
             return false;
         }
         logger.trace("Cleaning history data: {},{}", historyData.toString());
@@ -229,23 +225,23 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
             return;
         }
         try {
-            if (((updateNetwork() ? 1 : 0) + (updateVacuumStatus() ? 1 : 0) + (updateConsumables() ? 1 : 0)
+            if ((0 + (updateNetwork() ? 1 : 0) + (updateVacuumStatus() ? 1 : 0) + (updateConsumables() ? 1 : 0)
                     + (updateDnD() ? 1 : 0) + (updateHistory() ? 1 : 0)) > 0) {
                 updateStatus(ThingStatus.ONLINE);
+            } else {
+                disconnectedNoResponse();
             }
         } catch (Exception e) {
-            logger.debug("Error while updating '{}'", getThing().getUID().toString(), e);
+            logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     protected boolean initializeData() {
         this.roboCom = getConnection();
-        if (roboCom == null) {
-            updateStatus(ThingStatus.OFFLINE);
-            return false;
+        if (roboCom != null) {
+            updateStatus(ThingStatus.ONLINE);
         }
-        updateStatus(ThingStatus.ONLINE);
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             try {
                 return sendCommand(VacuumCommand.GET_STATUS);
@@ -278,14 +274,7 @@ public class XiaomiVacuumHandler extends XiaomiMiioHandler {
             }
             return null;
         });
-        network = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                return sendCommand(VacuumCommand.MIIO_INFO);
-            } catch (Exception e) {
-                logger.debug("Error during network status refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
+        initalizeNetworkCache();
         return true;
     }
 }
