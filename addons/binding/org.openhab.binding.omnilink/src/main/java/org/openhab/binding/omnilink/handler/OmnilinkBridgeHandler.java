@@ -47,11 +47,9 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AccessControlReaderEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ButtonEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.SystemEvent;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ZoneStateChangeEvent;
 import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
@@ -356,11 +354,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         OmnilinkBindingConstants.TRIGGER_CHANNEL_CAMERA_TRIGGER_EVENT);
                 triggerChannel(cameraChannel, String.valueOf(event.getType().toString().charAt(8)));
                 break;
-            case ACCESS_CONTROL_READER:
-                ChannelUID accessChannel = new ChannelUID(getThing().getUID(),
-                        OmnilinkBindingConstants.TRIGGER_CHANNEL_ACCESS_CONTROL_READER_EVENT);
-                triggerChannel(accessChannel, String.valueOf(((AccessControlReaderEvent) event).getReaderNumber()));
-                break;
             case BUTTON:
                 Optional<Thing> buttonThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON,
                         ((ButtonEvent) event).getButtonNumber());
@@ -375,15 +368,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 if (areaThing.isPresent()) {
                     logger.debug("thing for allOnOff event: {}", areaThing.get().getUID());
                     ((AreaHandler) areaThing.get().getHandler()).handleAllOnOffEvent((AllOnOffEvent) event);
-                }
-                break;
-            case ZONE_STATE_CHANGE:
-                Optional<Thing> zoneThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE,
-                        ((ZoneStateChangeEvent) event).getZoneNumber());
-                if (zoneThing.isPresent()) {
-                    logger.debug("thing for zone event: {}", zoneThing.get().getUID());
-                    ((ZoneHandler) zoneThing.get().getHandler())
-                            .handleZoneStateChangeEvent((ZoneStateChangeEvent) event);
                 }
                 break;
             default:

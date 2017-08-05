@@ -21,7 +21,6 @@
 				<label>Restore Zone</label>
 				<description>Send a 4 digit user code to restore the zone</description>
 			</channel>
-			<channel id="state_event" typeId="zone_state_event"/>
 		</channels>
 		<properties>
 			<property name="name" />
@@ -88,16 +87,5 @@
         <label>Zone Command</label>
         <description>Sends a user code and command to the zone.</description>
         <category>Alarm</category>
-    </channel-type>
-     <channel-type id="zone_state_Event">
-        <kind>trigger</kind>
-        <label>Zone Event</label>
-        <description>Event sent when a zone changes state</description>
-        <event>
-            <options>
-                <option value="OFF">Off</option>
-                <option value="ON">On</option>
-            </options>
-        </event>
     </channel-type>
 </thing:thing-descriptions>
