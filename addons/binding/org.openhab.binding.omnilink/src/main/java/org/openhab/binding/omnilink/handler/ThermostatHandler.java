@@ -169,7 +169,7 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
         updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HUMIDIFY_SETPOINT,
                 new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getHumiditySetpoint())));
         updateState(OmnilinkBindingConstants.CHANNEL_THERMO_DEHUMIDIFY_SETPOINT,
-                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getDehumiditySetpoint())));
+                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getDehumidifySetpoint())));
     }
 
     private void handleTemperatureStatus(ExtendedThermostatStatus status) {
@@ -182,7 +182,7 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
         updateState(OmnilinkBindingConstants.CHANNEL_THERMO_COOL_SETPOINT,
                 new DecimalType(temperatureFormat.omniToFormat(status.getCoolSetpoint())));
         updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HEAT_SETPOINT,
-                new DecimalType(temperatureFormat.omniToFormat(status.getHeatSetpotint())));
+                new DecimalType(temperatureFormat.omniToFormat(status.getHeatSetpoint())));
     }
 
     private void handleHoldStatus(ExtendedThermostatStatus status) {

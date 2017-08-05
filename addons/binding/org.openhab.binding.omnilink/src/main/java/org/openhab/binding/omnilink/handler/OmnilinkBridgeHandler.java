@@ -37,7 +37,6 @@ import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
-import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemFormats;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
@@ -48,6 +47,9 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ButtonEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.SystemEvent;
 import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
@@ -309,34 +311,72 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @Override
-    public void otherEventNotification(OtherEventNotifications event) {
-        logger.debug("Other event otification, type: {}", event.getMessageType());
-
-        if (event.getNotifications() != null && event.getNotifications().length > 0) {
-            logger.debug("First notification: {}", Integer.toString(event.getNotifications()[0], 2));
-        } else {
-            logger.debug("Event notification: {}", event.getNotifications());
-        }
-
-        // for a button, let's make sure we have only 1 notification
-        if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
-            int number = event.getNotifications()[0];
-            if (number > 0 && number <= 256) {
-                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON, number);
-                logger.debug("Detect button push: number={}, thing: {}", number, theThing);
-                if (theThing.isPresent()) {
-                    logger.debug("thing for button press is: {}", theThing.get().getUID());
-                    ((ButtonHandler) theThing.get().getHandler()).buttonPressed();
-                } else {
-                    logger.warn("Unhandled other event notification, type: {}, notification: {}",
-                            event.getMessageType(), event.getNotifications());
+    public void systemEventNotification(SystemEvent event) {
+        logger.debug("System event notification, type: {}", event.getType());
+        switch (event.getType()) {
+            case PHONE_LINE_DEAD:
+            case PHONE_LINE_OFF_HOOK:
+            case PHONE_LINE_ON_HOOK:
+            case PHONE_LINE_RING:
+                ChannelUID channel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_PHONE_LINE_EVENT);
+                triggerChannel(channel, event.getType().toString().substring("PHONE_LINE_".length()));
+                break;
+            case AC_POWER_OFF:
+            case AC_POWER_RESTORED:
+                ChannelUID acChannel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_AC_POWER_EVENT);
+                triggerChannel(acChannel, event.getType().toString().substring("AC_POWER_".length()));
+                break;
+            case BATTERY_LOW:
+            case BATTERY_OK:
+                ChannelUID batteryChannel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_BATTERY_EVENT);
+                triggerChannel(batteryChannel, event.getType().toString().substring("BATTERY__".length()));
+                break;
+            case DCM_OK:
+            case DCM_TROUBLE:
+                ChannelUID dcmChannel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_DCM_EVENT);
+                triggerChannel(dcmChannel, event.getType().toString().substring("DCM_".length()));
+                break;
+            case ENERGY_COST_CRITICAL:
+            case ENERGY_COST_HIGH:
+            case ENERGY_COST_LOW:
+            case ENERGY_COST_MID:
+                ChannelUID energyChannel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_ENERGY_COST_EVENT);
+                triggerChannel(energyChannel, event.getType().toString().substring("ENERGY_COST_".length()));
+                break;
+            case CAMERA_1_TRIGGER:
+            case CAMERA_2_TRIGGER:
+            case CAMERA_3_TRIGGER:
+            case CAMERA_4_TRIGGER:
+            case CAMERA_5_TRIGGER:
+            case CAMERA_6_TRIGGER:
+                ChannelUID cameraChannel = new ChannelUID(getThing().getUID(),
+                        OmnilinkBindingConstants.TRIGGER_CHANNEL_CAMERA_TRIGGER_EVENT);
+                triggerChannel(cameraChannel, String.valueOf(event.getType().toString().charAt(8)));
+                break;
+            case BUTTON:
+                Optional<Thing> buttonThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON,
+                        ((ButtonEvent) event).getButtonNumber());
+                if (buttonThing.isPresent()) {
+                    logger.debug("thing for button event: {}", buttonThing.get().getUID());
+                    ((ButtonHandler) buttonThing.get().getHandler()).buttonActivated();
                 }
-            }
-        } else {
-            logger.warn("Unhandled other event notification, type: {}, notification: {}", event.getMessageType(),
-                    Integer.toString(event.getNotifications()[0], 2));
+                break;
+            case ALL_ON_OFF:
+                Optional<Thing> areaThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
+                        ((AllOnOffEvent) event).getArea());
+                if (areaThing.isPresent()) {
+                    logger.debug("thing for allOnOff event: {}", areaThing.get().getUID());
+                    ((AreaHandler) areaThing.get().getHandler()).handleAllOnOffEvent((AllOnOffEvent) event);
+                }
+                break;
+            default:
+                logger.debug("Ignoring message of type type: {}", event.getType());
         }
-
     }
 
     private void getSystemStatus() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
@@ -420,5 +460,4 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private int getThingNumber(Thing thing) {
         return ((Number) thing.getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER)).intValue();
     }
-
 }

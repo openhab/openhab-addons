@@ -39,10 +39,9 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
         }
     }
 
-    public void buttonPressed() {
-        logger.debug("buttonPressed");
+    public void buttonActivated() {
         ChannelUID activateChannel = new ChannelUID(getThing().getUID(),
-                OmnilinkBindingConstants.CHANNEL_BUTTON_ACTIVATED);
+                OmnilinkBindingConstants.TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT);
         triggerChannel(activateChannel);
     }
 }
