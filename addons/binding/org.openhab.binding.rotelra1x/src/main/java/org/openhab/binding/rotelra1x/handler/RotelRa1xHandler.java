@@ -43,11 +43,11 @@ import gnu.io.UnsupportedCommOperationException;
 public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     private static final int BAUD = 115200;
-    private int maximumVolume = 0;
+    private int maximumVolume;
     private RXTXPort serialPort;
 
-    private boolean exit = false;
-    private volatile boolean power = false;
+    private boolean exit;
+    private volatile boolean power;
 
     private Logger logger = LoggerFactory.getLogger(RotelRa1xHandler.class);
 
@@ -62,7 +62,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         try {
             connect();
         } catch (IOException e) {
-            logger.error("Unable to connect to device", e);
+            logger.info("Unable to connect to device", e);
         }
     }
 
@@ -190,7 +190,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                     send("get_volume!");
                     send("get_current_source!");
                 } catch (IOException e) {
-                    logger.warn("Failed to request volume and source after powering on.", e);
+                    logger.info("Failed to request volume and source after powering on.", e);
                 }
             }
         }, 0, TimeUnit.SECONDS);
@@ -255,13 +255,13 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
             } catch (IOException e) {
                 if (serialPort != null) {
-                    logger.error("Input error while receiving data from amplifier", e);
+                    logger.info("Input error while receiving data from amplifier", e);
                     disconnect();
                 }
             } catch (NullPointerException e) {
                 if (serialPort != null) { // If serial port is closed, it's set to null,
                                           // there is no message here,
-                    logger.error("Unexpected error", e);
+                    logger.warn("Unexpected error", e);
                     disconnect();
                 }
             }
@@ -309,7 +309,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            logger.error("An I/O error occurred while processing the command {}.", command, e);
+            logger.info("An I/O error occurred while processing the command {}.", command, e);
             disconnect();
         }
     }
