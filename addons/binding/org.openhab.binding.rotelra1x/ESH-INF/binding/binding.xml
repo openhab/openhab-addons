@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Rotel RA1x Binding</name>
-    <description>Binding for the Rotal RA11 and RA12 stereo amplifiers.</description>
+    <description>Binding for Rotal RA11 and RA12 stereo amplifiers connected via RS232.</description>
     <author>Marius Bjørnstad</author>
 
 </binding:binding>
