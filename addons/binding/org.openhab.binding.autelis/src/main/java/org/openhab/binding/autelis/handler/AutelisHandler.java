@@ -92,7 +92,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Default poll rate rate, this is derived from the Autelis web UI
      */
-    static final int DEFAULT_REFRSH = 5; // 3 seconds
+    static final int DEFAULT_REFRSH = 3; // 3 seconds
 
     /**
      * How long should we wait to poll after we send an update, derived from trial and error
