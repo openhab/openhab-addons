@@ -56,6 +56,11 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class OmnilinkBridgeHandler extends BaseBridgeHandler implements NotificationListener {
 
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
@@ -130,7 +135,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand called); " + command);
+        logger.trace("handleCommand called); {}", command);
         switch (channelUID.getId()) {
             case OmnilinkBindingConstants.CHANNEL_SYSTEMDATE:
                 if (command instanceof DateTimeType) {
@@ -185,7 +190,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void makeOmnilinkConnection() {
-
         Retryer<Void> retryer = RetryerBuilder.<Void> newBuilder().retryIfExceptionOfType(IOException.class)
                 .withWaitStrategy(WaitStrategies.exponentialWait(100, 5, TimeUnit.MINUTES))
                 .withStopStrategy(StopStrategies.neverStop()).build();
@@ -208,7 +212,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         updateStatus(ThingStatus.ONLINE);
                     } catch (UnknownHostException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                        logger.debug(e.toString());
+                        logger.debug("{}", e.toString());
                         throw e;
                     } catch (IOException e) {
                         if (e.getCause() != null && e.getCause().getMessage().contains("Connection timed out")) {
@@ -221,11 +225,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     e.getCause().getMessage());
                         }
-                        logger.debug(e.toString());
+                        logger.debug("{}", e.toString());
                         throw e;
                     } catch (Exception e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                        logger.debug(e.toString());
+                        logger.debug("{}", e.toString());
                         throw e;
                     }
                     return null;

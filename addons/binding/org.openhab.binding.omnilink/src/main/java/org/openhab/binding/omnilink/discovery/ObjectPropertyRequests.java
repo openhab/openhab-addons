@@ -10,6 +10,12 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ * @param <T>
+ */
 public class ObjectPropertyRequests<T extends ObjectProperties> {
 
     public final static ObjectPropertyRequests<ThermostatProperties> THERMOSTAT = new ObjectPropertyRequests<>(

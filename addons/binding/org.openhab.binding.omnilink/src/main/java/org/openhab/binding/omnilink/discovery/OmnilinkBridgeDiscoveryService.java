@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class OmnilinkBridgeDiscoveryService extends AbstractDiscoveryService {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkBridgeDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;

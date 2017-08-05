@@ -17,6 +17,11 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(AudioZoneHandler.class);

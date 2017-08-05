@@ -22,6 +22,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     private enum ThermostatStatus {

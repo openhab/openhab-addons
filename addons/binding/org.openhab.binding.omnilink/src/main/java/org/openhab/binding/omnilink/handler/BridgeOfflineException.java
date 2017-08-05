@@ -1,5 +1,10 @@
 package org.openhab.binding.omnilink.handler;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class BridgeOfflineException extends Exception {
 
     /**

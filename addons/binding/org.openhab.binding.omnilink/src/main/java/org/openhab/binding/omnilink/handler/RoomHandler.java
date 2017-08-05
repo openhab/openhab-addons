@@ -15,6 +15,11 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 
+/**
+ *
+ * @author craigh
+ *
+ */
 public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
     private Logger logger = LoggerFactory.getLogger(RoomHandler.class);

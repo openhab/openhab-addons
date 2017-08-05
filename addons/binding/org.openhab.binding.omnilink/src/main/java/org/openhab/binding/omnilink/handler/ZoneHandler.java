@@ -21,6 +21,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class ZoneHandler extends AbstractOmnilinkHandler {
     private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
     private volatile ZoneStatus zoneStatus;

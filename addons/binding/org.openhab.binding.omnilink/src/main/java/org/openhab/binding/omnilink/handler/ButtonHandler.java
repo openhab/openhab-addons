@@ -13,6 +13,11 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class ButtonHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(ButtonHandler.class);
 

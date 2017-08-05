@@ -16,6 +16,11 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
     public FlagHandler(Thing thing) {
