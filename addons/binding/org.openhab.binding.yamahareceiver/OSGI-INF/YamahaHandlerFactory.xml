@@ -17,4 +17,10 @@
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
 
+   <reference cardinality="1..1"
+    interface="org.openhab.binding.yamahareceiver.internal.YamahaChannelsTypeProvider"
+    name="ChannelTypeProvider" policy="dynamic"
+    bind="setChannelTypeProvider"
+    unbind="unsetChannelTypeProvider"/>
+
 </scr:component>
