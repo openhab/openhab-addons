@@ -121,9 +121,6 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             serialPort.close();
         }
         serialPort = null;
-        if (!exit) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
     }
 
     private String readCommand() throws IOException {
@@ -256,6 +253,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             } catch (IOException e) {
                 if (serialPort != null) {
                     logger.info("Input error while receiving data from amplifier", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Input error while receiving data");
                     disconnect();
                 }
             }
@@ -304,6 +303,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.info("An I/O error occurred while processing the command {}.", command, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "An I/O error occurred while processing the command " + command.toString());
             disconnect();
         }
     }
