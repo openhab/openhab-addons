@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Oasis -->
+	<!-- StatusA -->
+	<channel-type id="statusA">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone A Status Channel</label>
+		<description>Status of the A zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusB -->
+	<channel-type id="statusB">
+		<item-type>Switch</item-type>
+		<label>Alarm B Status Channel</label>
+		<description>Status of the B zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusABC -->
+	<channel-type id="statusABC">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone ABC Status Channel</label>
+		<description>Status of the ABC zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusPGX -->
+	<channel-type id="statusPGX">
+		<item-type>Switch</item-type>
+		<label>OASIS PGX Status Channel</label>
+		<description>Status of the PGX switch of your OASIS alarm</description>
+	</channel-type>
+
+	<!-- StatusPGY -->
+	<channel-type id="statusPGY">
+		<item-type>Switch</item-type>
+		<label>OASIS PGY Status Channel</label>
+		<description>Status of the PGY switch of your OASIS alarm</description>
+	</channel-type>
+
+	<!-- JA100 -->
+	<channel-type id="status">
+		<item-type>Number</item-type>
+		<label>Alarm Section Status Channel</label>
+		<description>Status of the section of your alarm</description>
+	</channel-type>
+
+	<!-- StatusPGM -->
+	<channel-type id="statusPGM">
+		<item-type>Switch</item-type>
+		<label>JA-100 PGM Status Channel</label>
+		<description>Status of the PGM switch of your JA-100 alarm</description>
+	</channel-type>
+
+	<!-- Alarm -->
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm Channel</label>
+		<description>Status of the alarm of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Command -->
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Alarm Command Channel</label>
+		<description>Channel for sending commands to your alarm</description>
+	</channel-type>
+
+	<!-- LastTrouble -->
+	<channel-type id="lastTrouble">
+		<item-type>String</item-type>
+		<label>Alarm Last Trouble Text Description Channel</label>
+		<description>Text description of the last trouble with your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastTroubleName -->
+	<channel-type id="lastTroubleDetail">
+		<item-type>String</item-type>
+		<label>Alarm Last Trouble Detail Channel</label>
+		<description>Detail of the last trouble with your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEvent -->
+	<channel-type id="lastEvent">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Text Description Channel</label>
+		<description>Text description of the last event of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventCode -->
+	<channel-type id="lastEventCode">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Code Channel</label>
+		<description>Code of the last event of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventClass -->
+	<channel-type id="lastEventClass">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Class Channel</label>
+		<description>Class of the last event of your alarm (arm, disarm, ...)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventSection -->
+	<channel-type id="lastEventSection">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Section Channel</label>
+		<description>A last event section of your alarm (arm, disarm, ...)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventTime -->
+	<channel-type id="lastEventTime">
+		<item-type>DateTime</item-type>
+		<label>Alarm Last Event Time Channel</label>
+		<description>Date and time of the last event of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastCheckTime -->
+	<channel-type id="lastCheckTime">
+		<item-type>DateTime</item-type>
+		<label>Alarm Last Check Time Channel</label>
+		<description>Date and time of last status check of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

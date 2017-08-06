@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- ja100 alarm -->
+	<thing-type id="ja100">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Jablotron JA100 Alarm</label>
+		<description>A Jablotron JA100 alarm device.</description>
+
+		<channels>
+			<channel id="lastCheckTime" typeId="lastCheckTime"/>
+		</channels>
+		<config-description-ref uri="thing-type:jablotron:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

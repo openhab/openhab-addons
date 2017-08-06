@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:jablotron:device">
+		<parameter name="serviceId" type="text">
+			<label>Jablotron device ID</label>
+			<description>The identifier of the Jablotron device</description>
+			<required>true</required>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="url" type="text">
+			<label>Jablotron device url</label>
+			<description>The url of the Jablotron device used for initialization</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="refresh" type="integer" required="false">
+			<label>Refresh refresh</label>
+			<description>Specifies the refresh of thing states in seconds</description>
+			<default>180</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:jablotron:bridge">
+			<parameter name="login" type="text">
+				<label>Login</label>
+				<description>Login for Jablonet portal</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for Jablonet portal</description>
+				<required>true</required>
+			</parameter>
+	</config-description>
+</config-description:config-descriptions>

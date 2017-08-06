@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Oasis alarm -->
+	<thing-type id="oasis">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Jablotron Oasis Alarm</label>
+		<description>A Jablotron Oasis alarm device.</description>
+
+		<channels>
+			<channel id="statusA" typeId="statusA"/>
+			<channel id="statusB" typeId="statusB"/>
+			<channel id="statusABC" typeId="statusABC"/>
+			<channel id="statusPGX" typeId="statusPGX"/>
+			<channel id="statusPGY" typeId="statusPGY"/>
+			<channel id="command" typeId="command"/>
+			<channel id="lastTrouble" typeId="lastTrouble"/>
+			<channel id="lastTroubleDetail" typeId="lastTroubleDetail"/>
+			<channel id="lastEvent" typeId="lastEvent"/>
+			<channel id="lastEventCode" typeId="lastEventCode"/>
+			<channel id="lastEventClass" typeId="lastEventClass"/>
+			<channel id="lastEventTime" typeId="lastEventTime"/>
+			<channel id="lastCheckTime" typeId="lastCheckTime"/>
+			<channel id="alarm" typeId="alarm"/>
+		</channels>
+		<config-description-ref uri="thing-type:jablotron:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

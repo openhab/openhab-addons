@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Jablonet -->
+	<bridge-type id="bridge">
+		<label>Jablotron Jablonet Bridge</label>
+		<description>A bridge to the Jablonet cloud service.</description>
+
+		<config-description-ref uri="bridge-type:jablotron:bridge"/>
+	</bridge-type>
+
+</thing:thing-descriptions>
