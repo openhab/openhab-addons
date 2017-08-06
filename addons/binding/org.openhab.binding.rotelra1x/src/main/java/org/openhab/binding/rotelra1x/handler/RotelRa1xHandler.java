@@ -103,7 +103,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 updateStatus(ThingStatus.ONLINE);
                 sendForce("get_current_power!");
                 updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
-                updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
+                updateState(getThing().getChannel("brightness").getUID(), new PercentType(100));
                 // Seems we need to wait a bit after initialization for the channels to
                 // be ready to accept updates, so deferring input loop by 1 sec.
                 scheduler.schedule(this, 1, TimeUnit.SECONDS);
@@ -230,7 +230,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                         power = false;
                     }
                 } else if ("dimmer".equals(command)) {
-                    updateState(getThing().getChannel("dimmer").getUID(), readDimmer());
+                    updateState(getThing().getChannel("brightness").getUID(), readDimmer());
                 } else if ("freq".equals(command)) {
                     updateState(getThing().getChannel("frequency").getUID(), readFrequency());
                 } else if ("source".equals(command)) {
@@ -293,8 +293,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 }
             } else if ("volume".equals(channelUID.getId())) {
                 handleVolume(command);
-            } else if ("dimmer".equals(channelUID.getId())) {
-                handleDimmer(command);
+            } else if ("brightness".equals(channelUID.getId())) {
+                handleBrightness(command);
             } else if ("source".equals(channelUID.getId())) {
                 if (command instanceof StringType) {
                     send(command.toString() + "!");
@@ -321,7 +321,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         }
     }
 
-    private void handleDimmer(Command command) throws IOException {
+    private void handleBrightness(Command command) throws IOException {
         // Invert the scale so 100% is brightest
         if (command instanceof PercentType) {
             double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);

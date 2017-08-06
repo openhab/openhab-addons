@@ -36,7 +36,7 @@ The thing has the following configuration parameter:
 | mute       | Switch    | Enable / disable mute.                                                                           |
 | source     | String    | Selects from a list of input sources (see options).                                              |
 | frequency  | Number    | Reports the current sampling frequency if playing from a digital input.                          |
-| dimmer     | Dimmer    | Sets the backlight level of the display. Maps from percentage to 6 levels (can't be turned off). |
+| brightness | Dimmer    | Sets the backlight level of the display. Maps from percentage to 6 levels (can't be turned off). |
 
 All channels are updated in real time if modified by other means, e.g. by the remote control.
 

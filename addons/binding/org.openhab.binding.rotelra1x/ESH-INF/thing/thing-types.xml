@@ -14,7 +14,7 @@
             <channel id="mute" typeId="mute"/>
             <channel id="source" typeId="source"/>
             <channel id="frequency" typeId="frequency"/>
-            <channel id="dimmer" typeId="dimmer"/>
+            <channel id="brightness" typeId="brightness"/>
         </channels>
         
         <config-description>
@@ -85,7 +85,7 @@
         <state readOnly="true"/>
     </channel-type>
     
-    <channel-type id="dimmer" advanced="true">
+    <channel-type id="brightness" advanced="true">
         <item-type>Dimmer</item-type>
         <label>Display brightness</label>
         <description>Display backlight brightness.</description>
