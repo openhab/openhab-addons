@@ -112,11 +112,22 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             relativeVolumeChangeFactor = relVolumeChange.floatValue();
         }
 
-        // Determine the zone of this thing
+        // Determine the zone of this thing from configuration
         String zoneName = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
+
+        // If no zone was found in configuration, check properties
         if (zoneName == null) {
-            zoneName = YamahaReceiverCommunication.Zone.Main_Zone.name();
+            zoneName = thing.getProperties().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
+
+            // If no zone is still found, assume main zone
+            if (zoneName == null) {
+                zoneName = YamahaReceiverCommunication.Zone.Main_Zone.name();
+            } else {
+                zoneName = YamahaReceiverCommunication.Zone.valueOf(zoneName).name();
+            }
         }
+
+        logger.info("Zone found to be: " + zoneName);
 
         Zone zone = YamahaReceiverCommunication.Zone.valueOf(zoneName);
 

@@ -53,10 +53,9 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         } catch (Exception e) {
             // ignore and use the default label
         }
-        properties.put((String) YamahaReceiverBindingConstants.CONFIG_HOST_NAME,
+        properties.put(YamahaReceiverBindingConstants.CONFIG_HOST_NAME,
                 device.getIdentity().getDescriptorURL().getHost());
-        properties.put((String) YamahaReceiverBindingConstants.CONFIG_ZONE,
-                YamahaReceiverCommunication.Zone.Main_Zone.name());
+        properties.put(YamahaReceiverBindingConstants.CONFIG_ZONE, YamahaReceiverCommunication.Zone.Main_Zone.name());
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
 
