@@ -80,8 +80,9 @@ The Kodi thing supports the following channels:
 | inputtext        | String    | This channel emulates a keyboard input                                                                                                                                                       |
 | systemcommand    | String    | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi                                                                                                    |
 | mediatype        | String    | The media type of the current file. Valid return values are: `unknown`, `channel`, `episode`, `movie`, `musicvideo`, `picture`, `radio`, `song`, `video`                                     |
-| thumbnail        | String    | The URL to the thumbnail of the current file | 
-| fanart           | String    | The URL to the fanart of the current file |
+| thumbnail        | String    | The URL to the thumbnail of the current file                                                                                                                                                 |
+| fanart           | String    | The URL to the fanart of the current file                                                                                                                                                    |
+
 
 ### Channel Configuration
 
@@ -147,8 +148,8 @@ sitemap demo label="myKodi"
         Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info']
         Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
         Text      item=myKodi_mediatype
-        Image     item=myKodi_thumbnail url=""
-        Image     item=myKodi_fanart url=""
+        Image     item=myKodi_thumbnail
+        Image     item=myKodi_fanart
     }
 }
 ```

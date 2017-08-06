@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,6 +35,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
+import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  *
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
@@ -223,9 +224,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     private URI getImageBaseUrl() throws URISyntaxException {
-        String host = this.getConfig().get(HOST_PARAMETER).toString();
-        int httpPort = getIntConfigParameter(HTTP_PORT_PARAMETER, 8080);
-        return new URI(String.format("http://%s:%d/image/", host, httpPort));
+        KodiConfig config = getConfigAs(KodiConfig.class);
+        String host = config.getIpAddress();
+        int httpPort = config.getHttpPort();
+        String httpUser = config.getHttpUser();
+        String httpPassword = config.getHttpPassword();
+        if (httpUser == null || httpUser.isEmpty() || httpPassword == null || httpPassword.isEmpty()) {
+            return new URI(String.format("http://%s:%d/image/", host, httpPort));
+        } else {
+            return new URI(String.format("http://%s:%s@%s:%d/image/", httpUser, httpPassword, host, httpPort));
+        }
     }
 
     public void playURI(Command command) {
@@ -278,7 +286,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     if (KodiState.Play.equals(connection.getState())) {
                         connection.updatePlayerStatus();
                     }
-                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10000), TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);
@@ -398,15 +406,20 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     /**
-     * Download the image from the URL and return it as {@link RawType}. If the given link does not resolve to an image,
+     * Download the image from the URL and return it as {@link State}. If the given link does not resolve to an image,
      * return {@link UnDefType#UNDEF}.
      */
     private State createImage(String url) {
-        RawType image = HttpUtil.downloadImage(url);
-        if (image != null) {
-            return image;
-        } else {
+        if (url == null || url.isEmpty()) {
             return UnDefType.UNDEF;
+        }
+        logger.debug("Try to download the content of URL {}", url);
+        final State image = HttpUtil.downloadImage(url);
+        if (image == null) {
+            logger.debug("Failed to download the content of URL {}", url);
+            return UnDefType.UNDEF;
+        } else {
+            return image;
         }
     }
 

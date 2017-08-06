@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  * 
  */
 public class KodiBindingConstants {
@@ -33,6 +34,9 @@ public class KodiBindingConstants {
     public static final String HOST_PARAMETER = "ipAddress";
     public static final String WS_PORT_PARAMETER = "port";
     public static final String HTTP_PORT_PARAMETER = "httpPort";
+    public static final String HTTP_USER_PARAMETER = "httpUser";
+    public static final String HTTP_PASSWORD_PARAMETER = "httpPassword";
+    public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";

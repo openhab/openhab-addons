@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -29,6 +30,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  *
  */
 public class KodiConnection implements KodiClientSocketEventListener {
@@ -61,7 +63,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler, URI imageUri) {
-	this.imageUri = imageUri;
+        this.imageUri = imageUri;
         try {
             close();
             wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
@@ -267,27 +269,29 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     channel = item.get("channel").getAsString();
                 }
 
-        String thumbnail = "";
-        if (item.has("thumbnail")) {
-            thumbnail = convertToImageUrl(item.get("thumbnail"));
-        }
+                String thumbnail = "";
+                if (item.has("thumbnail")) {
+                    thumbnail = convertToImageUrl(item.get("thumbnail"));
+                }
 
-        String fanart = "";
-        if (item.has("fanart")) {
-            fanart = convertToImageUrl(item.get("fanart"));
-        }
+                String fanart = "";
+                if (item.has("fanart")) {
+                    fanart = convertToImageUrl(item.get("fanart"));
+                }
 
-        try {
-            listener.updateAlbum(album);
-            listener.updateTitle(title);
-            listener.updateShowTitle(showTitle);
-            listener.updateArtist(artist);
-            listener.updateMediaType(mediaType);
-            listener.updatePVRChannel(channel);
-            listener.updateThumbnail(thumbnail);
-            listener.updateFanart(fanart);
-        } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+                try {
+                    listener.updateAlbum(album);
+                    listener.updateTitle(title);
+                    listener.updateShowTitle(showTitle);
+                    listener.updateArtist(artist);
+                    listener.updateMediaType(mediaType);
+                    listener.updatePVRChannel(channel);
+                    listener.updateThumbnail(thumbnail);
+                    listener.updateFanart(fanart);
+                } catch (Exception e) {
+                    logger.error("Event listener invoking error", e);
+                }
+            }
         }
     }
 
@@ -324,7 +328,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
         String text = convertToText(element);
         if (!text.isEmpty()) {
             try {
-                String encodedURL = URLEncoder.encode(text, "UTF-8");
+                // we have to strip ending "/" here because Kodi returns a not valid path and filename
+                // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+                // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+                String encodedURL = URLEncoder.encode(StringUtils.stripEnd(text, "/"), "UTF-8");
                 return imageUri.resolve(encodedURL).toString();
             } catch (UnsupportedEncodingException e) {
                 return text;
