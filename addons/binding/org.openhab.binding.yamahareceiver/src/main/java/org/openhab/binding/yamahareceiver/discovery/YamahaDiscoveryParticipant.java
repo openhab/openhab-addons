@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.discovery;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.internal.protocol.YamahaReceiverCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(YamahaReceiverBindingConstants.THING_TYPE_YAMAHAAV);
+        return Collections.singleton(YamahaReceiverBindingConstants.BRIDGE_THING_TYPE);
     }
 
     @Override
@@ -53,10 +53,15 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         } catch (Exception e) {
             // ignore and use the default label
         }
-        properties.put((String) YamahaReceiverBindingConstants.CONFIG_HOST_NAME,
-                device.getIdentity().getDescriptorURL().getHost());
-        properties.put((String) YamahaReceiverBindingConstants.CONFIG_ZONE,
-                YamahaReceiverCommunication.Zone.Main_Zone.name());
+
+        URL url = device.getIdentity().getDescriptorURL();
+        int port = url.getPort() == -1 ? 80 : url.getPort();
+        // Fix for upnp implementations on 8080
+        if (port == 8080) {
+            port = 80;
+        }
+
+        properties.put(YamahaReceiverBindingConstants.CONFIG_HOST_NAME, url.getHost() + ":" + String.valueOf(port));
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
 
@@ -89,7 +94,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
             logger.debug("Discovered a Yamaha Receiver '{}' model '{}' thing with UDN '{}'", friedlyName, modelName,
                     udn);
 
-            return new ThingUID(YamahaReceiverBindingConstants.THING_TYPE_YAMAHAAV, udn);
+            return new ThingUID(YamahaReceiverBindingConstants.BRIDGE_THING_TYPE, udn);
         } else {
             return null;
         }
