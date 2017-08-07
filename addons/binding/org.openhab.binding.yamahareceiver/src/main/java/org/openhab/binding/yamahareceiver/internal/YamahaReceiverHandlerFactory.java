@@ -15,9 +15,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.handler.YamahaZoneThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,7 @@ import com.google.common.collect.Sets;
  *
  * @author David Graeff <david.graeff@web.de>
  */
+@Component(immediate = true, service = ThingHandlerFactory.class)
 public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             YamahaReceiverBindingConstants.BRIDGE_THING_TYPES_UIDS,
@@ -41,6 +45,7 @@ public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    @Reference
     protected void setChannelTypeProvider(YamahaChannelsTypeProvider channelTypeProvider) {
         this.yamahaChannelsTypeProvider = channelTypeProvider;
     }
@@ -59,7 +64,7 @@ public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(YamahaReceiverBindingConstants.BRIDGE_THING_TYPE)) {
+        if (thingTypeUID.equals(YamahaReceiverBindingConstants.BRIDGE_THING_TYPE) && thing instanceof Bridge) {
             return new YamahaBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(YamahaReceiverBindingConstants.ZONE_THING_TYPE)) {
             return new YamahaZoneThingHandler(thing, yamahaChannelsTypeProvider);
