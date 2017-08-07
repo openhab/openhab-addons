@@ -22,6 +22,7 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.avmfritz.test</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
@@ -88,7 +89,6 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
-    <module>org.openhab.binding.avmfritz.test</module>
   </modules>
 
 </project>
