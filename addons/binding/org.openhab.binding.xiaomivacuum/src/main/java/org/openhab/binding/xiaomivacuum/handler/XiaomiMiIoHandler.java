@@ -54,6 +54,8 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
 
     protected ScheduledFuture<?> pollingJob;
     protected XiaomiVacuumBindingConfiguration configuration;
+    protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
+
     protected JsonParser parser;
     protected byte[] token;
 
@@ -290,17 +292,25 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, result.get("fw_ver").getAsString());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.get("hw_ver").getAsString());
         updateProperties(properties);
-        MiIoDevices midev = MiIoDevices.getType(model);
-        if (midev.getThingType().equals(getThing().getThingTypeUID())) {
-            logger.info("MiIO Device model {} identified as: {}. Matches thingtype {}", model, midev.toString(),
-                    midev.getThingType().toString());
+        miDevice = MiIoDevices.getType(model);
+        if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
+            logger.info("Mi IO Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
+                    miDevice.getThingType().toString());
         } else {
-            logger.info(
-                    "MiIO Device model {} identified as: {}. Does not matches thingtype {}. Changing thingtype to {}",
-                    model, midev.toString(), getThing().getThingTypeUID().toString(), midev.getThingType().toString());
             ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLabel(midev.getDescription());
+            thingBuilder.withLabel(miDevice.getDescription());
             updateThing(thingBuilder.build());
+            if (!miDevice.getThingType().equals(THING_TYPE_MIIO)) {
+                logger.warn(
+                        "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Unexpected, unless intentionally changed.",
+                        model, miDevice.toString(), getThing().getThingTypeUID().toString(),
+                        miDevice.getThingType().toString());
+                return true;
+            }
+            logger.info(
+                    "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Changing thingtype to {}",
+                    model, miDevice.toString(), getThing().getThingTypeUID().toString(),
+                    miDevice.getThingType().toString());
             changeThingType(MiIoDevices.getType(model).getThingType(), getConfig());
         }
         return true;

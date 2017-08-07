@@ -74,11 +74,13 @@ public class XiaomiVacuumHandler extends XiaomiMiIoHandler {
             } else {
                 logger.info("Command {} not recognised", command.toString());
             }
+            status.invalidateValue();
             updateVacuumStatus();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
             sendCommand(VacuumCommand.SET_MODE, command.toString());
+            status.invalidateValue();
             updateVacuumStatus();
             return;
         }
@@ -86,6 +88,7 @@ public class XiaomiVacuumHandler extends XiaomiMiIoHandler {
             if (Integer.valueOf(command.toString()) > 0) {
                 sendCommand(VacuumCommand.SET_MODE, command.toString());
             }
+            status.invalidateValue();
             updateVacuumStatus();
             return;
         }

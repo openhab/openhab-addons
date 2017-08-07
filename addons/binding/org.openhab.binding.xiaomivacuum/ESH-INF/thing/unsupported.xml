@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="unsupported">
-		<label>Xiaomi Unsupported MiIO device</label>
+		<label>Xiaomi Unsupported Mi IO device</label>
 
 		<channel-groups>
 			<channel-group id="network" typeId="network" />
@@ -16,14 +16,19 @@
 		</properties>
 
 		<config-description-ref uri="thing-type:miio:config" />
-
 	</thing-type>
 
 	<channel-group-type id="miioactions">
 		<label>Actions</label>
 		<channels>
 			<channel id="commands" typeId="commands" />
+			<channel id="testcommands" typeId="testcommands" />
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="testcommands">
+		<item-type>Switch</item-type>
+		<label>(experimental)Execute Test Commands</label>
+		<description>(experimental)Execute Test Commands to support development for your device. (NB device can switch modes)</description>
+	</channel-type>
 </thing:thing-descriptions>

@@ -30,7 +30,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VACUUM,
-            THING_TYPE_MIIO);
+            THING_TYPE_MIIO, THING_TYPE_UNSUPPORTED);
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -46,6 +46,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
+    public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
 
     public static final String CHANNEL_SSID = "network#ssid";
     public static final String CHANNEL_BSSID = "network#bssid";

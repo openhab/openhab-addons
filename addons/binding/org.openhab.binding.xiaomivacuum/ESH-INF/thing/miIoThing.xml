@@ -16,14 +16,6 @@
 		</properties>
 
 		<config-description-ref uri="thing-type:miio:config" />
-
 	</thing-type>
-
-	<channel-group-type id="miioactions">
-		<label>Actions</label>
-		<channels>
-			<channel id="commands" typeId="commands" />
-		</channels>
-	</channel-group-type>
 
 </thing:thing-descriptions>
