@@ -124,7 +124,7 @@ public class HueEmulationUpnpServer extends Thread {
                                     logger.trace("Sending to {} : {}", recv.getAddress().getHostAddress(), msg);
                                     sendSocket.send(response);
                                 } catch (IOException e) {
-                                    logger.error("Could not send UPNP response", e);
+                                    logger.debug("Could not send UPNP response: {}", e.getMessage());
                                 }
                             }
                         }
