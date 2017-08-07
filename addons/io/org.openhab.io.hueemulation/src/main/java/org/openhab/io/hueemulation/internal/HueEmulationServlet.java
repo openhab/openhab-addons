@@ -102,9 +102,9 @@ public class HueEmulationServlet extends HttpServlet {
     private int webPort;
     private boolean pairingEnabled = false;
     // list of valid Hue API user ids
-    private ArrayList<String> userNames = new ArrayList<String>();
+    private List<String> userNames = new ArrayList<>();
     // deviceMap maps a Hue numeric id to a Item Name, ordered by that id
-    private TreeMap<Integer, String> deviceMap = new TreeMap<Integer, String>();
+    private TreeMap<Integer, String> deviceMap = new TreeMap<>();
 
     protected void activate(Map<String, Object> config) {
         modified(config);
@@ -307,8 +307,6 @@ public class HueEmulationServlet extends HttpServlet {
                     }
                 }
             }
-        } catch (IOException e) {
-
         }
     }
 
