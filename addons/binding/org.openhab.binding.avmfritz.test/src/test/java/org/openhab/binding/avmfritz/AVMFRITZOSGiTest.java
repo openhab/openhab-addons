@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
-import org.openhab.binding.avmfritz.handler.AVMFRITZHandler;
+import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.ThingProvider;
@@ -25,13 +25,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
-* Tests cases for {@link AVMFRITZHandler}.
-*
-* @author Christoph Weitkamp - Initial contribution
-*/
+ * Tests cases for {@link BoxHandler}.
+ *
+ * @author Christoph Weitkamp - Initial contribution
+ */
 public class AVMFRITZOSGiTest extends JavaOSGiTest {
-
-    private static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("avmfritz", "bridge");
 
     private ManagedThingProvider managedThingProvider;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();
@@ -41,20 +39,16 @@ public class AVMFRITZOSGiTest extends JavaOSGiTest {
     public void setUp() {
         registerService(volatileStorageService);
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
-        bridge = BridgeBuilder.create(BRIDGE_THING_TYPE_UID, "1").withLabel("My Bridge").build();
     }
 
     @After
     public void tearDown() {
-        managedThingProvider.remove(bridge.getUID());
         unregisterService(volatileStorageService);
     }
 
     @Test
     public void creationOfAVMFRITZHandler() {
-        assertThat(bridge.getHandler(), is(nullValue()));
-        managedThingProvider.add(bridge);
-        waitForAssert(() -> assertThat(bridge.getHandler(), is(notNullValue())));
+        assertThat(managedThingProvider, is(nullValue()));
     }
 
 }
