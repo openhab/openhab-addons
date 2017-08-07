@@ -28,43 +28,51 @@ Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.thi
 
 ## Channels
 
-The following channels are supported:
+The following channels are supported for fans:
 
-All devices support some of the following channels:
+| Channel Name            | Item Type    | Description                                           |
+|-------------------------|--------------|-------------------------------------------------------|
+| fan-power               | Switch       | Power on/off the fan                                  |
+| fan-speed               | Dimmer       | Adjust the speed of the fan                           |
+| fan-direction           | String       | Indicates the direction in which the fan is turning   |
+| fan-auto                | Switch       | Enable/disable fan auto mode                          |
+| fan-whoosh              | Switch       | Enable/disable fan "whoosh" mode                      |
+| fan-smartmode           | String       | Set Smartmode to HEATING, COOLING, or OFF             |
+| fan-learn-minspeed      | Dimmer       | Set minimum fan speed for Smartmode COOLING           |
+| fan-learn-maxspeed      | Dimmer       | Set maximum fan speed for Smartmode COOLING           |
+| fan-wintermode          | Switch       | Enable/disable fan winter mode                        |
+| fan-speed-min           | Dimmer       | Set minimum fan speed                                 |
+| fan-speed-max           | Dimmer       | Set maximum fan speed                                 |
+| light-power             | Switch       | Power on/off the fan                                  |
+| light-level             | Dimmer       | Adjust the brightness of the light from               |
+| light-auto              | Switch       | Enable/disable light auto mode                        |
+| light-smarter           | String       | Enable/disable Smarter Lighting                       |
+| light-level-min         | Dimmer       | Set minimum light level for Smarter Lighting          |
+| light-level-max         | Dimmer       | Set maximum light level for Smarter Lighting          |
+| light-present           | String       | Indicates is a light is installed in the fan          |
+| motion                  | Switch       | Motion was detected                                   |
+| time                    | DateTime     | Fan's date and time                                   |
 
-| Channel Name            | Item Type    | Description                                     |
-|-------------------------|--------------|-------------------------------------------------|
-| fan-power               | Switch       | Power on/off the fan                            |
-| fan-speed               | Dimmer       | Adjust the speed of the fan                     |
-| fan-direction           | Switch       | Change the direction in which the fan turns     |
-| fan-auto                | Switch       | Enable/disable fan auto mode                    |
-| fan-whoosh              | Switch       | Enable/disable fan "whoosh" mode                |
-| fan-smartmode           | String       | Set Smartmode to HEATING, COOLING, or OFF       |
-| fan-speed-min           | Dimmer       | Set minimum fan speed for Smartmode COOLING     |
-| fan-speed-max           | Dimmer       | Set maximum fan speed for Smartmode COOLING     |
-| light-power             | Switch       | Power on/off the fan                            |
-| light-level             | Dimmer       | Adjust the brightness of the light from         |
-| light-auto              | Switch       | Enable/disable light auto mode                  |
-| light-smarter           | String       | Enable/disable Smarter Lighting       |
-| light-level-min         | Dimmer       | Set minimum light level for Smarter Lighting    |
-| light-level-max         | Dimmer       | Set maximum light level for Smarter Lighting    |
-| motion                  | Switch       | Motion was detected                             |
-| time                    | DateTime     | Fan's date and time                             |
+The following channels are supported for wall controllers:
+
+| Channel Name            | Item Type    | Description                                           |
+|-------------------------|--------------|-------------------------------------------------------|
+| motion                  | Switch       | Motion was detected                                   |
+| time                    | DateTime     | Wall controllers date and time                        |
 
 
-## Items
+## Fan Items
 
 The following item definitions would be used to control the fan.
 
 ```
 Switch PorchFanPower                { channel="bigassfan:fan:20F85EDAA56A:fan-power" }
 Dimmer PorchFanSpeed                { channel="bigassfan:fan:20F85EDAA56A:fan-speed" }
-Switch PorchFanDirection            { channel="bigassfan:fan:20F85EDAA56A:fan-direction" }
 Switch PorchFanAuto                 { channel="bigassfan:fan:20F85EDAA56A:fan-auto" }
 Switch PorchFanWhoosh               { channel="bigassfan:fan:20F85EDAA56A:fan-whoosh" }
 String PorchFanSmartmode            { channel="bigassfan:fan:20F85EDAA56A:fan-smartmode" }
-Dimmer PorchFanSpeedMin             { channel="bigassfan:fan:20F85EDAA56A:fan-speed-min" }
-Dimmer PorchFanSpeedMax             { channel="bigassfan:fan:20F85EDAA56A:fan-speed-max" }
+Dimmer PorchFanSpeedMin             { channel="bigassfan:fan:20F85EDAA56A:fan-learn-minspeed" }
+Dimmer PorchFanSpeedMax             { channel="bigassfan:fan:20F85EDAA56A:fan-learn-maxspeed" }
 ```
 
 The following item definitions would be used to control the light.
@@ -76,6 +84,7 @@ Switch PorchFanLightAuto            { channel="bigassfan:fan:20F85EDAA56A:light-
 Switch PorchFanLightSmarter         { channel="bigassfan:fan:20F85EDAA56A:light-smarter" }
 Dimmer PorchFanLightLevelMin        { channel="bigassfan:fan:20F85EDAA56A:light-level-min" }
 Dimmer PorchFanLightLevelMax        { channel="bigassfan:fan:20F85EDAA56A:light-level-max" }
+String PorchFanLightPresent         { channel="bigassfan:fan:20F85EDAA56A:light-present" }
 ```
 
 The following readonly items are provided by the fan.
@@ -84,6 +93,15 @@ The following readonly items are provided by the fan.
 Switch PorchFanMotionSensor         { channel="bigassfan:fan:20F85EDAA56A:motion" }
 DateTime PorchFanTime               { channel="bigassfan:fan:20F85EDAA56A:time" }
 ```
+
+
+## Wall Controller Items
+
+```
+Switch PorchControllerMotionSensor  { channel="bigassfan:controller:20F85ED87F01:motion" }
+DateTime PorchControllerTime        { channel="bigassfan:controller:20F85ED87F01:time" }
+```
+
 
 ### Sitemap
 
@@ -108,5 +126,5 @@ bigassfan:fan:20F85EDAA56A [ label="Porch Fan", ipAddress="192.168.12.62", macAd
 
 #### Unsupported Features
 
-Wall Controllers are not supported.  Standalone lights are not supported.
+Standalone lights are not supported.
 
