@@ -30,6 +30,7 @@ public class XiaomiGatewayBindingConstants {
             "sensor_weather_v1");
     public static final ThingTypeUID THING_TYPE_SENSOR_MOTION = new ThingTypeUID(BINDING_ID, "sensor_motion");
     public static final ThingTypeUID THING_TYPE_SENSOR_SWITCH = new ThingTypeUID(BINDING_ID, "sensor_switch");
+    public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_SWITCH = new ThingTypeUID(BINDING_ID, "sensor_switch_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_CUBE = new ThingTypeUID(BINDING_ID, "sensor_cube");
