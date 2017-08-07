@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
@@ -30,10 +31,10 @@ import org.slf4j.LoggerFactory;
  * Discover all AHA (AVM Home Automation) devices connected to a FRITZ!Box
  * device.
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
  *
  */
-public class AvmDiscoveryService extends AbstractDiscoveryService {
+public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Logger
@@ -67,7 +68,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
      */
     private ScheduledFuture<?> scanningJob;
 
-    public AvmDiscoveryService(BoxHandler bridgeHandler) {
+    public AVMFritzDiscoveryService(BoxHandler bridgeHandler) {
         super(BindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
@@ -104,14 +105,15 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
      * @param device Device model received from a FRITZ!Box
      */
     public void onDeviceAddedInternal(DeviceModel device) {
-        ThingUID thingUID = this.bridgeHandler.getThingUID(device);
+        final ThingUID thingUID = bridgeHandler.getThingUID(device);
         if (thingUID != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            Map<String, Object> properties = new HashMap<>(1);
+            final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            final Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
-            properties.put(SERIAL_NUMBER, device.getIdentifier());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getIdentifier());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(device.getIdentifier()).withBridge(bridgeUID)
                     .withLabel(device.getName()).build();
 
@@ -154,14 +156,14 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
         /**
          * Handler for delegation to callbacks.
          */
-        private AvmDiscoveryService service;
+        private AVMFritzDiscoveryService service;
 
         /**
          * Constructor.
          *
          * @param handler
          */
-        public FritzScan(AvmDiscoveryService service) {
+        public FritzScan(AVMFritzDiscoveryService service) {
             this.service = service;
         }
 

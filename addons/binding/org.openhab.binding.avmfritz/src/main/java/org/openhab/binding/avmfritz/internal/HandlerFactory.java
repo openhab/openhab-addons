@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.handler.DeviceHandler;
-import org.openhab.binding.avmfritz.internal.discovery.AvmDiscoveryService;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,9 +96,8 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      * @param handler
      */
     private void registerDeviceDiscoveryService(BoxHandler handler) {
-        AvmDiscoveryService discoveryService = new AvmDiscoveryService(handler);
+        AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 }
-
