@@ -14,22 +14,24 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 
 /**
  * Extends the ChannelTypeProvider to provide the list of available channels for the current zone.
+ *
+ * @author David Gräff
  */
 public interface YamahaChannelsTypeProvider extends ChannelTypeProvider {
     /**
      * Changes the available inputs
      */
-    public void changeAvailableInputs(Map<String, String> availableInputs);
+    void changeAvailableInputs(Map<String, String> availableInputs);
 
     /**
      * Changes the available inputs
      */
-    public void changePresetNames(String presetNames[]);
+    void changePresetNames(String presetNames[]);
 
     /**
      * We need to call this method after the XML type files are read and available in the type registry.
      * This will provide us with a default input channels channel type which lists all existing inputs.
      * As soon as changeAvailableInputs is called, that channel type will be replaced.
      */
-    public void init();
+    void init();
 }
