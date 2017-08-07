@@ -7,6 +7,8 @@ Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.gson,
+ com.google.gson.reflect,
+ com.google.gson.stream,
  javax.servlet,
  javax.servlet.http,
  org.apache.commons.io,
