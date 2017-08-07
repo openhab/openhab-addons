@@ -109,6 +109,8 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorMotionHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_SWITCH)) {
             return new XiaomiSensorSwitchHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SENSOR_AQARA_SWITCH)) {
+            return new XiaomiSensorSwitchHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_MAGNET)) {
             return new XiaomiSensorMagnetHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_CUBE)) {
