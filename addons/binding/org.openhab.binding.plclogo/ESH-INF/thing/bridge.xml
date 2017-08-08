@@ -5,7 +5,7 @@
 
 	<!--Siemens LOGO! PLC bridge -->
 	<bridge-type id="device">
-		<label>Siemens LOGO! PLC</label>
+		<label>LOGO! PLC</label>
 		<description>Bridge for Siemens LOGO! PLC's</description>
 		<channels>
 			<channel id="rtc" typeId="rtc" />
@@ -13,10 +13,31 @@
 		<config-description-ref uri="thing-type:plclogo:bridge" />
 	</bridge-type>
 
+	<!--Siemens LOGO! bridge channels -->
 	<channel-type id="rtc">
 		<item-type>DateTime</item-type>
 		<label>Siemens LOGO! RTC</label>
 		<description>The value of Siemens LOGO! RTC</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<!--Siemens LOGO! digital channels -->
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Digital input</label>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Digital output</label>
+	</channel-type>
+
+	<!--Siemens LOGO! analog channels -->
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Analog number</label>
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Analog date/time</label>
 	</channel-type>
 </thing:thing-descriptions>

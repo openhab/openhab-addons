@@ -17,10 +17,9 @@ package org.openhab.binding.plclogo.config;
 public class PLCLogoDigitalConfiguration extends PLCLogoBlockConfiguration {
 
     @Override
-    public boolean isBlockValid() {
+    public boolean isBlockValid(final String name) {
         boolean valid = false;
-        final String name = getBlockName();
-        if (name.length() >= 2) {
+        if (name != null && name.length() >= 2) {
             valid = valid || name.startsWith("I") || name.startsWith("NI"); // Inputs
             valid = valid || name.startsWith("Q") || name.startsWith("NQ"); // Outputs
             valid = valid || name.startsWith("M"); // Markers
@@ -40,14 +39,14 @@ public class PLCLogoDigitalConfiguration extends PLCLogoBlockConfiguration {
     }
 
     @Override
-    public boolean isInputBlock() {
-        final String kind = getBlockKind();
+    public boolean isInputBlock(final String name) {
+        final String kind = getBlockKind(name);
         return kind.equalsIgnoreCase("I") || kind.equalsIgnoreCase("NI");
     }
 
     @Override
     public String getItemType() {
-        return isInputBlock() ? "Contact" : "Switch";
+        return isInputBlock(getBlockName()) ? "Contact" : "Switch";
     }
 
 }

@@ -30,13 +30,16 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.plclogo.PLCLogoBindingConstants;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.plclogo.config.PLCLogoAnalogConfiguration;
+import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.PLCLogoDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Moka7.S7;
+import Moka7.S7Client;
 
 /**
  * The {@link PLCAnalogBlockHandler} is responsible for handling commands, which are
@@ -61,58 +64,90 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
     }
 
     @Override
-    public void initialize() {
-        final Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCAnalogBlockHandler: Thing may not be null.");
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handle command {} on channel {}", command, channelUID);
 
         final Bridge bridge = getBridge();
         Objects.requireNonNull(bridge, "PLCAnalogBlockHandler: Bridge may not be null.");
 
+        final Thing thing = getThing();
+        Objects.requireNonNull(thing, "PLCAnalogBlockHandler: Thing may not be null.");
+        if ((ThingStatus.ONLINE != thing.getStatus()) || (ThingStatus.ONLINE != bridge.getStatus())) {
+            return;
+        }
+
+        final PLCLogoClient client = getClient();
+        final String channelId = channelUID.getId();
+        if (!ANALOG_CHANNEL_ID.equals(channelId) || (client == null)) {
+            logger.warn("Can not update channel {}: {}.", channelUID, client);
+            return;
+        }
+
+        final String name = getBlockName();
+        final PLCLogoDataType type = getBlockDataType();
+        if (command instanceof RefreshType) {
+            super.handleCommand(channelUID, command);
+        } else if (command instanceof DecimalType) {
+            final int offset = type.getByteCount();
+            if (((offset == 2) || (offset == 4)) && (name != null)) {
+                final byte[] buffer = new byte[offset];
+                final DecimalType state = (DecimalType) command;
+                if (offset == 2) {
+                    S7.SetShortAt(buffer, 0, state.intValue());
+                } else {
+                    S7.SetDWordAt(buffer, 0, state.longValue());
+                }
+                int result = client.writeDBArea(1, getAddress(), buffer.length, S7Client.S7WLByte, buffer);
+                if (result != 0) {
+                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                }
+            } else {
+                logger.warn("Invalid block {} found.", name);
+            }
+        } else if (command instanceof DateTimeType) {
+            final int offset = type.getByteCount();
+            if ((offset == 2) && (name != null)) {
+                final byte[] buffer = new byte[offset];
+                final DateTimeType state = (DateTimeType) command;
+                if (ANALOG_TIME_CHANNEL.equalsIgnoreCase(config.getType())) {
+                    final Calendar calendar = state.getCalendar();
+                    buffer[0] = S7.ByteToBCD(calendar.get(Calendar.HOUR_OF_DAY));
+                    buffer[1] = S7.ByteToBCD(calendar.get(Calendar.MINUTE));
+                } else if (ANALOG_DATE_CHANNEL.equalsIgnoreCase(config.getType())) {
+                    final Calendar calendar = state.getCalendar();
+                    buffer[0] = S7.ByteToBCD(calendar.get(Calendar.MONTH) + 1);
+                    buffer[1] = S7.ByteToBCD(calendar.get(Calendar.DATE));
+                }
+
+                int result = client.writeDBArea(1, getAddress(), buffer.length, S7Client.S7WLByte, buffer);
+                if (result != 0) {
+                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                }
+            } else {
+                logger.warn("Invalid block {} found.", name);
+            }
+        } else {
+            logger.debug("Not supported command {} received.", command);
+        }
+    }
+
+    @Override
+    public void initialize() {
         synchronized (config) {
             config = getConfigAs(PLCLogoAnalogConfiguration.class);
         }
 
-        final String name = config.getBlockName();
-        logger.debug("Initialize LOGO! {} analog handler.", name);
-
         scheduler.execute(new Runnable() {
             @Override
             public void run() {
-                if (config.isBlockValid()) {
-                    ThingBuilder tBuilder = editThing();
-
-                    String text = config.isInputBlock() ? INPUT_CHANNEL : OUTPUT_CHANNEL;
-                    text = text.substring(0, 1).toUpperCase() + text.substring(1);
-                    tBuilder = tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
-
-                    final Channel channel = thing.getChannel(ANALOG_CHANNEL_ID);
-                    if (channel != null) {
-                        tBuilder.withoutChannel(channel.getUID());
-                    }
-
-                    final String type = config.getItemType();
-                    final ChannelUID uid = new ChannelUID(thing.getUID(), ANALOG_CHANNEL_ID);
-                    ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
-                    cBuilder = cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
-                    cBuilder = cBuilder.withLabel(name);
-                    cBuilder = cBuilder.withDescription("Analog " + text);
-                    tBuilder = tBuilder.withChannel(cBuilder.build());
-
-                    oldValue = Long.MAX_VALUE;
-                    updateThing(tBuilder.build());
-                    PLCAnalogBlockHandler.super.initialize();
-                } else {
-                    final String message = "Can not initialize LOGO! block " + name + ".";
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-                    logger.error("Can not initialize thing {} for LOGO! block {}.", thing.getUID(), name);
-                }
+                doInitialization();
             }
         });
     }
 
     @Override
     public void dispose() {
-        logger.debug("Dispose LOGO! {} analog handler.", config.getBlockName());
+        logger.debug("Dispose LOGO! {} analog handler.", getBlockName());
         super.dispose();
 
         oldValue = Long.MAX_VALUE;
@@ -176,23 +211,12 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
 
     @Override
     public PLCLogoDataType getBlockDataType() {
-        final String kind = config.getBlockKind();
-        if ((kind != null) && config.isBlockValid()) {
+        final String name = getBlockName();
+        final String kind = config.getBlockKind(name);
+        if ((kind != null) && config.isBlockValid(name)) {
             return kind.equalsIgnoreCase("VD") ? PLCLogoDataType.DWORD : PLCLogoDataType.WORD;
         }
         return PLCLogoDataType.INVALID;
-    }
-
-    /**
-     * Returns configured channel type for configured block.
-     *
-     * @see PLCLogoBindingConstants#ANALOG_DATE_CHANNEL
-     * @see PLCLogoBindingConstants#ANALOG_TIME_CHANNEL
-     * @see PLCLogoBindingConstants#ANALOG_NUMBER_CHANNEL
-     * @return Configured channel type
-     */
-    public String getChannelType() {
-        return config.getType();
     }
 
     @Override
@@ -204,12 +228,53 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
     }
 
     @Override
+    protected void doInitialization() {
+        final Thing thing = getThing();
+        Objects.requireNonNull(thing, "PLCAnalogBlockHandler: Thing may not be null.");
+
+        final Bridge bridge = getBridge();
+        Objects.requireNonNull(bridge, "PLCAnalogBlockHandler: Bridge may not be null.");
+
+        final String name = getBlockName();
+        logger.debug("Initialize LOGO! {} analog handler.", name);
+
+        if (config.isBlockValid(name)) {
+            ThingBuilder tBuilder = editThing();
+
+            String text = config.isInputBlock(name) ? INPUT_CHANNEL : OUTPUT_CHANNEL;
+            text = text.substring(0, 1).toUpperCase() + text.substring(1);
+            tBuilder = tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
+
+            final Channel channel = thing.getChannel(ANALOG_CHANNEL_ID);
+            if (channel != null) {
+                tBuilder.withoutChannel(channel.getUID());
+            }
+
+            final String type = config.getItemType();
+            final ChannelUID uid = new ChannelUID(thing.getUID(), ANALOG_CHANNEL_ID);
+            ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
+            cBuilder = cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
+            cBuilder = cBuilder.withLabel(name);
+            cBuilder = cBuilder.withDescription("Analog " + text);
+            tBuilder = tBuilder.withChannel(cBuilder.build());
+
+            oldValue = Long.MAX_VALUE;
+            updateThing(tBuilder.build());
+            super.doInitialization();
+        } else {
+            final String message = "Can not initialize LOGO! block " + name + ".";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            logger.error("Can not initialize thing {} for LOGO! block {}.", thing.getUID(), name);
+        }
+    }
+
+    @Override
     protected int getAddress(final String name) {
-        int address = -1;
+        int address = INVALID;
 
         logger.debug("Get address of {} LOGO! for block {} .", getLogoFamily(), name);
 
-        if (config.isBlockValid()) {
+        if (config.isBlockValid(name)) {
             final String block = name.trim().split("\\.")[0];
             if (Character.isDigit(block.charAt(2))) {
                 address = Integer.parseInt(block.substring(2));
@@ -222,7 +287,7 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
                 address = base + (address - 1) * 2;
             }
         } else {
-            logger.error("Wrong configurated LOGO! block {} found.", name);
+            logger.warn("Wrong configurated LOGO! block {} found.", name);
         }
         return address;
     }

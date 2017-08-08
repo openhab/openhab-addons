@@ -130,7 +130,7 @@ public class PLCLogoClient extends S7Client {
      * @param Data Buffer to read into
      * @return Zero on success, error code otherwise
      */
-    public int ReadDBArea(int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
+    public int readDBArea(int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
         return ReadArea(S7.S7AreaDB, DBNumber, Start, Amount, WordLength, Data);
     }
 
@@ -186,8 +186,16 @@ public class PLCLogoClient extends S7Client {
      * @param Data Buffer to write from
      * @return Zero on success, error code otherwise
      */
-    public int WriteDBArea(int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
+    public int writeDBArea(int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
         return WriteArea(S7.S7AreaDB, DBNumber, Start, Amount, WordLength, Data);
     }
 
+    /**
+     * Returns, if client is already connected or not
+     *
+     * @return True, if client is connected and false otherwise
+     */
+    public synchronized boolean isConnected() {
+        return Connected;
+    }
 }

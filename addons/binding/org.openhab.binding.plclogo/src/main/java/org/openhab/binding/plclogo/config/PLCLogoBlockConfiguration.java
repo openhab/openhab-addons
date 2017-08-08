@@ -24,18 +24,18 @@ public abstract class PLCLogoBlockConfiguration {
     private Boolean force = false;
 
     /**
-     * Get configured Siemens LOGO! device block name.
+     * Get configured Siemens LOGO! output block name.
      *
-     * @return Configured Siemens LOGO! block name
+     * @return Configured Siemens LOGO! output block name
      */
     public String getBlockName() {
         return block;
     }
 
     /**
-     * Set Siemens LOGO! device block name.
+     * Set Siemens LOGO! output block name.
      *
-     * @param name Siemens LOGO! block name
+     * @param name Siemens LOGO! output block name
      */
     public void setBlockName(final String name) {
         Objects.requireNonNull(name, "PLCLogoBlockConfiguration: Block name may not be null.");
@@ -43,7 +43,7 @@ public abstract class PLCLogoBlockConfiguration {
     }
 
     /**
-     * Returns if Siemens LOGO! device block channel update must be forced.
+     * Returns if Siemens LOGO! block channel update must be forced.
      *
      * @return True, if channel update to be forced and false otherwise
      */
@@ -52,9 +52,9 @@ public abstract class PLCLogoBlockConfiguration {
     }
 
     /**
-     * Set Siemens LOGO! device blocks update must be forced.
+     * Set Siemens LOGO! block update must be forced.
      *
-     * @param force Force update of Siemens LOGO! device blocks
+     * @param force Force update of Siemens LOGO! block
      */
     public void setForceUpdate(final Boolean force) {
         Objects.requireNonNull(force, "PLCLogoBlockConfiguration: Force may not be null.");
@@ -62,37 +62,42 @@ public abstract class PLCLogoBlockConfiguration {
     }
 
     /**
-     * Checks if current block configuration is valid.
-     *
-     * @return True, if the name is valid and false otherwise
-     */
-    public abstract boolean isBlockValid();
-
-    /**
      * Returns configured LOGO! block kind.
      * Can be VB, VD, VW, I, Q, M, AI, AQ, AM, NI, NAI, NQ or NAQ
      *
+     * @param name Name of the LOGO! block
      * @see PLCLogoBindingConstants#LOGO_MEMORY_0BA7
      * @see PLCLogoBindingConstants#LOGO_MEMORY_0BA8
      * @return Kind of configured block
      */
-    public String getBlockKind() {
-        if (Character.isDigit(block.charAt(1))) {
-            return block.substring(0, 1);
-        } else if (Character.isDigit(block.charAt(2))) {
-            return block.substring(0, 2);
-        } else if (Character.isDigit(block.charAt(3))) {
-            return block.substring(0, 3);
+    public String getBlockKind(final String name) {
+        if (name != null) {
+            if (Character.isDigit(name.charAt(1))) {
+                return name.substring(0, 1);
+            } else if (Character.isDigit(name.charAt(2))) {
+                return name.substring(0, 2);
+            } else if (Character.isDigit(name.charAt(3))) {
+                return name.substring(0, 3);
+            }
         }
         return null;
     }
 
     /**
+     * Checks if block configuration is valid.
+     *
+     * @param name Name of the LOGO! block to check
+     * @return True, if the name is valid and false otherwise
+     */
+    public abstract boolean isBlockValid(final String name);
+
+    /**
      * Returns if block represents input.
      *
+     * @param name Name of the LOGO! block to check
      * @return True, if block is input and false otherwise
      */
-    public abstract boolean isInputBlock();
+    public abstract boolean isInputBlock(final String name);
 
     /**
      * Return supported item type for this block.
@@ -100,4 +105,5 @@ public abstract class PLCLogoBlockConfiguration {
      * @return Supported item type
      */
     public abstract String getItemType();
+
 }

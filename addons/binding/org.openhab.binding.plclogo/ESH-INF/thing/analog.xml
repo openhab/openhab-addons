@@ -8,18 +8,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="device" />
 		</supported-bridge-type-refs>
-		<label>Analog block</label>
-		<description>LOGO! analog input/output block</description>
+		<label>LOGO! analog block</label>
+		<description>Siemens LOGO! analog input/output block</description>
 		<config-description-ref uri="thing-type:plclogo:analog" />
 	</thing-type>
-
-	<channel-type id="number">
-		<item-type>Number</item-type>
-		<label>Analog number</label>
-	</channel-type>
-	<channel-type id="datetime">
-		<item-type>DateTime</item-type>
-		<label>Analog date/time</label>
-	</channel-type>
 </thing:thing-descriptions>
 

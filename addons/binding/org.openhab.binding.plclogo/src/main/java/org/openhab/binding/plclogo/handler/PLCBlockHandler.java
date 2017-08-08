@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.plclogo.handler;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.LOGO_MEMORY_BLOCK;
+import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,10 +22,14 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.plclogo.PLCLogoBindingConstants;
+import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.PLCLogoDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import Moka7.S7Client;
 
 /**
  * The {@link PLCBlockHandler} is responsible for handling commands, which are
@@ -34,10 +39,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PLCBlockHandler extends BaseThingHandler {
 
+    public static final int INVALID = Integer.MAX_VALUE;
+
     private final Logger logger = LoggerFactory.getLogger(PLCBlockHandler.class);
 
-    private int address = -1;
-    private int bit = -1;
+    private PLCLogoClient client;
+    private String family;
+
+    private int address = INVALID;
+    private int bit = INVALID;
 
     /**
      * Constructor.
@@ -48,32 +58,37 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        getBridge().getHandler().handleCommand(channelUID, command);
-    }
-
-    @Override
-    public void initialize() {
-        logger.debug("Initialize LOGO! common block handler.");
-
         final Bridge bridge = getBridge();
         Objects.requireNonNull(bridge, "PLCBlockHandler: Bridge may not be null.");
 
-        String message = "";
-        boolean success = false;
-        if (getBlockName() != null) {
-            final Map<?, Integer> block = LOGO_MEMORY_BLOCK.get(getLogoFamily());
-            if ((0 <= getAddress()) && (getAddress() <= block.get("SIZE"))) {
-                success = true;
-                super.initialize();
-            } else {
-                message = "Can not initialize LOGO! block " + getBlockName() + ".";
-            }
-        } else {
-            message = "Can not initialize LOGO! block. Please check blocks.";
+        final Thing thing = getThing();
+        Objects.requireNonNull(thing, "PLCBlockHandler: Thing may not be null.");
+        if ((ThingStatus.ONLINE != thing.getStatus()) || (ThingStatus.ONLINE != bridge.getStatus())) {
+            return;
         }
 
-        if (!success) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        final String channelId = channelUID.getId();
+        if (!ANALOG_CHANNEL_ID.equals(channelId) || !DIGITAL_CHANNEL_ID.equals(channelId) || (client == null)) {
+            logger.warn("Can not update channel {}: {}.", channelUID, client);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            final String name = getBlockName();
+            final int offset = getBlockDataType().getByteCount();
+            if ((offset > 0) && (name != null)) {
+                final byte[] buffer = new byte[offset];
+                int result = client.readDBArea(1, getAddress(), buffer.length, S7Client.S7WLByte, buffer);
+                if (result == 0) {
+                    setData(Arrays.copyOfRange(buffer, 0, offset));
+                } else {
+                    logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                }
+            } else {
+                logger.warn("Invalid block {} found.", name);
+            }
+        } else {
+            logger.debug("Not supported command {} received.", command);
         }
     }
 
@@ -81,8 +96,11 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Dispose LOGO! common block handler.");
         super.dispose();
-        address = -1;
-        bit = -1;
+
+        client = null;
+        family = null;
+        address = INVALID;
+        bit = INVALID;
     }
 
     /**
@@ -91,7 +109,7 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
      * @return Calculated address
      */
     public int getAddress() {
-        if (address == -1) {
+        if (address == INVALID) {
             address = getAddress(getBlockName());
         }
         return address;
@@ -103,7 +121,7 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
      * @return Calculated bit
      */
     public int getBit() {
-        if (bit == -1) {
+        if (bit == INVALID) {
             bit = getBit(getBlockName());
         }
         return bit;
@@ -131,6 +149,22 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
      */
     public abstract PLCLogoDataType getBlockDataType();
 
+    @Override
+    protected void updateConfiguration(Configuration configuration) {
+        super.updateConfiguration(configuration);
+        address = INVALID;
+        bit = INVALID;
+    }
+
+    /**
+     * Returns configured LOGO! communication client.
+     *
+     * @return Configured LOGO! client
+     */
+    protected PLCLogoClient getClient() {
+        return client;
+    }
+
     /**
      * Returns configured LOGO! family.
      *
@@ -138,21 +172,42 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
      * @see PLCLogoBindingConstants#LOGO_0BA8
      * @return Configured LOGO! family
      */
-    public String getLogoFamily() {
+    protected String getLogoFamily() {
+        return family;
+    }
+
+    /**
+     * Perform thing initialization.
+     *
+     */
+    protected void doInitialization() {
+        logger.debug("Initialize LOGO! common block handler.");
+
         final Bridge bridge = getBridge();
         Objects.requireNonNull(bridge, "PLCBlockHandler: Bridge may not be null.");
 
         final PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-        Objects.requireNonNull(handler, "PLCBlockHandler: Handler may not be null.");
+        Objects.requireNonNull(handler, "PLCBlockHandler: Bridge handler may not be null.");
 
-        return handler.getLogoFamily();
-    }
+        String message = "";
+        boolean success = false;
+        if (getBlockName() != null) {
+            family = handler.getLogoFamily();
+            final Map<?, Integer> block = LOGO_MEMORY_BLOCK.get(family);
+            if ((0 <= getAddress()) && (getAddress() <= block.get("SIZE"))) {
+                success = true;
+                client = handler.getLogoClient();
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                message = "Can not initialize LOGO! block " + getBlockName() + ".";
+            }
+        } else {
+            message = "Can not initialize LOGO! block. Please check block name.";
+        }
 
-    @Override
-    protected void updateConfiguration(Configuration configuration) {
-        super.updateConfiguration(configuration);
-        address = -1;
-        bit = -1;
+        if (!success) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        }
     }
 
     /**

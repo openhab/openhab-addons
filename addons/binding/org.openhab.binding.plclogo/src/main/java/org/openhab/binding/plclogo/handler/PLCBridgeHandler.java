@@ -22,9 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,18 +29,15 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.plclogo.config.PLCLogoBridgeConfiguration;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
-import org.openhab.binding.plclogo.internal.PLCLogoDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import Moka7.S7;
 import Moka7.S7Client;
 
 /**
@@ -73,12 +67,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         public void run() {
             try {
                 if (client != null) {
-                    int result = client.ReadDBArea(1, LOGO_STATE.intValue(), data.length, S7Client.S7WLByte, data);
+                    int result = client.readDBArea(1, LOGO_STATE.intValue(), data.length, S7Client.S7WLByte, data);
                     if (result == 0) {
-                        Calendar calendar = PLCLogoDataType.getRtcAt(data, 1);
-                        if (LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
-                            calendar = Calendar.getInstance();
-                        }
+                        final Calendar calendar = getRtcAt(data, 1);
                         synchronized (rtc) {
                             rtc.setTimeZone(calendar.getTimeZone());
                             rtc.setTimeInMillis(calendar.getTimeInMillis());
@@ -92,10 +83,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                             logger.trace("Channel {} accepting {} received {}.", channel.getUID(), type, raw);
                         }
                     } else {
-                        logger.error("Can not read diagnostics from LOGO!: {}.", S7Client.ErrorText(result));
+                        logger.warn("Can not read diagnostics from LOGO!: {}.", S7Client.ErrorText(result));
                     }
                 } else {
-                    logger.error("LOGO! client {} is invalid.", client);
+                    logger.warn("LOGO! client {} is invalid.", client);
                 }
             } catch (Exception exception) {
                 logger.error("RTC thread got exception: {}.", exception.getMessage());
@@ -117,7 +108,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 final Map<?, Integer> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
                 if ((memory != null) && (client != null)) {
                     final Integer size = memory.get("SIZE");
-                    int result = client.ReadDBArea(1, 0, size.intValue(), S7Client.S7WLByte, buffer);
+                    int result = client.readDBArea(1, 0, size.intValue(), S7Client.S7WLByte, buffer);
                     if (result == 0) {
                         synchronized (handlers) {
                             for (PLCBlockHandler handler : handlers) {
@@ -126,20 +117,20 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                                     continue;
                                 }
 
-                                final int offset = PLCLogoDataType.getBytesCount(handler.getBlockDataType());
-                                if (offset > 0) {
-                                    final int address = handler.getAddress();
+                                final int address = handler.getAddress();
+                                final int offset = handler.getBlockDataType().getByteCount();
+                                if ((offset > 0) && (address != PLCBlockHandler.INVALID)) {
                                     handler.setData(Arrays.copyOfRange(buffer, address, address + offset));
                                 } else {
-                                    logger.error("Invalid handler {} found.", handler.getClass().getSimpleName());
+                                    logger.warn("Invalid handler {} found.", handler.getClass().getSimpleName());
                                 }
                             }
                         }
                     } else {
-                        logger.error("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                        logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                     }
                 } else {
-                    logger.error("Either memory block {} or LOGO! client {} is invalid.", memory, client);
+                    logger.warn("Either memory block {} or LOGO! client {} is invalid.", memory, client);
                 }
             } catch (Exception exception) {
                 logger.error("Reader thread got exception: {}.", exception.getMessage());
@@ -161,116 +152,34 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} on channel {}", command, channelUID);
 
-        final String channelId = channelUID.getId();
-        final ThingUID thingUID = channelUID.getThingUID();
-        if ((thingUID == null) || (thingRegistry == null) || (client == null)) {
-            logger.error("Can not refresh channel {}: {}, {}, {} .", channelUID, thingUID, thingRegistry, client);
+        final Thing thing = getThing();
+        Objects.requireNonNull(thing, "PLCBridgeHandler: Thing may not be null.");
+        if (ThingStatus.ONLINE != thing.getStatus()) {
             return;
         }
 
-        final ThingHandler handler = thingRegistry.get(thingUID).getHandler();
-        if (handler instanceof PLCBridgeHandler && command instanceof RefreshType) {
-            if (RTC_CHANNEL_ID.equals(channelId)) {
-                byte[] buffer = { 0, 0, 0, 0, 0, 0, 0 };
-                int result = client.ReadDBArea(1, LOGO_STATE.intValue(), buffer.length, S7Client.S7WLByte, buffer);
-                if (result == 0) {
-                    Calendar calendar = PLCLogoDataType.getRtcAt(buffer, 1);
-                    if (LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
-                        calendar = Calendar.getInstance();
-                    }
-                    synchronized (rtc) {
-                        rtc.setTimeZone(calendar.getTimeZone());
-                        rtc.setTimeInMillis(calendar.getTimeInMillis());
-                    }
-                    updateState(channelUID, new DateTimeType(rtc));
-                } else {
-                    logger.error("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else {
-                logger.warn("Can not refresh not supported channel: {}.", channelUID);
-            }
-        } else if (handler instanceof PLCBlockHandler && command instanceof RefreshType) {
-            final PLCBlockHandler bHandler = (PLCBlockHandler) handler;
-            final int offset = PLCLogoDataType.getBytesCount(bHandler.getBlockDataType());
-            if ((offset > 0) && (ANALOG_CHANNEL_ID.equals(channelId) || DIGITAL_CHANNEL_ID.equals(channelId))) {
-                final byte[] buffer = new byte[offset];
-                int result = client.ReadDBArea(1, bHandler.getAddress(), buffer.length, S7Client.S7WLByte, buffer);
-                if (result == 0) {
-                    bHandler.setData(Arrays.copyOfRange(buffer, 0, offset));
-                } else {
-                    logger.error("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else {
-                logger.warn("Can not refresh not supported channel: {}.", channelUID);
-            }
-        } else if (handler instanceof PLCDigitalBlockHandler
-                && (command instanceof OnOffType || command instanceof OpenClosedType)) {
-            final PLCDigitalBlockHandler bHandler = (PLCDigitalBlockHandler) handler;
-            final int offset = PLCLogoDataType.getBytesCount(bHandler.getBlockDataType());
-            if ((offset > 0) && DIGITAL_CHANNEL_ID.equals(channelId)) {
-                final byte[] buffer = new byte[offset];
-                if (command instanceof OnOffType) {
-                    final OnOffType state = (OnOffType) command;
-                    S7.SetBitAt(buffer, 0, 0, state == OnOffType.ON);
-                } else if (command instanceof OpenClosedType) {
-                    final OpenClosedType state = (OpenClosedType) command;
-                    S7.SetBitAt(buffer, 0, 0, state == OpenClosedType.CLOSED);
-                }
+        final String channelId = channelUID.getId();
+        final PLCLogoClient client = getLogoClient();
+        if (!RTC_CHANNEL_ID.equals(channelId) || (client == null)) {
+            logger.warn("Can not update channel {}: {}.", channelUID, client);
+            return;
+        }
 
-                final int address = 8 * bHandler.getAddress() + bHandler.getBit();
-                int result = client.WriteDBArea(1, address, buffer.length, S7Client.S7WLBit, buffer);
-                if (result != 0) {
-                    logger.error("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+        if (command instanceof RefreshType) {
+            byte[] buffer = { 0, 0, 0, 0, 0, 0, 0 };
+            int result = client.readDBArea(1, LOGO_STATE.intValue(), buffer.length, S7Client.S7WLByte, buffer);
+            if (result == 0) {
+                final Calendar calendar = getRtcAt(buffer, 1);
+                synchronized (rtc) {
+                    rtc.setTimeZone(calendar.getTimeZone());
+                    rtc.setTimeInMillis(calendar.getTimeInMillis());
                 }
+                updateState(channelUID, new DateTimeType(rtc));
             } else {
-                logger.warn("Can not update not supported channel: {}.", channelUID);
-            }
-        } else if (handler instanceof PLCAnalogBlockHandler && command instanceof DecimalType) {
-            final PLCAnalogBlockHandler bHandler = (PLCAnalogBlockHandler) handler;
-            final int offset = PLCLogoDataType.getBytesCount(bHandler.getBlockDataType());
-            if (((offset == 2) || (offset == 4)) && ANALOG_CHANNEL_ID.equals(channelId)) {
-                final byte[] buffer = new byte[offset];
-                if (offset == 2) {
-                    final DecimalType state = (DecimalType) command;
-                    S7.SetShortAt(buffer, 0, state.intValue());
-                } else {
-                    final DecimalType state = (DecimalType) command;
-                    S7.SetDWordAt(buffer, 0, state.longValue());
-                }
-                int result = client.WriteDBArea(1, bHandler.getAddress(), buffer.length, S7Client.S7WLByte, buffer);
-                if (result != 0) {
-                    logger.error("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else {
-                logger.warn("Can not update not supported channel: {}.", channelUID);
-            }
-        } else if (handler instanceof PLCAnalogBlockHandler && command instanceof DateTimeType) {
-            final PLCAnalogBlockHandler bHandler = (PLCAnalogBlockHandler) handler;
-            final int offset = PLCLogoDataType.getBytesCount(bHandler.getBlockDataType());
-            if ((offset == 2) && ANALOG_CHANNEL_ID.equals(channelId)) {
-                final String type = bHandler.getChannelType();
-                final byte[] buffer = new byte[offset];
-                if (ANALOG_TIME_CHANNEL.equalsIgnoreCase(type)) {
-                    final DateTimeType state = (DateTimeType) command;
-                    final Calendar calendar = state.getCalendar();
-                    buffer[0] = S7.ByteToBCD(calendar.get(Calendar.HOUR_OF_DAY));
-                    buffer[1] = S7.ByteToBCD(calendar.get(Calendar.MINUTE));
-                } else if (ANALOG_DATE_CHANNEL.equalsIgnoreCase(type)) {
-                    final DateTimeType state = (DateTimeType) command;
-                    final Calendar calendar = state.getCalendar();
-                    buffer[0] = S7.ByteToBCD(calendar.get(Calendar.MONTH) + 1);
-                    buffer[1] = S7.ByteToBCD(calendar.get(Calendar.DATE));
-                }
-
-                int result = client.WriteDBArea(1, bHandler.getAddress(), buffer.length, S7Client.S7WLByte, buffer);
-                if (result != 0) {
-                    logger.error("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else {
-                logger.warn("Can not update not supported channel: {}.", channelUID);
+                logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
             }
         } else {
-            logger.error("Invalid handler {} found.", handler.getClass().getSimpleName());
+            logger.debug("Not supported command {} received.", command);
         }
     }
 
@@ -294,6 +203,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 client = new PLCLogoClient();
             }
             configured = connect();
+        } else {
+            final String message = "Can not initialize LOGO!. Please, check ip address / TSAP settings.";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
         }
 
         if (configured) {
@@ -310,8 +222,8 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
             PLCBridgeHandler.super.initialize();
         } else {
-            final String message = "Can not initialize LOGO!. Please, check parameter.";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            final String message = "Can not initialize LOGO!. Please, check network connection.";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             client = null;
         }
     }
@@ -327,7 +239,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException exception) {
-                    logger.error("Dispose LOGO! bridge handler throw an error: {}.", exception.getMessage());
+                    logger.debug("Dispose of RTC job throw an exception: {}.", exception.getMessage());
                     break;
                 }
             }
@@ -341,7 +253,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException exception) {
-                    logger.error("Dispose LOGO! bridge handler throw an error: {}.", exception.getMessage());
+                    logger.debug("Dispose of reader job throw an exception: {}.", exception.getMessage());
                     break;
                 }
             }
@@ -389,7 +301,16 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns configured Siemens LOGO! family: 0BA7 or 0BA8.
+     * Returns Siemens LOGO! communication client
+     *
+     * @return Configured Siemens LOGO! client
+     */
+    public PLCLogoClient getLogoClient() {
+        return client;
+    }
+
+    /**
+     * Returns configured Siemens LOGO! family: 0BA7 or 0BA8
      *
      * @return Configured Siemens LOGO! family
      */
@@ -398,7 +319,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns RTC was fetched last from Siemens LOGO!.
+     * Returns RTC was fetched last from Siemens LOGO!
      *
      * @return Siemens LOGO! RTC
      */
@@ -420,8 +341,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      * @return True, if connected and false otherwise
      */
     private boolean connect() {
-        synchronized (client) {
-            if (!client.Connected) {
+        boolean result = false;
+        if (client != null) {
+            if (!client.isConnected()) {
                 final String host = config.getAddress();
                 final Integer local = config.getLocalTSAP();
                 final Integer remote = config.getRemoteTSAP();
@@ -430,8 +352,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     client.Connect(host, local.intValue(), remote.intValue());
                 }
             }
+            result = client.isConnected();
         }
-        return client.Connected;
+        return result;
     }
 
     /**
@@ -441,13 +364,28 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      */
     private boolean disconnect() {
         boolean result = false;
-        synchronized (client) {
-            if (client != null) {
+        if (client != null) {
+            if (client.isConnected()) {
                 client.Disconnect();
-                result = !client.Connected;
             }
+            result = !client.isConnected();
         }
         return result;
+    }
+
+    private Calendar getRtcAt(byte[] buffer, int pos) {
+        Calendar calendar = Calendar.getInstance();
+        if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
+            final int year = calendar.get(Calendar.YEAR) / 100;
+            calendar.set(Calendar.YEAR, 100 * year + buffer[pos]);
+            calendar.set(Calendar.MONTH, buffer[pos + 1] - 1);
+            calendar.set(Calendar.DAY_OF_MONTH, buffer[pos + 2]);
+            calendar.set(Calendar.HOUR_OF_DAY, buffer[pos + 3]);
+            calendar.set(Calendar.MINUTE, buffer[pos + 4]);
+            calendar.set(Calendar.SECOND, buffer[pos + 5]);
+            calendar.set(Calendar.MILLISECOND, 0);
+        }
+        return calendar;
     }
 
 }

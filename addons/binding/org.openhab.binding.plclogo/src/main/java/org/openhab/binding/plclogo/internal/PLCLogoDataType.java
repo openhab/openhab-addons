@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.plclogo.internal;
 
-import java.util.Calendar;
-
 /**
  * The {@link PLCLogoDataType} describes data types supported.
  *
@@ -17,45 +15,19 @@ import java.util.Calendar;
  */
 
 public enum PLCLogoDataType {
-    INVALID,
-    BIT,
-    WORD,
-    DWORD;
+    INVALID(-1),
+    BIT(1),
+    WORD(2),
+    DWORD(4);
 
-    public static int getBytesCount(final PLCLogoDataType type) {
-        int count = -1;
-        switch (type) {
-            case BIT: {
-                count = 1;
-                break;
-            }
-            case DWORD: {
-                count = 4;
-                break;
-            }
-            case WORD: {
-                count = 2;
-                break;
-            }
-            default:
-            case INVALID: {
-                break;
-            }
-        }
-        return count;
+    private int count = -1;
+
+    private PLCLogoDataType(final int count) {
+        this.count = count;
     }
 
-    public static Calendar getRtcAt(byte[] buffer, int pos) {
-        Calendar calendar = Calendar.getInstance();
-        final int year = calendar.get(Calendar.YEAR) / 100;
-        calendar.set(Calendar.YEAR, 100 * year + buffer[pos]);
-        calendar.set(Calendar.MONTH, buffer[pos + 1] - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, buffer[pos + 2]);
-        calendar.set(Calendar.HOUR_OF_DAY, buffer[pos + 3]);
-        calendar.set(Calendar.MINUTE, buffer[pos + 4]);
-        calendar.set(Calendar.SECOND, buffer[pos + 5]);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar;
+    public int getByteCount() {
+        return count;
     }
 
 }
