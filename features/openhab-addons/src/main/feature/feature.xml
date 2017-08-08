@@ -294,6 +294,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smaenergymeter/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-solarview" description="Solarview Photovoltaic Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.solarview/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>

@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016-2017 (c) Guenther Schreiner <guenther.schreiner@smile.de>
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ -->
+ <!-- Solarview Binding -->
+<thing:thing-descriptions bindingId="solarview" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Solarview energyProduction Binding -->
+	<thing-type id="energyProduction">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+
+		<label>Solarview Energy Production Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="energyInjection">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Injection Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="energyImport">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Import Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterOne">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (I) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterTwo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (II) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterThree">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (III) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterFour">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (IV) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterFive">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (V) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterSix">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (VI) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterSeven">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (VII) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterEight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (VIII) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="productionInverterNine">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="solarviewServer" />
+		</supported-bridge-type-refs>
+		<label>Solarview Energy Inverter (IX) Information</label>
+		<description>Provides various energy data from the Solarview service</description>
+
+		<channels>
+			<channel id="KT0" typeId="KT0" />
+			<channel id="KYR" typeId="KYR" />
+			<channel id="KMT" typeId="KMT" />
+			<channel id="KDY" typeId="KDY" />
+
+			<channel id="PAC" typeId="PAC" />
+
+			<channel id="UDC" typeId="UDC" />
+			<channel id="IDC" typeId="IDC" />
+			<channel id="UDCB" typeId="UDCB" />
+			<channel id="IDCB" typeId="IDCB" />
+			<channel id="UDCC" typeId="UDCC" />
+			<channel id="IDCC" typeId="IDCC" />
+
+			<channel id="UL1" typeId="UL1" />
+			<channel id="IL1" typeId="IL1" />
+
+			<channel id="TKK" typeId="TKK" />
+		</channels>
+
+		<config-description>
+			<parameter name="refreshSecs" type="integer" min="1" step="1">
+				<label>Refresh interval</label>
+				<description>Interval that new time updates are posted to the event bus in seconds.</description>
+				<required>false</required>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+</thing:thing-descriptions>
+
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/thing-types.xml -->
+<!-- ==================================== -->

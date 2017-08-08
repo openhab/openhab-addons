@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016-2017 (c) Guenther Schreiner <guenther.schreiner@smile.de>
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ -->
+<binding:binding id="solarview"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Solarview Binding</name>
+	<description>The Solarview Binding requests the Solarview server
+                to show the current energy production, usage and injection.</description>
+	<author>Guenther Schreiner</author>
+
+</binding:binding>

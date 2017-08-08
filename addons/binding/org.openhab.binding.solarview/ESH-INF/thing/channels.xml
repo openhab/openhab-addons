@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016-2017 (c) Guenther Schreiner <guenther.schreiner@smile.de>
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ -->
+<!-- Solarview Binding -->
+<thing:thing-descriptions bindingId="solarview"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+        <!-- Channel Type -->
+
+        <channel-type id="KT0" advanced="true">
+                <item-type>Number</item-type>
+                <label>Gesamtertrag in kWh</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f kWh" />
+        </channel-type>
+        <channel-type id="KYR" advanced="true">
+                <item-type>Number</item-type>
+                <label>Jahresertrag in kWh</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f kWh" />
+        </channel-type>
+        <channel-type id="KMT" advanced="true">
+                <item-type>Number</item-type>
+                <label>Monatsertrag in kWh</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f kWh" />
+        </channel-type>
+        <channel-type id="KDY" advanced="true">
+                <item-type>Number</item-type>
+                <label>Tagesertrag in kWh</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f kWh" />
+        </channel-type>
+
+
+        <channel-type id="PAC">
+                <item-type>Number</item-type>
+                <label>Generatorleistung in W</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f W" />
+        </channel-type>
+
+
+        <channel-type id="UDC" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorspannung (I) in Volt</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f V" />
+        </channel-type>
+        <channel-type id="IDC" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorstrom (I) in Ampere</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f A" />
+        </channel-type>
+        <channel-type id="UDCB" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorspannung (II) in Volt</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f V" />
+        </channel-type>
+        <channel-type id="IDCB" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorstrom (II) in Ampere</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f A" />
+        </channel-type>
+        <channel-type id="UDCC" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorspannung (III) in Volt</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f V" />
+        </channel-type>
+        <channel-type id="IDCC" advanced="true">
+                <item-type>Number</item-type>
+                <label>Generatorstrom (III) in Ampere</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f A" />
+        </channel-type>
+
+        <channel-type id="UL1" advanced="true">
+                <item-type>Number</item-type>
+                <label>Netzspannung in Volt</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f V" />
+        </channel-type>
+        <channel-type id="IL1" advanced="true">
+                <item-type>Number</item-type>
+                <label>Netzstrom in Ampere</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f A" />
+        </channel-type>
+
+        <channel-type id="TKK" advanced="true">
+                <item-type>Number</item-type>
+                <label>Temperatur Wechselrichter</label>
+                <description>Energieerzeugung</description>
+                <category>Energy</category>
+                <state readOnly="true" pattern="%.1f C" />
+        </channel-type>
+
+</thing:thing-descriptions>
+
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/channels.xml -->
+<!-- ==================================== -->
+

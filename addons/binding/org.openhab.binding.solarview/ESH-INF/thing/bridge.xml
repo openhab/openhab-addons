@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016-2017 (c) Guenther Schreiner <guenther.schreiner@smile.de>
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ -->
+<!-- Solarview Bridge Things Binding -->
+<thing:thing-descriptions bindingId="solarview" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Solarview Bridge Binding -->
+	<bridge-type id="solarviewServer">
+		<label>Solarview Link</label>
+		<description>The Solarview Link represents the Solarview Meter bridge.</description>
+
+		<properties>
+			<property name="vendor">Solarview</property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostName" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Solarview system.</description>
+				<default>localhost</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="tcpPort" type="integer" min="1" step="1">
+				<label>TCP port</label>
+				<description>TCP Port number of the SAP of the Solarview system.</description>
+				<required>false</required>
+				<default>15000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="timeoutMsecs" type="integer" min="1" step="1">
+				<label>Timeout</label>
+				<description>TCP Connection timeout in milliseconds.</description>
+				<required>false</required>
+				<default>2000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
+
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/bridge.xml -->
+<!-- ==================================== -->
