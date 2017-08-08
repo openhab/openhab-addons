@@ -101,11 +101,25 @@ The binding does not handle commands.
 
 ## Full Example
 
+A typical Thing configuration for ec3k looks like this:
+```
+Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4", sketchName="ec3kSerial" ]
+Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
+Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
+```
+
+A typical Thing configuration for lacrosse looks like this:
+```
+Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6", sketchName="LaCrosseITPlusReader" ]
+Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
+Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
+```
+
 A typical item configuration for a LaCrosse temperature sensor looks like this:
 ```
-Number Humidty_LR "Living Room" <humidity> (gLaCrosse, gLaCrosseHumChart) {channel="jeelink:lacrosse:42:humidity"}
-Number Temperature_LR "Living Room" <temperature> (gLaCrosse, gLaCrosseTempChart) {channel="jeelink:lacrosse:42:temperature"}
-Contact Battery_Low_LR "Battery Low Living Room" (gLaCrosse) {channel="jeelink:lacrosse:42:batteryLow"}
-Contact Battery_New_LR "Battery New Living Room" (gLaCrosse) {channel="jeelink:lacrosse:42:batteryLow"}
+Number Humidty_LR "Living Room" <humidity> {channel="jeelink:lacrosse:42:humidity"}
+Number Temperature_LR "Living Room" <temperature> {channel="jeelink:lacrosse:42:temperature"}
+Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
+Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 ```
 
