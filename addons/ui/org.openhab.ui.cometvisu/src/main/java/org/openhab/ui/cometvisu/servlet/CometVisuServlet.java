@@ -25,9 +25,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,9 +43,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
@@ -64,6 +75,10 @@ import org.openhab.ui.cometvisu.internal.rss.beans.Feed;
 import org.openhab.ui.cometvisu.php.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 
@@ -863,8 +878,21 @@ public class CometVisuServlet extends HttpServlet {
      */
     private final void dataProviderService(File file, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        logger.debug("dataprovider '{}' requested", file.getName());
+        logger.debug("dataprovider '{}' requested", file.getPath());
         List<Object> beans = new ArrayList<Object>();
+        String resultString = null;
+
+        File resourceFolder = rootFolder;
+        String rel = file.getPath().substring(rootFolder.getPath().length());
+        // is CometVisu version >= 0.11 (Qooxdoo based)
+        if (rel.startsWith("/source/") || rel.startsWith("/build/")) {
+            // Qooxdoo based CometVisu in source/build mode
+            // change the folder
+            String[] parts = rel.substring(1).split("/");
+            resourceFolder = new File(rootFolder, parts[0] + "/resource");
+            logger.debug("new resource folder is {}", resourceFolder.getPath());
+        }
+
         if (file.getName().equals("dpt_list.json")) {
             // return all transforms available for openhab
             for (Transform transform : Transform.values()) {
@@ -875,42 +903,91 @@ public class CometVisuServlet extends HttpServlet {
             }
         } else if (file.getName().equals("list_all_addresses.php")) {
             // all item names
+
+            // collect all available transform types
+            ArrayList<String> transformTypes = new ArrayList<String>();
+            for (Transform transform : Transform.values()) {
+                transformTypes.add(transform.toString().toLowerCase());
+            }
+
+            Map<String, ArrayList<Object>> groups = new HashMap<String, ArrayList<Object>>();
             for (Item item : this.cometVisuApp.getItemRegistry().getItems()) {
                 ItemBean bean = new ItemBean();
                 bean.value = item.getName();
-                bean.label = item.getName();
-                // TODO handle other types
-                bean.hints.put("transform", "OH:string");
-                beans.add(bean);
-            }
 
+                String type = item.getType();
+                if (item.getType() == "Group") {
+                    if (((GroupItem) item).getBaseItem() != null) {
+                        type = ((GroupItem) item).getBaseItem().getType();
+                    } else {
+                        continue;
+                    }
+                }
+                bean.label = item.getName();
+                String transform = type.toLowerCase().replace("Item", "");
+                if (transformTypes.contains(transform)) {
+                    bean.hints.put("transform", "OH:" + transform);
+                } else {
+                    logger.debug("no transform type found for item type {}, skipping this item", type);
+                    continue;
+                }
+                if (!groups.containsKey(type)) {
+                    groups.put(type, new ArrayList<Object>());
+                }
+                groups.get(type).add(bean);
+            }
+            resultString = marshalJson(groups);
         } else if (file.getName().equals("list_all_icons.php")) {
             // all item names
-            File iconDir = new File(rootFolder, "icon/knx-uf-iconset/128x128_white/");
-            if (iconDir.exists() && iconDir.isDirectory()) {
-                FilenameFilter filter = new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        // TODO Auto-generated method stub
-                        return name.endsWith(".png");
-                    }
-                };
-                File[] icons = iconDir.listFiles(filter);
-                Arrays.sort(icons);
-                for (File iconFile : icons) {
-                    if (iconFile.isFile()) {
-                        String iconName = iconFile.getName().replace(".png", "");
+            File svgFile = new File(resourceFolder, "icon/knx-uf-iconset.svg");
+            if (svgFile.exists()) {
+                // extract names from SVG file
+                try {
+                    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = builder.parse(svgFile);
+                    XPath xpath = XPathFactory.newInstance().newXPath();
+                    XPathExpression expr = xpath.compile("//symbol/@id");
+                    NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+                    for (int i = 0, len = nl.getLength(); i < len; i++) {
+                        Node node = nl.item(i);
                         DataBean bean = new DataBean();
-                        bean.label = iconName;
-                        bean.value = iconName;
+                        bean.label = node.getTextContent();
+                        bean.value = node.getTextContent();
                         beans.add(bean);
+                    }
+                } catch (SAXException e) {
+                    logger.error("error parsing SVG file: {}", e.getMessage(), e);
+                } catch (ParserConfigurationException e) {
+                    logger.error("error extracting items from SVG file: {}", e.getMessage(), e);
+                } catch (XPathExpressionException e) {
+                    logger.error("error extracting items from SVG file: {}", e.getMessage(), e);
+                }
+            } else {
+                File iconDir = new File(resourceFolder, "icon/knx-uf-iconset/128x128_white/");
+                if (iconDir.exists() && iconDir.isDirectory()) {
+                    FilenameFilter filter = new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return name.endsWith(".png");
+                        }
+                    };
+                    File[] icons = iconDir.listFiles(filter);
+                    Arrays.sort(icons);
+                    for (File iconFile : icons) {
+                        if (iconFile.isFile()) {
+                            String iconName = iconFile.getName().replace(".png", "");
+                            DataBean bean = new DataBean();
+                            bean.label = iconName;
+                            bean.value = iconName;
+                            beans.add(bean);
+                        }
                     }
                 }
             }
         } else if (file.getName().equals("list_all_plugins.php")) {
             // all plugins
             // all item names
-            File pluginDir = new File(rootFolder, "plugins/");
+            File pluginDir = new File(resourceFolder, "plugins/");
             File[] plugins = pluginDir.listFiles();
             Arrays.sort(plugins);
             for (File icon : plugins) {
@@ -924,12 +1001,14 @@ public class CometVisuServlet extends HttpServlet {
 
         } else if (file.getName().equals("get_designs.php")) {
             // all designs
-            File designDir = new File(rootFolder, "designs/");
+            File designDir = new File(resourceFolder, "designs/");
             File[] designs = designDir.listFiles();
-            Arrays.sort(designs);
-            for (File design : designs) {
-                if (design.isDirectory()) {
-                    beans.add(design.getName());
+            if (designs != null) {
+                Arrays.sort(designs);
+                for (File design : designs) {
+                    if (design.isDirectory()) {
+                        beans.add(design.getName());
+                    }
                 }
             }
 
@@ -937,12 +1016,15 @@ public class CometVisuServlet extends HttpServlet {
             // all item names
 
         }
-        if (beans.size() == 0) {
+        if (beans.size() == 0 && resultString == null) {
             // nothing found try the PHP files
             processPhpRequest(file, request, response);
         } else {
             response.setContentType(MediaType.APPLICATION_JSON);
-            response.getWriter().write(marshalJson(beans));
+            if (resultString == null) {
+                resultString = marshalJson(beans);
+            }
+            response.getWriter().write(resultString);
             response.flushBuffer();
         }
     }
