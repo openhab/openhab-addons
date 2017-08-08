@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.yamahareceiver.discovery;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -21,29 +20,34 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
-import org.openhab.binding.yamahareceiver.internal.protocol.ZoneControl.Zone;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * After the AVR bridge thing has been added and a connection could be established,
+ * the user is presented with the available zones.
  *
  * @author David Gräff - Initial contribution
  */
 public class ZoneDiscoveryService extends AbstractDiscoveryService {
-    private Logger logger = LoggerFactory.getLogger(ZoneDiscoveryService.class);
     private ServiceRegistration<?> reg = null;
-    private final WeakReference<SystemControl.State> stateRef;
+    private final DeviceInformationState state;
     private final ThingUID bridgeUid;
 
-    public ZoneDiscoveryService(SystemControl.State state, ThingUID bridgeUid) {
+    /**
+     * Constructs a zone discovery service.
+     * We need the system state, which contains the available zones.
+     */
+    public ZoneDiscoveryService(DeviceInformationState state, ThingUID bridgeUid) {
         super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 2, true);
-        stateRef = new WeakReference<SystemControl.State>(state);
+        this.state = state;
         this.bridgeUid = bridgeUid;
     }
 
+    /**
+     * Unregisters this service from the OSGi service registry.
+     */
     public void stop() {
         if (reg != null) {
             reg.unregister();
@@ -57,18 +61,12 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void detectZones() {
-        SystemControl.State info = stateRef.get();
-        if (info == null) {
-            stop();
-            logger.error("Lost state of AVR in zone discovery!");
-            return;
-        }
-
         // Create a copy of the list to avoid concurrent modification exceptions, because
         // the state update takes place in another thread
-        List<Zone> zoneCopy = new ArrayList<Zone>(info.zones);
+        List<YamahaReceiverBindingConstants.Zone> zoneCopy = new ArrayList<YamahaReceiverBindingConstants.Zone>(
+                state.zones);
 
-        for (Zone zone : zoneCopy) {
+        for (YamahaReceiverBindingConstants.Zone zone : zoneCopy) {
             String zoneName = zone.name();
             ThingUID uid = new ThingUID(YamahaReceiverBindingConstants.ZONE_THING_TYPE, bridgeUid, zoneName);
 
@@ -76,11 +74,15 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
             properties.put(YamahaReceiverBindingConstants.CONFIG_ZONE, zoneName);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(info.name + " " + zoneName).withBridge(bridgeUid).build();
+                    .withLabel(state.name + " " + zoneName).withBridge(bridgeUid).build();
             thingDiscovered(discoveryResult);
         }
     }
 
+    /**
+     * Registers this zone discovery service programmatically.
+     * Call {@link ZoneDiscoveryService.stop()} to unregister the service after use.
+     */
     public void start(BundleContext bundleContext) {
         if (reg != null) {
             return;
