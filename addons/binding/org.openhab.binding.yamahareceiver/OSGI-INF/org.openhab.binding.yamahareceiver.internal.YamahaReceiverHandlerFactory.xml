@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.yamahareceiver.internal.YamahaReceiverHandlerFactory">
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <reference bind="setChannelTypeProvider" interface="org.openhab.binding.yamahareceiver.internal.YamahaChannelsTypeProvider" name="ChannelTypeProvider" unbind="unsetChannelTypeProvider"/>
+   <implementation class="org.openhab.binding.yamahareceiver.internal.YamahaReceiverHandlerFactory"/>
+</scr:component>

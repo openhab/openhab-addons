@@ -28,7 +28,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
- /**
+/**
  *
  * @author David Gräff - Initial contribution
  */
