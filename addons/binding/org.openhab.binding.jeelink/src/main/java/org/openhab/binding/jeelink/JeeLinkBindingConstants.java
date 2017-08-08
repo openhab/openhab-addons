@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.jeelink.handler.SensorDefinition;
+import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
  * Defines common constants, which are used across the whole binding.

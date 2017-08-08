@@ -12,8 +12,8 @@ This binding supports:
 
 * JeeLink USB RF receivers (as bridge)
 * JeeLink USB RF receivers connected over TCP (as bridge)
-* LaCrosse Temperature Sensors connected to the bridge (running the LaCrosseITPlusReader sketch)
-* EC3000 Power Monitors connected to the bridge (running the ec3kSerial sketch)
+* LaCrosse Temperature Sensors connected to the bridge 
+* EC3000 Power Monitors connected to the bridge
 
 ## Binding configuration
 
@@ -33,7 +33,6 @@ Afterwards, discovery reads from the USB receiver to find out which sensors are 
 |-------------------|--------------|------------
 | Serial Port       | String       | The serial port name for the USB receiver. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux
 | Baud Rate         | Number       | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200
-| Sketch Name       | String       | The sketch that has been flashed onto the stick. Currently LaCrosseITPlusReader and ec3kSerial are supported
 | Init Commands     | String       | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED
 
 #### JeeLink receivers connected over TCP
@@ -42,7 +41,6 @@ Afterwards, discovery reads from the USB receiver to find out which sensors are 
 |-------------------|--------------|------------
 | IP Address        | String       | The IP address of the Server to which the USB Receiver is connected
 | TCP Port          | Number       | The TCP port over which the serial port is made available
-| Sketch Name       | String       | The sketch that has been flashed onto the stick. Currently LaCrosseITPlusReader and ec3kSerial are supported
 | Init Commands     | String       | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED
 
 #### LaCrosse temperature sensors
@@ -51,10 +49,11 @@ Afterwards, discovery reads from the USB receiver to find out which sensors are 
 |-------------------|--------------|------------
 | Sensor ID         | Number       | The ID of the connected sensor
 | Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor
-| Update Interval   | Number       | The update interval in seconds how often state updates are propagated
+| Update Interval   | Number       | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value
 | Buffer Size       | Number       | The number of readings used for computing the rolling average
 | Lower Temperature Limit | Decimal       | The lowest allowed valid temperature. Lower temperature readings will be ignored
 | Upper Temperature Limit | Decimal       | The highest allowed valid temperature. Higher temperature readings will be ignored
+| Maximum allowed difference | Decimal    | The maximum allowed difference from a value to the previous value (0 disables this check). If the difference is higher, the reading will be ignored.
 
 #### EC3000 power monitors
 
@@ -62,7 +61,7 @@ Afterwards, discovery reads from the USB receiver to find out which sensors are 
 |-------------------|--------------|------------
 | Sensor ID         | Number       | The ID of the connected sensor
 | Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor
-| Update Interval   | Number       | The update interval in seconds how often state updates are propagated
+| Update Interval   | Number       | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value
 | Buffer Size       | Number       | The number of readings used for computing the rolling average
 
 

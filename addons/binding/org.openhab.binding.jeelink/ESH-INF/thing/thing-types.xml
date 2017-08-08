@@ -19,16 +19,6 @@
                 <description>@text/parameter.baudrate.description</description>
                 <default>57600</default>
             </parameter>
-			<parameter name="sketchName" type="text" required="true">
-				<label>@text/parameter.sketchname.label</label>
-				<description>@text/parameter.sketchname.description</description>
-				<default>LaCrosseITPlusReader</default>
-
-				<options>
-					<option value="LaCrosseITPlusReader">LaCrosseITPlusReader</option>
-					<option value="ec3kSerial">ec3kSerial</option>
-				</options>
-			</parameter>
 			<parameter name="initCommands" type="text" required="false">
 				<label>@text/parameter.initcommands.label</label>
 				<description>@text/parameter.initcommands.description</description>
@@ -49,16 +39,6 @@
             <parameter name="port" type="integer" required="true">
                 <label>@text/parameter.port.label</label>
                 <description>@text/parameter.port.description</description>
-            </parameter>
-            <parameter name="sketchName" type="text" required="true">
-                <label>@text/parameter.sketchname.label</label>
-                <description>@text/parameter.sketchname.description</description>
-                <default>LaCrosseITPlusReader</default>
-
-                <options>
-                    <option value="LaCrosseITPlusReader">LaCrosseITPlusReader</option>
-                    <option value="ec3kSerial">ec3kSerial</option>
-                </options>
             </parameter>
             <parameter name="initCommands" type="text" required="false">
                 <label>@text/parameter.initcommands.label</label>
@@ -108,13 +88,18 @@
 			<parameter name="minTemp" type="decimal" required="true">
 				<label>@text/parameter.mintemp.label</label>
 				<description>@text/parameter.mintemp.description</description>
-				<default>-20</default>
+				<default>-100</default>
 			</parameter>
 			<parameter name="maxTemp" type="decimal" required="true">
 				<label>@text/parameter.maxtemp.label</label>
 				<description>@text/parameter.maxtemp.description</description>
-				<default>40</default>
+				<default>100</default>
 			</parameter>
+            <parameter name="maxDiff" type="decimal" required="true">
+                <label>@text/parameter.maxdiff.label</label>
+                <description>@text/parameter.maxdiff.description</description>
+                <default>2</default>
+            </parameter>
 		</config-description>
 	</thing-type>
 

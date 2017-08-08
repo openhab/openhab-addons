@@ -9,7 +9,6 @@ Bundle-ClassPath: .
 Import-Package: 
  gnu.io,
  org.openhab.binding.jeelink,
- org.openhab.binding.jeelink.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,
@@ -22,5 +21,4 @@ Import-Package:
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.jeelink,
- org.openhab.binding.jeelink.handler
+Export-Package: org.openhab.binding.jeelink
