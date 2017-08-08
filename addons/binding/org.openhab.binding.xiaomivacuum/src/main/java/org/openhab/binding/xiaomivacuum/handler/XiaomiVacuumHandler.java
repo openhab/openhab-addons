@@ -38,7 +38,7 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class XiaomiVacuumHandler extends XiaomiMiIoHandler {
+public class XiaomiVacuumHandler extends XiaomiMiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiVacuumHandler.class);
 
     private ExpiringCache<String> status;

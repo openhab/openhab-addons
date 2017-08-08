@@ -47,6 +47,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_COMMAND = "actions#commands";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
+    public static final String CHANNEL_POWER = "actions#power";
 
     public static final String CHANNEL_SSID = "network#ssid";
     public static final String CHANNEL_BSSID = "network#bssid";
@@ -78,4 +79,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final byte[] DISCOVER_STRING = org.openhab.binding.xiaomivacuum.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     public static final int PORT = 54321;
+    public static final Set<String> IGNORED_TOLKENS = ImmutableSet.of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+            "00000000000000000000000000000000");
+
 }

@@ -15,12 +15,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
 import org.openhab.binding.xiaomivacuum.internal.robot.VacuumCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RoboCommunication} is responsible for communications with the vacuum
@@ -39,12 +45,16 @@ public class RoboCommunication {
     private final byte[] deviceId;
     private DatagramSocket socket;
     private AtomicInteger id = new AtomicInteger();
+    private int timeDelta;
+    private int timeStamp;
+    JsonParser parser;
 
     public RoboCommunication(String ip, byte[] token, byte[] did, int id) {
         this.ip = ip;
         this.token = token;
         this.deviceId = did;
         setId(id);
+        parser = new JsonParser();
     }
 
     public String sendCommand(VacuumCommand command) throws RoboCryptoException, IOException {
@@ -55,24 +65,25 @@ public class RoboCommunication {
         return sendCommand(command.getCommand(), params);
     }
 
-    public String sendCommand(String command, String params) throws RoboCryptoException, IOException {
-        if (params.length() > 0) {
-            params = "'params': [" + params + "],";
-        }
-        String idString = "'id': " + Integer.toString(id.incrementAndGet());
-        String fullCommand = "{'method': '" + command + "', " + params + idString + "}";
-        logger.debug("Send command: {} -> {} (Device: {} token: {})", fullCommand, ip, Utils.getHex(deviceId),
-                Utils.getHex(token));
-        return sendCommand(fullCommand, token, ip, deviceId);
+    public String sendCommand(String command, String params)
+            throws RoboCryptoException, IOException, JsonSyntaxException {
+        JsonObject fullCommand = new JsonObject();
+        fullCommand.addProperty("id", id.incrementAndGet());
+        fullCommand.addProperty("method", command);
+        fullCommand.add("params", parser.parse("[" + params + "]").getAsJsonArray());
+        logger.debug("Send command: {} -> {} (Device: {} token: {})", fullCommand.toString(), ip,
+                Utils.getHex(deviceId), Utils.getHex(token));
+        return sendCommand(fullCommand.toString(), token, ip, deviceId);
     }
 
     private String sendCommand(String command, byte[] token, String ip, byte[] deviceId)
             throws RoboCryptoException, IOException {
         byte[] encr;
-        encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
-        byte[] sendMsg = Message.createMsgData(encr, token, deviceId);
-        byte[] response = comms(sendMsg, ip);
-        if (response.length == 0) {
+        encr = RoboCrypto.encrypt(command.getBytes(), token);
+        timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
+        byte[] sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
+        Message roboResponseMsg = sendData(sendMsg, ip);
+        if (roboResponseMsg == null) {
             if (logger.isTraceEnabled()) {
                 logger.trace("No response from device {} at {} for command {}.\r\n{}", Utils.getHex(deviceId), ip,
                         command, (new Message(sendMsg)).toSting());
@@ -81,15 +92,34 @@ public class RoboCommunication {
             }
             return null;
         }
-        Message roboResponse = new Message(response);
-        logger.trace("Message Details:{} ", roboResponse.toSting());
-        String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
+
+        String decryptedResponse = new String(RoboCrypto.decrypt(roboResponseMsg.getData(), token)).trim();
         // TODO: Change this to trace level later onwards
         logger.debug("Received response from {}: {}", ip, decryptedResponse);
         return decryptedResponse;
     }
 
-    public synchronized byte[] comms(byte[] message, String ip) throws IOException {
+    public Message sendPing(String ip) throws IOException {
+        timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
+        return sendData(XiaomiVacuumBindingConstants.DISCOVER_STRING, ip);
+    }
+
+    private Message sendData(byte[] sendMsg, String ip) throws IOException {
+        byte[] response = comms(sendMsg, ip);
+        if (response.length > 32) {
+            Message roboResponse = new Message(response);
+            timeDelta = roboResponse.getTimestampAsInt() - timeStamp;
+            // TODO: remove this line shortly
+            logger.trace("time {}, robo {} DELTA TIME: {}. sendtime {}", timeStamp, roboResponse.getTimestampAsInt(),
+                    timeDelta, timeStamp + timeDelta);
+            logger.trace("Message Details:{} ", roboResponse.toSting());
+            return roboResponse;
+        } else {
+            return null;
+        }
+    }
+
+    private synchronized byte[] comms(byte[] message, String ip) throws IOException {
         InetAddress ipAddress = InetAddress.getByName(ip);
         DatagramSocket clientSocket = getSocket();
         try {
@@ -138,5 +168,12 @@ public class RoboCommunication {
      */
     public void setId(int id) {
         this.id.set(id);
+    }
+
+    /**
+     * Time delta between device time & server time
+     */
+    public int getTimeDelta() {
+        return timeDelta;
     }
 }

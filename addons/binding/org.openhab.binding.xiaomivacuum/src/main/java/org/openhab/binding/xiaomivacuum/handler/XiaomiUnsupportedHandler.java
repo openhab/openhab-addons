@@ -10,6 +10,7 @@ package org.openhab.binding.xiaomivacuum.handler;
 
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class XiaomiUnsupportedHandler extends XiaomiMiIoHandler {
+public class XiaomiUnsupportedHandler extends XiaomiMiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiUnsupportedHandler.class);
 
     public XiaomiUnsupportedHandler(Thing thing) {
@@ -38,6 +39,13 @@ public class XiaomiUnsupportedHandler extends XiaomiMiIoHandler {
             logger.debug("Refreshing {}", channelUID);
             updateData();
             return;
+        }
+        if (channelUID.getId().equals(CHANNEL_POWER)) {
+            if (command.equals(OnOffType.ON)) {
+                sendCommand("set_power[\"on\"]");
+            } else {
+                sendCommand("set_power[\"off\"]");
+            }
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             updateState(CHANNEL_COMMAND, new StringType(sendCommand(command.toString())));
@@ -54,20 +62,31 @@ public class XiaomiUnsupportedHandler extends XiaomiMiIoHandler {
             case POWERPLUG2:
             case POWERSTRIP:
             case POWERSTRIP2:
-                testCommands = new String[] { "miIO.info", "set_power['on']", "set_power['off']",
-                        "get_prop['power', 'temperature', 'current', 'mode']", "set_power_mode['green']",
-                        "set_power_mode['normal']", "set_power[on]", "set_power[off]", };
+                testCommands = new String[] { "miIO.info", "set_power[\"on\"]", "set_power[\"off\"]",
+                        "get_prop[\"power\", \"temperature\", \"current\", \"mode\"]", "set_power_mode[\"green\"]",
+                        "set_power_mode[\"normal\"]", "set_power[on]", "set_power[off]", };
                 break;
             case YEELIGHT_C1:
             case YEELIGHT_L1:
             case YEELIGHT_M1:
-                testCommands = new String[] { "miIO.info", "set_power['on']", "set_power['off']",
-                        "get_prop['power', 'bright', 'ct', 'rgb']", "set_bright[50, 'smooth', 500]",
-                        "start_cf[ 4, 2, '1000, 2, 2700, 100, 500, 1,255, 10, 5000, 7, 0,0, 500, 2, 5000, 1']" };
+                testCommands = new String[] { "miIO.info", "set_power[\"on\"]", "set_power[\"off\"]",
+                        "get_prop[\"power\", \"bright\", \"ct\", \"rgb\"]", "set_bright[50, \"smooth\", 500]",
+                        "start_cf[ 4, 2, \"1000, 2, 2700, 100, 500, 1,255, 10, 5000, 7, 0,0, 500, 2, 5000, 1\"]" };
                 break;
             case VACUUM:
-                testCommands = new String[] { "miIO.info", "get_clean_summary", "get_map_v1" };
+                testCommands = new String[] { "miIO.info", "get_current_sound", "get_map_v1", "get_serial_number",
+                        "get_timezone" };
                 break;
+            case AIR_PURIFIER:
+            case AIR_PURIFIER1:
+            case AIR_PURIFIER2:
+            case AIR_PURIFIER3:
+            case AIR_PURIFIER6:
+                testCommands = new String[] { "miIO.info", "set_power[\"on\"]", "set_power[\"off\"]",
+                        "get_prop[\"power\", \"mode\", \"temperature\", \"humidity\", \"aqi\"]", "set_mode[\"auto\"]",
+                        "led", "favoriteLevel", "ledBrightness" };
+                break;
+
             default:
                 testCommands = new String[] { "miIO.info" };
                 break;
@@ -87,6 +106,9 @@ public class XiaomiUnsupportedHandler extends XiaomiMiIoHandler {
         try {
             if (updateNetwork()) {
                 updateStatus(ThingStatus.ONLINE);
+                if (!isIdentified) {
+                    isIdentified = updateThingType(getJsonResultHelper(network.getValue()));
+                }
             } else {
                 disconnectedNoResponse();
             }
@@ -97,11 +119,11 @@ public class XiaomiUnsupportedHandler extends XiaomiMiIoHandler {
 
     @Override
     protected boolean initializeData() {
+        initalizeNetworkCache();
         this.roboCom = getConnection();
         if (roboCom != null) {
             updateStatus(ThingStatus.ONLINE);
         }
-        initalizeNetworkCache();
         return true;
     }
 

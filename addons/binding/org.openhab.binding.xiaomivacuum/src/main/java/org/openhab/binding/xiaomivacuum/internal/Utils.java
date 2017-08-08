@@ -8,6 +8,17 @@
  */
 package org.openhab.binding.xiaomivacuum.internal;
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Utility class for common tasks within the Xiaomi vacuum binding.
  *
@@ -67,5 +78,13 @@ public final class Utils {
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
         }
         return hex.toString();
+    }
+
+    public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException, IOException {
+        JsonObject jsonObject = new JsonObject();
+        JsonParser parser = new JsonParser();
+        JsonElement jsonElement = parser.parse(IOUtils.toString(fileName));
+        jsonObject = jsonElement.getAsJsonObject();
+        return jsonObject;
     }
 }

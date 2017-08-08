@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
-import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
 import org.openhab.binding.xiaomivacuum.internal.Message;
 import org.openhab.binding.xiaomivacuum.internal.MiIoDevices;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
@@ -44,17 +43,18 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link XiaomiMiIoHandler} is responsible for handling commands, which are
+ * The {@link XiaomiMiIoAbstractHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public abstract class XiaomiMiIoHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(XiaomiMiIoHandler.class);
+public abstract class XiaomiMiIoAbstractHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(XiaomiMiIoAbstractHandler.class);
 
     protected ScheduledFuture<?> pollingJob;
     protected XiaomiVacuumBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
+    protected boolean isIdentified;
 
     protected JsonParser parser;
     protected byte[] token;
@@ -66,7 +66,7 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
 
     protected final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
-    public XiaomiMiIoHandler(Thing thing) {
+    public XiaomiMiIoAbstractHandler(Thing thing) {
         super(thing);
         parser = new JsonParser();
     }
@@ -83,8 +83,9 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
+        isIdentified = false;
         scheduler.schedule(this::initializeData, 0, TimeUnit.SECONDS);
-        scheduler.schedule(this::getDeviceType, 1, TimeUnit.SECONDS);
+        scheduler.schedule(this::defineDeviceType, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
             pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 2, pollingPeriod, TimeUnit.SECONDS);
@@ -95,23 +96,18 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
     }
 
     private boolean tolkenCheckPass(String tokenSting) {
-        boolean tokenPassed = true;
         switch (tokenSting.length()) {
-            case 32:
-                if (tokenSting.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-                        || tokenSting.equals("00000000000000000000000000000000")) {
-                    tokenPassed = false;
-                } else {
-                    token = Utils.hexStringToByteArray(tokenSting);
-                }
-                break;
             case 16:
                 token = tokenSting.getBytes();
-                break;
+                return true;
+            case 32:
+                if (!IGNORED_TOLKENS.contains(tokenSting)) {
+                    token = Utils.hexStringToByteArray(tokenSting);
+                    return true;
+                }
             default:
-                tokenPassed = false;
+                return false;
         }
-        return tokenPassed;
     }
 
     @Override
@@ -155,6 +151,9 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
      * @return vacuum response
      */
     protected String sendCommand(String command) {
+        if (!hasConnection()) {
+            return null;
+        }
         try {
             command = command.trim();
             String param = "";
@@ -191,10 +190,7 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
     }
 
     protected boolean hasConnection() {
-        if (getConnection() != null) {
-            return true;
-        }
-        return false;
+        return getConnection() != null;
     }
 
     protected void disconnectedNoResponse() {
@@ -219,22 +215,21 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
         String deviceId = configuration.deviceId;
         try {
             if (deviceId != null && deviceId.length() == 8 && tolkenCheckPass(configuration.token)) {
-                logger.debug("Ping MiIO device {} at {}", deviceId, configuration.host);
+                logger.debug("Ping Mi IO device {} at {}", deviceId, configuration.host);
                 roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
                         lastId);
-                byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
-                if (response.length >= 32) {
-                    Message roboResponse = new Message(response);
+                Message roboResponse = roboCom.sendPing(configuration.host);
+                ;
+                if (roboResponse != null) {
                     logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
                             Utils.getHex(roboResponse.getDeviceId()), configuration.host, roboResponse.getTimestamp(),
-                            LocalDateTime.now(), LocalDateTime.now().compareTo(roboResponse.getTimestamp()));
+                            LocalDateTime.now(), roboCom.getTimeDelta());
                     return roboCom;
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving MiIO device ID");
                 RoboCommunication idCom = new RoboCommunication(configuration.host, token, new byte[0], lastId);
-                byte[] response = idCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
-                Message roboResponse = new Message(response);
+                Message roboResponse = idCom.sendPing(configuration.host);
                 updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceId()));
                 Configuration config = editConfiguration();
                 config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceId()));
@@ -245,6 +240,7 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
                 configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
                 if (tolkenCheckPass(configuration.token)) {
                     roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceId(), lastId);
+                    roboCom.sendPing(configuration.host);
                     return roboCom;
                 }
             }
@@ -281,55 +277,60 @@ public abstract class XiaomiMiIoHandler extends BaseThingHandler {
         });
     }
 
-    protected boolean getDeviceType() {
-        roboCom = getConnection();
-        String miIoData = sendCommand(VacuumCommand.MIIO_INFO);
-        logger.debug("MiIO Device Data {}", miIoData);
-        JsonObject result = ((JsonObject) parser.parse(miIoData)).getAsJsonObject("result").getAsJsonObject();
+    protected void defineDeviceType() {
+        JsonObject miioInfo = getJsonResultHelper(network.getValue());
+        if (miioInfo != null) {
+            updateProperties(miioInfo);
+            updateThingType(miioInfo);
+        }
+    }
+
+    private void updateProperties(JsonObject miioInfo) {
         Map<String, String> properties = editProperties();
-        String model = result.get("model").getAsString();
-        properties.put(Thing.PROPERTY_MODEL_ID, model);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, result.get("fw_ver").getAsString());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.get("hw_ver").getAsString());
+        properties.put(Thing.PROPERTY_MODEL_ID, miioInfo.get("model").getAsString());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, miioInfo.get("fw_ver").getAsString());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, miioInfo.get("hw_ver").getAsString());
         updateProperties(properties);
+    }
+
+    protected boolean updateThingType(JsonObject miioInfo) {
+        String model = miioInfo.get("model").getAsString();
         miDevice = MiIoDevices.getType(model);
         if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
-            logger.info("Mi IO Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
+            logger.info("Mi IO model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
+            return true;
         } else {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLabel(miDevice.getDescription());
             updateThing(thingBuilder.build());
-            if (!miDevice.getThingType().equals(THING_TYPE_MIIO)) {
+            if (getThing().getThingTypeUID().equals(THING_TYPE_MIIO)) {
+                logger.info(
+                        "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Changing thingtype to {}",
+                        model, miDevice.toString(), getThing().getThingTypeUID().toString(),
+                        miDevice.getThingType().toString());
+                changeThingType(MiIoDevices.getType(model).getThingType(), getConfig());
+            } else {
                 logger.warn(
                         "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Unexpected, unless intentionally changed.",
-                        model, miDevice.toString(), getThing().getThingTypeUID().toString(),
+                        miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());
                 return true;
             }
-            logger.info(
-                    "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Changing thingtype to {}",
-                    model, miDevice.toString(), getThing().getThingTypeUID().toString(),
-                    miDevice.getThingType().toString());
-            changeThingType(MiIoDevices.getType(model).getThingType(), getConfig());
         }
-        return true;
+        return false;
     }
 
-    protected JsonObject getJsonResultHelper(String res) {
+    protected JsonObject getJsonResultHelper(String response) {
         try {
-            JsonObject result;
-            JsonObject vacuumResponse = (JsonObject) parser.parse(res);
-            if (vacuumResponse.get("result").getClass().isAssignableFrom(JsonArray.class)) {
-                result = vacuumResponse.getAsJsonArray("result").get(0).getAsJsonObject();
+            JsonObject result = (JsonObject) parser.parse(response);
+            if (result.get("result").getClass().isAssignableFrom(JsonArray.class)) {
+                return result.getAsJsonArray("result").get(0).getAsJsonObject();
             } else {
-                result = vacuumResponse.getAsJsonObject("result");
+                return result.getAsJsonObject("result");
             }
-            logger.debug("Response ID:     '{}'", vacuumResponse.get("id").getAsString());
-            logger.debug("Response Result: '{}'", result);
-            return result;
         } catch (JsonSyntaxException e) {
-            logger.debug("Could not parse result from response: '{}'", res);
+            logger.debug("Could not parse result from response: '{}'", response);
         } catch (NullPointerException e) {
             logger.trace("Empty response received.");
         }

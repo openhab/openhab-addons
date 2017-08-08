@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+  * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,14 +9,10 @@
 package org.openhab.binding.xiaomivacuum.internal;
 
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The {@link Message} is responsible for creating Xiaomi messages.
@@ -34,7 +30,6 @@ public class Message {
     private byte[] unknowns = new byte[4];
 
     private byte[] deviceId = new byte[4];
-    private LocalDateTime timeStamp;
     private byte[] tsByte = new byte[4];
     private byte[] checksum;
     private byte[] raw;
@@ -48,25 +43,24 @@ public class Message {
         this.unknowns = java.util.Arrays.copyOfRange(raw, 4, 8);
         this.deviceId = java.util.Arrays.copyOfRange(raw, 8, 12);
         this.tsByte = java.util.Arrays.copyOfRange(raw, 12, 16);
-        this.timeStamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(ByteBuffer.wrap(tsByte).getInt()),
-                ZoneId.systemDefault());
         this.checksum = java.util.Arrays.copyOfRange(raw, 16, 32);
         this.data = java.util.Arrays.copyOfRange(raw, 32, length);
     }
 
-    public static Message createMsg(byte[] data, byte[] token, byte[] serial) throws RoboCryptoException {
-        return new Message(createMsgData(data, token, serial));
+    public static Message createMsg(byte[] data, byte[] token, byte[] deviceID, int timeStamp)
+            throws RoboCryptoException {
+        return new Message(createMsgData(data, token, deviceID, timeStamp));
     }
 
-    public static byte[] createMsgData(byte[] data, byte[] token, byte[] deviceID) throws RoboCryptoException {
+    public static byte[] createMsgData(byte[] data, byte[] token, byte[] deviceID, int timeStamp)
+            throws RoboCryptoException {
         short msgLength = (short) (data.length + 32);
         ByteBuffer header = ByteBuffer.allocate(16);
         header.put(MAGIC);
         header.putShort(msgLength);
         header.put(new byte[4]);
         header.put(deviceID);
-        header.putInt(nowtimestamp());
-
+        header.putInt(timeStamp);
         ByteBuffer msg = ByteBuffer.allocate(msgLength);
         msg.put(header.array());
         msg.put(getChecksum(header.array(), token, data));
@@ -82,19 +76,9 @@ public class Message {
         return RoboCrypto.md5(msg.array());
     }
 
-    private static int nowtimestamp() {
-        Long longTime = TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
-        return longTime.intValue();
-    }
-
     public String toSting() {
-
-        long ts = ByteBuffer.wrap(tsByte).getInt();
-        Date date = new Date(TimeUnit.SECONDS.toMillis(ts));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        sdf.setTimeZone(TimeZone.getDefault());
-        String formattedDate = sdf.format(date);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = getTimestamp().format(formatter);
         String s = "Message:\r\nHeader  : " + Utils.getSpacedHex(header) + "\r\nchecksum: "
                 + Utils.getSpacedHex(checksum);
         if (getLength() > 32) {
@@ -181,7 +165,14 @@ public class Message {
      * @return the timestamp
      */
     public LocalDateTime getTimestamp() {
-        return timeStamp;
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(getTimestampAsInt()), ZoneId.systemDefault());
+    }
+
+    /**
+     * @return the timestamp
+     */
+    public int getTimestampAsInt() {
+        return ByteBuffer.wrap(tsByte).getInt();
     }
 
     /**

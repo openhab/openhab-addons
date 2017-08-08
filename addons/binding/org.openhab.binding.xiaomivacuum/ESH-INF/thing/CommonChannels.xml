@@ -40,4 +40,16 @@
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 	</channel-type>
+	<channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power On/Off</label>
+    </channel-type>
+
+    <!-- Common Properties channels-->
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <state readOnly="true" />
+    </channel-type>
+    
 </thing:thing-descriptions>

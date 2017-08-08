@@ -25,9 +25,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public class XiaomiGenericHandler extends XiaomiMiIoHandler {
+public class XiaomiGenericHandler extends XiaomiMiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiGenericHandler.class);
-    private boolean isIdentified;
 
     public XiaomiGenericHandler(Thing thing) {
         super(thing);
@@ -55,7 +54,7 @@ public class XiaomiGenericHandler extends XiaomiMiIoHandler {
             if (updateNetwork()) {
                 updateStatus(ThingStatus.ONLINE);
                 if (!isIdentified) {
-                    isIdentified = getDeviceType();
+                    isIdentified = updateThingType(getJsonResultHelper(network.getValue()));
                 }
             } else {
                 disconnectedNoResponse();

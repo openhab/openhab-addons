@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.xiaomivacuum.discovery;
 
+import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -26,11 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
 import org.openhab.binding.xiaomivacuum.internal.Message;
 import org.openhab.binding.xiaomivacuum.internal.Utils;
 import org.slf4j.Logger;
@@ -43,13 +42,12 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
-public class VacuumDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+public class VacuumDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
     private static final int TIMEOUT = 10000;
     private ScheduledFuture<?> roboDiscoveryJob;
-    private DiscoveryServiceCallback discoveryServiceCallback;
 
     private final Logger logger = LoggerFactory.getLogger(VacuumDiscovery.class);
 
@@ -83,32 +81,23 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
         for (Entry<String, byte[]> i : responses.entrySet()) {
             logger.trace("Discovery responses from : {}:{}", i.getKey(), Utils.getSpacedHex(i.getValue()));
             Message msg = new Message(i.getValue());
-            logger.debug("Vacuum time stamp: {}, OH time {}, delta {}", msg.getTimestamp(), LocalDateTime.now(),
+            logger.debug("Mi IO device time stamp: {}, OH time {}, delta {}", msg.getTimestamp(), LocalDateTime.now(),
                     LocalDateTime.now().compareTo(msg.getTimestamp()));
             String token = Utils.getHex(msg.getChecksum());
             String id = Utils.getHex(msg.getDeviceId());
 
-            ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_MIIO, id);
-            // TODO: placeholder entries. Here test for MiIO things to determine as what thingType it needs to be added
-            if (discoveryServiceCallback.getExistingDiscoveryResult(uid) != null) {
-                logger.debug("Thing {} was already in discovery Inbox", uid.toString());
-            }
-            if (discoveryServiceCallback.getExistingThing(uid) != null) {
-                logger.debug("Thing {} already exists", uid.toString());
-            }
-            logger.debug("Discovered Xiaomi Robot Vacuum {} at {}", id, i.getKey());
-            if (token.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF") || token.equals("00000000000000000000000000000000")) {
+            ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+            logger.debug("Discovered Mi IO Device {} at {}", id, i.getKey());
+            if (IGNORED_TOLKENS.contains(token)) {
                 logger.debug(
-                        "No token discovered for device {}. To discover token reset the vacuum & connect to it's wireless network and re-run discovery",
+                        "No token discovered for device {}. To discover token reset your device & connect to it's wireless network and re-run discovery. Read readme for other options.",
                         id);
-                thingDiscovered(DiscoveryResultBuilder.create(uid)
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, i.getKey())
                         .withRepresentationProperty(id).withLabel("Discovered Xiaomi Mi IO Device").build());
             } else {
                 logger.debug("Discovered token for device {}: {} ('{}')", id, token, new String(msg.getChecksum()));
-                thingDiscovered(DiscoveryResultBuilder.create(uid)
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
-                        .withProperty(XiaomiVacuumBindingConstants.PROPERTY_TOKEN, token).withRepresentationProperty(id)
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, i.getKey())
+                        .withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
                         .withLabel("Discovered Xiaomi Mi IO Device").build());
             }
         }
@@ -121,7 +110,6 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
         TreeSet<String> broadcastAddresses = new TreeSet<String>();
         try {
             broadcastAddresses.add("224.0.0.1");
-            broadcastAddresses.add("192.168.3.109");
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 try {
@@ -152,9 +140,9 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
             clientSocket.setReuseAddress(true);
             clientSocket.setBroadcast(true);
             clientSocket.setSoTimeout(TIMEOUT);
-            byte[] sendData = XiaomiVacuumBindingConstants.DISCOVER_STRING;
+            byte[] sendData = DISCOVER_STRING;
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddress),
-                    XiaomiVacuumBindingConstants.PORT);
+                    PORT);
             for (int i = 1; i <= 2; i++) {
                 clientSocket.send(sendPacket);
             }
@@ -179,18 +167,13 @@ public class VacuumDiscovery extends AbstractDiscoveryService implements Extende
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return Collections.singleton(XiaomiVacuumBindingConstants.THING_TYPE_MIIO);
+        return Collections.singleton(THING_TYPE_MIIO);
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Start Xiaomi Robot Vacuum discovery");
+        logger.debug("Start Xiaomi Mi IO discovery");
         discover();
-        logger.debug("Xiaomi Robot Vacuum discovery done");
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
+        logger.debug("Xiaomi Mi IO discovery done");
     }
 }

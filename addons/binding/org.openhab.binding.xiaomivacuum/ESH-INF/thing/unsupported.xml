@@ -21,6 +21,7 @@
 	<channel-group-type id="miioactions">
 		<label>Actions</label>
 		<channels>
+			<channel id="power" typeId="power" />
 			<channel id="commands" typeId="commands" />
 			<channel id="testcommands" typeId="testcommands" />
 		</channels>
