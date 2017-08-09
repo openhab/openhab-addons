@@ -55,12 +55,6 @@ public final class LightifyDeviceDiscoveryService extends AbstractDiscoveryServi
         bridgeHandler.sendMessage(new LightifyListPairedDevicesMessage());
     }
 
-    public void scanComplete() {
-        logger.trace("Scan complete");
-        abortScan();
-        removeOlderResults(getTimestampOfLastScan());
-    }
-
     /**
      * Posts a discovery result for a Lightify device available via a gateway.
      *

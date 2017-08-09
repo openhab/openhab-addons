@@ -148,8 +148,6 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
 
         seen++;
 
-        bridgeHandler.getDiscoveryService().scanComplete();
-
         return true;
     }
 
