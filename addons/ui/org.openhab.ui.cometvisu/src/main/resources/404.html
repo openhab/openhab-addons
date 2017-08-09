@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <title>CometVisu client not found or not accessible</title>
 <style type="text/css">
+body {
+    font-family: Arial, sans-serif;
+}
 .cause {
     font-weight: bold;
 }
@@ -17,23 +20,270 @@
     color: #999;
 }
 .problem {
-    background-color: rgba(255,0,0,0.1);
+    background-color: rgba(255,165,0,0.1);
     margin-bottom: 10px;
 }
 .problem h2 { 
-    background-color: rgba(255,0,0,0.2);
-    padding: 5px 10px;
+    background-color: rgba(255,165,0,0.2);
+    padding: 1em;
  }
  .problem .explanation {
-    padding: 0 10px 10px 10px;
+    padding: 0 1em 1em 1em;
  }
+ section, header {
+    padding: 2em;
+ }
+ section.solution {
+	 background-color: rgba(0,233,0,0.2);
+	 padding: 2em;
+	 margin: 0 2em;
+ }
+ section.title {
+	 margin-bottom: 0;
+	 padding-bottom: 0;
+ }
+ .interaction {
+    margin: 2em;
+    width: 600px;
+ }
+ button {
+    padding: 0.5em; 
+ }
+ #downloadButton {
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 0.5em 1em;
+    margin: 0.2em auto;
+ }
+ 
+ .code {
+    font-family: monospace;
+    white-space: pre;
+  }
+  
+  #licenseHint {
+    display: none;
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    width: 400px;
+    background-color: rgba(255,255,255,0.9);
+    border: 1px solid #CCC;
+    padding: 2em;
+  }
+  .center { text-align: center; }
+  .input label {
+    display: inline-block;
+    min-width: 250px;
+    margin-right: 0.5em;
+    text-align: right;
+  }
+  .input { margin: 0.3em; }
+  .input input {
+    min-width: 300px;
+  }
+  .input input[type="checkbox"] {
+    min-width: auto;
+  }
+  .interaction .buttons { text-align: center; }
 </style>
+<script type="text/javascript">
+// include restclient, https://github.com/Amareis/another-rest-client, MIT licence
+!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.RestClient=t():e.RestClient=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var o=n[r]={exports:{},id:r,loaded:!1};return e[r].call(o.exports,o,o.exports,t),o.loaded=!0,o.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{"default":e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function s(e){var t="";for(var n in e)t+=encodeURIComponent(n)+"="+encodeURIComponent(e[n])+"&";return t.substr(0,t.length-1)}function i(e,t){try{return e(t)}catch(n){return console.error('Error in function "'+e.name+'" while decode/encode data'),console.log(e),console.log(t),console.log(n),t}}function u(e,t,n,r,o){var i=o?o:function(e){return void 0===e?i:i._clone(t,e)};return i._resources={},i._shortcuts={},i._clone=function(t,r){var o=u(e,t,n,r);o._shortcuts=i._shortcuts;for(var s in i._resources)o._resources[s]=i._resources[s]._clone(o),s in o._shortcuts&&(o[s]=o._resources[s]);return o},i.res=function(t){var n=arguments.length<=1||void 0===arguments[1]?e._opts.shortcut:arguments[1],r=function(t){if(t in i._resources)return i._resources[t];var r=u(e,i,t);return i._resources[t]=r,n&&(i._shortcuts[t]=r,i[t]=r),r};if(t.constructor===String)return r(t);if(t instanceof Array)return t.map(r);if(t instanceof Object){var o={};for(var s in t){var c=r(s);t[s]&&c.res(t[s]),o[s]=c}return o}},i.url=function(){var e=t?t.url():"";return n&&(e+="/"+n),void 0!==r&&(e+="/"+r),e},i.get=function(t){var n=i.url();return t&&(n+="?"+s(t)),e._request("GET",n)},i.post=function(t){var n=arguments.length<=1||void 0===arguments[1]?e._opts.contentType:arguments[1];return e._request("POST",i.url(),t,n)},i.put=function(t){var n=arguments.length<=1||void 0===arguments[1]?e._opts.contentType:arguments[1];return e._request("PUT",i.url(),t,n)},i.patch=function(t){var n=arguments.length<=1||void 0===arguments[1]?e._opts.contentType:arguments[1];return e._request("PATCH",i.url(),t,n)},i["delete"]=function(){return e._request("DELETE",i.url())},i}var c=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},a=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),f=n(1),l=r(f),p=function(){function e(t,n){o(this,e),this.host=t,this.conf(n),new l["default"](this),u(this,void 0,"",void 0,this)}return a(e,[{key:"conf",value:function(){var e=arguments.length<=0||void 0===arguments[0]?{}:arguments[0],t=this._opts||{trailing:"",shortcut:!0,contentType:"application/json","application/x-www-form-urlencoded":{encode:s},"application/json":{encode:JSON.stringify,decode:JSON.parse}};return this._opts=c(t,e),c({},this._opts)}},{key:"_request",value:function(e,t){var n=this,r=arguments.length<=2||void 0===arguments[2]?null:arguments[2],o=arguments.length<=3||void 0===arguments[3]?null:arguments[3];-1===t.indexOf("?")?t+=this._opts.trailing:t=t.replace("?",this._opts.trailing+"?");var s=new XMLHttpRequest;if(s.open(e,this.host+t,!0),o){var u=this._opts[o];u&&u.encode&&(r=i(u.encode,r)),s.setRequestHeader("Content-Type",o)}var c=new Promise(function(e,t){return s.onreadystatechange=function(){if(4===s.readyState)if(n.emit("response",s),c.emit("response",s),200===s.status||201===s.status||204===s.status){n.emit("success",s),c.emit("success",s);var r=s.responseText,o=s.getResponseHeader("Content-Type");if(o){var u=o.split(";")[0],a=n._opts[u];a&&a.decode&&(r=i(a.decode,r))}c.off(),e(r)}else n.emit("error",s),c.emit("error",s),c.off(),t(s)}});return new l["default"](c),this.emit("request",s),c.emit("request",s),s.send(r),c}}]),e}();e.exports=p},function(e,t){e.exports=function(e){var t={},n=[];e=e||this,e.on=function(n,r,o){return(t[n]=t[n]||[]).push([r,o]),e},e.off=function(r,o){r||(t={});for(var s=t[r]||n,i=s.length=o?s.length:0;i--;)o==s[i][0]&&s.splice(i,1);return e},e.emit=function(r){for(var o,s=t[r]||n,i=s.length>0?s.slice(0,s.length):s,u=0;o=i[u++];)o[0].apply(o[1],n.slice.call(arguments,1));return e}}}])});
+
+var config = {};
+var configDescriptions = {};
+var servicePid = "org.openhab.cometvisu";
+var uri = "ui:cometvisu";
+
+// get config from REST-API
+var api = new RestClient('/rest');
+api.on('request', function(xhr) {
+   xhr.setRequestHeader("Accept", "application/json, text/plain, */*"); 
+});
+api.res({
+    services: 'config',
+    "config-descriptions": 0,
+    cv: 'config'});
+
+api["config-descriptions"](uri).get().then(function(response) {
+    // config descriptions
+    configDescriptions = response;
+    return api.services(servicePid).config.get();
+}).then(function(response) {
+    // config settings
+    config = response;
+    if (!config.hasOwnProperty("autoDownload")) {
+        // set default value
+        config.autoDownload = false; 
+    }
+    for (var i=0, l = configDescriptions.parameters.length; i < l; i++) {
+        var param = configDescriptions.parameters[i];
+        var element = document.getElementById(param.name);
+        var value = getConfigValue(param.name);
+        if (value === null) {
+            value = param.defaultValue;
+        }
+        
+        // collect relevant elements by ID and CLASS
+        var elements = [];
+        if (element) {
+            elements.push(element);
+        }
+        Array.prototype.forEach.call(document.getElementsByClassName(param.name), function(elem) {
+            elements.push(elem);
+        });
+        
+        elements.forEach(function(elem) {
+            // apply value to element
+            if (param.type === "BOOLEAN") {
+                elem.checked = value;
+            } else if (param.type === "TEXT") {
+                if (elem.nodeName === "INPUT") {
+                    elem.value = value;
+                } else {
+                    elem.textContent = value;
+                }
+            }
+        });
+    }   
+});
+
+var getConfigValue = function(name) {
+    if (config.hasOwnProperty(name)) {
+        return config[name];
+    } else {
+        return null;    
+    }
+}
+
+var resetButton = function() {
+    var button = document.getElementById("downloadButton");
+    button.textContent = "Download client now";
+    button.disabled = false;
+}
+
+var resetAndReload = function() {
+    var button = document.getElementById("downloadButton");
+    var timeout = 5;
+    var counter = 0;
+    button.textContent = "reloading in "+timeout;
+    
+    var check = function() {
+        counter++;
+        var diff = (timeout-counter);
+        button.textContent = "reloading in "+diff;
+        if (diff <= 0) {
+            window.location.reload();
+        } else {
+            setTimeout(check, 1000);
+        }
+    }
+    // start countdown
+    setTimeout(check, 1000);
+}
+
+var isModified = function() {
+    return config.autoDownload != document.getElementById("autoDownload").checked ||
+           config.webFolder != document.getElementById("webFolder").value.trim();
+}
+
+var execute = function() {
+    var checkbox = document.getElementById("autoDownload");
+    var button = document.getElementById("downloadButton");
+    var webFolderInput = document.getElementById("webFolder");
+    
+    button.textContent = "processing...";
+    button.disabled = true;
+    var triggerDownload = false;
+    if (isModified()) {
+       // save changed configuration
+        config.autoDownload = checkbox.checked;
+        config.webFolder = webFolderInput.value.trim();
+        api.services(servicePid).config.put(config)
+        .then(function(response) {
+            button.textContent = 'configuration changed';
+            if (!config.autoDownload) {
+                // we still have to trigger the download manually
+                api.cv().config('download-client').get().then(function(response) {
+                    button.textContent = 'download request sent';
+                    setTimeout(resetAndReload, 1000);
+                }).catch(onError);   
+            } else {
+                setTimeout(resetAndReload, 1000);
+            }
+        }).catch(onError);
+        
+        triggerDownload = !config.autoDownload;
+    } else {
+        // just re-check ignoring the configuration
+        api.cv().config('download-client').get().then(function(response) {
+            button.textContent = 'download request sent';
+            setTimeout(resetAndReload, 1000);
+        }).catch(onError);
+    }
+    hideLicenseHint();
+}
+
+var onError = function(response) {
+    document.getElementById("downloadButton").textContent = "HTTP error: "+response.status+" "+response.statusText;
+    setTimeout(resetButton, 10000);
+}
+
+var showLicenseHint = function() {
+    document.getElementById("licenseHint").style.display = "block";
+}
+
+var hideLicenseHint = function() {
+    document.getElementById("licenseHint").style.display = "none";
+}
+
+</script>
 </head>
 <body>
-    <div class="problem">
-        <h2>CometVisu client not found or not accessible</h2>
-        <div class="explanation">The CometVisu add-on was not able to find your local CometVisu-client installation.</div>
+	<section class="title">
+	    <div class="problem">
+	        <h2>CometVisu client not found or not accessible</h2>
+	        <div class="explanation">The CometVisu add-on was not able to find your local CometVisu-client installation in <span class="webFolder code">/var/www/cometvisu/</span></div>
+	    </div>
+	</section>
+    <section class="solution">
+    <h2>Solution</h2>
+    <h3>The easy way:</h3>
+    <div class="interaction">
+        <div class="input">
+	        <label for="webFolder">Install CometVisu client in:</label>
+	        <input type="text" id="webFolder" value=""/> 
+        </div>
+        <div class="input">
+            <label for="autoDownload">Enable automatic downloading:</label>
+            <input type="checkbox" id="autoDownload"/>
+         </div>
+        <div class="buttons">
+            <button id="downloadButton" onclick="showLicenseHint()">Install client now</button>
+        </div>
     </div>
+    <div><strong>or</strong></div>
+    <div>Add:
+        <pre>autoDownload=true</pre>
+        to your 'services/cometvisu.cfg' file (create it if it does not exist).
+        <br/>
+        
+        <a href="https://github.com/CometVisu/CometVisu/blob/develop/COPYING">Licensing information</a>
+    </div>
+    <h3>The manual way:</h3>
+    <ol>
+        <li>Download the latest release of the CometVisu here: <a href="https://github.com/CometVisu/CometVisu/releases">CometVisu releases</a> and extract it 
+        and copy the 'release'-folder from the extracted archive to a local folder on your openHAB-server (e.g. /var/www/cometvisu)</a></li>
+        <li>Set the 'webFolder' setting in your 'services/cometvisu.cfg' to the path from the step above, e.g.:
+            <pre>webFolder=/var/www/cometvisu</pre>
+        </li>
+        <li>Change the owner of the CometVisu-clients folder to openhab, e.g. for linux systems: <pre>chown -R openhab:openhab /var/www/cometvisu</pre></li>
+    </ol>
+    </section>
+    
+    <section>
+    <h3>Further information:</h3>
     
     The prerequisites for a running version of the CometVisu are:
     <ul>
@@ -49,15 +299,26 @@
         </li>
         <li>The openHAB service has no access rights to the local CometVisu client folder</li>
     </ol>
-    
-    <h3>Possible solutions:</h3>
-    <ol>
-        <li>Download the latest release of the CometVisu here: <a href="https://github.com/CometVisu/CometVisu/releases">CometVisu releases</a> and extract it 
-        and copy the 'release'-folder from the extracted archive to a local folder on your openHAB-server (e.g. /var/www/cometvisu)</a></li>
-        <li>Set the 'webFolder' setting in your 'conf/cometvisu.cfg' to the path from the step above, e.g.:
-            <pre>webFolder=/var/www/cometvisu</pre>
-        </li>
-        <li>Change the owner of the CometVisu-clients folder to openhab, e.g. for linux systems: <pre>chown -R openhab:openhab /var/www/cometvisu</pre></li>
-    </ol>
+    </section>
+    <div id="licenseHint">
+        <h3>CometVisu License Hint</h3>
+        <div>
+            The CometVisu client is licensed under <strong>GNU General Public License v3.0</strong>.
+            If you proceed, it will be downloaded and extracted on your openHAB server 
+            in the folder <span class="webFolder code">/var/www/cometvisu</span>.
+            <br/>
+            <br/>
+            For more information, please read the CometVisu project's <a href="https://github.com/CometVisu/CometVisu/blob/develop/COPYING">Licensing information</a>
+            <br/>   
+            <br/>         
+            <strong>Please confirm that you accept that procedure!</strong>
+            <br/>            
+            <div class="center" style="margin-top: 1em">
+                <button onclick="hideLicenseHint()">Deny</button>
+                <button onclick="execute()">Accept</button>
+            </div>
+            
+        </div>
+    </div>
 </body>
 </html>

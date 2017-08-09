@@ -30,6 +30,7 @@ Import-Package:
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.persistence,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.rest,
  org.eclipse.smarthome.model.sitemap,
  org.eclipse.smarthome.ui.icon,
@@ -39,13 +40,13 @@ Import-Package:
  org.glassfish.jersey.media.sse,
  org.glassfish.jersey.server,
  org.glassfish.jersey.servlet.spi,
+ org.openhab.ui.cometvisu.php,
  org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.http,
  org.slf4j,
- org.xml.sax,
- org.openhab.ui.cometvisu.php
+ org.xml.sax
 Service-Component: OSGI-INF/*.xml
 Bundle-ClassPath: .,
  lib/rrd4j-2.2.jar,
