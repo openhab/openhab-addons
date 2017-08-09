@@ -236,14 +236,15 @@ public class YamahaBridgeHandler extends BaseBridgeHandler implements Connection
         }
 
         String host = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
+        BigDecimal port = (BigDecimal) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_PORT);
 
-        if (host == null || host.isEmpty()) {
+        if (host == null || port == null || host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname not set!");
             return;
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for data");
-        ProtocolFactory.createConnection(host, this);
+        ProtocolFactory.createConnection(host + ":" + String.valueOf(port.intValue()), this);
     }
 
     @Override
