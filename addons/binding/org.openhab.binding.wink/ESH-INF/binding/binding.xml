@@ -6,6 +6,6 @@
 
     <name>Wink Binding</name>
     <description>This is the OpenHab binding for the Wink Hub.</description>
-    <author>Sebastien Marchand</author>
+    <author>Shawn Crosby and Sebastien Marchand</author>
 
 </binding:binding>

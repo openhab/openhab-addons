@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.wink.client.CloudOauthWinkAuthenticationService;
+import org.openhab.binding.wink.client.DelegatedAuthenticationService;
 import org.openhab.binding.wink.client.IWinkAuthenticationService;
 import org.openhab.binding.wink.client.WinkAuthenticationService;
 import org.osgi.service.cm.ConfigurationException;
@@ -25,17 +26,28 @@ public class AuthenticationConfigurationService implements ManagedService {
 
     @Override
     public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-        configure(properties);
-
+        if (!properties.isEmpty() && properties.get("client_id") != null) {
+            configure(properties);
+        }
     }
 
     private void configure(Dictionary<String, ?> properties) {
-        Map<String, String> props = new HashMap<String, String>();
-        props.put("client_id", (String) properties.get("client_id"));
-        props.put("client_secret", (String) properties.get("client_secret"));
-        props.put("refresh_token", (String) properties.get("refresh_token"));
-        logger.debug("Configuring Wink Authentication Service {}", props);
-        IWinkAuthenticationService service = new CloudOauthWinkAuthenticationService(props);
+        IWinkAuthenticationService service = null;
+        String auth_service = (String) properties.get("auth_service");
+        logger.debug("Auth Service: {}", auth_service);
+
+        if ("delegated".equals(auth_service)) {
+            String token = (String) properties.get("auth_service_token");
+            logger.debug("Configuring Delegated Wink Authentication Service on Heroku with token {}", token);
+            service = new DelegatedAuthenticationService(token);
+        } else if (properties.get("client_id") != null) {
+            Map<String, String> props = new HashMap<String, String>();
+            props.put("client_id", (String) properties.get("client_id"));
+            props.put("client_secret", (String) properties.get("client_secret"));
+            props.put("refresh_token", (String) properties.get("refresh_token"));
+            logger.debug("Configuring Wink Authentication Service {}", props);
+            service = new CloudOauthWinkAuthenticationService(props);
+        }
 
         WinkAuthenticationService.setInstance(service);
     }
@@ -49,7 +61,10 @@ public class AuthenticationConfigurationService implements ManagedService {
      */
     public void activate(ComponentContext context) throws Exception {
         Dictionary<String, Object> properties = context.getProperties();
-        configure(properties);
+        if (!properties.isEmpty() && properties.get("client_id") != null) {
+            logger.debug("Configuring auth service with found properties {}", properties);
+            configure(properties);
+        }
     }
 
     /**

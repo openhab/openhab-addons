@@ -72,9 +72,11 @@ public class CloudRestfulWinkClient implements IWinkClient {
         WebTarget target = winkClient.target(WINK_URI).path(type.getPath() + "/" + Id);
         JsonElement resultJson = executeGet(target);
 
+        IWinkDevice ret = new JsonWinkDevice(resultJson.getAsJsonObject());
+
         winkClient.close();
 
-        return new JsonWinkDevice(resultJson.getAsJsonObject());
+        return ret;
     }
 
     @Override
@@ -85,9 +87,11 @@ public class CloudRestfulWinkClient implements IWinkClient {
         String desired_state = new Gson().toJson(updatedState);
         String wrapper = "{\"desired_state\":" + desired_state + "}";
         JsonElement jsonResult = executePut(target, wrapper);
+
+        IWinkDevice ret = new JsonWinkDevice(jsonResult.getAsJsonObject());
         winkClient.close();
 
-        return new JsonWinkDevice(jsonResult.getAsJsonObject());
+        return ret;
     }
 
     private JsonElement executePut(WebTarget target, String payload) {

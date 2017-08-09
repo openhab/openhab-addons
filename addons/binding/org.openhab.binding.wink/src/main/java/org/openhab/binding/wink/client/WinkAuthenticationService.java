@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.wink.client;
 
-import java.util.HashMap;
-
 /**
  * This is a singleton instance of the authentication service to get tokens from the wink rest api
  *
@@ -26,7 +24,11 @@ public class WinkAuthenticationService {
      */
     public static IWinkAuthenticationService getInstance() {
         if (instance == null) {
-            instance = new CloudOauthWinkAuthenticationService(new HashMap<String, String>());
+            synchronized (WinkAuthenticationService.class) {
+                if (instance == null) {
+                    instance = new DummyService();
+                }
+            }
         }
         return instance;
     }
@@ -38,5 +40,21 @@ public class WinkAuthenticationService {
      */
     public static void setInstance(IWinkAuthenticationService service) {
         instance = service;
+    }
+
+    private static class DummyService implements IWinkAuthenticationService {
+
+        @Override
+        public String getAuthToken() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String refreshToken() throws AuthenticationException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 }

@@ -37,4 +37,6 @@ public class WinkBindingConstants {
     public static final String WINK_DEVICES_REQUEST_PATH = "users/me/wink_devices";
     public static final String WINK_ACCESS_TOKEN = "access_token";
     public static final String WINK_REFRESH_TOKEN = "refresh_token";
+
+    public static final String DELEGATED_AUTH_SERVICE = "https://openhab-authservice.herokuapp.com";
 }
