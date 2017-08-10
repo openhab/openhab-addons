@@ -31,7 +31,7 @@ public class DiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(DiscoveryListener.class);
 
     private final String BCAST_ADDRESS = "255.255.255.255";
-    private final int SOCKET_RECEIVE_TIMEOUT = 300;
+    private final int SOCKET_RECEIVE_TIMEOUT = 500;
 
     private final String POLL_MESSAGE = "<ALL;DEVICE;ID;GET>";
 

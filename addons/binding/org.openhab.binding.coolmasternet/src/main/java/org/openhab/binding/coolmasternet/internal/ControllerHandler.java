@@ -60,7 +60,6 @@ public class ControllerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialising CoolMasterNet Controller handler...");
-        super.initialize();
 
         Configuration config = this.getConfig();
         host = (String) config.get(HOST);

@@ -74,7 +74,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing handler for Pioneer AVR @{}", connection.getConnectionName());
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
         // Start the status checker
         Runnable statusChecker = new Runnable() {

@@ -32,7 +32,9 @@ public class BigAssFanBindingConstants {
 
     // BigAssFan Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_FAN);
+    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_FAN,
+            THING_TYPE_CONTROLLER);
 
     /*
      * List of Channel Ids
@@ -46,6 +48,9 @@ public class BigAssFanBindingConstants {
     public static final String CHANNEL_FAN_SMARTMODE = "fan-smartmode";
     public static final String CHANNEL_FAN_SPEED_MIN = "fan-speed-min";
     public static final String CHANNEL_FAN_SPEED_MAX = "fan-speed-max";
+    public static final String CHANNEL_FAN_LEARN_MINSPEED = "fan-learn-speed-min";
+    public static final String CHANNEL_FAN_LEARN_MAXSPEED = "fan-learn-speed-max";
+    public static final String CHANNEL_FAN_WINTERMODE = "fan-wintermode";
 
     // Light control channels
     public static final String CHANNEL_LIGHT_POWER = "light-power";
@@ -54,6 +59,7 @@ public class BigAssFanBindingConstants {
     public static final String CHANNEL_LIGHT_SMARTER = "light-smarter";
     public static final String CHANNEL_LIGHT_LEVEL_MIN = "light-level-min";
     public static final String CHANNEL_LIGHT_LEVEL_MAX = "light-level-max";
+    public static final String CHANNEL_LIGHT_PRESENT = "light-present";
 
     // Miscellaneous channels
     public static final String CHANNEL_MOTION = "motion";

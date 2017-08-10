@@ -27,8 +27,6 @@ public class BindingConstants {
     public static final String BINDING_ID = "avmfritz";
     public static final String IP_ADDRESS = "ipAddress";
     public static final String BRIDGE_FRITZBOX = "fritzbox";
-    public static final String SERIAL_NUMBER = "serialNumber";
-    public static final String DEVICE_ID = "deviceId";
     public static final String BRIDGE_MODEL_NAME = "FRITZ!Box";
     public static final String PL546E_MODEL_NAME = "FRITZ!Powerline";
     public static final String THING_AIN = "ain";

@@ -255,7 +255,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void initialize() {
         logger.debug("[BRIDGE]: About to initialize bridge " + ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
-        super.initialize();
         try {
             updateStatus(ThingStatus.OFFLINE);
             logger.info("BRIDGE: ZoneMinder Server Bridge Handler Initialized");
@@ -1119,7 +1118,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     protected void stopTask(ScheduledFuture<?> task) {
         try {
             if (task != null && !task.isCancelled()) {
-                logger.debug("{}: Stopping ZoneMinder Bridge Monitor Task. Task='{}'", getLogIdentifier(), task.toString());
+                logger.debug("{}: Stopping ZoneMinder Bridge Monitor Task. Task='{}'", getLogIdentifier(),
+                        task.toString());
                 task.cancel(true);
             }
         } catch (Exception ex) {

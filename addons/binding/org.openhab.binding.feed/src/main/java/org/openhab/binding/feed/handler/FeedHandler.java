@@ -71,7 +71,7 @@ public class FeedHandler extends BaseThingHandler {
     public void initialize() {
         checkConfiguration();
         startAutomaticRefresh();
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**

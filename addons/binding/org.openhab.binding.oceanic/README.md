@@ -49,6 +49,7 @@ Thing oceanic:softener:s1 [ port="/dev/tty.usbserial-FTWGX64N", interval=60]
 ```
 
 .items
+
 ```
 Number oceanicVolume "volume [%d]" (oceanic) {channel="oceanic:softener:s1:totalflow"}
 String oceanicAlarm "alarm: [%s]" (oceanic) {channel="oceanic:softener:s1:alarm"}

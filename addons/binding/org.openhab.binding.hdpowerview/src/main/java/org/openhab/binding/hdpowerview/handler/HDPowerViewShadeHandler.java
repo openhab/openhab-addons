@@ -46,7 +46,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         getBridgeHandler().pollNow();
     }
 

@@ -149,7 +149,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         this.initGetStatusAndKeepAliveThread();
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         this.saveConfigurationsUsingCurrentStates();
     }
 
