@@ -21,7 +21,7 @@
             <parameter name="port" type="text">
                 <label>Serial port</label>
                 <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-                <default>COM1</default>
+                <default>/dev/ttyS0</default>
                 <required>true</required>
             </parameter>
             <!-- Max volume could have been queried using the protocol, but would have 
