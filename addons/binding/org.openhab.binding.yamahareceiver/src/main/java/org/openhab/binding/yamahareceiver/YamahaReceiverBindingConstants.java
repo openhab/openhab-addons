@@ -77,8 +77,7 @@ public class YamahaReceiverBindingConstants {
             CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG);
 
     public static final String UPNP_TYPE = "MediaRenderer";
-
-    public static final CharSequence UPNP_MANUFACTURER = "YAMAHA";
+    public static final String UPNP_MANUFACTURER = "YAMAHA";
 
     public static final String CONFIG_REFRESH = "REFRESH_IN_SEC";
     public static final String CONFIG_HOST_NAME = "HOST";

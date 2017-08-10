@@ -54,6 +54,8 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
     /**
      * Create a NavigationControl object for altering menu positions and requesting current menu information.
      *
+     * @param state We need the current navigation state, because most navigation commands are relative commands and we
+     *            offer API with absolute values.
      * @param inputID The input ID like USB or NET_RADIO.
      * @param com The Yamaha communication object to send http requests.
      */
@@ -152,14 +154,14 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
         if (useAlternativeBackToHomeCmd) {
             comReference.get().send(wrInput("<List_Control><Cursor>Return to Home</Cursor></List_Control>"));
             update();
-            if (getLevel() > 0) {
+            if (state.menuLayer > 0) {
                 observer.navigationError("Both going back to root commands failed for your receiver!");
                 return false;
             }
         } else {
             comReference.get().send(wrInput("<List_Control><Cursor>Back to Home</Cursor></List_Control>"));
             update();
-            if (getLevel() > 0) {
+            if (state.menuLayer > 0) {
                 observer.navigationError(
                         "The going back to root command failed for your receiver. Trying to use a different command.");
                 useAlternativeBackToHomeCmd = true;
@@ -180,7 +182,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
     public void selectItemFullPath(String fullPath) throws IOException, ReceivedMessageParseException {
         update();
 
-        if (getMenuName() == null) {
+        if (state.menuName == null) {
             return;
         }
 
@@ -189,7 +191,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
         // Just a relative menu item.
         if (pathArr.length < 2) {
             if (!selectItem(pathArr[0])) {
-                observer.navigationError("Item '" + pathArr[0] + "' doesn't exist in menu " + getMenuName());
+                observer.navigationError("Item '" + pathArr[0] + "' doesn't exist in menu " + state.menuName);
             }
             return;
         }
@@ -199,18 +201,18 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
         String selectItemName = pathArr[pathArr.length - 1];
         int selectMenuLevel = pathArr.length - 1;
 
-        boolean sameMenu = getMenuName().equals(selectMenuName) && getLevel() == selectMenuLevel;
+        boolean sameMenu = state.menuName.equals(selectMenuName) && state.menuLayer == selectMenuLevel;
 
         if (sameMenu) {
             if (!selectItem(selectItemName)) {
-                observer.navigationError("Item '" + selectItemName + "' doesn't exist in menu " + getMenuName()
+                observer.navigationError("Item '" + selectItemName + "' doesn't exist in menu " + state.menuName
                         + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
                         + state.getAllItemLabels());
             }
             return;
         }
 
-        if (getLevel() > 0) {
+        if (state.menuLayer > 0) {
             if (!goToRoot()) {
                 return;
             }
@@ -218,52 +220,12 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
 
         for (String pathElement : pathArr) {
             if (!selectItem(pathElement)) {
-                observer.navigationError("Item '" + pathElement + "' doesn't exist in menu " + getMenuName()
+                observer.navigationError("Item '" + pathElement + "' doesn't exist in menu " + state.menuName
                         + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
                         + state.getAllItemLabels());
                 return;
             }
         }
-    }
-
-    /**
-     * Get the menu name.
-     * Operates on a cached XML node! Call refreshMenuState for up-to-date information.
-     *
-     * @return The menu name
-     */
-    public String getMenuName() {
-        return state.menuName;
-    }
-
-    /**
-     * Get the menu level.
-     * Operates on a cached XML node! Call refreshMenuState for up-to-date information.
-     *
-     * @return The menu level. -1 if unknown. 0 equals root menu.
-     */
-    public int getLevel() {
-        return state.menuLayer;
-    }
-
-    /**
-     * Get the page number.
-     * Operates on a cached XML node! Call refreshMenuState for up-to-date information.
-     *
-     * @return The page number. Each page contains 8 items.
-     */
-    public int getCurrentItemNumber() {
-        return state.currentLine;
-    }
-
-    /**
-     * Get the page numbers.
-     * Operates on a cached XML node! Call refreshMenuState for up-to-date information.
-     *
-     * @return The page numbers. Each page contains 8 items.
-     */
-    public int getNumberOfItems() {
-        return state.maxLine;
     }
 
     /**

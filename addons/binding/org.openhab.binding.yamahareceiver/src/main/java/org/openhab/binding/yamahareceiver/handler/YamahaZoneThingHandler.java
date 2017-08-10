@@ -493,8 +493,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
             return;
         }
 
-        inputWithNavigationControl = ProtocolFactory.InputWithNavigationControl(navigationInfoState, currentInputID,
-                brHandler.getCommunication(), this);
+        inputWithNavigationControl = ProtocolFactory.InputWithNavigationControl(brHandler.getCommunication(), navigationInfoState,
+                currentInputID, this);
 
         updateAsyncMakeOfflineIfFail(inputWithNavigationControl);
     }
@@ -528,8 +528,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
             return;
         }
 
-        inputWithPlayControl = ProtocolFactory.InputWithPlayControl(currentInputID, brHandler.getCommunication(), this);
-        inputWithPresetControl = ProtocolFactory.InputWithPresetControl(currentInputID, brHandler.getCommunication(),
+        inputWithPlayControl = ProtocolFactory.InputWithPlayControl(brHandler.getCommunication(), currentInputID, this);
+        inputWithPresetControl = ProtocolFactory.InputWithPresetControl(brHandler.getCommunication(), currentInputID,
                 this);
 
         updateAsyncMakeOfflineIfFail(inputWithPlayControl);

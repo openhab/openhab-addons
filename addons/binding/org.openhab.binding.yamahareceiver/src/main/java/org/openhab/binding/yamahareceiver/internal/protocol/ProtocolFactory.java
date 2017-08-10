@@ -9,7 +9,6 @@
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
-import org.openhab.binding.yamahareceiver.handler.YamahaZoneThingHandler;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.DeviceInformationXML;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigationControlXML;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithPlayControlXML;
@@ -18,10 +17,14 @@ import org.openhab.binding.yamahareceiver.internal.protocol.xml.SystemControlXML
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneAvailableInputsXML;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneControlXML;
+import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
+import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
 
 /**
  * Factory to create a {@link AbstractConnection} connection object based on a feature test.
@@ -44,49 +47,48 @@ public class ProtocolFactory {
         connectionStateListener.connectionEstablished(new XMLConnection(host));
     }
 
-    public static InputWithNavigationControl InputWithNavigationControl(NavigationControlState state, String inputID,
-            AbstractConnection connection, NavigationControlStateListener observer) {
+    public static InputWithNavigationControl InputWithNavigationControl(AbstractConnection connection, NavigationControlState state,
+            String inputID, NavigationControlStateListener observer) {
         if (connection instanceof XMLConnection) {
             return new InputWithNavigationControlXML(state, inputID, connection, observer);
         }
         return null;
     }
 
-    public static SystemControl SystemControl(AbstractConnection connection, SystemControlState state) {
+    public static SystemControl SystemControl(AbstractConnection connection, SystemControlStateListener listener) {
         if (connection instanceof XMLConnection) {
-            return new SystemControlXML(connection, state);
+            return new SystemControlXML(connection, listener);
         }
         return null;
     }
 
-    public static InputWithPlayControl InputWithPlayControl(String currentInputID, AbstractConnection connection,
-            YamahaZoneThingHandler yamahaZoneThingHandler) {
+    public static InputWithPlayControl InputWithPlayControl(AbstractConnection connection, String currentInputID,
+            PlayInfoStateListener listener) {
         if (connection instanceof XMLConnection) {
-            return new InputWithPlayControlXML(currentInputID, connection, yamahaZoneThingHandler);
+            return new InputWithPlayControlXML(currentInputID, connection, listener);
         }
         return null;
     }
 
-    public static InputWithPresetControl InputWithPresetControl(String currentInputID, AbstractConnection connection,
-            YamahaZoneThingHandler yamahaZoneThingHandler) {
+    public static InputWithPresetControl InputWithPresetControl(AbstractConnection connection, String currentInputID,
+            PresetInfoStateListener listener) {
         if (connection instanceof XMLConnection) {
-            return new InputWithPresetControlXML(currentInputID, connection, yamahaZoneThingHandler);
+            return new InputWithPresetControlXML(currentInputID, connection, listener);
         }
         return null;
     }
 
-    public static ZoneControl ZoneControl(AbstractConnection connection, Zone zone,
-            YamahaZoneThingHandler yamahaZoneThingHandler) {
+    public static ZoneControl ZoneControl(AbstractConnection connection, Zone zone, ZoneControlStateListener listener) {
         if (connection instanceof XMLConnection) {
-            return new ZoneControlXML(connection, zone, yamahaZoneThingHandler);
+            return new ZoneControlXML(connection, zone, listener);
         }
         return null;
     }
 
     public static ZoneAvailableInputs ZoneAvailableInputs(AbstractConnection connection, Zone zone,
-            YamahaZoneThingHandler yamahaZoneThingHandler) {
+            AvailableInputStateListener listener) {
         if (connection instanceof XMLConnection) {
-            return new ZoneAvailableInputsXML(connection, zone, yamahaZoneThingHandler);
+            return new ZoneAvailableInputsXML(connection, zone, listener);
         }
         return null;
     }

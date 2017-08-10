@@ -31,36 +31,38 @@ import org.osgi.framework.ServiceRegistration;
  * @author David Gräff - Initial contribution
  */
 public class ZoneDiscoveryService extends AbstractDiscoveryService {
-    private ServiceRegistration<?> reg = null;
-    private final DeviceInformationState state;
-    private final ThingUID bridgeUid;
+    private final ServiceRegistration<?> reg;
 
     /**
      * Constructs a zone discovery service.
-     * We need the system state, which contains the available zones.
+     * Registers this zone discovery service programmatically.
+     * Call {@link ZoneDiscoveryService.destroy()} to unregister the service after use.
      */
-    public ZoneDiscoveryService(DeviceInformationState state, ThingUID bridgeUid) {
-        super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 2, true);
-        this.state = state;
-        this.bridgeUid = bridgeUid;
+    public ZoneDiscoveryService(BundleContext bundleContext) {
+        super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 0, false);
+        reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<String, Object>());
     }
 
     /**
      * Unregisters this service from the OSGi service registry.
+     * This object cannot be used aynmore after calling this method.
      */
-    public void stop() {
-        if (reg != null) {
-            reg.unregister();
-        }
-        reg = null;
+    public void destroy() {
+        reg.unregister();
     }
 
     @Override
     protected void startScan() {
-        detectZones();
     }
 
-    public void detectZones() {
+    /**
+     * The available zones are within the {@link DeviceInformationState}. Will will publish those
+     * as things via this discovery service instance.
+     *
+     * @param state The device information state
+     * @param bridgeUid The bridge UID
+     */
+    public void publishZones(DeviceInformationState state, ThingUID bridgeUid) {
         // Create a copy of the list to avoid concurrent modification exceptions, because
         // the state update takes place in another thread
         List<YamahaReceiverBindingConstants.Zone> zoneCopy = new ArrayList<YamahaReceiverBindingConstants.Zone>(
@@ -77,16 +79,5 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
                     .withLabel(state.name + " " + zoneName).withBridge(bridgeUid).build();
             thingDiscovered(discoveryResult);
         }
-    }
-
-    /**
-     * Registers this zone discovery service programmatically.
-     * Call {@link ZoneDiscoveryService.stop()} to unregister the service after use.
-     */
-    public void start(BundleContext bundleContext) {
-        if (reg != null) {
-            return;
-        }
-        reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<String, Object>());
     }
 }

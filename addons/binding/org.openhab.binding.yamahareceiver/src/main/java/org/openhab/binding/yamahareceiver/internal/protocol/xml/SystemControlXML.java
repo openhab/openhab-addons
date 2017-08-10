@@ -15,6 +15,7 @@ import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
 import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -27,15 +28,19 @@ import org.w3c.dom.Node;
  */
 public class SystemControlXML implements SystemControl {
     private WeakReference<AbstractConnection> comReference;
-    protected SystemControlState state;
+    private SystemControlStateListener observer;
 
-    public SystemControlXML(AbstractConnection xml, SystemControlState state) {
+    public SystemControlXML(AbstractConnection xml, SystemControlStateListener observer) {
         this.comReference = new WeakReference<AbstractConnection>(xml);
-        this.state = state;
+        this.observer = observer;
     }
 
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
+        if (observer == null) {
+            return;
+        }
+
         AbstractConnection xml = comReference.get();
         String response = xml.sendReceive("<System><Power_Control>GetParam</Power_Control></System>");
         Document doc = XMLUtils.xml(response);
@@ -48,9 +53,12 @@ public class SystemControlXML implements SystemControl {
         Node node;
         String value;
 
+        SystemControlState state = new SystemControlState();
+
         node = XMLUtils.getNode(basicStatus, "Power");
         value = node != null ? node.getTextContent() : "";
         state.power = (value.equals("On"));
+        observer.systemControlStateChanged(state);
     }
 
     @Override
