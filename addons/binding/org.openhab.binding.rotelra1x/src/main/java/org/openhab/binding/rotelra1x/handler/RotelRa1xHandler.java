@@ -62,6 +62,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         exit = false;
         try {
             connect();
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
