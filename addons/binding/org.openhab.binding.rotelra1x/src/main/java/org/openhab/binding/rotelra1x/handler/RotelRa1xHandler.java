@@ -100,9 +100,9 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
             // Don't need continuous updates of the display, we still get updates when
             // the volume, etc., changes
-            sendForce("display_update_manual!");
+            serialPort.getOutputStream().write("display_update_manual!".getBytes(StandardCharsets.US_ASCII));
             updateStatus(ThingStatus.ONLINE);
-            sendForce("get_current_power!");
+            serialPort.getOutputStream().write("get_current_power!".getBytes(StandardCharsets.US_ASCII));
             updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
             updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
             // Seems we need to wait a bit after initialization for the channels to
