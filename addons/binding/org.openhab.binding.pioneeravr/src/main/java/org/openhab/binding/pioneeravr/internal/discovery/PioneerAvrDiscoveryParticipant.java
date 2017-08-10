@@ -29,7 +29,7 @@ import com.google.common.collect.Collections2;
 
 /**
  * An UpnpDiscoveryParticipant which allows to discover Pioneer AVRs.
- * 
+ *
  * @author Antoine Besnard
  *
  */
@@ -47,7 +47,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
 
     /**
      * Called at the service activation.
-     * 
+     *
      * @param componentContext
      */
     protected void activate(ComponentContext componentContext) {
@@ -101,9 +101,17 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
                             PioneerAvrBindingConstants.UPNP_DEVICE_TYPE, device.getType().getType());
 
                     String deviceModel = device.getDetails().getModelDetails() != null
-                            ? device.getDetails().getModelDetails().getModelName() : null;
+                            ? device.getDetails().getModelDetails().getModelName()
+                            : null;
+
                     ThingTypeUID thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE;
-                    if (!isSupportedDeviceModel(deviceModel)) {
+                    if (isSupportedDeviceModel2016(deviceModel)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016;
+                    } else if (isSupportedDeviceModel2015(deviceModel)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015;
+                    } else if (isSupportedDeviceModel2014(deviceModel)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014;
+                    } else if (!isSupportedDeviceModel(deviceModel)) {
                         logger.debug("Device model {} not supported. Odd behaviors may happen.", deviceModel);
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE;
                     }
@@ -118,7 +126,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
 
     /**
      * Return true only if the given device model is supported.
-     * 
+     *
      * @param deviceModel
      * @return
      */
@@ -126,10 +134,43 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
         return StringUtils.isNotBlank(deviceModel)
                 && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS,
                         new com.google.common.base.Predicate<String>() {
+                            @Override
                             public boolean apply(String input) {
                                 return StringUtils.startsWithIgnoreCase(deviceModel, input);
                             }
                         }).isEmpty();
     }
 
+    private boolean isSupportedDeviceModel2016(final String deviceModel) {
+        return StringUtils.isNotBlank(deviceModel)
+                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016,
+                        new com.google.common.base.Predicate<String>() {
+                            @Override
+                            public boolean apply(String input) {
+                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
+                            }
+                        }).isEmpty();
+    }
+
+    private boolean isSupportedDeviceModel2015(final String deviceModel) {
+        return StringUtils.isNotBlank(deviceModel)
+                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2015,
+                        new com.google.common.base.Predicate<String>() {
+                            @Override
+                            public boolean apply(String input) {
+                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
+                            }
+                        }).isEmpty();
+    }
+
+    private boolean isSupportedDeviceModel2014(final String deviceModel) {
+        return StringUtils.isNotBlank(deviceModel)
+                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2014,
+                        new com.google.common.base.Predicate<String>() {
+                            @Override
+                            public boolean apply(String input) {
+                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
+                            }
+                        }).isEmpty();
+    }
 }

@@ -29,7 +29,7 @@ public class ParameterizedCommand extends SimpleCommand {
     public enum ParameterizedCommandType implements AvrCommand.CommandType {
 
         VOLUME_SET("[0-9]{3}", "VL", "ZV", "YV"),
-        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT");
+        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA");
 
         private String[] zoneCommands;
         private String parameterPattern;
