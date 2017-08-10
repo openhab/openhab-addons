@@ -81,7 +81,7 @@ public final class LightifyDeviceState {
                 thingHandler.setOnline();
                 powerDelta = 1; // causes a full refresh below
             }
-        } else if (state.timeSinceSeen != 0) {
+        } else if (state.reachable == 0 || state.timeSinceSeen != 0) {
             if (thingStatus != ThingStatus.OFFLINE) {
                 logger.debug("{}: OFFLINE", deviceAddress);
                 thingHandler.setStatus(ThingStatus.OFFLINE);
