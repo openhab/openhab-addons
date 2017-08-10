@@ -80,6 +80,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     private void connect() throws IOException, ConfigurationError {
         // Note: connect may leave the port open even if it throws an exception.
+
         if (serialPort == null) {
             String portName = (String) getThing().getConfiguration().get("port");
             if (portName == null) {
@@ -104,7 +105,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             updateStatus(ThingStatus.ONLINE);
             serialPort.getOutputStream().write("get_current_power!".getBytes(StandardCharsets.US_ASCII));
             updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
-            updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
+            updateState(getThing().getChannel("brightness").getUID(), new PercentType(100));
             // Seems we need to wait a bit after initialization for the channels to
             // be ready to accept updates, so deferring input loop by 1 sec.
             scheduler.schedule(this, 1, TimeUnit.SECONDS);
