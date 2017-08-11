@@ -127,6 +127,7 @@ String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex
 ```
 
 ## Serial (SL) Channel
+
 An *SL channel* sends serial command strings out the serial connector on the device.  
 
 For example, the following item links to the module 1 connector 1 channel on a GC-100-6 device.
