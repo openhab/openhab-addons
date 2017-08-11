@@ -67,11 +67,9 @@ public abstract class SensorDefinition<R extends Reading> {
 
         if (converters == null) {
             converters = new ArrayList<>();
-
             for (SensorDefinition<?> sensor : SENSOR_DEFS) {
                 converters.add(sensor.createConverter());
             }
-
             CONVERTERS.put(handler, converters);
         }
 
