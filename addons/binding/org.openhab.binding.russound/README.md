@@ -182,6 +182,7 @@ The channel will be refreshed with the new representation after processing.  If 
 The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy"},...]` and will have a representation for each VALID favorite in the zone (ie where "valid" is true).  You will have up to 2 zone favorites in the JSON array (the ID field will be between 1 and 2).    
 
 There are two different ways to use this channel:
+
 1. Save a zone favorite.  Send a representation with "valid" set to true.  Example: to set zone favorite 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"80s Rock"}]`.  
 2. Delete a zone favorite.  Send a representation with "valid" as false.  Example: deleting zone favorite 2 (after the above statement) by sending: `[{"id":2","valid":false"}] `
 

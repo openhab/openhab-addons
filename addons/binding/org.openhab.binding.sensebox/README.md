@@ -77,7 +77,6 @@ Number  Zugspitze_Temperature      "Zugspitze Temperature [%.1f °C]"      <temp
 Number  Zugspitze_UVIntensity      "Zugspitze UvIntensity [%.1f μW/cm²]"  <light>         (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#uvIntensity" }
 Number  Zugspitze_PM2dot5          "Zugspitze PM2.5 [%.1f µg/m³]"                         (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#particulateMatter2dot5" }
 Number  Zugspitze_PM10             "Zugspitze PM10 [%.1f µg/m³]"                          (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#particulateMatter10" }
-
 ```
 
 sensebox.sitemap:
