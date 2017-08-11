@@ -22,6 +22,7 @@ from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.
 * Xiaomi Aqara Door/Window Sensor (square one)
 
 (not yet confirmed)
+
 * Xiaomi Aqara Neutral Wall Switch (1 and 2 buttons)
 * Xiaomi Mijia Honeywell Gas Alarm Detector
 * Xiaomi Mijia Honeywell Fire Alarm Detector
