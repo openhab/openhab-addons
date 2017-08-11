@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="elkm1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The bridge to handle talking to the elk -->
+	<bridge-type id="bridge">
+		<label>Elk Alarm Connection</label>
+		<description>Connection to the elk alarm</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<label>Ip Address</label>
+				<description>The ip address of the elk alarm system.</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>The port to connect to on the elk alarm system.</description>
+			</parameter>
+			<parameter name="pincode" type="integer">
+				<label>Pincode</label>
+				<description>The pincode to use for access to the elk alarm data.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
