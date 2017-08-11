@@ -45,6 +45,8 @@ import org.slf4j.LoggerFactory;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_CODE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_DATE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_MESSAGE;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_HEALTH_HUM;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_HEALTH_TEMP;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_AFTER_MODE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_END;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_REMOTE_START;
@@ -229,11 +231,13 @@ public class RobonectHandler extends BaseThingHandler {
         } else if (command == OnOffType.OFF && !currentlyStopped) {
             answer = robonectClient.stop();
         }
-        if (answer.isSuccessful()) {
-            updateState(CHANNEL_MOWER_STATUS_STARTED, command);
-        } else{
-            logErrorFromResponse(answer);
-            refreshMowerInfo();
+        if(answer != null){
+            if (answer.isSuccessful()) {
+                updateState(CHANNEL_MOWER_STATUS_STARTED, command);
+            } else{
+                logErrorFromResponse(answer);
+                refreshMowerInfo();
+            }
         }
     }
 
@@ -263,6 +267,10 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getHours()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
+            if(info.getHealth() != null){
+                updateState(CHANNEL_HEALTH_TEMP, new DecimalType(info.getHealth().getTemperature()));
+                updateState(CHANNEL_HEALTH_HUM, new DecimalType(info.getHealth().getHumidity()));
+            }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
                     updateNextTimer(info);

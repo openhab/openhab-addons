@@ -157,7 +157,6 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=version");
     }
     
-    
     @Test
     public void shouldHandleProperEncoding() throws InterruptedException, ExecutionException, TimeoutException {
         byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}".getBytes(

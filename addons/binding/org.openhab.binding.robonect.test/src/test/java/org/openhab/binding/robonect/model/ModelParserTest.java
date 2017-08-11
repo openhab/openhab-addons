@@ -69,7 +69,32 @@ public class ModelParserTest {
         assertEquals(-76, mowerInfo.getWlan().getSignal());
         assertNull(mowerInfo.getError());
     }
-    
+
+    @Test
+    public void shouldParseCorrectStatusModelWithHealth() {
+        String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
+        MowerInfo mowerInfo = parser.parse(correctModel, MowerInfo.class);
+        assertTrue(mowerInfo.isSuccessful());
+        assertEquals("Rosenlund Automower", mowerInfo.getName());
+        assertEquals(MowerStatus.CHARGING, mowerInfo.getStatus().getStatus());
+        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(47493, mowerInfo.getStatus().getDuration());
+        assertEquals(MowerMode.AUTO, mowerInfo.getStatus().getMode());
+        assertEquals(20, mowerInfo.getStatus().getBattery());
+        assertEquals(991, mowerInfo.getStatus().getHours());
+        assertEquals(Timer.TimerMode.STANDBY, mowerInfo.getTimer().getStatus());
+        assertEquals("30.07.2017", mowerInfo.getTimer().getNext().getDate());
+        assertEquals("13:00:00", mowerInfo.getTimer().getNext().getTime());
+        assertEquals("1501419600", mowerInfo.getTimer().getNext().getUnix());
+        assertEquals(-66, mowerInfo.getWlan().getSignal());
+        assertNull(mowerInfo.getError());
+        assertNotNull(mowerInfo.getHealth());
+        assertEquals(28, mowerInfo.getHealth().getTemperature());
+        assertEquals(32, mowerInfo.getHealth().getHumidity());
+        // "health": { "temperature": 28, "humidity": 32 }
+        
+    }
+
     @Test
     public void shouldParseISOEncodedStatusModel() {
         byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}".getBytes(
