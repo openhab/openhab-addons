@@ -85,6 +85,7 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
+    <module>org.openhab.binding.xiaomivacuum</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>

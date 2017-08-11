@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:miio:config">
+		<parameter name="host" type="text" required="true">
+			<context>network-address</context>
+			<label>IP address Vacuum</label>
+		</parameter>
+		<parameter name="token" type="text" pattern="^([A-Fa-f0-9]{32}|.{16})$" required="true">
+			<label>Token</label>
+			<description>Token for communication (in Hex)</description>
+			<default>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</default>
+		</parameter>
+		<parameter name="deviceId" type="text" required="false">
+			<label>Device ID</label>
+			<description>Device ID number for communication (in Hex)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="0" max="9999" required="false">
+			<label>Refresh interval</label>
+			<description>Refresh interval for refreshing the data in seconds. (0=disabled)</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
