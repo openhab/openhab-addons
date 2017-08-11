@@ -50,12 +50,8 @@ public abstract class RollingAveragePublisher<R extends Reading> implements Read
     }
 
     private ScheduledFuture<?> createUpdateJob(ScheduledExecutorService execService, final int updateInterval) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                publisher.publish(rollingAvg.getAverage());
-            }
-        };
-        return execService.scheduleWithFixedDelay(runnable, updateInterval, updateInterval, TimeUnit.SECONDS);
+        return execService.scheduleWithFixedDelay(() -> {
+            publisher.publish(rollingAvg.getAverage());
+        }, updateInterval, updateInterval, TimeUnit.SECONDS);
     }
 }

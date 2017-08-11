@@ -72,16 +72,11 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     @Override
     public void connectionAborted(String cause) {
-        Runnable connector = new Runnable() {
-            @Override
-            public void run() {
-                connection.openConnection();
-            }
-        };
-
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause);
 
-        connectJob = scheduler.schedule(connector, 10, TimeUnit.SECONDS);
+        connectJob = scheduler.schedule(() -> {
+            connection.openConnection();
+        }, 10, TimeUnit.SECONDS);
         logger.debug("Connection to port {} aborted ({}). Reconnect scheduled.", connection.getPort(), cause);
 
         connectionInitialized.set(false);

@@ -67,14 +67,6 @@ Afterwards, discovery reads from the USB receiver to find out which sensors are 
 
 ## Channels
 
-#### JeeLink USB receivers 
-
-Do not have any channels.
-
-#### JeeLink receivers connected over TCP
-
-Do not have any channels.
-
 #### LaCrosse temperature sensors
 
 | Channel Type ID         | Item Type    | Description

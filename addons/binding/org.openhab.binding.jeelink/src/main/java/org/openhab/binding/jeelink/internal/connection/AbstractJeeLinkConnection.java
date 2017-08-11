@@ -47,6 +47,11 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
         return port;
     }
 
+    /**
+     * returns the stream that can be used to write the init commands to the receiver.
+     */
+    protected abstract OutputStream getInitStream() throws IOException;
+
     protected void notifyOpen() {
         connectionListener.connectionOpened();
     }

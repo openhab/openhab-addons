@@ -8,22 +8,29 @@
  */
 package org.openhab.binding.jeelink.internal.connection;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Interface for connections to JeeLink USB Receivers.
  *
  * @author Volker Bier - Initial contribution
  */
 public interface JeeLinkConnection {
+    /**
+     * closes the connection to the receiver.
+     */
     void closeConnection();
 
+    /**
+     * opens the connection to the receiver.
+     */
     void openConnection();
 
-    OutputStream getInitStream() throws IOException;
-
+    /**
+     * returns port to which the receiver is connected.
+     */
     String getPort();
 
+    /**
+     * sends the specified init commands to the receiver.
+     */
     void sendInitCommands(String initCommands);
 }

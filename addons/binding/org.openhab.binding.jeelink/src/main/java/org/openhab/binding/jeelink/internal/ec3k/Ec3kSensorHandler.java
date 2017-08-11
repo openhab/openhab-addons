@@ -54,15 +54,12 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
                             getThing().getUID().getId(), currentWatt, reading.getCurrentWatt(), maxWatt,
                             reading.getConsumptionTotal(), reading.getApplianceTime(), reading.getSensorTime());
 
-                    updateState(getThing().getChannel(CURRENT_WATT_CHANNEL).getUID(), new DecimalType(currentWatt));
-                    updateState(getThing().getChannel(MAX_WATT_CHANNEL).getUID(), new DecimalType(maxWatt));
-                    updateState(getThing().getChannel(CONSUMPTION_CHANNEL).getUID(),
-                            new DecimalType(reading.getConsumptionTotal()));
-                    updateState(getThing().getChannel(APPLIANCE_TIME_CHANNEL).getUID(),
-                            new DecimalType(reading.getApplianceTime()));
-                    updateState(getThing().getChannel(SENSOR_TIME_CHANNEL).getUID(),
-                            new DecimalType(reading.getSensorTime()));
-                    updateState(getThing().getChannel(RESETS_CHANNEL).getUID(), new DecimalType(reading.getResets()));
+                    updateState(CURRENT_WATT_CHANNEL, new DecimalType(currentWatt));
+                    updateState(MAX_WATT_CHANNEL, new DecimalType(maxWatt));
+                    updateState(CONSUMPTION_CHANNEL, new DecimalType(reading.getConsumptionTotal()));
+                    updateState(APPLIANCE_TIME_CHANNEL, new DecimalType(reading.getApplianceTime()));
+                    updateState(SENSOR_TIME_CHANNEL, new DecimalType(reading.getSensorTime()));
+                    updateState(RESETS_CHANNEL, new DecimalType(reading.getResets()));
                 }
             }
 

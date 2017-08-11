@@ -63,7 +63,7 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
 
         publisher = createPublisher();
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -82,14 +82,10 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
     }
 
     private ScheduledFuture<?> createStatusUpdateJob(ScheduledExecutorService execService, final int sensorTimeout) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (secsSinceLastReading++ > sensorTimeout) {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+        return execService.scheduleWithFixedDelay(() -> {
+            if (secsSinceLastReading++ > sensorTimeout) {
+                updateStatus(ThingStatus.OFFLINE);
             }
-        };
-        return execService.scheduleWithFixedDelay(runnable, sensorTimeout, 1, TimeUnit.SECONDS);
+        }, sensorTimeout, 1, TimeUnit.SECONDS);
     }
 }
