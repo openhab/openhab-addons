@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService, DeviceMessageListener {
+public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
+        implements ExtendedDiscoveryService, DeviceMessageListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
 
     private RFXComBridgeHandler bridgeHandler;
@@ -77,12 +78,17 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
             ThingTypeUID uid = RFXComBindingConstants.PACKET_TYPE_THING_TYPE_UID_MAP.get(msg.packetType);
             ThingUID thingUID = new ThingUID(uid, bridge, id.replace(ID_DELIMITER, "_"));
 
-            if (callback.getExistingThing(thingUID) != null) {
-                logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-                DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
-                msg.addDevicePropertiesTo(discoveryResultBuilder);
+            if (callback.getExistingThing(thingUID) == null) {
+                if (!bridgeHandler.getConfiguration().disableDiscovery) {
+                    logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
+                    DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
+                            .withBridge(bridge);
+                    msg.addDevicePropertiesTo(discoveryResultBuilder);
 
-                thingDiscovered(discoveryResultBuilder.build());
+                    thingDiscovered(discoveryResultBuilder.build());
+                } else {
+                    logger.trace("Ignoring RFXCOM {} with id '{}' - discovery disabled", thingUID, id);
+                }
             } else {
                 logger.trace("Ignoring already known RFXCOM {} with id '{}'", thingUID, id);
             }

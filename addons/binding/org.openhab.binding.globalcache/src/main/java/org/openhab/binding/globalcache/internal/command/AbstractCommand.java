@@ -20,7 +20,7 @@ import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link AbstractCommand} class implements the basic functionality needed for all GlobalCache commands.
  *
  * @author Mark Hilbush - Initial contribution
@@ -105,7 +105,7 @@ public abstract class AbstractCommand implements CommandInterface {
         this.commandType = commandType;
     }
 
-    public boolean isGC_100_12() {
+    public boolean isGC100Model12() {
         return thing.getThingTypeUID().equals(GlobalCacheBindingConstants.THING_TYPE_GC_100_12);
     }
 
@@ -254,7 +254,7 @@ public abstract class AbstractCommand implements CommandInterface {
             errorModule = "";
             errorConnector = "";
             errorCode = reply.substring(15);
-            errorMessage = lookupErrorMessage(errorCode, gcGC100ErrorMessages);
+            errorMessage = lookupErrorMessage(errorCode, GC100_ERROR_MESSAGES);
             logger.debug("Device reply indicates GC-100 error condition");
             return true;
         }
@@ -267,7 +267,7 @@ public abstract class AbstractCommand implements CommandInterface {
             errorModule = reply.substring(4, 5);
             errorConnector = reply.substring(6, 7);
             errorCode = reply.substring(8, 11);
-            errorMessage = lookupErrorMessage(errorCode, gcItachErrorMessages);
+            errorMessage = lookupErrorMessage(errorCode, ITACH_ERROR_MESSAGES);
             logger.debug("Device reply indicates iTach error condition");
             return true;
         }
@@ -279,7 +279,7 @@ public abstract class AbstractCommand implements CommandInterface {
             errorModule = "";
             errorConnector = "";
             errorCode = reply.substring(4);
-            errorMessage = lookupErrorMessage(errorCode, gcFlexGeneralErrorMessages);
+            errorMessage = lookupErrorMessage(errorCode, FLEX_ERROR_MESSAGES);
             logger.debug("Device reply indicates Flex general error condition");
             return true;
         }
@@ -291,7 +291,7 @@ public abstract class AbstractCommand implements CommandInterface {
             errorModule = "";
             errorConnector = "";
             errorCode = reply.substring(6);
-            errorMessage = lookupErrorMessage(errorCode, gcFlexIRErrorMessages);
+            errorMessage = lookupErrorMessage(errorCode, FLEX_IR_ERROR_MESSAGES);
             logger.debug("Device reply indicates Flex IR error condition");
             return true;
         }
@@ -303,7 +303,7 @@ public abstract class AbstractCommand implements CommandInterface {
             errorModule = "";
             errorConnector = "";
             errorCode = reply.substring(6);
-            errorMessage = lookupErrorMessage(errorCode, gcFlexSLErrorMessages);
+            errorMessage = lookupErrorMessage(errorCode, FLEX_SL_ERROR_MESSAGES);
             logger.debug("Device reply indicates Flex SL error condition");
             return true;
         }
@@ -338,7 +338,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Errors returned by GlobalCache iTach devices
      */
-    private static final String[] gcItachErrorMessages = {
+    private static final String[] ITACH_ERROR_MESSAGES = {
             // 0
             "Unknown error",
             // 1
@@ -401,7 +401,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Errors returned by GlobalCache GC-100 devices
      */
-    private static final String[] gcGC100ErrorMessages = {
+    private static final String[] GC100_ERROR_MESSAGES = {
             // 0
             "Unknown error.",
             // 1
@@ -456,7 +456,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * General errors returned by Flex devices
      */
-    private static final String[] gcFlexGeneralErrorMessages = {
+    private static final String[] FLEX_ERROR_MESSAGES = {
             // 0
             "Unknown error.",
             // 1
@@ -477,7 +477,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Infrared errors returned by Flex devices
      */
-    private static final String[] gcFlexIRErrorMessages = {
+    private static final String[] FLEX_IR_ERROR_MESSAGES = {
             // 0
             "Unknown error.",
             // 1
@@ -500,7 +500,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Serial errors returned by Flex devices
      */
-    private static final String[] gcFlexSLErrorMessages = {
+    private static final String[] FLEX_SL_ERROR_MESSAGES = {
             // 0
             "Unknown error.",
             // 1

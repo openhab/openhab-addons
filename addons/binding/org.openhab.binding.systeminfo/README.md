@@ -102,9 +102,9 @@ The binding introduces the following channels:
 | Channel ID | Channel Description | Supported item type | Default priority | Advanced |
 | ------------- | ------------- |------------|----------|----------|
 | load  | Recent load in percents  | Number | High | False |
-| load1 | Load in percents for the last 1 minute | Number | Medium | True |
-| load5 | Load in percents for the last 5 minutes | Number | Medium | True |
-| load15 | Load in percents for the last 15 minutes | Number | Medium | True |
+| load1 | Load for the last 1 minute | Number | Medium | True |
+| load5 | Load for the last 5 minutes | Number | Medium | True |
+| load15 | Load for the last 15 minutes | Number | Medium | True |
 | threads | Number of threads currently running | Number | Medium | True |
 | uptime | System uptime (time after start) in minutes | Number | Medium | True |
 | name | Name of the device  | String | Low | False |

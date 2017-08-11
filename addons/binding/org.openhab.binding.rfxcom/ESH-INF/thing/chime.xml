@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="chime">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Chime</label>
+		<description>A Chime device.</description>
+
+		<channels>
+			<channel id="chimeSound" typeId="chimesound" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Sensor Id. Example 2983</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="BYRONSX">Byron SX</option>
+					<option value="BYRONMP001">Byron MP001</option>
+					<option value="SELECTPLUS">SelectPlus</option>
+					<option value="SELECTPLUS3">SelectPlus3</option>
+					<option value="ENVIVO">Envivo</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

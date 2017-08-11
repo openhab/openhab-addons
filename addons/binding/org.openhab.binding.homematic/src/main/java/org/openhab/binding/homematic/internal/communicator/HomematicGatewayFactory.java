@@ -24,15 +24,15 @@ public class HomematicGatewayFactory {
     /**
      * Creates the HomematicGateway.
      */
-    public static HomematicGateway createGateway(String id, HomematicConfig config, HomematicGatewayListener listener)
+    public static HomematicGateway createGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter)
             throws IOException {
         loadGatewayInfo(config, id);
         if (config.getGatewayInfo().isCCU()) {
-            return new CcuGateway(id, config, listener);
+            return new CcuGateway(id, config, gatewayAdapter);
         } else if (config.getGatewayInfo().isHomegear()) {
-            return new HomegearGateway(id, config, listener);
+            return new HomegearGateway(id, config, gatewayAdapter);
         } else {
-            return new DefaultGateway(id, config, listener);
+            return new DefaultGateway(id, config, gatewayAdapter);
         }
     }
 

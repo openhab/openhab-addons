@@ -29,23 +29,29 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
+import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
+import org.openhab.binding.kodi.internal.jobs.KodiStatusUpdaterRunnable;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KodiHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link KodiHandler} is responsible for handling commands, which are sent
+ * to one of the channels.
  *
  * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * 
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(KodiHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
 
     private ScheduledFuture<?> connectionCheckerFuture;
+
+    private ScheduledFuture<?> statusUpdaterFuture;
 
     public KodiHandler(Thing thing) {
         super(thing);
@@ -57,6 +63,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         super.dispose();
         if (connectionCheckerFuture != null) {
             connectionCheckerFuture.cancel(true);
+        }
+        if (statusUpdaterFuture != null) {
+            statusUpdaterFuture.cancel(true);
         }
         if (connection != null) {
             connection.close();
@@ -133,15 +142,37 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PLAYURI:
                 if (command instanceof StringType) {
                     playURI(command);
+                    updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    // updateState(CHANNEL_PLAYURI, new StringType(""));
+                    updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_PVR_OPEN_TV:
+                if (command instanceof StringType) {
+                    KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                            .as(KodiChannelConfig.class);
+                    playPVRChannel(command, "tv", config);
+                    updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_PVR_OPEN_RADIO:
+                if (command instanceof StringType) {
+                    KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                            .as(KodiChannelConfig.class);
+                    playPVRChannel(command, "radio", config);
+                    updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
                 }
                 break;
             case CHANNEL_SHOWNOTIFICATION:
                 if (command instanceof StringType) {
                     connection.showNotification(command.toString());
+                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    // updateState(CHANNEL_SHOWNOTIFICATION, new StringType(""));
+                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
                 }
                 break;
             case CHANNEL_INPUT:
@@ -169,26 +200,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_ARTIST:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
             case CHANNEL_ALBUM:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
             case CHANNEL_TITLE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
             case CHANNEL_SHOWTITLE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
             case CHANNEL_MEDIATYPE:
+            case CHANNEL_PVR_CHANNEL:
                 if (command.equals(RefreshType.REFRESH)) {
                     connection.updatePlayerStatus();
                 }
@@ -202,6 +218,20 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     public void playURI(Command command) {
         connection.playURI(command.toString());
+    }
+
+    public void playPVRChannel(final Command command, final String channelType, final KodiChannelConfig config) {
+        int channelGroupID = connection.getChannelGroupID(channelType, config.getGroup());
+        if (channelGroupID <= 0) {
+            logger.warn("Received unknown PVR channel group {}. Using default.", config.getGroup());
+            channelGroupID = (channelType == "tv") ? 1 : 2;
+        }
+        int channelID = connection.getChannelID(channelGroupID, command.toString());
+        if (channelID > 0) {
+            connection.playPVRChannel(channelID);
+        } else {
+            logger.error("Received unknown PVR channel {}", command.toString());
+        }
     }
 
     public void playNotificationSoundURI(Command command) {
@@ -242,6 +272,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     }
                 };
                 connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+
+                // Start the status updater
+                Runnable statusUpdater = new KodiStatusUpdaterRunnable(connection);
+                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
+
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage());
@@ -333,6 +368,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateMediaType(String mediaType) {
         updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
+    }
+
+    @Override
+    public void updatePVRChannel(final String channel) {
+        updateState(CHANNEL_PVR_CHANNEL, new StringType(channel));
     }
 
 }

@@ -21,6 +21,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * RFXCOM data class for interface message.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Ivan Martinez - Older firmware support (OH1)
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
@@ -130,6 +131,38 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         }
     }
 
+    public enum FirmwareType {
+        TYPE1_RX_ONLY(0),
+        TYPE1(1),
+        TYPE2(2),
+        EXT(3),
+        EXT2(4);
+
+        private final int type;
+
+        FirmwareType(int type) {
+            this.type = type;
+        }
+
+        FirmwareType(byte type) {
+            this.type = type;
+        }
+
+        public byte toByte() {
+            return (byte) type;
+        }
+
+        public static FirmwareType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (FirmwareType type : FirmwareType.values()) {
+                if (type.type == input) {
+                    return type;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(FirmwareType.class, input);
+        }
+    }
+
     public SubType subType;
     public Commands command;
     public String text = "";
@@ -164,12 +197,15 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     public boolean enableARCPackets; // 0x02 - ARC (433.92)
     public boolean enableX10Packets; // 0x01 - X10 (310/433.92)
 
+    public boolean enableHomeConfortPackets; // 0x02 - HomeConfort (433.92)
+    public boolean enableKEELOQPackets; // 0x01 - KEELOQ (433.92)
+
     public byte hardwareVersion1;
     public byte hardwareVersion2;
 
-    public RFXComInterfaceMessage() {
+    public int outputPower; // -18dBm to +13dBm. N.B. maximum allowed is +10dBm
 
-    }
+    public FirmwareType firmwareType;
 
     public RFXComInterfaceMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
@@ -186,8 +222,10 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         if (subType == SubType.RESPONSE) {
 
             str += ", Transceiver type = " + transceiverType;
-            str += ", Firmware version = " + firmwareVersion;
             str += ", Hardware version = " + hardwareVersion1 + "." + hardwareVersion2;
+            str += ", Firmware type = " + (firmwareType != null ? firmwareType : "unknown");
+            str += ", Firmware version = " + firmwareVersion;
+            str += ", Output power = " + outputPower + "dBm";
             str += ", Undecoded packets = " + enableUndecodedPackets;
             str += ", RFU6 packets = " + enableImagintronixOpusPackets;
             str += ", Byron SX packets packets (433.92) = " + enableByronSXPackets;
@@ -200,7 +238,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             str += ", BlindsT1/T2/T3 (433.92) packets = " + enableBlindsT1T2T3T4Packets;
             str += ", BlindsT0 (433.92) packets = " + enableBlindsT0Packets;
             str += ", ProGuard (868.35 FSK) packets = " + enableProGuardPackets;
-            str += ", FS20 (868.35) packets = " + enableFS20Packets;
+            str += ", FS20/Legrand CAD (868.35/433.92) packets = " + enableFS20Packets;
             str += ", La Crosse (433.92/868.30) packets = " + enableLaCrossePackets;
             str += ", Hideki/UPM (433.92) packets = " + enableHidekiUPMPackets;
             str += ", AD LightwaveRF (433.92) packets = " + enableADPackets;
@@ -214,6 +252,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             str += ", AC (433.92) packets = " + enableACPackets;
             str += ", ARC (433.92) packets = " + enableARCPackets;
             str += ", X10 (310/433.92) packets = " + enableX10Packets;
+
+            str += ", HomeConfort (433.92) packets = " + enableHomeConfortPackets;
+            str += ", KEELOQ (433.92/868.95) packets = " + enableKEELOQPackets;
         } else if (subType == SubType.START_RECEIVER) {
             str += ", Text = " + text;
         }
@@ -227,9 +268,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
-        command = Commands.fromByte(data[4]);
 
         if (subType == SubType.RESPONSE) {
+            command = Commands.fromByte(data[4]);
             transceiverType = TransceiverType.fromByte(data[5]);
 
             firmwareVersion = data[6] & 0xFF;
@@ -261,12 +302,34 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             enableARCPackets = (data[9] & 0x02) != 0;
             enableX10Packets = (data[9] & 0x01) != 0;
 
-            hardwareVersion1 = data[10];
-            hardwareVersion2 = data[11];
+            /**
+             * Different firmware versions have slightly different message formats.
+             * The firmware version numbering is unique to each hardware version
+             * but the location of the hardware version in the message is one of
+             * those things whose position varies. So we have to just look at the
+             * firmware version and pray. This condition below is taken from the
+             * openhab1-addons binding.
+             */
+            if ((firmwareVersion >= 95 && firmwareVersion <= 100) || (firmwareVersion >= 195 && firmwareVersion <= 200)
+                    || (firmwareVersion >= 251)) {
+                enableHomeConfortPackets = (data[10] & 0x02) != 0;
+                enableKEELOQPackets = (data[10] & 0x01) != 0;
+
+                hardwareVersion1 = data[11];
+                hardwareVersion2 = data[12];
+
+                outputPower = data[13] - 18;
+                firmwareType = FirmwareType.fromByte(data[14]);
+            } else {
+                hardwareVersion1 = data[10];
+                hardwareVersion2 = data[11];
+            }
 
             text = "";
 
         } else if (subType == SubType.START_RECEIVER) {
+            command = Commands.fromByte(data[4]);
+
             final int len = 16;
             final int dataOffset = 5;
 
@@ -281,60 +344,21 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             } catch (UnsupportedEncodingException e) {
                 // ignore
             }
+        } else {
+            // We don't handle the other subTypes but to avoid null pointer
+            // exceptions we set command to something. It doesn't really
+            // matter what but it may b printed in log messages so...
+            command = Commands.UNSUPPORTED_COMMAND;
         }
     }
 
     @Override
-    public byte[] decodeMessage() {
-
-        byte[] data = new byte[14];
-
-        data[0] = 0x0D;
-        data[1] = RFXComBaseMessage.PacketType.INTERFACE_MESSAGE.toByte();
-        data[2] = subType.toByte();
-        data[3] = seqNbr;
-        data[4] = command.toByte();
-        data[5] = transceiverType.toByte();
-        data[6] = 0;
-
-        data[7] |= enableUndecodedPackets ? 0x80 : 0x00;
-        data[7] |= enableImagintronixOpusPackets ? 0x40 : 0x00;
-        data[7] |= enableByronSXPackets ? 0x20 : 0x00;
-        data[7] |= enableRSLPackets ? 0x10 : 0x00;
-        data[7] |= enableLighting4Packets ? 0x08 : 0x00;
-        data[7] |= enableFineOffsetPackets ? 0x04 : 0x00;
-        data[7] |= enableRubicsonPackets ? 0x02 : 0x00;
-        data[7] |= enableAEPackets ? 0x01 : 0x00;
-
-        data[8] |= enableBlindsT1T2T3T4Packets ? 0x80 : 0x00;
-        data[8] |= enableBlindsT0Packets ? 0x40 : 0x00;
-        data[8] |= enableProGuardPackets ? 0x20 : 0x00;
-        data[8] |= enableFS20Packets ? 0x10 : 0x00;
-        data[8] |= enableLaCrossePackets ? 0x08 : 0x00;
-        data[8] |= enableHidekiUPMPackets ? 0x04 : 0x00;
-        data[8] |= enableADPackets ? 0x02 : 0x00;
-        data[8] |= enableMertikPackets ? 0x01 : 0x00;
-
-        data[9] |= enableVisonicPackets ? 0x80 : 0x00;
-        data[9] |= enableATIPackets ? 0x40 : 0x00;
-        data[9] |= enableOregonPackets ? 0x20 : 0x00;
-        data[9] |= enableMeiantechPackets ? 0x10 : 0x00;
-        data[9] |= enableHomeEasyPackets ? 0x08 : 0x00;
-        data[9] |= enableACPackets ? 0x04 : 0x00;
-        data[9] |= enableARCPackets ? 0x02 : 0x00;
-        data[9] |= enableX10Packets ? 0x01 : 0x00;
-
-        data[10] = hardwareVersion1;
-        data[11] = hardwareVersion2;
-        data[12] = 0;
-        data[13] = 0;
-
-        return data;
+    public byte[] decodeMessage() throws RFXComException {
+        throw new RFXComException("Not supported");
     }
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
         throw new RFXComException("Not supported");
     }
 

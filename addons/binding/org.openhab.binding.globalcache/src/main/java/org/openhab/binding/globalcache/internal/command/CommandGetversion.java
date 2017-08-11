@@ -15,7 +15,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandGetversion} class implements the GlobalCache getversion command, which retrieves software
  * version of the device.
  *

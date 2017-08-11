@@ -102,7 +102,7 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
         this.networkService = new NetworkService();
         Configuration conf = this.getConfig();
 
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
         networkService.setHostname(String.valueOf(conf.get(PARAMETER_HOSTNAME)));
         Object value;
@@ -119,8 +119,9 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
 
         value = conf.get(PARAMETER_REFRESH_INTERVAL);
         if (value != null) {
-            networkService.setRefreshInterval(value instanceof java.math.BigDecimal
-                    ? ((java.math.BigDecimal) value).longValue() : Integer.valueOf((String) value));
+            networkService.setRefreshInterval(
+                    value instanceof java.math.BigDecimal ? ((java.math.BigDecimal) value).longValue()
+                            : Integer.valueOf((String) value));
         }
 
         value = conf.get(PARAMETER_TIMEOUT);

@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.boschindego.internal;
 
+/**
+ *
+ * @author Jonas Fleck - Initial contribution
+ */
 public class IndegoStateConstants {
 
     public static final int STATE_DOCKED_1 = 258;

@@ -18,7 +18,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandGetstate} class implements the GlobalCache getstate command, which retrieves the
  * current state of the contact closure on the device.
  *

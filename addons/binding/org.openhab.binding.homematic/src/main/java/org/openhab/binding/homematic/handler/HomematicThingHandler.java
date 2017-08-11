@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -130,9 +131,16 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        handleRefresh(channelUID);
+    }
+
+    /**
+     * Updates the state of the given channel.
+     */
+    protected void handleRefresh(ChannelUID channelUID) {
         try {
             if (thing.getStatus() == ThingStatus.ONLINE) {
-                logger.debug("Channel linked '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
+                logger.debug("Updating channel '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
                 updateChannelState(channelUID);
             }
         } catch (Exception ex) {
@@ -303,18 +311,19 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    /**
      * Returns true, if the channel is linked at least to one item.
      */
     private boolean isLinked(Channel channel) {
         return channel != null && super.isLinked(channel.getUID().getId());
+    }
+
+    /**
+     * Returns the channel config for the given datapoint.
+     */
+    protected HmDatapointConfig getChannelConfig(HmDatapoint dp) {
+        ChannelUID channelUid = UidUtils.generateChannelUID(dp, getThing().getUID());
+        Channel channel = getThing().getChannel(channelUid.getId());
+        return channel != null ? getChannelConfig(channel, dp) : new HmDatapointConfig();
     }
 
     /**
@@ -328,15 +337,16 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the Homematic gateway if the bridge is available.
      */
     private HomematicGateway getHomematicGateway() throws BridgeHandlerNotAvailableException {
-        if (getBridge() == null || getBridge().getHandler() == null
-                || ((HomematicBridgeHandler) getBridge().getHandler()).getGateway() == null) {
+        final Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null
+                || ((HomematicBridgeHandler) bridge.getHandler()).getGateway() == null) {
             if (thing.getStatus() != ThingStatus.INITIALIZING) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
             throw new BridgeHandlerNotAvailableException("BridgeHandler not yet available!");
         }
 
-        return ((HomematicBridgeHandler) getBridge().getHandler()).getGateway();
+        return ((HomematicBridgeHandler) bridge.getHandler()).getGateway();
     }
 
     /**
@@ -368,10 +378,11 @@ public class HomematicThingHandler extends BaseThingHandler {
                         try {
                             if (newValue != null) {
                                 if (newValue instanceof BigDecimal) {
+                                    final BigDecimal decimal = (BigDecimal) newValue;
                                     if (dp.isIntegerType()) {
-                                        newValue = ((BigDecimal) newValue).intValue();
+                                        newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
-                                        newValue = ((BigDecimal) newValue).doubleValue();
+                                        newValue = decimal.doubleValue();
                                     }
                                 }
                                 if (ObjectUtils.notEqual(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(),
