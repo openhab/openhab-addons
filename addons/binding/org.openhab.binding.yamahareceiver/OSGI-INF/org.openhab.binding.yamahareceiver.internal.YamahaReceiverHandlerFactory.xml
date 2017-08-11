@@ -3,6 +3,5 @@
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
-   <reference bind="setChannelTypeProvider" interface="org.openhab.binding.yamahareceiver.internal.YamahaChannelsTypeProvider" name="ChannelTypeProvider" unbind="unsetChannelTypeProvider"/>
    <implementation class="org.openhab.binding.yamahareceiver.internal.YamahaReceiverHandlerFactory"/>
 </scr:component>

@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -56,9 +57,9 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
     private ZoneDiscoveryService zoneDiscoveryService;
 
     private AbstractConnection connection;
-    private SystemControlState systemControlState = new SystemControlState();
-    private DeviceInformationState deviceInformationState = new DeviceInformationState();
-    private Boolean loadingDone = false;
+    SystemControlState systemControlState = new SystemControlState();
+    DeviceInformationState deviceInformationState = new DeviceInformationState();
+    private final CountDownLatch loadingDone = new CountDownLatch(1);
 
     public YamahaBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -78,16 +79,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      * @return Return true if the initial loading is done. This can either be after all requests have been answered by
      *         the AVR or after an error occurred.
      */
-    public boolean waitForLoadingDone(long timeoutInMs) {
-        if (loadingDone) {
-            return true;
-        }
-        try {
-            loadingDone.wait(timeoutInMs);
-        } catch (InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        }
-        return loadingDone;
+    public boolean waitForLoadingDone(long timeout_ms) throws InterruptedException {
+        return loadingDone.await(timeout_ms, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -169,39 +162,42 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             zoneDiscoveryService.publishZones(deviceInformationState, thing.getUID());
 
             SystemControl systemControl = ProtocolFactory.SystemControl(connection, this);
+            systemControlState.power = true;
             systemControl.update();
 
             updateProperty(YamahaReceiverBindingConstants.PROPERTY_VERSION, deviceInformationState.version);
             updateProperty(YamahaReceiverBindingConstants.PROPERTY_ASSIGNED_NAME, deviceInformationState.name);
 
+            updateStatus(ThingStatus.ONLINE);
+
+            Bridge bridge = (Bridge) thing;
+            List<Thing> things = bridge.getThings();
+            for (Thing thing : things) {
+                YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
+                // If thing still thinks that the bridge is offline, update its status.
+                if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+                    handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
+                } else if (handler.isCorrectlyInitialized()) {
+                    handler.updateZoneInformation();
+                }
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             systemControlState.invalidate();
             deviceInformationState.invalidate();
-            loadingDone = true;
-            loadingDone.notifyAll();
             return;
         } catch (ReceivedMessageParseException e) {
+            updateProperty(YamahaReceiverBindingConstants.PROPERTY_MENU_ERROR, e.getMessage());
             // Some AVRs send unexpected responses. We log parser exceptions therefore.
             logger.debug("Parse error!", e);
+        } finally {
+            loadingDone.countDown();
         }
-
-        Bridge bridge = (Bridge) thing;
-        List<Thing> things = bridge.getThings();
-        for (Thing thing : things) {
-            YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
-            // If thing still thinks that the bridge is offline, update its status.
-            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-                handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
-            } else if (handler.isCorrectlyInitialized()) {
-                handler.updateZoneInformation();
-            }
-        }
-        updateStatus(ThingStatus.ONLINE);
-        loadingDone = true;
-        loadingDone.notifyAll();
     }
 
+    /**
+     * We handle the update ourself to avoid a costly dispose/initialize
+     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         if (!isInitialized()) {

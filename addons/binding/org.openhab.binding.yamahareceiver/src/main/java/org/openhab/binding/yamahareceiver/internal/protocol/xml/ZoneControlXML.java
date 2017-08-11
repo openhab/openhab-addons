@@ -11,6 +11,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
@@ -50,6 +51,7 @@ public class ZoneControlXML implements ZoneControl {
         return zone;
     }
 
+    @Override
     public void setPower(boolean on) throws IOException, ReceivedMessageParseException {
         if (on) {
             comReference.get().send(XMLUtils.wrZone(zone, "<Power_Control><Power>On</Power></Power_Control>"));
@@ -65,6 +67,7 @@ public class ZoneControlXML implements ZoneControl {
      * @param volume Absolute value in decibel ([-80,+12]).
      * @throws IOException
      */
+    @Override
     public void setVolumeDB(float volume) throws IOException, ReceivedMessageParseException {
         if (volume < YamahaReceiverBindingConstants.VOLUME_MIN) {
             volume = YamahaReceiverBindingConstants.VOLUME_MIN;
@@ -85,6 +88,7 @@ public class ZoneControlXML implements ZoneControl {
      * @param volume
      * @throws IOException
      */
+    @Override
     public void setVolume(float volume) throws IOException, ReceivedMessageParseException {
         if (volume < 0) {
             volume = 0;
@@ -103,11 +107,13 @@ public class ZoneControlXML implements ZoneControl {
      * @param percent
      * @throws IOException
      */
+    @Override
     public void setVolumeRelative(ZoneControlState state, float percent)
             throws IOException, ReceivedMessageParseException {
         setVolume(state.volume + percent);
     }
 
+    @Override
     public void setMute(boolean mute) throws IOException, ReceivedMessageParseException {
         if (mute) {
             comReference.get().send(XMLUtils.wrZone(zone, "<Volume><Mute>On</Mute></Volume>"));
@@ -117,11 +123,13 @@ public class ZoneControlXML implements ZoneControl {
         update();
     }
 
+    @Override
     public void setInput(String name) throws IOException, ReceivedMessageParseException {
         comReference.get().send(XMLUtils.wrZone(zone, "<Input><Input_Sel>" + name + "</Input_Sel></Input>"));
         update();
     }
 
+    @Override
     public void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException {
         if (name.toLowerCase().equals("straight")) {
             comReference.get().send(XMLUtils.wrZone(zone,
@@ -134,6 +142,7 @@ public class ZoneControlXML implements ZoneControl {
         update();
     }
 
+    @Override
     public void update() throws IOException, ReceivedMessageParseException {
         if (observer == null) {
             return;
@@ -159,6 +168,11 @@ public class ZoneControlXML implements ZoneControl {
         node = XMLUtils.getNode(basicStatus, "Input/Input_Sel");
         value = node != null ? node.getTextContent() : "";
         state.inputID = XMLUtils.convertNameToID(value);
+
+        if (StringUtils.isBlank(state.inputID)) {
+            throw new ReceivedMessageParseException(
+                    "Expected inputID. Failed to read Input/Input_Sel_Item_Info/Src_Name");
+        }
 
         // Some receivers may use Src_Name instead?
         node = XMLUtils.getNode(basicStatus, "Input/Input_Sel_Item_Info/Title");

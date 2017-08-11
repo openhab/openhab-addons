@@ -71,7 +71,10 @@
 		<description>Control the zone</description>
 		<channels>
 			<channel id="power" typeId="power" />
+			<!--
+            We will provide an input channel dynamically. 
 			<channel id="input" typeId="availableinput" />
+			 -->
 			<channel id="surroundProgram" typeId="surroundProgram" />
 			<channel id="volume" typeId="volume" />
 			<channel id="volumeDB" typeId="volumeDB" />
@@ -199,7 +202,10 @@
 		<label>Playback control</label>
 		<description>Control the playback for the current zone and allow to select preset channels</description>
 		<channels>
+			<!--
+			We will provide a preset channel dynamically. 
 			<channel id="preset" typeId="namedpreset" />
+			-->
 			<channel id="playback" typeId="playback" />
 			<channel id="playback_station" typeId="playback_station" />
 			<channel id="playback_artist" typeId="playback_artist" />

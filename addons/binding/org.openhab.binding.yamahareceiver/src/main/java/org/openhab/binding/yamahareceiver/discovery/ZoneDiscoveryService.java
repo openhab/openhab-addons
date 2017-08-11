@@ -40,7 +40,13 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
      */
     public ZoneDiscoveryService(BundleContext bundleContext) {
         super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 0, false);
-        reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<String, Object>());
+        // Allow bundleContext to be null for the test suite
+        if (bundleContext != null) {
+            reg = bundleContext.registerService(DiscoveryService.class.getName(), this,
+                    new Hashtable<String, Object>());
+        } else {
+            reg = null;
+        }
     }
 
     /**
@@ -48,11 +54,17 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
      * This object cannot be used aynmore after calling this method.
      */
     public void destroy() {
-        reg.unregister();
+        if (reg != null) {
+            reg.unregister();
+        }
     }
 
     @Override
     protected void startScan() {
+    }
+
+    public static ThingUID zoneThing(ThingUID bridgeUid, String zoneName) {
+        return new ThingUID(YamahaReceiverBindingConstants.ZONE_THING_TYPE, bridgeUid, zoneName);
     }
 
     /**
@@ -70,7 +82,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
 
         for (YamahaReceiverBindingConstants.Zone zone : zoneCopy) {
             String zoneName = zone.name();
-            ThingUID uid = new ThingUID(YamahaReceiverBindingConstants.ZONE_THING_TYPE, bridgeUid, zoneName);
+            ThingUID uid = zoneThing(bridgeUid, zoneName);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(YamahaReceiverBindingConstants.CONFIG_ZONE, zoneName);
