@@ -10,6 +10,7 @@ package org.openhab.binding.netatmo.handler.station;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
@@ -36,10 +37,20 @@ public class NAModule4Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
+                case CHANNEL_TEMP_TREND:
+                    return new StringType(dashboardData.getTempTrend());
                 case CHANNEL_CO2:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
                 case CHANNEL_TEMPERATURE:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
+                case CHANNEL_DATE_MIN_TEMP:
+                    return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMinTemp());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
+                case CHANNEL_MIN_TEMP:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
+                case CHANNEL_MAX_TEMP:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getMaxTemp());
                 case CHANNEL_TIMEUTC:
                     return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
                 case CHANNEL_HUMIDITY:
