@@ -49,6 +49,7 @@ icons.mapping>firstfloor=control_building_int_og
 cons.mapping>groundfloor=control_building_int_eg
 
 ```
+
 The list of icons in the CometVisu is available at:
 
 ```

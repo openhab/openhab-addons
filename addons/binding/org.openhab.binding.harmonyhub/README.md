@@ -23,6 +23,7 @@ The Harmony binding will automatically find all Harmony Hubs on the local networ
 The binding requires no special configuration
 
 ## Thing Configuration
+
 This is optional, it is recommended to let the binding discover and add hubs and devices.
  
 To manually configure a Harmony Hub thing you may specify its host name  ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
@@ -42,6 +43,7 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ name="Denon AV Receiver"]
 }
 ```
+
 or
 
 ```
@@ -65,6 +67,7 @@ Devices can send button presses
 ```
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
 ```
+
 ## Example Sitemap
 
 Using the above things channels and items 
@@ -78,4 +81,5 @@ sitemap demo label="Main Menu" {
         }
 }
 ```
+
 Possible values for the "buttonPress" channel can be determined via the REST API for channel-types, http://YourServer:8080/rest/channel-types. Search the JSON for "harmonyhub:device".
