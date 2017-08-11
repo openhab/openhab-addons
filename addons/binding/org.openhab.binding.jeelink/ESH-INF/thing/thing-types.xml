@@ -141,7 +141,7 @@
 				<description>@text/parameter.sensortimeout.description</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="bufferSize" type="integer" required="true" min="0" max="100">
+			<parameter name="bufferSize" type="integer" required="false" min="0" max="100">
 				<label>@text/parameter.buffersize.label</label>
 				<description>@text/parameter.buffersize.description</description>
 				<default>20</default>
