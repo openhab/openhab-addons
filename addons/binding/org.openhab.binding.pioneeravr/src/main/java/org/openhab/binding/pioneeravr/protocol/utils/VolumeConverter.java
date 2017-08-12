@@ -15,13 +15,18 @@ import java.text.DecimalFormat;
  * @author Antoine Besnard - Initial contribution
  */
 public final class VolumeConverter {
-    
+
+    // Volume Format / MAX_IP / Min_DB for Zones
+    // Zone1 Command ***VL 000 to 185 (-80.0dB - +12.0dB - 1step = 0.5dB)
+    // Zone2 Command **ZV 00 to 81 (-80.0dB - + 0.0dB - 1step = 1.0dB)
+    // Zone3 Command **YV 00 to 81 (-80.0dB - + 0.0dB - 1step = 1.0dB)
+    // HDZone Command **YV 00 to 81 (-80.0dB - + 0.0dB - 1step = 1.0dB)
     private static final String[] IP_CONTROL_VOLUME_FORMAT = { "000", "00", "00", "00" };
     private static final String[] IP_CONTROL_VOLUME_DEFAULT_VALUE = { "000", "00", "00", "00" };
-    
+
     private static final double[] MAX_IP_CONTROL_VOLUME = { 184, 80, 80, 80 };
     private static final double[] MIN_DB_VOLUME = { 80, 80, 80, 80 };
-    
+
     /**
      * Return the double value of the volume from the value received in the IpControl response.
      *
@@ -32,7 +37,7 @@ public final class VolumeConverter {
         double ipControlVolumeInt = Double.parseDouble(ipControlVolume);
         return ((ipControlVolumeInt - 1d) / 2d) - MIN_DB_VOLUME[zone - 1];
     }
-    
+
     /**
      * Return the string parameter to send to the AVR based on the given volume.
      *
@@ -43,7 +48,7 @@ public final class VolumeConverter {
         double ipControlVolume = ((MIN_DB_VOLUME[zone - 1] + volumeDb) * 2d) + 1d;
         return formatIpControlVolume(ipControlVolume, zone);
     }
-    
+
     /**
      * Return the String parameter to send to the AVR based on the given persentage of the max volume level.
      *
@@ -54,7 +59,7 @@ public final class VolumeConverter {
         double ipControlVolume = 1 + (volumePercent * MAX_IP_CONTROL_VOLUME[zone - 1] / 100);
         return formatIpControlVolume(ipControlVolume, zone);
     }
-    
+
     /**
      * Return the percentage of the max volume levelfrom the value received in the IpControl response.
      *
@@ -65,7 +70,7 @@ public final class VolumeConverter {
         double ipControlVolumeInt = Double.parseDouble(ipControlVolume);
         return ((ipControlVolumeInt - 1d) * 100d) / MAX_IP_CONTROL_VOLUME[zone - 1];
     }
-    
+
     /**
      * Format the given double value to an IpControl volume.
      *
@@ -81,5 +86,5 @@ public final class VolumeConverter {
         }
         return result;
     }
-    
+
 }
