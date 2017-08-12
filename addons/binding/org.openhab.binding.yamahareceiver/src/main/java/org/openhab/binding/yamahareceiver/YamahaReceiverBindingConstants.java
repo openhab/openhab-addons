@@ -61,6 +61,9 @@ public class YamahaReceiverBindingConstants {
             CHANNEL_NAVIGATION_SELECT, CHANNEL_NAVIGATION_BACK, CHANNEL_NAVIGATION_BACKTOROOT, CHANNEL_NAVIGATION_LEVEL,
             CHANNEL_NAVIGATION_TOTAL_ITEMS);
 
+    // List of channel IDs for Tuner DAB control
+    public static final String CHANNEL_TUNER_BAND = "tuner_band"; // band name for DAB tuner; RW
+
     // List of channel IDs for playback control
     public static final String CHANNEL_PLAYBACK_PRESET = "preset"; // Preset number; RW
     public static final String CHANNEL_PLAYBACK_PRESET_TYPE_DEFAULT = "defaultpreset"; // Preset number; RW
@@ -73,7 +76,7 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_PLAYBACK_ALBUM = "playback_album";
     public static final String CHANNEL_PLAYBACK_SONG = "playback_song";
 
-    public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK_PRESET, CHANNEL_PLAYBACK,
+    public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK,
             CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG);
 
     public static final String UPNP_TYPE = "MediaRenderer";

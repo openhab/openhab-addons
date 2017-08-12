@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 
 /**
  * The play controls protocol interface
@@ -23,7 +24,8 @@ public interface InputWithPlayControl extends IStateUpdateable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    public static Set<String> supportedInputs = Sets.newHashSet("TUNER", "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
+    public static Set<String> supportedInputs = Sets.newHashSet("TUNER",
+            "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
             "Napster", "Pandora", "SIRIUS", "Rhapsody", "Bluetooth", "iPod", "HD_RADIO");
 
     /**

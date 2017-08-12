@@ -15,7 +15,7 @@ import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigat
  *
  * @author David Graeff - Initial contribution
  */
-public class NavigationControlState {
+public class NavigationControlState implements Invalidateable {
     public String menuName = null;
     public int menuLayer = -1;
     public int currentLine = 0;

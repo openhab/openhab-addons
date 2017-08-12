@@ -15,7 +15,7 @@ import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithPlayCon
  *
  * @author David Graeff - Initial contribution
  */
-public class PresetInfoState {
+public class PresetInfoState implements Invalidateable {
     public int presetChannel = 0; // Used by NET_RADIO, RADIO, HD_RADIO, iPOD, USB, PC
     public String presetChannelNames[] = new String[InputWithPlayControlXML.PRESET_CHANNELS];
     public boolean presetChannelNamesChanged = false;

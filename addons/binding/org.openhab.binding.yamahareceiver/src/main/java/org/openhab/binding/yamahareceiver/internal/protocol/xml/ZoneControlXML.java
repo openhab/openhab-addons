@@ -32,14 +32,15 @@ import org.w3c.dom.Node;
  * @author Ben Jones
  */
 public class ZoneControlXML implements ZoneControl {
+    private final Logger logger = LoggerFactory.getLogger(ZoneControlXML.class);
+
     private ZoneControlStateListener observer;
-    private Logger logger = LoggerFactory.getLogger(ZoneControlXML.class);
     private final WeakReference<AbstractConnection> comReference;
     private final YamahaReceiverBindingConstants.Zone zone;
 
     public ZoneControlXML(AbstractConnection xml, YamahaReceiverBindingConstants.Zone zone,
             ZoneControlStateListener observer) {
-        this.comReference = new WeakReference<AbstractConnection>(xml);
+        this.comReference = new WeakReference<>(xml);
         this.zone = zone;
         this.observer = observer;
     }
@@ -147,6 +148,8 @@ public class ZoneControlXML implements ZoneControl {
         if (observer == null) {
             return;
         }
+
+        logger.trace("Updating status");
 
         AbstractConnection com = comReference.get();
         String response = com.sendReceive(XMLUtils.wrZone(zone, "<Basic_Status>GetParam</Basic_Status>"));

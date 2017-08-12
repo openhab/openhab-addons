@@ -13,7 +13,7 @@ package org.openhab.binding.yamahareceiver.internal.state;
  *
  * @author David Graeff - Initial contribution
  */
-public class PlayInfoState {
+public class PlayInfoState implements Invalidateable {
     public String station; // NET_RADIO. Will also be used for TUNER where Radio_Text_A/B will be used instead.
     public String artist; // USB, iPOD, PC
     public String album; // USB, iPOD, PC

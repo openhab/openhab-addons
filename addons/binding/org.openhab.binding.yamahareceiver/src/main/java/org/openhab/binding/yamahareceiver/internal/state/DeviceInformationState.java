@@ -18,7 +18,7 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
  *
  * @author David Graeff - Initial contribution
  */
-public class DeviceInformationState {
+public class DeviceInformationState implements Invalidateable {
     public String host = null;
     // Some AVR information
     public String name = "N/A";
@@ -26,11 +26,22 @@ public class DeviceInformationState {
     public String version = "0.0";
     public List<YamahaReceiverBindingConstants.Zone> zones = new ArrayList<>();
 
+    /**
+     * Flag indicating if DAB input (dual band digital tuner) is supported
+     */
+    public boolean supportDAB = false;
+    /**
+     * Flag indicating if Tuner input is supported
+     */
+    public boolean supportTuner = false;
+
     // If we lost the connection, invalidate the state.
     public void invalidate() {
         zones.clear();
         version = "0.0";
         name = "N/A";
         id = "";
+        supportDAB = false;
+        supportTuner = false;
     }
 }

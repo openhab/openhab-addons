@@ -13,7 +13,7 @@ package org.openhab.binding.yamahareceiver.internal.state;
  *
  * @author David Graeff - Initial contribution
  */
-public class SystemControlState {
+public class SystemControlState implements Invalidateable {
     public boolean power = false;
 
     // If we lost the connection, invalidate the state.

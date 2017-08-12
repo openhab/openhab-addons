@@ -9,22 +9,9 @@
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.DeviceInformationXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigationControlXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithPlayControlXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithPresetControlXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.SystemControlXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConnection;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneAvailableInputsXML;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneControlXML;
-import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.openhab.binding.yamahareceiver.internal.state.NavigationControlState;
-import org.openhab.binding.yamahareceiver.internal.state.NavigationControlStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
+import org.openhab.binding.yamahareceiver.handler.YamahaZoneThingHandler;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.*;
+import org.openhab.binding.yamahareceiver.internal.state.*;
 
 /**
  * Factory to create a {@link AbstractConnection} connection object based on a feature test.
@@ -74,6 +61,17 @@ public class ProtocolFactory {
             PresetInfoStateListener listener) {
         if (connection instanceof XMLConnection) {
             return new InputWithPresetControlXML(currentInputID, connection, listener);
+        }
+        return null;
+    }
+
+    public static InputWithDabBandControl InputWithDabBandControl(String currentInputID, AbstractConnection connection,
+                                                                  DabBandStateListener observerForBand,
+                                                                  PresetInfoStateListener observerForPreset,
+                                                                  PlayInfoStateListener observerForPlayInfo) {
+        if (connection instanceof XMLConnection) {
+            return new InputWithDabControlXML(currentInputID, connection,
+                    observerForBand, observerForPreset, observerForPlayInfo);
         }
         return null;
     }

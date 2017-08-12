@@ -8,31 +8,28 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
-import java.io.IOException;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 
-/**
- * The preset control protocol interface
- *
- * @author David Graeff - Initial contribution
- */
+import java.io.IOException;
+import java.util.Set;
 
-public interface InputWithPresetControl extends IStateUpdateable {
+/**
+ * The DAB Band control protocol interface.
+ *
+ * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ */
+public interface InputWithDabBandControl extends IStateUpdateable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    public static Set<String> supportedInputs = Sets.newHashSet("TUNER",
-            "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
-            "Napster", "Pandora", "SIRIUS", "Rhapsody", "Bluetooth", "iPod", "HD_RADIO");
+    Set<String> supportedInputs = Sets.newHashSet("TUNER");
 
     /**
-     * Select a preset channel.
+     * Select a DAB band by name.
      *
-     * @param presetChannel The preset position [1,40]
+     * @param band The band name (e.g. FM or DAB)
      * @throws Exception
      */
-    public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException;
+    void selectBandByName(String band) throws IOException, ReceivedMessageParseException;
 }

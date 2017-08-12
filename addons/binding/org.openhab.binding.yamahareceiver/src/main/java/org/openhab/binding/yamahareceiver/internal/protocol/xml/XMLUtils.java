@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,6 +51,41 @@ public class XMLUtils {
     static Node getNode(Node root, String nodePath) {
         String[] nodePathArr = nodePath.split("/");
         return getNode(root, nodePathArr, 0);
+    }
+
+    /**
+     * Finds the node starting with the root and following the path. If the node is found it's inner text is returned,
+     * otherwise the default provided value.
+     * @param root
+     * @param nodePath
+     * @param defaultValue
+     * @return
+     */
+    public static String getNodeContentOrDefault(Node root, String nodePath, String defaultValue) {
+        Node node = getNode(root, nodePath);
+        if (node == null) {
+            return defaultValue;
+        }
+        return node.getTextContent();
+    }
+
+    /**
+     * Finds the node starting with the root and following the path. If the node is found it's inner text is returned,
+     * otherwise the default provided value.
+     * @param root
+     * @param nodePath
+     * @param defaultValue
+     * @return
+     */
+    public static Integer getNodeContentOrDefault(Node root, String nodePath, Integer defaultValue) {
+        Node node = getNode(root, nodePath);
+        if (node != null) {
+            try {
+                return Integer.valueOf(node.getTextContent());
+            } catch (NumberFormatException e) {
+            }
+        }
+        return defaultValue;
     }
 
     /**

@@ -39,7 +39,8 @@ Playback control channels are:
 * `playback_artist#playback_channels`: Get the current played artist.
 * `playback_album#playback_channels`: Get the current played album.
 * `playback_song#playback_channels`: Get the current played song.
-            
+* `tuner_band#playback_channels`: Set the band (FM or DAB) for tuner input when device supports it (e.g. RX-S601D).
+
 Navigation control channels are:
 
 * `navigation_menu#navigation_channels`:  Select or display the full or relative path to an item.

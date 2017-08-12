@@ -8,15 +8,11 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
- * List of AVR input channel names with <Input ID, Input Name>
+ * Listener for changes to {@link DabBandState}
  *
- * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
  */
-public class AvailableInputState {
-    // List of inputs with <Input ID, Input Name>
-    public Map<String, String> availableInputs = new TreeMap<>();
+public interface DabBandStateListener {
+    void dabBandUpdated(DabBandState msg);
 }

@@ -11,6 +11,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;

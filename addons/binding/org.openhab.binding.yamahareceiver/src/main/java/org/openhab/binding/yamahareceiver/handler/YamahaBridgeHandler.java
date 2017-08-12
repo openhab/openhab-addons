@@ -79,8 +79,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      * @return Return true if the initial loading is done. This can either be after all requests have been answered by
      *         the AVR or after an error occurred.
      */
-    public boolean waitForLoadingDone(long timeout_ms) throws InterruptedException {
-        return loadingDone.await(timeout_ms, TimeUnit.MILLISECONDS);
+    public boolean waitForLoadingDone(long timeoutInMs) throws InterruptedException {
+        return loadingDone.await(timeoutInMs, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -156,6 +156,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      * all update calls are blocking.
      */
     void updateAllZoneInformation() {
+        logger.trace("updateAllZoneInformation");
         try {
             DeviceInformation deviceInformation = ProtocolFactory.DeviceInformation(connection, deviceInformationState);
             deviceInformation.update();
@@ -174,6 +175,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             List<Thing> things = bridge.getThings();
             for (Thing thing : things) {
                 YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
+                handler.setDeviceInformationState(deviceInformationState);
                 // If thing still thinks that the bridge is offline, update its status.
                 if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
                     handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());

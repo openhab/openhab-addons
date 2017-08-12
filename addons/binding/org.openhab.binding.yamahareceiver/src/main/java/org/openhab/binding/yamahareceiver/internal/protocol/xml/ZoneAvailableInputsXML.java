@@ -18,6 +18,8 @@ import org.openhab.binding.yamahareceiver.internal.protocol.ZoneAvailableInputs;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputState;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,13 +32,15 @@ import org.w3c.dom.NodeList;
  * @author David Gräff - Initial contribution
  */
 public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
+    private final Logger logger = LoggerFactory.getLogger(ZoneAvailableInputsXML.class);
+
     private AvailableInputStateListener observer;
     private final WeakReference<AbstractConnection> comReference;
     private final YamahaReceiverBindingConstants.Zone zone;
 
     public ZoneAvailableInputsXML(AbstractConnection xml, YamahaReceiverBindingConstants.Zone zone,
             AvailableInputStateListener observer) {
-        this.comReference = new WeakReference<AbstractConnection>(xml);
+        this.comReference = new WeakReference<>(xml);
         this.zone = zone;
         this.observer = observer;
     }
@@ -52,6 +56,8 @@ public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
         if (observer == null) {
             return;
         }
+
+        logger.trace("Updating status");
 
         AbstractConnection com = comReference.get();
         String response = com
