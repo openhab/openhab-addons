@@ -113,7 +113,9 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
      * Returns true, if the device of the datapoint is a rollershutter.
      */
     private boolean isRollerShutter(HmDatapoint dp) {
-        return dp.getChannel().getType().equals(CHANNEL_TYPE_BLIND)
-                || dp.getChannel().getType().equals(CHANNEL_TYPE_JALOUSIE);
+        String channelType = dp.getChannel().getType();
+        return channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE)
+                || channelType.equals(CHANNEL_TYPE_SHUTTER_TRANSMITTER)
+                || channelType.equals(CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER);
     }
 }
