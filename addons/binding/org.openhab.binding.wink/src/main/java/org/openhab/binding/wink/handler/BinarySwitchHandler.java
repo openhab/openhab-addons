@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: The {@link BinarySwitchHandler} is responsible for handling commands, which are
+ * The {@link BinarySwitchHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Scott Hanson - Initial contribution

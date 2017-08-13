@@ -22,7 +22,7 @@ public class WinkClient {
      *
      * @return
      */
-    public static IWinkClient getInstance() {
+    public static synchronized IWinkClient getInstance() {
         if (instance == null) {
             instance = new CloudRestfulWinkClient();
         }
@@ -35,7 +35,7 @@ public class WinkClient {
      *
      * @param testClient
      */
-    public static void setInstance(IWinkClient testClient) {
+    public static synchronized void setInstance(IWinkClient testClient) {
         instance = testClient;
     }
 }

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: The {@link LightBulbHandler} is responsible for handling commands, which are
+ * The {@link LightBulbHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Sebastien Marchand - Initial contribution
@@ -80,18 +80,18 @@ public class LightBulbHandler extends WinkBaseThingHandler {
     @Override
     protected void updateDeviceState(IWinkDevice device) {
 
-        final String desired_brightness = device.getDesiredState().get("brightness");
-        final String current_brightness = device.getCurrentState().get("brightness");
-        if (desired_brightness != null && desired_brightness.equals(current_brightness)) {
-            Float brightness = Float.valueOf(current_brightness) * 100;
+        final String desiredBrightness = device.getDesiredState().get("brightness");
+        final String currentBrightness = device.getCurrentState().get("brightness");
+        if (desiredBrightness != null && desiredBrightness.equals(currentBrightness)) {
+            Float brightness = Float.valueOf(currentBrightness) * 100;
             logger.debug("New brightness state: {}", brightness);
             updateState(CHANNEL_LIGHTLEVEL, new PercentType(brightness.intValue()));
         }
-        final String desired_power_state = device.getDesiredState().get("powered");
-        final String current_power_state = device.getCurrentState().get("powered");
+        final String desiredPowerState = device.getDesiredState().get("powered");
+        final String currentPowerState = device.getCurrentState().get("powered");
 
-        if (desired_power_state == null || desired_power_state.equals(current_power_state)) {
-            if (current_power_state.equals("true")) {
+        if (desiredPowerState == null || desiredPowerState.equals(currentPowerState)) {
+            if (currentPowerState.equals("true")) {
                 logger.debug("New Light State: ON");
                 updateState(CHANNEL_LIGHTSTATE, OnOffType.ON);
             } else {

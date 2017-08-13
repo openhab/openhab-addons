@@ -27,7 +27,6 @@ public class RemoteHandler extends WinkBaseThingHandler {
 
     @Override
     public void handleWinkCommand(ChannelUID channelUID, Command command) {
-        // TODO
     }
 
     @Override
@@ -37,7 +36,6 @@ public class RemoteHandler extends WinkBaseThingHandler {
 
     @Override
     protected void updateDeviceState(IWinkDevice device) {
-        // TODO Auto-generated method stub
 
     }
 

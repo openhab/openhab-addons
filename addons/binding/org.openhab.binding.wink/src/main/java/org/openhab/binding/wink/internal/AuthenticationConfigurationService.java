@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.wink.internal;
 
 import java.util.Dictionary;
@@ -33,10 +41,10 @@ public class AuthenticationConfigurationService implements ManagedService {
 
     private void configure(Dictionary<String, ?> properties) {
         IWinkAuthenticationService service = null;
-        String auth_service = (String) properties.get("auth_service");
-        logger.debug("Auth Service: {}", auth_service);
+        String authService = (String) properties.get("auth_service");
+        logger.debug("Auth Service: {}", authService);
 
-        if ("delegated".equals(auth_service)) {
+        if ("delegated".equals(authService)) {
             String token = (String) properties.get("auth_service_token");
             logger.debug("Configuring Delegated Wink Authentication Service on Heroku with token {}", token);
             service = new DelegatedAuthenticationService(token);

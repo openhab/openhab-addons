@@ -22,12 +22,10 @@ public class WinkAuthenticationService {
      *
      * @return
      */
-    public static IWinkAuthenticationService getInstance() {
+    public static synchronized IWinkAuthenticationService getInstance() {
         if (instance == null) {
-            synchronized (WinkAuthenticationService.class) {
-                if (instance == null) {
-                    instance = new DummyService();
-                }
+            if (instance == null) {
+                instance = new DummyService();
             }
         }
         return instance;
@@ -38,7 +36,7 @@ public class WinkAuthenticationService {
      *
      * @param service
      */
-    public static void setInstance(IWinkAuthenticationService service) {
+    public static synchronized void setInstance(IWinkAuthenticationService service) {
         instance = service;
     }
 
@@ -46,13 +44,11 @@ public class WinkAuthenticationService {
 
         @Override
         public String getAuthToken() {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public String refreshToken() throws AuthenticationException {
-            // TODO Auto-generated method stub
             return null;
         }
 

@@ -16,6 +16,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +49,19 @@ public class DelegatedAuthenticationService implements IWinkAuthenticationServic
 
     public DelegatedAuthenticationService(String auth_token) {
         this.auth_token = auth_token;
-        Client client = ClientBuilder.newClient();
+        ClientConfig configuration = new ClientConfig();
+        configuration = configuration.property(ClientProperties.CONNECT_TIMEOUT, 1000 * 15);
+        configuration = configuration.property(ClientProperties.READ_TIMEOUT, 1000 * 15);
+        Client client = ClientBuilder.newBuilder().withConfig(configuration).build();
         WebTarget target = client.target(DELEGATED_AUTH_SERVICE);
         WebTarget tokenPath = target.path("/token");
         Response response = tokenPath.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Token " + this.auth_token).get();
         JsonElement json = getResultAsJson(response);
         logger.debug("Access Token Response: {}", json);
-        token = json.getAsJsonObject().get("access_token").getAsString();
+        if (json.getAsJsonObject().get("access_token") != null) {
+            token = json.getAsJsonObject().get("access_token").getAsString();
+        }
         client.close();
     }
 
@@ -73,7 +80,10 @@ public class DelegatedAuthenticationService implements IWinkAuthenticationServic
                 .header("Authorization", "Token " + this.auth_token).get();
         client.close();
         JsonElement json = getResultAsJson(response);
-        token = json.getAsJsonObject().get("access_token").getAsString();
+
+        if (json.getAsJsonObject().get("access_token") != null) {
+            token = json.getAsJsonObject().get("access_token").getAsString();
+        }
 
         return token;
     }

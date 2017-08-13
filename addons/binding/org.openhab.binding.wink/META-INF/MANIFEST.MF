@@ -4,16 +4,16 @@ Bundle-Name: Wink Binding
 Bundle-SymbolicName: org.openhab.binding.wink;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/pubnub-gson-4.4.3-all.jar
 Import-Package: 
- com.google.common.base;version="10.0.1",
+ com.google.common.base,
  com.google.common.collect,
  javax.ws.rs.client,
  javax.ws.rs.core,
  org.apache.commons.lang,
- org.apache.commons.logging;version="1.1.1",
+ org.apache.commons.logging,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -25,10 +25,11 @@ Import-Package:
  org.glassfish.jersey.client,
  org.glassfish.jersey.media.sse,
  org.openhab.binding.wink,
+ org.openhab.binding.wink.client,
  org.openhab.binding.wink.handler,
  org.osgi.framework,
- org.osgi.service.cm;version="1.5.0",
- org.osgi.service.component;version="1.2.2",
+ org.osgi.service.cm,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.wink,

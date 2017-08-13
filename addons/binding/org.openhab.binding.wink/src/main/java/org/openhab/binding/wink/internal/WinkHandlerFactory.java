@@ -37,10 +37,10 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(WinkHandlerFactory.class);
 
-    public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB,
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB,
             THING_TYPE_REMOTE, THING_TYPE_BINARY_SWITCH, THING_TYPE_LOCK);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
