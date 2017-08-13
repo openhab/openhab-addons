@@ -16,7 +16,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * According to Loxone API documentation, this control covers digital virtual states only. This control does not send
  * any commands to the Miniserver. It can be used to read a formatted representation of a digital virtual state.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlInfoOnlyDigital extends LxControl {

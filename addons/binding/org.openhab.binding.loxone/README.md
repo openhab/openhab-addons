@@ -2,9 +2,8 @@
 
 This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [openHAB](http://www.openhab.org/). Miniserver is represented as a [Thing](http://docs.openhab.org/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as openHAB channels.
 
-Binding has the Loxone-specific code separated in a .core package. This code does not depend on the openHAB framework and can be easily used to handle Loxone Miniservers in other Java applications.
-
 ## Features
+
 The following features are currently supported:
 
   * [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
@@ -18,7 +17,7 @@ The following features are currently supported:
 
 This binding supports [Loxone Miniservers](https://www.loxone.com/enen/products/miniserver-extensions/) for accessing controls that are configured in their UI.
 
-Thing ID, for automatically discovered Miniservers, is defined in the following way: `loxone:miniserver:<serial>`, where `<serial>` is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
+The Thing UID of automatically discovered Miniservers is: `loxone:miniserver:<serial>`, where `<serial>` is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
 
 ### Discovery
 
@@ -104,36 +103,6 @@ Channel label is defined in the following way:
   * For controls that belong to a room: `<Room name> / <Control name>` 
   * For controls without a room: `<Control name>`
 
-## Items
-
-Items for Miniserver's controls can be created manually or automatically, depending on openHAB's `Item Linking/Simple Mode` setting. This setting can be modified in PaperUI under `Configuration/System` page and should be set to the desired value before Loxone Thing is created. Please consult [tutorial](http://docs.openhab.org/tutorials/beginner/configuration.html) for more details about item linking simple mode.
-
-
-When `Simple Mode` is enabled, openHAB will automatically build and link items for all channels created by the binding, one for each channel. Item label will be equal to the channel's label, allowing for a human-readable representation of the controls wherever there is a need to choose an item in a user interface, usually from a drop-down list (for example in HABPanel, IFTTT, Alexa).
-
-In case user wants to create items manually, they can be defined in [.items file](http://docs.openhab.org/configuration/items.html#item-definition-and-syntax). Linking of an item to a particular Loxone control is done through passing channel ID to a `{channel=...}` assignment in the item definition. Examples:
-
-  * On-off switch with a tag recognizable by Alexa service, representing a Switch subcontrol (output) of a Miniserver's Lighting Controller:
-
-    `Switch Kitchen_Light "Kitchen Light" <switch> ["lighting"] {channel="loxone:miniserver:504E9420290F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E"}`
-
-  * Temperature of the Miniserver (on Loxone: Virtual Analog State functional block or InfoOnlyAnalog control}:
-
-    `Number Miniserver_Temp "Miniserver temperature: [%.1f °C]" <temperature> {channel="loxone:miniserver:504E9420290F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}`
-    
-  * Pushbutton switch representing a Miniserver's Virtual Input of pushbutton type (pushbutton realized by adding `autoupdate="false"` parameter):
-  
-    `Switch Reset_Lights "Switch all lights off" ["lighting"] {autoupdate="false",channel="loxone:miniserver:504E9420290F:0F2F2133-01AD-3282-FFFF201EB0C24B9E"}`
-
-
-### Loxone and Amazon Alexa
-
-Your openHAB server can be exposed through [myopenHAB](http://www.myopenhab.org/) cloud service to  [Amazon Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) device with [openHAB skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L) enabled. To enable this service, please consult instructions available [here](https://community.openhab.org/t/official-alexa-smart-home-skill-for-openhab-2/23533).
-
-When creating a Miniserver Thing in the openHAB's Item Linking Simple Mode, Loxone binding will automatically create item tags required by Alexa, so that Miniserver's controls can be discovered by [Alexa smart home]( https://www.amazon.com/alexasmarthome) module. Tags will be created for switches, which belong to a category of "lighting" type. This will allow you to command Loxone controls with your voice.
-
-Alexa will recognize items by their labels, which will be equal to the corresponding control's name on the Miniserver. In case your controls are named in a way not directly suiting voice commands, you will need to manually add and link new items to the channels, and add proper tags as described in the above instructions.
-
 ## Advanced Parameters
 
 This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. PaperUI) or in a .things file. If a parameter is not explicitly defined, binding will use its default value.
@@ -169,7 +138,7 @@ Timeout values control various parts of Websocket connection management. They ca
 
 ## Automatic Configuration Example
 
-The simplest and quickest way of configuring a Loxone Miniserver with openHAB is to use automatic configuration features available in openHAB2 and PaperUI:
+The simplest and quickest way of configuring a Loxone Miniserver with openHAB is to use automatic configuration features:
 
   * Make sure your Miniserver is up and running and on the same network segment as openHAB server.
   * Add Loxone binding from the available `Add-ons`.
@@ -177,7 +146,7 @@ The simplest and quickest way of configuring a Loxone Miniserver with openHAB is
   * Add your Miniserver Thing from the `Inbox`, after automatic discovery is performed by the framework during binding initialization.
   * Configure your Miniserver by editing Miniserver Thing in `Configuration/Things` page and providing user name and password.
   * Miniserver Thing should go online. Channels and Items will be automatically created and configured.
-  * On the `Control` page, you can test Miniserver Items and iteract with them.
+  * On the `Control` page, you can test Miniserver Items and interact with them.
   * As the user interface, you may use [HABPanel](http://docs.openhab.org/addons/uis/habpanel/readme.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
 
 ## Manual Configuration Example

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * If server is not needed anymore, a {@link #stop()} method should be called to close open connections and stop
  * processing thread.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxServer {
@@ -333,7 +333,7 @@ public class LxServer {
      * when it receives close command from supervisor ({@link LxServer} or when Miniserver locks out user due to too
      * many unsuccessful login attempts.
      *
-     * @author Pawel Pieczul - initial commit
+     * @author Pawel Pieczul - initial contribution
      *
      */
     private class LxServerThread extends Thread {

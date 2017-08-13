@@ -25,7 +25,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * <li>Hotel Lighting Controller
  * </ul>
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlLightController extends LxControl implements LxControlStateListener {

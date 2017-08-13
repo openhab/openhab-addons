@@ -11,7 +11,7 @@ package org.openhab.binding.loxone.core;
 /**
  * Reasons why Miniserver may be not reachable
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public enum LxOfflineReason {

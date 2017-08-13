@@ -22,7 +22,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * <li>Automatic blinds integrated
  * </ul>
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlJalousie extends LxControl implements LxControlStateListener {

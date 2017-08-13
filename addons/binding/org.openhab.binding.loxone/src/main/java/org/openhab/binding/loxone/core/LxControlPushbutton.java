@@ -17,7 +17,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * <p>
  * According to Loxone API documentation, a pushbutton control covers virtual input of type pushbutton
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlPushbutton extends LxControlSwitch {

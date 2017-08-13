@@ -59,7 +59,7 @@ import org.openhab.binding.loxone.core.LxControlTextState;
 import org.openhab.binding.loxone.core.LxOfflineReason;
 import org.openhab.binding.loxone.core.LxServer;
 import org.openhab.binding.loxone.core.LxServerListener;
-import org.openhab.binding.loxone.internal.LoxoneHandlerFactory;
+import org.openhab.binding.loxone.internal.LoxoneChannelTypeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +74,13 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
 
     private LxServer server;
-    private LoxoneHandlerFactory factory;
-    private ChannelTypeUID switchTypeId, roSwitchTypeId, rollerTypeId, infoTypeId;
+
+    private LoxoneChannelTypeProvider channelTypeProvider;
+    private ChannelTypeUID infoTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
+    private ChannelTypeUID switchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH);
+    private ChannelTypeUID roSwitchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH);
+    private ChannelTypeUID rollerTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER);
+
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
     private Map<ChannelUID, LxControl> controls = new HashMap<>();
 
@@ -84,12 +89,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *
      * @param thing
      *            Thing object that creates the handler
-     * @param factory
-     *            factory that creates the handler
+     * @param channelTypeProvider
+     *            channel type provider serving this binding
      */
-    public LoxoneMiniserverHandler(Thing thing, LoxoneHandlerFactory factory) {
+    public LoxoneMiniserverHandler(Thing thing, LoxoneChannelTypeProvider channelTypeProvider) {
         super(thing);
-        this.factory = factory;
+        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -103,7 +108,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
         LxControl control = getControlFromChannelUID(channelUID);
         if (control == null) {
-            logger.error("Received command {} from unknown control.", command);
+            // This situation should not happen under normal circumstances, it indicates binding somehow lost its
+            // controls
+            logger.error("Received command {} for unknown control.", command);
             return;
         }
 
@@ -184,8 +191,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -201,29 +206,14 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     @Override
     public void initialize() {
         logger.trace("Initializing thing");
-        switchTypeId = addNewChannelType("switch", "Switch", "Switch", "Loxone Switch", false);
-        rollerTypeId = addNewChannelType("rollershutter", "Rollershutter", "Rollershutter", "Loxone Jalousie", false);
-        roSwitchTypeId = addNewChannelType("digital", "Switch", "Switch", "Loxone digital read-only information", true);
-        infoTypeId = addNewChannelType("text", "String", "Information (string)", "Loxone read-only information", true);
-
         LoxoneMiniserverConfig cfg = getConfig().as(LoxoneMiniserverConfig.class);
         try {
             InetAddress ip = InetAddress.getByName(cfg.host);
-
-            // check if server does not need to be created from scratch
-            if (server != null && !server.isChanged(ip, cfg.port, cfg.user, cfg.password)) {
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
-                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
-            } else {
-                if (server != null) {
-                    server.stop();
-                }
-                server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
-                server.addListener(this);
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
-                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
-                server.start();
-            }
+            server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
+            server.addListener(this);
+            server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
+                    cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
+            server.start();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
         }
@@ -234,13 +224,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         logger.trace("Processing new configuration");
         Thing thing = getThing();
         thing.setProperty(MINISERVER_PROPERTY_MINISERVER_NAME, server.getMiniserverName());
-        thing.setProperty(MINISERVER_PROPERTY_SERIAL, server.getSerial());
         thing.setProperty(MINISERVER_PROPERTY_PROJECT_NAME, server.getProjectName());
         thing.setProperty(MINISERVER_PROPERTY_CLOUD_ADDRESS, server.getCloudAddress());
-        // set location only the first time after discovery
-        if (thing.getLocation() == null) {
-            thing.setLocation(server.getLocation());
-        }
+        thing.setProperty(MINISERVER_PROPERTY_PHYSICAL_LOCATION, server.getLocation());
 
         ArrayList<Channel> channels = new ArrayList<>();
         ThingBuilder builder = editThing();
@@ -262,7 +248,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         channels.sort(new Comparator<Channel>() {
             @Override
             public int compare(Channel c1, Channel c2) {
-                return c1.getLabel().compareTo(c2.getLabel());
+                String label = c1.getLabel();
+                if (label == null) {
+                    return 1;
+                }
+                return label.compareTo(c2.getLabel());
             }
         });
 
@@ -326,7 +316,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             server.stop();
             server = null;
         }
-        factory.removeChannelTypesForThing(getThing().getUID());
+        if (channelTypeProvider != null) {
+            channelTypeProvider.removeChannelTypesForThing(getThing().getUID());
+        }
     }
 
     private void addChannel(List<Channel> channels, String itemType, ChannelTypeUID typeId, ChannelUID channelId,
@@ -504,22 +496,20 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     private ChannelTypeUID addNewChannelType(String controlType, String itemType, String label, String description,
             String format, boolean readOnly, Map<String, String> options, int lastOption, String controlUuid) {
         logger.trace("Creating a new channel type for {}, {}", controlType, itemType);
-
-        String name = getThing().getUID().getAsString() + ":" + controlType;
-        if (controlUuid != null) {
-            name += ":" + controlUuid;
+        if (channelTypeProvider != null) {
+            String name = getThing().getUID().getAsString() + ":" + controlType;
+            if (controlUuid != null) {
+                name += ":" + controlUuid;
+            }
+            ChannelTypeUID typeId = new ChannelTypeUID(name);
+            ChannelType type = new ChannelType(typeId, false, itemType, label, description, null, null,
+                    buildStateDescription(format, readOnly, options, lastOption), null);
+            channelTypeProvider.removeChannelType(typeId);
+            channelTypeProvider.addChannelType(type);
+            return typeId;
         }
-        ChannelTypeUID typeId = new ChannelTypeUID(name);
-        ChannelType type = new ChannelType(typeId, false, itemType, label, description, null, null,
-                buildStateDescription(format, readOnly, options, lastOption), null);
-        factory.removeChannelType(typeId);
-        factory.addChannelType(type);
-        return typeId;
-    }
-
-    private ChannelTypeUID addNewChannelType(String controlType, String itemType, String label, String description,
-            boolean readOnly) {
-        return addNewChannelType(controlType, itemType, label, description, null, readOnly, null, 0, null);
+        logger.debug("Channel type provider is null, can't create channel type for {}, {}", controlType, itemType);
+        return null;
     }
 
     /**

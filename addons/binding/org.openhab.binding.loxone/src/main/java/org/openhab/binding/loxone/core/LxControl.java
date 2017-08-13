@@ -242,6 +242,7 @@ public abstract class LxControl {
     }
 
     /**
+     * Create a {@link LxControl} object for a control received from the Miniserver
      *
      * @param client
      *            websocket client to facilitate communication with Miniserver

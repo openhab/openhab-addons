@@ -21,7 +21,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * <li>a push button function block
  * </ul>
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlSwitch extends LxControl {

@@ -8,27 +8,16 @@
  */
 package org.openhab.binding.loxone.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.loxone.LoxoneBindingConstants;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -37,12 +26,13 @@ import com.google.common.collect.Sets;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
-    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
-    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
+public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
+
+    private LoxoneChannelTypeProvider channelTypeProvider;
+    private Logger logger = LoggerFactory.getLogger(LoxoneHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -53,92 +43,24 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID uid = thing.getThingTypeUID();
         if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
-            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing, this);
+            if (channelTypeProvider == null) {
+                // It indicates some problem with channel type provide service, but it is not a show stopper for the
+                // binding, as majority of channels are defined statically
+                logger.warn("Channel type provider is null when creating Miniserver thing handler.");
+            }
+            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing, channelTypeProvider);
             return handler;
         }
         return null;
     }
 
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
+    // The following methods are bindings to the channel type provider service and are referenced in
+    // OSGI-INF/LoxoneHandlerFactory.xml
+    protected void setChannelTypeProvider(LoxoneChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
     }
 
-    // The following methods are required by the UPnP service and are referenced in OSGI-INF/LoxoneHandlerFactory.xml
-    protected void setUpnpIOService(UpnpIOService upnpIOService) {
-    }
-
-    protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
-    }
-
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-    }
-
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-    }
-
-    @Override
-    public Collection<ChannelType> getChannelTypes(Locale locale) {
-        return channelTypes;
-    }
-
-    @Override
-    public ChannelType getChannelType(ChannelTypeUID channelTypeUID, Locale locale) {
-        for (ChannelType channelType : channelTypes) {
-            if (channelType.getUID().equals(channelTypeUID)) {
-                return channelType;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(Locale locale) {
-        return channelGroupTypes;
-    }
-
-    @Override
-    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, Locale locale) {
-        for (ChannelGroupType channelGroupType : channelGroupTypes) {
-            if (channelGroupType.getUID().equals(channelGroupTypeUID)) {
-                return channelGroupType;
-            }
-        }
-        return null;
-    }
-
-    public void addChannelGroupType(ChannelGroupType type) {
-        channelGroupTypes.add(type);
-    }
-
-    public void removeChannelGroupType(ChannelGroupType type) {
-        channelGroupTypes.remove(type);
-    }
-
-    public void addChannelType(ChannelType type) {
-        channelTypes.add(type);
-    }
-
-    public void removeChannelType(ChannelType type) {
-        channelTypes.remove(type);
-    }
-
-    public void removeChannelType(ChannelTypeUID id) {
-        List<ChannelType> removes = new ArrayList<>();
-        for (ChannelType c : channelTypes) {
-            if (c.getUID().getAsString().equals(id.getAsString())) {
-                removes.add(c);
-            }
-        }
-        channelTypes.removeAll(removes);
-    }
-
-    public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<>();
-        for (ChannelType c : channelTypes) {
-            if (c.getUID().getAsString().startsWith(uid.getAsString())) {
-                removes.add(c);
-            }
-        }
-        channelTypes.removeAll(removes);
+    protected void unsetChannelTypeProvider(LoxoneChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
     }
 }

@@ -22,14 +22,20 @@ public class LoxoneBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MINISERVER = new ThingTypeUID(BINDING_ID, "miniserver");
 
-    // Channel IDs are created dynamically in runtime
+    // Channel Type IDs
+    public static final String MINISERVER_CHANNEL_TYPE_SWITCH = "switchTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER = "rollerShutterTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";
     public static final String MINISERVER_PARAM_PORT = "port";
-    public static final String MINISERVER_PROPERTY_SERIAL = "Serial number";
-    public static final String MINISERVER_PROPERTY_MINISERVER_NAME = "Miniserver name";
-    public static final String MINISERVER_PROPERTY_PROJECT_NAME = "Project name";
-    public static final String MINISERVER_PROPERTY_CLOUD_ADDRESS = "Cloud address";
+    public static final String MINISERVER_PROPERTY_MINISERVER_NAME = "name";
+    public static final String MINISERVER_PROPERTY_PROJECT_NAME = "project";
+    public static final String MINISERVER_PROPERTY_CLOUD_ADDRESS = "cloudAddress";
 
+    // Location as configured on the Miniserver - it may be different to the Thing location property, which is user
+    // defined and influences the grouping of items in the UI
+    public static final String MINISERVER_PROPERTY_PHYSICAL_LOCATION = "physicalLocation";
 }

@@ -15,7 +15,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * <p>
  * According to Loxone API documentation, a text state represents a State functional block on the Miniserver
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlTextState extends LxControl {

@@ -16,7 +16,7 @@ import java.util.Set;
  * <p>
  * Examples of containers are rooms and categories.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxContainer {

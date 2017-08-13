@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
 /**
  * An event received from Loxone Miniserver with control's state update
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 class LxWsStateUpdateEvent {

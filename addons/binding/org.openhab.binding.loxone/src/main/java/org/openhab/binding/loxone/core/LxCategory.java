@@ -11,7 +11,7 @@ package org.openhab.binding.loxone.core;
 /**
  * Category of Loxone Miniserver's {@link LxControl} object.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxCategory extends LxContainer {

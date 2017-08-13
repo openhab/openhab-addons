@@ -16,7 +16,7 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  * According to Loxone API documentation, this control covers analog virtual states only. This control does not send any
  * commands to the Miniserver. It can be used to read a formatted representation of an analog virtual state.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public class LxControlInfoOnlyAnalog extends LxControl {

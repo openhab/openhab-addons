@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
  * <p>
  * This structure is used for parsing with Gson library.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 class LxJsonResponse {

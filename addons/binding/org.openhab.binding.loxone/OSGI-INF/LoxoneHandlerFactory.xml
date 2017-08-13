@@ -9,15 +9,12 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.loxone">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.loxone.internal.LoxoneHandlerFactory">
 
    <implementation class="org.openhab.binding.loxone.internal.LoxoneHandlerFactory"/>
-   <reference bind="setUpnpIOService" cardinality="1..1" interface="org.eclipse.smarthome.io.transport.upnp.UpnpIOService" name="UpnpIOService" policy="static" unbind="unsetUpnpIOService"/>
-   <reference bind="setDiscoveryServiceRegistry" cardinality="1..1" interface="org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry" name="DiscoveryServiceRegistry" policy="static" unbind="unsetDiscoveryServiceRegistry"/>
-   
+   <reference bind="setChannelTypeProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.type.ChannelTypeProvider" name="ChannelTypeProvider" policy="dynamic" unbind="unbindChannelTypeProvider"/>
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-      <provide interface="org.eclipse.smarthome.core.thing.type.ChannelTypeProvider"/>
    </service>
 
 </scr:component>

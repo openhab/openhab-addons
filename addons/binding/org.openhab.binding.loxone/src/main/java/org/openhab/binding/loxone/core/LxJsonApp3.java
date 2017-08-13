@@ -15,7 +15,7 @@ import com.google.gson.JsonElement;
 /**
  * A structure of JSON file http://miniserver/data/LoxAPP3.json used for parsing it with Gson library.
  *
- * @author Pawel Pieczul - initial commit
+ * @author Pawel Pieczul - initial contribution
  *
  */
 class LxJsonApp3 {
