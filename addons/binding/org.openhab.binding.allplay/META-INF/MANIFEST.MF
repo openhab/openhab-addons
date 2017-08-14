@@ -14,6 +14,7 @@ Bundle-NativeCode: lib/x86-64/win/alljoyn_java.dll;processor=amd64;osname=win32;
  lib/arm/linux/liballjoyn_java.so;processor=arm;osname=linux,*
 Import-Package: com.google.common.collect,
  org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
@@ -23,11 +24,11 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.allplay,
+ org.openhab.binding.allplay.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.slf4j,
- org.openhab.binding.allplay,
- org.openhab.binding.allplay.handler
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.allplay,
  org.openhab.binding.allplay.handler

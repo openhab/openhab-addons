@@ -16,6 +16,7 @@ Import-Package: com.rometools.rome.feed,
  com.rometools.rome.feed.synd,
  com.rometools.rome.io,
  com.rometools.utils,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.slf4j
 Export-Package: com.rometools.rome.feed,
  com.rometools.rome.feed.atom,

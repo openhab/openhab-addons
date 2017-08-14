@@ -18,6 +18,7 @@ Import-Package:
  javax.ws.rs.core,
  org.apache.commons.lang,
  org.apache.commons.net.util,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
