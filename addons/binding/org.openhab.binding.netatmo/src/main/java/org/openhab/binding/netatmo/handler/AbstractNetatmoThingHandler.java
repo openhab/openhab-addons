@@ -159,11 +159,15 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
         }
     }
 
+    public void refreshAllChannels() {
+        logger.debug("Refreshing Channels");
+        updateChannels(configuration.getEquipmentId());
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            logger.debug("Refreshing {}", channelUID);
-            updateChannels(configuration.getEquipmentId());
+            refreshAllChannels();
         }
     }
 
