@@ -280,8 +280,7 @@ public class MetadataUtils {
                 return ITEM_TYPE_SWITCH;
             }
         } else if (dp.isNumberType()) {
-            if (dpName.startsWith(DATAPOINT_NAME_LEVEL)
-                    && (channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE))) {
+            if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && isRollerShutter(dp)) {
                 return ITEM_TYPE_ROLLERSHUTTER;
             } else if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && !channelType.equals(CHANNEL_TYPE_WINMATIC)
                     && !channelType.equals(CHANNEL_TYPE_AKKU)) {
@@ -294,6 +293,16 @@ public class MetadataUtils {
         } else {
             return ITEM_TYPE_STRING;
         }
+    }
+
+    /**
+     * Returns true, if the device of the datapoint is a rollershutter.
+     */
+    public static boolean isRollerShutter(HmDatapoint dp) {
+        String channelType = dp.getChannel().getType();
+        return channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE)
+                || channelType.equals(CHANNEL_TYPE_SHUTTER_TRANSMITTER)
+                || channelType.equals(CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER);
     }
 
     /**
