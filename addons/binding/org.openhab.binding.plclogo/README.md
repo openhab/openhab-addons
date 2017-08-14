@@ -1,13 +1,17 @@
 # PLCLogo Binding
 
-This binding provides native support of Siemens LOGO! PLC devices. Communication with Logo is done via Moka7 library.
-Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8). Additionally multiple devices are supported.
-Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
+This binding provides native support of Siemens LOGO! PLC devices. Communication with LOGO! is done via Moka7 library.
+Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8). Additionally multiple devices are
+supported. Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
 Binding works nicely at least 100ms polling rate, if network connection is stable.
 
 ## Pitfalls
-- Changing of block parameter while running the binding may kill your LOGO!, so that program flashing via LOGO! SoftComort will be required. Furthermore programs within LOGO! SoftComfort and LOGO! itself will differ, so that online simulation will not work anymore without program synchronisation.
-- Flashing the LOGO! while running the binding may crash the network interface of your LOGO!. Before flashing the LOGO! with LOGO! SoftComfort stop openHAB service. If network interface is crashed, no reader could be created for this device. See troubleshooting section below how to recover.
+- Changing of block parameter while running the binding may kill your LOGO!, so that program flashing via LOGO! SoftComort
+  will be required. Furthermore programs within LOGO! SoftComfort and LOGO! itself will differ, so that online simulation
+  will not work anymore without program synchronisation.
+- Flashing the LOGO! while running the binding may crash the network interface of your LOGO!. Before flashing the LOGO!
+  with LOGO! SoftComfort stop openHAB service. If network interface is crashed, no reader could be created for this
+  device. See troubleshooting section below how to recover.
 
 ## Discovery
 
@@ -37,63 +41,91 @@ Be sure not to use the same values for localTSAP and remoteTSAP, if configure mo
 
 ## Thing configuration
 
-Binding supports two types of things: digital and analog.
+Binding supports four types of things: digital, analog, memory and datetime.
 
 ### Digital Things
 The configuration pattern for digital things is:
 
 ```
-Thing digital <ThingId> "Label" @ "Location" [ block="<name>", force=<true/false> ]
+Thing digital <ThingId> "Label" @ "Location" [ kind="<kind>", force=<true/false> ]
 ```
 
 | Parameter | Type    | Required   | Default   | Description                                                  |
 | --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------ |
-| block     | String  | Yes        |           | Block name                                                   |
+| kind      | String  | Yes        |           | Blocks kind                                                  |
 | force     | Boolean | No         | false     | Send current value to openHAB, independent if changed or not |
 
-Follow block names are allowed for digital things:
+Follow block kinds are allowed for digital things:
 
-| Type           | `0BA7`              | `0BA8`            | 
-| -------------- | :-----------------: | :---------------: |
-| Input          | `I[1-24]`           | `I[1-24]`         |
-| Output         | `Q[1-16]`           | `Q[1-20]`         |
-| Marker         | `M[1-27]`           | `M[1-64]`         |
-| Network input  |                     | `NI[1-64]`        |
-| Network output |                     | `NQ[1-64]`        |
-| Memory         | `VB[0-850].[0-7]`   | `VB[0-850].[0-7]` |
+| Type           | `0BA7` | `0BA8` | 
+| -------------- | :----: | ------ | 
+| Input          | `I`    | `I`    |
+| Output         | `Q`    | `Q`    |
+| Marker         | `M`    | `M`    |
+| Network input  |        | `NI`   |
+| Network output |        | `NQ`   |
 
 Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
 
 ### Analog Things
-The configuration pattern for analog things is as follow
+The configuration pattern for analog things is:
 
 ```
-Thing analog <ThingId>  "Label" @ "Location" [ block="<name>", threshold=<number>, force=<true/false>, type="<number/date/time>" ]
+Thing analog <ThingId>  "Label" @ "Location" [ kind="<kind>", threshold=<number>, force=<true/false>" ]
 ```
 
 | Parameter | Type    | Required   | Default   | Description                                                   |
 | --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------- |
-| block     | String  | Yes        |           | Block name                                                    |
+| kind      | String  | Yes        |           | Blocks kind                                                   |
 | threshold | Integer | No         | 0         | Send current value to openHAB, if changed more than threshold |
 | force     | Boolean | No         | false     | Send current value to openHAB, independent if changed or not  |
-| type      | String  | No         | "number"  | Configure how to interpret data fetched from LOGO! device     |
 
-If parameter `type` is `"number"`, incomig data will be interpret as numeric value. In this case, the appropriate
-channel must be linked to an `Number` item. Is `type` set to `"date"`, then the binding will try to interpret
-incomig data as calendar date. If `type` is set to `"time"`, then incoming data will be tried to interpret as
-time of day. For both `"date"` and `"time"` types, the appropriate channel must be linked to an `DateTime` item.
+Follow block kinds are allowed for analog things:
 
-Follow block names are allowed for analog things:
+| Type           | `0BA7` | `0BA8` | 
+| -------------- | :----: | ------ |
+| Input          | `AI`   | `AI`   |
+| Output         | `AQ`   | `AQ`   |
+| Marker         | `AM`   | `AM`   |
+| Network input  |        | `NAI`  |
+| Network output |        | `NAQ`  |
 
-| Type           | `0BA7`        | `0BA8`      | 
-| -------------- | :-----------: | :---------: |
-| Input          | `AI[1-8]`     | `AI[1-8]`   |
-| Output         | `AQ[1-2]`     | `AQ[1-8]`   |
-| Marker         | `AM[1-16]`    | `AM[1-64]`  |
-| Network input  |               | `NAI[1-32]` |
-| Network output |               | `NAQ[1-16]` |
-| Memory (DWORD) | `VD[0-847]`   | `VD[0-847]` |
-| Memory (WORD)  | `VW[0-849]`   | `VW[0-849]` |
+Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
+
+### Memory Things
+The configuration pattern for analog things is:
+
+```
+Thing memory <ThingId>  "Label" @ "Location" [ block="<name>", threshold=<number>, force=<true/false>" ]
+```
+
+Follow block names are allowed for memory things:
+
+| Type  | `0BA7`            | `0BA8`            |
+| ----- | :---------------: | ----------------- |
+| Bit   | `VB[0-850].[0-7]` | `VB[0-850].[0-7]` |
+| Byte  | `VB[0-850]`       | `VB[0-850]`       |
+| Word  | `VW[0-849]`       | `VW[0-849]`       |
+| DWord | `VD[0-847]`       | `VD[0-847]`       |
+
+Parameter `threshold` will be taken into account for Byte, Word and DWord, i.e Number items, only.
+Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
+
+### DateTime Things
+The configuration pattern for datetime things is:
+
+```
+Thing datetime <ThingId>  "Label" @ "Location" [ block="<name>", type=<type>, force=<true/false>" ]
+```
+
+Follow block names are allowed for datetime things:
+
+| Type  | `0BA7`      | `0BA8`      |
+| ----- | :---------: | ----------- |
+| Word  | `VW[0-849]` | `VW[0-849]` |
+
+If parameter `type` is `"date"`, then the binding will try to interpret incoming data as calendar date.
+If `type` is set to `"time"`, then incoming data will be tried to interpret as time of day.
 
 Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
 
@@ -111,25 +143,75 @@ any useful data for this channel, local time of openHAB host will be used. Rathe
 one second, `rtc` channel will be tried to update with the same rate.
 
 ### Digital
-Each digital thing have currently one channel `state`:
+Format pattern for digital channels is
 
 ```
-channel="plclogo:digital:<DeviceId>:<ThingId>:state"
+channel="plclogo:digital:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-Dependend on configured block type, channel supports one of two different item types: `Contact`
-for inputs and `Switch` for outputs. Means, that for `I` and `NI` blocks `Contact` items must
-be used. For other blocks simply use `Switch`, since they are bidirectional.
+Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+
+| Kind | `0BA7`    | `0BA8`     | Item      |
+| ---- | :-------: | :--------: | --------- |
+| `I`  | `I[1-24]` | `I[1-24]`  | `Contact` |
+| `Q`  | `Q[1-16]` | `Q[1-20]`  | `Switch`  |
+| `M`  | `M[1-27]` | `M[1-64]`  | `Switch`  |
+| `NI` |           | `NI[1-64]` | `Contact` |
+| `NQ` |           | `NQ[1-64]` | `Switch`  |
 
 ### Analog
-Each analog thing have currently one channel `value`:
+Format pattern for analog channels is
 
 ```
-channel="plclogo:digital:<DeviceId>:<ThingId>:value"
+channel="plclogo:analog:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-This channel supports `Number` or `DateTime` items dependend on thing configuration.
+Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
+| Kind  | `0BA7`     | `0BA8`      | Item     |
+| ----- | :--------: | :---------: | -------- |
+| `AI`  | `AI[1-8]`  | `AI[1-8]`   | `Number` |
+| `AQ`  | `AQ[1-2]`  | `AQ[1-8]`   | `Number` |
+| `AM`  | `AM[1-16]` | `AM[1-64]`  | `Number` |
+| `NAI` |            | `NAI[1-32]` | `Number` |
+| `NAQ` |            | `NAQ[1-16]` | `Number` |
+
+### Memory
+Format pattern for memory channels for bit values is
+
+```
+channel="plclogo:memory:<DeviceId>:<ThingId>:<state/value>"
+```
+
+Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+
+| Kind              | `0BA7`  | `0BA8`  | Item     |
+| ----------------- | :-----: | :-----: | -------- |
+| `VB[0-850].[0-7]` | `state` | `state` | `Switch` |
+| `VB[0-850]`       | `value` | `value` | `Number` |
+| `VW[0-849]`       | `value` | `value` | `Number` |
+| `VD[0-847]`       | `value` | `value` | `Number` |
+
+### Datime
+Format pattern depends for datetime channels is
+
+```
+channel="plclogo:memory:<DeviceId>:<ThingId>:<date/time>"
+```
+
+Additionally `value` channel is provided
+```
+channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
+```
+
+Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+
+| Kind        | `0BA7`  | `0BA8`  | Item       |
+| ----------- | :-----: | :-----: | ---------- |
+| `VW[0-849]` | `date`  | `date`  | `DateTime` |
+| `VW[0-849]` | `value` | `value` | `Number`   |
+| `VW[0-849]` | `time`  | `time`  | `DateTime` |
+| `VW[0-849]` | `value` | `value` | `Number`   |
 
 ## Examples
 Configuration of one Siemens LOGO!
@@ -139,33 +221,25 @@ logo.things:
 ```
 Bridge plclogo:device:Logo [ address="192.168.0.1", family="0BA8", localTSAP="0x3000", remoteTSAP="0x2000", refresh=100 ]
 {
-  Thing digital VB0_0 [ block="VB0.0" ]
-  Thing digital VB0_1 [ block="VB0.1" ]
-  Thing digital NI1   [ block="NI1" ]
-  Thing digital NI2   [ block="NI2" ]
-  Thing digital Q1    [ block="Q1" ]
-  Thing digital Q2    [ block="Q2" ]
-  Thing analog  VW100 [ block="VW100", threshold=1, force=true ]
-  Thing analog  VW102 [ block="VW102", type="time" ]
-  Thing analog  VW104 [ block="VW104", type="time" ]
+  Thing digital Inputs  [ kind="I" ]
+  Thing digital Outputs [ kind="Q" ]
+  Thing memory  VW100 [ block="VW100", threshold=1, force=true ]
+  Thing memory  VW102 [ block="VW102", type="time" ]
 }
 ```
 
 logo.items:
 
 ```
-// NI1 is mapped to VB0.0 address in LOGO!Soft Comfort 
-// NI2 is mapped to VB0.1 address in LOGO!Soft Comfort 
-Switch   LogoUp                             {channel="plclogo:digital:Logo:VB0_0:state"}
-Switch   LogoDown                           {channel="plclogo:digital:Logo:VB0_1:state"}
-Contact  LogoIsUp                           {channel="plclogo:digital:Logo:NI1:state"}
-Contact  LogoIsDown                         {channel="plclogo:digital:Logo:NI2:state"}
-Switch   Output1                            {channel="plclogo:digital:Logo:Q1:state"}
-Switch   Output2                            {channel="plclogo:digital:Logo:Q2:state"}
-Number   Position                           {channel="plclogo:analog:Logo:VW100:value"}
-DateTime Sunrise    "Sunrise [%1$tH:%1$tM]" {channel="plclogo:analog:Logo:VW102:value"}
-DateTime Sunset     "Sunset [%1$tH:%1$tM]"  {channel="plclogo:analog:Logo:VW104:value"}
-DateTime RTC                                {channel="plclogo:device:Logo:rtc}
+Contact LogoUp                             {channel="plclogo:digital:Logo:Inputs:I1"}
+Contact LogoDown                           {channel="plclogo:digital:Logo:Inputs:I2"}
+Switch  LogoIsUp                           {channel="plclogo:digital:Logo:Outputs:Q1"}
+Switch  LogoIsDown                         {channel="plclogo:digital:Logo:Outputs:Q2"}
+Number  Position                           {channel="plclogo:memory:Logo:VW100:value"}
+
+DateTime Sunrise   "Sunrise [%1$tH:%1$tM]" {channel="plclogo:datetime:Logo:VW102:time"}
+DateTime Sunset    "Sunset [%1$tH:%1$tM]"  {channel="plclogo:datetime:Logo:VW104:time"}
+DateTime RTC                               {channel="plclogo:device:Logo:rtc}
 ```
 
 Configuration of two Siemens LOGO!
@@ -175,45 +249,33 @@ logo.things:
 ```
 Bridge plclogo:device:Logo1 [ address="192.168.0.1", family="0BA8", localTSAP="0x3000", remoteTSAP="0x2000", refresh=100 ]
 {
-  Thing digital VB0_0 [ block="VB0.0" ]
-  Thing digital VB0_1 [ block="VB0.1" ]
-  Thing digital NI1   [ block="NI1" ]
-  Thing digital NI2   [ block="NI2" ]
-  Thing digital Q1    [ block="Q1" ]
-  Thing digital Q2    [ block="Q2" ]
-  Thing analog  VW100 [ block="VW100", threshold=1 ]
+  Thing digital Inputs  [ kind="I" ]
+  Thing digital Outputs [ kind="Q" ]
+  Thing memory  VW100 [ block="VW100", threshold=1 ]
 }
 Bridge plclogo:device:Logo2 [ address="192.168.0.2", family="0BA8", localTSAP="0x3100", remoteTSAP="0x2000", refresh=100 ]
 {
-  Thing digital VB0_0 [ block="VB0.0" ]
-  Thing digital VB0_1 [ block="VB0.1" ]
-  Thing digital NI1   [ block="NI1" ]
-  Thing digital NI2   [ block="NI2" ]
-  Thing digital Q1    [ block="Q1" ]
-  Thing digital Q2    [ block="Q2" ]
-  Thing analog  VW100 [ block="VW100", threshold=1 ]
+  Thing digital Inputs  [ kind="I" ]
+  Thing digital Outputs [ kind="Q" ]
+  Thing memory  VW100 [ block="VW100", threshold=1 ]
 }
 ```
 
 logo.items:
 
 ```
-Switch   Logo1_Up       {channel="plclogo:digital:Logo1:VB0_0:state"}
-Switch   Logo1_Down     {channel="plclogo:digital:Logo1:VB0_1:state"}
-Contact  Logo1_IsUp     {channel="plclogo:digital:Logo1:NI1:state"}
-Contact  Logo1_IsDown   {channel="plclogo:digital:Logo1:NI2:state"}
-Switch   Logo1_Output1  {channel="plclogo:digital:Logo1:Q1:state"}
-Switch   Logo1_Output2  {channel="plclogo:digital:Logo1:Q2:state"}
-Number   Logo1_Position {channel="plclogo:analog:Logo1:VW100:value"}
+Contact Logo1_Up        {channel="plclogo:digital:Logo1:Inputs:I1"}
+Contact Logo1_Down      {channel="plclogo:digital:Logo1:Inputs:I2"}
+Switch  Logo1_IsUp      {channel="plclogo:digital:Logo1:Outputs:Q1"}
+Switch  Logo1_IsDown    {channel="plclogo:digital:Logo1:Outputs:Q2"}
+Number  Logo1_Position  {channel="plclogo:memory:Logo1:VW100:value"}
 DateTime Logo1_RTC      {channel="plclogo:device:Logo1:rtc}
 
-Switch   Logo2_Up       {channel="plclogo:digital:Logo2:VB0_0:state"}
-Switch   Logo2_Down     {channel="plclogo:digital:Logo2:VB0_1:state"}
-Contact  Logo2_IsUp     {channel="plclogo:digital:Logo2:NI1:state"}
-Contact  Logo2_IsDown   {channel="plclogo:digital:Logo2:NI2:state"}
-Switch   Logo2_Output1  {channel="plclogo:digital:Logo2:Q1:state"}
-Switch   Logo2_Output2  {channel="plclogo:digital:Logo2:Q2:state"}
-Number   Logo2_Position {channel="plclogo:analog:Logo2:VW100:value"}
+Contact Logo2_Up        {channel="plclogo:digital:Logo2:Inputs:I1"}
+Contact Logo2_Down      {channel="plclogo:digital:Logo2:Inputs:I2"}
+Switch  Logo2_IsUp      {channel="plclogo:digital:Logo2:Outputs:Q1"}
+Switch  Logo2_IsDown    {channel="plclogo:digital:Logo2:Outputs:Q2"}
+Number  Logo2_Position  {channel="plclogo:memory:Logo2:VW100:value"}
 DateTime Logo2_RTC      {channel="plclogo:device:Logo2:rtc}
 ```
 

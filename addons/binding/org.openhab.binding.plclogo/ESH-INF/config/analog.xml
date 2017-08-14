@@ -4,14 +4,14 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:analog">
-		<parameter name="block" type="text" pattern="AI[1-8]|NAI([1-9]|[1-2]\d|3[0-2])|AQ[1-8]|NAQ([1-9]|1[0-6])|AM([1-9]|[1-5]\d|6[0-4])|VD(\d|[1-9]\d|[1-7]\d{2}|8[0-3]\d|84[0-7])|VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)">
-			<label>LOGO! block/memory</label>
-			<description>LOGO! block or memory address</description>
+		<parameter name="kind" type="text" pattern="AI|AM|AQ|NAI|NAQ">
+			<label>LOGO! analog block kind</label>
+			<description>LOGO! analog block kind</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="force" type="boolean">
-			<label>Force channel update</label>
-			<description>Update of the channel be should propagated to openHAB</description>
+			<label>Force channels update</label>
+			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
 			<required>false</required>
 		</parameter>
@@ -19,17 +19,6 @@
 			<label>Smallest value change to send</label>
 			<description>Smallest change of value will be send to openHAB</description>
 			<default>0</default>
-			<required>false</required>
-		</parameter>
-		<parameter name="type" type="text">
-			<label>Send value as</label>
-			<description>Interpret received channel value as number, date or time</description>
-			<options>
-				<option value="number">number</option>
-				<option value="date">date</option>
-				<option value="time">time</option>
-			</options>
-			<default>Number</default>
 			<required>false</required>
 		</parameter>
 	</config-description>

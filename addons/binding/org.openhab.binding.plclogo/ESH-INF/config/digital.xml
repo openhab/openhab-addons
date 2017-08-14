@@ -4,14 +4,14 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:digital">
-		<parameter name="block" type="text" pattern="I([1-9]|1\d|2[0-4])|NI([1-9]|[1-5]\d|6[0-4])|Q([1-9]|1\d|20)|NQ([1-9]|[1-5]\d|6[0-4])|M([1-9]|[1-5]\d|6[0-4])|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]">
-			<label>LOGO! block/memory</label>
-			<description>LOGO! block or memory address</description>
+		<parameter name="kind" type="text" pattern="I|M|Q|NI|NQ">
+			<label>LOGO! digital block kind</label>
+			<description>LOGO! digital block kind</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="force" type="boolean">
-			<label>Force channel update</label>
-			<description>Update of the channel be should propagated to openHAB</description>
+			<label>Force channels update</label>
+			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
 			<required>false</required>
 		</parameter>

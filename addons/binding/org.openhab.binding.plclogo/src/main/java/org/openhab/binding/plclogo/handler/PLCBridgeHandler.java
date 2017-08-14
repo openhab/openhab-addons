@@ -10,8 +10,8 @@ package org.openhab.binding.plclogo.handler;
 
 import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.plclogo.PLCLogoBindingConstants.Layout;
 import org.openhab.binding.plclogo.config.PLCLogoBridgeConfiguration;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.slf4j.Logger;
@@ -49,16 +50,17 @@ import Moka7.S7Client;
  */
 public class PLCBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DEVICE);
+
+    private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
+    private static final @NonNull String RTC_CHANNEL_ID = "rtc";
 
     // S7 client this bridge belongs to
     private volatile PLCLogoClient client;
-    private final Set<PLCBlockHandler> handlers = new HashSet<>();
+    private final Set<PLCCommonHandler> handlers = new HashSet<>();
     private PLCLogoBridgeConfiguration config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
-    private final Calendar rtc = Calendar.getInstance();
+    private ZonedDateTime rtc = ZonedDateTime.now();
     private ScheduledFuture<?> rtcJob;
     private final Runnable rtcReader = new Runnable() {
         // Buffer for diagnostic data
@@ -71,12 +73,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 if (client != null) {
                     int result = client.readDBArea(1, LOGO_STATE.intValue(), data.length, S7Client.S7WLByte, data);
                     if (result == 0) {
-                        final Calendar calendar = getRtcAt(data, 1);
-                        synchronized (rtc) {
-                            rtc.setTimeZone(calendar.getTimeZone());
-                            rtc.setTimeInMillis(calendar.getTimeInMillis());
+                        final ChannelUID channelUID = channel.getUID();
+                        if (channelUID != null) {
+                            synchronized (rtc) {
+                                rtc = getRtcAt(data, 1);
+                            }
+                            updateState(channelUID, new DateTimeType(rtc));
                         }
-                        updateState(channel.getUID(), new DateTimeType(rtc));
 
                         if (logger.isTraceEnabled()) {
                             final String raw = Arrays.toString(data);
@@ -106,23 +109,22 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             try {
-                final Map<?, Integer> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
+                final Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
                 if ((memory != null) && (client != null)) {
-                    final Integer size = memory.get("SIZE");
+                    final Integer size = memory.get("SIZE").length;
                     int result = client.readDBArea(1, 0, size.intValue(), S7Client.S7WLByte, buffer);
                     if (result == 0) {
                         synchronized (handlers) {
-                            for (PLCBlockHandler handler : handlers) {
+                            for (PLCCommonHandler handler : handlers) {
                                 if (handler == null) {
                                     logger.warn("Skip processing of invalid handler.");
                                     continue;
                                 }
 
-                                final String name = handler.getBlockName();
-                                final int address = handler.getAddress(name);
-                                final int offset = handler.getBlockDataType(name).getByteCount();
-                                if ((offset > 0) && (address != PLCBlockHandler.INVALID)) {
-                                    handler.setData(Arrays.copyOfRange(buffer, address, address + offset));
+                                final int length = handler.getBufferLength();
+                                final int address = handler.getStartAddress();
+                                if ((length > 0) && (address != PLCCommonHandler.INVALID)) {
+                                    handler.setData(Arrays.copyOfRange(buffer, address, address + length));
                                 } else {
                                     logger.warn("Invalid handler {} found.", handler.getClass().getSimpleName());
                                 }
@@ -171,10 +173,8 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             byte[] buffer = { 0, 0, 0, 0, 0, 0, 0 };
             int result = client.readDBArea(1, LOGO_STATE.intValue(), buffer.length, S7Client.S7WLByte, buffer);
             if (result == 0) {
-                final Calendar calendar = getRtcAt(buffer, 1);
                 synchronized (rtc) {
-                    rtc.setTimeZone(calendar.getTimeZone());
-                    rtc.setTimeInMillis(calendar.getTimeInMillis());
+                    rtc = getRtcAt(buffer, 1);
                 }
                 updateState(channelUID, new DateTimeType(rtc));
             } else {
@@ -270,15 +270,15 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        if (childHandler instanceof PLCBlockHandler) {
-            final PLCBlockHandler handler = (PLCBlockHandler) childHandler;
+        if (childHandler instanceof PLCCommonHandler) {
+            final PLCCommonHandler handler = (PLCCommonHandler) childHandler;
             synchronized (handlers) {
-                final String name = handler.getBlockName();
+                // final String name = handler.getBlockName();
                 if (!handlers.contains(handler)) {
                     handlers.add(handler);
-                    logger.debug("Insert handler for block {}.", name);
+                    // logger.debug("Insert handler for block {}.", name);
                 } else {
-                    logger.info("Handler {} for block {} already registered.", childThing.getUID(), name);
+                    // logger.info("Handler {} for block {} already registered.", childThing.getUID(), name);
                 }
             }
         }
@@ -286,15 +286,15 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof PLCBlockHandler) {
-            final PLCBlockHandler handler = (PLCBlockHandler) childHandler;
+        if (childHandler instanceof PLCCommonHandler) {
+            final PLCCommonHandler handler = (PLCCommonHandler) childHandler;
             synchronized (handlers) {
-                final String name = handler.getBlockName();
+                // final String name = handler.getBlockName();
                 if (handlers.contains(handler)) {
                     handlers.remove(handler);
-                    logger.debug("Remove handler for block {}.", name);
+                    // logger.debug("Remove handler for block {}.", name);
                 } else {
-                    logger.info("Handler {} for block {} already disposed.", childThing.getUID(), name);
+                    // logger.info("Handler {} for block {} already disposed.", childThing.getUID(), name);
                 }
             }
         }
@@ -315,7 +315,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      *
      * @return Configured Siemens LOGO! family
      */
-    public String getLogoFamily() {
+    public @NonNull String getLogoFamily() {
         return config.getFamily();
     }
 
@@ -324,7 +324,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      *
      * @return Siemens LOGO! RTC
      */
-    public Calendar getLogoRTC() {
+    public ZonedDateTime getLogoRTC() {
         return rtc;
     }
 
@@ -373,19 +373,18 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    private Calendar getRtcAt(byte[] buffer, int pos) {
-        Calendar calendar = Calendar.getInstance();
+    private ZonedDateTime getRtcAt(byte[] buffer, int pos) {
+        ZonedDateTime rtc = ZonedDateTime.now();
         if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
-            final int year = calendar.get(Calendar.YEAR) / 100;
-            calendar.set(Calendar.YEAR, 100 * year + buffer[pos]);
-            calendar.set(Calendar.MONTH, buffer[pos + 1] - 1);
-            calendar.set(Calendar.DAY_OF_MONTH, buffer[pos + 2]);
-            calendar.set(Calendar.HOUR_OF_DAY, buffer[pos + 3]);
-            calendar.set(Calendar.MINUTE, buffer[pos + 4]);
-            calendar.set(Calendar.SECOND, buffer[pos + 5]);
-            calendar.set(Calendar.MILLISECOND, 0);
+            final int year = rtc.getYear() / 100;
+            rtc = rtc.withYear(100 * year + buffer[pos]);
+            rtc = rtc.withMonth(buffer[pos + 1]);
+            rtc = rtc.withDayOfMonth(buffer[pos + 2]);
+            rtc = rtc.withHour(buffer[pos + 3]);
+            rtc = rtc.withMinute(buffer[pos + 4]);
+            rtc = rtc.withSecond(buffer[pos + 5]);
         }
-        return calendar;
+        return rtc;
     }
 
 }

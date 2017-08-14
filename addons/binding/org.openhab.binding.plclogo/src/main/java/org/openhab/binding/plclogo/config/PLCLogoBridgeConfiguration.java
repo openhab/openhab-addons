@@ -11,6 +11,7 @@ package org.openhab.binding.plclogo.config;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.PLCLogoBindingConstants;
 
 /**
@@ -22,9 +23,9 @@ public class PLCLogoBridgeConfiguration {
 
     private String address;
     private String family;
-    private String localTSAP;
-    private String remoteTSAP;
-    private Integer refresh = 100;
+    private @NonNull String localTSAP = "0x3000";
+    private @NonNull String remoteTSAP = "0x2000";
+    private @NonNull Integer refresh = 100;
 
     /**
      * Get configured Siemens LOGO! device IP address.
@@ -73,7 +74,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @return Configured local TSAP of Siemens LOGO!
      */
-    public Integer getLocalTSAP() {
+    public @Nullable Integer getLocalTSAP() {
         Integer result = null;
         if (localTSAP.startsWith("0x")) {
             result = Integer.decode(localTSAP);
@@ -96,7 +97,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @return Configured local TSAP of Siemens LOGO!
      */
-    public Integer getRemoteTSAP() {
+    public @Nullable Integer getRemoteTSAP() {
         Integer result = null;
         if (remoteTSAP.startsWith("0x")) {
             result = Integer.decode(remoteTSAP);

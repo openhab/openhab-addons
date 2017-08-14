@@ -28,26 +28,16 @@ public class PLCLogoBindingConstants {
     // List of all Thing Type UIDs
     public static final @NonNull ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final @NonNull ThingTypeUID THING_TYPE_ANALOG = new ThingTypeUID(BINDING_ID, "analog");
+    public static final @NonNull ThingTypeUID THING_TYPE_MEMORY = new ThingTypeUID(BINDING_ID, "memory");
     public static final @NonNull ThingTypeUID THING_TYPE_DIGITAL = new ThingTypeUID(BINDING_ID, "digital");
-
-    // List of all Channel Type UIDs
-    public static final @NonNull String ANALOG_CHANNEL_ID = "value";
-    public static final @NonNull String DIGITAL_CHANNEL_ID = "state";
-    public static final @NonNull String RTC_CHANNEL_ID = "rtc";
-
-    // List of all Channel configurations
-    public static final @NonNull String INPUT_CHANNEL = "input";
-    public static final @NonNull String OUTPUT_CHANNEL = "output";
-    public static final @NonNull String ANALOG_DATE_CHANNEL = "date";
-    public static final @NonNull String ANALOG_TIME_CHANNEL = "time";
-    public static final @NonNull String ANALOG_NUMBER_CHANNEL = "number";
+    public static final @NonNull ThingTypeUID THING_TYPE_DATETIME = new ThingTypeUID(BINDING_ID, "datetime");
 
     // LOGO! family definitions
     public static final @NonNull String LOGO_0BA7 = "0BA7";
     public static final @NonNull String LOGO_0BA8 = "0BA8";
 
     // LOGO! diagnostics memory
-    public static final Integer LOGO_STATE = 984; // Diagnostics
+    public static final @NonNull Integer LOGO_STATE = 984; // Diagnostics
 
     @SuppressWarnings("serial")
     private static final Map<?, String> LOGO_STATES_0BA7 = Collections.unmodifiableMap(new TreeMap<Integer, String>() {
@@ -105,52 +95,62 @@ public class PLCLogoBindingConstants {
             });
 
     // LOGO! RTC memory
-    public static final Integer LOGO_DATE = 985; // RTC date for 3 bytes: year month day
-    public static final Integer LOGO_TIME = 988; // RTC time for 3 bytes: hour minute second
+    public static final @NonNull Integer LOGO_DATE = 985; // RTC date for 3 bytes: year month day
+    public static final @NonNull Integer LOGO_TIME = 988; // RTC time for 3 bytes: hour minute second
+
+    public static final class Layout {
+        public final int address;
+        public final int length;
+
+        public Layout(final int address, final int length) {
+            this.address = address;
+            this.length = length;
+        }
+    }
 
     @SuppressWarnings("serial")
-    private static final Map<?, Integer> LOGO_MEMORY_0BA7 = Collections.unmodifiableMap(new TreeMap<String, Integer>() {
+    private static final Map<?, Layout> LOGO_MEMORY_0BA7 = Collections.unmodifiableMap(new TreeMap<String, Layout>() {
         {
             // @formatter:off
-            put(   "VB", 0);
-            put(   "VD", 0);
-            put(   "VW", 0);
-            put(    "I", 923); // Digital inputs starts at 923 for 3 bytes
-            put(    "Q", 942); // Digital outputs starts at 942 for 2 bytes
-            put(    "M", 948); // Digital markers starts at 948 for 2 bytes
-            put(   "AI", 926); // Analog inputs starts at 926 for 8 words
-            put(   "AQ", 944); // Analog outputs starts at 944 for 2 words
-            put(   "AM", 952); // Analog markers starts at 952 for 16 words
-            put( "SIZE", 984); // Size of memory block for LOGO! 7
+            put(   "VB", new Layout(0, 850));
+            put(   "VD", new Layout(0, 850));
+            put(   "VW", new Layout(0, 850));
+            put(    "I", new Layout(923, 3));  // Digital inputs starts at 923 for 3 bytes
+            put(    "Q", new Layout(942, 2));  // Digital outputs starts at 942 for 2 bytes
+            put(    "M", new Layout(948, 2));  // Digital markers starts at 948 for 2 bytes
+            put(   "AI", new Layout(926, 16)); // Analog inputs starts at 926 for 16 bytes -> 8 words
+            put(   "AQ", new Layout(944, 4));  // Analog outputs starts at 944 for 4 bytes -> 2 words
+            put(   "AM", new Layout(952, 32)); // Analog markers starts at 952 for 32 bytes -> 16 words
+            put( "SIZE", new Layout(0, 984));  // Size of memory block for LOGO! 7
             // @formatter:on
         }
     });
 
     @SuppressWarnings("serial")
-    private static final Map<?, Integer> LOGO_MEMORY_0BA8 = Collections.unmodifiableMap(new TreeMap<String, Integer>() {
+    private static final Map<?, Layout> LOGO_MEMORY_0BA8 = Collections.unmodifiableMap(new TreeMap<String, Layout>() {
         {
             // @formatter:off
-            put(   "VB", 0);
-            put(   "VD", 0);
-            put(   "VW", 0);
-            put(    "I", 1024); // Digital inputs starts at 1024 for 8 bytes
-            put(    "Q", 1064); // Digital outputs starts at 1064 for 8 bytes
-            put(    "M", 1104); // Digital markers starts at 1104 for 14 bytes
-            put(   "AI", 1032); // Analog inputs starts at 1032 for 32 bytes -> 16 words
-            put(   "AQ", 1072); // Analog outputs starts at 1072 for 32 bytes -> 16 words
-            put(   "AM", 1118); // Analog markers starts at 1118 for 128 bytes(64 words)
-            put(   "NI", 1246); // Network inputs starts at 1246 for 16 bytes
-            put(  "NAI", 1262); // Network analog inputs starts at 1262 for 128 bytes(64 words)
-            put(   "NQ", 1390); // Network outputs starts at 1390 for 16 bytes
-            put(  "NAQ", 1406); // Network analog inputs starts at 1406 for 64 bytes(32 words)
-            put( "SIZE", 1470); // Size of memory block for LOGO! 8
+            put(   "VB", new Layout(0, 850));
+            put(   "VD", new Layout(0, 850));
+            put(   "VW", new Layout(0, 850));
+            put(    "I", new Layout(1024, 8));   // Digital inputs starts at 1024 for 8 bytes
+            put(    "Q", new Layout(1064, 8));   // Digital outputs starts at 1064 for 8 bytes
+            put(    "M", new Layout(1104, 14));  // Digital markers starts at 1104 for 14 bytes
+            put(   "AI", new Layout(1032, 32));  // Analog inputs starts at 1032 for 32 bytes -> 16 words
+            put(   "AQ", new Layout(1072, 32));  // Analog outputs starts at 1072 for 32 bytes -> 16 words
+            put(   "AM", new Layout(1118, 128)); // Analog markers starts at 1118 for 128 bytes -> 64 words
+            put(   "NI", new Layout(1246, 16));  // Network inputs starts at 1246 for 16 bytes
+            put(  "NAI", new Layout(1262, 128)); // Network analog inputs starts at 1262 for 128 bytes -> 64 words
+            put(   "NQ", new Layout(1390, 16));  // Network outputs starts at 1390 for 16 bytes
+            put(  "NAQ", new Layout(1406, 64));  // Network analog inputs starts at 1406 for 64 bytes -> 32 words
+            put( "SIZE", new Layout(0, 1470));   // Size of memory block for LOGO! 8
             // @formatter:on
         }
     });
 
     @SuppressWarnings("serial")
-    public static final Map<?, Map<?, Integer>> LOGO_MEMORY_BLOCK = Collections
-            .unmodifiableMap(new TreeMap<String, Map<?, Integer>>() {
+    public static final Map<?, Map<?, Layout>> LOGO_MEMORY_BLOCK = Collections
+            .unmodifiableMap(new TreeMap<String, Map<?, Layout>>() {
                 {
                     put(LOGO_0BA7, LOGO_MEMORY_0BA7);
                     put(LOGO_0BA8, LOGO_MEMORY_0BA8);

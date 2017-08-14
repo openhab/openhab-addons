@@ -18,9 +18,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.plclogo.handler.PLCAnalogBlockHandler;
+import org.openhab.binding.plclogo.handler.PLCAnalogHandler;
 import org.openhab.binding.plclogo.handler.PLCBridgeHandler;
-import org.openhab.binding.plclogo.handler.PLCDigitalBlockHandler;
+import org.openhab.binding.plclogo.handler.PLCDateTimeHandler;
+import org.openhab.binding.plclogo.handler.PLCDigitalHandler;
+import org.openhab.binding.plclogo.handler.PLCMemoryHandler;
 
 /**
  * The {@link PLCLogoHandlerFactory} is responsible for creating things and
@@ -37,8 +39,10 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
      */
     public PLCLogoHandlerFactory() {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DEVICE);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIGITAL);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MEMORY);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ANALOG);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIGITAL);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DATETIME);
     }
 
     @Override
@@ -50,10 +54,14 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {
             return new PLCBridgeHandler((Bridge) thing);
-        } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {
-            return new PLCDigitalBlockHandler(thing);
         } else if (THING_TYPE_ANALOG.equals(thing.getThingTypeUID())) {
-            return new PLCAnalogBlockHandler(thing);
+            return new PLCAnalogHandler(thing);
+        } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {
+            return new PLCDigitalHandler(thing);
+        } else if (THING_TYPE_DATETIME.equals(thing.getThingTypeUID())) {
+            return new PLCDateTimeHandler(thing);
+        } else if (THING_TYPE_MEMORY.equals(thing.getThingTypeUID())) {
+            return new PLCMemoryHandler(thing);
         }
 
         return null;
