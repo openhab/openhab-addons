@@ -73,7 +73,7 @@ After adding gateways, they are automatically scanned for paired devices and cur
 
 When devices are powered on it typically takes several seconds for them to join the ZigBee network and for the gateway poll to see them and bring the things online in openHAB. If multiple devices are powered on at the same time they join the network one at a time serially so it can take quite a while until everything is done.
 
-When devices are powered off it takes 5 minutes for them to go offline in openHAB. This is a limitation of the gateway and protocol(s) involved.
+When devices are powered off it takes 10 minutes for them to go offline in openHAB. This is a limitation of the gateway and protocol(s) involved.
 
 
 ## Channels
