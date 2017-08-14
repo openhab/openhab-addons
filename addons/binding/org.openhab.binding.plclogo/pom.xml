@@ -9,6 +9,11 @@
     <version>2.1.0-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <bundle.symbolicName>org.openhab.binding.plclogo</bundle.symbolicName>
+    <bundle.namespace>org.openhab.binding.plclogo</bundle.namespace>
+  </properties>
+
   <groupId>org.openhab.binding</groupId>
   <artifactId>org.openhab.binding.plclogo</artifactId>
   <version>2.1.0-SNAPSHOT</version>
