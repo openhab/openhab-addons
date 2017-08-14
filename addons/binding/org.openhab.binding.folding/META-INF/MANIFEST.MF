@@ -10,6 +10,7 @@ Import-Package:
  com.google.gson,
  com.google.gson.reflect,
  com.google.gson.stream,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

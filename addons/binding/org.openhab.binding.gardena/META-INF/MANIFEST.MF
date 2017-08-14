@@ -13,6 +13,7 @@ Import-Package:
  org.apache.commons.collections,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
@@ -28,10 +29,10 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.gardena,
- org.openhab.binding.gardena.handler
+ org.openhab.binding.gardena.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.gardena,
  org.openhab.binding.gardena.handler

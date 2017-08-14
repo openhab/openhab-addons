@@ -21,6 +21,7 @@ Import-Package:
  org.apache.commons.lang,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
@@ -39,13 +40,13 @@ Import-Package:
  org.glassfish.jersey.media.sse,
  org.glassfish.jersey.server,
  org.glassfish.jersey.servlet.spi,
+ org.openhab.ui.cometvisu.php,
  org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.http,
  org.slf4j,
- org.xml.sax,
- org.openhab.ui.cometvisu.php
+ org.xml.sax
 Service-Component: OSGI-INF/*.xml
 Bundle-ClassPath: .,
  lib/rrd4j-2.2.jar,

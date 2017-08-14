@@ -16,6 +16,7 @@ Import-Package:
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
  org.apache.commons.logging,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
