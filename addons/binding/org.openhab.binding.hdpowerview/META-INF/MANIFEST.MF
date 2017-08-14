@@ -11,6 +11,7 @@ Import-Package:
  com.google.gson,
  javax.ws.rs.client;version="2.0.0",
  javax.ws.rs.core;version="2.0.1",
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

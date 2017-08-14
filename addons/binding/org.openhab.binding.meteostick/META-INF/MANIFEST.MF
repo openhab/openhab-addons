@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  gnu.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -15,9 +16,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.slf4j,
  org.openhab.binding.meteostick,
- org.openhab.binding.meteostick.handler
+ org.openhab.binding.meteostick.handler,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.meteostick,
  org.openhab.binding.meteostick.handler

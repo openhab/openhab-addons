@@ -12,6 +12,7 @@ Bundle-ClassPath: .,
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,

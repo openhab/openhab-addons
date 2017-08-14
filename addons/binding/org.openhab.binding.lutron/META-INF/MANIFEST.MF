@@ -12,6 +12,7 @@ Import-Package:
  org.apache.commons.lang,
  org.apache.commons.net,
  org.apache.commons.net.telnet,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.xml.util,
@@ -22,10 +23,10 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.lutron,
- org.openhab.binding.lutron.handler
+ org.openhab.binding.lutron.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.lutron,
  org.openhab.binding.lutron.handler
