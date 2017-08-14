@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.homematic.converter.type;
 
-import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
-
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -18,6 +16,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.type.MetadataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
             return convertToBinding(type, dp);
         } else if (command.getClass() == UpDownType.class) {
             int result = command.equals(UpDownType.UP) ? 100 : 0;
-            if (isRollerShutter(dp)) {
+            if (MetadataUtils.isRollerShutter(dp)) {
                 result = command.equals(UpDownType.UP) ? 0 : 100;
             }
             return convertToBinding(new PercentType(result), dp);
@@ -73,7 +72,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
     protected Object toBinding(PercentType type, HmDatapoint dp) throws ConverterException {
         Double number = (type.doubleValue() / 100) * dp.getMaxValue().doubleValue();
 
-        if (isRollerShutter(dp)) {
+        if (MetadataUtils.isRollerShutter(dp)) {
             number = dp.getMaxValue().doubleValue() - number;
         }
         if (number < 0.0 || number > 100.0) {
@@ -103,17 +102,9 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
         Double number = ((Number) dp.getValue()).doubleValue();
         int percent = (int) ((100 / dp.getMaxValue().doubleValue()) * number);
 
-        if (isRollerShutter(dp)) {
+        if (MetadataUtils.isRollerShutter(dp)) {
             percent = 100 - percent;
         }
         return new PercentType(percent);
-    }
-
-    /**
-     * Returns true, if the device of the datapoint is a rollershutter.
-     */
-    private boolean isRollerShutter(HmDatapoint dp) {
-        return dp.getChannel().getType().equals(CHANNEL_TYPE_BLIND)
-                || dp.getChannel().getType().equals(CHANNEL_TYPE_JALOUSIE);
     }
 }
