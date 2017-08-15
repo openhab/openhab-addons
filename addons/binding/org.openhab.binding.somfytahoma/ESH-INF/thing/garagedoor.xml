@@ -3,29 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="rollershutter">
+	<thing-type id="garagedoor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
         </supported-bridge-type-refs>
-		<label>Somfy Roller Shutter</label>
+		<label>Somfy Garage Door</label>
 		<channels>
 			<channel id="position" typeId="position"></channel>
 			<channel id="control" typeId="control"></channel>
 		</channels>
 	<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
-
-	<channel-type id="position">
-		<item-type>Dimmer</item-type>
-		<label>Somfy Device Position</label>
-		<description>Position of the device (only for IO devices)</description>
-		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="control">
-		<item-type>Rollershutter</item-type>
-		<label>Somfy Device Control</label>
-		<description>Device control (UP, DOWN, MY/STOP)</description>
-		<state readOnly="false"></state>
-	</channel-type>
 
 </thing:thing-descriptions>

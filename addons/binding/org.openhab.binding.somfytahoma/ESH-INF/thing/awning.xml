@@ -15,17 +15,4 @@
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 
-	<channel-type id="position">
-		<item-type>Dimmer</item-type>
-		<label>Somfy Awning Position</label>
-		<description>Position of the awning (only for IO devices)</description>
-		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="control">
-		<item-type>Rollershutter</item-type>
-		<label>Somfy Awning Control</label>
-		<description>Awning control (UP, DOWN, MY/STOP)</description>
-        <state readOnly="false"></state>
-    </channel-type>
-
 </thing:thing-descriptions>

@@ -27,8 +27,14 @@ public class SomfyTahomaBindingConstants {
     // Gateway
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
-    // Rollershutter
+    // Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
+
+    // Exterior Screen
+    public static final ThingTypeUID THING_TYPE_EXTERIORSCREEN = new ThingTypeUID(BINDING_ID, "exteriorscreen");
+
+    // Garage Door
+    public static final ThingTypeUID THING_TYPE_GARAGEDOOR = new ThingTypeUID(BINDING_ID, "garagedoor");
 
     // Awning
     public static final ThingTypeUID THING_TYPE_AWNING = new ThingTypeUID(BINDING_ID, "awning");
@@ -43,7 +49,7 @@ public class SomfyTahomaBindingConstants {
     // Gateway
     public static final String VERSION = "version";
 
-    // Roller shutter
+    // Roller shutter, Awning, Exterior screen, Garage door
     public static final String POSITION = "position";
     public static final String CONTROL = "control";
 

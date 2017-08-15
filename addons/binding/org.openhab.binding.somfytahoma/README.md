@@ -8,6 +8,8 @@ Currently supports these things
 - bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
 - gateways (Somfy Tahoma gateway - getting firmware version)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
+- exterior screens (UP, DOWN, STOP control of an exterior screen). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
+- garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
 - action groups (can execute predefined Tahoma action - groups of steps, e.g. send to all roller shutters DOWN command, one by one)
@@ -39,13 +41,13 @@ A bridge does not expose any channel.
 Gateways expose this read only channel:
 - version (this is a firmware version of your Tahoma gateway)
 
-Roller shutters and awnings expose these channels:
-- position (a percentual position of the roller shutter, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
-- control (a rollershutter controller which reacts to commands UP/DOWN/STOP)
+Roller shutters, exterior screens, garage doors and awnings expose these channels:
+- position (a percentual position of the device, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
+- control (a device controller which reacts to commands UP/DOWN/STOP)
 
 When STOP command received two possible behaviours are possible
-- when the roller shutter is idle then MY command is interpreted (the roller shutter/awning goes to your favourite position)
-- when the roller shutter is moving then STOP command is interpreted (the roller shutter/awning stops)
+- when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
+- when the roller shutter is moving then STOP command is interpreted (the roller shutter/exterior screen/awning stops)
 
 An action group thing has this channel:
 - trigger (a switch which reacts to ON command and triggers the predefined Tahoma action)
@@ -69,6 +71,8 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
     Thing onoff 095d6c49-9712-4220-a4c3-d3bb7a6cc5f0 "Zwave switch" [ url="zwave://0204-4519-8041/5" ]
 }
 ```
+Awnings, garage doors and exterior screens have the same notation as roller shutters. Just use "awning", "garagedoor" or "exteriorscreen" instead of "rolleshutter" in thing definition. 
+
 .items file
 ```
 String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }

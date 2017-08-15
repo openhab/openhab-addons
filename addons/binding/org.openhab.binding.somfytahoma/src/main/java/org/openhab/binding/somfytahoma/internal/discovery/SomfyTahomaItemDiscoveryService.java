@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
+        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_EXTERIORSCREEN, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
     }
 
     @Override
@@ -61,46 +61,40 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         bridge.startDiscovery();
     }
 
-    public void rollershutterDiscovered(String label, String deviceURL, String oid) {
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put("url", deviceURL);
+    public void rollerShutterDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ROLLERSHUTTER);
+    }
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_ROLLERSHUTTER, bridge.getThing().getUID(), oid);
+    public void exteriorScreenDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_EXTERIORSCREEN);
+    }
 
-        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
-            logger.debug("Detected a rollershutter - label: {} oid: {}", label, oid);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_ROLLERSHUTTER).withProperties(properties)
-                            .withRepresentationProperty("url").withLabel(label)
-                            .withBridge(bridge.getThing().getUID()).build());
-        }
+    public void garageDoorDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_GARAGEDOOR);
     }
 
     public void awningDiscovered(String label, String deviceURL, String oid) {
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put("url", deviceURL);
-
-        ThingUID thingUID = new ThingUID(THING_TYPE_AWNING, bridge.getThing().getUID(), oid);
-
-        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
-            logger.debug("Detected an awning - label: {} oid: {}", label, oid);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_AWNING).withProperties(properties)
-                            .withRepresentationProperty("url").withLabel(label)
-                            .withBridge(bridge.getThing().getUID()).build());
-        }
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_AWNING);
     }
 
     public void onOffDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ONOFF);
+    }
+
+    public void actionGroupDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP);
+    }
+
+    private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID) {
         Map<String, Object> properties = new HashMap<>(1);
         properties.put("url", deviceURL);
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_ONOFF, bridge.getThing().getUID(), oid);
+        ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
 
         if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
-            logger.debug("Detected an on/off switch - label: {} oid: {}", label, oid);
+            logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
             thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_ONOFF).withProperties(properties)
+                    DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
                             .withRepresentationProperty("url").withLabel(label)
                             .withBridge(bridge.getThing().getUID()).build());
         }
@@ -120,20 +114,4 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                             .withBridge(bridge.getThing().getUID()).build());
         }
     }
-
-    public void actionGroupDiscovered(String label, String deviceURL, String oid) {
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put("url", deviceURL);
-
-        ThingUID thingUID = new ThingUID(THING_TYPE_ACTIONGROUP, bridge.getThing().getUID(), oid);
-
-        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
-            logger.debug("Detected an action group - label: {} oid: {}", label, oid);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_ACTIONGROUP).withProperties(properties)
-                            .withRepresentationProperty("url").withLabel(label)
-                            .withBridge(bridge.getThing().getUID()).build());
-        }
-    }
-
 }

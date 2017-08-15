@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.somfytahoma.model;
 
-import java.util.ArrayList;
-
 /**
  * The {@link SomfyTahomaDevice} holds information about a device bound
  * to TahomaLink account.
+ *
  * @author Ondrej Pecta - Initial contribution
  */
 public class SomfyTahomaDevice {
@@ -34,6 +33,18 @@ public class SomfyTahomaDevice {
         return uiClass.equals("OnOff");
     }
 
+    public boolean isExteriorScreen() {
+        return uiClass.equals("ExteriorScreen");
+    }
+
+    public boolean isGarageDoor()  {
+        return uiClass.equals("GarageDoor");
+    }
+
+    public boolean isKnownUnsupported() {
+        return uiClass.equals("Alarm") || uiClass.equals("Pod");
+    }
+
     public String getLabel() {
         return label;
     }
@@ -44,5 +55,9 @@ public class SomfyTahomaDevice {
 
     public String getOid() {
         return oid;
+    }
+
+    public String getUiClass() {
+        return uiClass;
     }
 }

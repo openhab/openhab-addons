@@ -31,9 +31,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -247,13 +245,27 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             SomfyTahomaSetup setup = data.getSetup();
             for (SomfyTahomaDevice device : setup.getDevices()) {
                 if (device.isRollerShutter()) {
-                    discoveryService.rollershutterDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    discoveryService.rollerShutterDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
                 }
                 if (device.isAwning()) {
                     discoveryService.awningDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
                 }
                 if (device.isOnOff()) {
                     discoveryService.onOffDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isExteriorScreen()) {
+                    discoveryService.exteriorScreenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isGarageDoor()) {
+                    discoveryService.garageDoorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (!device.isKnownUnsupported()) {
+                    logger.warn("Detected a new unsupported device: {}", device.getUiClass());
                 }
             }
             for (SomfyTahomaGateway gateway : setup.getGateways()) {
