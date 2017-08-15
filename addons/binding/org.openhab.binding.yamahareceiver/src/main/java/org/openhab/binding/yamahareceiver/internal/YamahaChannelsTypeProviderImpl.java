@@ -19,12 +19,14 @@ import java.util.Map.Entry;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.handler.YamahaZoneThingHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff
  */
+@Component(service = { ChannelTypeProvider.class, YamahaChannelsTypeProvider.class })
 public class YamahaChannelsTypeProviderImpl implements YamahaChannelsTypeProvider {
     private Logger logger = LoggerFactory.getLogger(YamahaZoneThingHandler.class);
 
@@ -45,41 +48,26 @@ public class YamahaChannelsTypeProviderImpl implements YamahaChannelsTypeProvide
             YamahaReceiverBindingConstants.BINDING_ID,
             YamahaReceiverBindingConstants.CHANNEL_PLAYBACK_PRESET_TYPE_NAMED);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<ChannelType> getChannelTypes(Locale locale) {
         return channelTypes.values();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ChannelType getChannelType(ChannelTypeUID channelTypeUID, Locale locale) {
         return channelTypes.get(channelTypeUID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, Locale locale) {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<ChannelGroupType> getChannelGroupTypes(Locale locale) {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init() {
         if (xmlInputType == null) {
