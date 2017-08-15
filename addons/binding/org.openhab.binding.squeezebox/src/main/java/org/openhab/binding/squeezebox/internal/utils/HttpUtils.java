@@ -29,11 +29,12 @@ import com.google.gson.JsonParser;
  *
  * @author Dan Cunningham
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
+ * @author Mark Hilbush - Add support for LMS authentication
  */
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static int TIMEOUT = 5000;
+    private static final int TIMEOUT = 5000;
     private static HttpClient client = new HttpClient();
     /**
      * JSON request to get the CLI port from a Squeeze Server
@@ -47,7 +48,7 @@ public class HttpUtils {
      * @param timeout
      * @return
      */
-    public static String post(String url, String postData) throws Exception {
+    public static String post(String url, String postData) throws Exception, SqueezeBoxNotAuthorizedException {
         if (!client.isStarted()) {
             client.start();
         }
@@ -61,9 +62,15 @@ public class HttpUtils {
 
         int statusCode = response.getStatus();
 
+        if (statusCode == HttpStatus.UNAUTHORIZED_401) {
+            String statusLine = response.getStatus() + " " + response.getReason();
+            logger.error("Received '{}' from squeeze server", statusLine);
+            throw new SqueezeBoxNotAuthorizedException("Unauthorized: " + statusLine);
+        }
+
         if (statusCode != HttpStatus.OK_200) {
             String statusLine = response.getStatus() + " " + response.getReason();
-            logger.error("Method failed: {}", statusLine);
+            logger.error("HTTP POST method failed: {}", statusLine);
             throw new Exception("Method failed: " + statusLine);
         }
 

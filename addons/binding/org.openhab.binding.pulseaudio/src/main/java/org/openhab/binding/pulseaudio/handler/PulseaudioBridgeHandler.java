@@ -118,7 +118,6 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Pulseaudio handler.");
         Configuration conf = this.getConfig();
-        super.initialize();
 
         if (conf.get(BRIDGE_PARAMETER_HOST) != null) {
             this.host = String.valueOf(conf.get(BRIDGE_PARAMETER_HOST));

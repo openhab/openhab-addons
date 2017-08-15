@@ -139,15 +139,15 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     @Override
     public String toString() {
         String str = super.toString();
-        str += ", - Sub type = " + subType;
-        str += ", - Id = " + sensorId;
-        str += ", - Temperature = " + temperature;
-        str += ", - Humidity = " + humidity;
-        str += ", - Humidity status = " + humidityStatus;
-        str += ", - Pressure = " + pressure;
-        str += ", - Forecast = " + forecastStatus;
-        str += ", - Signal level = " + signalLevel;
-        str += ", - Battery level = " + batteryLevel;
+        str += ", Sub type = " + subType;
+        str += ", Device Id = " + sensorId;
+        str += ", Temperature = " + temperature;
+        str += ", Humidity = " + humidity;
+        str += ", Humidity status = " + humidityStatus;
+        str += ", Pressure = " + pressure;
+        str += ", Forecast = " + forecastStatus;
+        str += ", Signal level = " + signalLevel;
+        str += ", Battery level = " + batteryLevel;
 
         return str;
     }

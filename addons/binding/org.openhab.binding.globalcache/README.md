@@ -127,6 +127,7 @@ String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex
 ```
 
 ## Serial (SL) Channel
+
 An *SL channel* sends serial command strings out the serial connector on the device.  
 
 For example, the following item links to the module 1 connector 1 channel on a GC-100-6 device.
@@ -138,7 +139,7 @@ String RS232ME      "My RS232-controlled Device"   { channel="globalcache:gc100_
 Serial commands strings are contained in a MAP file contained within the conf/transform directory. Serial command strings can contain URL-encoded characters in order to represent special characters such as spaces, tabs, carriage returns, line feeds, etc.  See example below.
 
 
-## Serial Direct (SL) Channel
+## Serial (SL) Direct Channel
 
 The Serial Direct channel type enables serial commands to be sent directly to the device without attempting to map the command using the transformation service.  This is useful in rules where the serial command might be constructed "on the fly" in the body of the rule.
 
@@ -146,6 +147,28 @@ For example, the following item links to the module 1 connector 1 channel on an 
 
 ```
 String RUSSCAA66    "Russound CAA66"   { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
+```
+
+## Serial (SL) Receive Channel
+
+The Serial Receive channel receives feedback from the device connected to the GlobalCache's serial port.  You enable 
+this functionality by setting the **Enable Two Way** switch to ON in the thing configuration. In addition, you must 
+set the **End-of-Message Delimiter** in the thing configuration.  The End-of-Message can be a single character, 
+or a sequence of characters.  Use URL encoding for non-printable characters.
+
+For example, the following item links to the receive channel on module 1 connector 1 on a GC-100.  A rule that looks for 
+updates on this item will be able to process messages sent from the device connected to the GlobalCache's serial port. 
+
+```
+String RUSSCAA66_Receive    "Russound CAA66 Receive"   { channel="globalcache:gc100_06:000C1EFFF039:sl-m1#c1-receive" }
+```
+
+Here are some examples of common **End-ofMessage** delimiters.
+
+```
+%0D%0A      Carriage return / Line feed
+%0D         Carriage return
+%F7         Russound RNET message terminator
 ```
 
 ## Example Configuration

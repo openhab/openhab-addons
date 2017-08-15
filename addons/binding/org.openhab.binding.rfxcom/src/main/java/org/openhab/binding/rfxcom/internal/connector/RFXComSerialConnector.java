@@ -9,7 +9,6 @@
 package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
@@ -37,7 +36,6 @@ import gnu.io.UnsupportedCommOperationException;
 public class RFXComSerialConnector extends RFXComBaseConnector implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComSerialConnector.class);
 
-    private InputStream in;
     private OutputStream out;
     private SerialPort serialPort;
 
@@ -72,7 +70,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         } catch (TooManyListenersException e) {
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 
@@ -90,7 +88,8 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             readerThread.interrupt();
             try {
                 readerThread.join();
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -117,6 +116,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
+        if (out == null) {
+            throw new IOException("Not connected sending messages is not possible");
+        }
+
         logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
         out.write(data);
         out.flush();

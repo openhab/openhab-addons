@@ -82,7 +82,7 @@ public class HVACHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initialising CoolMasterNet HVAC handler...");
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         controller = (ControllerHandler) getBridge().getHandler();
     }
 

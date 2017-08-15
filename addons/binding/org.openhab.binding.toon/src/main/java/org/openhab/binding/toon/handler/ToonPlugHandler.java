@@ -113,4 +113,9 @@ public class ToonPlugHandler extends AbstractToonHandler {
         }
     }
 
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
 }

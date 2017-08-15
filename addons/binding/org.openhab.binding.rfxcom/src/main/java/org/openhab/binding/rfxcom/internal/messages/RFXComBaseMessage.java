@@ -131,12 +131,12 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     @Override
     public String toString() {
-        String str = "";
+        String str;
 
         if (rawMessage == null) {
-            str += "Raw data = unknown";
+            str = "Raw data = unknown";
         } else {
-            str += "Raw data = " + DatatypeConverter.printHexBinary(rawMessage);
+            str = "Raw data = " + DatatypeConverter.printHexBinary(rawMessage);
         }
 
         str += ", Packet type = " + packetType;

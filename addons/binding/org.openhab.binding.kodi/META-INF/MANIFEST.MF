@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Kodi Binding
 Bundle-SymbolicName: org.openhab.binding.kodi;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
@@ -11,6 +11,7 @@ Import-Package:
  com.google.common.collect,
  com.google.gson,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.websocket.api,
  org.eclipse.jetty.websocket.api.annotations,

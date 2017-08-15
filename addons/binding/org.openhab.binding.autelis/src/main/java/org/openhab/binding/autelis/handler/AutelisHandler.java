@@ -157,7 +157,6 @@ public class AutelisHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         configure();
     }
 

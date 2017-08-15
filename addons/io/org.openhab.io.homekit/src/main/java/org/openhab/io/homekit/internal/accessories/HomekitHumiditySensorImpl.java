@@ -19,7 +19,11 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.HumiditySensor;
 
-public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<NumberItem>implements HumiditySensor {
+/**
+ *
+ * @author Andy Lintner - Initial implementation
+ */
+public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<NumberItem> implements HumiditySensor {
 
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {

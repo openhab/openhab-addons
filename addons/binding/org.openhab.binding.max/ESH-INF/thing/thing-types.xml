@@ -13,7 +13,7 @@
 
 		<channels>
 			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="battery" />
+			<channel id="battery_low" typeId="system.low-battery" />
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -140,7 +140,7 @@
 
 		<channels>
 			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="battery" />
+			<channel id="battery_low" typeId="system.low-battery" />
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -267,7 +267,7 @@
 
 		<channels>
 			<channel id="valve" typeId="valve" />
-			<channel id="battery_low" typeId="battery" />
+			<channel id="battery_low" typeId="system.low-battery" />
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -336,7 +336,7 @@
 		<description>This is a MAX! EcoSwitch</description>
 
 		<channels>
-			<channel id="battery_low" typeId="battery" />
+			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
 		<config-description>
@@ -392,7 +392,7 @@
 
 		<channels>
 			<channel id="contact_state" typeId="contact_state" />
-			<channel id="battery_low" typeId="battery" />
+			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
 		<config-description>
@@ -455,14 +455,6 @@
 		<description>Thermostat Valve Position</description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
-	</channel-type>
-
-	<channel-type id="battery">
-		<item-type>Switch</item-type>
-		<label>Battery Level Low</label>
-		<description>Battery charge Level</description>
-		<category>Battery</category>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="mode">

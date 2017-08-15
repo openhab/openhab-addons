@@ -95,9 +95,9 @@ public class AvmFritzConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("IP", this.getIpAddress()).append("port", this.getPort())
-                .append("proto", this.getProtocol()).append("user", this.getUser())
-                .append("password", this.getPassword()).append("pollingInterval", this.getPollingInterval())
-                .append("asyncTimeout", this.getAsyncTimeout()).append("syncTimeout", this.getSyncTimeout()).toString();
+        return new ToStringBuilder(this).append("IP", getIpAddress()).append("port", getPort())
+                .append("proto", getProtocol()).append("user", getUser())
+                .append("password", getPassword()).append("pollingInterval", getPollingInterval())
+                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }
 }

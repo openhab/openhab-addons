@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ImperiHome Integration Service
 Bundle-SymbolicName: org.openhab.io.imperihome;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.common.base,
@@ -12,6 +12,7 @@ Import-Package: com.google.common.base,
  javax.servlet.http,
  org.apache.commons.io,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,

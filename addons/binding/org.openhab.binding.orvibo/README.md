@@ -29,6 +29,7 @@ Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 ## Channels
 
 ### S20:
+
 |Channel | Description | Example  |
 |------- | -------- | ---- |
 |power	 | Current power state of switch | orvibo:s20:mysocket:power |

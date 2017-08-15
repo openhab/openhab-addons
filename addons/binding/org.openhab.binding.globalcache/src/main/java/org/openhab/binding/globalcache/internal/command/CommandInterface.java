@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.globalcache.internal.command;
 
-/*
+/**
  * The {@link CommandInterface} interface class defines the methods that all command classes must implement.
  *
  * @author Mark Hilbush - Initial contribution

@@ -51,7 +51,7 @@ public class PioneerAvrBindingConstants {
     public static final String DISPLAY_INFORMATION_CHANNEL = "displayInformation#displayInformation";
 
     public static final String GROUP_CHANNEL_PATTERN = "zone%s#%s";
-    public static final Pattern GROUP_CHANNEL_ZONE_PATTERN = Pattern.compile("zone([0-1])#.*");
+    public static final Pattern GROUP_CHANNEL_ZONE_PATTERN = Pattern.compile("zone([0-3])#.*");
 
     // Used for Discovery service
     public static final String MANUFACTURER = "PIONEER";

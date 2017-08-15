@@ -71,12 +71,12 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     }
 
     private Boolean convertState(Object value) {
-        if (value == null) {
+        if (!(value instanceof Integer)) {
             return null;
         }
-        if ("CLOSED".equals(value)) {
+        if ((int) value == 0) {
             return true;
-        } else if ("OPEN".equals(value)) {
+        } else if ((int) value == 1) {
             return false;
         } else {
             return null;

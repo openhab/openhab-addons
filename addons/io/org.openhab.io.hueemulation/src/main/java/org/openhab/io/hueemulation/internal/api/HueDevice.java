@@ -27,11 +27,11 @@ public class HueDevice {
     public String swversion = "66009461";
     public Map<String, String> pointsymbol;
 
-    public HueDevice(HueState state, String name, String uniqueid) {
+    public HueDevice(HueState state, String name, Integer uniqueid) {
         super();
         this.state = state;
         this.name = name;
-        this.uniqueid = uniqueid;
+        this.uniqueid = uniqueid.toString();
         this.pointsymbol = new HashMap<String, String>();
         for (int i = 1; i < 9; i++) {
             this.pointsymbol.put(String.valueOf(i), "none");

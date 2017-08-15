@@ -42,7 +42,7 @@ The following configuration options are available for the Kodi binding:
 | `callbackUrl` | Callback URL | URL to use for playing notification sounds, e.g. `http://192.168.0.2:8080` | no |
 
 
-## Thing Configuration
+### Thing Configuration
 
 The Kodi thing requires the IP address of the device hosting your Kodi media center instance and the TCP port to access it on (default: `9090`).
 These parameters will be found by the auto-discovery feature.
@@ -57,22 +57,40 @@ kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
 
 The Kodi thing supports the following channels:
 
-| Channel Type ID         | Item Type    | Description  |
-|-------------------------|--------------|--------------|
-| mute                    | Switch       | Mute/unmute your playback |
-| volume                  | Dimmer       | Read or control the volume of your playback |
-| control                 | Player       | Control the Kodi player, e.g.  `PLAY`, `PAUSE`, `NEXT`, `PREVIOUS`, `FASTFORWARD`, `REWIND` |
-| stop                    | Switch       | Write `ON` to this channel: Stops the Kodi player. If this channel is `ON`, the player is stopped, otherwise kodi is in another state (see control channel) |
-| title                   | String       | Title of the currently played song/movie/tv episode |
-| showtitle               | String       | Title of the currently played tv-show; empty for other types |
-| album                   | String       | Album name of the currently played song |
-| artist                  | String       | Artist name of the currently played song or director of the currently played movie|
-| playuri                 | String       | Plays the file with the provided URI |
-| shownotification        | String       | Shows the provided notification message on the screen |
-| input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
-| inputtext               | String       | This channel emulates a keyboard input |
-| systemcommand           | String       | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi |
-| mediatype               | String       | The media type of the current file. e.g. song or movie | 
+| Channel Type ID  | Item Type | Description                                                                                                                                                                                  |
+|------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| mute             | Switch    | Mute/unmute your playback                                                                                                                                                                    |
+| volume           | Dimmer    | Read or control the volume of your playback                                                                                                                                                  |
+| control          | Player    | Control the Kodi player, e.g.  `PLAY`, `PAUSE`, `NEXT`, `PREVIOUS`, `FASTFORWARD`, `REWIND`                                                                                                  |
+| stop             | Switch    | Write `ON` to this channel: Stops the Kodi player. If this channel is `ON`, the player is stopped, otherwise kodi is in another state (see control channel)                                  |
+| title            | String    | Title of the currently played song/movie/tv episode                                                                                                                                          |
+| showtitle        | String    | Title of the currently played tv-show; empty for other types                                                                                                                                 |
+| album            | String    | Album name of the currently played song                                                                                                                                                      |
+| artist           | String    | Artist name of the currently played song or director of the currently played movie                                                                                                           |
+| playuri          | String    | Plays the file with the provided URI                                                                                                                                                         |
+| pvr-open-tv      | String    | Opens the PVR TV channel with the provided name                                                                                                                                              |
+| pvr-open-radio   | String    | Opens the PVR Radio channel with the provided name                                                                                                                                           |
+| pvr-channel      | String    | Title of the currently played PVR channel                                                                                                                                                    |
+| shownotification | String    | Shows the provided notification message on the screen                                                                                                                                        |
+| input            | String    | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowOSD`, `ShowPlayerProcessInfo`, `SendText` and `ExecuteAction` |
+| inputtext        | String    | This channel emulates a keyboard input                                                                                                                                                       |
+| systemcommand    | String    | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi                                                                                                    |
+| mediatype        | String    | The media type of the current file. Valid return values are: `unknown`, `channel`, `episode`, `movie`, `musicvideo`, `picture`, `radio`, `song`, `video`                                     |
+
+### Channel Configuration
+
+**group** The PVR channels can be put into user-defined PVR channel groups. There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle"). You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-radio` channels properly. You can optionally configure an user-defined PVR channel group.
+
+A manual setup through a `things/kodi.things` file could look like this:
+
+```
+kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"] {
+    Channels:
+        Type pvropentv : pvr-open-tv [
+            group="All channels"
+        ]
+}
+```
 
 ## Item Configuration
 
@@ -87,8 +105,11 @@ String myKodi_title         "Title [%s]"            { channel="kodi:kodi:myKodi:
 String myKodi_showtitle     "Show title [%s]"       { channel="kodi:kodi:myKodi:showtitle" }
 String myKodi_album         "Album [%s]"            { channel="kodi:kodi:myKodi:album" }
 String myKodi_artist        "Artist [%s]"           { channel="kodi:kodi:myKodi:artist" }
-String myKodi_playuri       "PlayerURI [%s]"        { channel="kodi:kodi:myKodi:playuri" }
-String myKodi_notification  "Notification [%s]"     { channel="kodi:kodi:myKodi:shownotification" }
+String myKodi_playuri       "PlayerURI"             { channel="kodi:kodi:myKodi:playuri" }
+String myKodi_pvropentv     "PVR TV channel"        { channel="kodi:kodi:myKodi:pvr-open-tv" }
+String myKodi_pvropenradio  "PVR Radio channel"     { channel="kodi:kodi:myKodi:pvr-open-radio" }
+String myKodi_pvrchannel    "PVR channel [%s]"      { channel="kodi:kodi:myKodi:pvr-channel" }
+String myKodi_notification  "Notification"          { channel="kodi:kodi:myKodi:shownotification" }
 String myKodi_input         "Input"                 { channel="kodi:kodi:myKodi:input" }
 String myKodi_inputtext     "Inputtext"             { channel="kodi:kodi:myKodi:inputtext" }
 String myKodi_systemcommand "Systemcommand"         { channel="kodi:kodi:myKodi:systemcommand" }
@@ -112,8 +133,10 @@ sitemap demo label="myKodi"
         Text      item=myKodi_showtitle
         Text      item=myKodi_album
         Text      item=myKodi_artist
-        Text      item=myKodi_playuri
-        Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info', ShowCodec='ShowCodec', ShowOSD='ShowOSD']
+        Selection item=myKodi_pvropentv mappings=[Add your PVR TV channels here ...]
+        Selection item=myKodi_pvropenchannel mappings=[Add your PVR radio channels here ...]
+        Text      item=myKodi_pvrchannel
+        Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info']
         Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
         Text      item=myKodi_mediatype
     }

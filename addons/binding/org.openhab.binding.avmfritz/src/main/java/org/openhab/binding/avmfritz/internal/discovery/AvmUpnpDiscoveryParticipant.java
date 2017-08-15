@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * {@link UpnpDiscoveryService}.
  *
  * @author Robert Bausdorf - Initial contribution
+ * 
  */
 public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     /**

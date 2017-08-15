@@ -18,7 +18,8 @@ In the thing file, this looks e.g. like
 ```
 Thing keba:kecontactp20:1 [ ipAddress="192.168.0.64", refreshInterval=30 ]
 ```
-the refreshInterval can optinally be used in combination with ```autoupdate="false"``` in the .items file so that the Items are updated with the latest actual value sent by the charging station
+
+the refreshInterval can optionally be used in combination with ```autoupdate="false"``` in the .items file so that the Items are updated with the latest actual value sent by the charging station
 
 ## Channels
 

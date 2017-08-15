@@ -10,11 +10,15 @@ package org.openhab.binding.pioneeravr.protocol.utils;
 
 import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
 
+/**
+ *
+ * @author Antoine Besnard - Initial contribution
+ */
 public class DisplayInformationConverter {
 
     /**
      * Convert an IpControl information message payload to a readable String.
-     * 
+     *
      * @param responsePayload
      * @return
      * @throws AvrConnectionException
