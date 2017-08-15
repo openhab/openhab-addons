@@ -16,13 +16,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link YamahaReceiver2Binding} class defines common constants, which are
+ * The {@link YamahaReceiverBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author David Graeff <david.graeff@web.de>
  */
 public class YamahaReceiverBindingConstants {
-
     public static final String BINDING_ID = "yamahareceiver";
 
     // List of all Thing Type UIDs
@@ -78,18 +77,47 @@ public class YamahaReceiverBindingConstants {
             CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG);
 
     public static final String UPNP_TYPE = "MediaRenderer";
-
-    public static final CharSequence UPNP_MANUFACTURER = "YAMAHA";
+    public static final String UPNP_MANUFACTURER = "YAMAHA";
 
     public static final String CONFIG_REFRESH = "REFRESH_IN_SEC";
     public static final String CONFIG_HOST_NAME = "HOST";
+    public static final String CONFIG_HOST_PORT = "PORT";
     public static final String CONFIG_ZONE = "ZONE";
     public static final String CONFIG_RELVOLUMECHANGE = "RELVOLUMECHANGE";
 
     public static final String PROPERTY_VERSION = "version";
     public static final String PROPERTY_ASSIGNED_NAME = "assigned_name";
+    public static final String PROPERTY_MENU_ERROR = "menu_error";
+    public static final String PROPERTY_LAST_PARSE_ERROR = "last_parse_error";
 
     public static final String CHANNEL_GROUP_PLAYBACK = "playback_channels";
     public static final String CHANNEL_GROUP_NAVIGATION = "navigation_channels";
     public static final String CHANNEL_GROUP_ZONE = "zone_channels";
+
+    /**
+     * The names of this enum are part of the protocols!
+     * Receivers have different capabilities, some have 2 zones, some up to 4.
+     * Every receiver has a "Main_Zone".
+     */
+    public enum Zone {
+        Main_Zone,
+        Zone_2,
+        Zone_3,
+        Zone_4;
+    }
+
+    /**
+     * The volume min and max is the same for all supported devices.
+     */
+    public static final int VOLUME_MIN = -80;
+
+    public static final int VOLUME_MAX = 12;
+
+    public static final int VOLUME_RANGE = -VOLUME_MIN + VOLUME_MAX;
+
+    /** Retry time in ms if no response for menu navigation */
+    public static final int MENU_RETRY_DELAY = 500;
+
+    /** Max menu waiting in ms */
+    public static final int MENU_MAX_WAITING_TIME = 5000;
 }
