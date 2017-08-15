@@ -14,13 +14,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.ThingTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * Provides all ThingTypes from all Homematic bridges.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(service = { HomematicThingTypeProvider.class, ThingTypeProvider.class }, immediate = true)
 public class HomematicThingTypeProviderImpl implements HomematicThingTypeProvider {
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<ThingTypeUID, ThingType>();
 
