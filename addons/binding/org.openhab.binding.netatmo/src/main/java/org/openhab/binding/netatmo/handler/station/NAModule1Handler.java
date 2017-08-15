@@ -37,12 +37,18 @@ public class NAModule1Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
-                case CHANNEL_PRESS_TREND:
-                    return new StringType(dashboardData.getPressureTrend());
                 case CHANNEL_TEMP_TREND:
                     return new StringType(dashboardData.getTempTrend());
                 case CHANNEL_TEMPERATURE:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
+                case CHANNEL_DATE_MIN_TEMP:
+                    return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMinTemp());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
+                case CHANNEL_MIN_TEMP:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
+                case CHANNEL_MAX_TEMP:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getMaxTemp());
                 case CHANNEL_HUMIDITY:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
                 case CHANNEL_TIMEUTC:

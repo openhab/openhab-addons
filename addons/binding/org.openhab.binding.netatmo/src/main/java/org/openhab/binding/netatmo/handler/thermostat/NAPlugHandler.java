@@ -8,9 +8,15 @@
  */
 package org.openhab.binding.netatmo.handler.thermostat;
 
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAPlugAdapter;
 
@@ -35,6 +41,21 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
             return new NAPlugAdapter(thermostatDataBody);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    protected State getNAThingProperty(String channelId) {
+        NAPlugAdapter plugAdapter = (NAPlugAdapter) device;
+        switch (channelId) {
+            case CHANNEL_CONNECTED_BOILER:
+                return plugAdapter.getConnectedBoiler() ? OnOffType.ON : OnOffType.OFF;
+            case CHANNEL_LAST_PLUG_SEEN:
+                return ChannelTypeUtils.toDateTimeType(plugAdapter.getLastPlugSeen());
+            case CHANNEL_LAST_BILAN:
+                return new DateTimeType(plugAdapter.getLastBilan());
+            default:
+                return super.getNAThingProperty(channelId);
         }
     }
 
