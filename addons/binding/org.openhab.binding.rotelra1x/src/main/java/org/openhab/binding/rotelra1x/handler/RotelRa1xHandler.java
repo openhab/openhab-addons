@@ -61,11 +61,11 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     public void initialize() {
         maximumVolume = ((BigDecimal) getThing().getConfiguration().get("maximum-volume")).intValue();
         exit = false;
+        // Seems we need to wait a bit after initialization for the channels to
+        // be ready to accept updates, so deferring input loop by 4 sec.
+        scheduler.schedule(this, 4, TimeUnit.SECONDS);
         try {
             connect();
-            // Seems we need to wait a bit after initialization for the channels to
-            // be ready to accept updates, so deferring input loop by 4 sec.
-            scheduler.schedule(this, 4, TimeUnit.SECONDS);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
