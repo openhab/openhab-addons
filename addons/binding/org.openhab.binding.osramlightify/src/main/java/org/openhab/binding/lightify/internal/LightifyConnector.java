@@ -306,10 +306,11 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                                     // to our requests. However since the protocol is undocumented we
                                     // cannot assume that will not change.
                                     if (LightifyMessage.getSeqNo(messageBuffer) != request.getSeqNo()) {
-                                        logger.warn("Sequence number mismatch. Please report this!");
+                                        logger.warn("Sequence number mismatch. Please report this! Got: ", DatatypeConverter.printHexBinary(messageBuffer.array()));
 
                                         // The best we can do is to disconnect and start over.
                                         disconnect();
+                                        continue;
                                     } else if (request.handleResponse(bridgeHandler, messageBuffer)) {
                                         backoff = INITIAL_BACKOFF;
                                         transmitQueue.sendNext();
