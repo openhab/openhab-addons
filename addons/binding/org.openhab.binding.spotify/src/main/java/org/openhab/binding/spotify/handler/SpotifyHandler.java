@@ -123,6 +123,11 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         String channel = channelUID.getId();
 
         switch (channel) {
+            case CHANNEL_DEVICEID:
+                if (command instanceof StringType) {
+                    spotifySession.transferPlay(((StringType) command).toString());
+                }
+                break;
             case CHANNEL_TRACKPLAY:
                 if (command instanceof StringType) {
                     spotifySession.playTrack(((StringType) command).toString());
