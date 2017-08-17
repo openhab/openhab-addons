@@ -32,6 +32,15 @@ public final class LightifySetColorMessage extends LightifyBaseMessage implement
     short unknown1;
     String deviceId;
 
+    public LightifySetColorMessage(String deviceAddress, int[] rgba) {
+        super(deviceAddress, Command.SET_COLOR);
+
+        r = (byte) (rgba[0] & 0xff);
+        g = (byte) (rgba[1] & 0xff);
+        b = (byte) (rgba[2] & 0xff);
+        a = (byte) (rgba[3] & 0xff);
+    }
+
     public LightifySetColorMessage(String deviceAddress, HSBType hsb) {
         super(deviceAddress, Command.SET_COLOR);
 

@@ -44,6 +44,7 @@ import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyGetProbedTemperatureMessage;
+import org.openhab.binding.osramlightify.internal.messages.LightifyListPairedDevicesMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetColorMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetLuminanceMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetSwitchMessage;
@@ -59,7 +60,10 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyDeviceHandler.class);
 
+    private String deviceAddress;
     private LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
+    private boolean stateValid = false;
+
     private LightifyDeviceConfiguration configuration = null;
 
     private double whiteTemperatureFactor;
@@ -70,11 +74,26 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        thingUpdated(getThing());
+        Thing thing = getThing();
+
+        // The IEEE address is constant.
+        deviceAddress = thing.getProperties().get(PROPERTY_IEEE_ADDRESS);
+
+        thingUpdated(thing);
 
         // N.B. We do not go online or offline here. We do that when we are seen in a
         // list paired/group response for a bridge.
         updateStatus(ThingStatus.UNKNOWN);
+
+        // If we are adding a discovered thing (i.e. one we have no probed capabilities
+        // for) we do an immediate poll to trigger probes and bring it online without
+        // undue delay.
+        if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
+        && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
+            LightifyBridgeHandler bridgeHandler = (LightifyBridgeHandler) getBridge().getHandler();
+
+            bridgeHandler.sendMessage(new LightifyListPairedDevicesMessage());
+        }
     }
 
     @Override
@@ -124,7 +143,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void setOnline() {
+    public boolean setOnline(LightifyBridgeHandler bridgeHandler) {
         Thing thing = getThing();
 
         // If we need to probe we'll do that now and leave the device offline. The next
@@ -135,9 +154,6 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         // the state polling.
         if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
         && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
-            LightifyBridgeHandler bridgeHandler = (LightifyBridgeHandler) getBridge().getHandler();
-            String deviceAddress = getThing().getProperties().get(PROPERTY_IEEE_ADDRESS);
-
             bridgeHandler.sendMessage(new LightifySetLuminanceMessage(deviceAddress, new PercentType(1)));
 
             bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, new DecimalType(0)));
@@ -146,20 +162,38 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
             bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, new DecimalType(65535)));
             bridgeHandler.sendMessage(new LightifyGetProbedTemperatureMessage(thing, deviceAddress, PROPERTY_MAXIMUM_WHITE_TEMPERATURE));
 
-            bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, lightifyDeviceState.getTemperature()));
-            bridgeHandler.sendMessage(new LightifySetColorMessage(deviceAddress, lightifyDeviceState.getColor()));
-            bridgeHandler.sendMessage(new LightifySetLuminanceMessage(deviceAddress, lightifyDeviceState.getLuminance()));
-            // We have no way of knowing if the light was initially in colour mode or white
-            // so we have no way to restore it. Therefore a probed light will be left off.
-            bridgeHandler.sendMessage(new LightifySetSwitchMessage(deviceAddress, OnOffType.OFF));
-
-            // Then rescan. Really this is just a repoll - we do not need discovery, we just
-            // want to try and bring the device online again A.S.A.P. In fact, what we are
+            // Re-poll to bring the device online again A.S.A.P. In fact, what we are
             // really saying is, bring the device online once all the above completes.
-            bridgeHandler.getDiscoveryService().startScan(null);
+            bridgeHandler.sendMessage(new LightifyListPairedDevicesMessage());
+
+            return false;
 
         } else {
+            // If we have a valid state it's either because we saw a transient and intended
+            // outage (e.g. firmware update) and want to restore the device to the state it
+            // was in a few moments ago or because we messed the device up by doing some
+            // probes and now need to restore the initial state.
+            if (lightifyDeviceState.isSaved()) {
+                // It may seem like we don't need to do both colour and temperature in each case
+                // as changing mode is done by simply writing the new value. However if we do
+                // not set both then the next poll will find a difference in state between what
+                // the device has and what we know it should have. That will cause us to become
+                // confused about what mode it is in and will generate bogus state updates on
+                // linked items.
+                if (lightifyDeviceState.getWhiteMode()) {
+                    bridgeHandler.sendMessage(new LightifySetColorMessage(deviceAddress, lightifyDeviceState.getRGBA()));
+                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, lightifyDeviceState.getTemperature()));
+                } else {
+                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, lightifyDeviceState.getTemperature()));
+                    bridgeHandler.sendMessage(new LightifySetColorMessage(deviceAddress, lightifyDeviceState.getRGBA()));
+                }
+
+                bridgeHandler.sendMessage(new LightifySetLuminanceMessage(deviceAddress, lightifyDeviceState.getLuminance()));
+                bridgeHandler.sendMessage(new LightifySetSwitchMessage(deviceAddress, lightifyDeviceState.getPower()));
+            }
+
             updateStatus(ThingStatus.ONLINE);
+            return true;
         }
     }
 
@@ -184,8 +218,6 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
-
-        String deviceAddress = getThing().getProperties().get(PROPERTY_IEEE_ADDRESS);
 
         if (command instanceof RefreshType) {
             // Ignored.

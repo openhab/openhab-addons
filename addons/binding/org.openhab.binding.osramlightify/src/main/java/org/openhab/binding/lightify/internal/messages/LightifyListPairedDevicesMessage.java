@@ -86,13 +86,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             data.getShort(); // deviceNumber
 
             String deviceAddress = decodeDeviceAddress(data);
-
-            ThingTypeUID thingTypeUID = DEVICE_TYPE_THING_TYPE_UID_MAP.get(data.get() & 0xff);
-            ThingUID thingUID = new ThingUID(thingTypeUID, deviceAddress.replace(":", "-"));
-
-            known.put(thingUID, seen);
-
-            Thing thing = bridgeHandler.getThingByUID(thingUID);
+            int deviceType = ((int) data.get() & 0xff);
 
             String firmwareVersion = decodeHex(data, 4);
             state.reachable = ((int) data.get() & 0xff);
@@ -108,21 +102,35 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             state.timeSinceSeen = data.getInt();
             state.joining = data.getInt();
 
-            logger.trace("{}: {}", deviceAddress, state);
+            logger.trace("{}: \"{}\" device type={}, firmware version={}, {}", deviceAddress, deviceName, deviceType, firmwareVersion, state);
 
-            if (thing != null && state.received(bridgeHandler, thing, deviceAddress)) {
-                changes = true;
-            }
+            ThingTypeUID thingTypeUID = DEVICE_TYPE_THING_TYPE_UID_MAP.get(deviceType);
 
-            if (thing != null) {
-                String currentFirmwareVersion = thing.getProperties().get(PROPERTY_FIRMWARE_VERSION);
+            // When pairing devices may appear in the list as generic devices and then be
+            // updated to their correct device type once the gateway has finished probing
+            // them. Other devices may be simply unsupported. In either case all we can
+            // do is ignore their very existence.
+            if (thingTypeUID != null) {
+                ThingUID thingUID = new ThingUID(thingTypeUID, deviceAddress.replace(":", "-"));
 
-                if (!firmwareVersion.equals(currentFirmwareVersion)) {
-                    thing.setProperty(PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+                known.put(thingUID, seen);
+
+                Thing thing = bridgeHandler.getThingByUID(thingUID);
+
+                if (thing != null && state.received(bridgeHandler, thing, deviceAddress)) {
+                    changes = true;
                 }
-            } else {
-                bridgeHandler.getDiscoveryService().discoveryResult(thingUID, thingTypeUID,
-                    deviceName, deviceAddress, firmwareVersion);
+
+                if (thing != null) {
+                    String currentFirmwareVersion = thing.getProperties().get(PROPERTY_FIRMWARE_VERSION);
+
+                    if (!firmwareVersion.equals(currentFirmwareVersion)) {
+                        thing.setProperty(PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+                    }
+                } else {
+                    bridgeHandler.getDiscoveryService().discoveryResult(thingUID, thingTypeUID,
+                        deviceName, deviceAddress, firmwareVersion);
+                }
             }
         }
 
@@ -137,8 +145,10 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             Thing thing = bridgeHandler.getThingByUID(thingUID);
 
             if (thing != null) {
-                LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
-                thingHandler.setStatus(ThingStatus.OFFLINE);
+                if (thing.getStatus() != ThingStatus.OFFLINE) {
+                    LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
+                    thingHandler.setStatus(ThingStatus.OFFLINE);
+                }
             } else {
                 bridgeHandler.getDiscoveryService().removeThing(thingUID);
             }

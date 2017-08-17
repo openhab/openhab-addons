@@ -13,10 +13,6 @@
 
 * Could we / should we attempt to maintain state for groups? We would have to merge each member item change into the group state.
 
-* When we add a thing we should request an immediate poll.
-  * But ONLY if we add it while running, NOT during openHAB start up.
-  * Actually it would be fine if we had a mechanism to collapse identical back-to-back messages in the TX queue.
-
 * When we remove a device should we remove any outstanding messages in the TX queue?
 
 * We do not really need to update the discovery inbox on _every_ poll. There is a lot of wasted cpu there.
@@ -31,5 +27,25 @@
 * Is it possible to have multiple outstanding requests if they are for different devices? If we have multiple connections?
 
 * Address the conflict issue noted in LightifyDeviceState by adding a config option to disable doing state updates for colour and temperature (and possibly luminance since it is tied to colour?). This means the item state is definitive and devices are assumed to just go along with it as best they can. It does, however, prevent tracking of changes made by external agents such as the Lightify app.
-  * When a thing goes online we need to look for linked items and command the device into a matching state.
-  * Q: how will we know whether we should be in colour or white mode?
+
+* Need a device option to say whether white mode is initially on or off?
+
+* Need a device option to say whether to restore last known state on device online or stay with whatever the power-on default is set to.
+
+* fullRefresh in LightifyDeviceState should set colour and temperature even if power is off so that linked items reflect the current values that will be in effect if the device is powered on. GUIs link to items...
+
+* State handling
+  * Device is added as a thing
+  * OpenHAB starts with device already on
+    * Uses current state, items refreshed
+  * Device power off, then on. Interval < 10mins (happens on firmware update too)
+    * Device comes up with reachable 0, existing state is saved, power up state is ignored, device is offline
+    * Reachable changes to 2, device is online, saved state is restored
+  * Device power off, then on. Interval > 10mins
+    * Offlined in openHAB after 10mins
+    * Powered on
+    * 20-30s later reachable seen as 2, power true, white mode is false but temperature and colour are unchanged
+    * Device is online, items are refreshed
+    * ~35s later a colour change to 255,255,255 is seen
+    * Uses device default state, items refreshed
+    * (Non-)issue: advertised state may not be correct for 20-30s, no way to tell mode. This seems to be just the way the gateway works. We cannot tell when the gateway has actual status other than power :-(

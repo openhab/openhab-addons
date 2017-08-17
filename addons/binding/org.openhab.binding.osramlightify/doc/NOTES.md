@@ -55,3 +55,9 @@
 
   * a gateway power cycle does not lose unknown1 above some threshold but below that it zeros them and sets reachable to 2.
     * this threshold is not currently known.
+
+* On firmware upgrade of a device the final step is for the device to reboot. When the reboot is initiated we receive a device state with reachable=0 and power=true (all else being as expected) - i.e. the device has powered up and become unreachable. Once the reboot is complete we receive reachable=2 with the rest of the state being the power on default.
+
+* PAR16 RGBW firmware 01020510 reports white range to be 1501K to 8000K, firmware 01020412 reported 2702K to 6622K. The only difference is light firmware, there is no bridge change. That suggests we are probing device capabilities as per ZLL but why has it changed? The quoted range for PAR16 RGBW is 2000K to 6500K and surely that is dependent on hardware? Perhaps the firmware is generic and Osram have lights with a wider range in the pipeline? Or some of the existing devices were firmware-crippled?
+
+* PAR16 RGBW firmware 01020510 causes lights to go offline and back online every 80-100 minutes or so due to the time since last seen becoming non-zero.

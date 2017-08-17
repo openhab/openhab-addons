@@ -61,6 +61,13 @@ The OSRAM Lightify gateway allows a transition time to be specified for every ch
 
 Different devices can have different white temperature ranges. The range possible for each device is probed when the device is added as a thing and stored in its properties. You can override the probed range by setting the minimum and maximum values either in the device config or the bridge config. The temperature range for the device is determined from the possible minimum and maximum values using the order of preference: device config, bridge config, device probed. This allows a common range to be set for some or all devices so that temperature changes via a slider are consistent regardless of actual capabilities (although, obviously, devices will never display a temperature outside their physical capabilities).
 
+N.B. The range advertised by devices in response to probing is neither consistent with the quoted range nor constant between firmware versions. The actual range supported by hardware is likely to be a subset of the probed range. If you want to avoid areas at the top and bottom of temperature sliders where moving the slider does not change the temperature you will have to configure the range manually. Currently no table of tested temperature capabilities for lights is available, nor is there any way to determine the specific type of a particular device.
+
+
+### State restore after powercycle
+
+If a device is powercycled quickly openHAB will autmatically restore it to the last known state when it reappears. This makes things like firmware upgrades as unobtrusive as possible. If a device is off for several minutes it will remain at it's power on defaults until it is changed.
+
 
 ## Discovery
 
@@ -71,9 +78,15 @@ After adding gateways, they are automatically scanned for paired devices and cur
 
 ## Notes
 
+### Power on/off
+
 When devices are powered on it typically takes several seconds for them to join the ZigBee network and for the gateway poll to see them and bring the things online in openHAB. If multiple devices are powered on at the same time they join the network one at a time serially so it can take quite a while until everything is done.
 
 When devices are powered off it takes 10 minutes for them to go offline in openHAB. This is a limitation of the gateway and protocol(s) involved.
+
+### Pairing
+
+When pairing devices with a gateway using the Lightify app sometimes the app appears to have a name for the device but the gateway does not actually have it set and so the device shows up in the openHAB inbox with a generic name. This is not a problem with openHAB or the OSRAM Lightify binding. If this happens you can correct the gateway via the Lightify app by tapping on the device, tapping on the name at the top of the screen, then tapping done to write the name to the gateway. It does not appear to be necessary to change the name at all. OpenHAB will then update the inbox entry with the new name on the next poll (you may need to reload paperUI to see it though).
 
 
 ## Channels
