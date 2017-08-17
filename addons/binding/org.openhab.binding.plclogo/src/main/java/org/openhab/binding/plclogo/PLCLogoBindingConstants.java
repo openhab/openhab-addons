@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -22,28 +23,28 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class PLCLogoBindingConstants {
 
-    public static final String BINDING_ID = "plclogo";
+    public static final @NonNull String BINDING_ID = "plclogo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final ThingTypeUID THING_TYPE_ANALOG = new ThingTypeUID(BINDING_ID, "analog");
-    public static final ThingTypeUID THING_TYPE_DIGITAL = new ThingTypeUID(BINDING_ID, "digital");
+    public static final @NonNull ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final @NonNull ThingTypeUID THING_TYPE_ANALOG = new ThingTypeUID(BINDING_ID, "analog");
+    public static final @NonNull ThingTypeUID THING_TYPE_DIGITAL = new ThingTypeUID(BINDING_ID, "digital");
 
     // List of all Channel Type UIDs
-    public static final String ANALOG_CHANNEL_ID = "value";
-    public static final String DIGITAL_CHANNEL_ID = "state";
-    public static final String RTC_CHANNEL_ID = "rtc";
+    public static final @NonNull String ANALOG_CHANNEL_ID = "value";
+    public static final @NonNull String DIGITAL_CHANNEL_ID = "state";
+    public static final @NonNull String RTC_CHANNEL_ID = "rtc";
 
     // List of all Channel configurations
-    public static final String INPUT_CHANNEL = "input";
-    public static final String OUTPUT_CHANNEL = "output";
-    public static final String ANALOG_DATE_CHANNEL = "date";
-    public static final String ANALOG_TIME_CHANNEL = "time";
-    public static final String ANALOG_NUMBER_CHANNEL = "number";
+    public static final @NonNull String INPUT_CHANNEL = "input";
+    public static final @NonNull String OUTPUT_CHANNEL = "output";
+    public static final @NonNull String ANALOG_DATE_CHANNEL = "date";
+    public static final @NonNull String ANALOG_TIME_CHANNEL = "time";
+    public static final @NonNull String ANALOG_NUMBER_CHANNEL = "number";
 
     // LOGO! family definitions
-    public static final String LOGO_0BA7 = "0BA7";
-    public static final String LOGO_0BA8 = "0BA8";
+    public static final @NonNull String LOGO_0BA7 = "0BA7";
+    public static final @NonNull String LOGO_0BA8 = "0BA8";
 
     // LOGO! diagnostics memory
     public static final Integer LOGO_STATE = 984; // Diagnostics

@@ -10,6 +10,7 @@ package org.openhab.binding.plclogo.config;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.plclogo.PLCLogoBindingConstants;
 
 /**
@@ -30,7 +31,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @return Configured Siemens LOGO! IP address
      */
-    public String getAddress() {
+    public @NonNull String getAddress() {
         return address;
     }
 
@@ -39,7 +40,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param address IP address of Siemens LOGO! device
      */
-    public void setAddress(final String address) {
+    public void setAddress(final @NonNull String address) {
         Objects.requireNonNull(address, "IP may not be null");
         this.address = address.trim();
     }
@@ -51,7 +52,7 @@ public class PLCLogoBridgeConfiguration {
      * @see PLCLogoBindingConstants#LOGO_0BA8
      * @return Configured Siemens LOGO! device family
      */
-    public String getFamily() {
+    public @NonNull String getFamily() {
         return family;
     }
 
@@ -62,7 +63,7 @@ public class PLCLogoBridgeConfiguration {
      * @see PLCLogoBindingConstants#LOGO_0BA7
      * @see PLCLogoBindingConstants#LOGO_0BA8
      */
-    public void setFamily(final String family) {
+    public void setFamily(final @NonNull String family) {
         Objects.requireNonNull(family, "Family may not be null");
         this.family = family.trim();
     }
@@ -85,7 +86,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param tsap Local TSAP of Siemens LOGO! device
      */
-    public void setLocalTSAP(final String tsap) {
+    public void setLocalTSAP(final @NonNull String tsap) {
         Objects.requireNonNull(tsap, "LocalTSAP may not be null");
         this.localTSAP = tsap.trim();
     }
@@ -108,7 +109,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param tsap Remote TSAP of Siemens LOGO! device
      */
-    public void setRemoteTSAP(final String tsap) {
+    public void setRemoteTSAP(final @NonNull String tsap) {
         Objects.requireNonNull(tsap, "RemoteTSAP may not be null");
         this.remoteTSAP = tsap.trim();
     }
@@ -118,7 +119,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @return Configured refresh rate of Siemens LOGO! device blocks
      */
-    public Integer getRefreshRate() {
+    public @NonNull Integer getRefreshRate() {
         return refresh;
     }
 
@@ -127,7 +128,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param rate Refresh rate of Siemens LOGO! device blocks
      */
-    public void setRefreshRate(Integer rate) {
+    public void setRefreshRate(final @NonNull Integer rate) {
         Objects.requireNonNull(rate, "Refresh rate may not be null");
         this.refresh = rate;
     }

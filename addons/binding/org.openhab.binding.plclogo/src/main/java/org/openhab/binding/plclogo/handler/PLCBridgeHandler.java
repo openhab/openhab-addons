@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -54,14 +55,15 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     // S7 client this bridge belongs to
     private volatile PLCLogoClient client;
-    private Set<PLCBlockHandler> handlers = new HashSet<>();
+    private final Set<PLCBlockHandler> handlers = new HashSet<>();
     private PLCLogoBridgeConfiguration config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
-    private Calendar rtc = Calendar.getInstance();
+    private final Calendar rtc = Calendar.getInstance();
     private ScheduledFuture<?> rtcJob;
     private final Runnable rtcReader = new Runnable() {
         // Buffer for diagnostic data
         private final byte[] data = { 0, 0, 0, 0, 0, 0, 0 };
+        private final Channel channel = getThing().getChannel(RTC_CHANNEL_ID);
 
         @Override
         public void run() {
@@ -74,7 +76,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                             rtc.setTimeZone(calendar.getTimeZone());
                             rtc.setTimeInMillis(calendar.getTimeInMillis());
                         }
-                        final Channel channel = thing.getChannel(RTC_CHANNEL_ID);
                         updateState(channel.getUID(), new DateTimeType(rtc));
 
                         if (logger.isTraceEnabled()) {
@@ -117,8 +118,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                                     continue;
                                 }
 
-                                final int address = handler.getAddress();
-                                final int offset = handler.getBlockDataType().getByteCount();
+                                final String name = handler.getBlockName();
+                                final int address = handler.getAddress(name);
+                                final int offset = handler.getBlockDataType(name).getByteCount();
                                 if ((offset > 0) && (address != PLCBlockHandler.INVALID)) {
                                     handler.setData(Arrays.copyOfRange(buffer, address, address + offset));
                                 } else {
@@ -144,7 +146,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     /**
      * Constructor.
      */
-    public PLCBridgeHandler(Bridge bridge) {
+    public PLCBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
 
@@ -194,8 +196,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             config = getConfigAs(PLCLogoBridgeConfiguration.class);
         }
 
-        boolean configured = (config.getAddress() != null);
-        configured = configured && (config.getLocalTSAP() != null);
+        boolean configured = (config.getLocalTSAP() != null);
         configured = configured && (config.getRemoteTSAP() != null);
 
         if (configured) {
@@ -220,7 +221,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 rtcJob = scheduler.scheduleWithFixedDelay(rtcReader, 100, 500, TimeUnit.MILLISECONDS);
             }
 
-            PLCBridgeHandler.super.initialize();
+            updateStatus(ThingStatus.ONLINE);
         } else {
             final String message = "Can not initialize LOGO!. Please, check network connection.";
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
@@ -344,12 +345,11 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         boolean result = false;
         if (client != null) {
             if (!client.isConnected()) {
-                final String host = config.getAddress();
                 final Integer local = config.getLocalTSAP();
                 final Integer remote = config.getRemoteTSAP();
 
-                if ((host != null) && (local != null) && (remote != null)) {
-                    client.Connect(host, local.intValue(), remote.intValue());
+                if ((local != null) && (remote != null)) {
+                    client.Connect(config.getAddress(), local.intValue(), remote.intValue());
                 }
             }
             result = client.isConnected();

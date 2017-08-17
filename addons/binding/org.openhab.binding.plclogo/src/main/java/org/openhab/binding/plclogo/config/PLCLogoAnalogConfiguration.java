@@ -12,6 +12,8 @@ import static org.openhab.binding.plclogo.PLCLogoBindingConstants.ANALOG_NUMBER_
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * The {@link PLCLogoAnalogConfiguration} holds configuration of Siemens LOGO! PLC
  * analog input/outputs blocks.
@@ -28,7 +30,7 @@ public class PLCLogoAnalogConfiguration extends PLCLogoBlockConfiguration {
      *
      * @return Configured Siemens LOGO! update threshold
      */
-    public Integer getThreshold() {
+    public @NonNull Integer getThreshold() {
         return threshold;
     }
 
@@ -37,7 +39,7 @@ public class PLCLogoAnalogConfiguration extends PLCLogoBlockConfiguration {
      *
      * @param force Force update of Siemens LOGO! device blocks
      */
-    public void setThreshold(final Integer threshold) {
+    public void setThreshold(final @NonNull Integer threshold) {
         Objects.requireNonNull(threshold, "PLCLogoAnalogConfiguration: Threshold may not be null.");
         this.threshold = threshold;
     }
@@ -56,15 +58,17 @@ public class PLCLogoAnalogConfiguration extends PLCLogoBlockConfiguration {
      *
      * @param type Item type to configure
      */
-    public void setType(final String type) {
+    public void setType(final @NonNull String type) {
         Objects.requireNonNull(threshold, "PLCLogoAnalogConfiguration: Type may not be null.");
         this.type = type;
     }
 
     @Override
-    public boolean isBlockValid(final String name) {
+    public boolean isBlockValid(final @NonNull String name) {
+        Objects.requireNonNull(name, "PLCLogoAnalogConfiguration: Block name may not be null.");
+
         boolean valid = false;
-        if (name != null && name.length() >= 3) {
+        if (name.length() >= 3) {
             valid = valid || name.startsWith("AI") || name.startsWith("NAI"); // Inputs
             valid = valid || name.startsWith("AQ") || name.startsWith("NAQ"); // Outputs
             valid = valid || name.startsWith("AM"); // Markers
@@ -81,13 +85,15 @@ public class PLCLogoAnalogConfiguration extends PLCLogoBlockConfiguration {
     }
 
     @Override
-    public boolean isInputBlock(final String name) {
+    public boolean isInputBlock(final @NonNull String name) {
+        Objects.requireNonNull(name, "PLCLogoAnalogConfiguration: Block name may not be null.");
+
         final String kind = getBlockKind(name);
         return kind.equalsIgnoreCase("AI") || kind.equalsIgnoreCase("NAI");
     }
 
     @Override
-    public String getItemType() {
+    public @NonNull String getItemType() {
         return ANALOG_NUMBER_CHANNEL.equalsIgnoreCase(getType()) ? "Number" : "DateTime";
     }
 

@@ -10,6 +10,7 @@ package org.openhab.binding.plclogo.config;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.plclogo.PLCLogoBindingConstants;
 
 /**
@@ -28,7 +29,7 @@ public abstract class PLCLogoBlockConfiguration {
      *
      * @return Configured Siemens LOGO! output block name
      */
-    public String getBlockName() {
+    public @NonNull String getBlockName() {
         return block;
     }
 
@@ -37,7 +38,7 @@ public abstract class PLCLogoBlockConfiguration {
      *
      * @param name Siemens LOGO! output block name
      */
-    public void setBlockName(final String name) {
+    public void setBlockName(final @NonNull String name) {
         Objects.requireNonNull(name, "PLCLogoBlockConfiguration: Block name may not be null.");
         this.block = name.trim();
     }
@@ -47,7 +48,7 @@ public abstract class PLCLogoBlockConfiguration {
      *
      * @return True, if channel update to be forced and false otherwise
      */
-    public Boolean isUpdateForced() {
+    public @NonNull Boolean isUpdateForced() {
         return force;
     }
 
@@ -56,7 +57,7 @@ public abstract class PLCLogoBlockConfiguration {
      *
      * @param force Force update of Siemens LOGO! block
      */
-    public void setForceUpdate(final Boolean force) {
+    public void setForceUpdate(final @NonNull Boolean force) {
         Objects.requireNonNull(force, "PLCLogoBlockConfiguration: Force may not be null.");
         this.force = force;
     }
@@ -70,15 +71,15 @@ public abstract class PLCLogoBlockConfiguration {
      * @see PLCLogoBindingConstants#LOGO_MEMORY_0BA8
      * @return Kind of configured block
      */
-    public String getBlockKind(final String name) {
-        if (name != null) {
-            if (Character.isDigit(name.charAt(1))) {
-                return name.substring(0, 1);
-            } else if (Character.isDigit(name.charAt(2))) {
-                return name.substring(0, 2);
-            } else if (Character.isDigit(name.charAt(3))) {
-                return name.substring(0, 3);
-            }
+    public String getBlockKind(final @NonNull String name) {
+        Objects.requireNonNull(name, "PLCLogoBlockConfiguration: Block name may not be null.");
+
+        if (Character.isDigit(name.charAt(1))) {
+            return name.substring(0, 1);
+        } else if (Character.isDigit(name.charAt(2))) {
+            return name.substring(0, 2);
+        } else if (Character.isDigit(name.charAt(3))) {
+            return name.substring(0, 3);
         }
         return null;
     }
@@ -89,7 +90,7 @@ public abstract class PLCLogoBlockConfiguration {
      * @param name Name of the LOGO! block to check
      * @return True, if the name is valid and false otherwise
      */
-    public abstract boolean isBlockValid(final String name);
+    public abstract boolean isBlockValid(final @NonNull String name);
 
     /**
      * Returns if block represents input.
@@ -97,13 +98,13 @@ public abstract class PLCLogoBlockConfiguration {
      * @param name Name of the LOGO! block to check
      * @return True, if block is input and false otherwise
      */
-    public abstract boolean isInputBlock(final String name);
+    public abstract boolean isInputBlock(final @NonNull String name);
 
     /**
      * Return supported item type for this block.
      *
      * @return Supported item type
      */
-    public abstract String getItemType();
+    public abstract @NonNull String getItemType();
 
 }

@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.plclogo.config;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * The {@link PLCLogoDigitalConfiguration} holds configuration of Siemens LOGO! PLC
  * digital input/outputs blocks.
@@ -17,9 +21,11 @@ package org.openhab.binding.plclogo.config;
 public class PLCLogoDigitalConfiguration extends PLCLogoBlockConfiguration {
 
     @Override
-    public boolean isBlockValid(final String name) {
+    public boolean isBlockValid(final @NonNull String name) {
+        Objects.requireNonNull(name, "PLCLogoDigitalConfiguration: Block name may not be null.");
+
         boolean valid = false;
-        if (name != null && name.length() >= 2) {
+        if (name.length() >= 2) {
             valid = valid || name.startsWith("I") || name.startsWith("NI"); // Inputs
             valid = valid || name.startsWith("Q") || name.startsWith("NQ"); // Outputs
             valid = valid || name.startsWith("M"); // Markers
@@ -39,14 +45,24 @@ public class PLCLogoDigitalConfiguration extends PLCLogoBlockConfiguration {
     }
 
     @Override
-    public boolean isInputBlock(final String name) {
+    public boolean isInputBlock(final @NonNull String name) {
         final String kind = getBlockKind(name);
         return kind.equalsIgnoreCase("I") || kind.equalsIgnoreCase("NI");
     }
 
     @Override
-    public String getItemType() {
-        return isInputBlock(getBlockName()) ? "Contact" : "Switch";
+    public @NonNull String getItemType() {
+        return getItemType(getBlockName());
+    }
+
+    /**
+     * Return supported item type for given block.
+     *
+     * @param name Name of the LOGO! block
+     * @return Supported item type
+     */
+    protected @NonNull String getItemType(final @NonNull String name) {
+        return isInputBlock(name) ? "Contact" : "Switch";
     }
 
 }
