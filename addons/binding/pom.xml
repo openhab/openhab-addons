@@ -40,6 +40,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.ipp</module>
+    <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.kostalinverter</module>
