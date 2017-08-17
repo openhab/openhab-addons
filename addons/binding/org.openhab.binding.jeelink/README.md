@@ -94,6 +94,7 @@ The binding does not handle commands.
 ## Full Example
 
 A typical Thing configuration for ec3k looks like this:
+
 ```
 Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4", sketchName="ec3kSerial" ]
 Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
@@ -101,6 +102,7 @@ Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 ```
 
 A typical Thing configuration for lacrosse looks like this:
+
 ```
 Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6", sketchName="LaCrosseITPlusReader" ]
 Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
@@ -108,6 +110,7 @@ Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse
 ```
 
 A typical item configuration for a LaCrosse temperature sensor looks like this:
+
 ```
 Number Humidty_LR "Living Room" <humidity> {channel="jeelink:lacrosse:42:humidity"}
 Number Temperature_LR "Living Room" <temperature> {channel="jeelink:lacrosse:42:temperature"}
