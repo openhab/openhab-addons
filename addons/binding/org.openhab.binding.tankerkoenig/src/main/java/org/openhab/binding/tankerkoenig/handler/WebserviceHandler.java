@@ -161,11 +161,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
                 setTankerkoenigListResult(result);
                 stationMap.clear();
                 for (LittleStation station : result.getPrices().getStations()) {
-                    if (station.getStatus().equals("open")) {
-                        station.setOpen(true);
-                    } else {
-                        station.setOpen(false);
-                    }
+                    station.setOpen("open".equals(station.getStatus()));
                     stationMap.put(station.getID(), station);
                 }
                 logger.debug("UpdateStationData: tankstellenList.size {}", stationMap.size());
