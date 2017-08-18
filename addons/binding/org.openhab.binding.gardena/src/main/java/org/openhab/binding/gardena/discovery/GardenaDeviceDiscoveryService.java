@@ -55,26 +55,17 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
         super.activate(null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deactivate() {
         super.deactivate();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startScan() {
         logger.debug("Starting Gardena discovery scan");
         loadDevices();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void stopScan() {
         logger.debug("Stopping Gardena discovery scan");

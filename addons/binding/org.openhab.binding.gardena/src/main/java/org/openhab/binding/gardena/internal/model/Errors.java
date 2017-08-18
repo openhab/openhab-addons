@@ -30,9 +30,6 @@ public class Errors {
         return errors;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);

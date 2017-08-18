@@ -115,9 +115,6 @@ public class GardenaConfig {
         return StringUtils.isNotBlank(email) && StringUtils.isNotBlank(password);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("email", email)

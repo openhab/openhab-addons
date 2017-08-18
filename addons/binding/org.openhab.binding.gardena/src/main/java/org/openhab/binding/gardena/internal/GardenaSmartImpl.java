@@ -116,9 +116,6 @@ public class GardenaSmartImpl implements GardenaSmart {
     private Map<String, Device> allDevicesById = new HashMap<>();
     private Set<Location> allLocations = new HashSet<>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler) throws GardenaException {
@@ -143,9 +140,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         loadAllDevices();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         stopRefreshThread(true);
@@ -178,25 +172,16 @@ public class GardenaSmartImpl implements GardenaSmart {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getId() {
         return id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Set<Location> getLocations() {
         return allLocations;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Device getDevice(String deviceId) throws GardenaException {
         Device device = allDevicesById.get(deviceId);
@@ -207,9 +192,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         return device;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void loadAllDevices() throws GardenaException {
         stopRefreshThread(false);
@@ -274,9 +256,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         return devices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sendCommand(Device device, GardenaSmartCommandName commandName, Object value) throws GardenaException {
         Ability ability = null;
@@ -359,9 +338,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sendSetting(Setting setting, Object value) throws GardenaException {
         SettingCommand settingCommand = new SettingCommand(setting.getName());
@@ -470,9 +446,6 @@ public class GardenaSmartImpl implements GardenaSmart {
     private class RefreshDevicesThread implements Runnable {
         private boolean connectionLost = false;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void run() {
             try {

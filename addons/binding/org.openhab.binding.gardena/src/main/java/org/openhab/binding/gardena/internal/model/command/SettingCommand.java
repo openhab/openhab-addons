@@ -20,9 +20,6 @@ public class SettingCommand extends Command {
     @SerializedName("device")
     private String deviceId;
 
-    /**
-     * {@inheritDoc}
-     */
     public SettingCommand(String name) {
         super(name);
     }

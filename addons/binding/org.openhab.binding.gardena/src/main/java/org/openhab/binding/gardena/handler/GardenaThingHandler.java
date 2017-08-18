@@ -59,9 +59,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         try {
@@ -105,9 +102,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         updateProperties(properties);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
@@ -178,9 +172,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -268,9 +259,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {

@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class SensorMeasureAmbientTemperatureCommand extends Command {
     private static final String COMMAND = "measure_ambient_temperature";
 
-    /**
-     * {@inheritDoc}
-     */
     public SensorMeasureAmbientTemperatureCommand() {
         super(COMMAND);
     }

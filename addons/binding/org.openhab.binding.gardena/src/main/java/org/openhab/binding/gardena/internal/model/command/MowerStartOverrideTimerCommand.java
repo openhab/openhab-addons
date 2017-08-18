@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class MowerStartOverrideTimerCommand extends Command {
     private static final String COMMAND = "start_override_timer";
 
-    /**
-     * {@inheritDoc}
-     */
     public MowerStartOverrideTimerCommand(String durationInMinutes) {
         super(COMMAND);
         parameters = new CommandParameters();

@@ -127,17 +127,11 @@ public class Device {
         throw new GardenaException("Setting '" + name + "' not found in device '" + this.name + "'");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).toHashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Device)) {
