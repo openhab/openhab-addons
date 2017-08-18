@@ -287,14 +287,10 @@ public class GardenaThingHandler extends BaseThingHandler {
                     newValue = new Double((String) newValue);
                 }
 
-                try {
-                    Setting setting = device.getSetting(key);
-                    if (ObjectUtils.notEqual(setting.getValue(), newValue)) {
-                        gardena.sendSetting(setting, newValue);
-                        setting.setValue(newValue);
-                    }
-                } catch (GardenaException ex) {
-                    logger.warn("Error setting thing property {}: {}", key, ex.getMessage());
+                Setting setting = device.getSetting(key);
+                if (ObjectUtils.notEqual(setting.getValue(), newValue)) {
+                    gardena.sendSetting(setting, newValue);
+                    setting.setValue(newValue);
                 }
             }
             updateSettings(device);
