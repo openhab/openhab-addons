@@ -111,5 +111,4 @@ public class Station {
     public void setOpen(boolean isOpen) {
         this.isOpen = isOpen;
     }
-
 }

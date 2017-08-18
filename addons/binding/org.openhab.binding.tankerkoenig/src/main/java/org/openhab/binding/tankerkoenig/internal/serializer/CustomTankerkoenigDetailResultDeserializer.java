@@ -43,6 +43,7 @@ public class CustomTankerkoenigDetailResultDeserializer implements JsonDeseriali
             final Double e10 = jsonStation.get("e10").getAsDouble();
             final Double e5 = jsonStation.get("e5").getAsDouble();
             final Double diesel = jsonStation.get("diesel").getAsDouble();
+            final Boolean isOpen = jsonStation.get("isOpen").getAsBoolean();
             final String stationID = jsonStation.get("id").getAsString();
             final LittleStation littleStation = new LittleStation();
             OpeningTime[] openingTime = context.deserialize(jsonStation.get("openingTimes"), OpeningTime[].class);
@@ -50,6 +51,7 @@ public class CustomTankerkoenigDetailResultDeserializer implements JsonDeseriali
             littleStation.setE10(e10);
             littleStation.setE5(e5);
             littleStation.setDiesel(diesel);
+            littleStation.setOpen(isOpen);
             littleStation.setID(stationID);
             final OpeningTimes openingTimes = new OpeningTimes(stationID, isWholeDay, openingTime);
             result.setLittleStation(littleStation);

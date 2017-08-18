@@ -3,10 +3,12 @@
 The binding uses the Tankerkönig API (https://www.tankerkoenig.de) for collecting gas price data of german gas stations. 
 Special thanks to the creators of Tankerkönig for providing an easy way to get data from  the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
 
-Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests. This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle maximum of 10 stations.
+Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests. This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle a maximum of 10 stations).
 The data will be updated for each Station individually after the initialization and after each Refresh Interval for all (open) stations (Note: changing the Webservice will cause the Refresh Interval to restart).
 Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.  For a correct usage of opening times the binding needs the information if the actual day is a holiday.
 
+Note: 
+While using the mode Opening-Times the channel "station_open" will NOT show "close" because during such times no update is being requested from that Station! 
 
 ## Preparation
 
@@ -54,7 +56,7 @@ The binding introduces the channel holiday for the Webservice and the channels e
 | e10                                             | price of e10                                                 | Number              | False    |
 | e5                                              | price of e5                                                  | Number              | False    |
 | diesel                                          | price of diesel                                              | Number              | False    |
-
+| station_open                                    | reported opening-state of the station                        | Contact             | False    |
 
 ## Full example
 
@@ -90,7 +92,7 @@ The further price-updates for all Stations are scheduled by the Webservice using
 
 -The Station(s) and Webservice stay OFFLINE
 
-Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhabbinding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
+Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhab.binding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
 
 ```
  2017-06-25 16:02:12.679 [DEBUG] [ig.internal.data.TankerkoenigService] - getTankerkoenigDetailResult IOException: 

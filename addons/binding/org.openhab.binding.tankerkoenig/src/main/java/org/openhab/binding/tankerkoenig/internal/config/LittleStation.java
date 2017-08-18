@@ -25,6 +25,7 @@ public class LittleStation {
     private double diesel;
     private String status;
     private String id;
+    private boolean isOpen;
 
     public double getE5() {
         return e5;
@@ -65,4 +66,13 @@ public class LittleStation {
     public void setID(String id) {
         this.id = id;
     }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
 }
