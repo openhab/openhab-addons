@@ -93,3 +93,12 @@ Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:2
 
 Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49-9712-4220-a4c3-d3bb7a6cc5f0:switch" }
 ```
+
+## Alexa compatibility
+This binding is compatible with the official Alexa Smart Home Skill. 
+Since Rolleshutter items are unsupported, only Dimmer with position channel can be used.
+Syntax in .item file is as follows:
+```
+Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:position"}
+```
+Alexa can set the roller shutter (awning, blind, ...) to a specific position as well as send ON (interpretted as UP) and OFF commands (interpretted as DOWN).

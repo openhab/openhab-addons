@@ -19,6 +19,12 @@ import org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.CONTROL;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.POSITION;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.SWITCH;
+
 /**
  * The {@link SomfyTahomaOnOffHandler} is responsible for handling commands,
  * which are sent to one of the channels of the on/off thing.
@@ -34,8 +40,8 @@ public class SomfyTahomaOnOffHandler extends BaseThingHandler implements SomfyTa
     }
 
     @Override
-    public String getStateName() {
-        return "core:OnOffState";
+    public Hashtable<String, String> getStateNames() {
+        return new Hashtable<String, String>() {{ put(SWITCH, "core:OnOffState"); }};
     }
 
     @Override

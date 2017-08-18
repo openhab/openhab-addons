@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.TRIGGER;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.TYPE_PERCENT;
@@ -42,7 +43,7 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
     private Gson gson = new Gson();
 
     @Override
-    public String getStateName() {
+    public Hashtable<String, String> getStateNames() {
         return null;
     }
 

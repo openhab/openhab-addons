@@ -19,14 +19,17 @@ import java.util.ArrayList;
 public class SomfyTahomaState {
 
     private Object value;
+    private int type;
+    private String name;
 
+    public Object getValue() {
+        return value;
+    }
     public int getType() {
         return type;
     }
 
-    private int type;
-
-    public Object getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 }

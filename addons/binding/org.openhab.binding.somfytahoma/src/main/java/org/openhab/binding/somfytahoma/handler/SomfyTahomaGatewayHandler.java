@@ -20,6 +20,8 @@ import org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
  * which are sent to one of the channels of the gateway thing.
@@ -35,7 +37,7 @@ public class SomfyTahomaGatewayHandler extends BaseThingHandler implements Somfy
     }
 
     @Override
-    public String getStateName() {
+    public Hashtable<String, String> getStateNames() {
         return null;
     }
 

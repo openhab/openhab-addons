@@ -17,6 +17,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
@@ -34,8 +36,8 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
     }
 
     @Override
-    public String getStateName() {
-        return "core:ClosureState";
+    public Hashtable<String, String> getStateNames() {
+        return new Hashtable<String, String>() {{ put(POSITION, "core:ClosureState"); put( CONTROL, "core:ClosureState"); }};
     }
 
     @Override
@@ -77,8 +79,10 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
     private String getTahomaCommand(String command) {
 
         switch (command) {
+            case "OFF":
             case "DOWN":
                 return COMMAND_DOWN;
+            case "ON":
             case "UP":
                 return COMMAND_UP;
             case "STOP":

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
+import java.util.Hashtable;
+
 /**
  * The {@link SomfyTahomaRollerShutterHandler} is interface for handlers
  * of all Somfy Tahoma things.
@@ -15,5 +17,5 @@ package org.openhab.binding.somfytahoma.handler;
  * @author Ondrej Pecta - Initial contribution
  */
 public interface SomfyTahomaThingHandler {
-    public abstract String getStateName();
+    public abstract Hashtable<String, String> getStateNames();
 }
