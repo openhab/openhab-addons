@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:digital">
-		<parameter name="block" type="text" pattern="I[1-24]|NI[1-64]|Q[1-20]|NQ[1-64]|M[1-64]|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]">
+		<parameter name="block" type="text" pattern="I([1-9]|1\d|2[0-4])|NI([1-9]|[1-5]\d|6[0-4])|Q([1-9]|1\d|20)|NQ([1-9]|[1-5]\d|6[0-4])|M([1-9]|[1-5]\d|6[0-4])|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]">
 			<label>LOGO! block/memory</label>
 			<description>LOGO! block or memory address</description>
 			<required>true</required>
