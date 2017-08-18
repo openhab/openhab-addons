@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -253,7 +252,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                     // special conversion for pump, convert on/off to boolean
                     if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)
                             && property.getName().equals(ABILITY_PUMP_ON_OFF)) {
-                        property.setValue(String.valueOf(StringUtils.equalsIgnoreCase("on", property.getValue())));
+                        property.setValue(String.valueOf("on".equalsIgnoreCase(property.getValue())));
                     }
 
                 }
