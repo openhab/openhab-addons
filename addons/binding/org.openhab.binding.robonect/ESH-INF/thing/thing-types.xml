@@ -14,6 +14,7 @@
             <channel-group id="wlan" typeId="wlanType"/>
             <channel-group id="job" typeId="jobGroupType"/>
             <channel-group id="error" typeId="errorGroupType"/>
+            <channel-group id="lastError" typeId="errorGroupType"/>
             <channel-group id="version" typeId="robonectVersionType"/>
             <channel-group id="health" typeId="healthType"/>
         </channel-groups>

@@ -60,6 +60,9 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 | `error#code`             | Number                    | The mower manufacturer code in case the mower is in status 7 (error). The binding resets this to UNDEF, once the mower is not in error status anymore. |
 | `error#message`          | String                    | The error message in case the mower is in status 7 (error). The binding resets this to UNDEF, once the mower is not in error status anymore. |
 | `error#date   `          | DateTime                  | The date and time the error happened. The binding resets this to UNDEF, once the mower is not in error status anymore. |
+| `lastError#code`         | Number                    | The mower manufacturer code of the last error happened |
+| `lastError#message`      | String                    | The error message of the last error happened |
+| `lastError#date   `      | DateTime                  | The date and time of the last error happened |
 | `health#temperature`     | Number                    | The temperature of the mower (just available for robonect firmware >= 1.0) |
 | `health#humidity   `     | Number                    | The humidity of the mower (just available for robonect firmware >= 1.0) |
 | `version#serial`         | String                    | Retrieves the serial number of the Robonect Module |

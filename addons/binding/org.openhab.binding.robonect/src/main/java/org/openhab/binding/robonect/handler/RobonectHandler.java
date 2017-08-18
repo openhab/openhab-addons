@@ -34,6 +34,7 @@ import org.openhab.binding.robonect.RobonectCommunicationException;
 import org.openhab.binding.robonect.RobonectEndpoint;
 import org.openhab.binding.robonect.config.RobonectConfig;
 import org.openhab.binding.robonect.model.ErrorEntry;
+import org.openhab.binding.robonect.model.ErrorList;
 import org.openhab.binding.robonect.model.MowerInfo;
 import org.openhab.binding.robonect.model.Name;
 import org.openhab.binding.robonect.model.RobonectAnswer;
@@ -51,6 +52,9 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_END;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_REMOTE_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_START;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_CODE;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_DATE;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_MESSAGE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_NAME;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
@@ -101,6 +105,11 @@ public class RobonectHandler extends BaseThingHandler {
                     case CHANNEL_TIMER_STATUS:
                     case CHANNEL_WLAN_SIGNAL:
                         refreshMowerInfo();
+                        break;
+                    case CHANNEL_LAST_ERROR_CODE:
+                    case CHANNEL_LAST_ERROR_DATE:
+                    case CHANNEL_LAST_ERROR_MESSAGE:
+                        refreshLastErrorInfo();
                         break;
                     case CHANNEL_VERSION_COMMENT:
                     case CHANNEL_VERSION_COMPILED:
@@ -334,6 +343,32 @@ public class RobonectHandler extends BaseThingHandler {
                     info.getErrorMessage());
         }
 
+    }
+    
+    private void refreshLastErrorInfo() throws InterruptedException{
+        ErrorList errorList = robonectClient.errorList();
+        if(errorList.isSuccessful()){
+            if(errorList.getErrors() != null && errorList.getErrors().size() > 0) {
+                ErrorEntry lastErrorEntry = errorList.getErrors().get(0);
+                updateLastErrorChannels(lastErrorEntry);
+            }
+        }else {
+            logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
+                                errorList.getErrorMessage());
+        }
+    }
+
+    private void updateLastErrorChannels(ErrorEntry error) {
+        if (error.getErrorMessage() != null) {
+            updateState(CHANNEL_LAST_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
+        }
+        if (error.getErrorCode() != null) {
+            updateState(CHANNEL_LAST_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
+        }
+        if (error.getDate() != null) {
+            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+            updateState(CHANNEL_LAST_ERROR_DATE, dateTime);
+        }
     }
 
     @Override
