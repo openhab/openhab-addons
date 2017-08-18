@@ -268,6 +268,7 @@ public class RobonectHandler extends BaseThingHandler {
                 updateErrorInfo(info.getError());
             } else {
                 clearErrorInfo();
+                refreshLastErrorInfo();
             }
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
