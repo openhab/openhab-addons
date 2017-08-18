@@ -21,6 +21,9 @@ import org.sputnikdev.bluetooth.gattparser.spec.Field;
 import org.sputnikdev.bluetooth.manager.GattCharacteristic;
 import org.sputnikdev.bluetooth.manager.GattService;
 
+/**
+ * @author Vlad Kolotov
+ */
 public class BluetoothSmartChannelBuilder {
 
     private Logger logger = LoggerFactory.getLogger(BluetoothSmartChannelBuilder.class);
@@ -74,7 +77,7 @@ public class BluetoothSmartChannelBuilder {
     }
 
     private Channel buildChannel(Thing thing, GattService service, GattCharacteristic characteristic, Field field) {
-        URL channelURL = characteristic.getURL().copyWith(field.getName());//this.handler.getURL().copyWith(service.getUUID(), characteristic.getUUID(), field.getName());
+        URL channelURL = characteristic.getURL().copyWithField(field.getName());//this.handler.getURL().copyWith(service.getUUID(), characteristic.getUUID(), field.getName());
         ChannelUID channelUID = new ChannelUID(thing.getUID(), BluetoothSmartUtils.getChannelUID(channelURL));
 
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BluetoothSmartBindingConstants.BINDING_ID,

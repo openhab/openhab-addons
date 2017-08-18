@@ -20,6 +20,9 @@ import org.sputnikdev.bluetooth.manager.DiscoveredAdapter;
 import org.sputnikdev.bluetooth.manager.DiscoveredDevice;
 import org.sputnikdev.bluetooth.manager.DiscoveredObject;
 
+/**
+ * @author Vlad Kolotov
+ */
 public class BluetoothSmartDiscoveryServiceImpl extends AbstractDiscoveryService
         implements BluetoothSmartDiscoveryService, DeviceDiscoveryListener, AdapterDiscoveryListener {
 

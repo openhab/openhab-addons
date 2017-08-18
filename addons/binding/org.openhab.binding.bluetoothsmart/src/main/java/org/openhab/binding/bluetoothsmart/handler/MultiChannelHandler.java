@@ -26,6 +26,9 @@ import org.sputnikdev.bluetooth.gattparser.GattRequest;
 import org.sputnikdev.bluetooth.manager.CharacteristicGovernor;
 import org.sputnikdev.bluetooth.manager.ValueListener;
 
+/**
+ * @author Vlad Kolotov
+ */
 class MultiChannelHandler implements ChannelHandler, ValueListener {
 
     private Logger logger = LoggerFactory.getLogger(MultiChannelHandler.class);
@@ -156,11 +159,11 @@ class MultiChannelHandler implements ChannelHandler, ValueListener {
 
     private Channel getChannel(FieldHolder fieldHolder) {
         return this.handler.getThing().getChannel(
-                BluetoothSmartUtils.getChannelUID(url.copyWith(fieldHolder.getField().getName())));
+                BluetoothSmartUtils.getChannelUID(url.copyWithField(fieldHolder.getField().getName())));
     }
 
     private Item getItem(FieldHolder fieldHolder) {
-        String itemID = BluetoothSmartUtils.getItemUID(url.copyWith(fieldHolder.getField().getName()));
+        String itemID = BluetoothSmartUtils.getItemUID(url.copyWithField(fieldHolder.getField().getName()));
         try {
             return this.handler.getItemRegistry().getItem(itemID);
         } catch (ItemNotFoundException e) {

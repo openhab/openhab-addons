@@ -20,6 +20,9 @@ import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
 import org.sputnikdev.bluetooth.manager.BluetoothGovernor;
 import org.sputnikdev.bluetooth.manager.BluetoothManager;
 
+/**
+ * @author Vlad Kolotov
+ */
 class BluetoothSmartHandler<T extends BluetoothGovernor> extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(BluetoothSmartHandler.class);

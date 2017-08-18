@@ -2,6 +2,9 @@ package org.openhab.binding.bluetoothsmart.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 
+/**
+ * @author Vlad Kolotov
+ */
 class IntegerTypeChannelHandler extends SingleChannelHandler<Integer, DecimalType> {
 
     IntegerTypeChannelHandler(BluetoothSmartHandler handler, String channelID, boolean persistent) {

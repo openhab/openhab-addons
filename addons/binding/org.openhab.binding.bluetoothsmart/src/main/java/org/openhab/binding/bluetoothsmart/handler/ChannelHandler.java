@@ -5,6 +5,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.sputnikdev.bluetooth.URL;
 
+/**
+ * @author Vlad Kolotov
+ */
 public interface ChannelHandler {
 
     void init();

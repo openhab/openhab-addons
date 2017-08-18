@@ -2,6 +2,9 @@ package org.openhab.binding.bluetoothsmart.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
+/**
+ * @author Vlad Kolotov
+ */
 class BooleanTypeChannelHandler extends SingleChannelHandler<Boolean, OnOffType> {
 
     BooleanTypeChannelHandler(BluetoothSmartHandler handler, String channelID, boolean persistent) {

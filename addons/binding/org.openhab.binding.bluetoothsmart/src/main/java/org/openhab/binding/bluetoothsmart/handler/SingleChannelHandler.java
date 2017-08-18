@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.sputnikdev.bluetooth.URL;
 import org.sputnikdev.bluetooth.manager.NotReadyException;
 
+/**
+ * @author Vlad Kolotov
+ */
 abstract class SingleChannelHandler<V, S extends Command> implements ChannelHandler {
 
     private Logger logger = LoggerFactory.getLogger(SingleChannelHandler.class);

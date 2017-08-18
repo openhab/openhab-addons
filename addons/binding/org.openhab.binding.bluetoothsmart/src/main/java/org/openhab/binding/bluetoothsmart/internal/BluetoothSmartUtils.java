@@ -6,6 +6,9 @@ import java.util.List;
 import org.openhab.binding.bluetoothsmart.BluetoothSmartBindingConstants;
 import org.sputnikdev.bluetooth.URL;
 
+/**
+ * @author Vlad Kolotov
+ */
 public class BluetoothSmartUtils {
 
     private static final String MAC_PART_REGEXP = "(\\w{2}(?=(\\w{2})))";

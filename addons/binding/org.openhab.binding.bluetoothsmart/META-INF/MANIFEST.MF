@@ -6,7 +6,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/tinyb.jar,lib/bluetooth-utils-1.1.jar,lib/bluetooth-gatt-parser-1.3.jar,lib/bluetooth-manager-1.0.jar,lib/commons-beanutils-1.9.3.jar
+ lib/tinyb.jar,lib/bluetooth-utils-1.4-SNAPSHOT.jar,lib/bluetooth-gatt-parser-1.4-SNAPSHOT.jar,lib/bluetooth-manager-1.1-SNAPSHOT.jar,lib/bluetooth-manager-tinyb-1.0-SNAPSHOT.jar,lib/commons-beanutils-1.9.3.jar
 Bundle-NativeCode: lib/libjavatinyb.so; osname=Linux; processor=ARM_le, *
 Import-Package: org.openhab.binding.bluetoothsmart,
  org.openhab.binding.bluetoothsmart.handler,

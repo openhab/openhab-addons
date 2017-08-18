@@ -5,6 +5,9 @@ import java.util.Date;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 
+/**
+ * @author Vlad Kolotov
+ */
 class DateTimeChannelHandler extends SingleChannelHandler<Date, DateTimeType> {
 
     DateTimeChannelHandler(BluetoothSmartHandler handler, String channelID) {

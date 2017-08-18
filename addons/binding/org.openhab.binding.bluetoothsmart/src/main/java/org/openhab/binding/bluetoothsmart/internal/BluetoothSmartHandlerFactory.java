@@ -33,6 +33,8 @@ import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
 import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
 import org.sputnikdev.bluetooth.manager.BluetoothManager;
 import org.sputnikdev.bluetooth.manager.impl.BluetoothManagerFactory;
+import org.sputnikdev.bluetooth.manager.impl.BluetoothObjectFactory;
+import org.sputnikdev.bluetooth.manager.impl.TinyBFactory;
 
 import static org.openhab.binding.bluetoothsmart.BluetoothSmartBindingConstants.THING_TYPE_ADAPTER;
 import static org.openhab.binding.bluetoothsmart.BluetoothSmartBindingConstants.THING_TYPE_BLE;
@@ -79,6 +81,7 @@ public class BluetoothSmartHandlerFactory extends BaseThingHandlerFactory {
             extensionFolder = System.getProperty("user.home") + File.separator + ".bluetooth_smart";
         }
         BundleContext bundleContext = componentContext.getBundleContext();
+        BluetoothObjectFactory.registerFactory(new TinyBFactory());
         bluetoothManager = BluetoothManagerFactory.getManager();
         if (refreshRate != null && NumberUtils.isNumber(refreshRate)) {
             bluetoothManager.setRefreshRate(NumberUtils.toInt(refreshRate));
