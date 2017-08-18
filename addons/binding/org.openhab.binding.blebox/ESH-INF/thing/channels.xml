@@ -31,7 +31,19 @@
     </channel-type>
 
     <!-- Switch Channel -->
-    <channel-type id="switch">
+    <channel-type id="switch0">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>The switch channel allows to switch the light on and off.
+        </description>
+        <category>Light</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+    
+      <!-- Switch Channel -->
+    <channel-type id="switch1">
         <item-type>Switch</item-type>
         <label>Switch</label>
         <description>The switch channel allows to switch the light on and off.

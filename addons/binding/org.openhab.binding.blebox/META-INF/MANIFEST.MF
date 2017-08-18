@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Blebox Binding
 Bundle-SymbolicName: org.openhab.binding.blebox;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 2.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  com.google.gson,
@@ -18,6 +18,7 @@ Import-Package:
  org.apache.http.entity,
  org.apache.http.impl.client,
  org.apache.http.message,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -34,3 +35,4 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.blebox,
  org.openhab.binding.blebox.handler
 Require-Bundle: com.google.guava
+Bundle-ActivationPolicy: lazy
