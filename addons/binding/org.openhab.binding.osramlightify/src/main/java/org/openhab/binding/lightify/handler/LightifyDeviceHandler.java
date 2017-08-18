@@ -258,7 +258,6 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                         + (
                             ((PercentType) command).doubleValue()
                             * (configuration.whiteTemperatureMax - configuration.whiteTemperatureMin)
-                            + 0.5
                           ) / 100.0
                     );
 
