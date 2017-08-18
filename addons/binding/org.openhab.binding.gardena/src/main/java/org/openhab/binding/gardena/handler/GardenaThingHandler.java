@@ -200,7 +200,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            logger.warn("{}", ex.getMessage(), ex);
         }
     }
 
@@ -294,12 +294,12 @@ public class GardenaThingHandler extends BaseThingHandler {
                         setting.setValue(newValue);
                     }
                 } catch (GardenaException ex) {
-                    logger.error("Error setting thing property {}: {}", key, ex.getMessage());
+                    logger.warn("Error setting thing property {}: {}", key, ex.getMessage());
                 }
             }
             updateSettings(device);
         } catch (GardenaException | AccountHandlerNotAvailableException ex) {
-            logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
+            logger.warn("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
 
