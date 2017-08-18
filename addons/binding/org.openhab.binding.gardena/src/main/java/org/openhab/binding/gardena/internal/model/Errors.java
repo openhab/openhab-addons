@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class Errors {
 
-    private List<Error> errors = new ArrayList<Error>();
+    private List<Error> errors = new ArrayList<>();
 
     /**
      * Returns a list of Gardena errors.

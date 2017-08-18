@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Devices {
 
-    private List<Device> devices = new ArrayList<Device>();
+    private List<Device> devices = new ArrayList<>();
 
     /**
      * Returns a list of Gardena devices.

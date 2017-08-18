@@ -30,11 +30,11 @@ public class Device {
     private String category;
     @SerializedName("configuration_synchronized")
     private boolean configurationSynchronized;
-    private List<Ability> abilities = new ArrayList<Ability>();
+    private List<Ability> abilities = new ArrayList<>();
     @SerializedName("scheduled_events")
-    private List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
+    private List<ScheduledEvent> scheduledEvents = new ArrayList<>();
     private transient Location location;
-    private List<Setting> settings = new ArrayList<Setting>();
+    private List<Setting> settings = new ArrayList<>();
 
     /**
      * Returns the id of the device.

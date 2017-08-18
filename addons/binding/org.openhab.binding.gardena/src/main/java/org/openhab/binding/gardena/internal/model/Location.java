@@ -26,7 +26,7 @@ public class Location {
     private String id;
     private String name;
     @SerializedName("devices")
-    public List<String> deviceIds = new ArrayList<String>();
+    public List<String> deviceIds = new ArrayList<>();
 
     /**
      * Returns the id of the location.

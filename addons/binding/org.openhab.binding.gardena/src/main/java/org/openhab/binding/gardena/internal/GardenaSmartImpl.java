@@ -113,8 +113,8 @@ public class GardenaSmartImpl implements GardenaSmart {
 
     private GardenaSmartEventListener eventListener;
 
-    private Map<String, Device> allDevicesById = new HashMap<String, Device>();
-    private Set<Location> allLocations = new HashSet<Location>();
+    private Map<String, Device> allDevicesById = new HashMap<>();
+    private Set<Location> allLocations = new HashSet<>();
 
     /**
      * {@inheritDoc}
