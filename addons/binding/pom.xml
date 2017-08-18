@@ -55,6 +55,7 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.network.test</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
@@ -90,5 +91,4 @@
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
   </modules>
-
 </project>

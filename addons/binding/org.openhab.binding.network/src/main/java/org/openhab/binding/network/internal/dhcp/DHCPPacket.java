@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.service.dhcp;
+package org.openhab.binding.network.internal.dhcp;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -21,18 +21,18 @@ import java.util.Map;
  * Parses a dhcp packet and extracts the OP code and all DHCP Options.
  *
  * Example:
- *   DatagramSocket socket = new DatagramSocket(67);
- *   while (true) {
- *      DatagramPacket packet = new DatagramPacket(new byte[1500], 1500);
- *      socket.receive(packet);
- *      DHCPPacket dhcp = new DHCPPacket(packet);
- *      InetAddress requestedAddress = dhcp.getRequestedIPAddress();
- *   }
+ * DatagramSocket socket = new DatagramSocket(67);
+ * while (true) {
+ * DatagramPacket packet = new DatagramPacket(new byte[1500], 1500);
+ * socket.receive(packet);
+ * DHCPPacket dhcp = new DHCPPacket(packet);
+ * InetAddress requestedAddress = dhcp.getRequestedIPAddress();
+ * }
  *
  * If used this way, beware that a <tt>BadPacketExpcetion</tt> is thrown
  * if the datagram contains invalid DHCP data.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff -- Inital contribution
  */
 class DHCPPacket {
     /** DHCP BOOTP CODES **/
@@ -86,6 +86,18 @@ class DHCPPacket {
 
     private byte op;
     private Map<Byte, byte[]> options;
+
+    /**
+     * Package private constructor for test suite.
+     */
+    DHCPPacket(byte[] messageType, byte[] requestedIP) {
+        this.op = BOOTREQUEST;
+        this.options = new LinkedHashMap<Byte, byte[]>();
+        options.put(DHO_DHCP_MESSAGE_TYPE, messageType);
+        if (requestedIP != null) {
+            options.put(DHO_DHCP_REQUESTED_ADDRESS, requestedIP);
+        }
+    }
 
     /**
      * Constructor for the <tt>DHCPPacket</tt> class. Parses the given datagram.
