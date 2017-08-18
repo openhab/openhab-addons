@@ -276,10 +276,9 @@ public class GardenaThingHandler extends BaseThingHandler {
             throws ConfigValidationException {
         validateConfigurationParameters(configurationParameters);
 
-        Device device = null;
         try {
             GardenaSmart gardena = getGardenaSmart();
-            device = gardena.getDevice(UidUtils.getGardenaDeviceId(getThing()));
+            Device device = gardena.getDevice(UidUtils.getGardenaDeviceId(getThing()));
 
             for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
                 String key = configurationParmeter.getKey();
