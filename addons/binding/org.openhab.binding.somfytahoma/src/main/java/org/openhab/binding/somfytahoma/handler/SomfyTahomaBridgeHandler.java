@@ -260,6 +260,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     discoveryService.exteriorScreenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
                 }
+                if (device.isExteriorVenetianBlind()) {
+                    discoveryService.exteriorVenetianBlindDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
                 if (device.isGarageDoor()) {
                     discoveryService.garageDoorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
@@ -308,7 +312,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     Double value = (Double) state.getValue();
                     return new PercentType(value.intValue());
                 }
-                if (state.getType() == TYPE_ONOFF) {
+                if (state.getType() == TYPE_STRING) {
                     String value = state.getValue().toString().toLowerCase();
                     return value.equals("on") ? OnOffType.ON : OnOffType.OFF;
                 }
@@ -479,9 +483,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             }
-            logger.error("Cannot send apply command!", e);
+            logger.error("Cannot send apply command {} to device {} with params {}!", command, url, params, e);
         } catch (Exception e) {
-            logger.error("Cannot send apply command!", e);
+            logger.error("Cannot send apply command {} to device {} with params {}!", command, url, params, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

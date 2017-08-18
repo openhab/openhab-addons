@@ -34,7 +34,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_EXTERIORSCREEN, THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -63,6 +63,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaExteriorScreenHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
+            return new SomfyTahomaExteriorVenetianBlindHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_GARAGEDOOR)) {
             return new SomfyTahomaGarageDoorHandler(thing);

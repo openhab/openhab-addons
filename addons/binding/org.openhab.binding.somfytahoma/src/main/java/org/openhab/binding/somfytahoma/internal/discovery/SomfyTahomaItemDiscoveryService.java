@@ -46,7 +46,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_EXTERIORSCREEN, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
+        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER, THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING, THING_TYPE_ONOFF));
     }
 
     @Override
@@ -67,6 +67,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     public void exteriorScreenDiscovered(String label, String deviceURL, String oid) {
         deviceDiscovered(label, deviceURL, oid, THING_TYPE_EXTERIORSCREEN);
+    }
+
+    public void exteriorVenetianBlindDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_EXTERIORVENETIANBLIND);
     }
 
     public void garageDoorDiscovered(String label, String deviceURL, String oid) {
@@ -114,4 +118,5 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                             .withBridge(bridge.getThing().getUID()).build());
         }
     }
+
 }

@@ -33,6 +33,9 @@ public class SomfyTahomaBindingConstants {
     // Exterior Screen
     public static final ThingTypeUID THING_TYPE_EXTERIORSCREEN = new ThingTypeUID(BINDING_ID, "exteriorscreen");
 
+    // Exterior Venetian Blind
+    public static final ThingTypeUID THING_TYPE_EXTERIORVENETIANBLIND = new ThingTypeUID(BINDING_ID, "exteriorvenetianblind");
+
     // Garage Door
     public static final ThingTypeUID THING_TYPE_GARAGEDOOR = new ThingTypeUID(BINDING_ID, "garagedoor");
 
@@ -66,7 +69,8 @@ public class SomfyTahomaBindingConstants {
     final public static String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
     final public static String UNAUTHORIZED = "Server returned HTTP response code: 401";
     final public static int TYPE_PERCENT = 1;
-    final public static int TYPE_ONOFF = 3;
+    final public static int TYPE_DECIMAL = 2;
+    final public static int TYPE_STRING = 3;
     final public static String COMMAND_MY = "my";
     final public static String COMMAND_SET_CLOSURE = "setClosure";
     final public static String COMMAND_UP = "up";

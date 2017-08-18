@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,27 +18,33 @@ import java.util.ArrayList;
  */
 public class SomfyTahomaCommand {
 
+    int type;
     String name;
-    ArrayList<String> parameters = new ArrayList<String>();
+    ArrayList<Object> parameters = new ArrayList<Object>();
 
     public SomfyTahomaCommand(String command) {
         this.name = command;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String command) {
-        this.name = command;
-    }
-
-    public ArrayList<String> getParameters() {
+    public ArrayList<Object> getParameters() {
         return parameters;
     }
 
-    public void addParameters(String param) {
-        this.parameters.add(param);
+    public ArrayList<Integer> getPercentParameters() {
+        ArrayList<Integer> newList = new ArrayList<>(parameters.size());
+        for( Object o : parameters) {
+            Double val = (Double) o;
+            newList.add(val.intValue());
+        }
+        return newList;
     }
 }
 

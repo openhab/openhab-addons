@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.TRIGGER;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.TYPE_PERCENT;
 
 /**
  * The {@link SomfyTahomaActionGroupHandler} is responsible for handling commands,
@@ -66,8 +67,9 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
     private void sendCommand(SomfyTahomaAction action) {
 
         for (SomfyTahomaCommand command : action.getCommands()) {
-            logger.debug("Sending to device {} command {} params {}", action.getDeviceURL(), command.getName(), gson.toJson(command.getParameters()));
-            getBridgeHandler().sendCommand(action.getDeviceURL(), command.getName(), gson.toJson(command.getParameters()));
+            String parameters = command.getType() == TYPE_PERCENT ? gson.toJson(command.getPercentParameters()) : gson.toJson(command.getParameters());
+            logger.debug("Sending to device {} command {} params {}", action.getDeviceURL(), command.getName(), parameters);
+            getBridgeHandler().sendCommand(action.getDeviceURL(), command.getName(), parameters);
         }
     }
 

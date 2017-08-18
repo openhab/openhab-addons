@@ -8,8 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.gson,
  org.apache.commons.lang,
- org.openhab.binding.somfytahoma,
- org.openhab.binding.somfytahoma.handler,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
@@ -19,6 +18,8 @@ Import-Package: com.google.gson,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.somfytahoma,
+ org.openhab.binding.somfytahoma.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

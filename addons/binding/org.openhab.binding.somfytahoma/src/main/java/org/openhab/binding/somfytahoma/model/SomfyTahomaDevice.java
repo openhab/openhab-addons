@@ -37,7 +37,11 @@ public class SomfyTahomaDevice {
         return uiClass.equals("ExteriorScreen");
     }
 
-    public boolean isGarageDoor()  {
+    public boolean isExteriorVenetianBlind() {
+        return uiClass.equals("ExteriorVenetianBlind");
+    }
+
+    public boolean isGarageDoor() {
         return uiClass.equals("GarageDoor");
     }
 
