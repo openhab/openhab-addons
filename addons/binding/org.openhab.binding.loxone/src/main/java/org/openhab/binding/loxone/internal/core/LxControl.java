@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.core;
+package org.openhab.binding.loxone.internal.core;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

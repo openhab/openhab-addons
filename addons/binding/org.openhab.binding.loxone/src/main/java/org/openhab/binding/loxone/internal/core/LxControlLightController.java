@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.core;
+package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
  * A Light Controller type of control on Loxone Miniserver.

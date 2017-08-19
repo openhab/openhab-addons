@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.core;
+package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
-import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
  * A jalousie type of control on Loxone Miniserver.

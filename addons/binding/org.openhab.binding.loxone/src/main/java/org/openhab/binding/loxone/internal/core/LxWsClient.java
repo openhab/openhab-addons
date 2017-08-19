@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.core;
+package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,8 +36,8 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.openhab.binding.loxone.core.LxJsonResponse.LxJsonSubResponse;
-import org.openhab.binding.loxone.core.LxServerEvent.EventType;
+import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
+import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

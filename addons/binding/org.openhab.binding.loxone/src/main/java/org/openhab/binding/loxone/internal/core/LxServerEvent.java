@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.core;
+package org.openhab.binding.loxone.internal.core;
 
-import org.openhab.binding.loxone.core.LxWsClient.LxWebSocket;
+import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
 /**
  * Event used to communicate between websocket client ({@link LxWebSocket}) and object representing a Miniserver
