@@ -196,7 +196,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         // SENSOR_ID + COMMAND
         data[4] = (byte) ((sensorId >> 12) & 0xFF);
         data[5] = (byte) ((sensorId >> 4) & 0xFF);
-        data[6] = (byte) ((sensorId << 4 & 0xF0) | (command.toByte() & 0x0F));
+        data[6] = (byte) ((sensorId << 4 & 0xF0) | (commandId & 0x0F));
 
         // PULSE
         data[7] = (byte) (pulse >> 8 & 0xFF);
