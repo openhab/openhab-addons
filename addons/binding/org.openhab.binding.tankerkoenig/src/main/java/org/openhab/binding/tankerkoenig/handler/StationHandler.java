@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -124,11 +125,10 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-
         DecimalType diesel = new DecimalType(station.getDiesel());
         DecimalType e10 = new DecimalType(station.getE10());
         DecimalType e5 = new DecimalType(station.getE5());
-
+        updateState(CHANNEL_STATION_OPEN, (station.isOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
         updateState(CHANNEL_DIESEL, diesel);
         updateState(CHANNEL_E10, e10);
         updateState(CHANNEL_E5, e5);

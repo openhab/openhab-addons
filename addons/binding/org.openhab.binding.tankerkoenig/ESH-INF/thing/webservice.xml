@@ -4,6 +4,9 @@
 	<bridge-type id="webservice">
 		<label>Tankerkönig Webservice</label>
 		<description>The Tankerkönig Webservice can handle 1 to 10 gas stations.</description>
+		<channels>
+			<channel id="holiday" typeId="holiday" />
+		</channels>
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
 				<label>API-Key</label>
@@ -22,4 +25,9 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+	<channel-type id="holiday">
+		<item-type>Switch</item-type>
+		<label>Holiday</label>
+		<description>ON if today is a holiday</description>
+	</channel-type>
 </thing:thing-descriptions>
