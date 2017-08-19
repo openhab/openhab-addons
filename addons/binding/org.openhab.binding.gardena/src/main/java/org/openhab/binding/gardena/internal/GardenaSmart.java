@@ -15,6 +15,7 @@ import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.Location;
+import org.openhab.binding.gardena.internal.model.Setting;
 
 /**
  * Describes the methods required for the communication with Gardens Smart Home.
@@ -53,6 +54,11 @@ public interface GardenaSmart {
      * Sends a command to Gardena Smart Home.
      */
     public void sendCommand(Device device, GardenaSmartCommandName commandName, Object value) throws GardenaException;
+
+    /**
+     * Sends a setting to Gardena Smart Home.
+     */
+    public void sendSetting(Setting setting, Object value) throws GardenaException;
 
     /**
      * Returns the id.

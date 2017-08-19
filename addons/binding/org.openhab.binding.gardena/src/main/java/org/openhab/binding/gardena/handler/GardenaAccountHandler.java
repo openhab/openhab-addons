@@ -54,9 +54,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         super(bridge);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
@@ -106,9 +103,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         super.dispose();
@@ -162,9 +156,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         return gardenaSmart;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -174,9 +165,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceUpdated(Device device) {
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
@@ -187,6 +175,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 for (Channel channel : gardenaThing.getChannels()) {
                     gardenaThingHandler.updateChannel(channel.getUID());
                 }
+                gardenaThingHandler.updateSettings(device);
                 gardenaThingHandler.updateStatus(device);
             } catch (GardenaException ex) {
                 logger.error("There is something wrong with your thing, please recreate the thing {}",
@@ -197,9 +186,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onNewDevice(Device device) {
         if (discoveryService != null) {
@@ -208,9 +194,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         onDeviceUpdated(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceDeleted(Device device) {
         if (discoveryService != null) {
@@ -218,17 +201,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);

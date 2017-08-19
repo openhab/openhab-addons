@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class SensorMeasureLightCommand extends Command {
     private static final String COMMAND = "measure_light";
 
-    /**
-     * {@inheritDoc}
-     */
     public SensorMeasureLightCommand() {
         super(COMMAND);
     }

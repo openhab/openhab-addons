@@ -8,18 +8,26 @@
  */
 package org.openhab.binding.gardena.internal.model.command;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * Command to manually override the mower timer.
+ * SettingComand wrapper for valid Gardena JSON serialization.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+public class SettingCommandWrapper {
+    @SerializedName("settings")
+    private SettingCommand command;
 
-public class MowerStartOverrideTimerCommand extends Command {
-    private static final String COMMAND = "start_override_timer";
-
-    public MowerStartOverrideTimerCommand(String durationInMinutes) {
-        super(COMMAND);
-        parameters = new CommandParameters();
-        parameters.setDuration(durationInMinutes);
+    public SettingCommandWrapper(SettingCommand command) {
+        this.command = command;
     }
+
+    /**
+     * Returns the setting command.
+     */
+    public SettingCommand getCommand() {
+        return command;
+    }
+
 }

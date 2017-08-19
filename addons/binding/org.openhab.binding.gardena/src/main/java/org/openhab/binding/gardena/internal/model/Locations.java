@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Locations {
 
-    private List<Location> locations = new ArrayList<Location>();
+    private List<Location> locations = new ArrayList<>();
 
     /**
      * Returns a list of Gardena locations.
