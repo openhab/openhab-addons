@@ -40,7 +40,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             return (Integer) object;
         }
         try {
-            return Double.valueOf(ObjectUtils.toString(object)).intValue();
+            return Long.valueOf(Double.valueOf(ObjectUtils.toString(object)).longValue()).intValue();
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -181,7 +181,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("off")) {
             return (Boolean.FALSE);
         } else if (value.matches("(-|\\+)?[0-9]+")) {
-            return (Integer.valueOf(value));
+            return Integer.valueOf((Long.valueOf(value).intValue()));
         } else if (value.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
             return (Double.valueOf(value));
         } else {
