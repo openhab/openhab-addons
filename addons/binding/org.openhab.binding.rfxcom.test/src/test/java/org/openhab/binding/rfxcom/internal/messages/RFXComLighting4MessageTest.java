@@ -51,10 +51,16 @@ public class RFXComLighting4MessageTest {
     private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId, Integer pulse,
             RFXComLighting4Message.Commands command, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
             throws RFXComException {
+        testMessage(hexMsg, subType, deviceId, pulse, command.toByte(), seqNbr, signalLevel, offCommand, onCommand);
+    }
+
+    private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId, Integer pulse,
+            byte commandByte, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
+            throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Command", command.toByte(), RFXComTestHelper.getActualIntValue(msg, COMMAND_ID));
+        assertEquals("Command", commandByte, RFXComTestHelper.getActualIntValue(msg, COMMAND_ID));
         if (seqNbr != null) {
             assertEquals("Seq Number", seqNbr.shortValue(), (short) (msg.seqNbr & 0xFF));
         }
@@ -74,6 +80,7 @@ public class RFXComLighting4MessageTest {
         testMessage("091300021D155C01E960", PT2262, "119125", 489, ON_12, 2, 6, 4, 12);
         testMessage("091300D345DD99018C50", PT2262, "286169", 396, ON_9, 211, 5, 4, 9);
         testMessage("09130035D149A2017750", PT2262, "857242", 375, OFF_2, 53, 5, 2, 1);
+        testMessage("091300CA0F8D2801AA70", PT2262, "63698", 426, (byte)8, 202, 7, 8, 1);
     }
 
     @Test
