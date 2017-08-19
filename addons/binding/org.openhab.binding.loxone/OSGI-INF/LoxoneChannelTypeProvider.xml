@@ -15,6 +15,7 @@
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.type.ChannelTypeProvider"/>
+      <provide interface="org.openhab.binding.loxone.internal.LoxoneChannelTypeProvider"/>
    </service>
 
 </scr:component>
