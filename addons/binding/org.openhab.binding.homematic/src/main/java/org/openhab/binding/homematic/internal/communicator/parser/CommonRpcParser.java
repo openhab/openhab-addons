@@ -47,6 +47,20 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
+     * Converts the object to a double.
+     */
+    protected Double toDouble(Object object) {
+        if (object == null || object instanceof Double) {
+            return (Double) object;
+        }
+        try {
+            return Double.valueOf(ObjectUtils.toString(object));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    /**
      * Converts the object to a number.
      */
     protected Number toNumber(Object object) {
