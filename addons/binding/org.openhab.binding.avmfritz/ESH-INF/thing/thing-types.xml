@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="avmfritz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported FRITZ! devices and features -->
@@ -122,8 +121,7 @@
 
 	<thing-type id="FRITZ_Powerline_546E_Solo">
 		<label>FRITZ!Powerline 546E</label>
-		<description>FRITZ!Powerline 546E with switchable outlet in standalone
-			mode.
+		<description>FRITZ!Powerline 546E with switchable outlet in standalone mode.
 		</description>
 
 		<channels>
