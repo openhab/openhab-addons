@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigationControlXML;
 
 /**
@@ -32,7 +33,7 @@ public class NavigationControlState implements Invalidateable {
     public String getAllItemLabels() {
         StringBuilder sb = new StringBuilder();
         for (String item : items) {
-            if (item != null && item.length() > 0) {
+            if (StringUtils.isNotEmpty(item)) {
                 sb.append(item);
                 sb.append(',');
             }

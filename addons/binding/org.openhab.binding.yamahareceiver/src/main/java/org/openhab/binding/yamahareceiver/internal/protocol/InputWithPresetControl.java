@@ -20,13 +20,13 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
  * @author David Graeff - Initial contribution
  */
 
-public interface InputWithPresetControl extends IStateUpdateable {
+public interface InputWithPresetControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    public static Set<String> supportedInputs = Sets.newHashSet("TUNER",
+    Set<String> SUPPORTED_INPUTS = Sets.newHashSet(YamahaReceiverBindingConstants.INPUT_TUNER,
             "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
-            "Napster", "Pandora", "SIRIUS", "Rhapsody", "Bluetooth", "iPod", "HD_RADIO");
+            "Napster", "Pandora", "SIRIUS", "Rhapsody", YamahaReceiverBindingConstants.INPUT_BLUETOOTH, "iPod", "HD_RADIO");
 
     /**
      * Select a preset channel.
@@ -34,5 +34,5 @@ public interface InputWithPresetControl extends IStateUpdateable {
      * @param presetChannel The preset position [1,40]
      * @throws Exception
      */
-    public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException;
+    void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException;
 }

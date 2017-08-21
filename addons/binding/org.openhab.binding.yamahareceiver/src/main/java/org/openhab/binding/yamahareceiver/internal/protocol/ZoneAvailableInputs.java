@@ -9,10 +9,10 @@
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
 /**
- * Implement this to
+ * Implement this interface to get callbacks of this and that
  *
  * @author David Graeff - Initial contribution
  */
 
-public interface ZoneAvailableInputs extends IStateUpdateable {
+public interface ZoneAvailableInputs extends IStateUpdatable {
 }

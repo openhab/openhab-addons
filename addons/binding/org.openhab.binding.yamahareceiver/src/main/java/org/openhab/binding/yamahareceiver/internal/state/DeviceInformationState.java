@@ -17,6 +17,7 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
  * Basic AVR state (name, version, available zones, etc)
  *
  * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - DAB support, Spotify support
  */
 public class DeviceInformationState implements Invalidateable {
     public String host = null;
@@ -34,8 +35,13 @@ public class DeviceInformationState implements Invalidateable {
      * Flag indicating if Tuner input is supported
      */
     public boolean supportTuner = false;
+    /**
+     * Flag indicating if Spotify input is supported
+     */
+    public boolean supportSpotify = false;
 
     // If we lost the connection, invalidate the state.
+    @Override
     public void invalidate() {
         zones.clear();
         version = "0.0";
@@ -43,5 +49,6 @@ public class DeviceInformationState implements Invalidateable {
         id = "";
         supportDAB = false;
         supportTuner = false;
+        supportSpotify = false;
     }
 }

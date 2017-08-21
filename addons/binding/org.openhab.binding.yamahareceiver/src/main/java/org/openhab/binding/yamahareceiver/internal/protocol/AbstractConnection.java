@@ -21,11 +21,14 @@ import org.slf4j.LoggerFactory;
  * Represents a connection to the AVR. Is implemented by the XMLConnection and JSONConnection.
  *
  * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - Refactoring
+ *
  */
 public abstract class AbstractConnection {
     private Logger logger = LoggerFactory.getLogger(AbstractConnection.class);
+
     protected String host;
-    protected boolean protocolSnifferEnabled = false;
+    protected boolean protocolSnifferEnabled;
     protected FileOutputStream debugOutStream;
 
     /**

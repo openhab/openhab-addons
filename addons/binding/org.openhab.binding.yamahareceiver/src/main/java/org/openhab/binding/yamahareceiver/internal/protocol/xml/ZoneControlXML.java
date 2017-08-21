@@ -30,6 +30,13 @@ import org.w3c.dom.Node;
  * @author David Gräff - Refactored
  * @author Eric Thill
  * @author Ben Jones
+ * @author Tomasz Maruszak - Refactoring
+ *
+ * FixMe:
+ *  When handing input channel this class needs some improvements.
+ *  For example, AVRs when setting input 'AUDIO_X' (or HDMI_X) need the input to be sent in this form.
+ *  However, what comes back in the status update from the AVR is 'AUDIOX' (and 'HDMIX') respectively.
+ *
  */
 public class ZoneControlXML implements ZoneControl {
     private final Logger logger = LoggerFactory.getLogger(ZoneControlXML.class);
@@ -98,8 +105,7 @@ public class ZoneControlXML implements ZoneControl {
             volume = 100;
         }
         // Compute value in db
-        setVolumeDB(volume * YamahaReceiverBindingConstants.VOLUME_RANGE / 100.0f
-                + YamahaReceiverBindingConstants.VOLUME_MIN);
+        setVolumeDB(volume * YamahaReceiverBindingConstants.VOLUME_RANGE / 100.0f + YamahaReceiverBindingConstants.VOLUME_MIN);
     }
 
     /**
@@ -126,6 +132,7 @@ public class ZoneControlXML implements ZoneControl {
 
     @Override
     public void setInput(String name) throws IOException, ReceivedMessageParseException {
+        // ToDo: See the fixme in the class description
         comReference.get().send(XMLUtils.wrZone(zone, "<Input><Input_Sel>" + name + "</Input_Sel></Input>"));
         update();
     }
@@ -149,8 +156,6 @@ public class ZoneControlXML implements ZoneControl {
             return;
         }
 
-        logger.trace("Updating status");
-
         AbstractConnection com = comReference.get();
         String response = com.sendReceive(XMLUtils.wrZone(zone, "<Basic_Status>GetParam</Basic_Status>"));
         Document doc = XMLUtils.xml(response);
@@ -159,17 +164,15 @@ public class ZoneControlXML implements ZoneControl {
         }
         Node basicStatus = XMLUtils.getNode(doc.getFirstChild(), zone + "/Basic_Status");
 
-        Node node;
         String value;
 
         ZoneControlState state = new ZoneControlState();
 
-        node = XMLUtils.getNode(basicStatus, "Power_Control/Power");
-        value = node != null ? node.getTextContent() : "";
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Power_Control/Power", "");
         state.power = "On".equalsIgnoreCase(value);
 
-        node = XMLUtils.getNode(basicStatus, "Input/Input_Sel");
-        value = node != null ? node.getTextContent() : "";
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Input/Input_Sel", "");
+        // ToDo: See the fixme in the class description
         state.inputID = XMLUtils.convertNameToID(value);
 
         if (StringUtils.isBlank(state.inputID)) {
@@ -178,16 +181,13 @@ public class ZoneControlXML implements ZoneControl {
         }
 
         // Some receivers may use Src_Name instead?
-        node = XMLUtils.getNode(basicStatus, "Input/Input_Sel_Item_Info/Title");
-        value = node != null ? node.getTextContent() : "";
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Input/Input_Sel_Item_Info/Title", "");
         state.inputName = value;
 
-        node = XMLUtils.getNode(basicStatus, "Surround/Program_Sel/Current/Sound_Program");
-        value = node != null ? node.getTextContent() : "";
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Surround/Program_Sel/Current/Sound_Program", "");
         state.surroundProgram = value;
 
-        node = XMLUtils.getNode(basicStatus, "Volume/Lvl/Val");
-        value = node != null ? node.getTextContent() : String.valueOf(YamahaReceiverBindingConstants.VOLUME_MIN);
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Volume/Lvl/Val", String.valueOf(YamahaReceiverBindingConstants.VOLUME_MIN));
         state.volume = Float.parseFloat(value) * .1f; // in DB
         state.volume = (state.volume + -YamahaReceiverBindingConstants.VOLUME_MIN) * 100.0f
                 / YamahaReceiverBindingConstants.VOLUME_RANGE; // in percent
@@ -196,9 +196,11 @@ public class ZoneControlXML implements ZoneControl {
             state.volume = 0;
         }
 
-        node = XMLUtils.getNode(basicStatus, "Volume/Mute");
-        value = node != null ? node.getTextContent() : "";
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Volume/Mute", "");
         state.mute = "On".equalsIgnoreCase(value);
+
+        logger.trace("Zone {} state - power: {}, input: {}, mute: {}, surroundProgram: {}, volume: {}",
+                zone, state.power, state.inputID, state.mute, state.surroundProgram, state.volume);
 
         observer.zoneStateChanged(state);
     }

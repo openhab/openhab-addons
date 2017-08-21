@@ -19,11 +19,11 @@ import java.util.Set;
  *
  * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
  */
-public interface InputWithDabBandControl extends IStateUpdateable {
+public interface InputWithDabBandControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    Set<String> supportedInputs = Sets.newHashSet("TUNER");
+    Set<String> SUPPORTED_INPUTS = Sets.newHashSet(YamahaReceiverBindingConstants.INPUT_TUNER);
 
     /**
      * Select a DAB band by name.

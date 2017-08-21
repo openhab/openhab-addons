@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
  *
  * @author David Graeff - Completely refactored class
  * @author Dennis Frommknecht - Initial idea and implementaton
+ * @author Tomasz Maruszak - Refactor
  */
 public class InputWithNavigationControlXML implements InputWithNavigationControl {
     protected final WeakReference<AbstractConnection> comReference;
@@ -62,7 +63,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
     public InputWithNavigationControlXML(NavigationControlState state, String inputID, AbstractConnection com,
             NavigationControlStateListener observer) {
         this.state = state;
-        this.comReference = new WeakReference<AbstractConnection>(com);
+        this.comReference = new WeakReference<>(com);
         this.inputID = inputID;
         this.observer = observer;
     }
@@ -79,15 +80,26 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
     }
 
     /**
+     * Sends a cursor command to Yamaha.
+     * @param command
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    private void navigateCursor(String command) throws IOException, ReceivedMessageParseException {
+        comReference.get().send(wrInput("<List_Control><Cursor>" + command + "</Cursor></List_Control>"));
+        update();
+    }
+
+    /**
      * Navigate back
      *
      * @throws Exception
      */
     @Override
     public void goBack() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Back</Cursor></List_Control>"));
-        update();
+        navigateCursor("Back");
     }
+
 
     /**
      * Navigate up
@@ -96,8 +108,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     @Override
     public void goUp() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Up</Cursor></List_Control>"));
-        update();
+        navigateCursor("Up");
     }
 
     /**
@@ -107,8 +118,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     @Override
     public void goDown() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Down</Cursor></List_Control>"));
-        update();
+        navigateCursor("Down");
     }
 
     /**
@@ -118,8 +128,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     @Override
     public void goLeft() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Left</Cursor></List_Control>"));
-        update();
+        navigateCursor("Left");
     }
 
     /**
@@ -129,8 +138,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     @Override
     public void goRight() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Right</Cursor></List_Control>"));
-        update();
+        navigateCursor("Right");
     }
 
     /**
@@ -140,8 +148,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     @Override
     public void selectCurrentItem() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<List_Control><Cursor>Select</Cursor></List_Control>"));
-        update();
+        navigateCursor("Select");
     }
 
     /**
@@ -152,18 +159,15 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
     @Override
     public boolean goToRoot() throws IOException, ReceivedMessageParseException {
         if (useAlternativeBackToHomeCmd) {
-            comReference.get().send(wrInput("<List_Control><Cursor>Return to Home</Cursor></List_Control>"));
-            update();
+            navigateCursor("Return to Home");
             if (state.menuLayer > 0) {
                 observer.navigationError("Both going back to root commands failed for your receiver!");
                 return false;
             }
         } else {
-            comReference.get().send(wrInput("<List_Control><Cursor>Back to Home</Cursor></List_Control>"));
-            update();
+            navigateCursor("Back to Home");
             if (state.menuLayer > 0) {
-                observer.navigationError(
-                        "The going back to root command failed for your receiver. Trying to use a different command.");
+                observer.navigationError("The going back to root command failed for your receiver. Trying to use a different command.");
                 useAlternativeBackToHomeCmd = true;
                 return goToRoot();
             }
@@ -259,8 +263,7 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
 
             int index = findItemOnCurrentPage(name);
             if (index > 0) {
-                com.send(wrInput(
-                        "<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
+                com.send(wrInput("<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
                 update();
                 return true;
             }
@@ -288,18 +291,13 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
             String response = com.sendReceive(wrInput("<List_Info>GetParam</List_Info>"));
             doc = XMLUtils.xml(response);
             if (doc.getFirstChild() == null) {
-                throw new ReceivedMessageParseException("<Play_Control>GetParam failed: " + response);
+                throw new ReceivedMessageParseException("<List_Info>GetParam failed: " + response);
             }
 
-            currentMenu = XMLUtils.getNode(doc.getFirstChild(), "List_Info");
-
-            if (currentMenu == null) {
-                throw new ReceivedMessageParseException("<List_Info>: GetParam response invalid!");
-            }
+            currentMenu = XMLUtils.getNodeOrFail(doc.getFirstChild(), "List_Info");
 
             Node nodeMenuState = XMLUtils.getNode(currentMenu, "Menu_Status");
-
-            if (nodeMenuState == null || nodeMenuState.getTextContent().equals("Ready")) {
+            if (nodeMenuState == null || "Ready".equals(nodeMenuState.getTextContent())) {
                 break;
             }
 
@@ -319,39 +317,22 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
 
         state.clearItems();
 
-        Node node = XMLUtils.getNode(currentMenu, "Menu_Name");
-        if (node == null) {
-            throw new ReceivedMessageParseException("Menu_Name child in parent node missing!");
-        }
-
+        Node node = XMLUtils.getNodeOrFail(currentMenu, "Menu_Name");
         state.menuName = node.getTextContent();
 
-        node = XMLUtils.getNode(currentMenu, "Menu_Layer");
-        if (node == null) {
-            throw new ReceivedMessageParseException("Menu_Layer child in parent node missing!");
-        }
-
+        node = XMLUtils.getNodeOrFail(currentMenu, "Menu_Layer");
         state.menuLayer = Integer.parseInt(node.getTextContent()) - 1;
 
-        node = XMLUtils.getNode(currentMenu, "Cursor_Position/Current_Line");
-        if (node == null) {
-            throw new ReceivedMessageParseException("Cursor_Position/Current_Line child in parent node missing!");
-        }
-
+        node = XMLUtils.getNodeOrFail(currentMenu, "Cursor_Position/Current_Line");
         int currentLine = Integer.parseInt(node.getTextContent());
         state.currentLine = currentLine;
 
-        node = XMLUtils.getNode(currentMenu, "Cursor_Position/Max_Line");
-        if (node == null) {
-            throw new ReceivedMessageParseException("Cursor_Position/Max_Line child in parent node missing!");
-        }
-
+        node = XMLUtils.getNodeOrFail(currentMenu, "Cursor_Position/Max_Line");
         int maxLines = Integer.parseInt(node.getTextContent());
         state.maxLine = maxLines;
 
         for (int i = 1; i < 8; ++i) {
-            node = XMLUtils.getNode(currentMenu, "Current_List/Line_" + i + "/Txt");
-            state.items[i - 1] = node != null ? node.getTextContent() : null;
+            state.items[i - 1] = XMLUtils.getNodeContentOrDefault(currentMenu, "Current_List/Line_" + i + "/Txt", (String) null);
         }
 
         if (observer != null) {

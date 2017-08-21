@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
  * No state will be saved in here, but in {@link ZoneControlState} instead.
  *
  * @author David Gräff - Initial contribution
+ * @author Tomasz Maruszak - Refactoring
  */
 public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
     private final Logger logger = LoggerFactory.getLogger(ZoneAvailableInputsXML.class);
@@ -57,8 +58,6 @@ public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
             return;
         }
 
-        logger.trace("Updating status");
-
         AbstractConnection com = comReference.get();
         String response = com
                 .sendReceive(XMLUtils.wrZone(zone, "<Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input>"));
@@ -78,6 +77,10 @@ public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
             if (writable) {
                 state.availableInputs.put(XMLUtils.convertNameToID(name), name);
             }
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Zone {} - available inputs: {}", zone, String.join(", ", state.availableInputs.keySet()));
         }
 
         observer.availableInputsChanged(state);

@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
  * used across the whole binding.
  *
  * @author David Graeff <david.graeff@web.de>
+ * @author Tomasz Maruszak - DAB support, Spotify support, refactoring
  */
 public class YamahaReceiverBindingConstants {
     public static final String BINDING_ID = "yamahareceiver";
@@ -75,9 +76,11 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_PLAYBACK_ARTIST = "playback_artist";
     public static final String CHANNEL_PLAYBACK_ALBUM = "playback_album";
     public static final String CHANNEL_PLAYBACK_SONG = "playback_song";
+    public static final String CHANNEL_PLAYBACK_SONG_IMAGE_URL = "playback_song_image_url";
 
     public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK,
-            CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG);
+            CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG,
+            CHANNEL_PLAYBACK_SONG_IMAGE_URL);
 
     public static final String UPNP_TYPE = "MediaRenderer";
     public static final String UPNP_MANUFACTURER = "YAMAHA";
@@ -106,7 +109,7 @@ public class YamahaReceiverBindingConstants {
         Main_Zone,
         Zone_2,
         Zone_3,
-        Zone_4;
+        Zone_4
     }
 
     /**
@@ -123,4 +126,14 @@ public class YamahaReceiverBindingConstants {
 
     /** Max menu waiting in ms */
     public static final int MENU_MAX_WAITING_TIME = 5000;
+
+    // List of known inputs
+    public static final String INPUT_TUNER = "TUNER";
+    public static final String INPUT_SPOTIFY = "Spotify";
+    public static final String INPUT_BLUETOOTH = "Bluetooth";
+
+    /** Placeholder value that is used when the string channel value is not available */
+    public static final String VALUE_NA = "N/A";
+    /** Empty value that is used when the string channel value is not available */
+    public static final String VALUE_EMPTY = "";
 }

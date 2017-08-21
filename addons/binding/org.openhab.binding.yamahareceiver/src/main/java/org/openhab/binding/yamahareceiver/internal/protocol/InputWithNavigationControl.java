@@ -17,13 +17,14 @@ import com.google.common.collect.Sets;
  * The navigation control protocol interface
  *
  * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - refactoring
  */
 
-public interface InputWithNavigationControl extends IStateUpdateable {
+public interface InputWithNavigationControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    public static Set<String> supportedInputs = Sets.newHashSet("NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC", "Napster",
+    Set<String> SUPPORTED_INPUTS = Sets.newHashSet("NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC", "Napster",
             "Pandora", "SIRIUS", "Rhapsody", "iPod", "HD_RADIO");
 
     /**
@@ -31,49 +32,49 @@ public interface InputWithNavigationControl extends IStateUpdateable {
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void goBack() throws ReceivedMessageParseException, IOException;
+    void goBack() throws ReceivedMessageParseException, IOException;
 
     /**
      * Navigate up
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void goUp() throws IOException, ReceivedMessageParseException;
+    void goUp() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate down
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void goDown() throws IOException, ReceivedMessageParseException;
+    void goDown() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate left. Not for all zones or functions available.
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void goLeft() throws IOException, ReceivedMessageParseException;
+    void goLeft() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate right. Not for all zones or functions available.
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void goRight() throws IOException, ReceivedMessageParseException;
+    void goRight() throws IOException, ReceivedMessageParseException;
 
     /**
      * Select current item. Not for all zones or functions available.
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public void selectCurrentItem() throws IOException, ReceivedMessageParseException;
+    void selectCurrentItem() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate to root menu
      *
      * @throws ReceivedMessageParseException, IOException
      */
-    public boolean goToRoot() throws IOException, ReceivedMessageParseException;
+    boolean goToRoot() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate to the given page. The Yamaha protocol separates list of items into pages.
@@ -83,7 +84,7 @@ public interface InputWithNavigationControl extends IStateUpdateable {
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public void goToPage(int page) throws IOException, ReceivedMessageParseException;
+    void goToPage(int page) throws IOException, ReceivedMessageParseException;
 
     /**
      * Provide a full path to the menu and menu item
@@ -92,5 +93,5 @@ public interface InputWithNavigationControl extends IStateUpdateable {
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public void selectItemFullPath(String fullPath) throws IOException, ReceivedMessageParseException;
+    void selectItemFullPath(String fullPath) throws IOException, ReceivedMessageParseException;
 }

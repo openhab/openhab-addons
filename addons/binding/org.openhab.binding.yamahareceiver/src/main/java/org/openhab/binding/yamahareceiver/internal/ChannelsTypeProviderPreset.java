@@ -94,7 +94,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider {
             return;
         }
 
-        List<StateOption> options = new ArrayList<StateOption>();
+        List<StateOption> options = new ArrayList<>();
         for (int i = 1; i <= presetNames.length; ++i) {
             options.add(new StateOption(String.valueOf(i), presetNames[i - 1]));
         }

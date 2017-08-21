@@ -25,13 +25,14 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link SystemControlState} instead.
  *
  * @author David Gräff - Initial contribution
+ * @author Tomasz Maruszak - refactoring
  */
 public class SystemControlXML implements SystemControl {
     private WeakReference<AbstractConnection> comReference;
     private SystemControlStateListener observer;
 
     public SystemControlXML(AbstractConnection xml, SystemControlStateListener observer) {
-        this.comReference = new WeakReference<AbstractConnection>(xml);
+        this.comReference = new WeakReference<>(xml);
         this.observer = observer;
     }
 
@@ -50,14 +51,11 @@ public class SystemControlXML implements SystemControl {
 
         Node basicStatus = XMLUtils.getNode(doc.getFirstChild(), "System/Power_Control");
 
-        Node node;
-        String value;
-
         SystemControlState state = new SystemControlState();
 
-        node = XMLUtils.getNode(basicStatus, "Power");
-        value = node != null ? node.getTextContent() : "";
-        state.power = (value.equals("On"));
+        String value = XMLUtils.getNodeContentOrDefault(basicStatus, "Power", "");
+        state.power = value.equals("On");
+
         observer.systemControlStateChanged(state);
     }
 

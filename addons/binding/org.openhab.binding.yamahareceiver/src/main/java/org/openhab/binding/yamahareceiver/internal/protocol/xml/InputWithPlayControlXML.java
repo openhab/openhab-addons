@@ -11,6 +11,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
@@ -18,6 +19,8 @@ import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParse
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -37,15 +40,19 @@ import org.w3c.dom.Node;
  * {@link PresetInfoState} instead.
  *
  * @author David Graeff
+ * @author Tomasz Maruszak - Spotify support, refactoring
  */
 public class InputWithPlayControlXML implements InputWithPlayControl {
+
+    public static final int PRESET_CHANNELS = 40;
+
+    private final Logger logger = LoggerFactory.getLogger(InputWithPlayControlXML.class);
+
     protected final WeakReference<AbstractConnection> comReference;
 
     protected final String inputID;
 
-    public static final int PRESET_CHANNELS = 40;
-
-    private PlayInfoStateListener observer;
+    private final PlayInfoStateListener observer;
 
     /**
      * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
@@ -56,7 +63,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     public InputWithPlayControlXML(String inputID, AbstractConnection com, PlayInfoStateListener observer) {
         this.inputID = inputID;
-        this.comReference = new WeakReference<AbstractConnection>(com);
+        this.comReference = new WeakReference<>(com);
         this.observer = observer;
     }
 
@@ -91,28 +98,56 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
 
         PlayInfoState msg = new PlayInfoState();
 
-        Node playbackInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Info/Playback_Info");
-        msg.playbackMode = playbackInfoNode != null ? playbackInfoNode.getTextContent() : "";
+        Node playInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Info");
 
-        Node metaInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Info/Meta_Info");
-        Node sub;
+        msg.playbackMode = XMLUtils.getNodeContentOrDefault(playInfoNode, "Playback_Info", msg.playbackMode);
 
-        if (inputID.equals("TUNER")) {
-            sub = XMLUtils.getNode(metaInfoNode, "Radio_Text_A");
-            msg.station = sub != null ? sub.getTextContent() : "";
-        } else {
-            sub = XMLUtils.getNode(metaInfoNode, "Station");
-            msg.station = sub != null ? sub.getTextContent() : "";
+        Node metaInfoNode = XMLUtils.getNode(playInfoNode, "Meta_Info");
+        if (metaInfoNode != null) {
+            String stationElement = YamahaReceiverBindingConstants.INPUT_TUNER.equals(inputID) ? "Radio_Text_A" : "Station";
+            msg.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, stationElement, msg.station);
+
+            msg.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Artist", msg.artist);
+            msg.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Album", msg.album);
+
+            String songElement = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Track" : "Song";
+            msg.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, songElement, msg.song);
         }
 
-        sub = XMLUtils.getNode(metaInfoNode, "Artist");
-        msg.artist = sub != null ? sub.getTextContent() : "";
+        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+            //<YAMAHA_AV rsp="GET" RC="0">
+            //    <Spotify>
+            //        <Play_Info>
+            //            <Feature_Availability>Ready</Feature_Availability>
+            //            <Playback_Info>Play</Playback_Info>
+            //            <Meta_Info>
+            //                <Artist>Way Out West</Artist>
+            //                <Album>Tuesday Maybe</Album>
+            //                <Track>Tuesday Maybe</Track>
+            //            </Meta_Info>
+            //            <Album_ART>
+            //                <URL>/YamahaRemoteControl/AlbumART/AlbumART3929.jpg</URL>
+            //                <ID>39290</ID>
+            //                <Format>JPEG</Format>
+            //            </Album_ART>
+            //            <Input_Logo>
+            //                <URL_S>/YamahaRemoteControl/Logos/logo005.png</URL_S>
+            //                <URL_M></URL_M>
+            //                <URL_L></URL_L>
+            //            </Input_Logo>
+            //        </Play_Info>
+            //    </Spotify>
+            //</YAMAHA_AV>
 
-        sub = XMLUtils.getNode(metaInfoNode, "Album");
-        msg.album = sub != null ? sub.getTextContent() : "";
+            // Spotify input supports song cover image
+            String songImageUrl = XMLUtils.getNodeContentOrDefault(playInfoNode, "Album_ART/URL", "");
+            if (StringUtils.isNotEmpty(songImageUrl)) {
+                msg.songImageUrl = String.format("http://%s%s", com.getHost(), songImageUrl);
+            }
+        }
 
-        sub = XMLUtils.getNode(metaInfoNode, "Song");
-        msg.song = sub != null ? sub.getTextContent() : "";
+        logger.trace("Playback: {}, Station: {}, Artist: {}, Album: {}, Song: {}, SongImageUrl: {}",
+                msg.playbackMode, msg.station, msg.artist, msg.album, msg.song, msg.songImageUrl);
 
         observer.playInfoUpdated(msg);
     }
@@ -125,8 +160,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void play() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>Play</Playback></Play_Control>"));
-        update();
+        sendPlaybackCommand("Play");
     }
 
     /**
@@ -136,8 +170,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void stop() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>Stop</Playback></Play_Control>"));
-        update();
+        sendPlaybackCommand("Stop");
     }
 
     /**
@@ -147,8 +180,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void pause() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>Pause</Playback></Play_Control>"));
-        update();
+        sendPlaybackCommand("Pause");
     }
 
     /**
@@ -158,7 +190,11 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void skipFF() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>Skip Fwd</Playback></Play_Control>"));
+        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+            logger.warn("Command skip forward is not supported for input {}", inputID);
+            return;
+        }
+        sendPlaybackCommand("Skip Fwd");
     }
 
     /**
@@ -168,7 +204,11 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void skipREV() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>Skip Rev</Playback></Play_Control>"));
+        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+            logger.warn("Command skip reverse is not supported for input {}", inputID);
+            return;
+        }
+        sendPlaybackCommand("Skip Rev");
     }
 
     /**
@@ -178,8 +218,8 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void nextTrack() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>>>|</Playback></Play_Control>"));
-        update();
+        String cmd = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Skip Fwd" : ">>|";
+        sendPlaybackCommand(cmd);
     }
 
     /**
@@ -189,7 +229,18 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void previousTrack() throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput("<Play_Control><Playback>|<<</Playback></Play_Control>"));
+        String cmd = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Skip Rev" : "|<<";
+        sendPlaybackCommand(cmd);
+    }
+
+    /**
+     * Sends a playback command to the AVR. After command is invoked, the state is also being refreshed.
+     * @param command - the protocol level command name
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    private void sendPlaybackCommand(String command) throws IOException, ReceivedMessageParseException {
+        comReference.get().send(wrInput("<Play_Control><Playback>" + command + "</Playback></Play_Control>"));
         update();
     }
 

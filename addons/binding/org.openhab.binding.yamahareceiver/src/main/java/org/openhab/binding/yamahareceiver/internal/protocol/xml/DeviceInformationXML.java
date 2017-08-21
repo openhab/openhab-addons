@@ -29,14 +29,15 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link SystemControlState} instead.
  *
  * @author David Gräff <david.graeff@tu-dortmund.de>
+ * @author Tomasz Maruszak - DAB support, Spotify support
  */
 public class DeviceInformationXML implements DeviceInformation {
     private Logger logger = LoggerFactory.getLogger(DeviceInformationXML.class);
     private WeakReference<AbstractConnection> comReference;
     protected DeviceInformationState state;
 
-    public DeviceInformationXML(AbstractConnection xml, DeviceInformationState state) {
-        this.comReference = new WeakReference<>(xml);
+    public DeviceInformationXML(AbstractConnection com, DeviceInformationState state) {
+        this.comReference = new WeakReference<>(com);
         this.state = state;
     }
 
@@ -83,24 +84,13 @@ public class DeviceInformationXML implements DeviceInformation {
 
         Node basicStatus = XMLUtils.getNode(doc.getFirstChild(), "System/Config");
 
-        Node node;
-        String value;
-
-        node = XMLUtils.getNode(basicStatus, "Model_Name");
-        value = node != null ? node.getTextContent() : "";
-        state.name = value;
-
-        node = XMLUtils.getNode(basicStatus, "System_ID");
-        value = node != null ? node.getTextContent() : "";
-        state.id = value;
-
-        node = XMLUtils.getNode(basicStatus, "Version");
-        value = node != null ? node.getTextContent() : "";
-        state.version = value;
+        state.name = XMLUtils.getNodeContentOrDefault(basicStatus, "Model_Name", "");
+        state.id = XMLUtils.getNodeContentOrDefault(basicStatus, "System_ID", "");
+        state.version = XMLUtils.getNodeContentOrDefault(basicStatus, "Version", "");
 
         state.zones.clear();
 
-        node = XMLUtils.getNode(basicStatus, "Feature_Existence");
+        Node node = XMLUtils.getNode(basicStatus, "Feature_Existence");
         if (node == null) {
             throw new ReceivedMessageParseException("Zone information not provided: " + response);
         }
@@ -114,12 +104,12 @@ public class DeviceInformationXML implements DeviceInformation {
 
         state.supportTuner = isFeatureSupported(node, "Tuner");
         state.supportDAB = isFeatureSupported(node, "DAB");
+        state.supportSpotify = isFeatureSupported(node, "Spotify");
     }
 
     private boolean isFeatureSupported(Node node, String name) {
-        Node subnode = XMLUtils.getNode(node, name);
-        String value = subnode != null ? subnode.getTextContent() : null;
-        boolean supported = value != null && (value.equals("1") || value.equals("Available"));
+        String value = XMLUtils.getNodeContentOrDefault(node, name, "");
+        boolean supported = value.equals("1") || value.equals("Available");
         if (supported) {
             logger.trace("Found feature {}", name);
         }

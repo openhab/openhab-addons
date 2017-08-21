@@ -34,6 +34,7 @@ An example for changing the state of the receiver:
 				Zone_3
 				Zone_4
 				Tuner
+				DAB
 				HD_Radio
 				SIRIUS
 				iPod
@@ -47,9 +48,10 @@ An example for changing the state of the receiver:
 				NET_RADIO
 				USB
 				iPod_USB
+				Spotify
 			Name
 				Input
-					... (for all HDMI_x, AV_x, USB, etc)
+					... (for all HDMI_x, AV_x, USB, Spotify, etc)
 
 
 		Power_Control

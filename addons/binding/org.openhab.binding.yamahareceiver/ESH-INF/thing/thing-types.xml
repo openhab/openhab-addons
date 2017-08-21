@@ -22,13 +22,12 @@
 				<label>Address</label>
 				<description>The address of the AVR to control.</description>
 			</parameter>
-            <parameter name="PORT" type="integer" required="false">
-                <context>network-address</context>
-                <label>Port</label>
-                <description>The API port of the AVR to control. Usually 80</description>
-                <default>80</default>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="PORT" type="integer" required="false">
+				<label>Port</label>
+				<description>The API port of the AVR to control. Usually 80</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="REFRESH_IN_SEC" type="integer" required="false">
 				<label>Refresh interval</label>
 				<description>Refresh interval in seconds.</description>
@@ -133,6 +132,7 @@
 				<option value="Pandora">Pandora</option>
 				<option value="Napster">Napster</option>
 				<option value="iPod_USB">iPod/USB</option>
+				<option value="Spotify">Spotify</option>
 			</options>
 		</state>
 	</channel-type>
@@ -207,6 +207,7 @@
 			<channel id="playback_artist" typeId="playback_artist" />
 			<channel id="playback_album" typeId="playback_album" />
 			<channel id="playback_song" typeId="playback_song" />
+			<channel id="playback_song_image_url" typeId="playback_song_image_url" />
 			<channel id="tuner_band" typeId="tuner_band" />
 		</channels>
 	</channel-group-type>
@@ -236,6 +237,13 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Track title</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_song_image_url">
+		<item-type>String</item-type>
+		<label>Track picture URL</label>
+		<description>Track picture URL</description>
 		<state readOnly="true" />
 	</channel-type>
 

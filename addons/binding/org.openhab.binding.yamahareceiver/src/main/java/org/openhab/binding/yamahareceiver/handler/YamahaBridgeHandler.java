@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -57,8 +58,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
     private ZoneDiscoveryService zoneDiscoveryService;
 
     private AbstractConnection connection;
-    SystemControlState systemControlState = new SystemControlState();
-    DeviceInformationState deviceInformationState = new DeviceInformationState();
+    private SystemControlState systemControlState = new SystemControlState();
+    private DeviceInformationState deviceInformationState = new DeviceInformationState();
     private final CountDownLatch loadingDone = new CountDownLatch(1);
 
     public YamahaBridgeHandler(Bridge bridge) {
@@ -163,6 +164,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             zoneDiscoveryService.publishZones(deviceInformationState, thing.getUID());
 
             SystemControl systemControl = ProtocolFactory.SystemControl(connection, this);
+            // Set power = true before calling systemControl.update(),
+            // otherwise the systemControlStateChanged method would call updateAllZoneInformation() again
             systemControlState.power = true;
             systemControl.update();
 
@@ -172,8 +175,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.ONLINE);
 
             Bridge bridge = (Bridge) thing;
-            List<Thing> things = bridge.getThings();
-            for (Thing thing : things) {
+            for (Thing thing : bridge.getThings()) {
                 YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
                 handler.setDeviceInformationState(deviceInformationState);
                 // If thing still thinks that the bridge is offline, update its status.
@@ -263,8 +265,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         String host = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
         BigDecimal port = (BigDecimal) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_PORT);
 
-        if (host == null || port == null || host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname not set!");
+        if (StringUtils.isEmpty(host) || port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname or port not set!");
             return;
         }
 

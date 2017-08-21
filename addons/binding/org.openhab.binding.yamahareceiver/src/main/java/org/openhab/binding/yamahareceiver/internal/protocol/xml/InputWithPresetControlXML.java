@@ -55,7 +55,7 @@ public class InputWithPresetControlXML implements InputWithPresetControl {
      */
     public InputWithPresetControlXML(String inputID, AbstractConnection com, PresetInfoStateListener observer) {
         this.inputID = inputID;
-        this.comReference = new WeakReference<AbstractConnection>(com);
+        this.comReference = new WeakReference<>(com);
         this.observer = observer;
     }
 

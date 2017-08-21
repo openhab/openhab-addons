@@ -16,7 +16,7 @@ import java.io.IOException;
  * @author David Graeff - Initial contribution
  */
 
-public interface SystemControl extends IStateUpdateable {
+public interface SystemControl extends IStateUpdatable {
     /**
      * Switches the AVR on/off (off equals network standby here).
      *
@@ -25,5 +25,5 @@ public interface SystemControl extends IStateUpdateable {
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public void setPower(boolean power) throws IOException, ReceivedMessageParseException;
+    void setPower(boolean power) throws IOException, ReceivedMessageParseException;
 }

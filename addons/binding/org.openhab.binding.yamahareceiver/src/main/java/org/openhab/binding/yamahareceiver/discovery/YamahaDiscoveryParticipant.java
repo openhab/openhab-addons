@@ -62,8 +62,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         // The port via UPNP is unreliable, sometimes it is 8080, on some models 49154.
         // But so far the API was always reachable via port 80.
         // We provide the CONFIG_HOST_PORT therefore, if the user ever needs to adjust the port.
-        // int port = url.getPort() == -1 ? 80 : url.getPort();
-        // properties.put(YamahaReceiverBindingConstants.CONFIG_HOST_PORT, String.valueOf(port));
+        // Note the port is set in the thing-types.xml to 80 by default.
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withTTL(MIN_MAX_AGE_SECS).withProperties(properties)
                 .withLabel(label).build();

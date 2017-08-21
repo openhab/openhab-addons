@@ -16,12 +16,12 @@ import java.io.IOException;
  * @author David Graeff - Initial contribution
  *
  */
-public interface IStateUpdateable {
+public interface IStateUpdatable {
     /**
      * Updates the corresponding state. This method is blocking.
      *
      * @throws IOException If the device is offline this exception will be thrown
      * @throws ReceivedMessageParseException If the response cannot be parsed correctly this exception is thrown
      */
-    public void update() throws IOException, ReceivedMessageParseException;
+    void update() throws IOException, ReceivedMessageParseException;
 }

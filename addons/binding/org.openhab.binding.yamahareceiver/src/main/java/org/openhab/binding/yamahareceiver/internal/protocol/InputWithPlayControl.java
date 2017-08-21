@@ -18,15 +18,20 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
  * The play controls protocol interface
  *
  * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - Spotify support
  */
 
-public interface InputWithPlayControl extends IStateUpdateable {
+public interface InputWithPlayControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    public static Set<String> supportedInputs = Sets.newHashSet("TUNER",
+    Set<String> SUPPORTED_INPUTS = Sets.newHashSet(
+            YamahaReceiverBindingConstants.INPUT_TUNER,
             "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
-            "Napster", "Pandora", "SIRIUS", "Rhapsody", "Bluetooth", "iPod", "HD_RADIO");
+            "Napster", "Pandora", "SIRIUS", "Rhapsody",
+            YamahaReceiverBindingConstants.INPUT_BLUETOOTH,
+            "iPod", "HD_RADIO",
+            YamahaReceiverBindingConstants.INPUT_SPOTIFY);
 
     /**
      * Start the playback of the content which is usually selected by the means of the Navigation control class or
@@ -34,47 +39,47 @@ public interface InputWithPlayControl extends IStateUpdateable {
      *
      * @throws Exception
      */
-    public void play() throws IOException, ReceivedMessageParseException;
+    void play() throws IOException, ReceivedMessageParseException;
 
     /**
      * Stop the currently playing content. Use start() to start again.
      *
      * @throws Exception
      */
-    public void stop() throws IOException, ReceivedMessageParseException;
+    void stop() throws IOException, ReceivedMessageParseException;
 
     /**
      * Pause the currently playing content. This is not available for streaming content like on NET_RADIO.
      *
      * @throws Exception
      */
-    public void pause() throws IOException, ReceivedMessageParseException;
+    void pause() throws IOException, ReceivedMessageParseException;
 
     /**
      * Skip forward. This is not available for streaming content like on NET_RADIO.
      *
      * @throws Exception
      */
-    public void skipFF() throws IOException, ReceivedMessageParseException;
+    void skipFF() throws IOException, ReceivedMessageParseException;
 
     /**
      * Skip reverse. This is not available for streaming content like on NET_RADIO.
      *
      * @throws Exception
      */
-    public void skipREV() throws IOException, ReceivedMessageParseException;
+    void skipREV() throws IOException, ReceivedMessageParseException;
 
     /**
      * Next track. This is not available for streaming content like on NET_RADIO.
      *
      * @throws Exception
      */
-    public void nextTrack() throws IOException, ReceivedMessageParseException;
+    void nextTrack() throws IOException, ReceivedMessageParseException;
 
     /**
      * Previous track. This is not available for streaming content like on NET_RADIO.
      *
      * @throws Exception
      */
-    public void previousTrack() throws IOException, ReceivedMessageParseException;
+    void previousTrack() throws IOException, ReceivedMessageParseException;
 }

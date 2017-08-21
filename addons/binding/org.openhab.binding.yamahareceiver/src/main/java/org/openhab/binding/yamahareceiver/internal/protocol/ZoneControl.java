@@ -18,16 +18,16 @@ import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
  * @author David Graeff - Initial contribution
  */
 
-public interface ZoneControl extends IStateUpdateable {
+public interface ZoneControl extends IStateUpdatable {
     /**
      * Switches the zone on/off (off equals network standby here).
      *
-     * @param power The new power state
+     * @param on The new power state
      *
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public void setPower(boolean on) throws IOException, ReceivedMessageParseException;
+    void setPower(boolean on) throws IOException, ReceivedMessageParseException;
 
     /**
      * Sets the absolute volume in decibel.
@@ -35,7 +35,7 @@ public interface ZoneControl extends IStateUpdateable {
      * @param volume Absolute value in decibel ([-80,+12]).
      * @throws IOException
      */
-    public void setVolumeDB(float volume) throws IOException, ReceivedMessageParseException;
+    void setVolumeDB(float volume) throws IOException, ReceivedMessageParseException;
 
     /**
      * Sets the volume in percent
@@ -43,7 +43,7 @@ public interface ZoneControl extends IStateUpdateable {
      * @param volume
      * @throws IOException
      */
-    public void setVolume(float volume) throws IOException, ReceivedMessageParseException;
+    void setVolume(float volume) throws IOException, ReceivedMessageParseException;
 
     /**
      * Increase or decrease the volume by the given percentage.
@@ -51,12 +51,11 @@ public interface ZoneControl extends IStateUpdateable {
      * @param percent
      * @throws IOException
      */
-    public void setVolumeRelative(ZoneControlState state, float percent)
-            throws IOException, ReceivedMessageParseException;
+    void setVolumeRelative(ZoneControlState state, float percent) throws IOException, ReceivedMessageParseException;
 
-    public void setMute(boolean mute) throws IOException, ReceivedMessageParseException;
+    void setMute(boolean mute) throws IOException, ReceivedMessageParseException;
 
-    public void setInput(String name) throws IOException, ReceivedMessageParseException;
+    void setInput(String name) throws IOException, ReceivedMessageParseException;
 
-    public void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException;
+    void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException;
 }

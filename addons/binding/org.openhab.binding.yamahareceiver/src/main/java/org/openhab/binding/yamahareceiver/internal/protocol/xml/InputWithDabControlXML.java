@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithDabBandControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
@@ -50,7 +51,7 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
     /**
      * Need to remember last band state to drive the preset
      */
-    private DabBandState bandState = null;
+    private DabBandState bandState;
 
     /**
      * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
@@ -96,85 +97,83 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
             throw new ReceivedMessageParseException("<Play_Info>GetParam failed: " + response);
         }
 
-        /*
-            Sample response:
-            <YAMAHA_AV rsp="GET" RC="0">
-                <DAB>
-                    <Play_Info>
-                        <Feature_Availability>Ready</Feature_Availability>
-                        <FM>
-                            <Preset>
-                                <Preset_Sel>1</Preset_Sel>
-                            </Preset>
-                            <Tuning>
-                                <Freq>
-                                    <Val>9945</Val>
-                                    <Exp>2</Exp>
-                                    <Unit>MHz</Unit>
-                                </Freq>
-                            </Tuning>
-                            <FM_Mode>Auto</FM_Mode>
-                            <Signal_Info>
-                                <Tuned>Assert</Tuned>
-                                <Stereo>Assert</Stereo>
-                            </Signal_Info>
-                            <Meta_Info>
-                                <Program_Type>POP M</Program_Type>
-                                <Program_Service>  22:59</Program_Service>
-                                <Radio_Text>tel. 22 333 33 33   * Trojka *   e-mail: trojka@polskieradio.pl</Radio_Text>
-                                <Clock_Time>22:59</Clock_Time>
-                            </Meta_Info>
-                        </FM>
-                        <DAB>
-                            <Status>Ready</Status>
-                            <Preset>
-                                <Preset_Sel>No Preset</Preset_Sel>
-                            </Preset>
-                            <ID>2</ID>
-                            <Signal_Info>
-                                <Freq>
-                                    <Val>218640</Val>
-                                    <Exp>3</Exp>
-                                    <Unit>MHz</Unit>
-                                </Freq>
-                                <Category>Primary</Category>
-                                <Audio_Mode>Stereo</Audio_Mode>
-                                <Bit_Rate>
-                                    <Val>128</Val>
-                                    <Exp>0</Exp>
-                                    <Unit>Kbps</Unit>
-                                </Bit_Rate>
-                                <Quality>82</Quality>
-                                <Tune_Aid>45</Tune_Aid>
-                                <Off_Air>Negate</Off_Air>
-                                <DAB_PLUS>Assert</DAB_PLUS>
-                            </Signal_Info>
-                            <Meta_Info>
-                                <Ch_Label>11B</Ch_Label>
-                                <Service_Label>PR Czwórka</Service_Label>
-                                <DLS>Kluboteka  Polskie Radio S.A.</DLS>
-                                <Ensemble_Label>Polskie Radio</Ensemble_Label>
-                                <Program_Type>Pop</Program_Type>
-                                <Date_and_Time>12AUG&apos;17 23:47</Date_and_Time>
-                            </Meta_Info>
-                        </DAB>
-                        <Band>FM</Band>
-                    </Play_Info>
-                </DAB>
-            </YAMAHA_AV>
-         */
+        //Sample response:
+        //<YAMAHA_AV rsp="GET" RC="0">
+        //    <DAB>
+        //        <Play_Info>
+        //            <Feature_Availability>Ready</Feature_Availability>
+        //            <FM>
+        //                <Preset>
+        //                    <Preset_Sel>1</Preset_Sel>
+        //                </Preset>
+        //                <Tuning>
+        //                    <Freq>
+        //                        <Val>9945</Val>
+        //                        <Exp>2</Exp>
+        //                        <Unit>MHz</Unit>
+        //                    </Freq>
+        //                </Tuning>
+        //                <FM_Mode>Auto</FM_Mode>
+        //                <Signal_Info>
+        //                    <Tuned>Assert</Tuned>
+        //                    <Stereo>Assert</Stereo>
+        //                </Signal_Info>
+        //                <Meta_Info>
+        //                    <Program_Type>POP M</Program_Type>
+        //                    <Program_Service>  22:59</Program_Service>
+        //                    <Radio_Text>tel. 22 333 33 33   * Trojka *   e-mail: trojka@polskieradio.pl</Radio_Text>
+        //                    <Clock_Time>22:59</Clock_Time>
+        //                </Meta_Info>
+        //            </FM>
+        //            <DAB>
+        //                <Status>Ready</Status>
+        //                <Preset>
+        //                    <Preset_Sel>No Preset</Preset_Sel>
+        //                </Preset>
+        //                <ID>2</ID>
+        //                <Signal_Info>
+        //                    <Freq>
+        //                        <Val>218640</Val>
+        //                        <Exp>3</Exp>
+        //                        <Unit>MHz</Unit>
+        //                    </Freq>
+        //                    <Category>Primary</Category>
+        //                    <Audio_Mode>Stereo</Audio_Mode>
+        //                    <Bit_Rate>
+        //                        <Val>128</Val>
+        //                        <Exp>0</Exp>
+        //                        <Unit>Kbps</Unit>
+        //                    </Bit_Rate>
+        //                    <Quality>82</Quality>
+        //                    <Tune_Aid>45</Tune_Aid>
+        //                    <Off_Air>Negate</Off_Air>
+        //                    <DAB_PLUS>Assert</DAB_PLUS>
+        //                </Signal_Info>
+        //                <Meta_Info>
+        //                    <Ch_Label>11B</Ch_Label>
+        //                    <Service_Label>PR Czwórka</Service_Label>
+        //                    <DLS>Kluboteka  Polskie Radio S.A.</DLS>
+        //                    <Ensemble_Label>Polskie Radio</Ensemble_Label>
+        //                    <Program_Type>Pop</Program_Type>
+        //                    <Date_and_Time>12AUG&apos;17 23:47</Date_and_Time>
+        //                </Meta_Info>
+        //            </DAB>
+        //            <Band>FM</Band>
+        //        </Play_Info>
+        //    </DAB>
+        //</YAMAHA_AV>
 
         DabBandState msgForBand = new DabBandState();
         PresetInfoState msgForPreset = new PresetInfoState();
         PlayInfoState msgForPlayInfo = new PlayInfoState();
 
-        msgForBand.band = XMLUtils.getNodeContentOrDefault(doc.getFirstChild(), "DAB/Play_Info/Band", "");
+        msgForBand.band = XMLUtils.getNodeContentOrDefault(doc.getFirstChild(), "DAB/Play_Info/Band", msgForBand.band);
         logger.debug("Band set to {} for input {}", msgForBand.band, inputID);
 
         // store last state of band
         bandState = msgForBand;
 
-        if (msgForBand.band == null || msgForBand.band.isEmpty()) {
+        if (StringUtils.isEmpty(msgForBand.band)) {
             logger.warn("Band is unknown for input {}, therefore preset and playback information will not be available", inputID);
         } else {
             Node playInfoNode = XMLUtils.getNode(doc.getFirstChild(), "DAB/Play_Info/" + msgForBand.band);
@@ -184,15 +183,15 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
 
             Node metaInfoNode = XMLUtils.getNode(playInfoNode, "Meta_Info");
             if (metaInfoNode != null) {
-                msgForPlayInfo.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Type", "");
+                msgForPlayInfo.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Type", msgForPlayInfo.album);
                 if (BAND_FM.equals(msgForBand.band)) {
-                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Service", "");
-                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Station", "");
-                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Radio_Text", "");
+                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Service", msgForPlayInfo.station);
+                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Station", msgForPlayInfo.artist);
+                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Radio_Text", msgForPlayInfo.song);
                 } else if (BAND_DAB.equals(msgForBand.band)) {
-                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Service_Label", "");
-                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Ensemble_Label", "");
-                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "DLS", "");
+                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Service_Label", msgForPlayInfo.station);
+                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Ensemble_Label", msgForPlayInfo.artist);
+                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "DLS", msgForPlayInfo.song);
                 }
             }
         }

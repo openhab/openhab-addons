@@ -12,6 +12,7 @@ package org.openhab.binding.yamahareceiver.internal.state;
  * System AVR state (system power, etc)
  *
  * @author David Graeff - Initial contribution
+ *
  */
 public class SystemControlState implements Invalidateable {
     public boolean power = false;
