@@ -79,13 +79,13 @@
 		<item-type>String</item-type>
 		<label>Play PVR tv</label>
 		<description>Play the given PVR TV channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="pvr-open-radio" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR radio</label>
 		<description>Play the given PVR Radio channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="shownotification" advanced="true">
 		<item-type>String</item-type>
@@ -132,7 +132,7 @@
 	</channel-type>
 
 	<!-- Kodi variables -->
-	<channel-type id="pvr-channel">
+	<channel-type id="pvr-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>PVR channel title</label>
 		<description>Title of the current PVR channel</description>
