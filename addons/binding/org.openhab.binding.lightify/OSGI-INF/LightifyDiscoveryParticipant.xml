@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.lightify">
+   <implementation class="org.openhab.binding.lightify.internal.discovery.LightifyDiscoveryParticipant"/>
+   <service>
+      <provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant"/>
+   </service>
+</scr:component>
