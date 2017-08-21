@@ -100,7 +100,7 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
                 NetatmoDeviceConfiguration deviceConfiguration = deviceHandler.configuration;
                 if (deviceConfiguration.getEquipmentId().equalsIgnoreCase(configuration.getParentId())) {
                     // I'm your father Luke
-                    ((NetatmoDeviceHandler) thingHandler).refreshAllChannels();
+                    ((NetatmoDeviceHandler<?>) thingHandler).refreshAllChannels();
                 }
             }
         }
