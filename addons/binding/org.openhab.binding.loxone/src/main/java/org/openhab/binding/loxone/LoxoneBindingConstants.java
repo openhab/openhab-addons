@@ -22,11 +22,16 @@ public class LoxoneBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MINISERVER = new ThingTypeUID(BINDING_ID, "miniserver");
 
-    // Channel Type IDs
+    // Channel Type IDs - read/write
     public static final String MINISERVER_CHANNEL_TYPE_SWITCH = "switchTypeId";
-    public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_LIGHT_CTRL = "lightCtrlTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RADIO_BUTTON = "radioButtonTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER = "rollerShutterTypeId";
+
+    // Channel Type IDs - read only
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_ANALOG = "roAnalogTypeId";
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";

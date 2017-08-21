@@ -11,7 +11,6 @@ package org.openhab.binding.loxone.handler;
 import static org.openhab.binding.loxone.LoxoneBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.Channels;
@@ -38,14 +37,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.StateDescription;
-import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.config.LoxoneMiniserverConfig;
-import org.openhab.binding.loxone.internal.LoxoneChannelTypeProvider;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxControl;
@@ -75,11 +70,14 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
     private LxServer server;
 
-    private LoxoneChannelTypeProvider channelTypeProvider;
-    private ChannelTypeUID infoTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
     private ChannelTypeUID switchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH);
+    private ChannelTypeUID lightCtrlTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL);
+    private ChannelTypeUID radioButtonTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON);
+    private ChannelTypeUID rollershutterTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER);
+
+    private ChannelTypeUID roTextTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
     private ChannelTypeUID roSwitchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH);
-    private ChannelTypeUID rollerTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER);
+    private ChannelTypeUID roAnalogTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG);
 
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
     private Map<ChannelUID, LxControl> controls = new HashMap<>();
@@ -89,12 +87,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *
      * @param thing
      *            Thing object that creates the handler
-     * @param channelTypeProvider
-     *            channel type provider serving this binding
      */
-    public LoxoneMiniserverHandler(Thing thing, LoxoneChannelTypeProvider channelTypeProvider) {
+    public LoxoneMiniserverHandler(Thing thing) {
         super(thing);
-        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -316,19 +311,13 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             server.stop();
             server = null;
         }
-        if (channelTypeProvider != null) {
-            channelTypeProvider.removeChannelTypesForThing(getThing().getUID());
-        }
     }
 
     private void addChannel(List<Channel> channels, String itemType, ChannelTypeUID typeId, ChannelUID channelId,
             String channelLabel, String channelDescription, Set<String> tags) {
-        if (itemType != null && typeId != null && channelDescription != null) {
-            Channel channel = ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
-                    .withDescription(channelDescription + " : " + channelLabel).withDefaultTags(tags).build();
-            if (channel != null) {
-                channels.add(channel);
-            }
+        if (channelId != null && itemType != null && typeId != null && channelDescription != null) {
+            channels.add(ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
+                    .withDescription(channelDescription + " : " + channelLabel).withDefaultTags(tags).build());
         }
     }
 
@@ -348,7 +337,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         logger.trace("Creating channels for control: {}, {}", control.getClass().getSimpleName(), control.getUuid());
 
         String label;
-        String controlUuid = control.getUuid().toString();
         ChannelUID id = getChannelIdForControl(control, 0);
 
         List<Channel> channels = new ArrayList<>();
@@ -382,25 +370,17 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             }
             addChannel(channels, "Switch", switchTypeId, id, label, "Switch", tags);
         } else if (control instanceof LxControlJalousie) {
-            addChannel(channels, "Rollershutter", rollerTypeId, id, label, "Rollershutter", tags);
+            addChannel(channels, "Rollershutter", rollershutterTypeId, id, label, "Rollershutter", tags);
         } else if (control instanceof LxControlInfoOnlyDigital) {
             addChannel(channels, "Switch", roSwitchTypeId, id, label, "Digital virtual state", tags);
         } else if (control instanceof LxControlInfoOnlyAnalog) {
-            LxControlInfoOnlyAnalog info = (LxControlInfoOnlyAnalog) control;
-            ChannelTypeUID typeId = addNewChannelType(control.getTypeName(), "Number", label, "Analog virtual state",
-                    info.getFormatString(), true, null, 0, controlUuid);
-            addChannel(channels, "Number", typeId, id, label, "Analog virtual state", tags);
+            addChannel(channels, "Number", roAnalogTypeId, id, label, "Analog virtual state", tags);
         } else if (control instanceof LxControlLightController) {
-            ChannelTypeUID typeId = addNewChannelType(control.getTypeName(), "Number", label, "Light controller", null,
-                    false, ((LxControlLightController) control).getSceneNames(),
-                    (LxControlLightController.NUM_OF_SCENES - 1), controlUuid);
-            addChannel(channels, "Number", typeId, id, label, "Light controller", tags);
+            addChannel(channels, "Number", lightCtrlTypeId, id, label, "Light controller", tags);
         } else if (control instanceof LxControlRadio) {
-            ChannelTypeUID typeId = addNewChannelType(control.getTypeName(), "Number", label, "Radio button", null,
-                    false, ((LxControlRadio) control).getOutputs(), LxControlRadio.MAX_RADIO_OUTPUTS, controlUuid);
-            addChannel(channels, "Number", typeId, id, label, "Radio button", tags);
+            addChannel(channels, "Number", radioButtonTypeId, id, label, "Radio button", tags);
         } else if (control instanceof LxControlTextState) {
-            addChannel(channels, "String", infoTypeId, id, label, "Text state", tags);
+            addChannel(channels, "String", roTextTypeId, id, label, "Text state", tags);
         }
         return channels;
     }
@@ -467,75 +447,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateState(channelId, new StringType(value));
             }
         }
-    }
-
-    /**
-     * Create and register a new channel type
-     *
-     * @param controlType
-     *            type of Loxone control (e.g. switch, jalousie)
-     * @param itemType
-     *            type of openHAB item
-     * @param label
-     *            label for the channel type
-     * @param description
-     *            description of the channel type
-     * @param format
-     *            format string to present the value
-     * @param readOnly
-     *            true if this control does not accept commands
-     * @param options
-     *            map of options for drop down lists (can be null)
-     * @param lastOption
-     *            index of last option
-     * @param controlUuid
-     *            UUID of Loxone control object (can be null if channel type is generic)
-     * @return
-     *         channel type ID of newly created type
-     */
-    private ChannelTypeUID addNewChannelType(String controlType, String itemType, String label, String description,
-            String format, boolean readOnly, Map<String, String> options, int lastOption, String controlUuid) {
-        logger.trace("Creating a new channel type for {}, {}", controlType, itemType);
-        if (channelTypeProvider != null) {
-            String name = getThing().getUID().getAsString() + ":" + controlType;
-            if (controlUuid != null) {
-                name += ":" + controlUuid;
-            }
-            ChannelTypeUID typeId = new ChannelTypeUID(name);
-            ChannelType type = new ChannelType(typeId, false, itemType, label, description, null, null,
-                    buildStateDescription(format, readOnly, options, lastOption), null);
-            channelTypeProvider.removeChannelType(typeId);
-            channelTypeProvider.addChannelType(type);
-            return typeId;
-        }
-        logger.debug("Channel type provider is null, can't create channel type for {}, {}", controlType, itemType);
-        return null;
-    }
-
-    /**
-     * Builds {@link StateDescription} for channel type, that has multiple options to select from
-     *
-     * @param format
-     *            format string to present the value
-     * @param readOnly
-     *            true if this control does not accept commands
-     * @param options
-     *            collection of options, where key is option ID (number in reality) and value is option name
-     * @param lastOption
-     *            maximum value an option ID can have
-     * @return
-     *         state description to be used for creating channel type
-     */
-    private StateDescription buildStateDescription(String format, boolean readOnly, Map<String, String> options,
-            int lastOption) {
-        List<StateOption> optionsList = new ArrayList<>();
-        if (options != null) {
-            for (Map.Entry<String, String> entry : options.entrySet()) {
-                optionsList.add(new StateOption(entry.getKey(), entry.getValue()));
-            }
-        }
-        return new StateDescription(BigDecimal.ZERO, new BigDecimal(lastOption), BigDecimal.ONE, format, readOnly,
-                optionsList);
     }
 
     /**

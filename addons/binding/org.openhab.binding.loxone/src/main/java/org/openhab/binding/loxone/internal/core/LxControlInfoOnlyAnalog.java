@@ -56,7 +56,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
         if (json.details != null && json.details.format != null) {
             format = json.details.format;
         } else {
-            format = "%.2f";
+            format = "%.1f";
         }
     }
 

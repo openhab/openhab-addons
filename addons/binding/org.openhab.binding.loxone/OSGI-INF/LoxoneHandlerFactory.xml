@@ -15,11 +15,5 @@
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
-   <reference cardinality="1..1" 
-    bind="setChannelTypeProvider" 
-    interface="org.openhab.binding.loxone.internal.LoxoneChannelTypeProvider"
-    name="ChannelTypeProvider" 
-    policy="dynamic" 
-    unbind="unbindChannelTypeProvider"/>
 
 </scr:component>
