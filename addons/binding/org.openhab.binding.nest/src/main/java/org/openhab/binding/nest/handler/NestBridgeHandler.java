@@ -115,7 +115,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        logger.info("Config update");
+        logger.debug("Config update");
         super.handleConfigurationUpdate(configurationParameters);
 
         updateAccessToken();
@@ -196,10 +196,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             Thing thingThermostat = getDevice(thermostat.getDeviceId(), things);
             if (thingThermostat != null) {
                 NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
-                handler.updateThermostat(thermostat);
+                if (handler != null) {
+                    handler.updateThermostat(thermostat);
+                }
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
-                    logger.info("Found new thermostat {}", thermostat.getDeviceId());
+                    logger.debug("Found new thermostat {}", thermostat.getDeviceId());
                     listener.onThermostatAdded(thermostat);
                 }
             }
@@ -208,10 +210,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             Thing thingCamera = getDevice(camera.getDeviceId(), things);
             if (thingCamera != null) {
                 NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
-                handler.updateCamera(camera);
+                if (handler != null) {
+                    handler.updateCamera(camera);
+                }
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
-                    logger.info("Found new camera. {}", camera.getDeviceId());
+                    logger.debug("Found new camera. {}", camera.getDeviceId());
                     listener.onCameraAdded(camera);
                 }
             }
@@ -220,10 +224,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             Thing thingSmokeDetector = getDevice(smokeDetector.getDeviceId(), things);
             if (thingSmokeDetector != null) {
                 NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
-                handler.updateSmokeDetector(smokeDetector);
+                if (handler != null) {
+                    handler.updateSmokeDetector(smokeDetector);
+                }
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
-                    logger.info("Found new smoke detector. {}", smokeDetector.getDeviceId());
+                    logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
                     listener.onSmokeDetectorAdded(smokeDetector);
                 }
             }
@@ -238,10 +244,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             Thing thingStructure = getDevice(struct.getStructureId(), things);
             if (thingStructure != null) {
                 NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
-                handler.updateStructure(struct);
+                if (handler != null) {
+                    handler.updateStructure(struct);
+                }
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
-                    logger.info("Found new structure {}", struct.getStructureId());
+                    logger.debug("Found new structure {}", struct.getStructureId());
                     listener.onStructureAdded(struct);
                 }
             }
@@ -250,7 +258,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private String buildQueryString(NestBridgeConfiguration config)
             throws InterruptedException, TimeoutException, ExecutionException {
-        logger.info("Making url with access token {}", config.accessToken);
+        logger.debug("Making url with access token {}", config.accessToken);
         StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
         urlBuilder.append("?auth=");
         String stringAccessToken;
@@ -264,13 +272,13 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             stringAccessToken = config.accessToken;
         }
         urlBuilder.append(stringAccessToken);
-        logger.info("Made url {}", urlBuilder.toString());
+        logger.debug("Made url {}", urlBuilder.toString());
         return urlBuilder.toString();
     }
 
     private String jsonFromGetUrl(final String url, NestBridgeConfiguration config)
             throws InterruptedException, ExecutionException, TimeoutException {
-        logger.info("connecting to {}", url);
+        logger.debug("connecting to {}", url);
         ContentResponse response = this.httpClient.GET(url);
         return response.getContentAsString();
     }

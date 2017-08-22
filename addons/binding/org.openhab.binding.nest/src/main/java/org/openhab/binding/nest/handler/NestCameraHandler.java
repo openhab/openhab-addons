@@ -68,19 +68,14 @@ public class NestCameraHandler extends BaseThingHandler {
     public void updateCamera(Camera camera) {
         logger.debug("Updating camera {}", camera.getDeviceId());
         if (lastData == null || !lastData.equals(camera)) {
-            updateState(getThing().getChannel(CHANNEL_STREAMING).getUID(),
-                    camera.isStreaming() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_VIDEO_HISTORY_ENABLED).getUID(),
-                    camera.isVideoHistoryEnabled() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_AUDIO_INPUT_ENABLED).getUID(),
-                    camera.isAudioInputEnabled() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_PUBLIC_SHARE_ENABLED).getUID(),
-                    camera.isPublicShareEnabled() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_PUBLIC_SHARE_URL).getUID(),
-                    new StringType(camera.getPublicShareUrl()));
-            updateState(getThing().getChannel(CHANNEL_WEB_URL).getUID(), new StringType(camera.getWebUrl()));
-            updateState(getThing().getChannel(CHANNEL_APP_URL).getUID(), new StringType(camera.getAppUrl()));
-            updateState(getThing().getChannel(CHANNEL_SNAPSHOT_URL).getUID(), new StringType(camera.getSnapshotUrl()));
+            updateState(CHANNEL_STREAMING, camera.isStreaming() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_VIDEO_HISTORY_ENABLED, camera.isVideoHistoryEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_AUDIO_INPUT_ENABLED, camera.isAudioInputEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_PUBLIC_SHARE_ENABLED, camera.isPublicShareEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_PUBLIC_SHARE_URL, new StringType(camera.getPublicShareUrl()));
+            updateState(CHANNEL_WEB_URL, new StringType(camera.getWebUrl()));
+            updateState(CHANNEL_APP_URL, new StringType(camera.getAppUrl()));
+            updateState(CHANNEL_SNAPSHOT_URL, new StringType(camera.getSnapshotUrl()));
 
             if (camera.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);

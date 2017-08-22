@@ -113,38 +113,26 @@ public class NestThermostatHandler extends BaseThingHandler {
     public void updateThermostat(Thermostat thermostat) {
         logger.debug("Updating thermostat {}", thermostat.getDeviceId());
         if (lastData == null || !lastData.equals(thermostat)) {
-            updateState(getThing().getChannel(CHANNEL_TEMPERATURE).getUID(),
-                    new DecimalType(thermostat.getAmbientTemperature()));
-            updateState(getThing().getChannel(CHANNEL_HUMIDITY).getUID(), new PercentType(thermostat.getHumidity()));
-            updateState(getThing().getChannel(CHANNEL_MODE).getUID(), new StringType(thermostat.getMode()));
+            updateState(CHANNEL_TEMPERATURE, new DecimalType(thermostat.getAmbientTemperature()));
+            updateState(CHANNEL_HUMIDITY, new PercentType(thermostat.getHumidity()));
+            updateState(CHANNEL_MODE, new StringType(thermostat.getMode()));
 
             String previousMode = thermostat.getPreviousMode();
             if ("".equals(previousMode)) {
                 previousMode = thermostat.getMode();
             }
-            updateState(getThing().getChannel(CHANNEL_PREVIOUS_MODE).getUID(), new StringType(previousMode));
-            updateState(getThing().getChannel(CHANNEL_MIN_SET_POINT).getUID(),
-                    new DecimalType(thermostat.getTargetTemperatureLow()));
-            updateState(getThing().getChannel(CHANNEL_MAX_SET_POINT).getUID(),
-                    new DecimalType(thermostat.getTargetTemperatureHigh()));
-            updateState(getThing().getChannel(CHANNEL_CAN_HEAT).getUID(),
-                    thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_CAN_COOL).getUID(),
-                    thermostat.isCanCool() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_HAS_FAN).getUID(),
-                    thermostat.isHasFan() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_HAS_LEAF).getUID(),
-                    thermostat.isHasLeaf() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_USING_EMERGENCY_HEAT).getUID(),
-                    thermostat.isUsingEmergencyHeat() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_LOCKED).getUID(),
-                    thermostat.isLocked() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_LOCKED_MAX_SET_POINT).getUID(),
-                    new DecimalType(thermostat.getLockedTemperatureHigh()));
-            updateState(getThing().getChannel(CHANNEL_LOCKED_MIN_SET_POINT).getUID(),
-                    new DecimalType(thermostat.getLockedTemperatureLow()));
-            updateState(getThing().getChannel(CHANNEL_TIME_TO_TARGET_MINS).getUID(),
-                    new DecimalType(thermostat.getTimeToTarget()));
+            updateState(CHANNEL_PREVIOUS_MODE, new StringType(previousMode));
+            updateState(CHANNEL_MIN_SET_POINT, new DecimalType(thermostat.getTargetTemperatureLow()));
+            updateState(CHANNEL_MAX_SET_POINT, new DecimalType(thermostat.getTargetTemperatureHigh()));
+            updateState(CHANNEL_CAN_HEAT, thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_CAN_COOL, thermostat.isCanCool() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_HAS_FAN, thermostat.isHasFan() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_HAS_LEAF, thermostat.isHasLeaf() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_USING_EMERGENCY_HEAT, thermostat.isUsingEmergencyHeat() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_LOCKED, thermostat.isLocked() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_LOCKED_MAX_SET_POINT, new DecimalType(thermostat.getLockedTemperatureHigh()));
+            updateState(CHANNEL_LOCKED_MIN_SET_POINT, new DecimalType(thermostat.getLockedTemperatureLow()));
+            updateState(CHANNEL_TIME_TO_TARGET_MINS, new DecimalType(thermostat.getTimeToTarget()));
 
             if (thermostat.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);

@@ -52,16 +52,12 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
     public void updateSmokeDetector(SmokeDetector smokeDetector) {
         logger.debug("Updating camera {}", smokeDetector.getDeviceId());
         if (lastData == null || !lastData.equals(smokeDetector)) {
-            updateState(getThing().getChannel(CHANNEL_UI_COLOR_STATE).getUID(),
-                    new StringType(smokeDetector.getUiColorState().toString()));
-            updateState(getThing().getChannel(CHANNEL_LOW_BATTERY).getUID(),
+            updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
+            updateState(CHANNEL_LOW_BATTERY,
                     smokeDetector.getBatteryHealth() == BatteryHealth.OK ? OnOffType.OFF : OnOffType.ON);
-            updateState(getThing().getChannel(CHANNEL_CO_ALARM_STATE).getUID(),
-                    new StringType(smokeDetector.getCoAlarmState().toString()));
-            updateState(getThing().getChannel(CHANNEL_SMOKE_ALARM_STATE).getUID(),
-                    new StringType(smokeDetector.getSmokeAlarmState().toString()));
-            updateState(getThing().getChannel(CHANNEL_MANUAL_TEST_ACTIVE).getUID(),
-                    smokeDetector.isManualTestActive() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_CO_ALARM_STATE, new StringType(smokeDetector.getCoAlarmState().toString()));
+            updateState(CHANNEL_SMOKE_ALARM_STATE, new StringType(smokeDetector.getSmokeAlarmState().toString()));
+            updateState(CHANNEL_MANUAL_TEST_ACTIVE, smokeDetector.isManualTestActive() ? OnOffType.ON : OnOffType.OFF);
 
             if (smokeDetector.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);

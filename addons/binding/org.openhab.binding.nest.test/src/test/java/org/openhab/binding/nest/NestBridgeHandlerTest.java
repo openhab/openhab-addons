@@ -52,6 +52,7 @@ public class NestBridgeHandlerTest {
         handler.setCallback(callback);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void initializeShouldCallTheCallback() {
         when(bridge.getConfiguration()).thenReturn(configuration);

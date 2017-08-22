@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
-		<label>Nest Account Details</label>
-		<description>Provides the layer to talk to the nest apis by setting up the nest account to use.</description>
+		<label>Nest Account</label>
+		<description>An account for the Nest web service.</description>
 		<config-description>
 			<parameter-group name="nest">
 				<description>The pieces for talking to nest</description>
@@ -41,7 +41,7 @@
 			<parameter name="refreshInterval" type="integer" groupName="binding">
 				<label>Refresh Interval</label>
 				<description>How often to refresh the data from nest (in seconds). Don't make this too often or nest will throttle
-				your account.  The default of 2 minutes is roughly the most often you can do it.</description>
+				your account. The default of 2 minutes is roughly the most often you can do it.</description>
 				<default>120</default>
 			</parameter>
 		</config-description>

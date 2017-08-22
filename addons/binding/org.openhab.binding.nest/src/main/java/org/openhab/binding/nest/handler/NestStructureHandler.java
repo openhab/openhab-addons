@@ -48,42 +48,39 @@ public class NestStructureHandler extends BaseThingHandler {
     public void updateStructure(Structure structure) {
         logger.debug("Updating structure {}", structure.getStructureId());
         if (lastData == null || !lastData.equals(structure)) {
-            updateState(getThing().getChannel(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT).getUID(),
+            updateState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT,
                     structure.isRushHourRewardsEnrollement() ? OnOffType.ON : OnOffType.OFF);
-            updateState(getThing().getChannel(CHANNEL_COUNTRY_CODE).getUID(),
-                    new StringType(structure.getCountryCode()));
-            updateState(getThing().getChannel(CHANNEL_POSTAL_CODE).getUID(), new StringType(structure.getPostalCode()));
+            updateState(CHANNEL_COUNTRY_CODE, new StringType(structure.getCountryCode()));
+            updateState(CHANNEL_POSTAL_CODE, new StringType(structure.getPostalCode()));
 
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             if (structure.getPeakPeriodStartTime() != null) {
                 cal.setTime(structure.getPeakPeriodStartTime());
-                updateState(getThing().getChannel(CHANNEL_PEAK_PERIOD_START_TIME).getUID(), new DateTimeType(cal));
+                updateState(CHANNEL_PEAK_PERIOD_START_TIME, new DateTimeType(cal));
             }
             if (structure.getPeakPeriodEndTime() != null) {
                 cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 cal.setTime(structure.getPeakPeriodEndTime());
-                updateState(getThing().getChannel(CHANNEL_PEAK_PERIOD_END_TIME).getUID(), new DateTimeType(cal));
+                updateState(CHANNEL_PEAK_PERIOD_END_TIME, new DateTimeType(cal));
             }
-            updateState(getThing().getChannel(CHANNEL_TIME_ZONE).getUID(), new StringType(structure.getTimeZone()));
+            updateState(CHANNEL_TIME_ZONE, new StringType(structure.getTimeZone()));
             if (structure.getEtaBegin() != null) {
                 cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 cal.setTime(structure.getEtaBegin());
-                updateState(getThing().getChannel(CHANNEL_ETA_BEGIN).getUID(), new DateTimeType(cal));
+                updateState(CHANNEL_ETA_BEGIN, new DateTimeType(cal));
             }
             if (structure.getCoAlarmState() != null) {
-                updateState(getThing().getChannel(CHANNEL_CO_ALARM_STATE).getUID(),
-                        new StringType(structure.getCoAlarmState().toString()));
+                updateState(CHANNEL_CO_ALARM_STATE, new StringType(structure.getCoAlarmState().toString()));
             } else {
                 logger.error("Cannot get co alarm state {} on {}", CHANNEL_CO_ALARM_STATE, getThing().getLabel());
             }
             if (structure.getSmokeAlarmState() != null) {
-                updateState(getThing().getChannel(CHANNEL_SMOKE_ALARM_STATE).getUID(),
-                        new StringType(structure.getSmokeAlarmState().toString()));
+                updateState(CHANNEL_SMOKE_ALARM_STATE, new StringType(structure.getSmokeAlarmState().toString()));
             } else {
                 logger.error("Cannot get smoke alarm state {} on {}", CHANNEL_SMOKE_ALARM_STATE, getThing().getLabel());
             }
 
-            updateState(getThing().getChannel(CHANNEL_AWAY).getUID(), new StringType(structure.getAway().toString()));
+            updateState(CHANNEL_AWAY, new StringType(structure.getAway().toString()));
 
             updateStatus(ThingStatus.ONLINE);
 
