@@ -61,8 +61,6 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
 
-    private String callbackUrl;
-
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     @Override
@@ -166,23 +164,19 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private String createCallbackUrl() {
-        if (callbackUrl != null) {
-            return callbackUrl;
-        } else {
-            final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
-                logger.warn("No network interface could be found.");
-                return null;
-            }
-
-            final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-            if (port == -1) {
-                logger.warn("Cannot find port of the http service.");
-                return null;
-            }
-
-            return "http://" + ipAddress + ":" + port;
+        final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        if (ipAddress == null) {
+            logger.warn("No network interface could be found.");
+            return null;
         }
+
+        final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+        if (port == -1) {
+            logger.warn("Cannot find port of the http service.");
+            return null;
+        }
+
+        return "http://" + ipAddress + ":" + port;
     }
 
     @Reference
