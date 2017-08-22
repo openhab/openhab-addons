@@ -77,26 +77,24 @@ There can be following reasons why Miniserver status is `OFFLINE`:
 
 ## Channels
 
-This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one or more channels, depending on various states it has. Currently supported controls are presented in the table below.
+This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Currently supported controls are presented in the table below.
 
-|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|
-|----|----|----|----|----|
-|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlyanalog:<uuid>`<br> This channel type is created dynamically for each control, because control contains custom display format string|
-|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`|
-|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|
-|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|
-|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|
-|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|`
-|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
-|TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|`loxone:miniserver:<serial>:text`|
+|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|
+|----|----|----|----|
+|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|
+|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|
+|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|
+|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|
+|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|
+|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|
+|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|
+|TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 
 Channel ID is defined in the following way: 
 
-  * For primary control's channel: `loxone:miniserver:<serial>:<control-UUID>`
-  * For other control's channels (currently no such controls): `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `channel-index >=1`
-
+  * `loxone:miniserver:<serial>:<control-UUID>`
 
 Channel label is defined in the following way:
 
@@ -135,6 +133,7 @@ Timeout values control various parts of Websocket connection management. They ca
 ## Limitations
 
   * As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
+  * Lighting controllers and radio buttons do not have automatically populated scene and button selection labels to the channel options. If these names are important, user has to define them manually in the sitemap, as in the  example provided at the end of this instruction.
 
 ## Automatic Configuration Example
 
