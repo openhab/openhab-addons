@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="smoke_detector" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Nest Protect</label>
+		<description>The smoke detector/Nest Protect for the account.</description>
+
+		<channels>
+			<channel id="ui_color_state" typeId="UiColorState">
+				<label>UI Color</label>
+				<description>The current color of the ring on the smoke detector</description>
+			</channel>
+			<channel id="low_battery" typeId="system.low-battery">
+				<label>Battery</label>
+				<description>The state of the battery on the nest protect (if it is battery powered)</description>
+			</channel>
+			<channel id="co_alarm_state" typeId="CoAlarmState">
+				<label>CO alarm</label>
+				<description>The carbon monoxide alarm state of the nest protect.</description>
+			</channel>
+			<channel id="smoke_alarm_state" typeId="SmokeAlarmAlarmState">
+				<label>Smoke Alarm</label>
+				<description>The smoke alarm state of the nest protect</description>
+			</channel>
+			<channel id="manual_test_active" typeId="ManualTestActive">
+				<label>Manual Test</label>
+				<description>Manual test active at the moment</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Nest</property>
+		</properties>
+	</thing-type>
+
+	<channel-type id="UiColorState" advanced="true">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current color state of the protect</description>
+		<state readOnly="true">
+			<options>
+				<option value="GRAY">gray</option>
+				<option value="GREEN">green</option>
+				<option value="YELLOW">yellow</option>
+				<option value="RED">red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="CoAlarmState">
+		<item-type>String</item-type>
+		<label>CO Alarm State</label>
+		<description>Carbon Monoxide alarm state</description>
+		<state readOnly="false">
+			<options>
+				<option value="OK">ok</option>
+				<option value="EMERGENCY">emergency</option>
+				<option value="WARNING">warning</option>
+			</options>
+		</state>
+	</channel-type>
+
+    <channel-type id="SmokeAlarmAlarmState">
+        <item-type>String</item-type>
+        <label>Smoke Alarm State</label>
+        <description>Smoke Alarm state</description>
+        <state readOnly="false">
+            <options>
+                <option value="OK">ok</option>
+                <option value="EMERGENCY">emergency</option>
+                <option value="WARNING">warning</option>
+            </options>
+        </state>
+    </channel-type>
+
+	<channel-type id="Battery">
+		<item-type>String</item-type>
+		<label>Battery</label>
+		<description>Battery state</description>
+		<state readOnly="false">
+			<options>
+				<option value="OK">ok</option>
+				<option value="REPLACE">replace</option>
+			</options>
+		</state>
+	</channel-type>
+	
+    <channel-type id="ManualTestActive" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Manual Test Active</label>
+        <description>If the manual test is currently active</description>
+    </channel-type>
+</thing:thing-descriptions>

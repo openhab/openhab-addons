@@ -57,6 +57,8 @@
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.network.test</module>
+    <module>org.openhab.binding.nest</module>
+    <module>org.openhab.binding.nest.test</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
