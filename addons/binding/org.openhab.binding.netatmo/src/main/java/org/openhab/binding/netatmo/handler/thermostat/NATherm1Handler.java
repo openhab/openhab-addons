@@ -69,7 +69,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
             if (thermostat != null) {
                 switch (channelId) {
                     case CHANNEL_THERM_ORIENTATION:
-                        return new DecimalType(thermostat.getThermOrientation());
+                        return ChannelTypeUtils.toDecimalType(thermostat.getThermOrientation());
                     case CHANNEL_THERM_RELAY:
                         return thermostat.getThermRelayCmd() == 100 ? OnOffType.ON : OnOffType.OFF;
                     case CHANNEL_TEMPERATURE:
@@ -93,7 +93,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
                     }
                     case CHANNEL_SETPOINT_MODE: {
                         return thermostat.getSetpoint() != null
-                                ? new StringType(thermostat.getSetpoint().getSetpointMode()) : UnDefType.NULL;
+                                ? ChannelTypeUtils.toStringType(thermostat.getSetpoint().getSetpointMode())
+                                : UnDefType.NULL;
                     }
 
                 }
