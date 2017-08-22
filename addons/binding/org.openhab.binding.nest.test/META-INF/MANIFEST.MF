@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name:  Nest Binding Tests
+Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Fragment-Host: org.openhab.binding.nest
+Import-Package: org.openhab.binding.nest,
+ org.openhab.binding.nest.handler,
+ org.eclipse.smarthome.core.common.registry,
+ org.slf4j,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test.storage,
+ org.eclipse.smarthome.test.java,
+ org.hamcrest;core=split,
+ org.mockito,
+ org.junit,
+ org.osgi.service.device,
+ org.osgi.framework
+Require-Bundle: org.junit,org.mockito,org.hamcrest
+Export-Package: 
+ org.openhab.binding.nest;uses:="org.eclipse.smarthome.test"
