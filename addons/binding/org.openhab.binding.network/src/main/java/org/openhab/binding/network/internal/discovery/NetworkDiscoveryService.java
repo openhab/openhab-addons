@@ -6,12 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.discovery;
+package org.openhab.binding.network.internal.discovery;
 
 import static org.openhab.binding.network.NetworkBindingConstants.*;
 
 import java.net.UnknownHostException;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,15 +19,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
-import org.openhab.binding.network.internal.PresenceDetection.PingMethod;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +46,10 @@ import com.google.common.collect.Sets;
  * @author David Graeff - Rewritten
  * @author Marc Mettke - Initial contribution
  */
+@Component(immediate = true, service = DiscoveryService.class, name = "NetworkDiscovery")
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
     static final int PING_TIMEOUT_IN_MS = 500;
+    static final int MAXIMUM_IPS_PER_INTERFACE = 255;
     private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
 
     // TCP port 548 (Apple Filing Protocol (AFP))
@@ -52,23 +58,37 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     private Set<Integer> tcp_service_ports = Sets.newHashSet(80, 548, 554, 1025);
     private Integer scannedIPcount;
     private ExecutorService executorService = null;
-    private boolean canUseARPPing;
-    private String arpPingToolPath;
+    private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     NetworkUtils networkUtils = new NetworkUtils();
 
     public NetworkDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS,
-                (int) Math.round(new NetworkUtils().getNetworkIPs().size() * (PING_TIMEOUT_IN_MS / 1000.0)), false);
+        super(SUPPORTED_THING_TYPES_UIDS, (int) Math.round(
+                new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size() * (PING_TIMEOUT_IN_MS / 1000.0)),
+                false);
     }
 
-    protected void activate(ComponentContext componentContext) {
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        arpPingToolPath = (String) properties.get("arp_ping_tool_path");
-        if (arpPingToolPath == null) {
-            arpPingToolPath = "arping";
-        }
-        canUseARPPing = networkUtils.isNativeARPpingWorking(arpPingToolPath);
+    @Override
+    @Activate
+    public void activate(Map<String, Object> config) {
+        super.activate(config);
+        modified(config);
     };
+
+    @Override
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        super.modified(config);
+        // We update instead of replace the configuration object, so that if the user updates the
+        // configuration, the values are automatically available in all handlers. Because they all
+        // share the same instance.
+        configuration.update(new Configuration(config).as(NetworkBindingConfiguration.class));
+    }
+
+    @Override
+    @Deactivate
+    protected void deactivate() {
+        super.deactivate();
+    }
 
     @Override
     public void partialDetectionResult(PresenceDetectionValue value) {
@@ -98,7 +118,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         removeOlderResults(getTimestampOfLastScan(), null);
         logger.trace("Starting Discovery");
 
-        final Set<String> networkIPs = networkUtils.getNetworkIPs();
+        final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
         scannedIPcount = 0;
 
@@ -111,11 +131,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                 continue;
             }
             s.setIOSDevice(true);
-            s.setDHCPsniffing(false);
+            s.setUseDhcpSniffing(false);
             s.setTimeout(PING_TIMEOUT_IN_MS);
             // Ping devices
-            s.setPingMethod(PingMethod.SYSTEM_PING);
-            s.setUseARPping(canUseARPPing, arpPingToolPath);
+            s.setUseIcmpPing(true);
+            s.setUseArpPing(true, configuration.arpPingToolPath);
             // TCP devices
             s.setServicePorts(tcp_service_ports);
 
@@ -149,7 +169,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         executorService = null;
     }
 
-    static ThingUID createServiceUID(String ip, int tcpPort) {
+    public static ThingUID createServiceUID(String ip, int tcpPort) {
         // uid must not contains dots
         return new ThingUID(SERVICE_DEVICE, ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
     }
@@ -192,7 +212,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                 .withProperties(properties).withLabel(label).build());
     }
 
-    static ThingUID createPingUID(String ip) {
+    public static ThingUID createPingUID(String ip) {
         // uid must not contains dots
         return new ThingUID(PING_DEVICE, ip.replace('.', '_'));
     }
