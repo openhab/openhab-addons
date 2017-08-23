@@ -10,7 +10,6 @@ package org.openhab.binding.netatmo.handler.thermostat;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -53,7 +52,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
             case CHANNEL_LAST_PLUG_SEEN:
                 return ChannelTypeUtils.toDateTimeType(plugAdapter.getLastPlugSeen());
             case CHANNEL_LAST_BILAN:
-                return new DateTimeType(plugAdapter.getLastBilan());
+                return ChannelTypeUtils.toDateTimeType(plugAdapter.getLastBilan());
             default:
                 return super.getNAThingProperty(channelId);
         }

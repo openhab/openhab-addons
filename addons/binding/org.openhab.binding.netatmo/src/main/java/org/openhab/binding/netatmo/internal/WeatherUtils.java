@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler.station;
+package org.openhab.binding.netatmo.internal;
 
 /**
  * This class holds various unit/measurement conversion methods
  *
  * @author Gaël L'hopital
  */
-class WeatherUtils {
+public class WeatherUtils {
 
     /**
      * Compute the HeatIndex temperature given temperature and hygrometry
@@ -23,7 +23,7 @@ class WeatherUtils {
      * @param hygro relative level (%)
      * @return heatIndex
      */
-    static double getHeatIndex(double temperature, double humidity) {
+    public static double getHeatIndex(double temperature, double humidity) {
         double t = (9 / 5) * temperature + 32; // switch to °F
         double hi = 16.923 + (1.85212 * Math.pow(10, -1) * t) + (5.37941 * humidity)
                 - (1.00254 * Math.pow(10, -1) * t * humidity) + (9.41695 * Math.pow(10, -3) * Math.pow(t, 2))
@@ -41,7 +41,7 @@ class WeatherUtils {
         return hi;
     }
 
-    static double getDewPointDep(double temperature, double dewpoint) {
+    public static double getDewPointDep(double temperature, double dewpoint) {
         return temperature - dewpoint;
     }
 
@@ -54,7 +54,7 @@ class WeatherUtils {
      * @param hygro relative level (%)
      * @return dewpoint temperature
      */
-    static double getDewPoint(double temperature, double humidity) {
+    public static double getDewPoint(double temperature, double humidity) {
         double a = 17.271, b = 237.2;
         double gamma = ((a * temperature) / (b + temperature)) + Math.log(humidity / 100.0);
         return b * gamma / (a - gamma);
@@ -68,7 +68,7 @@ class WeatherUtils {
      * @param hygro relative level (%)
      * @return Humidex index value
      */
-    static double getHumidex(double temperature, double hygro) {
+    public static double getHumidex(double temperature, double hygro) {
         double result = 6.112 * Math.pow(10, 7.5 * temperature / (237.7 + temperature)) * hygro / 100;
         result = temperature + 0.555555556 * (result - 10);
         return result;
