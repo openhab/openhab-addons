@@ -9,7 +9,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.allplay.internal.AllPlayHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.allplay">
 
    <implementation class="org.openhab.binding.allplay.internal.AllPlayHandlerFactory"/>
 
