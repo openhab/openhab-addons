@@ -18,6 +18,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SenseBoxHandlerFactory} is responsible for creating things and thing
@@ -25,6 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  *
  * @author Hakan Tandogan - Initial contribution
  */
+@Component(service = BaseThingHandlerFactory.class, immediate = true, name="binding.sensebox")
 public class SenseBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BOX);
