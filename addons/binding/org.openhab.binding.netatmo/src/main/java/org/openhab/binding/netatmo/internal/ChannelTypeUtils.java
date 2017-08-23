@@ -37,6 +37,14 @@ public class ChannelTypeUtils {
         return (calendar == null) ? UnDefType.NULL : new DateTimeType(calendar);
     }
 
+    public static State toDecimalType(Float value) {
+        return (value == null) ? UnDefType.NULL : toDecimalType(new BigDecimal(value));
+    }
+
+    public static State toDecimalType(Double value) {
+        return (value == null) ? UnDefType.NULL : toDecimalType(new BigDecimal(value));
+    }
+
     public static State toDecimalType(float value) {
         return toDecimalType(new BigDecimal(value));
     }
