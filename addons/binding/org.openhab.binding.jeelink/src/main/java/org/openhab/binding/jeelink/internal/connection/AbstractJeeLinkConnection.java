@@ -90,6 +90,7 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
                 for (String cmd : initCommands) {
                     w.write(cmd);
                 }
+                w.flush();
             }
         } catch (IOException ex) {
             logger.debug("Error writing to output stream!", ex);
