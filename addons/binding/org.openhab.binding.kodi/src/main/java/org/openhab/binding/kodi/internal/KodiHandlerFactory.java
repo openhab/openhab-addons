@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.kodi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.kodi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(KodiHandlerFactory.class);

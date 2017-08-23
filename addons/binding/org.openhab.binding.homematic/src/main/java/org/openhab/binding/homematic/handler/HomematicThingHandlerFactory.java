@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.homematic", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.homematic", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
     private HomematicTypeGenerator typeGenerator;
     private NetworkAddressService networkAddressService;

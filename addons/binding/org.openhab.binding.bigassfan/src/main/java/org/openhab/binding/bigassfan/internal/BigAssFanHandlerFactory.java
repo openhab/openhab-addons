@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.bigassfan", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.bigassfan", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
 
     private NetworkAddressService networkAddressService;

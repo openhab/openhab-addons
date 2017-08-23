@@ -45,7 +45,7 @@ import de.kaizencode.tchaikovsky.exception.AllPlayException;
  *
  * @author Dominic Lerbs - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.allplay", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.allplay", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandlerFactory.class);

@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - several thing types and handlers + discovery service
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.freebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.freebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);

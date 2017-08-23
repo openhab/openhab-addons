@@ -48,7 +48,7 @@ import com.google.common.collect.Sets;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Cancel request player job when handler removed
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.squeezebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.squeezebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);

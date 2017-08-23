@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.onkyo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onkyo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandlerFactory.class);
