@@ -24,9 +24,12 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@Component(service = ExtendedDiscoveryService.class, immediate = true)
 public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 
@@ -47,6 +51,8 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
     public static final int BACKGROUND_DISCOVERY_DELAY = 10;
 
     private DiscoveryServiceCallback discoveryServiceCallback;
+
+    private NetworkAddressService networkAddressService;
 
     private boolean terminate;
 
@@ -121,7 +127,7 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
         MulticastListener gcMulticastListener;
 
         try {
-            gcMulticastListener = new MulticastListener();
+            gcMulticastListener = new MulticastListener(networkAddressService.getPrimaryIpv4HostAddress());
         } catch (SocketException se) {
             logger.error("Discovery job got Socket exception creating multicast socket: {}", se.getMessage());
             return;
@@ -176,5 +182,14 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
         }
         gcMulticastListener.shutdown();
         logger.debug("Discovery job is exiting");
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

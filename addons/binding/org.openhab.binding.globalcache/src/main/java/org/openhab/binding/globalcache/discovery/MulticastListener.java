@@ -19,7 +19,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +57,8 @@ public class MulticastListener {
     /*
      * Constructor joins the multicast group, throws IOException on failure.
      */
-    public MulticastListener() throws IOException, SocketException {
-        InetAddress ifAddress = InetAddress.getByName(NetUtil.getLocalIpv4HostAddress());
+    public MulticastListener(String ipv4Address) throws IOException, SocketException {
+        InetAddress ifAddress = InetAddress.getByName(ipv4Address);
         logger.debug("Discovery job using address {} on network interface {}", ifAddress.getHostAddress(),
                 NetworkInterface.getByInetAddress(ifAddress).getName());
         socket = new MulticastSocket(GC_MULTICAST_PORT);

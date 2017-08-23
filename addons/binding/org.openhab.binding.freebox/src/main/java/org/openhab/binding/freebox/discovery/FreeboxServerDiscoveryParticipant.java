@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
 import org.openhab.binding.freebox.config.FreeboxServerConfiguration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier
  */
+@Component(immediate = true)
 public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(FreeboxServerDiscoveryParticipant.class);

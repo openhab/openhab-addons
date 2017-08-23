@@ -10,12 +10,17 @@ package org.openhab.binding.globalcache.internal;
 
 import static org.openhab.binding.globalcache.GlobalCacheBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +29,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.globalcache", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class GlobalCacheHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandlerFactory.class);
+
+    private NetworkAddressService networkAddressService;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -44,9 +52,18 @@ public class GlobalCacheHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new GlobalCacheHandler(thing);
+            return new GlobalCacheHandler(thing, networkAddressService.getPrimaryIpv4HostAddress());
         }
 
         return null;
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

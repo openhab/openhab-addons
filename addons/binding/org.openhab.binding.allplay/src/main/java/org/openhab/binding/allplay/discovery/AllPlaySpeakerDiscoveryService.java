@@ -18,9 +18,11 @@ import java.util.Set;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.allplay.AllPlayBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
  *
  * @author Dominic Lerbs - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true)
 public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService implements SpeakerAnnouncedListener {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlaySpeakerDiscoveryService.class);

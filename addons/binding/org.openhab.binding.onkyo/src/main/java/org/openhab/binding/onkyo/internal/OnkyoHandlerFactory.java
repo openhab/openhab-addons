@@ -18,15 +18,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
-import org.eclipse.smarthome.core.net.NetUtil;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.handler.OnkyoHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onkyo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandlerFactory.class);
@@ -44,6 +49,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     private UpnpIOService upnpIOService;
     private AudioHTTPServer audioHTTPServer;
+    private NetworkAddressService networkAddressService;
 
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl = null;
@@ -84,7 +90,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
         if (callbackUrl != null) {
             return callbackUrl;
         } else {
-            final String ipAddress = NetUtil.getLocalIpv4HostAddress();
+            final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
             if (ipAddress == null) {
                 logger.warn("No network interface could be found.");
                 return null;
@@ -110,6 +116,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    @Reference
     protected void setUpnpIOService(UpnpIOService upnpIOService) {
         this.upnpIOService = upnpIOService;
     }
@@ -118,11 +125,21 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
         this.upnpIOService = null;
     }
 
+    @Reference
     protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = audioHTTPServer;
     }
 
     protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = null;
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

@@ -36,12 +36,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -77,12 +77,12 @@ public class BigAssFanHandler extends BaseThingHandler {
     private final StringType COOLING = new StringType("COOLING");
     private final StringType HEATING = new StringType("HEATING");
 
-    public BigAssFanHandler(Thing thing) {
+    public BigAssFanHandler(@NonNull Thing thing, String ipv4Address) {
         super(thing);
         this.thing = thing;
 
         logger.debug("Creating FanListener object for {}", thing.getUID());
-        fanListener = new FanListener();
+        fanListener = new FanListener(ipv4Address);
     }
 
     @Override
@@ -577,8 +577,8 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
         };
 
-        public FanListener() {
-            conn = new ConnectionManager();
+        public FanListener(String ipv4Address) {
+            conn = new ConnectionManager(ipv4Address);
         }
 
         public void startFanListener() {
@@ -1019,10 +1019,10 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
         };
 
-        public ConnectionManager() {
+        public ConnectionManager(String ipv4Address) {
             deviceIsConnected = false;
             try {
-                ifAddress = InetAddress.getByName(NetUtil.getLocalIpv4HostAddress());
+                ifAddress = InetAddress.getByName(ipv4Address);
                 logger.debug("Handler for {} using address {} on network interface {}", thing.getUID(),
                         ifAddress.getHostAddress(), NetworkInterface.getByInetAddress(ifAddress).getName());
             } catch (UnknownHostException e) {
