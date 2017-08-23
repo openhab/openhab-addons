@@ -150,6 +150,8 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
             connection.closeConnection();
         }
 
+        connectionInitialized.set(false);
+
         SensorDefinition.disposeConverters(this);
         super.dispose();
     }
