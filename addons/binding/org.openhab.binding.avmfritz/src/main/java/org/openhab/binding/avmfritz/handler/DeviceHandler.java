@@ -184,12 +184,12 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 break;
             case CHANNEL_SETTEMP:
                 if (command instanceof DecimalType) {
-                    final BigDecimal temperature = new BigDecimal(command.toString());
+                    BigDecimal temperature = new BigDecimal(command.toString());
                     state.getHkr().setTist(temperature);
                     fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    final BigDecimal temperature = state.getHkr().getTsoll();
+                    BigDecimal temperature = state.getHkr().getTsoll();
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
                         temperature.add(BigDecimal.ONE);
                     } else {
@@ -199,7 +199,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else if (command instanceof OnOffType) {
-                    final BigDecimal temperature = OnOffType.ON.equals(command) ? HeatingModel.TEMP_FRITZ_ON
+                    BigDecimal temperature = OnOffType.ON.equals(command) ? HeatingModel.TEMP_FRITZ_ON
                             : HeatingModel.TEMP_FRITZ_OFF;
                     state.getHkr().setTist(temperature);
                     fritzBox.setSetTemp(ain, temperature);
@@ -221,12 +221,12 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF)));
                     } else if (command.equals(MODE_COMFORT)) {
-                        final BigDecimal comfort_temp = state.getHkr().getKomfort();
+                        BigDecimal comfort_temp = state.getHkr().getKomfort();
                         state.getHkr().setTist(comfort_temp);
                         fritzBox.setSetTemp(ain, comfort_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(comfort_temp)));
                     } else if (command.equals(MODE_ECO)) {
-                        final BigDecimal eco_temp = state.getHkr().getAbsenk();
+                        BigDecimal eco_temp = state.getHkr().getAbsenk();
                         state.getHkr().setTist(eco_temp);
                         fritzBox.setSetTemp(ain, eco_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(eco_temp)));
@@ -261,11 +261,11 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     public void addDeviceList(DeviceModel device) {
         try {
             logger.debug("set device model: {}", device);
-            final ThingUID thingUID = getThingUID(device);
-            final Thing thing = getThing();
+            ThingUID thingUID = getThingUID(device);
+            Thing thing = getThing();
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
-                final DeviceHandler handler = (DeviceHandler) thing.getHandler();
+                DeviceHandler handler = (DeviceHandler) thing.getHandler();
                 handler.setState(device);
                 updateThingFromDevice(thing, device);
             }
