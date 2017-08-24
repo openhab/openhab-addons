@@ -77,8 +77,10 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     private ScheduledFuture<?> pollingJob;
 
-    // keeps track of the current state for handling of increase/decrease
-    private DeviceModel state = null;
+    /**
+     * keeps track of the current state for handling of increase/decrease
+     */
+    private DeviceModel state;
 
     /**
      * Constructor
@@ -177,9 +179,9 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
                     state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
-                    fritzBox.setSwitch(ain, OnOffType.ON.equals(command) ? true : false);
+                    fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else {
-                    logger.warn("Received unknown command {} for channel {}", command.toString(), CHANNEL_SWITCH);
+                    logger.warn("Received unknown command {} for channel {}", command, CHANNEL_SWITCH);
                 }
                 break;
             case CHANNEL_SETTEMP:
@@ -205,7 +207,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else {
-                    logger.warn("Received unknown command {} for channel {}", command.toString(), CHANNEL_SETTEMP);
+                    logger.warn("Received unknown command {} for channel {}", command, CHANNEL_SETTEMP);
                 }
                 break;
             case CHANNEL_RADIATOR_MODE:
@@ -236,8 +238,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_MAX)));
                     } else {
-                        logger.warn("Received unknown command {} for channel {}", command.toString(),
-                                CHANNEL_RADIATOR_MODE);
+                        logger.warn("Received unknown command {} for channel {}", command, CHANNEL_RADIATOR_MODE);
                     }
                 }
                 break;
