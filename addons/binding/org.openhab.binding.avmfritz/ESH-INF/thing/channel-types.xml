@@ -34,8 +34,6 @@
 		<description>Current measured temperature (in °C).</description>
 		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true" />
-
-		<config-description-ref uri="channel-type:avmfritz:temperature-channel" />
 	</channel-type>
 
 	<channel-type id="energy">

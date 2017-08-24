@@ -57,7 +57,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     /**
-     * IP of FRITZ!Powerline 546E in standalone mode
+     * IP of FRITZ!Powerline 546E in stand-alone mode
      */
     private String soloIp;
     /**
@@ -139,7 +139,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
 
     /**
      * Handle the commands for switchable outlets or heating thermostats. TODO:
-     * test switch behaviour on PL546E standalone
+     * test switch behaviour on PL546E stand-alone
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -314,7 +314,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                                     : OnOffType.OFF);
                 }
             }
-            // save AIN to config for PL546E standalone
+            // save AIN to config for PL546E stand-alone
             if (thing.getConfiguration().get(THING_AIN) == null) {
                 thing.getConfiguration().put(THING_AIN, device.getIdentifier());
             }

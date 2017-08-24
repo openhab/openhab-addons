@@ -19,7 +19,7 @@ This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) 
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in standalone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
+This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
 
 ### FRITZ!DECT 300 / Comet DECT
 
