@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.osramlightify.internal.discovery;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,14 @@ public final class LightifyDeviceDiscoveryService extends AbstractDiscoveryServi
         logger.trace("Start scanning for paired devices");
         bridgeHandler.sendMessage(new LightifyListGroupsMessage());
         bridgeHandler.sendMessage(new LightifyListPairedDevicesMessage());
+    }
+
+    public void scanComplete() {
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
+    public void removeResults() {
+        removeOlderResults(new Date().getTime());
     }
 
     /**

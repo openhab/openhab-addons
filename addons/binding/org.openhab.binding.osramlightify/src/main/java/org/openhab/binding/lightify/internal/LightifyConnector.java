@@ -331,6 +331,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                                         LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
 
                                         havePoll = false;
+                                        bridgeHandler.getDiscoveryService().scanComplete();
 
                                         if (pollResponse.hasChanges()) {
                                             // If there are changes happening that we didn't initiate we

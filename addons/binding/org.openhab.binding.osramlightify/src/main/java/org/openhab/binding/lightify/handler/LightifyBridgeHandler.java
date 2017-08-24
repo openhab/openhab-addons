@@ -131,6 +131,8 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     }
 
     private void deregisterDeviceDiscoveryService() {
+        discoveryService.removeResults();
+
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
             serviceRegistration = null;
