@@ -34,6 +34,7 @@ public final class VolumeConverter {
      * @return the volume in Db
      */
     public static double convertFromIpControlVolumeToDb(String ipControlVolume, int zone) {
+        validateZone(zone - 1);
         double ipControlVolumeInt = Double.parseDouble(ipControlVolume);
         return ((ipControlVolumeInt - 1d) / 2d) - MIN_DB_VOLUME[zone - 1];
     }
@@ -45,6 +46,7 @@ public final class VolumeConverter {
      * @return the volume for IpControlRequest
      */
     public static String convertFromDbToIpControlVolume(double volumeDb, int zone) {
+        validateZone(zone - 1);
         double ipControlVolume = ((MIN_DB_VOLUME[zone - 1] + volumeDb) * 2d) + 1d;
         return formatIpControlVolume(ipControlVolume, zone);
     }
@@ -56,6 +58,7 @@ public final class VolumeConverter {
      * @return the volume for IpControlRequest
      */
     public static String convertFromPercentToIpControlVolume(double volumePercent, int zone) {
+        validateZone(zone - 1);
         double ipControlVolume = 1 + (volumePercent * MAX_IP_CONTROL_VOLUME[zone - 1] / 100);
         return formatIpControlVolume(ipControlVolume, zone);
     }
@@ -67,6 +70,7 @@ public final class VolumeConverter {
      * @return the volume percentage
      */
     public static double convertFromIpControlVolumeToPercent(String ipControlVolume, int zone) {
+        validateZone(zone - 1);
         double ipControlVolumeInt = Double.parseDouble(ipControlVolume);
         return ((ipControlVolumeInt - 1d) * 100d) / MAX_IP_CONTROL_VOLUME[zone - 1];
     }
@@ -78,6 +82,7 @@ public final class VolumeConverter {
      * @return
      */
     private static String formatIpControlVolume(double ipControlVolume, int zone) {
+        validateZone(zone - 1);
         DecimalFormat FORMATTER = new DecimalFormat(IP_CONTROL_VOLUME_FORMAT[zone - 1]);
         String result = IP_CONTROL_VOLUME_DEFAULT_VALUE[zone - 1];
         // DecimalFormat is not ThreadSafe
@@ -85,6 +90,12 @@ public final class VolumeConverter {
             result = FORMATTER.format(Math.round(ipControlVolume));
         }
         return result;
+    }
+
+    private static void validateZone(int zone) {
+        if (zone < 0 || zone > 3) {
+            throw new IllegalArgumentException("An unexpected zone was received, the value should be in the range 0-3");
+        }
     }
 
 }
