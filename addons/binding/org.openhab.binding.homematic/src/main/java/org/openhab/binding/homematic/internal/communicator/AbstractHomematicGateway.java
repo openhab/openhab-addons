@@ -824,6 +824,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             if (timeSinceLastEvent >= config.getAliveInterval()) {
                 logger.info("No event since {} seconds from gateway '{}', restarting RPC server", timeSinceLastEvent,
                         id);
+
+                // set lastEventTime so that the alive interval starts again
+                lastEventTime = System.currentTimeMillis();
+
                 try {
                     stopServers();
                     startServers();
