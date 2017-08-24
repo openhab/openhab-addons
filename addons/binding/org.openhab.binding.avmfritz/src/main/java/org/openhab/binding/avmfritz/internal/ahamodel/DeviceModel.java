@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
- * <li>Bit 4: Alarm-Sensor</li>
  * <li>Bit 6: Heizkostenregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
@@ -35,8 +34,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 @XmlRootElement(name = "device")
 public class DeviceModel {
-
-    public static final int ALARM_SENSOR_BIT = 16;
     public static final int HEATING_THERMOSTAT_BIT = 64;
     public static final int POWERMETER_BIT = 128;
     public static final int TEMPSENSOR_BIT = 256;
