@@ -15,8 +15,8 @@
 		<description>A BBQ Temperature device.</description>
 
 		<channels>
-			<channel id="foodTemperature" typeId="temperature" />
-			<channel id="bbqTemperature" typeId="temperature" />
+			<channel id="foodTemperature" typeId="foodTemperature" />
+			<channel id="bbqTemperature" typeId="bbqTemperature" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
