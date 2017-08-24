@@ -70,7 +70,7 @@ public class NAPlugAdapter extends NADeviceAdapter<NAPlug> {
     }
 
     public boolean getConnectedBoiler() {
-        return device.getPlugConnectedBoiler().booleanValue();
+        return device.getPlugConnectedBoiler().intValue() != 0;
     }
 
     public Integer getLastPlugSeen() {
@@ -81,7 +81,8 @@ public class NAPlugAdapter extends NADeviceAdapter<NAPlug> {
         Calendar cal = Calendar.getInstance();
 
         cal.setTimeInMillis(0);
-        cal.set(device.getLastBilan().getY(), device.getLastBilan().getM() - 1, 1);
+        cal.set(device.getLastBilan().getY(), device.getLastBilan().getM(), 1);
+        cal.add(Calendar.MONTH, -1);
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 
         return cal;
