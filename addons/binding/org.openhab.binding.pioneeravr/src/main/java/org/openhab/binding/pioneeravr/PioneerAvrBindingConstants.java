@@ -70,6 +70,6 @@ public class PioneerAvrBindingConstants {
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(IP_AVR_THING_TYPE,
-            IP_AVR_THING_TYPE2016, IP_AVR_UNSUPPORTED_THING_TYPE);
+            IP_AVR_THING_TYPE2016, IP_AVR_THING_TYPE2015, IP_AVR_THING_TYPE2014, IP_AVR_UNSUPPORTED_THING_TYPE);
 
 }

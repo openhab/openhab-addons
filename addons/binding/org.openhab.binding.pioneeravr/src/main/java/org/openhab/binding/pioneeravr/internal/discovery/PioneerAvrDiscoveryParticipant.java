@@ -25,6 +25,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 /**
@@ -105,13 +106,17 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
                             : null;
 
                     ThingTypeUID thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE;
-                    if (isSupportedDeviceModel2016(deviceModel)) {
+
+                    if (isSupportedDeviceModel(deviceModel, PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016)) {
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016;
-                    } else if (isSupportedDeviceModel2015(deviceModel)) {
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2015)) {
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015;
-                    } else if (isSupportedDeviceModel2014(deviceModel)) {
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2014)) {
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014;
-                    } else if (!isSupportedDeviceModel(deviceModel)) {
+                    } else if (!isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS)) {
                         logger.debug("Device model {} not supported. Odd behaviors may happen.", deviceModel);
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE;
                     }
@@ -130,47 +135,13 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
      * @param deviceModel
      * @return
      */
-    private boolean isSupportedDeviceModel(final String deviceModel) {
+    private boolean isSupportedDeviceModel(String deviceModel, Set<String> supportedDeviceModels) {
         return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS,
-                        new com.google.common.base.Predicate<String>() {
-                            @Override
-                            public boolean apply(String input) {
-                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                            }
-                        }).isEmpty();
-    }
-
-    private boolean isSupportedDeviceModel2016(final String deviceModel) {
-        return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016,
-                        new com.google.common.base.Predicate<String>() {
-                            @Override
-                            public boolean apply(String input) {
-                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                            }
-                        }).isEmpty();
-    }
-
-    private boolean isSupportedDeviceModel2015(final String deviceModel) {
-        return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2015,
-                        new com.google.common.base.Predicate<String>() {
-                            @Override
-                            public boolean apply(String input) {
-                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                            }
-                        }).isEmpty();
-    }
-
-    private boolean isSupportedDeviceModel2014(final String deviceModel) {
-        return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2014,
-                        new com.google.common.base.Predicate<String>() {
-                            @Override
-                            public boolean apply(String input) {
-                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                            }
-                        }).isEmpty();
+                && !Collections2.filter(supportedDeviceModels, new Predicate<String>() {
+                    @Override
+                    public boolean apply(String input) {
+                        return StringUtils.startsWithIgnoreCase(deviceModel, input);
+                    }
+                }).isEmpty();
     }
 }
