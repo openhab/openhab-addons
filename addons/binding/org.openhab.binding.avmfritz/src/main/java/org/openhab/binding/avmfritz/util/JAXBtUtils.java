@@ -28,13 +28,11 @@ public class JAXBtUtils {
     public static final JAXBContext JAXBCONTEXT = initJAXBContext();
 
     private static JAXBContext initJAXBContext() {
-        JAXBContext jaxbContext = null;
         try {
-            jaxbContext = JAXBContext.newInstance(DevicelistModel.class);
+            return JAXBContext.newInstance(DevicelistModel.class);
         } catch (JAXBException e) {
             logger.error("Exception creating JAXBContext: {}", e.getMessage(), e);
-            jaxbContext = null;
+            return null;
         }
-        return jaxbContext;
     }
 }
