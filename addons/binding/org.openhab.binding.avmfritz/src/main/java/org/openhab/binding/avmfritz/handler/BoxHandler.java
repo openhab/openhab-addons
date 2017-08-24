@@ -200,8 +200,12 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                         calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
                         updateThingChannelState(thing, CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
                     }
-                    updateThingChannelState(thing, CHANNEL_NEXTTEMP,
-                            new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
+                    if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
+                        updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
+                    } else {
+                        updateThingChannelState(thing, CHANNEL_NEXTTEMP,
+                                new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
+                    }
                 }
                 if (device.getHkr().getBatterylow() == null) {
                     updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
