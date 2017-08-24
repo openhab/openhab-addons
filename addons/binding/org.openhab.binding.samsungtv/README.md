@@ -4,13 +4,14 @@ This binding integrates the [Samsung TV's](http://www.samsung.com).
 
 ## Supported Things
 
-Samsung TV C (2010), D (2011) and E (2012) models should be supported. Because Samsung haven't publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
+Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported. Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
 
 Tested TV models:
 
 | Model     | State | Notes |
 |-----------|-------|--------------------------------------------------------------------|
 | UE46E5505 | OK | Initial contribution is done by this model |
+| UE40F6500 | OK | All channels except `colorTemperature`, `programTitle` and `channelName` are working |
 
 
 ## Discovery
@@ -19,7 +20,7 @@ The TV's are discovered through UPnP protocol in the local network and all devic
 
 ## Binding Configuration
 
-The binding does not require any special configuration
+The binding does not require any special configuration.
 
 ## Thing Configuration
 
@@ -28,7 +29,7 @@ The Samsung TV Thing requires the host name and port address as a configuration 
 E.g.
 
 ```
-Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000]
+Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000 ]
 ```
 
 ## Channels
