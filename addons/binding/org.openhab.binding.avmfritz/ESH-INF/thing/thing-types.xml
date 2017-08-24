@@ -16,6 +16,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -42,6 +43,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -68,6 +70,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
@@ -89,6 +92,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
@@ -111,6 +115,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
@@ -127,6 +132,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />

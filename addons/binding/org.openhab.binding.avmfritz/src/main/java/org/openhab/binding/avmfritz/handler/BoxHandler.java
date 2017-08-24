@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -79,7 +80,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public BoxHandler(Bridge bridge) {
+    public BoxHandler(@NonNull Bridge bridge) {
         super(bridge);
         this.pollingRunnable = new DeviceListPolling(this);
     }
@@ -166,6 +167,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
                 updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
                         ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
+                        device.getSwitch().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
+                                : OpenClosedType.OPEN);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
@@ -177,6 +181,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
                 updateThingChannelState(thing, CHANNEL_LOCKED,
                         device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
+                        device.getHkr().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
+                                : OpenClosedType.OPEN);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
                 final BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());

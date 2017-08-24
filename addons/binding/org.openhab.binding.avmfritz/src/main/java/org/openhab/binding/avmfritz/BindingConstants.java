@@ -58,6 +58,7 @@ public class BindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
+    public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
     public static final String CHANNEL_TEMP = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";

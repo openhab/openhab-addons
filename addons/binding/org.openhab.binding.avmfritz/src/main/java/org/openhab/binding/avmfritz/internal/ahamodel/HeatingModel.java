@@ -150,8 +150,8 @@ public class HeatingModel {
     public String toString() {
         return new ToStringBuilder(this).append("tist", getTist()).append("tsoll", getTsoll())
                 .append("absenk", getAbsenk()).append("komfort", getKomfort()).append("lock", getLock())
-                .append("errorcode", getErrorcode()).append("batterylow", getBatterylow())
-                .append("nextchange", getNextchange()).toString();
+                .append("devicelock", getDevicelock()).append("errorcode", getErrorcode())
+                .append("batterylow", getBatterylow()).append("nextchange", getNextchange()).toString();
     }
 
     public static boolean inCelsiusRange(BigDecimal celsiusValue) {
