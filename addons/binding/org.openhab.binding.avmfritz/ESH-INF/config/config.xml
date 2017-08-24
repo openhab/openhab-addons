@@ -143,16 +143,4 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="channel-type:avmfritz:temperature-channel">
-		<parameter name="sourceUnit" type="text" required="true">
-			<label>Temperature Unit</label>
-			<description>Select the temperature unit.</description>
-			<options>
-				<option value="C">Degree Celsius</option>
-				<option value="F">Degree Fahrenheit</option>
-			</options>
-			<default>C</default>
-		</parameter>
-	</config-description>
-
 </config-description:config-descriptions>
