@@ -29,7 +29,7 @@ public class PioneerAvrBindingConstants {
             "VSX-51", "VSX-1021", "VSX-1026", "VSA-1021", "VSX-50", "VSX-926", "VSX-921", "VSA-921");
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2014 = ImmutableSet.of("SC-LX87", "SC-LX77", "SC-LX57",
-            "SC-2032", "SC-1223", "VSX-1123", "VSX-923");
+            "SC-2023", "SC-1223", "VSX-1123", "VSX-923");
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2015 = ImmutableSet.of("SC-89", "SC-LX88", "SC-87",
             "SC-LX78", "SC-85", "SC-LX58", "SC-82", "SC-2024", "SC-81", "VSX-80");

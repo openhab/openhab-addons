@@ -5,8 +5,8 @@
 
 	<!-- AVR control over IP -->
 	<thing-type id="ipAvr">
-		<label>Pioneer AVR over IP</label>
-		<description>Control a Pioneer AVR over IP </description>
+		<label>Pioneer Classic AVR over IP</label>
+		<description>Control a classic Pioneer AVR (SC-57, SC-LX85, SC-55, SC-1526, SC-LX75, VSX-53, VSX-1326, VSX-LX55, VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921, VSA-921) over IP </description>
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
@@ -31,7 +31,7 @@
 	
 	<thing-type id="ipAvr2014">
         <label>Pioneer AVR over IP 2014</label>
-        <description>Control a 2014 Pioneer AVR over IP </description>
+        <description>Control a 2014 Pioneer AVR (SC-LX87, SC-LX77, SC-LX57, SC-2023, SC-1223, VSX-1123, VSX-923) over IP </description>
 
         <channel-groups>
             <channel-group typeId="displayInformationGroup" id="displayInformation" />
@@ -57,7 +57,7 @@
     
 	<thing-type id="ipAvr2015">
         <label>Pioneer AVR over IP 2015</label>
-        <description>Control a 2015 Pioneer AVR over IP </description>
+        <description>Control a 2015 Pioneer AVR (SC-89, SC-LX88, SC-87, SC-LX78, SC-85, SC-LX58, SC-82, SC-2024, SC-81, VSX-80) over IP </description>
 
         <channel-groups>
             <channel-group typeId="displayInformationGroup" id="displayInformation" />
@@ -83,7 +83,7 @@
     
     <thing-type id="ipAvr2016">
         <label>Pioneer AVR over IP 2016</label>
-        <description>Control a 2016 Pioneer AVR over IP </description>
+        <description>Control a 2016 Pioneer AVR (SC-99, SC-LX89, SC-97, SC-LX79, SC-95, SC-LX59, SC-92, SC-91, VSX-90, VSX-45) over IP </description>
 
         <channel-groups>
             <channel-group typeId="displayInformationGroup" id="displayInformation" />
