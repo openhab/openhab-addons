@@ -9,19 +9,18 @@
 package org.openhab.binding.netatmo.internal.homecoach;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.NADeviceAdapter;
-import org.openhab.binding.netatmo.internal.NAHealthyHomeCoachAdapter;
-import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
 
 import io.swagger.client.model.NADashboardData;
+import io.swagger.client.model.NAHealthyHomeCoach;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
-import io.swagger.client.model.NAUserAdministrative;
 
 /**
  * {@link NAHealthyHomeCoachHandler} is the class used to handle the Health Home Coach device
@@ -29,64 +28,63 @@ import io.swagger.client.model.NAUserAdministrative;
  * @author Michael Svinth - Initial contribution OH2 version
  *
  */
-public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
+public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHomeCoach> {
 
-    public NAHealthyHomeCoachHandler(Thing thing) {
-        super(thing, NetatmoDeviceConfiguration.class);
+    public NAHealthyHomeCoachHandler(@NonNull Thing thing) {
+        super(thing);
     }
 
     @Override
-    protected NADeviceAdapter<?> updateReadings(String equipmentId) {
-        NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(equipmentId);
+    protected NAHealthyHomeCoach updateReadings() {
+        NAHealthyHomeCoach result = null;
+        NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(getId());
         if (homecoachDataBody != null) {
-            return new NAHealthyHomeCoachAdapter(homecoachDataBody);
-        } else {
-            return null;
+            userAdministrative = homecoachDataBody.getUser().getAdministrative();
+            result = homecoachDataBody.getDevices().get(0);
         }
+        return result;
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAHealthyHomeCoachAdapter adapter = (NAHealthyHomeCoachAdapter) device;
-        NADashboardData dashboardData = adapter.getDashboardData();
-        NAUserAdministrative userAdministrative = device.getUserAdministrative();
-        switch (channelId) {
-            case CHANNEL_CO2:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
-            case CHANNEL_TEMPERATURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
-            case CHANNEL_HEALTH_INDEX:
-                return ChannelTypeUtils.toStringType(toHealthIndexString(dashboardData.getHealthIdx()));
-            case CHANNEL_MIN_TEMP:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
-            case CHANNEL_MAX_TEMP:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getMaxTemp());
-            case CHANNEL_TEMP_TREND:
-                return ChannelTypeUtils.toStringType(dashboardData.getTempTrend());
-            case CHANNEL_NOISE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getNoise());
-            case CHANNEL_PRESSURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getPressure());
-            case CHANNEL_PRESS_TREND:
-                return ChannelTypeUtils.toStringType(dashboardData.getPressureTrend());
-            case CHANNEL_ABSOLUTE_PRESSURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getAbsolutePressure());
-            case CHANNEL_TIMEUTC:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
-            case CHANNEL_DATE_MIN_TEMP:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMinTemp());
-            case CHANNEL_DATE_MAX_TEMP:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
-            case CHANNEL_HUMIDITY:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
-            case CHANNEL_WIND_UNIT:
-                return new DecimalType(userAdministrative.getWindunit());
-            case CHANNEL_PRESSURE_UNIT:
-                return new DecimalType(userAdministrative.getPressureunit());
-
-            default:
-                return super.getNAThingProperty(channelId);
+        if (device != null) {
+            NADashboardData dashboardData = device.getDashboardData();
+            switch (channelId) {
+                case CHANNEL_CO2:
+                    return toDecimalType(dashboardData.getCO2());
+                case CHANNEL_TEMPERATURE:
+                    return toDecimalType(dashboardData.getTemperature());
+                case CHANNEL_HEALTH_INDEX:
+                    return toStringType(toHealthIndexString(dashboardData.getHealthIdx()));
+                case CHANNEL_MIN_TEMP:
+                    return toDecimalType(dashboardData.getMinTemp());
+                case CHANNEL_MAX_TEMP:
+                    return toDecimalType(dashboardData.getMaxTemp());
+                case CHANNEL_TEMP_TREND:
+                    return toStringType(dashboardData.getTempTrend());
+                case CHANNEL_NOISE:
+                    return toDecimalType(dashboardData.getNoise());
+                case CHANNEL_PRESSURE:
+                    return toDecimalType(dashboardData.getPressure());
+                case CHANNEL_PRESS_TREND:
+                    return toStringType(dashboardData.getPressureTrend());
+                case CHANNEL_ABSOLUTE_PRESSURE:
+                    return toDecimalType(dashboardData.getAbsolutePressure());
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc());
+                case CHANNEL_DATE_MIN_TEMP:
+                    return toDateTimeType(dashboardData.getDateMinTemp());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return toDateTimeType(dashboardData.getDateMaxTemp());
+                case CHANNEL_HUMIDITY:
+                    return toDecimalType(dashboardData.getHumidity());
+                case CHANNEL_WIND_UNIT:
+                    return new DecimalType(userAdministrative.getWindunit());
+                case CHANNEL_PRESSURE_UNIT:
+                    return new DecimalType(userAdministrative.getPressureunit());
+            }
         }
+        return super.getNAThingProperty(channelId);
     }
 
     private String toHealthIndexString(Integer healthIndex) {
@@ -108,4 +106,16 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NetatmoDevic
                 return healthIndex.toString();
         }
     }
+
+    @Override
+    protected @Nullable Integer getDataTimestamp() {
+        if (device != null) {
+            Integer lastStored = device.getLastStatusStore();
+            if (lastStored != null) {
+                return lastStored;
+            }
+        }
+        return null;
+    }
+
 }

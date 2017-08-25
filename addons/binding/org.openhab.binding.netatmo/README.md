@@ -1,14 +1,15 @@
 # Netatmo Binding
- 
+
 The Netatmo binding integrates the following Netatmo products:
 
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 
 See http://www.netatmo.com/ for details on their product.
-    
+
+
 ## Binding Configuration
- 
+
 The binding has no configuration options itself, all configuration is done at 'Things' level but before, you'll have to grant openHab to access Netatmo API. Here is the procedure:
 
 ### 1. Application Creation
@@ -21,23 +22,46 @@ The variables you'll need to get to setup the binding are:
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
 * `<USERNAME>` The username you use to connect to the Netatmo API (usually your mail address).
 * `<PASSWORD>` The password attached to the above username.
- 
+
+
 ## 2. Bridge and Things Configuration
- 
+
 Once you'll get needed informations from the Netatmo API, you'll be able to configure bridge and things.
 
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false] {
-    Thing NAMain    inside  [ equipmentId="aa:aa:aa:aa:aa:aa", [refreshInterval=60000] ]
-    Thing NAModule1 outside  [ equipmentId="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
-    Thing NHC       homecoach  [ equipmentId="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
-    Thing NAPlug    plugtherm  [ equipmentId="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
-    Thing NATherm1  thermostat [ equipmentId="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false] {
+    Thing NAMain    inside  [ id="aa:aa:aa:aa:aa:aa" ]
+    Thing NAModule1 outside  [ id="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NHC       homecoach  [ id="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
+    Thing NAPlug    plugtherm  [ id="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
+    Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
+    Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
+    Thing NAWelcomeCamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
-}  
+}
 ```
+
+
+### Webhook
+
+For Welcome or Presence Camera, Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
+The webhook URL is setup at bridge level using "Webhook Address" parameter. You'll define here public way to access your OH2 server:
+
+```
+http(s)://xx.yy.zz.ww:8080
+```
+
+Your Netatmo App will be configured automatically by the bridge to the endpoint : 
+
+```
+http(s)://xx.yy.zz.ww:8080/netatmo/camera
+```
+
+Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
+
 
 ### Configure Things
 
@@ -46,7 +70,7 @@ First login with your user. Then some examples of the documentation contain the 
 
 `main_device` is the ID of the "main device", the indoor sensor. This is equal to the MAC address of the Netatmo.
 
-The other modules you can recognize by "module_name" and then note the "_id" which you need later.
+The other modules you can recognize by "module_name" and then note the "\_id" which you need later.
 
 **Another way to get the IDs is to calculate them:**
 
@@ -61,13 +85,20 @@ split the rest into three parts of two characters and append with a colon as del
 
 For example your serial number "h00bcdc" should end up as "02:00:00:00:bc:dc".
 
+
 ## Discovery
 
 If you don't manually create things in the *.things file, the Netatmo Binding is able to discover automatically all depending modules and devices from Netatmo website.
- 
+
+
 ## Channels
- 
+
+
 ### Weather Station Main Indoor Device
+
+#### Configuration
+
+Weather station does not need any refreshInterval setting. Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
 
 Example item for the **indoor module**:
 
@@ -75,7 +106,7 @@ Example item for the **indoor module**:
 Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home:inside:Co2" }
 ```
 
-**Supported types for the indoor module:**
+**Supported channels for the indoor module:**
 
 * Temperature
 * TemperatureTrend
@@ -97,7 +128,8 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 * MaxTemp
 * DateMinTemp
 * DateMaxTemp
- 
+
+
 ### Weather Station Outdoor module
 
 Example item for the **outdoor module** 
@@ -106,7 +138,7 @@ Example item for the **outdoor module**
 Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:home:outside:Temperature" }
 ```
 
-**Supported types for the outdoor module:**
+**Supported channels for the outdoor module:**
 
 * Temperature
 * TemperatureTrend
@@ -125,6 +157,7 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 * DateMinTemp
 * DateMaxTemp
 
+
 ### Weather Station Additional Indoor module
 
 Example item for the **indoor module** 
@@ -133,7 +166,7 @@ Example item for the **indoor module**
 Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:home:insidesupp:Temperature" }
 ```
 
-**Supported types for the additional indoor module:**
+**Supported channels for the additional indoor module:**
 
 * Temperature
 * TemperatureTrend
@@ -153,15 +186,16 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 * DateMinTemp
 * DateMaxTemp
 
-### Rain
+
+### Rain Gauge
 
 Example item for the **rain gauge**
- 
+
 ```
 Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home:rain:Rain" }
 ```
 
-**Supported types for the rain guage:**
+**Supported channels for the rain guage:**
 
 * Rain
 * Rain1
@@ -179,7 +213,7 @@ Example item for the **wind module**:
 Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAModule2:home:wind:WindStrength" }
 ```
 
-**Supported types for the wind module:**
+**Supported channels for the wind module:**
 
 * WindStrength
 * WindAngle
@@ -198,7 +232,7 @@ Example item for the **Healthy Home Coach**:
 String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:NHC:home:livingroom:HealthIndex" }
 ```
 
-**Supported types for the healthy home coach device:**
+**Supported channels for the healthy home coach device:**
 
 * HealthIndex
 * Temperature
@@ -218,9 +252,10 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 * DateMinTemp
 * DateMaxTemp
 
+
 ### Thermostat Relay Device
 
-**Supported types for the thermostat relay device:**
+**Supported channels for the thermostat relay device:**
 
 * LastStatusStore
 * WifiStatus
@@ -229,9 +264,10 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 * LastPlugSeen
 * LastBilan
 
+
 ### Thermostat Module
 
-**Supported types for the thermostat module:**
+**Supported channels for the thermostat module:**
 
 * Temperature
 * SetpointTemperature
@@ -240,7 +276,67 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 * BoilerOff
 * TimeStamp
 
+
+### Welcome Home
+
+This part of the binding will require basic read_camera and access_camera scopes. write_camera will only be needed to changed some channels from within OH2 (detailed below).
+
+**Supported channels for the Home thing:**
+
+* welcomeHomeCity
+* welcomeHomeCountry
+* welcomeHomeTimezone
+* welcomeHomePersonCount
+* welcomeHomeUnknownCount
+* welcomeEventType
+* welcomeEventTime
+* welcomeEventCameraId
+* welcomeEventPersonId
+* welcomeEventVideoStatus
+* welcomeEventIsArrival
+* welcomeEventMessage
+* welcomeEventSubType
+* welcomeEventSnapshot : picture of the last event, if it applies.
+* welcomeEventSnapshotURL : if the last event (depending upon event type) in the home lead a a snapshot picture, it will be available here.
+* welcomeEventVideoURL :  the last event (depending upon event type) in the home lead a a snapshot picture, the corresponding videoo will be available here.
+
+
+### Welcome Camera
+
+**Supported channels for the Camera thing:**
+
+* welcomeCameraStatus
+* welcomeCameraSdStatus
+* welcomeCameraAlimStatus
+* welcomeCameraIsLocal : indicates wether the camera is on the same network than the openHab Netatmo Binding
+* welcomeCameraLivePicture : current image snapshot
+* welcomeCameraLivePictureUrl : url of the current image
+* welcomeCameraLiveStreamUrl : url of the feed for live video
+
+
+### Welcome Person
+
+Netatmo API distinguishes two kinds of persons:
+
+* Known persons : have been identified by the camera and you have defined a name for those.
+* Unknown persons : identified by the camera, but no name defined.
+
+Person things are automatically created in discovery process for all known persons.
+
+**Supported channels for the Person thing:**
+
+* welcomePersonLastSeen
+* welcomePersonAtHome. Indicates if this person is known to be at home or not. Modifying this value from OH2 requires the "write_camera" in the Netatmo App scope. Warning : while setting person away is fine, the contrary does not seem supported officialy by Netatmo API. 
+* welcomePersonAvatarUrl
+* welcomePersonAvatar
+* welcomePersonLastEventMessage
+* welcomePersonLastEventTime
+* welcomePersonLastEvent
+* welcomePersonLastEventUrl
+
+
 # Configuration Examples
+
 
 ## transform/netatmo_unit_en.map
 
@@ -249,6 +345,7 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 1=Imperial
 ```
 
+
 ## transform/netatmo_pressureunit.map
 
 ```
@@ -256,6 +353,7 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 1=inHg
 2=mmHg
 ```
+
 
 ## transform/netatmo_windunit.map
 
@@ -267,16 +365,18 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 4=Knot
 ```
 
+
 ## things/netatmo.things
 
 ```
 // Bridge configuration:
 Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "me@example.com", password = "******", readStation=true, readThermostat=false] {
     // Thing configuration:
-    Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ equipmentId="aa:aa:aa:aa:aa:aa" ]
-    Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ equipmentId="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ id="aa:aa:aa:aa:aa:aa" ]
+    Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
 }
 ```
+
 
 ## items/netatmo.items
 
@@ -314,6 +414,7 @@ Number Netatmo_Outdoor_BatteryVP          "BatteryVP [%.0f %%]"            <batt
 DateTime Netatmo_Outdoor_TimeStamp        "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAModule1:home:outside:TimeStamp" }
 DateTime Netatmo_Outdoor_LastMessage      "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <text>  { channel = "netatmo:NAModule1:home:outside:LastMessage" }
 ```
+
 
 ## sitemaps/netatmo.sitemap
 
@@ -356,7 +457,9 @@ sitemap netatmo label="Netatmo"
 }
 ```
 
+
 # Common problems
+
 
 ## Missing Certificate Authority
 
@@ -412,18 +515,19 @@ If it's set correctly then you should see something similar to:
 Now try and rerun the keytool command. If you didn't get errors, you should be good to go [source](http://jinahya.wordpress.com/2013/04/28/installing-the-startcom-ca-certifcate-into-the-local-jdk/).  
 
 Alternative approach if above solution does not work: 
- 
+
 ```
 sudo keytool -delete -alias StartCom-Root-CA -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit  
 ```  
-    
+
 Download the certificate from https://api.netatmo.net to `$JAVA_HOME/jre/lib/security/` and save it as api.netatmo.net.crt (X.509 / PEM).
 
-```      
-sudo $JAVA_HOME/bin/keytool -import -keystore $JAVA_HOME/jre/lib/security/cacerts -alias StartCom-Root-CA -file api.netatmo.net.crt 
+```
+sudo $JAVA_HOME/bin/keytool -import -keystore $JAVA_HOME/jre/lib/security/cacerts -alias StartCom-Root-CA -file api.netatmo.net.crt
 ```
 
 The password is "changeit".
+
 
 # Sample data
 
@@ -432,15 +536,18 @@ yet, you can add the Netatmo office in Paris to your account:
 
 http://www.netatmo.com/en-US/addguest/index/TIQ3797dtfOmgpqUcct3/70:ee:50:00:02:20
 
+
 # Icons
 
 The following icons are used by original Netatmo web app:
+
 
 ## Modules
 
 - http://my.netatmo.com/img/my/app/module_int.png
 - http://my.netatmo.com/img/my/app/module_ext.png
 - http://my.netatmo.com/img/my/app/module_rain.png
+
 
 ## Battery status
 
@@ -450,6 +557,7 @@ The following icons are used by original Netatmo web app:
 - http://my.netatmo.com/img/my/app/battery_high.png
 - http://my.netatmo.com/img/my/app/battery_full.png
 
+
 ## Signal status
 
 - http://my.netatmo.com/img/my/app/signal_verylow.png
@@ -457,6 +565,7 @@ The following icons are used by original Netatmo web app:
 - http://my.netatmo.com/img/my/app/signal_medium.png
 - http://my.netatmo.com/img/my/app/signal_high.png
 - http://my.netatmo.com/img/my/app/signal_full.png
+
 
 ## Wifi status
 
