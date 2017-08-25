@@ -39,7 +39,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
 
     /**
      * Maximum time to search for devices.
@@ -110,6 +110,8 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             final Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
+            properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
+            properties.put(Thing.PROPERTY_MODEL_ID, device.getDeviceId());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
 
