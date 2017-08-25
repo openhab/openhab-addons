@@ -265,11 +265,11 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageVolumeLevelUpdate(AvrResponse response) {
 
-        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()),
-                new DecimalType(VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue())));
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()), new DecimalType(
+                VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue(), response.getZone())));
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, response.getZone()),
-                new PercentType(
-                        (int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue())));
+                new PercentType((int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue(),
+                        response.getZone())));
     }
 
     /**
