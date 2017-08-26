@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zipato" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+    <thing-type id="sensor" listed="true">
+        <label>Zipato Sensor Device</label>
+        <description></description>
+        <channels>
+            <channel id="sensor" typeId="sensor">
+              <label>Value</label>
+            </channel>
+        </channels>
+    </thing-type>
+    <channel-type id="sensor">
+        <item-type>String</item-type>
+        <label>Status</label>
+        <tags>
+            <tag></tag>
+        </tags>
+        <state readOnly="true">
+        </state>
+    </channel-type>
+</thing:thing-descriptions>

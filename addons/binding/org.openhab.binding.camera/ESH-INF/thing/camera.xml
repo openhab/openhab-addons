@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="camera"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <!-- Sample Thing Type -->
+    <thing-type id="camera">
+        <label>Camera Binding Thing</label>
+        <description>Simple thing for Camera Binding</description>
+        <channels>
+            <channel id="image" typeId="image-channel"/>
+        </channels>
+        <config-description-ref uri="thing-type:camera:camera" />
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="image-channel">
+        <item-type>Image</item-type>
+        <label>Image</label>
+        <description>Image channel for Camera Binding</description>
+    </channel-type>
+</thing:thing-descriptions>

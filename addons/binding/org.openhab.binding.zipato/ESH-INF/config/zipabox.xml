@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+    <config-description uri="bridge-type:zipato:zipabox">
+        <parameter name="username" type="text">
+            <label>Username:</label>
+            <description>Zipato portal username</description>
+            <default>email@email.email</default>
+        </parameter>
+        <parameter name="password" type="text">
+            <label>Password:</label>
+            <description>Zipato portal password</description>
+            <default>********</default>
+        </parameter>
+        <parameter name="url" type="text">
+            <label>Url</label>
+            <description>Zipato portal address (no need to change usually)</description>
+            <default>https://my.zipato.com:443</default>
+        </parameter>
+        <parameter name="path" type="text">
+            <label>Path</label>
+            <description>Zipato portal API path (no need to change usually)</description>
+            <default>zipato-web/v2</default>
+        </parameter>
+        <parameter name="push_url" type="text">
+            <label>Push Url</label>
+            <description>Callback URL which is used for push notification,
+            these notifications are realized by injected rules in the Zipato portal.
+            However this feature is early ALPHA. If no push ping command is received the system
+            is falling back to polling. The IP address is your IP running OpenHab.
+            It has to be made sure this IP is reachable by the Zipato device either internally
+            or externally. Hint: Use a DDNS and/or port forwarding in your router.  
+            </description>
+            <default>http://YOUR-LOCAL-IP</default>
+        </parameter>
+        <parameter name="push_port_external" type="integer">
+            <label>Push external port</label>
+            <description>The external port for the Url to be called by Zipato
+            </description>
+            <default>9090</default>
+        </parameter>
+        <parameter name="push_port_internal" type="integer">
+            <label>Push listening port</label>
+            <description> The local port the listener expects push notifications
+            </description>
+            <default>9090</default>
+        </parameter>
+        <parameter name="push_timeout" type="integer">
+            <label>Push timeout</label>
+            <description>Timeout in seconds for falling back to polling 
+            </description>
+            <default>60</default>
+        </parameter>
+        <parameter name="poll" min="2" max="120" unit="s" step="1" type="decimal">
+            <label>Poll time</label>
+            <description>Zipato device polling in seconds (warning produces a lot of traffic)</description>
+            <default>5</default>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>

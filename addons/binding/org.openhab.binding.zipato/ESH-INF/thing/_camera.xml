@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zipato" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+    <thing-type id="camera" listed="true">
+        <label>Zipato Camera Device</label>
+        <description></description>
+        <channels>
+            <channel id="camera" typeId="camera">
+              <label>Status</label>
+            </channel>
+        </channels>
+    </thing-type>
+    <channel-type id="camera">
+        <item-type>Image</item-type>
+        <label>Image</label>
+        <tags>
+            <tag></tag>
+        </tags>
+        <state readOnly="true"> </state>
+    </channel-type>
+</thing:thing-descriptions>
+
