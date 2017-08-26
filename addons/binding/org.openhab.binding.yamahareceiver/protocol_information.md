@@ -1,33 +1,8 @@
 # Yamahareceiver Binding - Developer documentation
 
-An overview is presented with the following diagram:
-![Class Diagram](doc/classes.png "Class Diagram")
-
-The control flow is visualised here:
-![ControlFlow](doc/ControlFlow.png "ControlFlow")
-
-The YamahaReceiverCommunication class is a pure protocol implementation.
-Yamaha uses a XML API. The receiver does not allow long polling or any
-other type of state-update notification, therefore we use a timer for
-periodically refreshing the state.
-
-The thing handler needs a host and zone configuration that is usually
-given by the discovery service (YamahaDiscoveryParticipant via UPNP).
-createCommunicationObject() is called in initialize(). There we create
-a communication object (YamahaReceiverCommunication) which needs the host
-and zone parameters and hand it over to a newly created YamahaReceiverState.
-We also setup the refresh timer.
-
-There is a second discovery service, the ZoneDiscoveryService which is created
-and used in createCommunicationObject() Main_Zone thing handler.
-For every other zone a discovery result will be generated and can be added by the user.
-
-## Protocol
-
 There exist two protocols so far. An xml based one for the following receiver types:
 RX-A3010,RX-A2010,RX-A1010,RX-A810,RX-A710,RX-V3071,RX-V2071,RX-V1071,RX-V871,RX-V771,RX-V671,
-and a json based protocol for newer reeivers. At the moment there exists only an implementation
-for the xml based protocol.
+and a json based protocol for newer receivers.
 
 ### XML protocol overview
 
@@ -59,6 +34,7 @@ An example for changing the state of the receiver:
 				Zone_3
 				Zone_4
 				Tuner
+				DAB
 				HD_Radio
 				SIRIUS
 				iPod
@@ -72,9 +48,10 @@ An example for changing the state of the receiver:
 				NET_RADIO
 				USB
 				iPod_USB
+				Spotify
 			Name
 				Input
-					... (for all HDMI_x, AV_x, USB, etc)
+					... (for all HDMI_x, AV_x, USB, Spotify, etc)
 
 
 		Power_Control

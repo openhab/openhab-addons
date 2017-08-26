@@ -11,19 +11,17 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
 import java.io.IOException;
 
 /**
- * The system control protocol interface. This is basically just power.
+ * To offer a method to retrieve a specific state, a protocol part would extend this interface.
  *
  * @author David Graeff - Initial contribution
+ *
  */
-
-public interface SystemControl extends IStateUpdatable {
+public interface IStateUpdatable {
     /**
-     * Switches the AVR on/off (off equals network standby here).
+     * Updates the corresponding state. This method is blocking.
      *
-     * @param power The new power state
-     *
-     * @throws IOException
-     * @throws ReceivedMessageParseException
+     * @throws IOException If the device is offline this exception will be thrown
+     * @throws ReceivedMessageParseException If the response cannot be parsed correctly this exception is thrown
      */
-    void setPower(boolean power) throws IOException, ReceivedMessageParseException;
+    void update() throws IOException, ReceivedMessageParseException;
 }
