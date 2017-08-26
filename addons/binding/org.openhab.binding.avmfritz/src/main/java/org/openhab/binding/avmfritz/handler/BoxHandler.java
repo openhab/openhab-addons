@@ -136,6 +136,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             Thing thing = getThingByUID(thingUID);
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
+                DeviceHandler handler = (DeviceHandler) thing.getHandler();
+                handler.setState(device);
                 updateThingFromDevice(thing, device);
             }
         } catch (Exception e) {
@@ -179,17 +181,12 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                         device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
-                final BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
-                if (HeatingModel.inCelsiusRange(settemp)) {
-                    thing.getConfiguration().put(THING_SETTEMP, settemp);
-                }
-                updateThingChannelState(thing, CHANNEL_SETTEMP, new DecimalType(settemp));
-                final BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
-                thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
-                updateThingChannelState(thing, CHANNEL_ECOTEMP, new DecimalType(ecotemp));
-                final BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
-                thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
-                updateThingChannelState(thing, CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
+                updateThingChannelState(thing, CHANNEL_SETTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTsoll())));
+                updateThingChannelState(thing, CHANNEL_ECOTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getAbsenk())));
+                updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getKomfort())));
                 updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
                         new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
