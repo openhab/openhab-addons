@@ -245,6 +245,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    @SuppressWarnings("null")
     private void handleUnitStatus(UnitStatus stat) {
         logger.debug("received status update for unit: {}, status: {}", stat.getNumber(), stat.getStatus());
         Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, stat.getNumber());
@@ -254,8 +255,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (theThing.isPresent() == false) {
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, stat.getNumber());
         }
-        if (theThing.isPresent() && theThing.get().getHandler() != null) {
-            ((UnitHandler) theThing.get().getHandler()).handleUnitStatus(stat);
+        if (theThing.isPresent()) {
+            theThing.map(Thing::getHandler).ifPresent(theHandler -> ((UnitHandler) theHandler).handleUnitStatus(stat));
         }
     }
 
