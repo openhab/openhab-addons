@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -58,15 +60,19 @@ public class LxControlRadio extends LxControl {
      * @param category
      *            category to which control belongs
      */
-    LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
         if (json.details.outputs != null) {
             outputs = new TreeMap<>(json.details.outputs);
         } else {
             outputs = new TreeMap<>();
         }
-        if (json.details != null && json.details.allOff != null) {
-            outputs.put("0", json.details.allOff);
+        if (json.details != null) {
+            String allOff = json.details.allOff;
+            if (allOff != null) {
+                outputs.put("0", allOff);
+            }
         }
     }
 
@@ -96,7 +102,10 @@ public class LxControlRadio extends LxControl {
         if (output == 0) {
             socketClient.sendAction(uuid, CMD_RESET);
         } else if (output >= 1 && output <= MAX_RADIO_OUTPUTS) {
-            socketClient.sendAction(uuid, Long.toString(output));
+            @SuppressWarnings("null")
+            @NonNull
+            String command = Long.toString(output);
+            socketClient.sendAction(uuid, command);
         }
     }
 
@@ -106,7 +115,7 @@ public class LxControlRadio extends LxControl {
      * @return
      *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or null if error occured
      */
-    public Integer getActiveOutput() {
+    public @Nullable Integer getActiveOutput() {
         LxControlState state = getState(STATE_ACTIVE_OUTPUT);
         if (state != null) {
             Double value = state.getValue();

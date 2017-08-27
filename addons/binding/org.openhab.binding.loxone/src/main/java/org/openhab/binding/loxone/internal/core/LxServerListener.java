@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Interface to get notifications about {@link LxServer} asynchronous events.
  * These events are triggered by messages received from Miniserver over websocket connection or the state of the
@@ -43,7 +45,7 @@ public interface LxServerListener {
      * @param details
      *            details describing the disconnection reason
      */
-    void onServerGoesOffline(LxOfflineReason reason, String details);
+    void onServerGoesOffline(LxOfflineReason reason, @Nullable String details);
 
     /**
      * Called by {@link LxServer} thread when a state of a control is updated on the Loxone Miniserver

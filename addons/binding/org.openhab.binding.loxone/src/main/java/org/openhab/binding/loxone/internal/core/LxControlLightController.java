@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -67,7 +69,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
 
     private Map<String, String> sceneNames = new TreeMap<>();
     private boolean newSceneNames = false;
-    private Integer movementScene;
+    private @Nullable Integer movementScene;
 
     /**
      * Create lighting controller object.
@@ -83,8 +85,8 @@ public class LxControlLightController extends LxControl implements LxControlStat
      * @param category
      *            category to which controller belongs
      */
-    LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
+    LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
 
         super(client, uuid, json, room, category);
 
@@ -109,7 +111,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      *            New category that this control belongs to
      */
     @Override
-    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+    void update(LxJsonControl json, @Nullable LxContainer room, @Nullable LxCategory category) {
 
         super.update(json, room, category);
 
@@ -118,13 +120,19 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 // recursively create a subcontrol as a new control
                 subControl.room = json.room;
                 subControl.cat = json.cat;
-                LxUuid uuid = new LxUuid(subControl.uuidAction);
-                if (subControls.containsKey(uuid)) {
-                    subControls.get(uuid).update(subControl, room, category);
-                } else {
-                    LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
-                    if (control != null) {
-                        subControls.put(control.uuid, control);
+                String jsonUuid = subControl.uuidAction;
+                if (jsonUuid != null) {
+                    LxUuid uuid = new LxUuid(jsonUuid);
+                    if (subControls.containsKey(uuid)) {
+                        @SuppressWarnings("null")
+                        @NonNull
+                        LxControl control = subControls.get(uuid);
+                        control.update(subControl, room, category);
+                    } else {
+                        LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
+                        if (control != null) {
+                            subControls.put(control.uuid, control);
+                        }
                     }
                 }
             }
@@ -204,7 +212,10 @@ public class LxControlLightController extends LxControl implements LxControlStat
         if (scene == SCENE_ALL_ON) {
             allOn();
         } else if (scene >= 0 && scene < NUM_OF_SCENES) {
-            socketClient.sendAction(uuid, Long.toString(scene));
+            @SuppressWarnings("null")
+            @NonNull
+            String command = Long.toString(scene);
+            socketClient.sendAction(uuid, command);
         }
     }
 
@@ -214,7 +225,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      * @return
      *         number of the active scene (0-9, 0-all off, 9-all on) or null if error
      */
-    public Integer getCurrentScene() {
+    public @Nullable Integer getCurrentScene() {
         LxControlState state = getState(STATE_ACTIVE_SCENE);
         if (state != null) {
             Double value = state.getValue();
@@ -231,7 +242,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      * @return
      *         number of the movement scene (0-9, 0-all off, 9-all on) or null if undefined
      */
-    public Integer getMovementScene() {
+    public @Nullable Integer getMovementScene() {
         return movementScene;
     }
 
@@ -270,7 +281,13 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 line = line.replaceAll("\"", "");
                 String[] params = line.split("=");
                 if (params.length == 2) {
-                    sceneNames.put(params[0], params[1]);
+                    @SuppressWarnings("null")
+                    @NonNull
+                    String p0 = params[0];
+                    @SuppressWarnings("null")
+                    @NonNull
+                    String p1 = params[1];
+                    sceneNames.put(p0, p1);
                 }
             }
             newSceneNames = true;

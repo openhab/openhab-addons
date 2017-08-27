@@ -11,6 +11,9 @@ package org.openhab.binding.loxone.internal.core;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Unique identifier of an object on Loxone Miniserver.
  * <p>
@@ -32,27 +35,34 @@ public class LxUuid {
      *            identifier retrieved from Loxone Miniserver
      */
     public LxUuid(String uuid) {
-        init(uuid);
+        uuidOriginal = uuid;
+        this.uuid = cleanupUuid(uuid);
+        updated = true;
     }
 
     public LxUuid(byte data[], int offset) {
+        @SuppressWarnings("null")
+        @NonNull
         String id = String.format("%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
                 ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt(),
                 ByteBuffer.wrap(data, offset + 4, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(),
                 ByteBuffer.wrap(data, offset + 6, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(), data[offset + 8],
                 data[offset + 9], data[offset + 10], data[offset + 11], data[offset + 12], data[offset + 13],
                 data[offset + 14], data[offset + 15]);
-        init(id);
-    }
-
-    private void init(String uuid) {
-        uuidOriginal = uuid;
-        this.uuid = uuidOriginal.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
+        uuidOriginal = id;
+        this.uuid = cleanupUuid(id);
         updated = true;
     }
 
+    String cleanupUuid(String uuid) {
+        @SuppressWarnings("null")
+        @NonNull
+        String newId = uuid.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
+        return newId;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }

@@ -11,6 +11,8 @@ package org.openhab.binding.loxone.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A state of a Loxone control ({@link LxControl})
  * <p>
@@ -27,8 +29,8 @@ import java.util.List;
 class LxControlState {
     private LxUuid uuid;
     private String name;
-    private Double value;
-    private String textValue;
+    private @Nullable Double value;
+    private @Nullable String textValue;
     private LxControl control;
     private List<LxControlStateListener> listeners = new ArrayList<>();
 
@@ -57,7 +59,7 @@ class LxControlState {
      * @param textValue
      *            current state's text value to set
      */
-    void setValue(Double value, String textValue) {
+    void setValue(@Nullable Double value, @Nullable String textValue) {
         boolean changed = false;
 
         uuid.setUpdate(true);
@@ -95,6 +97,7 @@ class LxControlState {
      * @return
      *         current state's value
      */
+    @Nullable
     Double getValue() {
         return value;
     }
@@ -105,6 +108,7 @@ class LxControlState {
      * @return
      *         current state's value
      */
+    @Nullable
     String getTextValue() {
         return textValue;
     }

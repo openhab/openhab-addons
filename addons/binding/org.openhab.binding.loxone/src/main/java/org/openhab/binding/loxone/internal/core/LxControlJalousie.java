@@ -10,6 +10,7 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -96,7 +97,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     private static final String CMD_STOP = "Stop";
 
-    private Double targetPosition;
+    private @Nullable Double targetPosition;
 
     /**
      * Create jalousie control object.
@@ -112,7 +113,8 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      * @param category
      *            category to which jalousie belongs
      */
-    LxControlJalousie(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlJalousie(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
 
         LxControlState positionState = getState(STATE_POSITION);
@@ -202,7 +204,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      * @return
      *         a floating point number from range 0-fully closed to 1-fully open or null if position not available
      */
-    public Double getPosition() {
+    public @Nullable Double getPosition() {
         LxControlState state = getState(LxControlJalousie.STATE_POSITION);
         if (state != null) {
             return state.getValue();
@@ -215,9 +217,9 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     @Override
     public void onStateChange(LxControlState state) {
+        Double target = targetPosition;
         // check position changes
-        if (state.getName().equals(STATE_POSITION) && targetPosition != null && targetPosition > 0
-                && targetPosition < 1) {
+        if (state.getName().equals(STATE_POSITION) && target != null && target > 0 && target < 1) {
             // see in which direction jalousie is moving
             LxControlState up = getState(STATE_UP);
             LxControlState down = getState(STATE_DOWN);
@@ -226,8 +228,8 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
                 Double upValue = up.getValue();
                 Double downValue = down.getValue();
                 if (currentPosition != null && upValue != null && downValue != null) {
-                    if (((upValue == 1) && (currentPosition <= targetPosition))
-                            || ((downValue == 1) && (currentPosition >= targetPosition))) {
+                    if (((upValue == 1) && (currentPosition <= target))
+                            || ((downValue == 1) && (currentPosition >= target))) {
                         targetPosition = null;
                         try {
                             stop();

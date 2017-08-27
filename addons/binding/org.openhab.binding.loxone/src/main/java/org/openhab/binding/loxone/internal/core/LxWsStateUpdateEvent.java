@@ -11,6 +11,8 @@ package org.openhab.binding.loxone.internal.core;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * An event received from Loxone Miniserver with control's state update
  *
@@ -20,9 +22,9 @@ import java.nio.ByteOrder;
 class LxWsStateUpdateEvent {
     private LxUuid uuid;
     @SuppressWarnings("unused")
-    private LxUuid iconUuid;
-    private Double value;
-    private String text;
+    private @Nullable LxUuid iconUuid;
+    private @Nullable Double value;
+    private @Nullable String text;
     private int size = 0;
 
     /**
@@ -71,6 +73,7 @@ class LxWsStateUpdateEvent {
      * @return
      *         current value of the state or null if state has no value
      */
+    @Nullable
     Double getValue() {
         return value;
     }
@@ -81,6 +84,7 @@ class LxWsStateUpdateEvent {
      * @return
      *         current text value of this state
      */
+    @Nullable
     String getText() {
         return text;
     }

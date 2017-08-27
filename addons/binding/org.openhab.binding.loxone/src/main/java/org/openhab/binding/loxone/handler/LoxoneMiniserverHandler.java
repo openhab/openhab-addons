@@ -18,10 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -68,9 +71,10 @@ import org.slf4j.LoggerFactory;
  */
 public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServerListener {
 
+    @SuppressWarnings("null")
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
 
-    private LxServer server;
+    private @Nullable LxServer server;
 
     private ChannelTypeUID switchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH);
     private ChannelTypeUID lightCtrlTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL);
@@ -83,6 +87,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     private ChannelTypeUID roTimedSwitchDeactivationDelayTypeId = new ChannelTypeUID(BINDING_ID,
             MINISERVER_CHANNEL_TYPE_RO_NUMBER);
 
+    @SuppressWarnings("null")
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
     private Map<ChannelUID, LxControl> controls = new HashMap<>();
 
@@ -97,7 +102,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, @Nullable Command command) {
 
         if (server == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -110,6 +115,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             // This situation should not happen under normal circumstances, it indicates binding somehow lost its
             // controls
             logger.error("Received command {} for unknown control.", command);
+            return;
+        }
+
+        if (command == null) {
+            logger.debug("Received null command for control {}.", control.getName());
             return;
         }
 
@@ -231,16 +241,32 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     @Override
     public void initialize() {
         logger.trace("Initializing thing");
+
+        // config.as does not put restrictions on the return time (it is nullable)
+        // but compiler figures out its implementation never returns null and gives a warning
+        // about redundant null check - so we do not check for null here even though this is nullable
+        @Nullable
         LoxoneMiniserverConfig cfg = getConfig().as(LoxoneMiniserverConfig.class);
-        try {
-            InetAddress ip = InetAddress.getByName(cfg.host);
-            server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
-            server.addListener(this);
-            server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
-                    cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
-            server.start();
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+        String host = cfg.host;
+        String user = cfg.user;
+        String password = cfg.password;
+        int port = cfg.port;
+        if (user != null && password != null) {
+            try {
+                @SuppressWarnings("null")
+                @NonNull
+                InetAddress ip = InetAddress.getByName(host);
+                LxServer srv = new LxServer(ip, port, user, password);
+                srv.addListener(this);
+                srv.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
+                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
+                srv.start();
+                this.server = srv;
+            } catch (UnknownHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error getting configuration");
         }
     }
 
@@ -260,12 +286,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         logger.trace("Building new channels ({} controls)", server.getControls().size());
         for (LxControl control : server.getControls().values()) {
             List<Channel> newChannels = createChannelsForControl(control);
-            if (newChannels != null) {
-                channels.addAll(newChannels);
-                for (Channel channel : newChannels) {
-                    ChannelUID id = channel.getUID();
-                    controls.put(id, control);
-                }
+            channels.addAll(newChannels);
+            for (Channel channel : newChannels) {
+                @SuppressWarnings("null")
+                @NonNull
+                ChannelUID id = channel.getUID();
+                controls.put(id, control);
             }
         }
 
@@ -298,7 +324,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     @Override
-    public void onServerGoesOffline(LxOfflineReason reason, String details) {
+    public void onServerGoesOffline(LxOfflineReason reason, @Nullable String details) {
         logger.debug("Server goes offline: {}, {}", reason, details);
 
         switch (reason) {
@@ -337,18 +363,17 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     @Override
     public void dispose() {
         logger.debug("Disposing of server");
-        if (server != null) {
-            server.stop();
+        LxServer srv = server;
+        if (srv != null) {
+            srv.stop();
             server = null;
         }
     }
 
     private void addChannel(List<Channel> channels, String itemType, ChannelTypeUID typeId, ChannelUID channelId,
             String channelLabel, String channelDescription, Set<String> tags) {
-        if (channelId != null && itemType != null && typeId != null && channelDescription != null) {
-            channels.add(ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
-                    .withDescription(channelDescription + " : " + channelLabel).withDefaultTags(tags).build());
-        }
+        channels.add(ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
+                .withDescription(channelDescription + " : " + channelLabel).withDefaultTags(tags).build());
     }
 
     /**
@@ -380,11 +405,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         }
 
         String controlName = control.getName();
-        if (controlName == null) {
-            // Each control on a Miniserver must have a name defined, but in case this is a subject
-            // of some malicious data attack, we'll prevent null pointer exception
-            controlName = "Undefined name";
-        }
 
         if (roomName != null) {
             label = roomName + " / " + controlName;
@@ -392,12 +412,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             label = controlName;
         }
 
-        Set<String> tags = Collections.singleton("");
+        Set<String> tags = new HashSet<>();
 
         if (control instanceof LxControlPushbutton || control instanceof LxControlSwitch
                 || control instanceof LxControlTimedSwitch) {
             if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
-                tags = Collections.singleton("Lighting");
+                tags.add("Lighting");
             }
             addChannel(channels, "Switch", switchTypeId, id, label, "Switch", tags);
             // adding a deactivation delay channel for timed switch
@@ -518,7 +538,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * @return
      *         control corresponding to the channel ID or null if not found
      */
-    private LxControl getControlFromChannelUID(ChannelUID channelUID) {
+    private @Nullable LxControl getControlFromChannelUID(ChannelUID channelUID) {
         return controls.get(channelUID);
     }
 

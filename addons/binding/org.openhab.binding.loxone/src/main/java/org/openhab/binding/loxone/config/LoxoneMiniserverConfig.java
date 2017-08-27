@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.config;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
 
 /**
@@ -20,50 +21,50 @@ public class LoxoneMiniserverConfig {
     /**
      * Host address or IP of the Miniserver
      */
-    public String host;
+    public @Nullable String host;
     /**
      * Port of web service of the Miniserver
      */
-    public int port;
+    public int port = 80;
     /**
      * User name used to log into the Miniserver
      */
-    public String user;
+    public @Nullable String user;
     /**
      * Password used to log into the Miniserver
      */
-    public String password;
+    public @Nullable String password;
     /**
      * Time in seconds between binding initialization and first connection attempt
      */
-    public int firstConDelay;
+    public int firstConDelay = 1;
     /**
      * Time in seconds between sending two consecutive keep-alive messages
      */
-    public int keepAlivePeriod;
+    public int keepAlivePeriod = 240;
     /**
      * Time in seconds between failed websocket connect attempts
      */
-    public int connectErrDelay;
+    public int connectErrDelay = 10;
     /**
      * Time to wait for Miniserver response to a request sent from the binding
      */
-    public int responseTimeout;
+    public int responseTimeout = 4;
     /**
      * Time in seconds between user login error as a result of wrong name/password or no authority and next connection
      * attempt
      */
-    public int userErrorDelay;
+    public int userErrorDelay = 60;
     /**
      * Time in seconds between connection close (as a result of some communication error) and next connection attempt
      */
-    public int comErrorDelay;
+    public int comErrorDelay = 30;
     /**
      * Websocket client's max binary message size in kB
      */
-    public int maxBinMsgSize;
+    public int maxBinMsgSize = 3 * 1024;
     /**
      * Websocket client's max text message size in kB
      */
-    public int maxTextMsgSize;
+    public int maxTextMsgSize = 512;
 }

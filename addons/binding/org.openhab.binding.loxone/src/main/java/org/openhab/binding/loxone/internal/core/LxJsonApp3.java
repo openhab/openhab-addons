@@ -10,6 +10,9 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonElement;
 
 /**
@@ -18,12 +21,13 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault({})
 class LxJsonApp3 {
 
     LxJsonInfo msInfo;
-    Map<String, LxJsonControl> controls;
-    Map<String, LxJsonRoom> rooms;
-    Map<String, LxJsonCat> cats;
+    Map<@NonNull String, @NonNull LxJsonControl> controls;
+    Map<@NonNull String, @NonNull LxJsonRoom> rooms;
+    Map<@NonNull String, @NonNull LxJsonCat> cats;
 
     class LxJsonInfo {
         String serialNr;
@@ -58,7 +62,7 @@ class LxJsonApp3 {
             String format;
             int movementScene;
             String allOff;
-            Map<String, String> outputs;
+            Map<@NonNull String, @NonNull String> outputs;
         }
 
         String uuidAction;
@@ -67,7 +71,7 @@ class LxJsonApp3 {
         String room;
         String cat;
         LxJsonDetails details;
-        Map<String, JsonElement> states;
-        Map<String, LxJsonControl> subControls;
+        Map<@NonNull String, @NonNull JsonElement> states;
+        Map<@NonNull String, @NonNull LxJsonControl> subControls;
     }
 }
