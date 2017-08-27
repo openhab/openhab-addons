@@ -71,7 +71,6 @@ public class OmnilinkBindingConstants {
     // buttons
 
     public final static String CHANNEL_BUTTON_PRESS = "press";
-    public final static String CHANNEL_BUTTON_ACTIVATED = "activated";
 
     // thermostats
 
@@ -98,6 +97,18 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_AUDIO_ZONE_MUTE = "zone_mute";
     public static final String CHANNEL_AUDIO_ZONE_VOLUME = "zone_volume";
     public static final String CHANNEL_AUDIO_ZONE_SOURCE = "zone_source";
+
+    // trigger channels
+    public final static String TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT = "activated_event";
+    public final static String TRIGGER_CHANNEL_PHONE_LINE_EVENT = "phone_line_event";
+    public final static String TRIGGER_CHANNEL_AC_POWER_EVENT = "ac_power_event";
+    public final static String TRIGGER_CHANNEL_BATTERY_EVENT = "battery_event";
+    public final static String TRIGGER_CHANNEL_DCM_EVENT = "dcm_event";
+    public final static String TRIGGER_CHANNEL_ENERGY_COST_EVENT = "energy_cost_event";
+    public final static String TRIGGER_CHANNEL_CAMERA_TRIGGER_EVENT = "camera_trigger_event";
+    public final static String TRIGGER_CHANNEL_ACCESS_CONTROL_READER_EVENT = "access_control_reader_event";
+    public final static String TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT = "all_on_off_Event";
+    public final static String TRIGGER_CHANNEL_ZONE_STATE_EVENT = "zone_state_Event";
 
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";

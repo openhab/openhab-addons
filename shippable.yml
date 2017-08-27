@@ -15,7 +15,7 @@ env:
 build:
   ci:
     #Run test and code coverage and output results to the right folder
-    - mvn -f addons/binding/org.openhab.binding.omnilink/pom.xml -B install
+    - mvn -f addons/binding/org.openhab.binding.omnilink/pom.xml  -Dreport.fail.on.error=false -B install
     - ls -al $SHIPPABLE_BUILD_DIR
   on_success:
     - if [ "$IS_PULL_REQUEST" == false ]; then aws s3 cp --debug $SHIPPABLE_BUILD_DIR/addons/binding/org.openhab.binding.omnilink/target/org.openhab.binding.omnilink-2.2.0-SNAPSHOT.jar s3://craigham-pub/org.openhab.binding.omnilink-2.2.0-SNAPSHOT.jar --region "us-west-1"; fi

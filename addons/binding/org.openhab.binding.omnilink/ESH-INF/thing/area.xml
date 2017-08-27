@@ -71,14 +71,15 @@
 				<label>Arm Night Delayed Command</label>
 				<description>Send a 4 digit user code to arm the system to night delayed</description>
 			</channel>
+			<channel id="all_on_off_event" typeId="all_on_off_event"/>
 		</channels>
 		<properties>
 			<property name="name" />
 		</properties>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
-				<label>Zone Number</label>
-				<description>Zone Number</description>
+				<label>Area Number</label>
+				<description>Area Number</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -115,14 +116,15 @@
 				<label>Set System to Special</label>
 				<description>Send a 4 digit user code to set the system to special</description>
 			</channel>
+			<channel id="all_on_off_event" typeId="all_on_off_event"/>
 		</channels>
 		<properties>
 			<property name="name" />
 		</properties>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
-				<label>Zone Number</label>
-				<description>Zone Number</description>
+				<label>Area Number</label>
+				<description>Area Number</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -199,5 +201,15 @@
 			</options>
 		</state>
 	</channel-type>
-
+  <channel-type id="all_on_off_event">
+        <kind>trigger</kind>
+        <label>All On Off Event</label>
+        <description>Event sent when a all on or off event occurs</description>
+        <event>
+            <options>
+                <option value="OFF">Off</option>
+                <option value="ON">On</option>
+            </options>
+        </event>
+    </channel-type>
 </thing:thing-descriptions>
