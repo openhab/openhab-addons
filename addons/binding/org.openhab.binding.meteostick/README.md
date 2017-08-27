@@ -28,15 +28,16 @@ Next add the sensor and configure the channel number.
 | port   | Sets the serial port to be used for the stick      |
 | mode   | Sets the mode (frequency band)                     |
 
-Set mode to one of the following depending on your region:
+Set mode to one of the following depending on your device and region:
 
-| Mode  | Description             |
-|-------|-------------------------|
-| 1     | US                      |
-| 2     | Europe                  |
-| 3     | Fine Offset (US)        |
-| 4     | Fine Offset (Europe)    |
-| 5     | New Zealand             |
+| Mode  | Device       | Region           |Frequency  |
+|-------|--------------|------------------|-----------|
+| 0     | Davis        | US               | 915 mhz   |
+| 1     | Davis        | Australia        | 915 mhz   |
+| 2     | Davis        | Europe           | 868 mhz   |
+| 3     | Fine Offset  | US               | 915 mhz   |
+| 4     | Fine Offset  | Europe           | 868 mhz   |
+| 5     | Davis        | New Zealand      | 931.5 mhz |
 
 ### meteostick_davis_iss Configuration Options
 
