@@ -8,12 +8,13 @@
  */
 package org.openhab.ui.cometvisu.servlet;
 
-import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -53,7 +54,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
@@ -72,6 +72,7 @@ import org.openhab.ui.cometvisu.internal.config.VisuConfig;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.DataBean;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.ItemBean;
 import org.openhab.ui.cometvisu.internal.rss.beans.Feed;
+import org.openhab.ui.cometvisu.internal.util.ClientInstaller;
 import org.openhab.ui.cometvisu.php.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +152,15 @@ public class CometVisuServlet extends HttpServlet {
         } catch (Exception e) {
             phpEnabled = false;
         }
+    }
+
+    /**
+     * Returns true if the PHP feature is enabled
+     *
+     * @return {boolean}
+     */
+    public boolean isPhpEnabled() {
+        return phpEnabled;
     }
 
     /**
@@ -264,6 +274,9 @@ public class CometVisuServlet extends HttpServlet {
 
     protected File getRequestedFile(HttpServletRequest req) throws UnsupportedEncodingException {
         String requestedFile = req.getPathInfo();
+        if (requestedFile.endsWith("/")) {
+            requestedFile = requestedFile.substring(0, requestedFile.length() - 1);
+        }
         File file = null;
 
         // check services folder if a file exists there
@@ -485,7 +498,6 @@ public class CometVisuServlet extends HttpServlet {
 
             }
         }
-
     }
 
     /**
@@ -510,7 +522,6 @@ public class CometVisuServlet extends HttpServlet {
             boolean content) throws IOException {
         // Validate the requested file
         // ------------------------------------------------------------
-
         if (file == null) {
             // Get requested file by path info.
             String requestedFile = request.getPathInfo();
@@ -530,12 +541,29 @@ public class CometVisuServlet extends HttpServlet {
             // file object.
             file = new File(rootFolder, URLDecoder.decode(requestedFile, "UTF-8"));
         }
+        if (file.equals(rootFolder) || (file.exists() && file.isDirectory())) {
+            file = new File(file, "index.html");
+        }
+
         // Check if file actually exists in filesystem.
         if (!file.exists()) {
             // show installation hints if the CometVisu-Clients main index.html is requested but cannot be found
-            if (file.getParent().equals(rootFolder.getPath())
+            if (file.getParentFile().equals(rootFolder)
                     && (file.getName().equalsIgnoreCase("index.html") || file.getName().length() == 0)) {
-                showInstallationHint(request, response);
+                // looking for CometVisu clients index.html file
+                String path = null;
+                File folder = file.isDirectory() ? file : file.getParentFile();
+                if (folder.exists()) {
+                    File index = ClientInstaller.findClientRoot(folder, "index.html");
+                    path = index.exists() ? index.getPath().replaceFirst(rootFolder.getPath() + "/", "") : null;
+                }
+                if (path != null) {
+                    // forward to position
+                    response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                    response.setHeader("Location", path + "?" + request.getQueryString());
+                } else {
+                    showInstallationHint(request, response);
+                }
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -803,10 +831,15 @@ public class CometVisuServlet extends HttpServlet {
      * @throws IOException
      */
     private void showInstallationHint(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        BufferedInputStream in = new BufferedInputStream(getClass().getResourceAsStream("/404.html"));
-        String everything = IOUtils.toString(in);
-        response.getWriter().write(everything);
-        response.flushBuffer();
+        InputStream in = getClass().getClassLoader().getResourceAsStream("404.html");
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        byte[] bytes = new byte[in.available()];
+        in.read(bytes);
+        response.setContentLength(bytes.length);
+        writer.print(new String(bytes));
+        writer.flush();
+        writer.close();
     }
 
     /**

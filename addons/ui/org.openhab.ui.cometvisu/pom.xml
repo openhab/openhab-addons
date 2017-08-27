@@ -28,7 +28,7 @@
                  <sources>
                     <source>src/main/resources/visu_config.xsd</source>
                 </sources>
-                <outputDirectory>src/main/java</outputDirectory>
+                <outputDirectory>src/gen/java</outputDirectory>
                 <locale>en</locale>
                 <clearOutputDir>false</clearOutputDir>
                 <generateEpisode>false</generateEpisode>

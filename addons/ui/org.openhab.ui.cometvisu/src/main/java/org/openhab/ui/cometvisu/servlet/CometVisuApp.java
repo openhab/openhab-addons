@@ -27,6 +27,7 @@ import org.eclipse.smarthome.model.sitemap.SitemapProvider;
 import org.eclipse.smarthome.ui.icon.IconProvider;
 import org.eclipse.smarthome.ui.items.ItemUIRegistry;
 import org.openhab.ui.cometvisu.internal.Config;
+import org.openhab.ui.cometvisu.internal.util.ClientInstaller;
 import org.openhab.ui.cometvisu.php.PHProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationException;
@@ -62,6 +63,22 @@ public class CometVisuApp {
     private PHProvider phpProvider;
 
     protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<>();
+
+    private final ClientInstaller installer = ClientInstaller.getInstance();
+
+    private Map<String, Object> properties = new HashMap<>();
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> props) {
+        properties = props;
+    }
+
+    public CometVisuServlet getServlet() {
+        return servlet;
+    }
 
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
@@ -165,11 +182,22 @@ public class CometVisuApp {
 
     private void readConfiguration(final Map<String, Object> properties) {
         if (properties != null) {
+            setProperties(properties);
             if (properties.get(Config.COMETVISU_WEBFOLDER_PROPERTY) != null) {
                 Config.COMETVISU_WEBFOLDER = (String) properties.get(Config.COMETVISU_WEBFOLDER_PROPERTY);
             }
             if (properties.get(Config.COMETVISU_WEBAPP_ALIAS_PROPERTY) != null) {
                 Config.COMETVISU_WEBAPP_ALIAS = (String) properties.get(Config.COMETVISU_WEBAPP_ALIAS_PROPERTY);
+            }
+            if (properties.get(Config.COMETVISU_AUTODOWNLOAD_PROPERTY) != null) {
+                Boolean newValue = (Boolean) properties.get(Config.COMETVISU_AUTODOWNLOAD_PROPERTY);
+                boolean changed = Config.COMETVISU_AUTO_DOWNLOAD != newValue;
+                Config.COMETVISU_AUTO_DOWNLOAD = newValue;
+                if (Config.COMETVISU_AUTO_DOWNLOAD && changed) {
+                    // let the installer check if the CometVisu client is installed and do that if not
+                    installer.check();
+                }
+                Config.COMETVISU_AUTO_DOWNLOAD = newValue;
             }
             for (String key : properties.keySet()) {
                 String[] parts = key.split(">");
