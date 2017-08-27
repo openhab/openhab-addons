@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Netatmo Binding</name>
-    <description>The Netatmo binding integrates the Weather Station with companion modules as well as Thermostat Plug.</description>
+    <description>The Netatmo binding integrates the Weather Station with companion modules, the Healthy Home Coach as well as Thermostat Plug.</description>
     <author>Gaël L'hopital</author>
 
 </binding:binding>

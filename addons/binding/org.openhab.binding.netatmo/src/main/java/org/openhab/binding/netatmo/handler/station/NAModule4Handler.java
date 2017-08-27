@@ -40,7 +40,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
                 case CHANNEL_TEMP_TREND:
                     return ChannelTypeUtils.toStringType(dashboardData.getTempTrend());
                 case CHANNEL_CO2:
-                    return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getCo2());
                 case CHANNEL_TEMPERATURE:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
                 case CHANNEL_DATE_MIN_TEMP:

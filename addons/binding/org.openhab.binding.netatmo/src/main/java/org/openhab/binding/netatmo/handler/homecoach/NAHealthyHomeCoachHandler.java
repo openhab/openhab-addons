@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler.station;
+package org.openhab.binding.netatmo.handler.homecoach;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
@@ -17,31 +17,30 @@ import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
-import org.openhab.binding.netatmo.internal.NAStationAdapter;
+import org.openhab.binding.netatmo.internal.NAHealthyHomeCoachAdapter;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 
 import io.swagger.client.model.NADashboardData;
-import io.swagger.client.model.NAStationDataBody;
+import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAUserAdministrative;
 
 /**
- * {@link NAMainHandler} is the base class for all current Netatmo
- * weather station equipments (both modules and devices)
+ * {@link NAHealthyHomeCoachHandler} is the class used to handle the Health Home Coach device
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Michael Svinth - Initial contribution OH2 version
  *
  */
-public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
+public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
 
-    public NAMainHandler(Thing thing) {
+    public NAHealthyHomeCoachHandler(Thing thing) {
         super(thing, NetatmoDeviceConfiguration.class);
     }
 
     @Override
     protected NADeviceAdapter<?> updateReadings(String equipmentId) {
-        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(equipmentId);
-        if (stationDataBody != null) {
-            return new NAStationAdapter(stationDataBody);
+        NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(equipmentId);
+        if (homecoachDataBody != null) {
+            return new NAHealthyHomeCoachAdapter(homecoachDataBody);
         } else {
             return null;
         }
@@ -49,14 +48,16 @@ public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAStationAdapter stationAdapter = (NAStationAdapter) device;
-        NADashboardData dashboardData = stationAdapter.getDashboardData();
+        NAHealthyHomeCoachAdapter adapter = (NAHealthyHomeCoachAdapter) device;
+        NADashboardData dashboardData = adapter.getDashboardData();
         NAUserAdministrative userAdministrative = device.getUserAdministrative();
         switch (channelId) {
             case CHANNEL_CO2:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getCo2());
             case CHANNEL_TEMPERATURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
+            case CHANNEL_HEALTH_INDEX:
+                return ChannelTypeUtils.toStringType(toHealthIndexString(dashboardData.getHealthIdx()));
             case CHANNEL_MIN_TEMP:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
             case CHANNEL_MAX_TEMP:
@@ -102,4 +103,23 @@ public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
         }
     }
 
+    private String toHealthIndexString(Integer healthIndex) {
+        if (healthIndex == null) {
+            return null;
+        }
+        switch (healthIndex) {
+            case 0:
+                return "healthy";
+            case 1:
+                return "fine";
+            case 2:
+                return "fair";
+            case 3:
+                return "poor";
+            case 4:
+                return "unhealthy";
+            default:
+                return healthIndex.toString();
+        }
+    }
 }

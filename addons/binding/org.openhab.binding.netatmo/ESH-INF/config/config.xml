@@ -40,6 +40,12 @@
             <description>Read weather station's data.</description>
             <default>true</default>
         </parameter>
+                       
+        <parameter name="readHealthyHomeCoach" type="boolean" required="true">
+            <label>Access Healthy Home Coach</label>
+            <description>Read healthy home coach's data.</description>
+            <default>true</default>
+        </parameter>
             
         <parameter name="readThermostat" type="boolean" required="true">
             <label>Access Thermostat</label>
