@@ -10,6 +10,7 @@ Bundle-ClassPath: .,
  lib/jOmniLinkII.jar,
  lib/guava-retrying-2.0.0.jar
 Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

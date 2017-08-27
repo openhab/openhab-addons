@@ -184,7 +184,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void initialize() {
         makeOmnilinkConnection();
-        super.initialize();
     }
 
     private void makeOmnilinkConnection() {
@@ -253,11 +252,12 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (theThing.isPresent() == false) {
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, stat.getNumber());
         }
-        if (theThing.isPresent()) {
+        if (theThing.isPresent() && theThing.get().getHandler() != null) {
             ((UnitHandler) theThing.get().getHandler()).handleUnitStatus(stat);
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void objectStatusNotification(ObjectStatus objectStatus) {
         Status[] statuses = objectStatus.getStatuses();
@@ -269,33 +269,28 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 Integer number = new Integer(stat.getNumber());
                 logger.debug("received status update for zone: {},status: {}", number, stat.getStatus());
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
-
-                if (theThing.isPresent()) {
-                    ((ZoneHandler) theThing.get().getHandler()).handleZoneStatus(stat);
-                }
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((ZoneHandler) theHandler).handleZoneStatus(stat));
             } else if (status instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) status;
-                // TODO we shuold check if this is a lumina system and return that if so
+                // TODO we should check if this is a lumina system and return that if so
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
                         status.getNumber());
                 logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
-                if (theThing.isPresent()) {
-                    ((AreaHandler) theThing.get().getHandler()).handleAreaEvent(areaStatus);
-                }
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((AreaHandler) theHandler).handleAreaEvent(areaStatus));
             } else if (status instanceof ExtendedThermostatStatus) {
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
                         status.getNumber());
-                if (theThing.isPresent()) {
-                    ((ThermostatHandler) theThing.get().getHandler()).handleThermostatStatus(thermostatStatus);
-                }
+                theThing.map(Thing::getHandler).ifPresent(
+                        theHandler -> ((ThermostatHandler) theHandler).handleThermostatStatus(thermostatStatus));
             } else if (status instanceof AudioZoneStatus) {
                 AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
                         status.getNumber());
-                if (theThing.isPresent()) {
-                    ((AudioZoneHandler) theThing.get().getHandler()).handleAudioZoneStatus(audioZoneStatus);
-                }
+                theThing.map(Thing::getHandler).ifPresent(
+                        theHandler -> ((AudioZoneHandler) theHandler).handleAudioZoneStatus(audioZoneStatus));
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
@@ -308,9 +303,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         logger.debug("childHandlerDisposed called with '{}', childThing '{}'", childHandler, childThing);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void otherEventNotification(OtherEventNotifications event) {
-        logger.debug("Other event otification, type: {}", event.getMessageType());
+        logger.debug("Other event notification, type: {}", event.getMessageType());
 
         if (event.getNotifications() != null && event.getNotifications().length > 0) {
             logger.debug("First notification: {}", Integer.toString(event.getNotifications()[0], 2));
@@ -323,14 +319,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             int number = event.getNotifications()[0];
             if (number > 0 && number <= 256) {
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_BUTTON, number);
-                logger.debug("Detect button push: number={}, thing: {}", number, theThing);
-                if (theThing.isPresent()) {
-                    logger.debug("thing for button press is: {}", theThing.get().getUID());
-                    ((ButtonHandler) theThing.get().getHandler()).buttonPressed();
-                } else {
-                    logger.warn("Unhandled other event notification, type: {}, notification: {}",
-                            event.getMessageType(), event.getNotifications());
-                }
+                theThing.map(Thing::getHandler).ifPresent(theHandler -> ((ButtonHandler) theHandler).buttonPressed());
             }
         } else {
             logger.warn("Unhandled other event notification, type: {}, notification: {}", event.getMessageType(),
