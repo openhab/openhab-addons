@@ -32,12 +32,12 @@ Set mode to one of the following depending on your device and region:
 
 | Mode  | Device       | Region           |Frequency  |
 |-------|--------------|------------------|-----------|
-| 0     | Davis        | US               | 915 mhz   |
-| 1     | Davis        | Australia        | 915 mhz   |
-| 2     | Davis        | Europe           | 868 mhz   |
-| 3     | Fine Offset  | US               | 915 mhz   |
-| 4     | Fine Offset  | Europe           | 868 mhz   |
-| 5     | Davis        | New Zealand      | 931.5 mhz |
+| 0     | Davis        | North America    | 915 Mhz   |
+| 1     | Davis        | Australia        | 915 Mhz   |
+| 2     | Davis        | Europe           | 868 Mhz   |
+| 3     | Fine Offset  | North America    | 915 Mhz   |
+| 4     | Fine Offset  | Europe           | 868 Mhz   |
+| 5     | Davis        | New Zealand      | 931.5 Mhz |
 
 ### meteostick_davis_iss Configuration Options
 
