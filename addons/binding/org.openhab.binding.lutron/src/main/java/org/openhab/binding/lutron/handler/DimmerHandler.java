@@ -12,8 +12,10 @@ import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_LIGHTLEV
 
 import java.math.BigDecimal;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -31,6 +33,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DimmerHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
+    private static final Integer ACTION_START_RAISING = 2;
+    private static final Integer ACTION_START_LOWERING = 3;
+    private static final Integer ACTION_STOP_RAISING_LOWERING = 4;
 
     private Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
@@ -88,6 +93,14 @@ public class DimmerHandler extends LutronHandler {
                 output(ACTION_ZONELEVEL, 100, this.config.getFadeInTime());
             } else if (command.equals(OnOffType.OFF)) {
                 output(ACTION_ZONELEVEL, 0, this.config.getFadeOutTime());
+
+            } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                output(ACTION_START_RAISING);
+            } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                output(ACTION_START_LOWERING);
+            } else if (command.equals(StopMoveType.STOP)) {
+                output(ACTION_STOP_RAISING_LOWERING);
+
             }
         }
     }
