@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.autelis.config;
+package org.openhab.binding.autelis.internal.config;
 
 /**
  * Configuration properties for connecting to a Autelis Controller
