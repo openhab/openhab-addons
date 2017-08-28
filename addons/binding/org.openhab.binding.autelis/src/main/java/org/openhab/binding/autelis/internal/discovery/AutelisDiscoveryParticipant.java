@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.autelis.discovery;
+package org.openhab.binding.autelis.internal.discovery;
 
 import java.net.URL;
 import java.util.HashMap;
