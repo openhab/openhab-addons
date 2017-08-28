@@ -54,7 +54,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
         NAUserAdministrative userAdministrative = device.getUserAdministrative();
         switch (channelId) {
             case CHANNEL_CO2:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getCo2());
+                return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
             case CHANNEL_TEMPERATURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
             case CHANNEL_MIN_TEMP:

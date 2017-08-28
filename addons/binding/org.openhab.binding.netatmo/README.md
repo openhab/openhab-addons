@@ -209,10 +209,6 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 * PressureTrend
 * AbsolutePressure
 * Noise
-* HeatIndex
-* Humidex
-* Dewpoint
-* DewpointDepression
 * WifiStatus
 * Location
 * TimeStamp

@@ -18,7 +18,6 @@ import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAHealthyHomeCoachAdapter;
-import org.openhab.binding.netatmo.internal.WeatherUtils;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
@@ -53,7 +52,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NetatmoDevic
         NAUserAdministrative userAdministrative = device.getUserAdministrative();
         switch (channelId) {
             case CHANNEL_CO2:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getCo2());
+                return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
             case CHANNEL_TEMPERATURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
             case CHANNEL_HEALTH_INDEX:
@@ -80,19 +79,6 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NetatmoDevic
                 return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
             case CHANNEL_HUMIDITY:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
-            case CHANNEL_HUMIDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_HEATINDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINT:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINTDEP:
-                Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity());
-                return ChannelTypeUtils
-                        .toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
             case CHANNEL_WIND_UNIT:
                 return new DecimalType(userAdministrative.getWindunit());
             case CHANNEL_PRESSURE_UNIT:
