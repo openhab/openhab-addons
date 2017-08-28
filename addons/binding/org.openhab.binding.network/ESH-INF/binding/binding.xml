@@ -8,29 +8,28 @@
     <description>The Network Binding can be used for device presence detection and to determine network device health</description>
     <author>Marc Mettke, David Graeff</author>
     <config-description>
-	    <parameter name="allow_system_pings" type="boolean">
+	    <parameter name="allowSystemPings" type="boolean">
 	        <default>true</default>
 	        <label>Allow system pings</label>
 	        <description>Allows or disallows to use system pings next to the java integrated ping functionality.
 	        On windows the system ping works more reliable most of the time.</description>
 	    </parameter>
-        <parameter name="allow_dhcp_listen" type="boolean">
+        <parameter name="allowDHCPlisten" type="boolean">
             <default>true</default>
             <label>Listen for dhcp requests</label>
             <description>Usually a device requests an IP address in an IPv4 network with the help of DHCP as soon as it enters a network. If we listen to those
             packets, we can detect a device presence even faster. You need elevated access rights (see readme) for this to work.</description>
         </parameter>
-        <parameter name="cache_device_state" type="integer">
+        <parameter name="cacheDeviceStateTimeInMS" type="integer">
             <default>2000</default>
             <label>Cache time in ms</label>
             <description>The result of a device presence detection is cached for a small amount of time. Be aware that no new pings will be issued within this time frame, even if explicitly requested.</description>
             <advanced>true</advanced>
         </parameter>
-        <parameter name="arp_ping_tool_path" type="text">
+        <parameter name="arpPingToolPath" type="text">
             <default>arping</default>
             <label>ARP ping tool path</label>
             <description>If your arp ping tool is not called arping and cannot be found in the PATH environment, you can configure the absolute path / tool name here</description>
         </parameter>
     </config-description>
-
 </binding:binding>

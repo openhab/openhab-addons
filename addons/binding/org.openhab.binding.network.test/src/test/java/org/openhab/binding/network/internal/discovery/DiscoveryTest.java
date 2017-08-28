@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.discovery;
+package org.openhab.binding.network.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.anyObject;
