@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smaenergymeter.configuration;
+package org.openhab.binding.smaenergymeter.internal.configuration;
 
 /**
  * The {@link EnergyMeterConfig} class holds the configuration properties of the binding.
