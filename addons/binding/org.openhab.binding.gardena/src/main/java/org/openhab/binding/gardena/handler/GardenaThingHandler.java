@@ -42,7 +42,7 @@ import org.openhab.binding.gardena.internal.model.Ability;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.Setting;
 import org.openhab.binding.gardena.internal.util.DateUtils;
-import org.openhab.binding.gardena.util.UidUtils;
+import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

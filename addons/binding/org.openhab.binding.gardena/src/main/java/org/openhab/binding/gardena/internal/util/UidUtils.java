@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gardena.util;
+package org.openhab.binding.gardena.internal.util;
 
 import static org.openhab.binding.gardena.GardenaBindingConstants.BINDING_ID;
 
