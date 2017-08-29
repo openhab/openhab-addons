@@ -9,6 +9,7 @@ Bundle-ClassPath: .
 Import-Package: 
  gnu.io,
  org.openhab.binding.jeelink,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,
