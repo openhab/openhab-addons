@@ -190,7 +190,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudClient.shutdown();
         }
 
-        String localBaseUrl = "http://localhost:" + localPort;
+        String localHost = System.getProperty("jetty.host", "localhost");
+        String localBaseUrl = "http://" + localHost + ":" + localPort;
         cloudClient = new CloudClient(InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl, remoteAccessEnabled,
                 exposedItems);
         cloudClient.setOpenHABVersion(OpenHAB.getVersion());
