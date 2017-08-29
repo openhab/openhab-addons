@@ -11,7 +11,7 @@ package org.openhab.binding.silvercrestwifisocket.handler;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.silvercrestwifisocket.discovery.SilvercrestWifiSocketDiscoveryService;
+import org.openhab.binding.silvercrestwifisocket.internal.discovery.SilvercrestWifiSocketDiscoveryService;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.runnable.SilvercrestWifiSocketUpdateReceiverRunnable;
 
