@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.discovery;
+package org.openhab.binding.netatmo.internal.discovery;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
@@ -20,8 +20,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
-import org.openhab.binding.netatmo.config.NetatmoThingConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
@@ -30,6 +28,8 @@ import org.openhab.binding.netatmo.internal.NAHealthyHomeCoachAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
 import org.openhab.binding.netatmo.internal.NAPlugAdapter;
 import org.openhab.binding.netatmo.internal.NAStationAdapter;
+import org.openhab.binding.netatmo.internal.config.NetatmoModuleConfiguration;
+import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
 
 import io.swagger.client.model.NAHealthyHomeCoach;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;

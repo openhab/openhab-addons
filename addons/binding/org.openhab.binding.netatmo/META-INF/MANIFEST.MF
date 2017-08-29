@@ -28,8 +28,12 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler,
+ org.openhab.binding.netatmo.handler.station, 
+ org.openhab.binding.netatmo.handler.thermostat,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler
+ org.openhab.binding.netatmo.handler,
+ org.openhab.binding.netatmo.handler.station, 
+ org.openhab.binding.netatmo.handler.thermostat
