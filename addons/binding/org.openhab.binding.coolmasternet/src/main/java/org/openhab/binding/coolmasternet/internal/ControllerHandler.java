@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
+import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;

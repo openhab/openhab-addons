@@ -9,7 +9,7 @@
 package org.openhab.binding.coolmasternet.handler;
 
 import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
-import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
+import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
 
 import java.util.HashMap;
 import java.util.Map;
