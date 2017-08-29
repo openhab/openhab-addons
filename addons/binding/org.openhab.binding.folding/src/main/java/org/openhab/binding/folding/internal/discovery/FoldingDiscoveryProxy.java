@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.folding.discovery;
+package org.openhab.binding.folding.internal.discovery;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
 

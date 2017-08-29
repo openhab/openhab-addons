@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.folding.discovery.FoldingDiscoveryProxy;
+import org.openhab.binding.folding.internal.discovery.FoldingDiscoveryProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
