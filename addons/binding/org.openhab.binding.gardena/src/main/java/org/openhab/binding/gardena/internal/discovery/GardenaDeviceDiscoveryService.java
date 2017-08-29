@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gardena.discovery;
+package org.openhab.binding.gardena.internal.discovery;
 
 import static org.openhab.binding.gardena.GardenaBindingConstants.BINDING_ID;
 
@@ -24,7 +24,7 @@ import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.Location;
-import org.openhab.binding.gardena.util.UidUtils;
+import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
