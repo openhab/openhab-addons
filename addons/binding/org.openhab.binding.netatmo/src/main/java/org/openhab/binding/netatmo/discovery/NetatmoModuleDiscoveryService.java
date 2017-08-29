@@ -26,10 +26,13 @@ import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
+import org.openhab.binding.netatmo.internal.NAHealthyHomeCoachAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
 import org.openhab.binding.netatmo.internal.NAPlugAdapter;
 import org.openhab.binding.netatmo.internal.NAStationAdapter;
 
+import io.swagger.client.model.NAHealthyHomeCoach;
+import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAMain;
 import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAStationDataBody;
@@ -67,6 +70,16 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
             List<NAMain> stationDevices = stationsDataBody.getDevices();
             for (NAMain device : stationDevices) {
                 NADeviceAdapter<NAMain> deviceAdapter = new NAStationAdapter(device);
+                onDeviceAddedInternal(deviceAdapter);
+                screenModules(deviceAdapter);
+            }
+        }
+
+        NAHealthyHomeCoachDataBody homecoachDataBody = netatmoBridgeHandler.getHomecoachDataBody(null);
+        if (homecoachDataBody != null) {
+            List<NAHealthyHomeCoach> homecoachDevices = homecoachDataBody.getDevices();
+            for (NAHealthyHomeCoach device : homecoachDevices) {
+                NADeviceAdapter<NAHealthyHomeCoach> deviceAdapter = new NAHealthyHomeCoachAdapter(device);
                 onDeviceAddedInternal(deviceAdapter);
                 screenModules(deviceAdapter);
             }

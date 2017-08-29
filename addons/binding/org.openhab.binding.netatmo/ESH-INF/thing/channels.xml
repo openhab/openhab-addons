@@ -178,6 +178,13 @@
         <state readOnly="true" pattern="%d ppm">
         </state>
     </channel-type>
+
+    <channel-type id="healthindex">
+        <item-type>String</item-type>
+        <label>Health Index</label>
+        <description>Health Index (healthy, fine, fair, poor, unhealthy)</description>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
     
     <channel-type id="noise">
         <item-type>Number</item-type>

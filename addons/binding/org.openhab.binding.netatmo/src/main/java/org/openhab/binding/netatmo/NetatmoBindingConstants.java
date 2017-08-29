@@ -35,6 +35,7 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID MODULE2_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule2");
     public static final ThingTypeUID MODULE3_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule3");
     public static final ThingTypeUID MODULE4_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule4");
+    public static final ThingTypeUID HOMECOACH_THING_TYPE = new ThingTypeUID(BINDING_ID, "NHC");
     public static final ThingTypeUID PLUG_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAPlug");
     public static final ThingTypeUID THERM1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NATherm1");
 
@@ -76,6 +77,9 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_WIND_UNIT = "WindUnit";
     public static final String CHANNEL_PRESSURE_UNIT = "PressureUnit";
 
+    // Healthy Home Coach specific channel
+    public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
+
     // Thermostat specific channels
     public static final String CHANNEL_SETPOINT_MODE = "SetpointMode";
     public static final String CHANNEL_SETPOINT_END_TIME = "SetpointEndTime";
@@ -94,13 +98,13 @@ public class NetatmoBindingConstants {
 
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
-            THERM1_THING_TYPE);
+            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
+            PLUG_THING_TYPE, THERM1_THING_TYPE);
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
-            THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
+            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
+            PLUG_THING_TYPE, THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
 
     public static final Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
 

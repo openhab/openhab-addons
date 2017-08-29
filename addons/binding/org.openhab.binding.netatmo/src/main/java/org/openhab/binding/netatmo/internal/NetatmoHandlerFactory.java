@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.netatmo.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.handler.homecoach.NAHealthyHomeCoachHandler;
 import org.openhab.binding.netatmo.handler.station.NAMainHandler;
 import org.openhab.binding.netatmo.handler.station.NAModule1Handler;
 import org.openhab.binding.netatmo.handler.station.NAModule2Handler;
@@ -63,6 +64,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAModule4Handler(thing);
         } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
             return new NAMainHandler(thing);
+        } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
+            return new NAHealthyHomeCoachHandler(thing);
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {

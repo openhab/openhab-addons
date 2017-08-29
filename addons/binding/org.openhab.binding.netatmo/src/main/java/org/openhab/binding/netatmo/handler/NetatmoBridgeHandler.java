@@ -22,11 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.ApiClient;
+import io.swagger.client.api.HealthyhomecoachApi;
 import io.swagger.client.api.PartnerApi;
 import io.swagger.client.api.StationApi;
 import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
+import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
 import retrofit.RestAdapter.LogLevel;
@@ -45,6 +47,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private NetatmoBridgeConfiguration configuration;
     private ApiClient apiClient;
     private StationApi stationApi = null;
+    private HealthyhomecoachApi homecoachApi = null;
     private ThermostatApi thermostatApi = null;
     private PartnerApi partnerApi = null;
 
@@ -104,6 +107,10 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             stringBuilder.append("read_thermostat write_thermostat ");
         }
 
+        if (configuration.readHealthyHomeCoach) {
+            stringBuilder.append("read_homecoach ");
+        }
+
         return stringBuilder.toString().trim();
     }
 
@@ -117,6 +124,13 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             stationApi = apiClient.createService(StationApi.class);
         }
         return stationApi;
+    }
+
+    private HealthyhomecoachApi getHomeCoachApi() {
+        if (configuration.readHealthyHomeCoach && homecoachApi == null) {
+            homecoachApi = apiClient.createService(HealthyhomecoachApi.class);
+        }
+        return homecoachApi;
     }
 
     public ThermostatApi getThermostatApi() {
@@ -137,6 +151,21 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         if (getStationApi() != null) {
             try {
                 NAStationDataBody data = getStationApi().getstationsdata(equipmentId).getBody();
+                updateStatus(ThingStatus.ONLINE);
+                return data;
+            } catch (Exception e) {
+                logger.debug("An error occurred while calling station API : {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "An error occurred while calling station API : " + e.getLocalizedMessage());
+            }
+        }
+        return null;
+    }
+
+    public NAHealthyHomeCoachDataBody getHomecoachDataBody(String equipmentId) {
+        if (getHomeCoachApi() != null) {
+            try {
+                NAHealthyHomeCoachDataBody data = getHomeCoachApi().gethomecoachsdata(equipmentId).getBody();
                 updateStatus(ThingStatus.ONLINE);
                 return data;
             } catch (Exception e) {
