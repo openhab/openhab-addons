@@ -6,16 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.handler.server;
+package org.openhab.binding.minecraft.internal.server;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
-import org.openhab.binding.minecraft.message.OHMessage;
-import org.openhab.binding.minecraft.message.data.PlayerData;
-import org.openhab.binding.minecraft.message.data.ServerData;
-import org.openhab.binding.minecraft.message.data.SignData;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
+import org.openhab.binding.minecraft.internal.message.data.PlayerData;
+import org.openhab.binding.minecraft.internal.message.data.ServerData;
+import org.openhab.binding.minecraft.internal.message.data.SignData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

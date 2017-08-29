@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.handler.server;
+package org.openhab.binding.minecraft.internal.server;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.minecraft.discovery.MinecraftDiscoveryService;
-import org.openhab.binding.minecraft.message.OHMessage;
+import org.openhab.binding.minecraft.internal.discovery.MinecraftDiscoveryService;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

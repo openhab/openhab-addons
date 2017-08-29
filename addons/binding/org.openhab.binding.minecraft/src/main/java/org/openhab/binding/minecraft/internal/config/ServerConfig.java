@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.config;
+package org.openhab.binding.minecraft.internal.config;
 
 /**
  * Configuration settings for a {@link org.openhab.binding.minecraft.handler.MinecraftServerHandler}.

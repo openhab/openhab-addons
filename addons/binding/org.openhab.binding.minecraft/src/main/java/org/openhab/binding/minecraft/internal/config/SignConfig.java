@@ -6,31 +6,31 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.config;
+package org.openhab.binding.minecraft.internal.config;
 
 /**
- * Configuration settings for a {@link org.openhab.binding.minecraft.handler.MinecraftPlayerHandler}.
+ * Configuration settings for a {@link org.openhab.binding.minecraft.handler.MinecraftSignHandler}.
  *
  * @author Mattias Markehed
  */
-public class PlayerConfig {
-    private String playerName = "";
+public class SignConfig {
+    private String signName = "";
 
     /**
-     * Get name of player.
+     * Get text of sign to monitor.
      *
-     * @return player name
+     * @return sign text
      */
     public String getName() {
-        return playerName;
+        return signName;
     }
 
     /**
-     * Set the player name.
+     * Set the sign text to listen for.
      *
-     * @param player name
+     * @param sign text.
      */
     public void setName(String name) {
-        this.playerName = name;
+        this.signName = name;
     }
 }
