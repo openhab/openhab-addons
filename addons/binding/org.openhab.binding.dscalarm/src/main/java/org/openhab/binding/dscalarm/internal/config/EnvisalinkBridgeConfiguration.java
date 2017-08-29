@@ -6,36 +6,41 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.dscalarm.config;
+package org.openhab.binding.dscalarm.internal.config;
 
 /**
- * Configuration class for the TCP Server bridge, used to connect to the DSC Alarm system.
+ * Configuration class for the EyezOn Envisalink 3/2DS Ethernet TCP interface bridge, used to connect to the DSC Alarm
+ * system.
  *
  * @author Russell Stephens - Initial contribution
  */
 
-public class TCPServerBridgeConfiguration {
+public class EnvisalinkBridgeConfiguration {
 
-    // TCP Server Bridge Thing constants
+    // Envisalink Bridge Thing constants
     public static final String IP_ADDRESS = "ipAddress";
     public static final String PORT = "port";
     public static final String PASSWORD = "password";
     public static final String CONNECTION_TIMEOUT = "connectionTimeout";
     public static final String POLL_PERIOD = "pollPeriod";
-    public static final String PROTOCOL = "protocol";
 
     /**
-     * The IP address of the TCP Server
+     * The IP address of the Envisalink Ethernet 3/2DS TCP interface
      */
     public String ipAddress;
 
     /**
-     * The port number of the TCP Server
+     * The port number of the Envisalink Ethernet 3/2DS TCP interface
      */
     public Integer port;
 
     /**
-     * The Socket connection timeout for the TCP Server
+     * The password of the Envisalink Ethernet 3/2DS TCP interface
+     */
+    public String password;
+
+    /**
+     * The Socket connection timeout for the Envisalink Ethernet 3/2DS TCP interface
      */
     public Integer connectionTimeout;
 
@@ -43,10 +48,4 @@ public class TCPServerBridgeConfiguration {
      * The Panel Poll Period. Can be set in range 1-15 minutes. Default is 1 minute;
      */
     public Integer pollPeriod;
-
-    /**
-     * The Protocol Type - 1 for IT-100 API or 2 for Envisalink TPI.
-     */
-    public Integer protocol;
-
 }

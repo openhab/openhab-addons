@@ -18,7 +18,7 @@ import java.util.TooManyListenersException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.dscalarm.config.IT100BridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,8 +15,8 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
-import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
-import org.openhab.binding.dscalarm.config.IT100BridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

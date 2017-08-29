@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
