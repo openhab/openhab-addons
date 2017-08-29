@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bigassfan.discovery;
+package org.openhab.binding.bigassfan.internal.discovery;
 
 /**
  * The {@link BigAssFanDevice} is responsible for storing information about a fan.
