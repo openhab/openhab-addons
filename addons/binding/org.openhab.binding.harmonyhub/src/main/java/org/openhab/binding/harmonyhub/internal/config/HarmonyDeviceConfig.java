@@ -6,15 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.harmonyhub.config;
+package org.openhab.binding.harmonyhub.internal.config;
 
 /**
- * The {@link HarmonyHubConfig} class represents the configuration of a Harmony Hub
+ * The {@link HarmonyDeviceConfig} class represents the configuration for a device connected to a Harmony Hub
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
-public class HarmonyHubConfig {
-    public String host;
-    public int heartBeatInterval;
+public class HarmonyDeviceConfig {
+    public int id;
+    public String name;
 }
