@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.dscalarm.config;
+package org.openhab.binding.dscalarm.internal.config;
 
 /**
  * Configuration class for the DSC IT100 RS232 Serial interface bridge, used to connect to the DSC Alarm system.
