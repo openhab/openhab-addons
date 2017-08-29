@@ -5,7 +5,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -246,27 +245,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @SuppressWarnings("null")
-    private void handleUnitStatus(UnitStatus stat) {
-        logger.debug("received status update for unit: {}, status: {}", stat.getNumber(), stat.getStatus());
-        Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, stat.getNumber());
-        if (theThing.isPresent() == false) {
-            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ROOM, stat.getNumber());
-        }
-        if (theThing.isPresent() == false) {
-            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, stat.getNumber());
-        }
-        if (theThing.isPresent()) {
-            theThing.map(Thing::getHandler).ifPresent(theHandler -> ((UnitHandler) theHandler).handleUnitStatus(stat));
-        }
-    }
-
-    @SuppressWarnings("null")
     @Override
     public void objectStatusNotification(ObjectStatus objectStatus) {
         Status[] statuses = objectStatus.getStatuses();
         for (Status status : statuses) {
             if (status instanceof UnitStatus) {
-                handleUnitStatus((UnitStatus) status);
+                UnitStatus stat = (UnitStatus) status;
+                logger.debug("received status update for unit: {}, status: {}", stat.getNumber(), stat.getStatus());
+                Optional<Thing> theThing = getUnitThing(status.getNumber());
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((UnitHandler) theHandler).handleUnitStatus(stat));
             } else if (status instanceof ZoneStatus) {
                 ZoneStatus stat = (ZoneStatus) status;
                 Integer number = new Integer(stat.getNumber());
@@ -441,19 +429,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private Optional<Thing> getChildThing(ThingTypeUID type, int number) {
         Bridge bridge = getThing();
+        return bridge.getThings().stream().filter(t -> t.getThingTypeUID().equals(type))
+                .filter(t -> ((Number) t.getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER))
+                        .intValue() == number)
+                .findFirst();
+    }
 
-        List<Thing> things = bridge.getThings();
-        for (Thing thing : things) {
-            if (type.equals(thing.getThingTypeUID())) {
-                if (getThingNumber(thing) == number) {
-                    return Optional.of(thing);
-                }
-            }
+    private Optional<Thing> getUnitThing(int unitId) {
+        Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, unitId);
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ROOM, unitId);
         }
-        return Optional.empty();
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, unitId);
+        }
+        return theThing;
     }
 
-    private int getThingNumber(Thing thing) {
-        return ((Number) thing.getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER)).intValue();
-    }
 }
