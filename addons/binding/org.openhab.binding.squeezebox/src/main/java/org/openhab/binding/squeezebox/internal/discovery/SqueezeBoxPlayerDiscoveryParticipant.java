@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.squeezebox.discovery;
+package org.openhab.binding.squeezebox.internal.discovery;
 
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
 
