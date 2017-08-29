@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.freebox.discovery;
+package org.openhab.binding.freebox.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxServerConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

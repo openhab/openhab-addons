@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.freebox.config;
+package org.openhab.binding.freebox.internal.config;
 
 /**
  * The {@link FreeboxServerConfiguration} is responsible for holding

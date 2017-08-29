@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.freebox.discovery;
+package org.openhab.binding.freebox.internal.discovery;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +25,11 @@ import org.matmaul.freeboxos.lan.LanHostConfig;
 import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxAirPlayDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetInterfaceConfiguration;
 import org.openhab.binding.freebox.handler.FreeboxHandler;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
+import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

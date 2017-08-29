@@ -6,19 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.freebox.config;
+package org.openhab.binding.freebox.internal.config;
 
 /**
- * The {@link FreeboxNetDeviceConfiguration} is responsible for holding
- * configuration informations associated to a Freebox Network Device
+ * The {@link FreeboxNetInterfaceConfiguration} is responsible for holding
+ * configuration informations associated to a Freebox Network Interface
  * thing type
  *
  * @author Laurent Garnier
  */
-public class FreeboxNetDeviceConfiguration {
+public class FreeboxNetInterfaceConfiguration {
 
-    public static final String MAC_ADDRESS = "macAddress";
+    public static final String IP_ADDRESS = "ipAddress";
 
-    public String macAddress;
+    public String ipAddress;
 
 }
