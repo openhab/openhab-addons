@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdpowerview.config;
+package org.openhab.binding.hdpowerview.internal.config;
 
 /**
  * Basic configuration for an HD Power View Scene

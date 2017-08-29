@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdpowerview.discovery;
+package org.openhab.binding.hdpowerview.internal.discovery;
 
-import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -18,30 +18,23 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.config.HDPowerViewShadeConfiguration;
-import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+
+import jcifs.netbios.NbtAddress;
 
 /**
- * Discovers an HD Power View Shade from an existing hub
+ * Discovers the HD Power View HUB by searching for a host advertised with the NetBIOS name PDBU-Hub3.0
  *
  * @author Andy Lintner
  */
-public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
+public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeDiscoveryService.class);
-    private final HDPowerViewHubHandler hub;
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
 
-    public HDPowerViewShadeDiscoveryService(HDPowerViewHubHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 600, true);
-        this.hub = hub;
-        this.scanner = createScanner();
+    public HDPowerViewHubDiscoveryService() {
+        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_HUB), 600, true);
+        scanner = createScanner();
     }
 
     @Override
@@ -69,26 +62,20 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 
     private Runnable createScanner() {
         return () -> {
-            HDPowerViewWebTargets targets = hub.getWebTargets();
-            Shades shades;
             try {
-                shades = targets.getShades();
-            } catch (IOException e) {
-                logger.error("{}", e.getMessage(), e);
-                stopScan();
-                return;
-            }
-            if (shades != null) {
-                for (Shade shade : shades.shadeData) {
-                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
-                            Integer.toString(shade.id));
+                NbtAddress address = NbtAddress.getByName(HDPowerViewBindingConstants.NETBIOS_NAME);
+                if (address != null) {
+                    String host = address.getInetAddress().getHostAddress();
+                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB,
+                            host.replace('.', '_'));
                     DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewShadeConfiguration.ID, shade.id).withLabel(shade.getName())
-                            .withBridge(hub.getThing().getUID()).build();
+                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                            .withLabel("PowerView Hub (" + host + ")").build();
                     thingDiscovered(result);
                 }
+            } catch (UnknownHostException e) {
+                // Nothing to do here - the host couldn't be found, likely because it doesn't exist
             }
-            stopScan();
         };
     }
 

@@ -6,18 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdpowerview.config;
+package org.openhab.binding.hdpowerview.internal.config;
 
 /**
- * Basic configuration for the HD Power View HUB
+ * Basic configuration for an HD Power View Shade
  *
  * @author Andy Lintner
  */
-public class HDPowerViewHubConfiguration {
+public class HDPowerViewShadeConfiguration {
 
-    public static String HOST = "host";
+    public static String ID = "id";
 
-    public String host;
+    public int id;
 
-    public long refresh;
 }
