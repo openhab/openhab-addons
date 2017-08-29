@@ -138,7 +138,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
                 DeviceHandler handler = (DeviceHandler) thing.getHandler();
-                handler.setState(device);
+                if (handler != null) {
+                    handler.setState(device);
+                }
                 updateThingFromDevice(thing, device);
             }
         } catch (Exception e) {
