@@ -36,10 +36,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
@@ -166,8 +166,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
-                        ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_LOCKED,
+                        device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
+                                : OpenClosedType.OPEN);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
