@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.avmfritz.util;
+package org.openhab.binding.avmfritz.internal.util;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for a static use of JAXBContext as singleton instance.
- * 
+ *
  * @author Christoph Weitkamp
- * 
+ *
  */
 public class JAXBtUtils {
 

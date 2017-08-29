@@ -17,7 +17,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
 
     /**
      * Constructor
-     * 
+     *
      * @param webIface Webinterface to FRITZ!Box
      * @param service Discovery service to call with result.
      */
