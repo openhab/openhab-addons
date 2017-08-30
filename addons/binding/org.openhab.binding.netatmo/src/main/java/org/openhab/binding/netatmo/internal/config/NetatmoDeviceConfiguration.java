@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.config;
+package org.openhab.binding.netatmo.internal.config;
 
 /**
  * The {@link NetatmoDeviceConfiguration} is responsible for holding configuration
