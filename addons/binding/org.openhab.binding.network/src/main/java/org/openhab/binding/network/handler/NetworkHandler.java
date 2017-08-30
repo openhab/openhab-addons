@@ -55,7 +55,6 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     int retries;
     // Retry counter. Will be reset as soon as a device presence detection succeed.
     private int retryCounter = 0;
-    private int cacheDeviceStateTimeInMS;
     private NetworkHandlerConfiguration handlerConfiguration;
 
     /**
@@ -200,7 +199,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
-        initialize(new PresenceDetection(this, cacheDeviceStateTimeInMS));
+        initialize(new PresenceDetection(this, configuration.cacheDeviceStateTimeInMS.intValue()));
     }
 
     /**
