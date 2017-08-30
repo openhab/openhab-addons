@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.systeminfo.discovery">
-   <implementation class="org.openhab.binding.systeminfo.discovery.SysteminfoDiscoveryService"/>
+   <implementation class="org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>
