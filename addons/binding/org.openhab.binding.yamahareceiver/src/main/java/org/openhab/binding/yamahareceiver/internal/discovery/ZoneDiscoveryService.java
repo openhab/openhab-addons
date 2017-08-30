@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yamahareceiver.discovery;
+package org.openhab.binding.yamahareceiver.internal.discovery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
