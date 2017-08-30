@@ -32,7 +32,7 @@ Auto discovery can be used to scan the local network for **pingdevice** things b
 ```
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 
-network:pingdevice:second_device [ hostname="192.168.0.65", retry=1, timeout=5000, refresh_interval=60000 ]
+network:pingdevice:second_device [ hostname="192.168.0.65", retry=1, timeout=5000, refreshInterval=60000 ]
 
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
 ```
