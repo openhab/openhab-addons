@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.zway.config;
+package org.openhab.binding.zway.internal.config;
 
 import static org.openhab.binding.zway.ZWayBindingConstants.DEVICE_CONFIG_NODE_ID;
 
