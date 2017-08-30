@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.smaenergymeter.configuration.EnergyMeterConfig;
+import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
