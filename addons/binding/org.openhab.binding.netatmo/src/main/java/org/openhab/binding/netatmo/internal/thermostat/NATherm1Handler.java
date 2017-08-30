@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler.thermostat;
+package org.openhab.binding.netatmo.internal.thermostat;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
@@ -24,10 +24,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.netatmo.config.NATherm1Configuration;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
+import org.openhab.binding.netatmo.internal.config.NATherm1Configuration;
 
 import io.swagger.client.CollectionFormats.CSVParams;
 import io.swagger.client.api.ThermostatApi;

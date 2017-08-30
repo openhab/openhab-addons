@@ -6,28 +6,28 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler.station;
+package org.openhab.binding.netatmo.internal.station;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.config.NetatmoModuleConfiguration;
 
 import io.swagger.client.model.NADashboardData;
 
 /**
- * {@link NAModule3Handler} is the class used to handle the Rain Gauge
- * capable of measuring precipitation
+ * {@link NAModule2Handler} is the class used to handle the wind module
+ * capable of reporting wind angle and strength
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NAModule3Handler extends NetatmoModuleHandler<NetatmoModuleConfiguration> {
+public class NAModule2Handler extends NetatmoModuleHandler<NetatmoModuleConfiguration> {
 
-    public NAModule3Handler(Thing thing) {
+    public NAModule2Handler(Thing thing) {
         super(thing, NetatmoModuleConfiguration.class);
     }
 
@@ -36,12 +36,14 @@ public class NAModule3Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
-                case CHANNEL_RAIN:
-                    return ChannelTypeUtils.toDecimalType(dashboardData.getRain());
-                case CHANNEL_SUM_RAIN1:
-                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain1());
-                case CHANNEL_SUM_RAIN24:
-                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
+                case CHANNEL_WIND_ANGLE:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getWindAngle());
+                case CHANNEL_WIND_STRENGTH:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getWindStrength());
+                case CHANNEL_GUST_ANGLE:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getGustAngle());
+                case CHANNEL_GUST_STRENGTH:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getGustStrength());
 
             }
         }

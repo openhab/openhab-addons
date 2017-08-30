@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.netatmo.config.NetatmoBridgeConfiguration;
+import org.openhab.binding.netatmo.internal.config.NetatmoBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
