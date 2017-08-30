@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lutron.config;
+package org.openhab.binding.lutron.internal.config;
 
 import org.apache.commons.lang.StringUtils;
 
