@@ -400,4 +400,14 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     public void setState(DeviceModel state) {
         this.state = state;
     }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
+                && ThingStatus.OFFLINE.equals(getThing().getStatusInfo().getStatus())
+                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        }
+    }
 }
