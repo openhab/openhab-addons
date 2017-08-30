@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.wifiled.configuration;
+package org.openhab.binding.wifiled.internal.configuration;
 
 /**
  * The {@link WiFiLEDConfig} class holds the configuration properties of the thing.
