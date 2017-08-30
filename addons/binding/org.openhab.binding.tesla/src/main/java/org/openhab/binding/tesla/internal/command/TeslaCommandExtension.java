@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tesla.command;
+package org.openhab.binding.tesla.internal.command;
 
 import static org.openhab.binding.tesla.TeslaBindingConstants.*;
 
