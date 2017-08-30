@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.systeminfo.discovery;
+package org.openhab.binding.systeminfo.internal.discovery;
 
 import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
 
