@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.homematic.converter.type;
+package org.openhab.binding.homematic.internal.converter.type;
 
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -14,9 +14,9 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.homematic.converter.ConverterException;
+import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
-import org.openhab.binding.homematic.type.MetadataUtils;
+import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

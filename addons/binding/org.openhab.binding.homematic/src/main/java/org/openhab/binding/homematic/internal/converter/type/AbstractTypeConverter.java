@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.homematic.converter.type;
+package org.openhab.binding.homematic.internal.converter.type;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
@@ -19,10 +19,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.homematic.converter.ConverterException;
-import org.openhab.binding.homematic.converter.ConverterTypeException;
-import org.openhab.binding.homematic.converter.StateInvertInfo;
-import org.openhab.binding.homematic.converter.TypeConverter;
+import org.openhab.binding.homematic.internal.converter.ConverterException;
+import org.openhab.binding.homematic.internal.converter.ConverterTypeException;
+import org.openhab.binding.homematic.internal.converter.StateInvertInfo;
+import org.openhab.binding.homematic.internal.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.slf4j.Logger;

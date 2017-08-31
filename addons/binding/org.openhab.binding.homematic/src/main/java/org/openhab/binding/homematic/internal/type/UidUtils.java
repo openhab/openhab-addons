@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.homematic.type;
+package org.openhab.binding.homematic.internal.type;
 
 import static org.openhab.binding.homematic.HomematicBindingConstants.BINDING_ID;
 
