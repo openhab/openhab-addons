@@ -41,7 +41,6 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // There is nothing to update on the smoke detector.
-
     }
 
     /**
@@ -50,7 +49,7 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
      * @param smokeDetector The current smoke detector state
      */
     public void updateSmokeDetector(SmokeDetector smokeDetector) {
-        logger.debug("Updating camera {}", smokeDetector.getDeviceId());
+        logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
         if (lastData == null || !lastData.equals(smokeDetector)) {
             updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
             updateState(CHANNEL_LOW_BATTERY,

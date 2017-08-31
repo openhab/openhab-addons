@@ -97,16 +97,23 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         SslContextFactory sslContextFactory = new SslContextFactory();
         httpClient = new HttpClient(sslContextFactory);
         httpClient.setConnectTimeout(30000);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error starting HTTP client " + e.getMessage());
+            return;
+        }
 
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
-        startAutomaticRefresh(config.refreshInterval);
-        updateAccessToken();
-
         logger.debug("Client Id       {}.", config.clientId);
         logger.debug("Client Secret   {}.", config.clientSecret);
         logger.debug("Pincode         {}.", config.pincode);
 
+        updateAccessToken();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
+
+        startAutomaticRefresh(config.refreshInterval);
     }
 
     /**
@@ -157,7 +164,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         try {
             String uri = buildQueryString(config);
             String data = jsonFromGetUrl(uri, config);
-            logger.error("Data from nest {}", data);
+            logger.debug("Data from nest {}", data);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Received update from nest");
             // Now convert the incoming data into something more useful.
             Gson gson = builder.create();
@@ -258,9 +265,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private String buildQueryString(NestBridgeConfiguration config)
             throws InterruptedException, TimeoutException, ExecutionException {
-        logger.debug("Making url with access token {}", config.accessToken);
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
-        urlBuilder.append("?auth=");
         String stringAccessToken;
         if (config.accessToken == null) {
             stringAccessToken = accessToken.getAccessToken();
@@ -271,6 +275,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         } else {
             stringAccessToken = config.accessToken;
         }
+        logger.debug("Making url with access token {}", stringAccessToken);
+        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
+        urlBuilder.append("?auth=");
         urlBuilder.append(stringAccessToken);
         logger.debug("Made url {}", urlBuilder.toString());
         return urlBuilder.toString();
