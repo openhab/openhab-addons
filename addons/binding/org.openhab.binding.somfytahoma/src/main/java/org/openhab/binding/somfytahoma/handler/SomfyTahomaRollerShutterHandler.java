@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,10 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
 
     @Override
     public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{ put(POSITION, "core:ClosureState"); put( CONTROL, "core:ClosureState"); }};
+        return new Hashtable<String, String>() {{
+            put(POSITION, "core:ClosureState");
+            put(CONTROL, "core:ClosureState");
+        }};
     }
 
     @Override
@@ -50,7 +53,7 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
         String url = getThing().getConfiguration().get("url").toString();
         if (command.equals(RefreshType.REFRESH)) {
             //sometimes refresh is sent sooner than bridge initialized...
-            if(getBridgeHandler() != null) {
+            if (getBridgeHandler() != null) {
                 getBridgeHandler().updateChannelState(this, channelUID, url);
             }
         } else {
@@ -77,7 +80,6 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
     }
 
     private String getTahomaCommand(String command) {
-
         switch (command) {
             case "OFF":
             case "DOWN":
@@ -92,7 +94,7 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
         }
     }
 
-    private SomfyTahomaBridgeHandler getBridgeHandler() {
+    protected SomfyTahomaBridgeHandler getBridgeHandler() {
         return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
     }
 

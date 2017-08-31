@@ -20,6 +20,7 @@ public class SomfyTahomaDevice {
     private String deviceURL;
     private String label;
     private String oid;
+    private SomfyTahomaDeviceDefinition definition;
 
     public boolean isRollerShutter() {
         return uiClass.equals("RollerShutter");
@@ -37,8 +38,16 @@ public class SomfyTahomaDevice {
         return uiClass.equals("ExteriorScreen");
     }
 
+    public boolean isScreen() {
+        return uiClass.equals("Screen");
+    }
+
     public boolean isExteriorVenetianBlind() {
         return uiClass.equals("ExteriorVenetianBlind");
+    }
+
+    public boolean isVenetianBlind() {
+        return uiClass.equals("VenetianBlind");
     }
 
     public boolean isGarageDoor() {
@@ -63,5 +72,9 @@ public class SomfyTahomaDevice {
 
     public String getUiClass() {
         return uiClass;
+    }
+
+    public SomfyTahomaDeviceDefinition getDefinition() {
+        return definition;
     }
 }

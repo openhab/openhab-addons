@@ -13,16 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SomfyTahomaExteriorVenetianBlindHandler} is responsible for handling commands,
- * which are sent to one of the channels of the exterior venetian blind thing.
+ * The {@link SomfyTahomaScreenHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the screen thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaExteriorVenetianBlindHandler extends SomfyTahomaRollerShutterHandler {
+public class SomfyTahomaScreenHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaExteriorVenetianBlindHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaScreenHandler.class);
 
-    public SomfyTahomaExteriorVenetianBlindHandler(Thing thing) {
+    public SomfyTahomaScreenHandler(Thing thing) {
         super(thing);
     }
 

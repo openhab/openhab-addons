@@ -30,6 +30,12 @@ public class SomfyTahomaBindingConstants {
     // Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
+    // Screen
+    public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
+
+    // Venetian Blind
+    public static final ThingTypeUID THING_TYPE_VENETIANBLIND = new ThingTypeUID(BINDING_ID, "venetianblind");
+
     // Exterior Screen
     public static final ThingTypeUID THING_TYPE_EXTERIORSCREEN = new ThingTypeUID(BINDING_ID, "exteriorscreen");
 
@@ -52,9 +58,12 @@ public class SomfyTahomaBindingConstants {
     // Gateway
     public static final String VERSION = "version";
 
-    // Roller shutter, Awning, Exterior screen, Garage door
+    // Roller shutter, Awning, Screen, Blind, Garage door
     public static final String POSITION = "position";
     public static final String CONTROL = "control";
+
+    // Blind
+    public static final String ORIENTATION = "orientation";
 
     // Action group
     public static final String TRIGGER = "trigger";
@@ -73,6 +82,8 @@ public class SomfyTahomaBindingConstants {
     final public static int TYPE_STRING = 3;
     final public static String COMMAND_MY = "my";
     final public static String COMMAND_SET_CLOSURE = "setClosure";
+    final public static String COMMAND_SET_DEPLOYMENT = "setDeployment";
+    final public static String COMMAND_SET_ORIENTATION = "setOrientation";
     final public static String COMMAND_UP = "up";
     final public static String COMMAND_DOWN = "down";
 }

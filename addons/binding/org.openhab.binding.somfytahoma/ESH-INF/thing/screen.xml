@@ -3,11 +3,11 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="rollershutter">
+	<thing-type id="screen">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
         </supported-bridge-type-refs>
-		<label>Somfy Roller Shutter</label>
+		<label>Somfy Screen</label>
 		<channels>
 			<channel id="position" typeId="position"></channel>
 			<channel id="control" typeId="control"></channel>

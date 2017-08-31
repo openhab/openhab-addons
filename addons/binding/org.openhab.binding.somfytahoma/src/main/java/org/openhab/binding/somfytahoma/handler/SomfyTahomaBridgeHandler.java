@@ -269,12 +269,21 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     discoveryService.exteriorVenetianBlindDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
                 }
+                if (device.isScreen()) {
+                    discoveryService.screenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isVenetianBlind()) {
+                    discoveryService.venetianBlindDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
                 if (device.isGarageDoor()) {
                     discoveryService.garageDoorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
                 }
                 if (!device.isKnownUnsupported()) {
                     logger.warn("Detected a new unsupported device: {}", device.getUiClass());
+                    logger.warn(device.getDefinition().toString());
                 }
             }
             for (SomfyTahomaGateway gateway : setup.getGateways()) {
@@ -311,19 +320,17 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
             SomfyTahomaStatesResponse data = gson.fromJson(line, SomfyTahomaStatesResponse.class);
             SomfyTahomaDeviceWithState device = data.getDevices().get(0);
-            if (device.hasStates()) {
-                return device.getStates();
-            } else {
-                logger.warn("Device: {} has not returned any state", deviceUrl);
-                return null;
+            if (!device.hasStates()) {
+                logger.debug("Device: {} has not returned any state", deviceUrl);
             }
+            return device.getStates();
         } catch (MalformedURLException e) {
             logger.error("The URL '{}' is malformed!", url, e);
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
-                return null;
             }
+            logger.error("Cannot send getStates command!", e);
         } catch (Exception e) {
             logger.error("Cannot send getStates command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -381,7 +388,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     return value.equals("on") ? OnOffType.ON : OnOffType.OFF;
                 }
             } else {
-                logger.warn("Device: {} has not returned any state", deviceUrl);
+                logger.debug("Device: {} has not returned any state", deviceUrl);
                 return UnDefType.UNDEF;
             }
         } catch (MalformedURLException e) {
@@ -400,6 +407,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateTahomaStates() {
         logger.debug("Updating Tahoma States...");
+        if(thing.getStatus().equals(ThingStatus.OFFLINE)) {
+            login();
+        }
+
         for (Thing thing : getThing().getThings()) {
             logger.debug("Updating thing {} with UID {}", thing.getLabel(), thing.getThingTypeUID());
             if (thing.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
