@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.message.data;
+package org.openhab.binding.minecraft.internal.message.data;
 
 /**
  * Object representing Minecraft server.

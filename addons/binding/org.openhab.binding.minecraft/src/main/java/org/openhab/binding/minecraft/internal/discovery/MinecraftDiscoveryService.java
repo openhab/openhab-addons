@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.discovery;
+package org.openhab.binding.minecraft.internal.discovery;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,13 +18,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.config.ServerConfig;
 import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
-import org.openhab.binding.minecraft.handler.server.ServerConnection;
 import org.openhab.binding.minecraft.internal.MinecraftHandlerFactory;
-import org.openhab.binding.minecraft.message.data.PlayerData;
-import org.openhab.binding.minecraft.message.data.SignData;
-import org.openhab.binding.minecraft.util.Pair;
+import org.openhab.binding.minecraft.internal.config.ServerConfig;
+import org.openhab.binding.minecraft.internal.message.data.PlayerData;
+import org.openhab.binding.minecraft.internal.message.data.SignData;
+import org.openhab.binding.minecraft.internal.server.ServerConnection;
+import org.openhab.binding.minecraft.internal.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
