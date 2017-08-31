@@ -30,7 +30,7 @@
         <item-type>Number</item-type>
         <label>Illumination</label>
         <description>
-            This channel shows the brightness of the environment of the gateway.
+            This channel shows the brightness of the environment of the device.
         </description>
         <state readOnly="true"></state>
     </channel-type>
@@ -89,6 +89,12 @@
         <item-type>Switch</item-type>
         <label>Gas detected</label>
         <category>Gas</category>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="leak">
+        <item-type>Switch</item-type>
+        <label>Leak detected</label>
         <state readOnly="true"></state>
     </channel-type>
 
