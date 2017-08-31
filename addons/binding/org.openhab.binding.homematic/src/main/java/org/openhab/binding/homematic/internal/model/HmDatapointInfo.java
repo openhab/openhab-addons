@@ -80,6 +80,13 @@ public class HmDatapointInfo {
     }
 
     /**
+     * Return true, if this is a pong datapoint info.
+     */
+    public boolean isPong() {
+        return address != null && name != null && "CENTRAL".equals(address) && "PONG".equals(name);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
