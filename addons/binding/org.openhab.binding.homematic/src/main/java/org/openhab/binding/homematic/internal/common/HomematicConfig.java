@@ -46,10 +46,8 @@ public class HomematicConfig {
     private int xmlCallbackPort;
     private int binCallbackPort;
 
-    private Integer aliveInterval = 300;
     private int socketMaxAlive = 900;
     private int timeout = 15;
-    private int reconnectInterval = 0;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -79,16 +77,6 @@ public class HomematicConfig {
      */
     public void setCallbackHost(String callbackHost) {
         this.callbackHost = callbackHost;
-    }
-
-    /**
-     * Returns the callback host port.
-     *
-     * @deprecated use getBinCallbackPort
-     */
-    @Deprecated
-    public int getCallbackPort() {
-        return binCallbackPort;
     }
 
     /**
@@ -127,20 +115,6 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
-    }
-
-    /**
-     * Returns the alive interval in seconds.
-     */
-    public Integer getAliveInterval() {
-        return aliveInterval;
-    }
-
-    /**
-     * Sets the alive interval in seconds.
-     */
-    public void setAliveInterval(Integer aliveInterval) {
-        this.aliveInterval = aliveInterval;
     }
 
     /**
@@ -183,20 +157,6 @@ public class HomematicConfig {
      */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    /**
-     * Returns the interval in seconds to reconnect to the Homematic gateway.
-     */
-    public int getReconnectInterval() {
-        return reconnectInterval;
-    }
-
-    /**
-     * Sets the interval in seconds to reconnect to the Homematic gateway.
-     */
-    public void setReconnectInterval(int reconnectInterval) {
-        this.reconnectInterval = reconnectInterval;
     }
 
     /**
@@ -342,7 +302,6 @@ public class HomematicConfig {
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
                 .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
-                .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
                 .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }

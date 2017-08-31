@@ -289,14 +289,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * {@inheritDoc}
      */
     @Override
-    public void onServerRestart() {
-        reloadAllDeviceValues();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }

@@ -50,11 +50,6 @@ public interface HomematicGatewayAdapter {
     public void onDeviceLoaded(HmDevice device);
 
     /**
-     * Called when a gateway has restarted the RPC Server.
-     */
-    public void onServerRestart();
-
-    /**
      * Called when the connection is lost to the gateway.
      */
     public void onConnectionLost();
