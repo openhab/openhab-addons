@@ -241,7 +241,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 getRpcClient(hmInterface).release(hmInterface);
             } catch (IOException ex) {
                 // recoverable exception, therefore only debug
-                logger.debug("{}", ex.getMessage(), ex);
+                logger.debug("Unable to release the connection to the gateway with id '{}': {}", id, ex.getMessage(),
+                        ex);
             }
         }
 
@@ -636,7 +637,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             logger.debug("Echo event detected, ignoring '{}'", dpInfo);
         } else {
             try {
-                if (newValue != null && connectionTrackerThread != null && dpInfo.isPong() && id.equals(newValue)) {
+                if (connectionTrackerThread != null && dpInfo.isPong() && id.equals(newValue)) {
                     connectionTrackerThread.pongReceived();
                 }
 
