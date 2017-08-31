@@ -6,18 +6,18 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.homematic.converter;
+package org.openhab.binding.homematic.internal.converter;
 
 import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.homematic.converter.type.DecimalTypeConverter;
-import org.openhab.binding.homematic.converter.type.OnOffTypeConverter;
-import org.openhab.binding.homematic.converter.type.OpenClosedTypeConverter;
-import org.openhab.binding.homematic.converter.type.PercentTypeConverter;
-import org.openhab.binding.homematic.converter.type.StringTypeConverter;
+import org.openhab.binding.homematic.internal.converter.type.DecimalTypeConverter;
+import org.openhab.binding.homematic.internal.converter.type.OnOffTypeConverter;
+import org.openhab.binding.homematic.internal.converter.type.OpenClosedTypeConverter;
+import org.openhab.binding.homematic.internal.converter.type.PercentTypeConverter;
+import org.openhab.binding.homematic.internal.converter.type.StringTypeConverter;
 
 /**
  * A factory for creating converters based on the itemType.

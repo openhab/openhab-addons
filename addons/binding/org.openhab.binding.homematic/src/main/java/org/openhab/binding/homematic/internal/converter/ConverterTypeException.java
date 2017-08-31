@@ -6,17 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.homematic.converter;
+package org.openhab.binding.homematic.internal.converter;
 
 /**
- * Exception if something goes wrong when converting values between openHAB and the binding.
+ * Exception if converting between two types is not possible due wrong item type or command.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class ConverterException extends Exception {
-    private static final long serialVersionUID = 78045670450002L;
+public class ConverterTypeException extends ConverterException {
+    private static final long serialVersionUID = 7114173349077221055L;
 
-    public ConverterException(String message) {
+    public ConverterTypeException(String message) {
         super(message);
     }
 
