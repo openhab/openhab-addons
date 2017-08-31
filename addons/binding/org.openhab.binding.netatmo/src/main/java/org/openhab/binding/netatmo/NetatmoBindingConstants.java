@@ -35,6 +35,7 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID MODULE2_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule2");
     public static final ThingTypeUID MODULE3_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule3");
     public static final ThingTypeUID MODULE4_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule4");
+    public static final ThingTypeUID HOMECOACH_THING_TYPE = new ThingTypeUID(BINDING_ID, "NHC");
     public static final ThingTypeUID PLUG_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAPlug");
     public static final ThingTypeUID THERM1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NATherm1");
 
@@ -52,10 +53,10 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LOCATION = "Location";
     public static final String CHANNEL_BOILER_ON = "BoilerOn";
     public static final String CHANNEL_BOILER_OFF = "BoilerOff";
-    public static final String CHANNEL_DATE_MAX_TEMP = "date_max_temp";
-    public static final String CHANNEL_DATE_MIN_TEMP = "date_min_temp";
-    public static final String CHANNEL_MAX_TEMP = "min_temp";
-    public static final String CHANNEL_MIN_TEMP = "max_temp";
+    public static final String CHANNEL_DATE_MAX_TEMP = "DateMaxTemp";
+    public static final String CHANNEL_DATE_MIN_TEMP = "DateMinTemp";
+    public static final String CHANNEL_MAX_TEMP = "MaxTemp";
+    public static final String CHANNEL_MIN_TEMP = "MinTemp";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "AbsolutePressure";
     public static final String CHANNEL_CO2 = "Co2";
     public static final String CHANNEL_NOISE = "Noise";
@@ -76,12 +77,18 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_WIND_UNIT = "WindUnit";
     public static final String CHANNEL_PRESSURE_UNIT = "PressureUnit";
 
+    // Healthy Home Coach specific channel
+    public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
+
     // Thermostat specific channels
     public static final String CHANNEL_SETPOINT_MODE = "SetpointMode";
     public static final String CHANNEL_SETPOINT_END_TIME = "SetpointEndTime";
     public static final String CHANNEL_SETPOINT_TEMP = "Sp_Temperature";
     public static final String CHANNEL_THERM_RELAY = "ThermRelayCmd";
     public static final String CHANNEL_THERM_ORIENTATION = "ThermOrientation";
+    public static final String CHANNEL_CONNECTED_BOILER = "ConnectedBoiler";
+    public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
+    public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
     // Module Properties
     public static final String PROPERTY_BATTERY_MIN = "batteryMin";
@@ -91,13 +98,13 @@ public class NetatmoBindingConstants {
 
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
-            THERM1_THING_TYPE);
+            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
+            PLUG_THING_TYPE, THERM1_THING_TYPE);
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
-            THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
+            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
+            PLUG_THING_TYPE, THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
 
     public static final Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
 

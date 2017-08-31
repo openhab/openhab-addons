@@ -36,10 +36,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
@@ -125,7 +125,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
 
     @Override
     public FritzahaWebInterface getWebInterface() {
-        return this.connection;
+        return connection;
     }
 
     @Override
@@ -136,6 +136,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             Thing thing = getThingByUID(thingUID);
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
+                DeviceHandler handler = (DeviceHandler) thing.getHandler();
+                handler.setState(device);
                 updateThingFromDevice(thing, device);
             }
         } catch (Exception e) {
@@ -164,8 +166,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
-                        ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_LOCKED,
+                        device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
+                                : OpenClosedType.OPEN);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
@@ -179,17 +182,12 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                         device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
-                final BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
-                if (HeatingModel.inCelsiusRange(settemp)) {
-                    thing.getConfiguration().put(THING_SETTEMP, settemp);
-                }
-                updateThingChannelState(thing, CHANNEL_SETTEMP, new DecimalType(settemp));
-                final BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
-                thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
-                updateThingChannelState(thing, CHANNEL_ECOTEMP, new DecimalType(ecotemp));
-                final BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
-                thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
-                updateThingChannelState(thing, CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
+                updateThingChannelState(thing, CHANNEL_SETTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTsoll())));
+                updateThingChannelState(thing, CHANNEL_ECOTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getAbsenk())));
+                updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getKomfort())));
                 updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
                         new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
@@ -259,15 +257,11 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * Start the polling.
      */
     private synchronized void onUpdate() {
-        if (this.getThing() != null) {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("start polling job at intervall {}", refreshInterval);
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
-            } else {
-                logger.debug("pollingJob active");
-            }
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            logger.debug("start polling job at intervall {}", refreshInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
         } else {
-            logger.warn("bridge is null");
+            logger.debug("pollingJob active");
         }
     }
 

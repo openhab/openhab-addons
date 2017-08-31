@@ -15,11 +15,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.core.ConfigDescription;
+import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
+import org.osgi.service.component.annotations.Component;
 
 /**
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(service = { HomematicConfigDescriptionProvider.class, ConfigDescriptionProvider.class }, immediate = true)
 public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<URI, ConfigDescription>();
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:chromecast:device">
+		<parameter name="ipAddress" type="text">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>Network address of the Chromecast device.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="port" type="integer">
+			<label>Network Port</label>
+			<description>Network port of the Chromecast device.</description>
+			<advanced>true</advanced>
+			<default>8009</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

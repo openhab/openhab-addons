@@ -25,9 +25,6 @@ import com.google.gson.JsonParseException;
  */
 public class DateDeserializer implements JsonDeserializer<Date> {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Date deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
         return DateUtils.parseToDate(element.getAsString());

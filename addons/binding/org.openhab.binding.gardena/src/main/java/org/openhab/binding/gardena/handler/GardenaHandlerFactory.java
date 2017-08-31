@@ -23,17 +23,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class GardenaHandlerFactory extends BaseThingHandlerFactory {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BINDING_ID.equals(thingTypeUID.getBindingId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {

@@ -16,13 +16,16 @@ import java.util.Map;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * Provides all ChannelTypes and ChannelGroupTypes from all Homematic bridges.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(service = { HomematicChannelTypeProvider.class, ChannelTypeProvider.class }, immediate = true)
 public class HomematicChannelTypeProviderImpl implements HomematicChannelTypeProvider {
     private Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<ChannelTypeUID, ChannelType>();
     private Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<ChannelGroupTypeUID, ChannelGroupType>();

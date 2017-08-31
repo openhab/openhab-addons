@@ -34,4 +34,8 @@ public class GardenaBindingConstants {
 
     public static final String ABILITY_DEVICE_INFO = "device_info";
     public static final String ABILITY_RADIO = "radio";
+
+    public static final String SETTING_LEAKAGE_DETECTION = "leakage_detection";
+    public static final String SETTING_OPERATION_MODE = "operating_mode";
+    public static final String SETTING_TURN_ON_PRESSURE = "turn_on_pressure";
 }

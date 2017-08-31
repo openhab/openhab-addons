@@ -153,10 +153,6 @@ public class HeatingModel {
                 .append("nextchange", getNextchange()).toString();
     }
 
-    public static boolean inCelsiusRange(BigDecimal celsiusValue) {
-        return (TEMP_CELSIUS_MIN.compareTo(celsiusValue) <= 0) && (TEMP_CELSIUS_MAX.compareTo(celsiusValue) >= 0);
-    }
-
     public static BigDecimal fromCelsius(BigDecimal celsiusValue) {
         if (celsiusValue == null) {
             return BigDecimal.ZERO;

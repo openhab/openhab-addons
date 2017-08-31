@@ -47,6 +47,9 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.type.MetadataUtils.OptionsBuilder;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(immediate = true)
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
@@ -79,6 +83,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         }
     }
 
+    @Reference
     protected void setThingTypeProvider(HomematicThingTypeProvider thingTypeProvider) {
         this.thingTypeProvider = thingTypeProvider;
     }
@@ -87,6 +92,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         this.thingTypeProvider = null;
     }
 
+    @Reference
     protected void setChannelTypeProvider(HomematicChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
     }
@@ -95,6 +101,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         this.channelTypeProvider = null;
     }
 
+    @Reference
     protected void setConfigDescriptionProvider(HomematicConfigDescriptionProvider configDescriptionProvider) {
         this.configDescriptionProvider = configDescriptionProvider;
     }
@@ -107,6 +114,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * {@inheritDoc}
      */
     @Override
+    @Activate
     public void initialize() {
         MetadataUtils.initialize();
     }

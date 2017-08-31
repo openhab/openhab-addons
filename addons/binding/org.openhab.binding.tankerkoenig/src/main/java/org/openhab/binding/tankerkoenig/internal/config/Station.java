@@ -30,7 +30,7 @@ public class Station {
     private String street;
     private String place;
     private String postCode;
-    private boolean isOpen;
+    private Boolean open;
 
     public String getId() {
         return id;
@@ -104,12 +104,11 @@ public class Station {
         this.postCode = postCode;
     }
 
-    public boolean isOpen() {
-        return isOpen;
+    public Boolean isOpen() {
+        return open;
     }
 
-    public void setOpen(boolean isOpen) {
-        this.isOpen = isOpen;
+    public void setOpen(Boolean isOpen) {
+        this.open = isOpen;
     }
-
 }

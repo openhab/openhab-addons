@@ -145,6 +145,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ipp/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-jeelink" description="Jeelink Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.jeelink/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-keba" description="Keba Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
@@ -165,6 +171,12 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-loxone" description="Loxone Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.loxone/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
@@ -203,6 +215,11 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.minecraft/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-nest" description="Nest Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nest/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">

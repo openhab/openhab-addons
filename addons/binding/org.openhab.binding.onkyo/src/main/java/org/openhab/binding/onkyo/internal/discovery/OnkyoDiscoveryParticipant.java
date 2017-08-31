@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,7 @@ import com.google.common.collect.Collections2;
  * @author Paul Frank
  *
  */
+@Component(immediate = true)
 public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(OnkyoDiscoveryParticipant.class);
@@ -51,6 +54,7 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
      *
      * @param componentContext
      */
+    @Activate
     protected void activate(ComponentContext componentContext) {
         if (componentContext.getProperties() != null) {
             String autoDiscoveryPropertyValue = (String) componentContext.getProperties().get("enableAutoDiscovery");
@@ -98,7 +102,8 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             device.getType().getType());
 
                     String deviceModel = device.getDetails().getModelDetails() != null
-                            ? device.getDetails().getModelDetails().getModelName() : null;
+                            ? device.getDetails().getModelDetails().getModelName()
+                            : null;
 
                     logger.debug("Device model: {}.", deviceModel);
 

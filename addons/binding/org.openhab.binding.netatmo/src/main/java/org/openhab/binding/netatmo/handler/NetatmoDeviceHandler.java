@@ -20,11 +20,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
-import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
+import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
+import org.openhab.binding.netatmo.internal.config.NetatmoModuleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

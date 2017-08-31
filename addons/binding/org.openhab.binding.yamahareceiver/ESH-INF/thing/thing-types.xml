@@ -22,6 +22,12 @@
 				<label>Address</label>
 				<description>The address of the AVR to control.</description>
 			</parameter>
+			<parameter name="PORT" type="integer" required="false">
+				<label>Port</label>
+				<description>The API port of the AVR to control. Usually 80</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="REFRESH_IN_SEC" type="integer" required="false">
 				<label>Refresh interval</label>
 				<description>Refresh interval in seconds.</description>
@@ -64,7 +70,10 @@
 		<description>Control the zone</description>
 		<channels>
 			<channel id="power" typeId="power" />
+			<!--
+            We will provide an input channel dynamically. 
 			<channel id="input" typeId="availableinput" />
+			 -->
 			<channel id="surroundProgram" typeId="surroundProgram" />
 			<channel id="volume" typeId="volume" />
 			<channel id="volumeDB" typeId="volumeDB" />
@@ -123,6 +132,7 @@
 				<option value="Pandora">Pandora</option>
 				<option value="Napster">Napster</option>
 				<option value="iPod_USB">iPod/USB</option>
+				<option value="Spotify">Spotify</option>
 			</options>
 		</state>
 	</channel-type>
@@ -187,17 +197,18 @@
 		<category>SoundVolume</category>
 	</channel-type>
 
-
 	<channel-group-type id="playback_channels">
 		<label>Playback control</label>
 		<description>Control the playback for the current zone and allow to select preset channels</description>
 		<channels>
-			<channel id="preset" typeId="namedpreset" />
+			<channel id="preset" typeId="defaultpreset" />
 			<channel id="playback" typeId="playback" />
 			<channel id="playback_station" typeId="playback_station" />
 			<channel id="playback_artist" typeId="playback_artist" />
 			<channel id="playback_album" typeId="playback_album" />
 			<channel id="playback_song" typeId="playback_song" />
+			<channel id="playback_song_image_url" typeId="playback_song_image_url" />
+			<channel id="tuner_band" typeId="tuner_band" />
 		</channels>
 	</channel-group-type>
 
@@ -226,6 +237,13 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Track title</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_song_image_url">
+		<item-type>String</item-type>
+		<label>Track picture URL</label>
+		<description>Track picture URL</description>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -276,6 +294,18 @@
 				<option value="38">Item_38</option>
 				<option value="39">Item_39</option>
 				<option value="40">Item_40</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tuner_band">
+		<item-type>String</item-type>
+		<label>Tuner Band</label>
+		<description>Select a DAB Tuner band</description>
+		<state pattern="%s">
+			<options>
+				<option value="FM">FM</option>
+				<option value="DAB">DAB+</option>
 			</options>
 		</state>
 	</channel-type>

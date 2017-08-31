@@ -29,9 +29,10 @@ Once you'll get needed informations from the Netatmo API, you'll be able to conf
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readThermostat=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false] {
     Thing NAMain    inside  [ equipmentId="aa:aa:aa:aa:aa:aa", [refreshInterval=60000] ]
     Thing NAModule1 outside  [ equipmentId="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NHC       homecoach  [ equipmentId="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
     Thing NAPlug    plugtherm  [ equipmentId="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
     Thing NATherm1  thermostat [ equipmentId="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     ...
@@ -92,6 +93,10 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 * Location
 * TimeStamp
 * LastStatusStore
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
  
 ### Weather Station Outdoor module
 
@@ -115,6 +120,10 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 * DewpointDepression
 * LastMessage
 * LowBattery
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
 
 ### Weather Station Additional Indoor module
 
@@ -126,9 +135,10 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 **Supported types for the additional indoor module:**
 
-* Co2
 * Temperature
+* TemperatureTrend
 * Humidity
+* Co2
 * RfStatus
 * BatteryVP
 * TimeStamp
@@ -138,6 +148,10 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 * DewpointDepression
 * LastMessage
 * LowBattery
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
 
 ### Rain
 
@@ -176,6 +190,34 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * RfStatus
 * BatteryVP
 
+### Healthy Home Coach Device
+
+Example item for the **Healthy Home Coach**:
+
+```
+String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:NHC:home:livingroom:HealthIndex" }
+```
+
+**Supported types for the healthy home coach device:**
+
+* HealthIndex
+* Temperature
+* TemperatureTrend
+* Humidity
+* Co2
+* Pressure
+* PressureTrend
+* AbsolutePressure
+* Noise
+* WifiStatus
+* Location
+* TimeStamp
+* LastStatusStore
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
+
 ### Thermostat Relay Device
 
 **Supported types for the thermostat relay device:**
@@ -183,6 +225,9 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * LastStatusStore
 * WifiStatus
 * Location
+* ConnectedBoiler
+* LastPlugSeen
+* LastBilan
 
 ### Thermostat Module
 

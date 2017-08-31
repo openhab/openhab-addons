@@ -51,7 +51,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         THERMOSTAT3(66),
         THERMOSTAT4(67),
         RADIATOR1(72),
-        BBQ1(78),
+        BBQ(78),
         TEMPERATURE_RAIN(79),
         TEMPERATURE(80),
         HUMIDITY(81),

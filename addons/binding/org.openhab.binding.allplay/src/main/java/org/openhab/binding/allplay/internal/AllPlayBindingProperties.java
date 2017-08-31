@@ -10,6 +10,9 @@ package org.openhab.binding.allplay.internal;
 
 import java.util.Dictionary;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * AllPlay binding properties.
  *
@@ -17,17 +20,23 @@ import java.util.Dictionary;
  */
 public class AllPlayBindingProperties {
 
-    private final Integer rewindSkipTimeInSec;
-    private final Integer fastForwardSkipTimeInSec;
+    private final Logger logger = LoggerFactory.getLogger(AllPlayBindingProperties.class);
+
+    private final int rewindSkipTimeInSec;
+    private final int fastForwardSkipTimeInSec;
     private final String callbackUrl;
 
     private static final String REWIND_SKIP_TIME_PROPERTY = "rewindSkipTimeInSec";
+    private static final int REWIND_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String FAST_FORWARD_SKIP_TIME_PROPERTY = "fastForwardSkipTimeInSec";
+    private static final int FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String CALLBACK_URL = "callbackUrl";
 
     public AllPlayBindingProperties(Dictionary<String, Object> properties) {
-        rewindSkipTimeInSec = (Integer) properties.get(REWIND_SKIP_TIME_PROPERTY);
-        fastForwardSkipTimeInSec = (Integer) properties.get(FAST_FORWARD_SKIP_TIME_PROPERTY);
+
+        rewindSkipTimeInSec = getIntegerProperty(properties, REWIND_SKIP_TIME_PROPERTY, REWIND_SKIP_TIME_DEFAULT_VALUE);
+        fastForwardSkipTimeInSec = getIntegerProperty(properties, FAST_FORWARD_SKIP_TIME_PROPERTY,
+                FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE);
         callbackUrl = (String) properties.get(CALLBACK_URL);
     }
 
@@ -41,5 +50,21 @@ public class AllPlayBindingProperties {
 
     public String getCallbackUrl() {
         return callbackUrl;
+    }
+
+    private int getIntegerProperty(Dictionary<String, Object> properties, String propertyKey, int defaultValue) {
+        Object configValue = properties.get(propertyKey);
+        int value = defaultValue;
+        if (configValue instanceof String) {
+            try {
+                value = Integer.parseInt((String) configValue);
+            } catch (NumberFormatException e) {
+                logger.warn("Unable to convert value {} for config property {} to integer. Using default value.",
+                        configValue, propertyKey);
+            }
+        } else if (configValue instanceof Integer) {
+            value = (int) configValue;
+        }
+        return value;
     }
 }

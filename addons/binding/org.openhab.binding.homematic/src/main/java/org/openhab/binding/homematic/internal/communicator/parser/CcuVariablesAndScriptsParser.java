@@ -45,9 +45,15 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                     dp.setName(entry.name);
                     dp.setInfo(entry.name);
                     dp.setDescription(entry.description);
+                    dp.setType(HmValueType.parse(entry.valueType));
                     dp.setValue(convertToType(entry.value));
-                    dp.setMinValue((Number) convertToType(entry.minValue));
-                    dp.setMaxValue((Number) convertToType(entry.maxValue));
+                    if (dp.isIntegerType()) {
+                        dp.setMinValue(toInteger(entry.minValue));
+                        dp.setMaxValue(toInteger(entry.maxValue));
+                    } else {
+                        dp.setMinValue(toDouble(entry.minValue));
+                        dp.setMaxValue(toDouble(entry.maxValue));
+                    }
                     dp.setReadOnly(entry.readOnly);
                     dp.setUnit(entry.unit);
 
@@ -59,7 +65,6 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                         dp.setMaxValue(dp.getOptions().length - 1);
                     }
 
-                    dp.setType(HmValueType.parse(entry.valueType));
                     dp.setParamsetType(HmParamsetType.VALUES);
                     channel.addDatapoint(dp);
                 }

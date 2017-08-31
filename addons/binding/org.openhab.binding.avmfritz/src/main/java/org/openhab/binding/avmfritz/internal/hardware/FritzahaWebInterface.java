@@ -8,12 +8,9 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
-import static org.openhab.binding.avmfritz.BindingConstants.*;
-
-import java.math.BigDecimal;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +24,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.handler.IFritzHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -39,11 +35,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles requests to a FRITZ!OS web interface for interfacing with
  * AVM home automation devices. It manages authentication and wraps commands.
- * 
+ *
  * @author Robert Bausdorf, Christian Brauers
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- * 
+ *
  */
 public class FritzahaWebInterface {
 
@@ -140,7 +136,8 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
-                                    ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
+                                    ? ("username=" + this.config.getUser() + "&")
+                                    : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
             logger.debug("Failed to get loginXML {}", e);
@@ -254,7 +251,7 @@ public class FritzahaWebInterface {
     /**
      * Constructs a URL from the stored information, a specified path and a
      * specified argument string
-     * 
+     *
      * @param path Path to include in URL
      * @param args String of arguments, in standard HTTP format
      *            (arg1=value1&arg2=value2&...)

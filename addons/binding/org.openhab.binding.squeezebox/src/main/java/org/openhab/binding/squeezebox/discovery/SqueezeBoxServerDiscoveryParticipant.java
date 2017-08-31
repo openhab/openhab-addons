@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxNotAuthorizedException;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Add support for LMS authentication
  *
  */
+@Component(immediate = true)
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     /**
