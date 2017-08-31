@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.samsungtv.discovery;
+package org.openhab.binding.samsungtv.internal.discovery;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
-import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.HOST_NAME;
+import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
 import java.util.Collections;
 import java.util.HashMap;
