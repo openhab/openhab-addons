@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
-import org.openhab.binding.tellstick.handler.core.TelldusCoreBridgeHandler;
-import org.openhab.binding.tellstick.handler.live.TelldusLiveBridgeHandler;
+import org.openhab.binding.tellstick.internal.core.TelldusCoreBridgeHandler;
 import org.openhab.binding.tellstick.internal.discovery.TellstickDiscoveryService;
+import org.openhab.binding.tellstick.internal.live.TelldusLiveBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

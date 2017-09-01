@@ -6,7 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler.live.xml;
+package org.openhab.binding.tellstick.internal.live.xml;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,16 +19,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Jarle Hjortland
  *
  */
-@XmlRootElement(name = "device")
-public class TelldusLiveResponse {
-    @XmlElement
-    public String status;
-    @XmlElement
-    public String error;
+@XmlRootElement(name = "devices")
+public class TellstickNetDevices {
 
-    @Override
-    public String toString() {
-        return "TelldusLiveResponse [status=" + status + ", error=" + error + "]";
+    public TellstickNetDevices() {
+        super();
     }
 
+    List<TellstickNetDevice> devices;
+
+    @XmlElement(name = "device")
+    public List<TellstickNetDevice> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<TellstickNetDevice> devices) {
+        this.devices = devices;
+    }
 }

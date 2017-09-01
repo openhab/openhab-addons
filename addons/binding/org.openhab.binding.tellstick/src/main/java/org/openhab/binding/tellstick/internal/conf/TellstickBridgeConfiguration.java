@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.conf;
+package org.openhab.binding.tellstick.internal.conf;
 
 /**
  * Configuration class for {@link TellstickBridge} bridge used to connect to the
