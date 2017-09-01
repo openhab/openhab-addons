@@ -15,7 +15,7 @@ Tested mowers
 | Mower                   | Robonect module  | Robonect firmware version |
 |-------------------------|------------------|---------------------------|
 | Husqvarna Automower 105 | Robonect Hx      | 0.9c, 0.9e                |
-| Husqvarna Automower 315 | Robonect Hx      | 0.9e                      |
+| Husqvarna Automower 315 | Robonect Hx      | 0.9e, 1.0 preview         |
 
 ## Discovery
 
@@ -33,7 +33,8 @@ following configuration settings are supported for the `mower` thing.
 | user          | no        | the username if authentication is enabled in the firmware.         |
 | password      | no        | the password if authenticaiton is enabled in the firmware.         |
 
-So an example things configuration might look like
+
+An example things configuration might look like
 ```
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval="5", user="gardener", password = "cutter"]
 ```
@@ -114,26 +115,5 @@ Map transformation for mower status (`robonect_status.map`)
 8=LOST_SIGNAL
 16=OFF
 17=SLEEPING
-98=OFFLINE
 99=UNKNOWN
 ```
-
-
-Sitemaps `.sitemap`
-
-```
-
-```
-
-Rules `.rules`
-
-```
-
-```
-
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
