@@ -96,27 +96,29 @@ public class NestAccessToken {
 
     private void refreshAccessToken() throws InterruptedException, TimeoutException, ExecutionException {
         try {
-            StringBuilder stuff = new StringBuilder().append("client_id=").append(config.clientId)
-                    .append("&client_secret=").append(config.clientSecret).append("&code=").append(config.pincode)
-                    .append("&grant_type=authorization_code");
-            logger.info("Result {}", stuff.toString());
-            Request request = httpClient.POST(stuff.toString())
+            StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
+                    .append("?client_id=").append(config.clientId).append("&client_secret=").append(config.clientSecret)
+                    .append("&code=").append(config.pincode).append("&grant_type=authorization_code");
+            logger.debug("Result {}", urlBuilder.toString());
+            Request request = httpClient.POST(urlBuilder.toString())
                     .header("Content-Type", "application/x-www-form-urlencoded").timeout(10, TimeUnit.SECONDS);
             ContentResponse response = request.send();
-            logger.info("Result {}", response.getContentAsString());
+            logger.debug("Result {}", response.getContentAsString());
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
             AccessTokenData data = gson.fromJson(response.getContentAsString(), AccessTokenData.class);
-            accessToken = data.getAccessToken();
-            logger.info("Access token {}", accessToken);
-            logger.info("Expiration Time {}", data.getExpiresIn());
-            // Write the token to a file so we can reload it later.
-            File file = new File(this.folderName, ACCESS_TOKEN_FILE_NAME);
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-                writer.write(accessToken);
-                writer.close();
-            } catch (IOException e) {
-                logger.error("Error reading access token file {}", file, e);
+            if (data.getAccessToken() != null) {
+                accessToken = data.getAccessToken();
+                logger.debug("Access token {}", accessToken);
+                logger.debug("Expiration Time {}", data.getExpiresIn());
+                // Write the token to a file so we can reload it later.
+                File file = new File(this.folderName, ACCESS_TOKEN_FILE_NAME);
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
+                    writer.write(accessToken);
+                    writer.close();
+                } catch (IOException e) {
+                    logger.error("Error reading access token file {}", file, e);
+                }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
             logger.error("Unable to get the nest access token ", e1);
