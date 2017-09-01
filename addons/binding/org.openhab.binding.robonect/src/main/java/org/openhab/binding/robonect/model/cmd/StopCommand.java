@@ -9,9 +9,18 @@
 package org.openhab.binding.robonect.model.cmd;
 
 /**
+ * Stops the mower if it was started.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class StopCommand implements Command {
+
+    /**
+     * {@inheritDoc}
+     * @param baseURL - will be passed by the {@link org.openhab.binding.robonect.RobonectClient} in the form 
+     *                http://xxx.xxx.xxx/json?
+     * @return
+     */
     @Override
     public String toCommandURL(String baseURL) {
         return baseURL + "?cmd=stop";

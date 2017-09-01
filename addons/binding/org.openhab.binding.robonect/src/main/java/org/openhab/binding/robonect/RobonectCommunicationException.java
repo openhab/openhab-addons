@@ -9,6 +9,9 @@
 package org.openhab.binding.robonect;
 
 /**
+ * This exception is thrown if there was an error in communication with the mower. As a mower is a moving object, this
+ * error is kind of expected and the error situation is handled in the handler.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectCommunicationException extends RuntimeException {

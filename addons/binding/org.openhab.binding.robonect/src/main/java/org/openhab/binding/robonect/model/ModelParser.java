@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * This class is responsible for parsing JSNON formatted answers from the Robonect module using the Gson library.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class ModelParser {
@@ -19,6 +21,10 @@ public class ModelParser {
     
     private final Gson gson;
 
+    /**
+     * Creates a parser with containing a preconfigured Gson object capable of parsing the JSON answers from the 
+     * Robonect module.
+     */
     public ModelParser() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(MowerStatus.class, new MowerStatusDeserializer());
@@ -27,12 +33,15 @@ public class ModelParser {
         this.gson = gsonBuilder.create();         
     }
 
+    /**
+     * Parses a jsonString to a Java Object of the specified type.
+     * @param jsonString - the json string to parse
+     * @param type - the class of the type of the expected object to be returned.
+     * @param <T> - the type of expected return value.
+     * @return
+     */
     public <T>T parse(String jsonString,Class<T> type){
         return gson.fromJson(jsonString, type);
     }
     
-    public String exceptionToJSON(Exception e, int errorCode){
-        RobonectAnswer answer = new RobonectAnswer().withSuccessful(false).withErrorCode(new Integer(errorCode)).withErrorMessage(e.getMessage());
-        return gson.toJson(answer);
-    }
 }

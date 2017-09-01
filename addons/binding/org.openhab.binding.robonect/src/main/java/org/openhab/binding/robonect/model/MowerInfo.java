@@ -7,6 +7,9 @@
 package org.openhab.binding.robonect.model;
 
 /**
+ * The mower information holds the main information from the majority of the available channels. This class is a POJO
+ * to deserialize the JSON response from the module.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class MowerInfo extends RobonectAnswer {
@@ -18,20 +21,46 @@ public class MowerInfo extends RobonectAnswer {
     private Health health;
     private ErrorEntry error;
 
+    /**
+     * @return - the name of the mower
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return - some status information of the mower. See {@link Status} for details.
+     */
     public Status getStatus() {
         return status;
     }
 
+    /**
+     * @return - the current timer status information.
+     */
     public Timer getTimer() {
         return timer;
     }
 
+    /**
+     * @return - the WLAN signal status.
+     */
     public Wlan getWlan() {
         return wlan;
+    }
+
+    /**
+     * @return - if the mower is in error status {@link #getStatus()} the error information is returned, null otherwise.
+     */
+    public ErrorEntry getError() {
+        return error;
+    }
+
+    /**
+     * @return - the health status information.
+     */
+    public Health getHealth() {
+        return health;
     }
 
     public void setName(String name) {
@@ -50,16 +79,8 @@ public class MowerInfo extends RobonectAnswer {
         this.wlan = wlan;
     }
 
-    public Health getHealth() {
-        return health;
-    }
-
     public void setHealth(Health health) {
         this.health = health;
-    }
-
-    public ErrorEntry getError() {
-        return error;
     }
 
     public void setError(ErrorEntry error) {

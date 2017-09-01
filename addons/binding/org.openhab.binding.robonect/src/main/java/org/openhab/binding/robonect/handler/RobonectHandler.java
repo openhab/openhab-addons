@@ -74,6 +74,8 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
  * sent to one of the channels.
+ * 
+ * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
  */
@@ -89,6 +91,9 @@ public class RobonectHandler extends BaseThingHandler {
     private HttpClient httpClient;
     private RobonectClient robonectClient;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -372,6 +377,9 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
         try {
@@ -421,6 +429,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose() {
         if(pollingJob != null){
@@ -435,26 +446,10 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    protected ScheduledFuture<?> getPollingJob() {
-        return pollingJob;
-    }
-
-    protected void setPollingJob(ScheduledFuture<?> pollingJob) {
-        this.pollingJob = pollingJob;
-    }
-
-    protected HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    protected void setHttpClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
-    protected RobonectClient getRobonectClient() {
-        return robonectClient;
-    }
-
+    /**
+     * method to inject the robonect client to be used in test cases to allow mocking.
+     * @param robonectClient
+     */
     protected void setRobonectClient(RobonectClient robonectClient) {
         this.robonectClient = robonectClient;
     }

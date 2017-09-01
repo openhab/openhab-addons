@@ -16,9 +16,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
+ * Gson deserializer for deserializing timer mode values to the corresponding enum.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class TimerModeDeserializer implements JsonDeserializer<Timer.TimerMode> {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Timer.TimerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

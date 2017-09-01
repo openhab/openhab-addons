@@ -16,6 +16,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
+ * This is a Gson deserializer to deserialize numeric mower status codes into enum values.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class MowerStatusDeserializer implements JsonDeserializer<MowerStatus>{

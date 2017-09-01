@@ -9,6 +9,10 @@
 package org.openhab.binding.robonect.model.cmd;
 
 /**
+ * Queries the mowers status. The status holds a lot of status information. 
+ * See {@link org.openhab.binding.robonect.model.MowerStatus}
+ * or the documentation at: http://www.robonect.de/viewtopic.php?f=11&t=38
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class StatusCommand implements Command {

@@ -9,6 +9,9 @@
 package org.openhab.binding.robonect.model.cmd;
 
 /**
+ * Queries version information about the mower and the module. See {@link org.openhab.binding.robonect.model.VersionInfo} 
+ * for more information. 
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class VersionCommand implements Command {

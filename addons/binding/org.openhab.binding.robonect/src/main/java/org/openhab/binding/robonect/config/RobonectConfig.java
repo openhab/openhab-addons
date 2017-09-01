@@ -9,6 +9,9 @@
 package org.openhab.binding.robonect.config;
 
 /**
+ * 
+ * This class acts simply a structure for holding the thing configuration.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectConfig {

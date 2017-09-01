@@ -11,6 +11,8 @@ package org.openhab.binding.robonect;
 import org.eclipse.jetty.util.StringUtil;
 
 /**
+ * The {@link RobonectEndpoint} is holds the information required to a Robonect endpoint.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectEndpoint {

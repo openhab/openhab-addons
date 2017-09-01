@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The command allows to set or retrieve the mower name.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class NameCommand implements Command {
@@ -24,11 +26,23 @@ public class NameCommand implements Command {
 
     private String newName;
 
+    /**
+     * sets the mower name.
+     * @param newName - the mower name.
+     * @return - the command instance.
+     */
     public NameCommand withNewName(String newName) {
         this.newName = newName != null ? newName : "";
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @param baseURL - will be passed by the {@link org.openhab.binding.robonect.RobonectClient} in the form 
+     *                http://xxx.xxx.xxx/json?
+     * @return
+     */
     @Override
     public String toCommandURL(String baseURL) {
         if (newName == null) {

@@ -11,12 +11,17 @@ package org.openhab.binding.robonect.model;
 import java.util.List;
 
 /**
+ * Simple POJO for deserialize the list of errors from the errors command.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class ErrorList extends RobonectAnswer {
     
     private List<ErrorEntry> errors;
 
+    /**
+     * @return - the list of errors.
+     */
     public List<ErrorEntry> getErrors() {
         return errors;
     }

@@ -11,6 +11,8 @@ package org.openhab.binding.robonect.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * POJO for deserialize an error entry from a JSON response using GSON.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class ErrorEntry  {
@@ -27,22 +29,37 @@ public class ErrorEntry  {
     
     private String unix;
 
+    /**
+     * @return - the date the error happend in the format "dd.MM.yy"
+     */
     public String getDate() {
         return date;
     }
 
+    /**
+     * @return - the error code. Some codes are documented here: http://www.robonect.de/viewtopic.php?f=11&t=110
+     */
     public Integer getErrorCode() {
         return errorCode;
     }
 
+    /**
+     * @return - The localized error message from the mower. 
+     */
     public String getErrorMessage() {
         return errorMessage;
     }
 
+    /**
+     * @return - The time the error happened in the format "HH:mm:ss"
+     */
     public String getTime() {
         return time;
     }
 
+    /**
+     * @return - The unix time when the error happened.
+     */
     public String getUnix() {
         return unix;
     }

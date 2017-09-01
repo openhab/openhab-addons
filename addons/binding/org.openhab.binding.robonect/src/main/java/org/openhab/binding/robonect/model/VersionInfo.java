@@ -9,10 +9,15 @@
 package org.openhab.binding.robonect.model;
 
 /**
+ * Answer object for holding version information.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class VersionInfo extends RobonectAnswer {
 
+    /**
+     * encapsulates the robonect version information.
+     */
     public class RobonectVersion {
         private String serial;
 
@@ -22,18 +27,30 @@ public class VersionInfo extends RobonectAnswer {
 
         private String comment;
 
+        /**
+         * @return - The serial number of the robonect module.
+         */
         public String getSerial() {
             return serial;
         }
 
+        /**
+         * @return - The firmware version running on the robonect module.
+         */
         public String getVersion() {
             return version;
         }
 
+        /**
+         * @return - The date and time the firmware was compiled.
+         */
         public String getCompiled() {
             return compiled;
         }
 
+        /**
+         * @return - The comment added to this version.
+         */
         public String getComment() {
             return comment;
         }
@@ -57,6 +74,9 @@ public class VersionInfo extends RobonectAnswer {
     
     private RobonectVersion robonect;
 
+    /**
+     * @return - the object encapsulating the version information. See {@link RobonectVersion}
+     */
     public RobonectVersion getRobonect() {
         return robonect;
     }

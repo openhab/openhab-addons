@@ -9,12 +9,17 @@
 package org.openhab.binding.robonect.model;
 
 /**
+ * Response holding the name of the mower used in the name command.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class Name extends RobonectAnswer {
     
     private String name;
 
+    /**
+     * @return - The mower name.
+     */
     public String getName() {
         return name;
     }

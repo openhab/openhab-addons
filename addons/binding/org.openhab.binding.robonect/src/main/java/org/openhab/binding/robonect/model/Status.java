@@ -9,6 +9,8 @@
 package org.openhab.binding.robonect.model;
 
 /**
+ * Object holding information from the status section of the mowers status response.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class Status {
@@ -20,26 +22,44 @@ public class Status {
     private MowerMode mode;
     private boolean stopped;
 
+    /**
+     * @return - the battery level in percent. (0-100)
+     */
     public int getBattery() {
         return battery;
     }
 
+    /**
+     * @return - The duration in seconds the mower is already in the current {@link #status}.
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * @return - The hours the mower was in use so far.
+     */
     public int getHours() {
         return hours;
     }
 
+    /**
+     * @return - The status the mower is currently in. see {@link MowerStatus} for details.
+     */
     public MowerStatus getStatus() {
         return status;
     }
 
+    /**
+     * @return - true if the mower is currentyl stopped, false otherwise.
+     */
     public boolean isStopped() {
         return stopped;
     }
 
+    /**
+     * @return - The mode the mower is currently in. See {@link MowerMode} for details.
+     */
     public MowerMode getMode() {
         return mode;
     }

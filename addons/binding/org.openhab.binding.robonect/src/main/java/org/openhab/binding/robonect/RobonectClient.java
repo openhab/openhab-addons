@@ -41,6 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The {@link RobonectClient} class is responsible to communicate with the robonect module via it's HTTP interface.
+ * 
+ * The API of the module is documented here: http://robonect.de/viewtopic.php?f=10&t=37
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectClient {
@@ -51,6 +55,9 @@ public class RobonectClient {
 
     private final ModelParser parser;
 
+    /**
+     * The {@link JobSettings} class holds the values required for starting a job.
+     */
     public class JobSettings {
         private static final String TIME_REGEX = "^[012]\\d:\\d\\d$";
         private ModeCommand.RemoteStart remoteStart;
@@ -58,6 +65,10 @@ public class RobonectClient {
         private String start;
         private String end;
 
+        /**
+         * returns the 'remote start' setting for the job. See {@link ModeCommand.RemoteStart} for details.
+         * @return - the remote start settings for the job.
+         */
         public ModeCommand.RemoteStart getRemoteStart() {
             if (remoteStart != null) {
                 return remoteStart;
@@ -67,22 +78,42 @@ public class RobonectClient {
             }
         }
 
+        /**
+         * Sets the desired 'remote start' settings for the job.
+         * @param remoteStart - The 'remote start' settings. See {@link ModeCommand.RemoteStart} for the allowed modes.
+         */
         public void setRemoteStart(ModeCommand.RemoteStart remoteStart) {
             this.remoteStart = remoteStart;
         }
 
+        /**
+         * Returns the mode the mower should be set to after the job is complete.
+         * @return - the mode after compleness of the job.
+         */
         public ModeCommand.Mode getAfter() {
             return after;
         }
 
+        /**
+         * Sets the mode after the mower is complete with the job.
+         * @param after - the desired mode after job completeness.
+         */
         public void setAfter(ModeCommand.Mode after) {
             this.after = after;
         }
 
+        /**
+         * Returns the start time of the job in the format HH:MM (H = Hour, M = Minute).
+         * @return - the start time of the job.
+         */
         public String getStart() {
             return start;
         }
 
+        /**
+         * Sets the start time of the job. This needs to be specified in the format HH:MM (H = Hour, M = Minute).
+         * @param start - the start time of the job.
+         */
         public void setStart(String start) {
             if (start != null && start.matches(TIME_REGEX)) {
                 this.start = start;
@@ -91,10 +122,20 @@ public class RobonectClient {
             }
         }
 
+        /**
+         * Returns the end time of the job in the format HH:MM (H = Hour, M = Minute).
+         *
+         * @return - the end time of the job.
+         */
         public String getEnd() {
             return end;
         }
 
+        /**
+         * Sets the end time of the job. This needs to be specified in the format HH:MM (H = Hour, M = Minute).
+         *
+         * @param end - the end time of the job.
+         */
         public void setEnd(String end) {
             if (end != null && end.matches(TIME_REGEX)) {
                 this.end = end;
@@ -132,6 +173,12 @@ public class RobonectClient {
 
     private final String baseUrl;
 
+    /**
+     * Creates an instance of RobonectClient which allows to communicate with the specified endpoint via the passed
+     * httpClient instance.
+     * @param httpClient - The HttpClient to use for the communication.
+     * @param endpoint - The endpoint information for connecting and issuing commands.
+     */
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
         this.httpClient = httpClient;
         this.baseUrl = "http://" + endpoint.getIpAddress() + "/json";
@@ -149,31 +196,65 @@ public class RobonectClient {
                 .encode(endpoint.getUser() + ":" + endpoint.getPassword(), StandardCharsets.ISO_8859_1)));
     }
 
+    /**
+     * returns general mower information. See {@MowerInfo} for the detailed information.
+     * @return - the general mower information including a general success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public MowerInfo getMowerInfo() throws InterruptedException {
         String responseString = sendCommand(new StatusCommand());
         return parser.parse(responseString, MowerInfo.class);
     }
 
+    /**
+     * sends a start command to the mower.
+     * @return - a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public RobonectAnswer start() throws InterruptedException {
         String responseString = sendCommand(new StartCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
+    /**
+     * sends a stop command to the mower.
+     *
+     * @return - a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public RobonectAnswer stop() throws InterruptedException {
         String responseString = sendCommand(new StopCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
+    /**
+     * resets the errors on the mower.
+     * @return - a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public RobonectAnswer resetErrors() throws InterruptedException {
         String responseString = sendCommand(new ErrorCommand().withReset(true));
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
+    /**
+     * returns the list of all errors happened since last reset.
+     * @return - the list of errors.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public ErrorList errorList() throws InterruptedException {
         String responseString = sendCommand(new ErrorCommand());
         return parser.parse(responseString, ErrorList.class);
     }
 
+    /**
+     * Sets the mode of the mower. See {@link ModeCommand.Mode} for details about the available modes. Not allowed is mode
+     * {@link ModeCommand.Mode#JOB}.
+     * 
+     * @param mode - the desired mower mode.
+     * @return - a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public RobonectAnswer setMode(ModeCommand.Mode mode) throws InterruptedException {
         String responseString = sendCommand(createCommand(mode));
         return parser.parse(responseString, RobonectAnswer.class);
@@ -188,11 +269,22 @@ public class RobonectClient {
         }
     }
 
+    /**
+     * Returns the name of the mower.
+     * @return - The name including a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public Name getName() throws InterruptedException {
         String responseString = sendCommand(new NameCommand());
         return parser.parse(responseString, Name.class);
     }
 
+    /**
+     * Allows to set the name of the mower.
+     * @param name - the desired name.
+     * @return - The resulting name including a general answer with success status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public Name setName(String name) throws InterruptedException {
         String responseString = sendCommand(new NameCommand().withNewName(name));
         return parser.parse(responseString, Name.class);
@@ -225,11 +317,20 @@ public class RobonectClient {
         }
     }
 
+    /**
+     * Retrieve the version information of the mower and module. See {@link VersionInfo} for details.
+     * @return - the Version Information including the successful status.
+     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
+     */
     public VersionInfo getVersionInfo() throws InterruptedException {
         String versionResponse = sendCommand(new VersionCommand());
         return parser.parse(versionResponse, VersionInfo.class);
     }
 
+    /**
+     * The currently set job settings which will be used when a job is started.
+     * @return - the currently set job settings.
+     */
     public JobSettings getJobSettings() {
         return jobSettings;
     }

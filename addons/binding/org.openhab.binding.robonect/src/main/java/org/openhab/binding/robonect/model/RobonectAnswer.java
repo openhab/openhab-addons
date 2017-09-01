@@ -11,6 +11,10 @@ package org.openhab.binding.robonect.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The super class of all answers from the robonect module. All answersd derive from this class. An answer is either
+ * successful where all the information of the subclass will be filled, or it is not successful, and this class will
+ * hold the error information.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectAnswer {
@@ -22,43 +26,26 @@ public class RobonectAnswer {
     
     @SerializedName("error_message")
     private String errorMessage;
-    
-    public RobonectAnswer withSuccessful(boolean successful){
-        this.successful = successful;
-        return this;
-    }
-    
-    public RobonectAnswer withErrorCode(Integer errorCode){
-        this.errorCode = errorCode;
-        return this;
-    }
-    
-    public RobonectAnswer withErrorMessage(String errorMessage){
-        this.errorMessage = errorMessage;
-        return this;
-    }
-    
+
+    /**
+     * @return - true if the request was successful, false otherwise.
+     */
     public boolean isSuccessful() {
         return successful;
     }
 
+    /**
+     * @return - in case of a not successful request, the error code, null otherwise.
+     */
     public Integer getErrorCode() {
         return errorCode;
     }
 
+    /**
+     * @return - in case of a not successful request, the error message, null otherwise.
+     */
     public String getErrorMessage() {
         return errorMessage;
     }
-
-    public void setSuccessful(boolean successful) {
-        this.successful = successful;
-    }
-
-    public void setErrorCode(Integer errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+    
 }

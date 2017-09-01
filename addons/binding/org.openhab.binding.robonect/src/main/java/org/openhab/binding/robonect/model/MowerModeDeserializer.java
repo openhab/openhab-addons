@@ -16,9 +16,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
+ * This is a Gson desirializer capable of translating numeric modes into enum values.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class MowerModeDeserializer implements JsonDeserializer<MowerMode> {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MowerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

@@ -9,12 +9,17 @@
 package org.openhab.binding.robonect.model;
 
 /**
+ * Object holding the wlan signal strength.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class Wlan {
 
     private int signal;
 
+    /**
+     * @return - The signal strength in dB.
+     */
     public int getSignal() {
         return signal;
     }
