@@ -222,14 +222,20 @@ public class KodiClientSocket {
 
             sendMessage(message);
             if (commandLatch.await(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                logger.debug("callMethod returns {}", commandResponse.toString());
-                return commandResponse.get("result");
+                logger.debug("callMethod returns {}", commandResponse);
+                if (commandResponse.has("result")) {
+                    return commandResponse.get("result");
+                } else {
+                    JsonElement error = commandResponse.get("error");
+                    logger.debug("Error received from server: {}", error);
+                    return null;
+                }
             } else {
-                logger.error("Timeout during callMethod({}, {})", methodName, params != null ? params.toString() : "");
+                logger.debug("Timeout during callMethod({}, {})", methodName, params);
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Error during callMethod", e);
+            logger.debug("Error during callMethod({}): {}", methodName, e.getMessage(), e);
             return null;
         }
     }
