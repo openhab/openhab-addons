@@ -35,6 +35,14 @@ public class RobonectAnswer {
     }
 
     /**
+     * allows to set the successful status for testing.
+     * @param successful
+     */
+    public void setSuccessful(boolean successful){
+        this.successful = successful;
+    }
+    
+    /**
      * @return - in case of a not successful request, the error code, null otherwise.
      */
     public Integer getErrorCode() {

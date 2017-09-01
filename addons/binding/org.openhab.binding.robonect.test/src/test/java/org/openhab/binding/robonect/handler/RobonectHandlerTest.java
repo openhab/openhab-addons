@@ -30,6 +30,7 @@ import org.openhab.binding.robonect.RobonectBindingConstants;
 import org.openhab.binding.robonect.RobonectClient;
 import org.openhab.binding.robonect.handler.RobonectHandler;
 import org.openhab.binding.robonect.model.ErrorEntry;
+import org.openhab.binding.robonect.model.ErrorList;
 import org.openhab.binding.robonect.model.MowerInfo;
 import org.openhab.binding.robonect.model.MowerMode;
 import org.openhab.binding.robonect.model.MowerStatus;
@@ -125,9 +126,12 @@ public class RobonectHandlerTest {
         error.setErrorMessage("Dummy Message");
         mowerInfo.getStatus().setStatus(MowerStatus.ERROR_STATUS);
         mowerInfo.setError(error);
+        ErrorList errorList = new ErrorList();
+        errorList.setSuccessful(true);
 
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(robonectClientMock.errorList()).thenReturn(errorList);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
@@ -241,9 +245,12 @@ public class RobonectHandlerTest {
 
         // given
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
-
+        ErrorList errorList = new ErrorList();
+        errorList.setSuccessful(true);
+        
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(robonectClientMock.errorList()).thenReturn(errorList);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
