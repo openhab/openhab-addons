@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -286,9 +285,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
                 id.replaceAll("[^A-Za-z0-9\\-_]", ""));
-        thingDiscovered(DiscoveryResultBuilder.create(uid)
-                .withProperties(properties)
-                .withLabel("HarmonyHub " + friendlyName)
-                .build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel("HarmonyHub " + friendlyName).build());
     }
 }

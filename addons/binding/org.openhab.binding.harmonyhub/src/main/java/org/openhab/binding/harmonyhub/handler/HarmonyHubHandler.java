@@ -91,6 +91,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private int heartBeatInterval;
 
+    private Activity currentActivity;
+
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
         this.factory = factory;
@@ -103,10 +105,15 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         } else if (command instanceof StringType) {
             try {
                 try {
-                    int actId = Integer.parseInt(command.toString());
-                    client.startActivity(actId);
+                    Integer actId = Integer.parseInt(command.toString());
+                    if (currentActivity == null || !actId.equals(currentActivity.getId())) {
+                        client.startActivity(actId);
+                    }
                 } catch (NumberFormatException ignored) {
-                    client.startActivityByName(command.toString());
+                    String activity = command.toString();
+                    if (currentActivity == null || !activity.equals(currentActivity.getLabel())) {
+                        client.startActivityByName(activity);
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Could not start activity", e);
@@ -258,6 +265,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private void updateState(Activity activity) {
         logger.debug("Updating current activity to {}", activity.getLabel());
+        currentActivity = activity;
         updateState(new ChannelUID(getThing().getUID(), HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY),
                 new StringType(activity.getLabel()));
     }
