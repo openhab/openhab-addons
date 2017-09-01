@@ -227,11 +227,11 @@ public class KodiClientSocket {
                     return commandResponse.get("result");
                 } else {
                     JsonElement error = commandResponse.get("error");
-                    logger.debug("Error received from server: {}", error != null ? error : "");
+                    logger.debug("Error received from server: {}", error);
                     return null;
                 }
             } else {
-                logger.debug("Timeout during callMethod({}, {})", methodName, params != null ? params : "");
+                logger.debug("Timeout during callMethod({}, {})", methodName, params);
                 return null;
             }
         } catch (Exception e) {
