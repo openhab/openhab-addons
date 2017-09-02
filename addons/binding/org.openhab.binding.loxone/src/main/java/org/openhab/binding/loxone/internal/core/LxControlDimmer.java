@@ -13,43 +13,41 @@ import java.io.IOException;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
- * A switch type of control on Loxone Miniserver.
+ * A dimmer type of control on Loxone Miniserver.
  * <p>
- * According to Loxone API documentation, a switch control is:
+ * According to Loxone API documentation, a dimmer control is:
  * <ul>
- * <li>a virtual input of switch type
- * <li>a push button function block
+ * <li>a virtual input of dimmer type
  * </ul>
  *
- * @author Pawel Pieczul - initial contribution
+ * @author Stephan Brunner
  *
  */
 public class LxControlDimmer extends LxControl {
 
     /**
-     * A name by which Miniserver refers to switch controls
+     * A name by which Miniserver refers to dimmer controls
      */
     private static final String TYPE_NAME = "dimmer";
 
     /**
-     * Switch has one state that can be on/off
+     * States
      */
     private static final String STATE_POSITION = "position";
     private static final String STATE_MIN = "min";
     private static final String STATE_MAX = "max";
-    private static final String STATE_STEP = "step";
 
     /**
-     * Command string used to set control's state to ON
+     * Command string used to set the dimmer ON
      */
     private static final String CMD_ON = "On";
     /**
-     * Command string used to set control's state to OFF
+     * Command string used to set the dimmer e to OFF
      */
     private static final String CMD_OFF = "Off";
 
     /**
-     * Create switch control object.
+     * Create dimmer control object.
      *
      * @param client
      *            communication client used to send commands to the Miniserver
@@ -58,9 +56,9 @@ public class LxControlDimmer extends LxControl {
      * @param json
      *            JSON describing the control as received from the Miniserver
      * @param room
-     *            room to which switch belongs
+     *            room to which dimmer belongs
      * @param category
-     *            category to which switch belongs
+     *            category to which dimmer belongs
      */
     LxControlDimmer(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
@@ -79,7 +77,7 @@ public class LxControlDimmer extends LxControl {
     }
 
     public void setPosition(Double position) throws IOException {
-        socketClient.sendAction(uuid, position.toString()); // find out loxone call
+        socketClient.sendAction(uuid, position.toString());
     }
 
     public void on() throws IOException {
