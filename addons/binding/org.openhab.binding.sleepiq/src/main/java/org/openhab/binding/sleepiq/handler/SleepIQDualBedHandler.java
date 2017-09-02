@@ -90,6 +90,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateProperties();
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
     }
 
