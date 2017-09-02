@@ -76,8 +76,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     private ChannelTypeUID lightCtrlTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL);
     private ChannelTypeUID radioButtonTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON);
     private ChannelTypeUID rollershutterTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER);
-
-    /// TODO STB code
     private ChannelTypeUID dimmerTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER);
     private ChannelTypeUID roTextTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
     private ChannelTypeUID roSwitchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH);
@@ -150,9 +148,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
             if (control instanceof LxControlDimmer) {
                 LxControlDimmer dimmer = (LxControlDimmer) control;
-
-                /// TODO acceptedCommandTypes.add(IncreaseDecreaseType.class);
-
                 if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
                         dimmer.on();

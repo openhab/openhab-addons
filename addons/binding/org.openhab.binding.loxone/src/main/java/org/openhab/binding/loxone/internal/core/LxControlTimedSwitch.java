@@ -13,7 +13,7 @@ import java.io.IOException;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
- * A switch type of control on Loxone Miniserver.
+ * A timed switch type of control on Loxone Miniserver.
  * <p>
  * According to Loxone API documentation, a switch control is:
  * <ul>
@@ -21,13 +21,13 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * <li>a push button function block
  * </ul>
  *
- * @author Pawel Pieczul - initial contribution
+ * @author Stephan Brunner
  *
  */
 public class LxControlTimedSwitch extends LxControl {
 
     /**
-     * A name by which Miniserver refers to switch controls
+     * A name by which Miniserver refers to timed switch controls
      */
     private static final String TYPE_NAME = "timedswitch";
 
@@ -40,16 +40,16 @@ public class LxControlTimedSwitch extends LxControl {
     private static final String STATE_DEACTIVATION_DELAY = "deactivationDelay";
 
     /**
-     * Command string used to set control's state to ON
+     * Command string used to set timed switch to ON
      */
     private static final String CMD_ON = "On";
     /**
-     * Command string used to set control's state to OFF
+     * Command string used to set timed switch to OFF
      */
     private static final String CMD_OFF = "Off";
 
     /**
-     * Create switch control object.
+     * Create timed switch control object.
      *
      * @param client
      *            communication client used to send commands to the Miniserver
@@ -79,9 +79,9 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
-     * Set switch to ON.
+     * Set timed switch to ON.
      * <p>
-     * Sends a command to operate the switch.
+     * Sends a command to operate the timed switch.
      *
      * @throws IOException
      *             when something went wrong with communication
@@ -91,9 +91,9 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
-     * Set switch to OFF.
+     * Set timed switch to OFF.
      * <p>
-     * Sends a command to operate the switch.
+     * Sends a command to operate the timed switch.
      *
      * @throws IOException
      *             when something went wrong with communication
@@ -103,7 +103,7 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
-     * Get current value of the switch'es state.
+     * Get current value of the timed switch'es state.
      *
      * @return
      *         0 - switch off, 1 - switch on
@@ -111,7 +111,12 @@ public class LxControlTimedSwitch extends LxControl {
     public Double getState() {
         LxControlState state = getState(STATE_DEACTIVATION_DELAY);
         if (state != null) {
-            return state.getValue();
+
+            if (state.getValue() == -1 || state.getValue() > 0) { // mapping
+                return 1d;
+            } else if (state.getValue() == 0) {
+                return 0d;
+            }
         }
         return null;
     }
