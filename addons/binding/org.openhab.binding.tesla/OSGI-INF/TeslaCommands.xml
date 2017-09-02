@@ -11,7 +11,7 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.tesla.command.TeslaCommandExtension">
 
-   <implementation class="org.openhab.binding.tesla.command.TeslaCommandExtension"/>
+   <implementation class="org.openhab.binding.tesla.internal.command.TeslaCommandExtension"/>
 
    <reference bind="setStorageService"
                   unbind="unsetStorageService"
