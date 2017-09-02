@@ -130,7 +130,7 @@ All channels have no defined state. They exist as one-way communication to the d
 | activate   | Switch    | Activate the defined instance                         |
 | next       | Switch    | Change to the next defined stream                     |
 | play       | Switch    | Play the current stream                               |
-| previous   | Switch    | Change to the previous stream (currently not working) |
+| previous   | Switch    | Change to the previous stream                         |
 | stop       | Switch    | Stop the radio                                        |
 | control    | Player    | Control interface to manipulate the radio             |
 
