@@ -89,6 +89,8 @@ This binding creates channels for controls that are [used in Loxone's user inter
 |Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|
 |Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|
 |TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|
+|Timed Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of timed switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|
+|Dimmer| [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of dimmer type<br>[Dimmer](https://www.loxone.com/enen/kb/dimmer/) | `Dimmer` |`OnOffType.*`<br>`Percent`|
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 
