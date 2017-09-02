@@ -82,7 +82,19 @@ public class ValloxSerialHandler extends BaseThingHandler
             try {
                 Configuration configuration = getThing().getConfiguration();
                 String host = (String) configuration.get(ValloxBindingConstants.PARAMETER_HOST);
-                BigDecimal port = (BigDecimal) configuration.get(ValloxBindingConstants.PARAMETER_PORT);
+                BigDecimal port;
+                Object portObject = configuration.get(ValloxBindingConstants.PARAMETER_PORT);
+                // this is the case when parameter is set through Paper UI
+                if (portObject instanceof BigDecimal) {
+                    port = (BigDecimal) portObject;
+                }
+                // this is the case when parameter is set through .thing-File
+                else if (portObject instanceof String) {
+                    port = new BigDecimal((String) portObject); // might throw NumberFormatException
+                } else {
+                    throw new NumberFormatException(
+                            "Cannot read vallox port parameter of type " + portObject.getClass() + ": " + portObject);
+                }
                 vallox.connect(host, port.intValue());
                 vallox.getValueListener().add(this);
                 vallox.getStatusListener().add(this);
@@ -91,6 +103,12 @@ public class ValloxSerialHandler extends BaseThingHandler
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 String message = "Failed to start connection to Vallox serial interface. ";
+                logger.error(message, e);
+                // want a readable message here
+                // as thing status is shown in GUI to end users, it should be very comprehensible
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message + e.getMessage());
+            } catch (NumberFormatException e) {
+                String message = "Failed to read input for port parameter of Vallox interface. Must be a plain positive integer.";
                 logger.error(message, e);
                 // want a readable message here
                 // as thing status is shown in GUI to end users, it should be very comprehensible
