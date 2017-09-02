@@ -5,6 +5,7 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 ## Supported Things
 
 Currently supports these things
+
 - bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
 - gateways (Somfy Tahoma gateway - getting firmware version)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
@@ -19,7 +20,8 @@ Currently only Somfy Tahoma device has been tested.
 
 ## Discovery
 
-To start a discovery, just 
+To start a discovery, just
+ 
 - install this binding
 - open Paper UI
 - add a new thing in menu Configuration/Things
@@ -40,28 +42,35 @@ Please see the example below.
 A bridge does not expose any channel.
 
 Gateways expose this read only channel:
+
 - version (this is a firmware version of your Tahoma gateway)
 
 Roller shutters, exterior screens, garage doors and awnings expose these channels:
+
 - position (a percentual position of the device, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
 - control (a device controller which reacts to commands UP/DOWN/STOP)
 
 Blinds expose on top of position and control channels
+
 - orientation (a percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
 
 When STOP command received two possible behaviours are possible
+
 - when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
 - when the roller shutter is moving then STOP command is interpreted (the roller shutter/exterior screen/awning stops)
 
 An action group thing has this channel:
+
 - trigger (a switch which reacts to ON command and triggers the predefined Tahoma action)
 
 A on/off thing has this channel:
+
 - switch (reacts to standard ON/OFF commands)
 
 ## Full Example
 
 .things file
+
 ```
 Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=30 ] {
     Thing gateway 1214-4519-8041 "Tahoma gateway" [ id="1214-4519-8041" ]
@@ -75,9 +84,11 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
     Thing onoff 095d6c49-9712-4220-a4c3-d3bb7a6cc5f0 "Zwave switch" [ url="zwave://0204-4519-8041/5" ]
 }
 ```
+
 Awnings, garage doors and exterior screens have the same notation as roller shutters. Just use "awning", "garagedoor" or "exteriorscreen" instead of "rolleshutter" in thing definition. 
 
 .items file
+
 ```
 String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }
 Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
@@ -99,10 +110,13 @@ Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49
 ```
 
 ## Alexa compatibility
+
 This binding is compatible with the official Alexa Smart Home Skill. 
 Since Rolleshutter items are unsupported, only Dimmer with position channel can be used.
 Syntax in .item file is as follows:
+
 ```
 Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:position"}
 ```
+
 Alexa can set the roller shutter (awning, blind, ...) to a specific position as well as send ON (interpretted as UP) and OFF commands (interpretted as DOWN).

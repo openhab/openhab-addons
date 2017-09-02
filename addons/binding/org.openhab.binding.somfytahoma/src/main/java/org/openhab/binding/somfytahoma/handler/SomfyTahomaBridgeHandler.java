@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -283,7 +283,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 if (!device.isKnownUnsupported()) {
                     logger.warn("Detected a new unsupported device: {}", device.getUiClass());
-                    logger.warn(device.getDefinition().toString());
+                    logger.warn("Supported commands: {}", device.getDefinition().toString());
                 }
             }
             for (SomfyTahomaGateway gateway : setup.getGateways()) {
