@@ -27,6 +27,8 @@ public class LoxoneBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_LIGHT_CTRL = "lightCtrlTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RADIO_BUTTON = "radioButtonTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER = "rollerShutterTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_DIMMER = "dimmerTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_TIMED_SWITCH = "timedSwitchTypeId";
 
     // Channel Type IDs - read only
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
