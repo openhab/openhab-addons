@@ -8,8 +8,9 @@ Currently supports these things
 - bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
 - gateways (Somfy Tahoma gateway - getting firmware version)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
-- exterior screens (UP, DOWN, STOP control of an exterior screen). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
-- garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
+- blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blinds (0-100%) as well as orientation of slats (0-100%)
+- screens (UP, DOWN, STOP control of a screen). IO Homecontrol devices are allowed to set exact position of a screen (0-100%)
+- garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a garage door (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
 - action groups (can execute predefined Tahoma action - groups of steps, e.g. send to all roller shutters DOWN command, one by one)
@@ -44,6 +45,9 @@ Gateways expose this read only channel:
 Roller shutters, exterior screens, garage doors and awnings expose these channels:
 - position (a percentual position of the device, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
 - control (a device controller which reacts to commands UP/DOWN/STOP)
+
+Blinds expose on top of position and control channels
+- orientation (a percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
 
 When STOP command received two possible behaviours are possible
 - when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
