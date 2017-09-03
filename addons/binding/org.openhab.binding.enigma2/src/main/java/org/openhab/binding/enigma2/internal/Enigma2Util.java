@@ -99,7 +99,7 @@ public class Enigma2Util {
     public static String createUserPasswordHostnamePrefix(String hostName, String userName, String password) {
         String returnString = "http://" + hostName;
         if (!((userName == null) || (userName.length() == 0))) {
-            returnString = returnString + ":" + password + "@" + hostName;
+            returnString = "http://" + userName + ":" + password + "@" + hostName;
         }
         return returnString;
     }
