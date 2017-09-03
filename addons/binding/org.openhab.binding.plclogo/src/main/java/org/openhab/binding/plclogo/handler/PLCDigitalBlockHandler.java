@@ -205,7 +205,7 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
 
             String text = config.isInputBlock(name) ? INPUT_CHANNEL : OUTPUT_CHANNEL;
             text = text.substring(0, 1).toUpperCase() + text.substring(1);
-            tBuilder = tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
+            tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
 
             final Channel channel = thing.getChannel(DIGITAL_CHANNEL_ID);
             if (channel != null) {
@@ -215,10 +215,10 @@ public class PLCDigitalBlockHandler extends PLCBlockHandler {
             final String type = config.getItemType();
             final ChannelUID uid = new ChannelUID(thing.getUID(), DIGITAL_CHANNEL_ID);
             ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
-            cBuilder = cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
-            cBuilder = cBuilder.withLabel(name);
-            cBuilder = cBuilder.withDescription("Digital " + text);
-            tBuilder = tBuilder.withChannel(cBuilder.build());
+            cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
+            cBuilder.withLabel(name);
+            cBuilder.withDescription("Digital " + text);
+            tBuilder.withChannel(cBuilder.build());
 
             oldValue = INVALID;
             updateThing(tBuilder.build());
