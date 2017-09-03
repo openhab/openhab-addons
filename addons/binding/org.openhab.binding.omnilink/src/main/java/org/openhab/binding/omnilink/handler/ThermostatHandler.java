@@ -2,7 +2,6 @@ package org.openhab.binding.omnilink.handler;
 
 import java.math.BigInteger;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -19,15 +18,13 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 
 /**
  *
  * @author Craig Hamilton
  *
  */
-public class ThermostatHandler extends AbstractOmnilinkHandler {
+public class ThermostatHandler extends AbstractOmnilinkHandler<ExtendedThermostatStatus> {
 
     private enum ThermostatStatus {
         HEATING(0, 1),
@@ -43,14 +40,6 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
             this.modeValue = modeValue;
         }
     }
-
-    private final Supplier<Optional<ExtendedThermostatStatus>> statusSupplier = Suppliers
-            .synchronizedSupplier(Suppliers.memoizeWithExpiration(new Supplier<Optional<ExtendedThermostatStatus>>() {
-                @Override
-                public Optional<ExtendedThermostatStatus> get() {
-                    return retrieveStatus();
-                }
-            }, 1, TimeUnit.SECONDS));
 
     private Logger logger = LoggerFactory.getLogger(ThermostatHandler.class);
 
@@ -128,15 +117,16 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     }
 
-    public void handleThermostatStatus(ExtendedThermostatStatus status) {
-        logger.debug("Thermostat Status {}", status);
-        handleThermostatAlarms(status);
-        handleThermostatRunStatus(status);
-        handleTemperatureStatus(status);
-        handleHumidityStatus(status);
-        handleSystemModeStatus(status);
-        handleFanStatus(status);
-        handleHoldStatus(status);
+    @Override
+    protected void updateChannels(ExtendedThermostatStatus thermostatStatus) {
+        logger.debug("Thermostat Status {}", thermostatStatus);
+        handleThermostatAlarms(thermostatStatus);
+        handleThermostatRunStatus(thermostatStatus);
+        handleTemperatureStatus(thermostatStatus);
+        handleHumidityStatus(thermostatStatus);
+        handleSystemModeStatus(thermostatStatus);
+        handleFanStatus(thermostatStatus);
+        handleHoldStatus(thermostatStatus);
     }
 
     private void handleFanStatus(ExtendedThermostatStatus status) {
@@ -243,15 +233,7 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("Thermostat channel linked: {}", channelUID);
-        Optional<ExtendedThermostatStatus> status = statusSupplier.get();
-        if (status.isPresent()) {
-            handleThermostatStatus(status.get());
-        }
-    }
-
-    private final Optional<ExtendedThermostatStatus> retrieveStatus() {
+    protected Optional<ExtendedThermostatStatus> retrieveStatus() {
         try {
             int thermostatID = getThingNumber();
             logger.debug("Requesting status for thermostat ID: {}", thermostatID);
@@ -262,7 +244,6 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
             logger.debug("Unexpected exception refreshing unit:", e);
             return Optional.empty();
         }
-
     }
 
 }

@@ -1,12 +1,12 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -26,9 +26,8 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
  * @author Craig Hamilton
  *
  */
-public class ZoneHandler extends AbstractOmnilinkHandler {
+public class ZoneHandler extends AbstractOmnilinkHandler<ZoneStatus> {
     private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
-    private volatile ZoneStatus zoneStatus;
 
     public ZoneHandler(Thing thing) {
         super(thing);
@@ -92,55 +91,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
     }
 
     @Override
-    public void initialize() {
-        updateZoneStatus();
-        updateChannels();
-        updateStatus(ThingStatus.ONLINE);
-
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            initialize();
-        }
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {} for zone {}", channelUID, getThingNumber());
-        updateChannels();
-    }
-
-    private void updateZoneStatus() {
-        logger.debug("Updating zone status");
-        try {
-            int zoneId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
-                    zoneId, false);
-            zoneStatus = (ZoneStatus) objStatus.getStatuses()[0];
-        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("Unexpected exception refreshing zone:", e);
-            return;
-        }
-    }
-
-    /**
-     * Called by the bridge when ZoneStatus updates are sent by the controller
-     *
-     * @param status
-     */
-    public void handleZoneStatus(ZoneStatus status) {
-        zoneStatus = status;
-        updateChannels();
-    }
-
-    private void updateChannels() {
-        if (zoneStatus == null) {
-            logger.debug("cannot update zone channles with undefined ZoneStatus object");
-            return;
-        }
+    protected void updateChannels(ZoneStatus zoneStatus) {
 
         // 0 Secure. 1 Not ready, 3 Trouble
         int current = ((zoneStatus.getStatus() >> 0) & 0x03);
@@ -155,5 +106,19 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_CURRENT_CONDITION, new DecimalType(current));
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_LATCHED_ALARM_STATUS, new DecimalType(latched));
         updateState(OmnilinkBindingConstants.CHANNEL_ZONE_ARMING_STATUS, new DecimalType(arming));
+    }
+
+    @Override
+    protected Optional<ZoneStatus> retrieveStatus() {
+        logger.debug("Updating zone status");
+        try {
+            int zoneId = getThingNumber();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
+                    zoneId, false);
+            return Optional.of((ZoneStatus) objStatus.getStatuses()[0]);
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.debug("Unexpected exception refreshing zone:", e);
+            return Optional.empty();
+        }
     }
 }
