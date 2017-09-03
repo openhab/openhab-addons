@@ -173,14 +173,10 @@ public class ConfigHelper {
         }
 
         // add download link
-        String filename = "visu_config";
-        if (this.sitemapName.length() > 0) {
-            filename += "_oh_" + this.sitemapName;
-        }
-        filename += ".xml";
         CDataStatus downloadConfig = new CDataStatus();
         downloadConfig.setType("html");
-        downloadConfig.setValue(" - <a href=\"config/" + filename + "\">Download</a>");
+        downloadConfig
+                .setValue(" - <a href=\"config/" + this.sitemapName + "\" download target=\"_blank\">Download</a>");
         statusbar.getStatus().add(downloadConfig);
 
         // version information
