@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icloud"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="bridge">
+		<label>iCloud Binding</label>
+		<description>Provides various information about an iCloud device.</description>
+
+		<channels>
+		    <channel id="Owner" typeId="Owner" />
+			<channel id="NumberOfDevices" typeId="NumberOfDevices"/>
+			<channel id="HttpStatusCode" typeId="HttpStatusCode" />
+		</channels>
+		
+		<config-description>
+			<parameter name="AppleId" type="text" required="true">
+			     <context>email</context>
+			     <label>Apple Id</label>
+			     <description>Apple Id (eMail) to access iCloud information.</description>
+			</parameter>
+			<parameter name="Password" type="text" required="true" >
+			     <context>password</context>
+			     <label>Password</label>
+			     <description>Apple iCloud password for the given Id.</description>
+			</parameter>
+			<parameter name="RefreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
+			     <label>Refresh</label>
+			     <description>Refresh time in minutes.</description>
+			     <default>5</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	
+	<thing-type id="device">
+	   <supported-bridge-type-refs>
+           <bridge-type-ref id="bridge"/>
+       </supported-bridge-type-refs>
+       
+	   <label>iCloud Device</label>
+	   
+	   <channels>
+	       <channel typeId="BatteryStatus" id="BatteryStatus"/>
+	       <channel typeId="BatteryLevel" id="BatteryLevel" />
+	       <channel typeId="FindMyPhone" id="FindMyPhone" /> 
+	       <channel typeId="Location" id="Location"/>
+	       <channel typeId="LocationAccuracy" id="LocationAccuracy"/>
+	       <channel typeId="DistanceFromHome" id="DistanceFromHome"/>
+	       <channel typeId="LastUpdate" id="LastUpdate" />
+	       <channel typeId="AddressStreet" id="AddressStreet" />
+	       <channel typeId="AddressCity" id="AddressCity" />
+	       <channel typeId="AddressCountry" id="AddressCountry" />
+	       <channel typeId="FormattedAddress" id="FormattedAddress" />
+	   </channels>
+	   
+	</thing-type>
+	
+	<channel-type id="NumberOfDevices">
+		<item-type>Number</item-type>
+		<label>Number of devices</label>
+		<description>Number of registered devices with this iCloud account.</description>
+	</channel-type>
+	<channel-type id="Owner">
+	   <item-type>String</item-type>
+	   <label>Owner</label>
+	   <description>Registered owner of this iCloud account.</description>
+	</channel-type>
+	<channel-type id="HttpStatusCode">
+	   <item-type>Number</item-type>
+	   <label>HTTP Response</label>
+	   <description>HTTP status code of the last request to iCloud (OK = 200)</description>
+	</channel-type>
+	<channel-type id="BatteryStatus">
+	   <item-type>String</item-type>
+	   <label>Battery Status</label>
+	</channel-type>
+    <channel-type id="BatteryLevel">
+        <item-type>Number</item-type>
+        <label>Battery Level</label>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="FindMyPhone">
+        <item-type>Switch</item-type>
+        <label>Find my phone</label>
+    </channel-type>
+    <channel-type id="Location">
+        <item-type>Location</item-type>
+        <label>Location</label>
+    </channel-type>
+    <channel-type id="LocationAccuracy">
+        <item-type>Number</item-type>
+        <label>Location accuracy</label>
+        <state readOnly="true" pattern="%d m" />
+    </channel-type>
+    <channel-type id="DistanceFromHome">
+        <item-type>Number</item-type>
+        <label>Distance from home</label>
+        <state readOnly="true" pattern="%d m" />
+    </channel-type>
+    <channel-type id="LastUpdate">
+        <item-type>DateTime</item-type>
+        <label>Last location update</label>
+    </channel-type>
+    <channel-type id="AddressStreet">
+        <item-type>String</item-type>
+        <label>Street</label>
+    </channel-type>
+    <channel-type id="AddressCity">
+        <item-type>String</item-type>
+        <label>City</label>
+    </channel-type>
+    <channel-type id="AddressCountry">
+        <item-type>String</item-type>
+        <label>Country</label>
+    </channel-type>
+    <channel-type id="FormattedAddress">
+        <item-type>String</item-type>
+        <label>Formatted address</label>
+    </channel-type>
+</thing:thing-descriptions>
+ 
