@@ -260,8 +260,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 Integer number = new Integer(stat.getNumber());
                 logger.debug("received status update for zone: {},status: {}", number, stat.getStatus());
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ZONE, stat.getNumber());
-                theThing.map(Thing::getHandler)
-                        .ifPresent(theHandler -> ((ZoneHandler) theHandler).handleZoneStatus(stat));
+                theThing.map(Thing::getHandler).ifPresent(theHandler -> ((ZoneHandler) theHandler).handleStatus(stat));
             } else if (status instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) status;
                 // TODO we should check if this is a lumina system and return that if so
@@ -274,8 +273,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
                         status.getNumber());
-                theThing.map(Thing::getHandler).ifPresent(
-                        theHandler -> ((ThermostatHandler) theHandler).handleThermostatStatus(thermostatStatus));
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((ThermostatHandler) theHandler).handleStatus(thermostatStatus));
             } else if (status instanceof AudioZoneStatus) {
                 AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
