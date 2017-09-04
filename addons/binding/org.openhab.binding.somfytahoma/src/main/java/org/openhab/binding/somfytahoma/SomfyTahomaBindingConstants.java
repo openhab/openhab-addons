@@ -54,6 +54,18 @@ public class SomfyTahomaBindingConstants {
     // On Off
     public static final ThingTypeUID THING_TYPE_ONOFF = new ThingTypeUID(BINDING_ID, "onoff");
 
+    // Light
+    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
+
+    // Light sensor
+    public static final ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
+
+    // Smoke sensor
+    public static final ThingTypeUID THING_TYPE_SMOKESENSOR = new ThingTypeUID(BINDING_ID, "smokesensor");
+
+    // Occupancy sensor
+    public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
+
     // List of all Channel ids
     // Gateway
     public static final String VERSION = "version";
@@ -68,8 +80,14 @@ public class SomfyTahomaBindingConstants {
     // Action group
     public static final String TRIGGER = "trigger";
 
-    // OnOff
+    // OnOff, Light
     public static final String SWITCH = "switch";
+
+    // Smoke sensor, Occupancy sensor
+    public static final String CONTACT = "contact";
+
+    // Light sensor
+    public static final String LUMINANCE = "luminance";
 
     //Constants
     final public static String TAHOMA_URL = "https://www.tahomalink.com/enduser-mobile-web/externalAPI/json/";

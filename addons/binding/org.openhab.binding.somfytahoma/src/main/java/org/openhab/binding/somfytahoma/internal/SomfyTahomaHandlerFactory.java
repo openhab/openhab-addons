@@ -45,7 +45,11 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_GARAGEDOOR,
             THING_TYPE_AWNING,
             THING_TYPE_ACTIONGROUP,
-            THING_TYPE_ONOFF
+            THING_TYPE_ONOFF,
+            THING_TYPE_LIGHT,
+            THING_TYPE_LIGHTSENSOR,
+            THING_TYPE_SMOKESENSOR,
+            THING_TYPE_OCCUPANCYSENSOR
     ));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -90,6 +94,18 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_ONOFF)) {
             return new SomfyTahomaOnOffHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_LIGHT)) {
+            return new SomfyTahomaOnOffHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_LIGHTSENSOR)) {
+            return new SomfyTahomaLightSensorHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_SMOKESENSOR)) {
+            return new SomfyTahomaSmokeSensorHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_OCCUPANCYSENSOR)) {
+            return new SomfyTahomaOccupancySensorHandler(thing);
         }
         return null;
     }

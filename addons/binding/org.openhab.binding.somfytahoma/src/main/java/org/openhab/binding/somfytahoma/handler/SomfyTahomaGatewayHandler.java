@@ -28,7 +28,7 @@ import java.util.Hashtable;
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaGatewayHandler extends BaseThingHandler implements SomfyTahomaThingHandler {
+public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGatewayHandler.class);
 
@@ -53,12 +53,4 @@ public class SomfyTahomaGatewayHandler extends BaseThingHandler implements Somfy
         }
     }
 
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    private SomfyTahomaBridgeHandler getBridgeHandler() {
-        return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
-    }
 }

@@ -3,15 +3,15 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="onoff">
+	<thing-type id="occupancysensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Somfy On/Off Switch</label>
+		<label>Somfy Occupancy Sensor</label>
 		<channels>
-			<channel id="switch" typeId="switch"></channel>
+			<channel id="contact" typeId="contact"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
-
+    
 </thing:thing-descriptions>

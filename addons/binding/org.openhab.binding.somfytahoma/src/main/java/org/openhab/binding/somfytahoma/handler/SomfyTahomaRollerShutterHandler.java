@@ -27,7 +27,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements SomfyTahomaThingHandler {
+public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaRollerShutterHandler.class);
 
@@ -74,11 +74,6 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
 
     }
 
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
     private String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
@@ -93,9 +88,4 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler implements
                 return COMMAND_SET_CLOSURE;
         }
     }
-
-    protected SomfyTahomaBridgeHandler getBridgeHandler() {
-        return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
-    }
-
 }

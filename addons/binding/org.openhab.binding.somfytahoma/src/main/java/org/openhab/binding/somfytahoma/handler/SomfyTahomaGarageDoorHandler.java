@@ -20,10 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SomfyTahomaGarageDoorHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGarageDoorHandler.class);
-
     public SomfyTahomaGarageDoorHandler(Thing thing) {
         super(thing);
     }
-
 }

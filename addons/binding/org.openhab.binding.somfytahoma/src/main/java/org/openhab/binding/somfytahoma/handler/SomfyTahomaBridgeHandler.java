@@ -11,10 +11,7 @@ package org.openhab.binding.somfytahoma.handler;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -261,6 +258,22 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     discoveryService.onOffDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
                 }
+                if (device.isLight()) {
+                    discoveryService.lightDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isLightSensor()) {
+                    discoveryService.lightSensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isSmokeSensor()) {
+                    discoveryService.smokeSensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
+                if (device.isOccupancySensor()) {
+                    discoveryService.occupancySensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
+                    continue;
+                }
                 if (device.isExteriorScreen()) {
                     discoveryService.exteriorScreenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
                     continue;
@@ -385,7 +398,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 if (state.getType() == TYPE_STRING) {
                     String value = state.getValue().toString().toLowerCase();
-                    return value.equals("on") ? OnOffType.ON : OnOffType.OFF;
+                    return parseStringState(value.toLowerCase());
                 }
             } else {
                 logger.debug("Device: {} has not returned any state", deviceUrl);
@@ -403,6 +416,24 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         return null;
+    }
+
+    private State parseStringState(String value) {
+        switch(value) {
+            case "on":
+                return OnOffType.ON;
+            case "off":
+                return OnOffType.OFF;
+            case "notdetected":
+            case "nopersoninside":
+                return OpenClosedType.CLOSED;
+            case "detected":
+            case "personinside":
+                return OpenClosedType.OPEN;
+            default:
+                logger.warn("Unknown thing state returned: {}", value);
+                return UnDefType.UNDEF;
+        }
     }
 
     private void updateTahomaStates() {

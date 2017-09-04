@@ -32,7 +32,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.TYPE_P
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements SomfyTahomaThingHandler {
+public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaActionGroupHandler.class);
 
@@ -60,11 +60,6 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
         }
     }
 
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
     private void sendCommand(SomfyTahomaAction action) {
 
         for (SomfyTahomaCommand command : action.getCommands()) {
@@ -72,10 +67,6 @@ public class SomfyTahomaActionGroupHandler extends BaseThingHandler implements S
             logger.debug("Sending to device {} command {} params {}", action.getDeviceURL(), command.getName(), parameters);
             getBridgeHandler().sendCommand(action.getDeviceURL(), command.getName(), parameters);
         }
-    }
-
-    private SomfyTahomaBridgeHandler getBridgeHandler() {
-        return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
     }
 
 }

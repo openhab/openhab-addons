@@ -25,7 +25,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaAwningHandler extends SomfyTahomaRollerShutterHandler {
+public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaAwningHandler.class);
 

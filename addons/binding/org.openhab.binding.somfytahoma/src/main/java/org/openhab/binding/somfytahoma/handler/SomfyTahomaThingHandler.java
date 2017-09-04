@@ -17,5 +17,6 @@ import java.util.Hashtable;
  * @author Ondrej Pecta - Initial contribution
  */
 public interface SomfyTahomaThingHandler {
+
     public abstract Hashtable<String, String> getStateNames();
 }

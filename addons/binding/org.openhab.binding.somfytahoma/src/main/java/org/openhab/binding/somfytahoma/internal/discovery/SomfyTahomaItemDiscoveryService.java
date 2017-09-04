@@ -56,7 +56,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_GARAGEDOOR,
                 THING_TYPE_ACTIONGROUP,
                 THING_TYPE_AWNING,
-                THING_TYPE_ONOFF
+                THING_TYPE_ONOFF,
+                THING_TYPE_LIGHT,
+                THING_TYPE_LIGHTSENSOR,
+                THING_TYPE_SMOKESENSOR,
+                THING_TYPE_OCCUPANCYSENSOR
         ));
     }
 
@@ -102,6 +106,22 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     public void onOffDiscovered(String label, String deviceURL, String oid) {
         deviceDiscovered(label, deviceURL, oid, THING_TYPE_ONOFF);
+    }
+
+    public void lightDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_LIGHT);
+    }
+
+    public void lightSensorDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_LIGHTSENSOR);
+    }
+
+    public void smokeSensorDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_SMOKESENSOR);
+    }
+
+    public void occupancySensorDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_OCCUPANCYSENSOR);
     }
 
     public void actionGroupDiscovered(String label, String deviceURL, String oid) {

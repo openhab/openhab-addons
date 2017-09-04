@@ -34,6 +34,22 @@ public class SomfyTahomaDevice {
         return uiClass.equals("OnOff");
     }
 
+    public boolean isLight() {
+        return uiClass.equals("Light");
+    }
+
+    public boolean isSmokeSensor() {
+        return uiClass.equals("SmokeSensor");
+    }
+
+    public boolean isOccupancySensor() {
+        return uiClass.equals("OccupancySensor");
+    }
+
+    public boolean isLightSensor() {
+        return uiClass.endsWith("LightSensor");
+    }
+
     public boolean isExteriorScreen() {
         return uiClass.equals("ExteriorScreen");
     }
@@ -55,7 +71,7 @@ public class SomfyTahomaDevice {
     }
 
     public boolean isKnownUnsupported() {
-        return uiClass.equals("Alarm") || uiClass.equals("Pod");
+        return uiClass.equals("Alarm") || uiClass.equals("Pod") || uiClass.equals("ProtocolGateway");
     }
 
     public String getLabel() {
