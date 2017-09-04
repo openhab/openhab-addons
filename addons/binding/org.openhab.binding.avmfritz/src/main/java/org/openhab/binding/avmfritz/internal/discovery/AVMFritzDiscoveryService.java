@@ -79,6 +79,16 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         this.activate(null);
     }
 
+    @Override
+    protected void activate(Map<String, Object> configProperties) {
+        super.activate(configProperties);
+    }
+
+    @Override
+    protected void modified(Map<String, Object> configProperties) {
+        super.modified(configProperties);
+    }
+
     /**
      * Called from the UI when starting a search.
      */
