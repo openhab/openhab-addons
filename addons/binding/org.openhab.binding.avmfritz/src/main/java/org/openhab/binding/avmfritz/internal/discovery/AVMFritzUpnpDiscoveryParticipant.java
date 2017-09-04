@@ -40,7 +40,7 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
 
     /**
      * Provide supported thing type uid's

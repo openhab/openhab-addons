@@ -99,7 +99,7 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET", getURL("login_sid.lua", addSID("")),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -136,11 +136,10 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
-                                    ? ("username=" + this.config.getUser() + "&")
-                                    : "") + "response=" + response),
+                                    ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

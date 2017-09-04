@@ -86,8 +86,12 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BoxHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
+                // remove discovery service, if bridge handler is removed
+                AVMFritzDiscoveryService discoveryService = (AVMFritzDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                discoveryService.deactivate();
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
@@ -101,7 +105,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      */
     private void registerDeviceDiscoveryService(BoxHandler handler) {
         AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
+        discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 }

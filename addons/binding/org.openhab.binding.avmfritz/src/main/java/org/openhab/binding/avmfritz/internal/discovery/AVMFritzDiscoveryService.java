@@ -10,6 +10,7 @@ package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -39,7 +40,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
 
     /**
      * Maximum time to search for devices.
@@ -89,12 +90,17 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         super.modified(configProperties);
     }
 
+    public void deactivate() {
+        super.deactivate();
+        removeOlderResults(new Date().getTime());
+    }
+
     /**
      * Called from the UI when starting a search.
      */
     @Override
     public void startScan() {
-        logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
+        logger.debug("start manual scan on bridge {}", bridgeHandler.getThing().getUID());
         FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
         bridgeHandler.getWebInterface().asyncGet(callback);
     }
@@ -104,7 +110,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected synchronized void stopScan() {
-        logger.debug("stop scan on bridge {}", bridgeHandler.getThing().getUID());
+        logger.debug("stop manual scan on bridge {}", bridgeHandler.getThing().getUID());
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
@@ -139,9 +145,9 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
-            logger.debug("start background scanning job");
-            this.scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(this.scanningRunnable,
-                    INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+            logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
+            scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(scanningRunnable, INITIAL_DELAY,
+                    SCAN_INTERVAL, TimeUnit.SECONDS);
         } else {
             logger.debug("scanningJob active");
         }
@@ -154,7 +160,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected void stopBackgroundDiscovery() {
         if (scanningJob != null && !scanningJob.isCancelled()) {
             logger.debug("stop background scanning job");
-            scanningJob.cancel(false);
+            scanningJob.cancel(true);
             scanningJob = null;
         }
     }
@@ -182,7 +188,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
          */
         @Override
         public void run() {
-            logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
+            logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
             FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
                     service);
             bridgeHandler.getWebInterface().asyncGet(callback);
