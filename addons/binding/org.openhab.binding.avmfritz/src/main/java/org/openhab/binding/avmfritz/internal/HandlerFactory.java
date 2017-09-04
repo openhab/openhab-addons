@@ -21,10 +21,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  *
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
