@@ -14,9 +14,13 @@ Currently supports these things
 - garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a garage door (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
-- action groups (can execute predefined Tahoma action - groups of steps, e.g. send to all roller shutters DOWN command, one by one)
+- light switches (similar to on/off)
+- light sensors (luminance value)
+- occupancy sensors (OPEN/CLOSE contact)
+- smoke sensors (OPEN/CLOSE contact)
+- action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
 
-Currently only Somfy Tahoma device has been tested.
+Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
 
 ## Discovery
 
@@ -63,9 +67,17 @@ An action group thing has this channel:
 
 - trigger (a switch which reacts to ON command and triggers the predefined Tahoma action)
 
-A on/off thing has this channel:
+An on/off and light thing has this channel:
 
 - switch (reacts to standard ON/OFF commands)
+
+A smoke sensor and occupancy sensor has this channel:
+
+- contact (normal value is CLOSE, changes to OPEN when detection triggered)
+
+A light sensors exposes this channel:
+
+- luminance (light luminance value in luxes) 
 
 ## Full Example
 
@@ -82,6 +94,10 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
     Thing actiongroup 712c0019-b422-1234-b4da-208e249c571b "2nd floor up" [ url="712c0019-b422-1234-b4da-208e249c571b" ]
     Thing actiongroup e201637b-de3b-1234-b7af-5693811a953b "2nd floor down" [ url="e201637b-de3b-1234-b7af-5693811a953b" ]
     Thing onoff 095d6c49-9712-4220-a4c3-d3bb7a6cc5f0 "Zwave switch" [ url="zwave://0204-4519-8041/5" ]
+    Thing light 1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d "Light switch" [ url="enocean://0204-4519-8041/4294453515/2" ]
+    Thing lightsensor 2c90808c3a0c193f013a743f2f660f12 "Light sensor" [ url="io://0204-4519-8041/13527450" ]
+    Thing occupancysensor 995e16ca-07c4-4111-9cda-504cb5120f82 "Occupancy sensor" [ url="io://0204-4519-8041/4855758" ]
+    Thing smokesensor 9438e6ff-c17e-40d7-a4b4-3e797eca5bf7 "Smoke sensor" [ url="io://0204-4510-8041/13402124" ]
 }
 ```
 
@@ -107,6 +123,12 @@ Switch Rollers2UP "Rollers 2nd floor UP" {channel="somfytahoma:actiongroup:237db
 Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:237dbae7:e201637b-de3b-1234-b7af-5693811a953b:trigger", autoupdate="false"}
 
 Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49-9712-4220-a4c3-d3bb7a6cc5f0:switch" }
+Switch TahomaLightSwitch "Light Switch" { channel="somfytahoma:light:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d:switch" }
+
+Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:237dbae7:2c90808c3a0c193f013a743f2f660f12:luminance" }
+
+Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupancysensor:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:contact" }
+Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
 ```
 
 ## Alexa compatibility
