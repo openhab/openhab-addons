@@ -126,6 +126,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             final Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
+            properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
 
