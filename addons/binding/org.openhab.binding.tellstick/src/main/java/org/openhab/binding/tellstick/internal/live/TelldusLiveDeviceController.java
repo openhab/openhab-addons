@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler.live;
+package org.openhab.binding.tellstick.internal.live;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
@@ -36,8 +36,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tellstick.handler.TelldusDeviceController;
-import org.openhab.binding.tellstick.handler.live.xml.TelldusLiveResponse;
-import org.openhab.binding.tellstick.handler.live.xml.TellstickNetDevice;
+import org.openhab.binding.tellstick.internal.live.xml.TelldusLiveResponse;
+import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;

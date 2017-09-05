@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler.core;
+package org.openhab.binding.tellstick.internal.core;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,11 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tellstick.conf.TellstickBridgeConfiguration;
 import org.openhab.binding.tellstick.handler.DeviceStatusListener;
 import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.handler.TelldusDeviceController;
 import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
+import org.openhab.binding.tellstick.internal.conf.TellstickBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;

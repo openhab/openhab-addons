@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler.core;
+package org.openhab.binding.tellstick.internal.core;
 
 import java.math.BigDecimal;
 import java.util.Collections;
