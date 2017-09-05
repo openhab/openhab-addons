@@ -246,58 +246,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             SomfyTahomaSetupResponse data = gson.fromJson(line, SomfyTahomaSetupResponse.class);
             SomfyTahomaSetup setup = data.getSetup();
             for (SomfyTahomaDevice device : setup.getDevices()) {
-                if (device.isRollerShutter()) {
-                    discoveryService.rollerShutterDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isAwning()) {
-                    discoveryService.awningDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isOnOff()) {
-                    discoveryService.onOffDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isLight()) {
-                    discoveryService.lightDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isLightSensor()) {
-                    discoveryService.lightSensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isSmokeSensor()) {
-                    discoveryService.smokeSensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isOccupancySensor()) {
-                    discoveryService.occupancySensorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isExteriorScreen()) {
-                    discoveryService.exteriorScreenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isExteriorVenetianBlind()) {
-                    discoveryService.exteriorVenetianBlindDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isScreen()) {
-                    discoveryService.screenDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isVenetianBlind()) {
-                    discoveryService.venetianBlindDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (device.isGarageDoor()) {
-                    discoveryService.garageDoorDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid());
-                    continue;
-                }
-                if (!device.isKnownUnsupported()) {
-                    logger.warn("Detected a new unsupported device: {}", device.getUiClass());
-                    logger.warn("Supported commands: {}", device.getDefinition().toString());
-                }
+                discoveryService.discoverDevice(device);
             }
             for (SomfyTahomaGateway gateway : setup.getGateways()) {
                 discoveryService.gatewayDiscovered(gateway.getGatewayId());

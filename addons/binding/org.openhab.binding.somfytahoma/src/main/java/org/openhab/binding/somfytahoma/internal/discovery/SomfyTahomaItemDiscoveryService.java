@@ -15,6 +15,7 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.model.SomfyTahomaDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,56 +77,52 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         bridge.startDiscovery();
     }
 
-    public void rollerShutterDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ROLLERSHUTTER);
-    }
-
-    public void exteriorScreenDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_EXTERIORSCREEN);
-    }
-
-    public void screenDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_SCREEN);
-    }
-
-    public void exteriorVenetianBlindDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_EXTERIORVENETIANBLIND);
-    }
-
-    public void venetianBlindDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_VENETIANBLIND);
-    }
-
-    public void garageDoorDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_GARAGEDOOR);
-    }
-
-    public void awningDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_AWNING);
-    }
-
-    public void onOffDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ONOFF);
-    }
-
-    public void lightDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_LIGHT);
-    }
-
-    public void lightSensorDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_LIGHTSENSOR);
-    }
-
-    public void smokeSensorDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_SMOKESENSOR);
-    }
-
-    public void occupancySensorDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_OCCUPANCYSENSOR);
-    }
-
-    public void actionGroupDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP);
+    public void discoverDevice(SomfyTahomaDevice device) {
+        switch(device.getUiClass()) {
+            case AWNING:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_AWNING);
+                break;
+            case EXTERIORSCREEN:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_EXTERIORSCREEN);
+                break;
+            case EXTERIORVENETIANBLIND:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_EXTERIORVENETIANBLIND);
+                break;
+            case GARAGEDOOR:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_GARAGEDOOR);
+                break;
+            case LIGHT:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_LIGHT);
+                break;
+            case LIGHTSENSOR:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_LIGHTSENSOR);
+                break;
+            case OCCUPANCYSENSOR:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_OCCUPANCYSENSOR);
+                break;
+            case ONOFF:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_ONOFF);
+                break;
+            case ROLLERSHUTTER:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_ROLLERSHUTTER);
+                break;
+            case SCREEN:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_SCREEN);
+                break;
+            case SMOKESENSOR:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_SMOKESENSOR);
+                break;
+            case VENETIANBLIND:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_VENETIANBLIND);
+                break;
+            case ALARM:
+            case POD:
+            case PROTOCOLGATEWAY:
+                break;
+            default:
+                logger.warn("Detected a new unsupported device: {}", device.getUiClass());
+                logger.warn("Supported commands: {}", device.getDefinition().toString());
+        }
     }
 
     private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID) {
@@ -141,6 +138,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                             .withRepresentationProperty("url").withLabel(label)
                             .withBridge(bridge.getThing().getUID()).build());
         }
+    }
+
+    public void actionGroupDiscovered(String label, String deviceURL, String oid) {
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP);
     }
 
     public void gatewayDiscovered(String id) {

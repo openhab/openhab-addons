@@ -104,4 +104,23 @@ public class SomfyTahomaBindingConstants {
     final public static String COMMAND_SET_ORIENTATION = "setOrientation";
     final public static String COMMAND_UP = "up";
     final public static String COMMAND_DOWN = "down";
+
+    // supproted uiClasses
+    final public static String ROLLERSHUTTER = "RollerShutter";
+    final public static String SCREEN = "Screen";
+    final public static String VENETIANBLIND = "VenetianBlind";
+    final public static String EXTERIORSCREEN = "ExteriorScreen";
+    final public static String EXTERIORVENETIANBLIND = "ExteriorVenetianBlind";
+    final public static String GARAGEDOOR = "GarageDoor";
+    final public static String AWNING = "Awning";
+    final public static String ONOFF = "OnOff";
+    final public static String LIGHT = "Light";
+    final public static String LIGHTSENSOR = "LightSensor";
+    final public static String SMOKESENSOR = "SmokeSensor";
+    final public static String OCCUPANCYSENSOR = "OccupancySensor";
+
+    // unsupported uiClasses
+    final public static String ALARM = "Alarm";
+    final public static String POD = "Pod";
+    final public static String PROTOCOLGATEWAY = "ProtocolGateway";
 }
