@@ -80,16 +80,15 @@ public class ExecHandler extends BaseThingHandler {
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
-                if (command instanceof StringType) {
-                    String previousInput = lastInput;
-                    lastInput = command.toString();
-                    if (lastInput != null && !lastInput.equals(previousInput)) {
-                        if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
-                            lastInput = command.toString();
-                            logger.trace("Executing command '{}' after a change of the input channel to '{}'",
-                                    getConfig().get(COMMAND), command.toString());
-                            scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
-                        }
+                logger.error("command = {}", command.toString());
+                String previousInput = lastInput;
+                lastInput = command.toString();
+                if (lastInput != null && !lastInput.equals(previousInput)) {
+                    if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
+                        lastInput = command.toString();
+                        logger.trace("Executing command '{}' after a change of the input channel to '{}'",
+                                getConfig().get(COMMAND), command.toString());
+                        scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
                     }
                 }
             }
