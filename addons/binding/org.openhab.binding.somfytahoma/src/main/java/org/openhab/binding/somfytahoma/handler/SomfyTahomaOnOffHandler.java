@@ -49,7 +49,8 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
         String url = getThing().getConfiguration().get("url").toString();
 
         if (channelUID.getId().equals(SomfyTahomaBindingConstants.SWITCH) && command instanceof OnOffType) {
-            getBridgeHandler().sendCommand(url, "setOnOff", "[\"" + command.toString().toLowerCase() + "\"]");
+            //getBridgeHandler().sendCommand(url, "setOnOff", "[\"" + command.toString().toLowerCase() + "\"]");
+            getBridgeHandler().sendCommand(url, command.toString().toLowerCase(), "[]");
         }
         if (command.equals(RefreshType.REFRESH)) {
             //sometimes refresh is sent sooner than bridge initialized...
