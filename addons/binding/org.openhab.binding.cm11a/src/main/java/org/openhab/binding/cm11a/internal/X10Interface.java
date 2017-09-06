@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,6 +26,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.openhab.binding.cm11a.handler.Cm11aAbstractHandler;
+import org.openhab.binding.cm11a.handler.Cm11aBridgeHandler;
 import org.openhab.binding.cm11a.handler.ReceivedDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  *
  * @author anthony green - Original code
- * @author bob raker -
+ * @author Bob Raker-
  * @see <a href="http://www.heyu.org/docs/protocol.txt">CM11 Protocol specification</a>
  * @see <a href="http://www.rxtx.org">RXTX Serial API for Java</a>
  */
@@ -227,15 +228,21 @@ public class X10Interface extends Thread implements SerialPortEventListener {
     private List<String> lastAddresses;
 
     /**
+     * Need to have access to BridgeHandler so it's status can be updated.
+     */
+    private Cm11aBridgeHandler bridgeHandler;
+
+    /**
      *
      * @param serialPort serial port device. e.g. /dev/ttyS0
      * @throws NoSuchPortException
      *
      */
-    public X10Interface(String serialPort) throws NoSuchPortException {
+    public X10Interface(String serialPort, Cm11aBridgeHandler bridgeHandler) throws NoSuchPortException {
         super();
         logger.trace("**** Constructing X10Interface for serial port: {} *******", serialPort);
         portId = CommPortIdentifier.getPortIdentifier(serialPort);
+        this.bridgeHandler = bridgeHandler;
     }
 
     /**
@@ -272,8 +279,13 @@ public class X10Interface extends Thread implements SerialPortEventListener {
                 if (!serialPort.isReceiveTimeoutEnabled()) {
                     logger.info("Serial receive timeout not supported by this driver.");
                 }
+
+                bridgeHandler.changeBridgeStatusToUp();
             } catch (PortInUseException e) {
-                logger.warn("Serial port {} is in use by another application ({})", portId.getName(), e.currentOwner);
+                String message = String.format("Serial port %s is in use by another application (%s)", portId.getName(),
+                        e.currentOwner);
+                logger.warn("{}", message);
+                bridgeHandler.changeBridgeStatusToDown(message);
             } catch (UnsupportedCommOperationException e) {
                 logger.warn("Serial port {} doesn't support the required baud/parity/stopbits or Timeout",
                         portId.getName());
@@ -283,6 +295,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
                 logger.warn(
                         "TooManyListeners error when trying to connect to serial port.  Interface is unlikely to work, raise a bug report.",
                         e);
+                bridgeHandler.changeBridgeStatusToDown("ToManyListenersException");
             }
         } else {
             logger.trace("Already connected to hardware, skipping reconnection.");
@@ -451,7 +464,8 @@ public class X10Interface extends Thread implements SerialPortEventListener {
                                 Integer.toHexString(IF_READY & 0x00000FF), Integer.toHexString(response & 0x00000FF));
                     }
                 } catch (EOFException ex) {
-                    logger.warn("Received EOF exception while sending X10 command after {} ms",
+                    logger.warn(
+                            "Received EOF exception while sending X10 command after {} ms. Make sure the cm11a is connected to the serial port",
                             (System.currentTimeMillis() - startTime));
                 }
                 serialPort.notifyOnDataAvailable(true);
@@ -503,7 +517,9 @@ public class X10Interface extends Thread implements SerialPortEventListener {
                 }
             } catch (IOException e) {
                 connected = false;
-                logger.warn("IO Exception when updating module hardware.  Will retry shortly", e);
+                String message = "IO Exception when updating module hardware.  Will retry shortly";
+                logger.warn(message, e);
+                bridgeHandler.changeBridgeStatusToDown(message);
                 Thread.sleep(IO_RECONNECT_INTERVAL);
             } catch (InvalidAddressException e) {
                 logger.warn("Attempted to send an X10 Function call with invalid address.  Ignoring this.");

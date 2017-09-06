@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,7 +35,7 @@ import gnu.io.NoSuchPortException;
  * for a description of OpenHAB bridges. This gets called first and is responsible for setting up the handler. Mostly it
  * loads the 10Interface class which does all of the heavy lifting.
  *
- * @author bob raker - Initial contribution
+ * @author Bob Raker - Initial contribution
  */
 public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDataListener {
 
@@ -74,7 +74,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
 
         // Initialize the X10 interface
         try {
-            x10Interface = new X10Interface(cm11aConfig.serialPort);
+            x10Interface = new X10Interface(cm11aConfig.serialPort, this);
             x10Interface.setDaemon(true);
             x10Interface.start();
             x10Interface.addReceivedDataListener(this);
@@ -97,6 +97,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
             x10Interface.disconnect();
             x10Interface = null;
         }
+        logger.debug("Cm11aBridgeHandler is being removed.");
     }
 
     /**
@@ -139,8 +140,8 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
         synchronized (rd) {
             for (Thing thing : things) {
                 String houseUnitCode = (String) thing.getConfiguration().get("HouseUnitCode");
-                for (String huc : rd.getAddr()) {
-                    if (huc.equals(houseUnitCode)) {
+                for (String messageHouseUnitCode : rd.getAddr()) {
+                    if (messageHouseUnitCode.equals(houseUnitCode)) {
                         // The channel we want should end in "switchstatus" or "lightlevel". In reality there is
                         // probably only one channel since these things only define one channel
                         ChannelUID desiredChannelUid = findX10Channel(thing.getChannels());
@@ -164,9 +165,10 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
      */
     private ChannelUID findX10Channel(List<Channel> channels) {
         ChannelUID desiredChannelUid = null;
-        for (Channel ch : channels) {
-            if (ch.getUID().toString().endsWith("switchstatus") || ch.getUID().toString().endsWith("lightlevel")) {
-                desiredChannelUid = ch.getUID();
+        for (Channel channel : channels) {
+            if (channel.getUID().toString().endsWith("switchstatus")
+                    || channel.getUID().toString().endsWith("lightlevel")) {
+                desiredChannelUid = channel.getUID();
                 break;
             }
         }
@@ -225,5 +227,20 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
      */
     public X10Interface getX10Interface() {
         return x10Interface;
+    }
+
+    public void changeBridgeStatusToUp() {
+        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Changed the Bridge status to online because the serial interface is working again.");
+        }
+    }
+
+    public void changeBridgeStatusToDown(String message) {
+        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            // Bridge was online but the serial interface is now down
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            logger.debug("Changed the Bridge status to offline because {}.", message);
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -44,7 +44,6 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
      */
     public Cm11aLampHandler(Thing thing) {
         super(thing);
-        this.thing = thing;
         currentState = OnOffType.ON; // Assume it is on. During refresh it will be turned off and the currentState will
                                      // be updated appropriately
     }
@@ -93,58 +92,52 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
     @Override
     public void updateHardware(X10Interface x10Interface) throws IOException, InvalidAddressException {
         if (!desiredState.equals(currentState)) {
-            try {
-                boolean x10Status = false;
-                if (desiredState.equals(OnOffType.ON)) {
-                    x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_ON);
-                } else if (desiredState.equals(OnOffType.OFF)) {
-                    x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_OFF);
-                } else if (desiredState instanceof PercentType) {
-                    // desiredState must be a PercentType if we got here.
-                    // Calc how many bright increments we need to send (0 to 22)
-                    int desiredPercentFullBright = ((PercentType) desiredState).intValue();
-                    int dims = (desiredPercentFullBright * X10_DIM_INCREMENTS) / 100;
-                    if (currentState.equals(OnOffType.ON)) {
-                        // The current level isn't known because it would have gone to
-                        // the same level as when last turned on. Need to go to full dim and then up to desired
-                        // level.
-                        x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_DIM, X10_DIM_INCREMENTS);
-                        x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, dims);
-                    } else if (currentState.equals(OnOffType.OFF)) {
-                        // desiredState must be a PercentType if we got here. And, the light should be off
-                        // We should just be able to send the appropriate number if dims
-                        x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, dims);
-                    } else if (currentState instanceof PercentType) {
-                        // This is the expected case
-                        // Now currentState and desiredState are both PercentType's
-                        // Need to calc how much to dim or brighten
-                        int currentPercentFullBright = ((PercentType) currentState).intValue();
-                        int percentToBrighten = desiredPercentFullBright - currentPercentFullBright;
-                        int brightens = (percentToBrighten * X10_DIM_INCREMENTS) / 100;
-                        if (brightens > 0) {
-                            x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, brightens);
-                        } else if (brightens < 0) {
-                            x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_DIM, -brightens);
-                        }
-                    } else {
-                        // Current state is not as expected
-                        logger.warn("Starting state of dimmer was not as expected: {}",
-                                currentState.getClass().getName());
+            boolean x10Status = false;
+            if (desiredState.equals(OnOffType.ON)) {
+                x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_ON);
+            } else if (desiredState.equals(OnOffType.OFF)) {
+                x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_OFF);
+            } else if (desiredState instanceof PercentType) {
+                // desiredState must be a PercentType if we got here.
+                // Calc how many bright increments we need to send (0 to 22)
+                int desiredPercentFullBright = ((PercentType) desiredState).intValue();
+                int dims = (desiredPercentFullBright * X10_DIM_INCREMENTS) / 100;
+                if (currentState.equals(OnOffType.ON)) {
+                    // The current level isn't known because it would have gone to
+                    // the same level as when last turned on. Need to go to full dim and then up to desired
+                    // level.
+                    x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_DIM, X10_DIM_INCREMENTS);
+                    x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, dims);
+                } else if (currentState.equals(OnOffType.OFF)) {
+                    // desiredState must be a PercentType if we got here. And, the light should be off
+                    // We should just be able to send the appropriate number if dims
+                    x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, dims);
+                } else if (currentState instanceof PercentType) {
+                    // This is the expected case
+                    // Now currentState and desiredState are both PercentType's
+                    // Need to calc how much to dim or brighten
+                    int currentPercentFullBright = ((PercentType) currentState).intValue();
+                    int percentToBrighten = desiredPercentFullBright - currentPercentFullBright;
+                    int brightens = (percentToBrighten * X10_DIM_INCREMENTS) / 100;
+                    if (brightens > 0) {
+                        x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, brightens);
+                    } else if (brightens < 0) {
+                        x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_DIM, -brightens);
                     }
-                }
-
-                // Now the hardware should have been updated. If successful update the status
-                if (x10Status) {
-                    // Hardware update was successful so update OpenHAB
-                    updateState(channelUID, desiredState);
-                    setCurrentState(desiredState);
                 } else {
-                    // Hardware update failed, log
-                    logger.error("cm11a failed to update device: {}", houseUnitCode);
+                    // Current state is not as expected
+                    logger.warn("Starting state of dimmer was not as expected: {}", currentState.getClass().getName());
                 }
-            } catch (Exception e) {
-                logger.error("cm11a was not able to update the cm11a because of this exception. Check your hardware.",
-                        e);
+            }
+
+            // Now the hardware should have been updated. If successful update the status
+            if (x10Status) {
+                // Hardware update was successful so update OpenHAB
+                updateState(channelUID, desiredState);
+                setCurrentState(desiredState);
+            } else {
+                // Hardware update failed, log
+                logger.error("cm11a failed to update device: {}", houseUnitCode);
             }
         }
     }

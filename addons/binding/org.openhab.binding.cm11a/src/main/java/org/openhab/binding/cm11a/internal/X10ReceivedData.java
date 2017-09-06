@@ -1,14 +1,12 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-/**
- *
- */
+
 package org.openhab.binding.cm11a.internal;
 
 import java.util.Arrays;
@@ -78,8 +76,8 @@ public class X10ReceivedData {
     /**
      * Lookup table to convert House code received from the cm11a into an X10 house code
      */
-    public static final char HOUSE_CODE[] = new char[] { 'M', 'E', 'C', 'K', 'O', 'G', 'A', 'I', 'N', 'F', 'D', 'L', 'P',
-            'H', 'B', 'J' };
+    public static final char HOUSE_CODE[] = new char[] { 'M', 'E', 'C', 'K', 'O', 'G', 'A', 'I', 'N', 'F', 'D', 'L',
+            'P', 'H', 'B', 'J' };
 
     /**
      * Lookup table to convert Unit code received from the cm11a into an X10 unit code

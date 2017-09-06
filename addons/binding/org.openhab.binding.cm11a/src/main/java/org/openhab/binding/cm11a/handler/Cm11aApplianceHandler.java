@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,12 +38,11 @@ public class Cm11aApplianceHandler extends Cm11aAbstractHandler {
 
     public Cm11aApplianceHandler(Thing thing) {
         super(thing);
-        this.thing = thing;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("**** Cm11aApplianceHandler handleCommand command = {}, channelUID = {}", command.toString(),
+        logger.debug("**** Cm11aApplianceHandler handleCommand command = {}, channelUID = {}", command,
                 channelUID.getAsString());
 
         x10Function = 0;
@@ -52,10 +51,10 @@ public class Cm11aApplianceHandler extends Cm11aAbstractHandler {
 
         Cm11aBridgeHandler cm11aHandler = (Cm11aBridgeHandler) bridge.getHandler();
         if (cm11aHandler != null && cm11aHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            if (command.equals(OnOffType.ON)) {
+            if (command == OnOffType.ON) {
                 x10Function = X10Interface.FUNC_ON;
                 desiredState = OnOffType.ON;
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (command == OnOffType.OFF) {
                 x10Function = X10Interface.FUNC_OFF;
                 desiredState = OnOffType.OFF;
             } else if (command instanceof RefreshType) {
@@ -68,10 +67,10 @@ public class Cm11aApplianceHandler extends Cm11aAbstractHandler {
                 X10Interface x10Interface = cm11aHandler.getX10Interface();
                 x10Interface.scheduleHWUpdate(this);
             } else {
-                logger.debug("Received invalid command for switch {} command: {}", houseUnitCode, command.toString());
+                logger.debug("Received invalid command for switch {} command: {}", houseUnitCode, command);
             }
         } else {
-            logger.debug("Attempted to change switch to {} for {} because the cm11a is not online", command.toString(),
+            logger.debug("Attempted to change switch to {} for {} because the cm11a is not online", command,
                     houseUnitCode);
         }
     }
@@ -79,15 +78,10 @@ public class Cm11aApplianceHandler extends Cm11aAbstractHandler {
     @Override
     public void updateHardware(X10Interface x10Interface) throws IOException, InvalidAddressException {
         if (!desiredState.equals(currentState)) {
-            try {
-                if (x10Interface.sendFunction(houseUnitCode, x10Function)) {
-                    // Hardware update was successful so update openHAB
-                    updateState(channelUID, desiredState);
-                    setCurrentState(desiredState);
-                }
-            } catch (Exception e) {
-                logger.warn("cm11a was not able to update the cm11a because of this exception. Check your hardware.",
-                        e);
+            if (x10Interface.sendFunction(houseUnitCode, x10Function)) {
+                // Hardware update was successful so update openHAB
+                updateState(channelUID, desiredState);
+                setCurrentState(desiredState);
             }
         }
     }
