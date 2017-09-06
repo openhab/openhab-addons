@@ -1,0 +1,110 @@
+# Feican Binding
+
+This binding adds support for the Feican Wi-Fi version of the smart light led Bulb, the WiFi RGBW Bulb. 
+
+With this binding the light bulb can be switched on or off, set the color or set color based on color temperature.
+Set the brightness. It can also operate as a white light on which the brightness can be set. And it contains a set
+of preset programs, where for some the program speed can be set.
+
+## Supported Things
+
+This binding supports the Feican smart smart light led Bulb, WiFi RGBW Bulb. This bulb supports color, color temperature,
+brightness. It also is possible to use it as a white light and set brightness on that white light. It also has a number of
+preset programs, with static color, jumping color(s), gradient color(s) and flashing color(s). On some of these programs
+where it make sense the program speed can be set.
+
+It might be the Feican ledstrips also work as it seems they can be controlled with the same app. But this has not been tested.
+
+### Limitations
+
+It's not possible to get the state of the bulb from the bulb itself. Therefore the state visible to the user only reflects
+what was set in openHAB and may not correspond with the actual state.
+
+Due to the way the brightness works, the brightness can not be set to completely dim the light.
+
+## Prerequisites
+
+Before using the Feican bulb with openHab the devices must be connected to the Wi-Fi network. This can be done using the
+Feican Android or iPhone DreamColor app.
+
+## Discovery
+
+Devices can be auto discovered in the same local network as the openHAB application. It's possible to connect to
+devices in a different network, but these must be added manually.
+
+
+## Thing Configuration
+
+The thing has a few configuration parameters:
+
+| Parameter | Description                                                              |
+|-----------|------------------------------------------------------------------------- |
+| ipAddress | IP Address of the device. Mandatory.                                     |
+
+## Channels
+
+The following channels are available:
+
+| Channel Type ID   | Item Type | Description                                                                                |
+|-------------------|-----------|--------------------------------------------------------------------------------------------|
+| switch            | Switch    | This channel supports switching the light on and off.                                      |
+| color             | Color     | This channel supports adjusting the color of a light.                                      |
+| color_temperature | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).       |
+| brightness        | Dimmer    | This channel supports adjusting the brightness of the color, color temperature of program. |
+| white_brightness  | Dimmer    | This channel supports adjusting the brightness value of the white light.                   |
+| program           | String    | This channel supports setting the bulb to a static, jumping, gradient or flashing light.   |
+| programSpeed      | Dimmer    | This channel supports adjusting speed of jump, gradient or flash programs                  |
+
+The program channel supports the following values:
+
+| Value | Description         |
+|-------|---------------------|
+| 1     | Static red          |
+| 2     | Static blue         |
+| 3     | Static green        |
+| 4     | Static cyan         |
+| 5     | Static yellow       |
+| 6     | Static purple       |
+| 7     | Static white        |
+| 8     | Tricolor jump       |
+| 9     | 7-color jump        |
+| 10    | Tricolor gradient   |
+| 11    | 7-color gradient    |
+| 12    | Red gradient        |
+| 13    | Green gradient      |
+| 14    | Blue gradient       |
+| 15    | Yellow gradient     |
+| 16    | Cyan gradient       |
+| 17    | Purple gradient     |
+| 18    | White gradient      |
+| 19    | Red-Green gradient  |
+| 20    | Red-Blue gradient   |
+| 21    | Green-Blue gradient |
+| 22    | 7-color flash       |
+| 23    | Red flash           |
+| 24    | Green flash         |
+| 25    | Blue flash          |
+| 26    | Yellow flash        |
+| 27    | Cyan flash          |
+| 28    | Purple flash        |
+| 29    | White flash         |
+
+## Full Example
+
+### feican.things:
+
+```
+feican:bulb:home "Living Room" [ ipAddress="192.168.0.13" ]
+```
+
+### feican.items:
+
+```
+Switch   FC_1_Switch  "Switch"                    { channel="feican:bulb:home:switch" }
+Color    FC_1_Color   "Color"            <slider> { channel="feican:bulb:home:color" }
+Dimmer   FC_1_Dimmer  "Brightness [%d]"  <slider> { channel="feican:bulb:home:brightness" }
+```
+
+## Disclaimer
+
+This binding is not endorsed or sponsored by Feican.
