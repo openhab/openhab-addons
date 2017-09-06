@@ -44,8 +44,10 @@ public class AcknowledgementMessage extends Message {
         ON_ACK(216),
         POWER_CALIBRATION_ACK(218),
         OFF_ACK(222),
+        REAL_TIME_CLOCK_SET_ACK(223),
         TIMEOUT(225),
         ON_OFF_NACK(226),
+        REAL_TIME_CLOCK_SET_NACK(231),
         SLEEP_SET_ACK(246),
         POWER_LOG_INTERVAL_SET_ACK(248),
         UNKNOWN(999);

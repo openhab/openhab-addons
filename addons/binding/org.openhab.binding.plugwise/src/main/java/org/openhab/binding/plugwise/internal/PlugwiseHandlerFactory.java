@@ -21,18 +21,22 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.plugwise.handler.PlugwiseRelayDeviceHandler;
 import org.openhab.binding.plugwise.handler.PlugwiseScanHandler;
 import org.openhab.binding.plugwise.handler.PlugwiseSenseHandler;
 import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
 import org.openhab.binding.plugwise.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link PlugwiseHandlerFactory} is responsible for creating Plugwise things and thing handlers.
  *
  * @author Wouter Born - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.plugwise", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
@@ -44,7 +48,6 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_STICK)) {

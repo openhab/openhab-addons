@@ -14,6 +14,7 @@
             <channel id="leftbuttonstate" typeId="leftbuttonstate" />
             <channel id="rightbuttonstate" typeId="rightbuttonstate" />
         </channels>
+        <representation-property>macAddress</representation-property>
         <config-description-ref uri="thing-type:plugwise:switch" />
     </thing-type>
 
