@@ -80,7 +80,6 @@ public class ExecHandler extends BaseThingHandler {
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
-                logger.error("command = {}", command.toString());
                 String previousInput = lastInput;
                 lastInput = command.toString();
                 if (lastInput != null && !lastInput.equals(previousInput)) {
