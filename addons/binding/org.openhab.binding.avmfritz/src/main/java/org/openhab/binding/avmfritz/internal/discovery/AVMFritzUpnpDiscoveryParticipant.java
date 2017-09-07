@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * 
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.avmfritz")
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
 public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     /**
      * Logger
