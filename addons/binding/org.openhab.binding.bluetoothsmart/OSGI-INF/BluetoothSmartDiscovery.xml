@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.BluetoothSmart.discovery.BluetoothSmartDiscoveryService">
+    <implementation class="org.openhab.binding.bluetoothsmart.internal.discovery.BluetoothSmartDiscoveryServiceImpl"/>
+
+    <reference bind="setBluetoothManager" cardinality="1..1" interface="org.sputnikdev.bluetooth.manager.BluetoothManager"
+               name="BluetoothManager" policy="static" unbind="unsetBluetoothManager"/>
+
+    <service>
+        <provide interface="org.openhab.binding.bluetoothsmart.BluetoothSmartDiscoveryService"/>
+        <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+    </service>
+
+</scr:component>
