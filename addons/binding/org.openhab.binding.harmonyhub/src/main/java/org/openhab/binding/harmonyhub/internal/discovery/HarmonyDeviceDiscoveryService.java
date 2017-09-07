@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.harmonyhub.discovery;
+package org.openhab.binding.harmonyhub.internal.discovery;
 
 import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.HARMONY_DEVICE_THING_TYPE;
 

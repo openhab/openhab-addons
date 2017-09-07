@@ -35,8 +35,8 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
-import org.openhab.binding.harmonyhub.config.HarmonyDeviceConfig;
 import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.openhab.binding.harmonyhub.internal.config.HarmonyDeviceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

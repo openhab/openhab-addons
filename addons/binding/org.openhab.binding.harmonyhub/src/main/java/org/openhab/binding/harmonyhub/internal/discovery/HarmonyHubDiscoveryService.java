@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.harmonyhub.discovery;
+package org.openhab.binding.harmonyhub.internal.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -254,7 +253,6 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                             hubDiscovered(props.getProperty("ip"),
                                     props.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", ""),
                                     props.getProperty("friendlyName"));
-
                         }
                     }
                 } catch (IOException e) {
@@ -286,9 +284,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
                 id.replaceAll("[^A-Za-z0-9\\-_]", ""));
-        thingDiscovered(DiscoveryResultBuilder.create(uid)
-                .withProperties(properties)
-                .withLabel("HarmonyHub " + friendlyName)
-                .build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel("HarmonyHub " + friendlyName).build());
     }
 }
