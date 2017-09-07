@@ -10,7 +10,6 @@ package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -82,7 +81,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
 
     public void deactivate() {
         super.deactivate();
-        removeOlderResults(new Date().getTime());
     }
 
     /**
@@ -102,7 +100,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         logger.debug("stop manual scan on bridge {}", bridgeHandler.getThing().getUID());
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
     }
 
     /**
