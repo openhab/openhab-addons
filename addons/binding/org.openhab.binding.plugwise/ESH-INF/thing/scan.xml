@@ -13,6 +13,7 @@
             <channel id="triggered" typeId="triggered" />
             <channel id="lastseen" typeId="lastseen" />
         </channels>
+        <representation-property>macAddress</representation-property>
         <config-description-ref uri="thing-type:plugwise:scan" />
     </thing-type>
 

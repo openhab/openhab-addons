@@ -84,7 +84,6 @@ public class NetworkStatusResponseMessage extends Message {
         } else {
             throw new PlugwisePayloadMismatchException(NETWORK_STATUS_RESPONSE, PAYLOAD_PATTERN, payload);
         }
-
     }
 
     @Override

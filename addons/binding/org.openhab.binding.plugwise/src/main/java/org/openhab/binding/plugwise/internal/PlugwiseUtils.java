@@ -91,7 +91,6 @@ public final class PlugwiseUtils {
     }
 
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {
-
         boolean update = false;
 
         // Update firmware version property

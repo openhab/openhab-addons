@@ -67,7 +67,6 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
 
     @Override
     public void handleReponseMessage(Message message) {
-
         updateLastSeen();
 
         switch (message.getType()) {
