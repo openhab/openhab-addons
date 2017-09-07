@@ -58,6 +58,10 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     private final Logger logger = LoggerFactory.getLogger(BoxHandler.class);
 
     /**
+     * Initial delay in s for polling job.
+     */
+    private static final int INITIAL_DELAY = 1;
+    /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
     private long refreshInterval = 15;
@@ -166,9 +170,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED,
-                        device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
+                        ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
@@ -258,8 +261,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+            logger.debug("start polling job at intervall {}s", refreshInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, INITIAL_DELAY, refreshInterval,
+                    TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
         }

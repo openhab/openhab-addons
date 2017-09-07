@@ -23,22 +23,24 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.avmfritz.BindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AvmUpnpDiscoveryParticipant} is responsible for discovering
+ * The {@link AVMFritzUpnpDiscoveryParticipant} is responsible for discovering
  * new and removed FRITZ!Box devices. It uses the central
  * {@link UpnpDiscoveryService}.
  *
  * @author Robert Bausdorf - Initial contribution
  * 
  */
-public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
 
     /**
      * Provide supported thing type uid's

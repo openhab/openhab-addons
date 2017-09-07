@@ -143,6 +143,10 @@ public class DeviceModel {
         return firmwareVersion;
     }
 
+    public String getManufacturer() {
+        return deviceManufacturer;
+    }
+
     public String getProductName() {
         return productName;
     }
@@ -157,13 +161,12 @@ public class DeviceModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("ain", this.getIdentifier()).append("bitmask", this.bitmask)
-                .append("isDectRepeater", this.isDectRepeater()).append("isPowermeter", this.isPowermeter())
-                .append("isTempSensor", this.isTempSensor()).append("isSwitchableOutlet", this.isSwitchableOutlet())
-                .append("isHeatingThermostat", this.isHeatingThermostat()).append("id", this.deviceId)
-                .append("manufacturer", this.deviceManufacturer).append("productname", this.getProductName())
-                .append("fwversion", this.getFirmwareVersion()).append("present", this.present)
-                .append("name", this.name).append(this.getSwitch()).append(this.getPowermeter())
-                .append(this.getTemperature()).append(this.getHkr()).toString();
+        return new ToStringBuilder(this).append("ain", getIdentifier()).append("bitmask", bitmask)
+                .append("isDectRepeater", isDectRepeater()).append("isPowermeter", isPowermeter())
+                .append("isTempSensor", isTempSensor()).append("isSwitchableOutlet", isSwitchableOutlet())
+                .append("isHeatingThermostat", isHeatingThermostat()).append("id", deviceId)
+                .append("manufacturer", getManufacturer()).append("productname", getProductName())
+                .append("fwversion", getFirmwareVersion()).append("present", getPresent()).append("name", getName())
+                .append(getSwitch()).append(getPowermeter()).append(getTemperature()).append(getHkr()).toString();
     }
 }
