@@ -10,9 +10,15 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls" id="zone1" />
-			<channel-group typeId="zone2Controls" id="zone2" />
-			<channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zoneControls" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -32,13 +38,20 @@
 	<thing-type id="ipAvr2014">
 		<label>Pioneer AVR over IP 2014</label>
 		<description>Control a 2014 Pioneer AVR (SC-LX87, SC-LX77, SC-LX57, SC-2023, SC-1223, VSX-1123, VSX-923) over IP </description>
-
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls2014" id="zone1" />
-			<channel-group typeId="zone2Controls2014" id="zone2" />
-			<channel-group typeId="zone3Controls2014" id="zone3" />
-			<channel-group typeId="zone4Controls2014" id="zone4" />
+			<channel-group typeId="controls2014" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2014" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2014" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2014" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -61,10 +74,18 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls2015" id="zone1" />
-			<channel-group typeId="zone2Controls2015" id="zone2" />
-			<channel-group typeId="zone3Controls2015" id="zone3" />
-			<channel-group typeId="zone4Controls2015" id="zone4" />
+			<channel-group typeId="controls2015" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2015" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2015" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2015" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -87,10 +108,18 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls2016" id="zone1" />
-			<channel-group typeId="zone2Controls2016" id="zone2" />
-			<channel-group typeId="zone3Controls2016" id="zone3" />
-			<channel-group typeId="zone4Controls2016" id="zone4" />
+			<channel-group typeId="controls2016" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2016" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2016" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2016" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -114,9 +143,9 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls" id="zone1" />
-			<channel-group typeId="zone2Controls" id="zone2" />
-			<channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zoneControls" id="zone1" />
+			<channel-group typeId="zoneControls" id="zone2" />
+			<channel-group typeId="zoneControls" id="zone3" />
 		</channel-groups>
 
 		<config-description>
@@ -160,8 +189,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone1Controls">
-		<label>Zone 1</label>
+	<channel-group-type id="zoneControls">
+		<label>Controls</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -171,8 +200,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone1Controls2014">
-		<label>Zone 1</label>
+	<channel-group-type id="controls2014">
+		<label>zoneControls2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -182,41 +211,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone1Controls2015">
-		<label>Zone 1</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel2015" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone1Controls2016">
-		<label>Zone 1</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel2016" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone2Controls">
-		<label>Zone 2</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone2Controls2014">
-		<label>Zone 2</label>
+	<channel-group-type id="zoneControls2014">
+		<label>zoneControls2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -226,74 +222,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone2Controls2015">
-		<label>Zone 2</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceZoneChannel2015" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone2Controls2016">
-		<label>Zone 2</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceZoneChannel2016" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone3Controls">
-		<label>Zone 3</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone3Controls2014">
-		<label>Zone 3</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone3Controls2015">
-		<label>Zone 3</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceZoneChannel2015" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone3Controls2016">
-		<label>Zone 3</label>
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceZoneChannel2016" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone4Controls2014">
-		<label>HD Zone</label>
+	<channel-group-type id="hdZoneControls2014">
+		<label>zoneControls2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -303,8 +233,30 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone4Controls2015">
-		<label>HD Zone</label>
+	<channel-group-type id="controls2015">
+		<label>zoneControls2015</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel2015" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zoneControls2015">
+		<label>zoneControls2015</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hdZoneControls2015">
+		<label>zoneControls2015</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -314,8 +266,30 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone4Controls2016">
-		<label>HD Zone</label>
+	<channel-group-type id="controls2016">
+		<label>controls2016</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel2016" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zoneControls2016">
+		<label>zoneControls2016</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceZoneChannel2016" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hdZoneControls2016">
+		<label>hdZoneControls2016</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
