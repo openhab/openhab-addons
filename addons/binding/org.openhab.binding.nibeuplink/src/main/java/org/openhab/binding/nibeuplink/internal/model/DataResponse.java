@@ -13,12 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.nibeuplink.UplinkDataChannels;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * data class to map the json status response
+ *
+ * @author afriese
+ *
  */
 public class DataResponse {
 
@@ -40,7 +41,7 @@ public class DataResponse {
     @JsonProperty("Values")
     private List<Value> values = new ArrayList<>();
 
-    public String getValue(UplinkDataChannels key) {
+    public String getValue(VVM320Channels key) {
         for (Value value : values) {
             if (value.variableId.equals(key.getId())) {
                 return value.currentValue;

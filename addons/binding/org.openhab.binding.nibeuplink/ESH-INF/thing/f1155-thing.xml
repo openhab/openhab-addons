@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeuplink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="f1155">
+		<label>NibeUplink</label>
+		<description>data retrieved from Nibe Uplink web interface</description>
+
+		<channel-groups>
+			<channel-group typeId="f1155-sensors" id="sensor" />
+			<channel-group typeId="f1155-settings" id="setting" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:nibeuplink:web" />
+	</thing-type>
+
+	<thing-type id="f1155-sensors">
+		<label>NibeUplink</label>
+		<description>data retrieved from Nibe Uplink web interface</description>
+
+		<channel-groups>
+			<channel-group typeId="f1155-sensors" id="sensor" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:nibeuplink:web" />
+	</thing-type>
+
+	<thing-type id="f1155-settings">
+		<label>NibeUplink</label>
+		<description>data retrieved from Nibe Uplink web interface</description>
+
+		<channel-groups>
+			<channel-group typeId="f1155-settings" id="setting" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:nibeuplink:web" />
+	</thing-type>
+
+</thing:thing-descriptions>

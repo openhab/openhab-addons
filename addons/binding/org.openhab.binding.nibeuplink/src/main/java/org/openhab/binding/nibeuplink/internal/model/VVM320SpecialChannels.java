@@ -23,17 +23,19 @@ public enum VVM320SpecialChannels implements Channel {
     CH_43009("43009", "Calc. Supply S1", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_40033("40033", "BT50 Room Temp S1", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_43161("43161", "External adjustment activated via input S1", ChannelType.Sensor, ChannelGroup.General,
-            Double.class),
+            String.class),
     CH_40008("40008", "BT2 Supply temp S1", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_40071("40071", "BT25 Ext. Supply", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_40072("40072", "BF1 EP14 Flow", ChannelType.Sensor, ChannelGroup.General, Double.class),
+
     CH_44270("44270", "Calc. Cooling Supply S1", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_43081("43081", "Tot. op.time add.", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_43084("43084", "Int. el.add. Power", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_47212("47212", "Max int add. power", ChannelType.Setting, ChannelGroup.General, Double.class),
     CH_48914("48914", "Max int add. power, SG Ready", ChannelType.Setting, ChannelGroup.General, Double.class),
     CH_40121("40121", "BT63 Add Supply Temp", ChannelType.Sensor, ChannelGroup.General, Double.class),
+
     CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelType.Sensor, ChannelGroup.General, Double.class),
     CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelType.Sensor, ChannelGroup.General, Double.class),
@@ -66,7 +68,7 @@ public enum VVM320SpecialChannels implements Channel {
     CH_44701("44701", "EB101-EP14 Actual Cpr Frequency Outdoor Unit", ChannelType.Sensor, ChannelGroup.Compressor,
             Double.class),
     CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelType.Sensor, ChannelGroup.Compressor,
-            Double.class),
+            String.class),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelType.Sensor, ChannelGroup.Compressor,
             Double.class),
     // Airsupply
@@ -76,7 +78,7 @@ public enum VVM320SpecialChannels implements Channel {
     CH_40183("40183", "AZ30-BT23 Outdoor temp. ERS", ChannelType.Sensor, ChannelGroup.Airsupply, Double.class),
     CH_40311("40311", "External ERS accessory GQ2 speed", ChannelType.Sensor, ChannelGroup.Airsupply, Double.class),
     CH_40312("40312", "External ERS accessory GQ3 speed", ChannelType.Sensor, ChannelGroup.Airsupply, Double.class),
-    CH_40942("40942", "External ERS accessory block status", ChannelType.Sensor, ChannelGroup.Airsupply, Double.class),
+    CH_40942("40942", "External ERS accessory block status", ChannelType.Sensor, ChannelGroup.Airsupply, String.class),
 
     /* END */
     ;

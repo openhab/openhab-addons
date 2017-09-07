@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,21 +24,25 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nibeuplink.UplinkDataChannels;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
+import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UplinkHandler} is responsible for handling commands, which are
+ * The {@link GenericUplinkHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author afriese - Initial contribution
  */
-public class UplinkHandler extends BaseThingHandler implements NibeUplinkHandler {
+public abstract class GenericUplinkHandler extends BaseThingHandler implements NibeUplinkHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(UplinkHandler.class);
+    private final String NO_VALUE = "--";
+
+    private final Logger logger = LoggerFactory.getLogger(GenericUplinkHandler.class);
+
+    private Set<Channel> deadChannels = new HashSet<>(1000);
 
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 60 s)
@@ -58,7 +64,7 @@ public class UplinkHandler extends BaseThingHandler implements NibeUplinkHandler
      */
     private ScheduledFuture<?> pollingJob;
 
-    public UplinkHandler(@NonNull Thing thing) {
+    public GenericUplinkHandler(@NonNull Thing thing) {
         super(thing);
         this.pollingRunnable = new UplinkPolling(this);
     }
@@ -123,18 +129,40 @@ public class UplinkHandler extends BaseThingHandler implements NibeUplinkHandler
     @Override
     public void updateChannelStatus(Map<String, String> values) {
         logger.debug("Handling channel update.");
+
         for (String key : values.keySet()) {
-            UplinkDataChannels channel = UplinkDataChannels.fromId(key);
+            Channel channel = getThingSpecificChannel(key);
             if (channel != null) {
-                logger.debug("Channel is to be updated: {}", channel.toString());
-                if (channel.getType().equals(Double.class)) {
-                    updateState(channel.toString(),
-                            new DecimalType(values.get(key).replaceAll(",", ".").replaceAll("[^0-9.]", "")));
+                String value = values.get(key);
+                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
+                if (value != null && !value.equals(NO_VALUE)) {
+                    if (channel.getJavaType().equals(Double.class)) {
+                        try {
+                            updateState(channel.getFQName(),
+                                    new DecimalType(value.replaceAll(",", ".").replaceAll("[^0-9.]", "")));
+                        } catch (NumberFormatException ex) {
+                            logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
+                                    value);
+                        }
+                    } else {
+                        updateState(channel.getFQName(), new StringType(value));
+                    }
                 } else {
-                    updateState(channel.toString(), new StringType(values.get(key)));
+                    logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+                    deadChannels.add(channel);
                 }
+            } else {
+                logger.debug("Could not identify channel: {} for model {}", key,
+                        getThing().getThingTypeUID().getAsString());
             }
         }
+    }
+
+    protected abstract Channel getThingSpecificChannel(String id);
+
+    @Override
+    public Set<Channel> getDeadChannels() {
+        return deadChannels;
     }
 
     @Override

@@ -20,15 +20,16 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.nibeuplink.UplinkDataChannels;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
+import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
+import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * generic command that retrieves status values for all channels defined in {@link UplinkDataChannels}
+ * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
  *
  * @author afriese
  *
@@ -50,8 +51,10 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         fields.add(DATA_API_FIELD_LAST_DATE, DATA_API_FIELD_LAST_DATE_DEFAULT_VALUE);
         fields.add(DATA_API_FIELD_ID, config.getNibeId());
 
-        for (UplinkDataChannels channel : UplinkDataChannels.values()) {
-            fields.add(DATA_API_FIELD_DATA, channel.getId());
+        for (Channel channel : handler.getChannels()) {
+            if (!handler.getDeadChannels().contains(channel)) {
+                fields.add(DATA_API_FIELD_DATA, channel.getId());
+            }
         }
 
         fields.add(DATA_API_FIELD_DATA, DATA_API_FIELD_DATA_DEFAULT_VALUE);
@@ -104,10 +107,10 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         DataResponse obj = null;
         try {
-            logger.debug(jsonInString);
+            logger.debug("JSON String: {}", jsonInString);
             obj = mapper.readValue(jsonInString, DataResponse.class);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("Caught IOException: {}", e.getMessage());
         }
         return obj;
     }

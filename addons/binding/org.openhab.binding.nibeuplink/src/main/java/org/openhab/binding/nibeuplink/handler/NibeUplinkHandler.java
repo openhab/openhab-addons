@@ -8,17 +8,20 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
+import org.openhab.binding.nibeuplink.internal.model.Channel;
 
 /**
- * public interface of the {@link UplinkHandler}
- * 
+ * public interface of the {@link GenericUplinkHandler}
+ *
  * @author afriese
  *
  */
@@ -43,5 +46,9 @@ public interface NibeUplinkHandler extends ThingHandler {
     public void updateChannelStatus(Map<String, String> values);
 
     public NibeUplinkConfiguration getConfiguration();
+
+    public List<Channel> getChannels();
+
+    public Set<Channel> getDeadChannels();
 
 }

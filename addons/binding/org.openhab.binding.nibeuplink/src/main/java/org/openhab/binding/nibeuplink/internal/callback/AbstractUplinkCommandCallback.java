@@ -80,12 +80,17 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
         super.onFailure(response, failure);
         try {
             logger.warn("Request failed: {}", failure.toString());
-            throw failure;
+            httpStatus = HttpStatus.IM_A_TEAPOT_418;
+
+            // as we are not allowed to catch Throwables we must only throw Exceptions!
+            if (failure instanceof Exception) {
+                throw (Exception) failure;
+            }
         } catch (SocketTimeoutException e) {
             httpStatus = HttpStatus.REQUEST_TIMEOUT_408;
         } catch (UnknownHostException e) {
             httpStatus = HttpStatus.BAD_GATEWAY_502;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             httpStatus = HttpStatus.IM_A_TEAPOT_418;
         }
 
