@@ -43,8 +43,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
-import org.openhab.binding.harmonyhub.config.HarmonyHubConfig;
 import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
