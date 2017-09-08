@@ -1884,7 +1884,7 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         <item-type>Number</item-type>
         <label>EB101-EP14 Actual Cpr Frequency Outdoor Unit</label>
         <description></description>
-        <state pattern="%.1f Hz" readOnly="true">
+        <state pattern="%d Hz" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="vvm320-type-44702">
