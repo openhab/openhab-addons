@@ -9,8 +9,8 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.harmonyhub.discovery">
-	<implementation class="org.openhab.binding.harmonyhub.discovery.HarmonyHubDiscoveryService"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.harmonyhub.internal.discovery">
+	<implementation class="org.openhab.binding.harmonyhub.internal.discovery.HarmonyHubDiscoveryService"/>
 	<service>
 		<provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
 	</service>
