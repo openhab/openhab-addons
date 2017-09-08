@@ -124,10 +124,12 @@ Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
 Write("<list>\n");
 foreach (datapointName, datapointNames) {
     object dp = dom.GetObject(channel #  datapointName);
-    Write("  <entry");
-    Write(" name='"); WriteXML(dp.Name().StrValueByIndex(".",2));
-    Write("' value='"); WriteXML(dp.Value());
-    Write("' />\n");
+	if(dp) {
+        Write("  <entry");
+        Write(" name='"); WriteXML(dp.Name().StrValueByIndex(".",2));
+        Write("' value='"); WriteXML(dp.Value());
+        Write("' />\n");
+	}
 }
 Write("</list>");
         ]]>
