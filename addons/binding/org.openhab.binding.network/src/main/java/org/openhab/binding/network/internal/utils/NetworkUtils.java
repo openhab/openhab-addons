@@ -205,7 +205,11 @@ public class NetworkUtils {
         if (StringUtils.isBlank(result)) {
             return null;
         } else if (result.contains("Thomas Habets")) {
-            return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+            if (result.contains("-w sec Specify a timeout")) {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+            } else {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
+            }
         } else if (result.contains("-w timeout")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         }
@@ -250,7 +254,8 @@ public class NetworkUtils {
     public enum ArpPingUtilEnum {
         UNKNOWN_TOOL,
         IPUTILS_ARPING,
-        THOMAS_HABERT_ARPING
+        THOMAS_HABERT_ARPING,
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT
     }
 
     /**
@@ -273,10 +278,12 @@ public class NetworkUtils {
             return false;
         }
         Process proc;
-        // IPutilsArping uses "-w", ThomasHabertArping "-W" for the timeout
-        String timeoutFlag = arpingTool == ArpPingUtilEnum.IPUTILS_ARPING ? "-w" : "-W";
-        proc = new ProcessBuilder(arpUtilPath, timeoutFlag, String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
-                interfaceName, ipV4address).start();
+        if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-I", interfaceName, ipV4address).start();
+        } else {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
+                    interfaceName, ipV4address).start();
+        }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
