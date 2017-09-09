@@ -47,11 +47,12 @@ pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ]
 
 ##Input Source Mapping
 
-Here after are the ID values of the input sources:
+Here after are the ID values of the input sources (depending on you AVR input sources might not be available):
 
 * 04: DVD
 * 25: BD
 * 05: TV/SAT
+* 06: SAT/CBL
 * 15: DVR/BDR
 * 10: VIDEO 1(VIDEO)
 * 14: VIDEO 2
@@ -60,16 +61,25 @@ Here after are the ID values of the input sources:
 * 21: HDMI 3
 * 22: HDMI 4
 * 23: HDMI 5
+* 24: HDMI 6
+* 34: HDMI 7
+* 35: HDMI 8
 * 26: HOME MEDIA GALLERY(Internet Radio)
+* 44: Media Server
+* 38: Internet Radio
 * 17: iPod/USB
-* 18: XM RADIO
+* 48: MHL
 * 01: CD
 * 03: CD-R/TAPE
 * 02: TUNER
 * 00: PHONO
+* 13: USB-DAC
 * 12: MULTI CH IN
-* 33: ADAPTER PORT
+* 33: ADAPTER PORT (BT)
+* 18: XM RADIO
 * 27: SIRIUS
+* 41: PANDORA
+* 57: Spotify
 * 31: HDMI (cyclic)
 
 
