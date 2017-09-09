@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Spotify Binding
 Bundle-SymbolicName: org.openhab.binding.spotify;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
@@ -11,6 +11,7 @@ Import-Package:
  com.google.gson.annotations,
  javax.servlet,
  javax.servlet.http,
+ org.eclipse.jdt.annotation;resolution:="optional",
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,

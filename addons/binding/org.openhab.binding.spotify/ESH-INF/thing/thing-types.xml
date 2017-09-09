@@ -23,7 +23,6 @@
             <channel id="trackPlay" typeId="trackPlay"/>
             <channel id="trackPlayer" typeId="trackPlayer"/>
             <channel id="trackRepeat" typeId="trackRepeat"/>
-            <channel id="trackShuffle" typeId="trackShuffle"/>
             <channel id="trackId" typeId="currentlyPlayedTrackId"/>
             <channel id="trackHref" typeId="currentlyPlayedTrackHref"/>
             <channel id="trackUri" typeId="currentlyPlayedTrackUri"/>
@@ -170,12 +169,6 @@
         <item-type>String</item-type>
         <label>Repeat Mode</label>
         <description>Channel get/sets player repeat mode</description>
-    </channel-type>
-    <channel-type id="trackShuffle">
-        <item-type>Switch</item-type>
-        <label>Shuffle Track</label>
-        <description>Channel get/sets player shuffle mode</description>
-        <category>Switch</category>
     </channel-type>
     <channel-type id="currentlyPlayedTrackId" advanced="true">
         <item-type>String</item-type>
@@ -356,14 +349,12 @@
         <label>Device Active</label>
         <description>Channel reports active status for device</description>
         <category>Switch</category>
-        <state readOnly="true"></state>
     </channel-type>
     <channel-type id="deviceRestricted" advanced="true">
         <item-type>Switch</item-type>
         <label>Device Restricted</label>
         <description>Channel reports whether the device is restricted</description>
         <category>Switch</category>
-        <state readOnly="true"></state>
     </channel-type>
 
 </thing:thing-descriptions>

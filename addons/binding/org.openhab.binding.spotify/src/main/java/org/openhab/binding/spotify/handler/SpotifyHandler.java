@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -355,7 +356,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         SpotifyWebAPIPlayerInfo playerInfo = spotifySession.getPlayerInfo();
 
         setChannelValue(CHANNEL_TRACKPLAYER, playerInfo.getIsPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        setChannelValue(CHANNEL_TRACKSHUFFLE, playerInfo.getShuffleState() ? OnOffType.ON : OnOffType.OFF);
+        setChannelValue(CHANNEL_DEVICESHUFFLE, playerInfo.getShuffleState() ? OnOffType.ON : OnOffType.OFF);
         setChannelValue(CHANNEL_TRACKREPEAT, new StringType(playerInfo.getRepeatState()));
 
         Long progress = playerInfo.getProgressMs();
@@ -407,7 +408,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         }
 
         setChannelValue(CHANNEL_DEVICEID, new StringType(playerInfo.getDevice().getId()));
-        setChannelValue(CHANNEL_DEVICEACTIVE, playerInfo.getDevice().getIsActive() ? OnOffType.ON : OnOffType.OFF);
+        // setChannelValue(CHANNEL_DEVICEACTIVE, playerInfo.getDevice().getIsActive() ? OnOffType.ON : OnOffType.OFF);
         setChannelValue(CHANNEL_DEVICENAME, new StringType(playerInfo.getDevice().getName()));
         setChannelValue(CHANNEL_DEVICETYPE, new StringType(playerInfo.getDevice().getType()));
 

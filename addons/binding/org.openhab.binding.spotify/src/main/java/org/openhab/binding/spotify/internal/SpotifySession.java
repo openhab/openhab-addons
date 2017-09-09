@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -236,6 +237,10 @@ public class SpotifySession implements Runnable {
                             new StringType(accessToken));
 
                     return;
+                } else if (response.getStatus() == 400) {
+                    logger.error("Response: {} - verify that Spotify Client ID and Client Secret are correct!",
+                            response.getContentAsString());
+
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.debug("Exception caught while calling Spotify Web API for token refresh: ", e);
@@ -377,7 +382,7 @@ public class SpotifySession implements Runnable {
         String result = requestReply("GET", url, "");
         Gson gson = new Gson();
         SpotifyWebAPIDeviceList deviceList = gson.fromJson(result, SpotifyWebAPIDeviceList.class);
-        if (deviceList == null || deviceList.getDevices() == null) {
+        if (deviceList.getDevices() == null) {
             return Collections.emptyList();
         }
         return deviceList.getDevices();

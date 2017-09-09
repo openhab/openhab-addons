@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -98,6 +99,7 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
      * @param httpService the shared http service
      */
     protected void unsetHttpService(HttpService httpService) {
+        httpService.unregister(WEBAPP_ALIAS);
         httpService.unregister(SERVLET_NAME);
         this.httpService = null;
     }
@@ -372,5 +374,4 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
             this.clientId = clientId;
         }
     }
-
 }
