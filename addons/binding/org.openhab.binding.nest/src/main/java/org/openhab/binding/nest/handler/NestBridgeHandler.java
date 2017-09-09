@@ -185,7 +185,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private Thing getDevice(String deviceId, List<Thing> things) {
+    private Thing getExistingDevice(String deviceId, List<Thing> things) {
         for (Thing thing : things) {
             String thingDeviceId = thing.getUID().getId();
             if (thingDeviceId.equals(deviceId)) {
@@ -199,45 +199,53 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         Bridge bridge = getThing();
         List<Thing> things = bridge.getThings();
 
-        for (Thermostat thermostat : devices.getThermostats().values()) {
-            Thing thingThermostat = getDevice(thermostat.getDeviceId(), things);
-            if (thingThermostat != null) {
-                NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
-                if (handler != null) {
-                    handler.updateThermostat(thermostat);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new thermostat {}", thermostat.getDeviceId());
-                    listener.onThermostatAdded(thermostat);
-                }
-            }
-        }
-        for (Camera camera : devices.getCameras().values()) {
-            Thing thingCamera = getDevice(camera.getDeviceId(), things);
-            if (thingCamera != null) {
-                NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
-                if (handler != null) {
-                    handler.updateCamera(camera);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new camera. {}", camera.getDeviceId());
-                    listener.onCameraAdded(camera);
+        if (devices.getThermostats() != null) {
+            for (Thermostat thermostat : devices.getThermostats().values()) {
+                Thing thingThermostat = getExistingDevice(thermostat.getDeviceId(), things);
+                if (thingThermostat != null) {
+                    NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
+                    if (handler != null) {
+                        handler.updateThermostat(thermostat);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new thermostat {}", thermostat.getDeviceId());
+                        listener.onThermostatAdded(thermostat);
+                    }
                 }
             }
         }
-        for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
-            Thing thingSmokeDetector = getDevice(smokeDetector.getDeviceId(), things);
-            if (thingSmokeDetector != null) {
-                NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
-                if (handler != null) {
-                    handler.updateSmokeDetector(smokeDetector);
+
+        if (devices.getCameras() != null) {
+            for (Camera camera : devices.getCameras().values()) {
+                Thing thingCamera = getExistingDevice(camera.getDeviceId(), things);
+                if (thingCamera != null) {
+                    NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
+                    if (handler != null) {
+                        handler.updateCamera(camera);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new camera. {}", camera.getDeviceId());
+                        listener.onCameraAdded(camera);
+                    }
                 }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
-                    listener.onSmokeDetectorAdded(smokeDetector);
+            }
+        }
+
+        if (devices.getSmokeDetectors() != null) {
+            for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
+                Thing thingSmokeDetector = getExistingDevice(smokeDetector.getDeviceId(), things);
+                if (thingSmokeDetector != null) {
+                    NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
+                    if (handler != null) {
+                        handler.updateSmokeDetector(smokeDetector);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
+                        listener.onSmokeDetectorAdded(smokeDetector);
+                    }
                 }
             }
         }
@@ -248,7 +256,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         List<Thing> things = bridge.getThings();
 
         for (Structure struct : structures) {
-            Thing thingStructure = getDevice(struct.getStructureId(), things);
+            Thing thingStructure = getExistingDevice(struct.getStructureId(), things);
             if (thingStructure != null) {
                 NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
                 if (handler != null) {
