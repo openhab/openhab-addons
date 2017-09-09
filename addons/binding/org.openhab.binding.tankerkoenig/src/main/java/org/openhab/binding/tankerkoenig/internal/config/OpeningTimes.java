@@ -57,9 +57,7 @@ public class OpeningTimes {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("WholeDay: ");
-        sb.append(this.getWholeDay().toString());
-        sb.append("/ Days: ");
+        sb.append("WholeDay: ").append(this.getWholeDay().toString()).append("/ Days: ");
         for (OpeningTime ot : this.getOpeningTimes()) {
             sb.append(ot.toString());
         }

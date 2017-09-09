@@ -50,11 +50,8 @@ public class OpeningTime {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.getText());
-        sb.append(" Open: ");
-        sb.append(this.getStart());
-        sb.append("  Close: ");
-        sb.append(this.getEnd());
+        sb.append(" ").append(this.getText()).append(" Open: ").append(this.getStart()).append("  Close: ")
+                .append(this.getEnd());
         return sb.toString();
     }
 }
