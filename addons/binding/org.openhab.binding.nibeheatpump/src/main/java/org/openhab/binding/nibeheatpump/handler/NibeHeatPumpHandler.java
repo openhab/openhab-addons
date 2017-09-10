@@ -388,21 +388,24 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private void parseWriteEnabledItems() throws IllegalArgumentException {
         itemsToEnableWrite.clear();
-        String[] items = configuration.enableWriteCommandsToRegisters.replace(" ", "").split(",");
-        if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                try {
-                    int coilAddress = Integer.parseInt(items[i]);
-                    VariableInformation variableInformation = VariableInformation.getVariableInfo(pumpModel,
-                            coilAddress);
-                    if (variableInformation == null) {
-                        String description = String.format("Unknown register %s", coilAddress);
+        if (configuration.enableWriteCommands && configuration.enableWriteCommandsToRegisters != null
+                && configuration.enableWriteCommandsToRegisters.length() > 0) {
+            String[] items = configuration.enableWriteCommandsToRegisters.replace(" ", "").split(",");
+            if (items != null) {
+                for (int i = 0; i < items.length; i++) {
+                    try {
+                        int coilAddress = Integer.parseInt(items[i]);
+                        VariableInformation variableInformation = VariableInformation.getVariableInfo(pumpModel,
+                                coilAddress);
+                        if (variableInformation == null) {
+                            String description = String.format("Unknown register %s", coilAddress);
+                            throw new IllegalArgumentException(description);
+                        }
+                        itemsToEnableWrite.add(coilAddress);
+                    } catch (NumberFormatException e) {
+                        String description = String.format("Illegal register %s", items[i]);
                         throw new IllegalArgumentException(description);
                     }
-                    itemsToEnableWrite.add(coilAddress);
-                } catch (NumberFormatException e) {
-                    String description = String.format("Illegal register %s", items[i]);
-                    throw new IllegalArgumentException(description);
                 }
             }
         }
