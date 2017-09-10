@@ -1391,7 +1391,7 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         <item-type>Number</item-type>
         <label>Degree Minutes (16 bit)</label>
         <description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest valid value.</description>
-        <state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
+        <state min="-30000" max="30000" step="1" pattern="%d" readOnly="false">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43006">

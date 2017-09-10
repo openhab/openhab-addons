@@ -126,6 +126,9 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         return webInterface;
     }
 
+    /**
+     * will update all channels provided in the map
+     */
     @Override
     public void updateChannelStatus(Map<String, String> values) {
         logger.debug("Handling channel update.");
@@ -138,8 +141,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                 if (value != null && !value.equals(NO_VALUE)) {
                     if (channel.getJavaType().equals(Double.class)) {
                         try {
-                            updateState(channel.getFQName(),
-                                    new DecimalType(value.replaceAll(",", ".").replaceAll("[^0-9.]", "")));
+                            updateState(channel.getFQName(), convertToDecimal(value));
                         } catch (NumberFormatException ex) {
                             logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
                                     value);
@@ -156,6 +158,17 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                         getThing().getThingTypeUID().getAsString());
             }
         }
+    }
+
+    /**
+     * internal method for conversion to a valid decimal value.
+     *
+     * @throws NumberFormatException
+     * @param number as String
+     * @return converted value to DecimalType
+     */
+    private DecimalType convertToDecimal(String number) {
+        return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
     }
 
     protected abstract Channel getThingSpecificChannel(String id);
