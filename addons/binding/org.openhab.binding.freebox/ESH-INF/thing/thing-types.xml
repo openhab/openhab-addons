@@ -313,7 +313,7 @@
 		<item-type>Number</item-type>
 		<label>Screen Orientation</label>
 		<description>Screen Orientation in degrees</description>
-		<state pattern="%d °">
+		<state pattern="%s">
 			<options>
 				<option value="0">Horizontal</option>
 				<option value="90">Turned left</option>
