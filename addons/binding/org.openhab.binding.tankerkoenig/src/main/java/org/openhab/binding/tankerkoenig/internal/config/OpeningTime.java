@@ -47,4 +47,11 @@ public class OpeningTime {
         this.end = end;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ").append(this.getText()).append(" Open: ").append(this.getStart()).append("  Close: ")
+                .append(this.getEnd());
+        return sb.toString();
+    }
 }
