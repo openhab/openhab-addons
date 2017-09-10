@@ -58,6 +58,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
 import de.kaizencode.tchaikovsky.speaker.Speaker.LoopMode;
 import de.kaizencode.tchaikovsky.speaker.Speaker.ShuffleMode;
 import de.kaizencode.tchaikovsky.speaker.VolumeRange;
+import de.kaizencode.tchaikovsky.speaker.ZoneItem;
 
 /**
  * The {@link AllPlayHandler} is responsible for handling commands, which are
@@ -351,12 +352,26 @@ public class AllPlayHandler extends BaseThingHandler
 
     private void handleZoneMembersCommand(Command command) throws SpeakerException {
         String[] memberNames = command.toString().split(bindingProperties.getZoneMemberSeparator());
+        logger.debug("{}: Creating new zone with members {}", speaker, String.join(", ", memberNames));
         List<String> memberIds = new ArrayList<>();
         for (String memberName : memberNames) {
             memberIds.add(getHandlerIdByLabel(memberName.trim()));
         }
-        // Note: This call blocks if one of the members is unreachable
-        speaker.zoneManager().createZone(memberIds);
+        createZoneInNewThread(memberIds);
+    }
+
+    private void createZoneInNewThread(List<String> memberIds) {
+        scheduler.execute(() -> {
+            try {
+                // This call blocks up to 10 seconds if one of the members is unreachable,
+                // therefore it is executed in a new thread
+                ZoneItem zone = speaker.zoneManager().createZone(memberIds);
+                logger.debug("{}: Zone {} with member ids {} has been created", speaker, zone.getZoneId(),
+                        String.join(", ", zone.getSlaves().keySet()));
+            } catch (SpeakerException e) {
+                logger.warn("{}: Cannot create zone", speaker, e);
+            }
+        });
     }
 
     @Override
