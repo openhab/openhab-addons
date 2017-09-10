@@ -99,7 +99,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND);
 
     private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SHUTTER);
+            .asList(RFXComValueSelector.SHUTTER, RFXComValueSelector.VENETIAN_BLIND);
 
     private boolean sunDetector;
 
