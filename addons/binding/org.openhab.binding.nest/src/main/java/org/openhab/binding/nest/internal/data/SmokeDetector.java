@@ -76,48 +76,6 @@ public class SmokeDetector extends BaseNestDevice {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((batteryHealth == null) ? 0 : batteryHealth.hashCode());
-        result = prime * result + ((coAlarmState == null) ? 0 : coAlarmState.hashCode());
-        result = prime * result + (isManualTestActive ? 1231 : 1237);
-        result = prime * result + ((smokeAlarmState == null) ? 0 : smokeAlarmState.hashCode());
-        result = prime * result + ((uiColorState == null) ? 0 : uiColorState.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SmokeDetector other = (SmokeDetector) obj;
-        if (batteryHealth != other.batteryHealth) {
-            return false;
-        }
-        if (coAlarmState != other.coAlarmState) {
-            return false;
-        }
-        if (isManualTestActive != other.isManualTestActive) {
-            return false;
-        }
-        if (smokeAlarmState != other.smokeAlarmState) {
-            return false;
-        }
-        if (uiColorState != other.uiColorState) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "SmokeDetector [batteryHealth=" + batteryHealth + ", coAlarmState=" + coAlarmState + ", smokeAlarmState="
                 + smokeAlarmState + ", isManualTestActive=" + isManualTestActive + ", uiColorState=" + uiColorState

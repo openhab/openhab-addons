@@ -11,7 +11,7 @@ package org.openhab.binding.nest;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link NestBinding} class defines common constants, which are
+ * The {@link NestBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author David Bennett - Initial contribution
@@ -30,7 +30,7 @@ public class NestBindingConstants {
     public static final String NEST_THERMOSTAT_UPDATE_URL = NEST_URL + "/devices/thermostats/";
 
     /** The url to get set values on the structure when talking to nest. */
-    public static final Object NEST_STRUCTURE_UPDATE_URL = NEST_URL + "/structures/";
+    public static final String NEST_STRUCTURE_UPDATE_URL = NEST_URL + "/structures/";
 
     /** The url to get set values on the camera when talking to nest. */
     public static final String NEST_CAMERA_UPDATE_URL = NEST_URL + "/devices/camera/";

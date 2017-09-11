@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.openhab.binding.nest.NestBindingConstants.*;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -22,6 +20,14 @@ import org.openhab.binding.nest.internal.data.SmokeDetector.BatteryHealth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CO_ALARM_STATE;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOW_BATTERY;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MANUAL_TEST_ACTIVE;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_STATE;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_UI_COLOR_STATE;
+import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
+
 /**
  * The smoke detector handler, it handles the data from nest for the smoke detector.
  *
@@ -29,7 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 public class NestSmokeDetectorHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
-    private SmokeDetector lastData;
 
     public NestSmokeDetectorHandler(Thing thing) {
         super(thing);
@@ -48,28 +53,20 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
      *
      * @param smokeDetector The current smoke detector state
      */
-    public void updateSmokeDetector(SmokeDetector smokeDetector) {
+    void updateSmokeDetector(SmokeDetector smokeDetector) {
         logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
-        if (lastData == null || !lastData.equals(smokeDetector)) {
-            updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
-            updateState(CHANNEL_LOW_BATTERY,
-                    smokeDetector.getBatteryHealth() == BatteryHealth.OK ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_CO_ALARM_STATE, new StringType(smokeDetector.getCoAlarmState().toString()));
-            updateState(CHANNEL_SMOKE_ALARM_STATE, new StringType(smokeDetector.getSmokeAlarmState().toString()));
-            updateState(CHANNEL_MANUAL_TEST_ACTIVE, smokeDetector.isManualTestActive() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
+        updateState(CHANNEL_LOW_BATTERY,
+                smokeDetector.getBatteryHealth() == BatteryHealth.OK ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_CO_ALARM_STATE, new StringType(smokeDetector.getCoAlarmState().toString()));
+        updateState(CHANNEL_SMOKE_ALARM_STATE, new StringType(smokeDetector.getSmokeAlarmState().toString()));
+        updateState(CHANNEL_MANUAL_TEST_ACTIVE, smokeDetector.isManualTestActive() ? OnOffType.ON : OnOffType.OFF);
 
-            if (smokeDetector.isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+        updateStatus(smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
-            // Setup the properties for this device.
-            updateProperty(PROPERTY_ID, smokeDetector.getDeviceId());
-            updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
-        } else {
-            logger.debug("Nothing to update, same as before.");
-        }
+        // Setup the properties for this device.
+        updateProperty(PROPERTY_ID, smokeDetector.getDeviceId());
+        updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
     }
 
 }

@@ -8,30 +8,20 @@
  */
 package org.openhab.binding.nest.internal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;
+import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Keeps track of the access token, refreshing it if needed.
@@ -39,13 +29,10 @@ import com.google.gson.GsonBuilder;
  * @author David Bennett - Initial contribution
  */
 public class NestAccessToken {
-    private Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
-    private NestBridgeConfiguration config;
-    private String accessToken;
-    private String folderName;
-    private HttpClient httpClient;
+    private final Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
 
-    private static final String ACCESS_TOKEN_FILE_NAME = "accesstoken.txt";
+    private final NestBridgeConfiguration config;
+    private final HttpClient httpClient;
 
     /**
      * Create the helper class for the nest access token. Also creates the folder
@@ -55,74 +42,46 @@ public class NestAccessToken {
      */
     public NestAccessToken(NestBridgeConfiguration config, HttpClient httpClient) {
         this.config = config;
-        this.folderName = ConfigConstants.getUserDataFolder() + "/" + NestBindingConstants.BINDING_ID;
         this.httpClient = httpClient;
-        File folder = new File(folderName);
-        if (!folder.exists()) {
-            logger.debug("Creating directory {}", folderName);
-            folder.mkdirs();
-        }
     }
 
     /**
      * Get the current access token, refreshing if needed. Also reads it from the disk
      * if it is stored there.
      *
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
+     * @throws InvalidAccessTokenException thrown when the access token is invalid and could not be refreshed
      */
-    public String getAccessToken() throws InterruptedException, TimeoutException, ExecutionException {
-        if (config.accessToken == null) {
-            // See if it is written to disk.
-            File file = new File(this.folderName, ACCESS_TOKEN_FILE_NAME);
-            if (file.exists()) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-                    String line = reader.readLine();
-                    reader.close();
-                    if (line != null && line.length() > 0) {
-                        this.accessToken = line;
-                    }
-                } catch (IOException e) {
-                    logger.error("Error reading access token file {}", file, e);
-                }
-            }
-            refreshAccessToken();
-        } else {
-            accessToken = config.accessToken;
-        }
-        return accessToken;
-    }
-
-    private void refreshAccessToken() throws InterruptedException, TimeoutException, ExecutionException {
+    public String getAccessToken() throws InvalidAccessTokenException {
         try {
             StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
-                    .append("?client_id=").append(config.clientId).append("&client_secret=").append(config.clientSecret)
-                    .append("&code=").append(config.pincode).append("&grant_type=authorization_code");
-            logger.debug("Result {}", urlBuilder.toString());
+                    .append("?client_id=")
+                    .append(config.clientId)
+                    .append("&client_secret=")
+                    .append(config.clientSecret)
+                    .append("&code=")
+                    .append(config.pincode)
+                    .append("&grant_type=authorization_code");
+
+            logger.debug("Requesting accesstoken from url: {}", urlBuilder);
+
             Request request = httpClient.POST(urlBuilder.toString())
-                    .header("Content-Type", "application/x-www-form-urlencoded").timeout(10, TimeUnit.SECONDS);
-            ContentResponse response = request.send();
-            logger.debug("Result {}", response.getContentAsString());
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
-            AccessTokenData data = gson.fromJson(response.getContentAsString(), AccessTokenData.class);
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .timeout(10, TimeUnit.SECONDS);
+
+            // TODO should we store this instead of recreating it each and every time?
+            Gson gson = new GsonBuilder().create();
+            String responseContentAsString = request.send().getContentAsString();
+
+            AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
             if (data.getAccessToken() != null) {
-                accessToken = data.getAccessToken();
-                logger.debug("Access token {}", accessToken);
-                logger.debug("Expiration Time {}", data.getExpiresIn());
-                // Write the token to a file so we can reload it later.
-                File file = new File(this.folderName, ACCESS_TOKEN_FILE_NAME);
-                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-                    writer.write(accessToken);
-                    writer.close();
-                } catch (IOException e) {
-                    logger.error("Error reading access token file {}", file, e);
-                }
+                logger.debug("Access token {}, expiration Time {} ", data.getAccessToken(), data.getExpiresIn());
+                return data.getAccessToken();
+            } else {
+                throw new InvalidAccessTokenException("Received empty token");
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e1) {
-            logger.error("Unable to get the nest access token ", e1);
-            throw e1;
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new InvalidAccessTokenException(e);
         }
     }
+
 }

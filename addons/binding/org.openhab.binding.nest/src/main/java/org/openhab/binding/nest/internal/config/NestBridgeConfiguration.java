@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.config;
+package org.openhab.binding.nest.internal.config;
 
 /**
  * This has the configuration for the nest bridge, allowing it to talk to nest.
@@ -14,6 +14,7 @@ package org.openhab.binding.nest.config;
  * @author David Bennett - initial contribution
  */
 public class NestBridgeConfiguration {
+    public static final String ACCESS_TOKEN = "accessToken";
     /** Client id from the nest product page. */
     public String clientId;
     /** Client secret from the nest product page. */

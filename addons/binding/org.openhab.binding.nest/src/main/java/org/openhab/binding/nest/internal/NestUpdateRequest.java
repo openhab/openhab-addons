@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.internal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,22 +17,44 @@ import java.util.Map;
  * @author David Bennett - Initial Contribution
  */
 public class NestUpdateRequest {
-    public String getUpdateUrl() {
-        return updateUrl;
+    private final String updateUrl;
+    private final Map<String, Object> values;
+
+    private NestUpdateRequest(Builder builder) {
+        this.updateUrl = builder.baseUrl + builder.identifier;
+        this.values = builder.values;
     }
 
-    public void setUpdateUrl(String updateUrl) {
-        this.updateUrl = updateUrl;
+    public String getUpdateUrl() {
+        return updateUrl;
     }
 
     public Map<String, Object> getValues() {
         return values;
     }
 
-    public void addValue(String key, Object value) {
-        values.put(key, value);
-    }
+    public static class Builder {
+        private String baseUrl;
+        private String identifier;
+        private Map<String, Object> values = new HashMap<>();
 
-    private String updateUrl;
-    private Map<String, Object> values;
+        public Builder withBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public Builder withIdentifier(String identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        public Builder withAdditionalValue(String field, Object value) {
+            values.put(field, value);
+            return this;
+        }
+
+        public NestUpdateRequest build() {
+            return new NestUpdateRequest(this);
+        }
+    }
 }

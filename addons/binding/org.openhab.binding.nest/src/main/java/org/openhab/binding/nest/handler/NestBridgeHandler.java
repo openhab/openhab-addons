@@ -8,15 +8,8 @@
  */
 package org.openhab.binding.nest.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -30,8 +23,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.config.NestBridgeConfiguration;
-import org.openhab.binding.nest.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.internal.NestAccessToken;
 import org.openhab.binding.nest.internal.NestDeviceAddedListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
@@ -41,11 +34,19 @@ import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.openhab.binding.nest.internal.data.TopLevelData;
+import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeoutException;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * This bridge handler connects to nest and handles all the api requests. It pulls down the
@@ -56,22 +57,13 @@ import com.google.gson.GsonBuilder;
  */
 public class NestBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
-    private List<NestDeviceAddedListener> listeners = new ArrayList<NestDeviceAddedListener>();
-
-    // Will refresh the data each time it runs.
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshData();
-        }
-    };
+    private final List<NestDeviceAddedListener> listeners = new ArrayList<>();
 
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
     private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
-    private TopLevelData lastDataQuery;
     private HttpClient httpClient;
 
     private final GsonBuilder builder;
@@ -110,7 +102,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Client Secret   {}.", config.clientSecret);
         logger.debug("Pincode         {}.", config.pincode);
 
-        updateAccessToken();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
 
         startAutomaticRefresh(config.refreshInterval);
@@ -125,8 +116,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Config update");
         super.handleConfigurationUpdate(configurationParameters);
 
-        updateAccessToken();
-
         stopAutomaticRefresh();
         startAutomaticRefresh(getConfigAs(NestBridgeConfiguration.class).refreshInterval);
     }
@@ -139,9 +128,15 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Nest bridge disposed");
         stopAutomaticRefresh();
         this.accessToken = null;
-        this.lastDataQuery = null;
         this.pollingJob = null;
-        this.pollingRunnable = null;
+        if (httpClient != null) {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop client", e);
+            }
+            httpClient = null;
+        }
     }
 
     /**
@@ -170,13 +165,11 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
             if (newData != null) {
-                lastDataQuery = newData;
-            } else {
-                newData = lastDataQuery;
+                compareThings(newData.getDevices());
+                compareStructure(newData.getStructures().values());
             }
-            // Turn this new data into things and stuff.
-            compareThings(newData.getDevices());
-            compareStructure(newData.getStructures().values());
+        } catch (InvalidAccessTokenException e) {
+            logger.warn("Invalid access token", e);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error parsing data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -271,36 +264,40 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private String buildQueryString(NestBridgeConfiguration config)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    private String buildQueryString(NestBridgeConfiguration config) throws InvalidAccessTokenException {
         String stringAccessToken;
+
+        // FIXME should we ever expire access tokens?
         if (config.accessToken == null) {
             stringAccessToken = accessToken.getAccessToken();
+
             // Update the configuration and persist to the database.
             Configuration bridgeConfiguration = editConfiguration();
-            bridgeConfiguration.put("accessToken", stringAccessToken);
+            bridgeConfiguration.put(NestBridgeConfiguration.ACCESS_TOKEN, stringAccessToken);
             updateConfiguration(bridgeConfiguration);
+            logger.debug("Retrieved fresh access token: {}", stringAccessToken);
         } else {
             stringAccessToken = config.accessToken;
+            logger.debug("Re-using access token from configuration: {}", stringAccessToken);
         }
-        logger.debug("Making url with access token {}", stringAccessToken);
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
-        urlBuilder.append("?auth=");
-        urlBuilder.append(stringAccessToken);
-        logger.debug("Made url {}", urlBuilder.toString());
+
+        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL)
+                .append("?auth=")
+                .append(stringAccessToken);
+        logger.debug("Constructed url: {}", urlBuilder);
         return urlBuilder.toString();
     }
 
     private String jsonFromGetUrl(final String url, NestBridgeConfiguration config)
             throws InterruptedException, ExecutionException, TimeoutException {
-        logger.debug("connecting to {}", url);
+        logger.debug("Fetching data from {}", url);
         ContentResponse response = this.httpClient.GET(url);
         return response.getContentAsString();
     }
 
     private synchronized void startAutomaticRefresh(int refreshInterval) {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, SECONDS);
         }
     }
 
@@ -311,28 +308,18 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void updateAccessToken() {
-        accessToken = new NestAccessToken(getConfigAs(NestBridgeConfiguration.class), this.httpClient);
-
-        try {
-            logger.debug("New Access Token {}.", accessToken.getAccessToken());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error getting Access Token.", e);
-        }
-    }
-
     /**
      * @param nestDiscoveryService The device added listener to add
      */
     public void addDeviceAddedListener(NestDeviceAddedListener nestDiscoveryService) {
-        this.listeners.add(nestDiscoveryService);
+        listeners.add(nestDiscoveryService);
     }
 
     /**
      * @param nestDiscoveryService The device added listener to remove
      */
     public void removeDeviceAddedListener(NestDiscoveryService nestDiscoveryService) {
-        this.listeners.remove(nestDiscoveryService);
+        listeners.remove(nestDiscoveryService);
     }
 
     /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */

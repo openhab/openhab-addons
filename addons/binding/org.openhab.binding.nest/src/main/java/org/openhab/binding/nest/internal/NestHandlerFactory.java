@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.nest.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.handler.NestCameraHandler;
 import org.openhab.binding.nest.handler.NestSmokeDetectorHandler;
@@ -40,11 +40,10 @@ import com.google.common.collect.Sets;
  * @author David Bennett - Initial contribution
  */
 public class NestHandlerFactory extends BaseThingHandlerFactory {
-
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_THERMOSTAT,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_THERMOSTAT,
             THING_TYPE_CAMERA, THING_TYPE_BRIDGE, THING_TYPE_STRUCTURE, THING_TYPE_SMOKE_DETECTOR);
 
-    Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
+    private Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     /**
      * The things this factory supports creating.
@@ -60,32 +59,31 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+        if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
             return new NestThermostatHandler(thing);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_CAMERA)) {
+        if (THING_TYPE_CAMERA.equals(thingTypeUID)) {
             return new NestCameraHandler(thing);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_STRUCTURE)) {
+        if (THING_TYPE_STRUCTURE.equals(thingTypeUID)) {
             return new NestStructureHandler(thing);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_SMOKE_DETECTOR)) {
+        if (THING_TYPE_SMOKE_DETECTOR.equals(thingTypeUID)) {
             return new NestSmokeDetectorHandler(thing);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             NestBridgeHandler handler = new NestBridgeHandler((Bridge) thing);
             NestDiscoveryService service = new NestDiscoveryService(handler);
             service.activate();
             // Register the discovery service.
             discoveryService.put(handler.getThing().getUID(), bundleContext
-                    .registerService(DiscoveryService.class.getName(), service, new Hashtable<String, Object>()));
+                    .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
             return handler;
         }
 
