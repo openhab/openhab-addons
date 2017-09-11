@@ -61,9 +61,11 @@ public abstract class AbstractOmnilinkHandler<T extends Status> extends BaseThin
      * @param t Status to process.
      */
     public void handleStatus(T t) {
-        this.status = Optional.ofNullable(t);
-        if (status.isPresent()) {
-            updateChannels(status.get());
+        if (t != null) {
+            this.status = Optional.of(t);
+            updateChannels(t);
+        } else {
+            logger.warn("Received null status update");
         }
     }
 

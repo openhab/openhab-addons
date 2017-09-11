@@ -1,5 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
 /**
  *
@@ -51,5 +54,15 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
             logger.debug("Could not send console command to omnilink", e);
         }
 
+    }
+
+    @Override
+    protected Optional retrieveStatus() {
+        return Optional.empty();
+    }
+
+    @Override
+    protected void updateChannels(Status t) {
+        // No Status.
     }
 }

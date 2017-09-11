@@ -268,7 +268,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         status.getNumber());
                 logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
                 theThing.map(Thing::getHandler)
-                        .ifPresent(theHandler -> ((AreaHandler) theHandler).handleAreaEvent(areaStatus));
+                        .ifPresent(theHandler -> ((AreaHandler) theHandler).updateChannels(areaStatus));
             } else if (status instanceof ExtendedThermostatStatus) {
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
@@ -279,8 +279,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
                         status.getNumber());
-                theThing.map(Thing::getHandler).ifPresent(
-                        theHandler -> ((AudioZoneHandler) theHandler).handleAudioZoneStatus(audioZoneStatus));
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((AudioZoneHandler) theHandler).updateChannels(audioZoneStatus));
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }

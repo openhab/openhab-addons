@@ -1,5 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -22,7 +24,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
  * @author Craig Hamilton
  *
  */
-public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHandler {
+public class AudioZoneHandler extends AbstractOmnilinkHandler<AudioZoneStatus> implements ThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(AudioZoneHandler.class);
 
@@ -102,7 +104,8 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHa
                 audioZoneID);
     }
 
-    public void handleAudioZoneStatus(AudioZoneStatus status) {
+    @Override
+    public void updateChannels(AudioZoneStatus status) {
         logger.debug("Audio Zone Status {}", status);
         handlePowerState(status);
         handleMuteStatus(status);
@@ -122,17 +125,16 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHa
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {}", channelUID);
+    protected Optional<AudioZoneStatus> retrieveStatus() {
         try {
             int audioZoneID = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AUDIO_ZONE,
                     audioZoneID, audioZoneID, true);
-            handleAudioZoneStatus((AudioZoneStatus) objStatus.getStatuses()[0]);
+            return Optional.of((AudioZoneStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);
+            return Optional.empty();
         }
     }
-
 }

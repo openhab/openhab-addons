@@ -1,5 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,7 +22,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
  * @author craigh
  *
  */
-public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler {
+public class RoomHandler extends AbstractOmnilinkHandler<UnitStatus> implements UnitHandler {
 
     private Logger logger = LoggerFactory.getLogger(RoomHandler.class);
 
@@ -135,8 +137,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     }
 
     @Override
-    public void handleUnitStatus(UnitStatus unitStatus) {
-        logger.debug("need to handle status update{}", unitStatus);
+    public void updateChannels(UnitStatus unitStatus) {
 
         updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATE, new DecimalType(unitStatus.getStatus()));
         // the on/off and scene buttons are only 1 can be on
@@ -162,17 +163,22 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {}", channelUID);
-
+    protected Optional<UnitStatus> retrieveStatus() {
         try {
             int unitId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
                     unitId, false);
-            handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+            return Optional.of((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);
+            return Optional.empty();
         }
     }
+
+    @Override
+    public void handleUnitStatus(UnitStatus unitStatus) {
+        updateChannels(unitStatus);
+    }
+
 }
