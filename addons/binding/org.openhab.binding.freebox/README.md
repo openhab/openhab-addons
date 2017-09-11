@@ -271,7 +271,7 @@ Switch FreeboxAirMedia "AirMedia" {autoupdate="false", channel="freebox:server:f
 Switch FreeboxSambaFiles "Win File Share" {autoupdate="false", channel="freebox:server:fb:sambafileshare_status"}
 Switch FreeboxSambaPrinters "Win Print Share" {autoupdate="false", channel="freebox:server:fb:sambaprintershare_status"}
 Number Freebox_lcd_brightness "Brightness [%d %%]" {channel="freebox:server:fb:lcd_brightness"}
-Number Freebox_lcd_orientation "Orientation [%d Â°]" {channel="freebox:server:fb:lcd_orientation"}
+Number Freebox_lcd_orientation "Orientation [%s]" {channel="freebox:server:fb:lcd_orientation"}
 Switch Freebox_lcd_forced "LCD Forced" {channel="freebox:server:fb:lcd_forced"}
 
 Switch Freebox_onhook "Phone on hook" {channel="freebox:phone:fb:Phone:state#onhook"}
