@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.fronius.handler;
 
 import static org.openhab.binding.fronius.FroniusBindingConstants.*;
@@ -15,6 +23,11 @@ import org.openhab.binding.fronius.internal.service.StorageRealtimeDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link FroniusSymoHybrid} is an extension for {@link FroniusHandler} and handles Symo Hybrid devices.
+ *
+ * @author Gerrit Beine - Initial contribution
+ */
 public class FroniusSymoHybrid extends FroniusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoHybrid.class);
@@ -71,6 +84,9 @@ public class FroniusSymoHybrid extends FroniusHandler {
         refreshStorageData();
     }
 
+    /**
+     * Fetch and update data for {@link StorageRealtimeDataService}.
+     */
     private void refreshStorageData() {
         if (storageRealtimeDataService != null) {
             StorageRealtimeData data = storageRealtimeDataService.getData();

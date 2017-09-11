@@ -74,10 +74,16 @@ public class FroniusHandler extends BaseThingHandler {
                 TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Fetch and update data.
+     */
     protected void refresh() {
         refreshRealtimeData();
     }
 
+    /**
+     * Fetch and update data for {@link InterverRealtimeDataService}.
+     */
     private void refreshRealtimeData() {
         if (interverRealtimeDataService != null) {
             InverterRealtimeData data = interverRealtimeDataService.getData();

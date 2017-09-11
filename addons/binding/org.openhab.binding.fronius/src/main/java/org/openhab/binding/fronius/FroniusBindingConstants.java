@@ -54,10 +54,7 @@ public class FroniusBindingConstants {
 
     // List of thing parameters names
     public static final String PARAMETER_HOSTNAME = "hostname";
-    public static final String PARAMETER_SCOPE = "scope";
     public static final String PARAMETER_DEVICE = "device";
-    public static final String PARAMETER_PORT = "port";
-    public static final String PARAMETER_TIMEOUT = "timeout";
     public static final String PARAMETER_REFRESH_INTERVAL = "refreshInterval";
 
     // List of all API URLs

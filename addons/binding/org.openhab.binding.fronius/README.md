@@ -1,52 +1,73 @@
-# <bindingName> Binding
+# Fronius Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding allows openHAB to gather data from Fronius inverters.
+Currently Fronius Symo and Fronious Symo Hybrid are supported via the Solar API v1. 
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+The two different kind of Fronius inverters can be configured as ```symo``` and ```symo_hybrid```
 
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Thin configuration is quite simple:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+A hostname ist required for each thing.
+If there are more than one Fronius devices are available with this hostname, the device can be selected.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel Type ID     | Item Type | Description                  | Available on thing |
+|---------------------|-----------|------------------------------|--------------------|
+| day_energy          | Number    | Wh                           | Symo, Symo Hybrid  |
+| year_energy         | Number    | Wh                           | Symo, Symo Hybrid  |
+| total_energy        | Number    | Wh                           | Symo, Symo Hybrid  |
+| pac                 | Number    | W - actual output power      | Symo, Symo Hybrid  |
+| iac                 | Number    | A - actual output current    | Symo, Symo Hybrid  |
+| uac                 | Number    | V - actual output voltage    | Symo, Symo Hybrid  |
+| fac                 | Number    | Hz - actual output frequency | Symo, Symo Hybrid  |
+| idc                 | Number    | A - acutal input current     | Symo, Symo Hybrid  |
+| udc                 | Number    | V - acutal input voltage     | Symo, Symo Hybrid  |
+| status_code         | Number    | Device state                 | Symo, Symo Hybrid  |
+| timestamp           | String    | Date & Time                  | Symo, Symo Hybrid  |
+| storage_current     | Number    | A - storage current          | Symo Hybrid        |
+| storage_voltage     | Number    | V - storage voltage          | Symo Hybrid        |
+| storage_charge      | Number    | % - storage charge state     | Symo Hybrid        |
+| storage_capacity    | Number    | Wh - storage capacity        | Symo Hybrid        |
+| storage_temperature | Number    | storage temperature          | Symo Hybrid        |
+| storage_code        | Number    | Device state.                | Symo Hybrid        |
+| storage_timestamp   | String    | Date & Time                  | Symo Hybrid        |
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+demo.things:
 
-## Any custom content here!
+```
+fronius:symo_hybrid:hybrid_inverter [ hostname="my.hybrid.inverter" ]
+fronius:symo:inverter_1 [ hostname="my.inverter", device=1 ]
+fronius:symo:inverter_2 [ hostname="my.inverter", device=2 ]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+demo.items:
+
+```
+Number FSH_UDC { channel="fronius:symo_hybrid:hybrid_inverter:udc" }
+Number FSH_IDC { channel="fronius:symo_hybrid:hybrid_inverter:idc" }
+Number SFSH_PAC { channel="fronius:symo_hybrid:hybrid_inverter:pac" }
+Number FSH_UAC { channel="fronius:symo_hybrid:hybrid_inverter:uac" }
+Number FSH_IAC { channel="fronius:symo_hybrid:hybrid_inverter:iac" }
+Number FSH_FAC { channel="fronius:symo_hybrid:hybrid_inverter:fac" }
+Number FSH_DAY_ENERGY { channel="fronius:symo_hybrid:hybrid_inverter:day_energy" }
+Number FSH_YEAR_ENERGY { channel="fronius:symo_hybrid:hybrid_inverter:year_energy" }
+Number FSH_TOTAL_ENERGY { channel="fronius:symo_hybrid:hybrid_inverter:total_energy" }
+Number FSH_CODE { channel="fronius:symo_hybrid:hybrid_inverter:status_code" }
+String FSH_TIMESTAMP { channel="fronius:symo_hybrid:hybrid_inverter:timestamp" }
+Number FSH_Storage_Current { channel="fronius:symo_hybrid:hybrid_inverter:storage_current" }
+Number FSH_Storage_Voltage { channel="fronius:symo_hybrid:hybrid_inverter:storage_voltage" }
+Number FSH_Storage_Charge { channel="fronius:symo_hybrid:hybrid_inverter:storage_charge" }
+Number FSH_Storage_Capacity { channel="fronius:symo_hybrid:hybrid_inverter:storage_capacity" }
+Number FSH_Storage_Temperature { channel="fronius:symo_hybrid:hybrid_inverter:storage_temperature" }
+Number FSH_Storage_CODE { channel="fronius:symo_hybrid:hybrid_inverter:storage_code" }
+String FSH_Storage_TIMESTAMP { channel="fronius:symo_hybrid:hybrid_inverter:storage_timestamp" }
+```
