@@ -199,6 +199,22 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
     void updateZoneInformation() {
         updateAsyncMakeOfflineIfFail(zoneAvailableInputs);
         updateAsyncMakeOfflineIfFail(zoneControl);
+
+        if (inputWithPlayControl != null) {
+            updateAsyncMakeOfflineIfFail(inputWithPlayControl);
+        }
+
+        if (inputWithNavigationControl != null) {
+            updateAsyncMakeOfflineIfFail(inputWithNavigationControl);
+        }
+
+        if (inputWithPresetControl != null) {
+            updateAsyncMakeOfflineIfFail(inputWithPresetControl);
+        }
+
+        if (inputWithDabBandControl != null) {
+            updateAsyncMakeOfflineIfFail(inputWithDabBandControl);
+        }
     }
 
     @Override
