@@ -17,15 +17,17 @@ from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.
 * Xiaomi Aqara ZigBee Wired Wall Switch (1 and 2 buttons)
 * Xiaomi Aqara ZigBee Wireless Wall Switch (1 and 2 buttons)
 * Xiaomi Aqara Smart Curtain
+* Xiaomi Aqara Water Leak Sensor
 * Xiaomi Aqara Wireless Switch (square one)
 * Xiaomi Aqara Temperature, Humidity and Pressure Sensor (square one)
 * Xiaomi Aqara Door/Window Sensor (square one)
+* Xiaomi Aqara Motion Sensor (with light intensity support)
+* Xiaomi Mijia Honeywell Gas Alarm Detector
+* Xiaomi Mijia Honeywell Fire Alarm Detector
 
 (not yet confirmed)
 
 * Xiaomi Aqara Neutral Wall Switch (1 and 2 buttons)
-* Xiaomi Mijia Honeywell Gas Alarm Detector
-* Xiaomi Mijia Honeywell Fire Alarm Detector
 
 ## Setup
 
