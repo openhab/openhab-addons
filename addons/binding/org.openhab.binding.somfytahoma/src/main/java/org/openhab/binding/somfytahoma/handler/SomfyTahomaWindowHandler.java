@@ -15,31 +15,20 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
-
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
- * The {@link SomfyTahomaRollerShutterHandler} is responsible for handling commands,
- * which are sent to one of the channels of the roller shutter, screen & garage door
- * things.
+ * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the window thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaRollerShutterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandler.class);
 
-    public SomfyTahomaRollerShutterHandler(Thing thing) {
+    public SomfyTahomaWindowHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
-            put(POSITION, "core:ClosureState");
-            put(CONTROL, "core:ClosureState");
-        }};
     }
 
     @Override
@@ -62,12 +51,14 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
             if (executionId != null) {
                 //STOP command should be interpreted if rollershutter is moving
                 //otherwise do nothing
-                if (cmd.equals(COMMAND_MY)) {
+                if (cmd.equals(COMMAND_STOP)) {
                     getBridgeHandler().cancelExecution(executionId);
                 }
             } else {
-                String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
-                getBridgeHandler().sendCommand(url, cmd, param);
+                if (!cmd.equals(COMMAND_STOP)) {
+                    String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
+                    getBridgeHandler().sendCommand(url, cmd, param);
+                }
             }
         }
     }
@@ -76,12 +67,12 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
         switch (command) {
             case "OFF":
             case "DOWN":
-                return COMMAND_DOWN;
+                return COMMAND_CLOSE;
             case "ON":
             case "UP":
-                return COMMAND_UP;
+                return COMMAND_OPEN;
             case "STOP":
-                return COMMAND_MY;
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_CLOSURE;
         }

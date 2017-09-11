@@ -66,11 +66,15 @@ public class SomfyTahomaBindingConstants {
     // Occupancy sensor
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
 
+    // Window
+    public static final ThingTypeUID THING_TYPE_WINDOW = new ThingTypeUID(BINDING_ID, "window");
+
+
     // List of all Channel ids
     // Gateway
     public static final String VERSION = "version";
 
-    // Roller shutter, Awning, Screen, Blind, Garage door
+    // Roller shutter, Awning, Screen, Blind, Garage door, Window
     public static final String POSITION = "position";
     public static final String CONTROL = "control";
 
@@ -104,6 +108,9 @@ public class SomfyTahomaBindingConstants {
     final public static String COMMAND_SET_ORIENTATION = "setOrientation";
     final public static String COMMAND_UP = "up";
     final public static String COMMAND_DOWN = "down";
+    final public static String COMMAND_OPEN = "open";
+    final public static String COMMAND_CLOSE = "close";
+    final public static String COMMAND_STOP = "stop";
 
     // supproted uiClasses
     final public static String ROLLERSHUTTER = "RollerShutter";
@@ -118,7 +125,7 @@ public class SomfyTahomaBindingConstants {
     final public static String LIGHTSENSOR = "LightSensor";
     final public static String SMOKESENSOR = "SmokeSensor";
     final public static String OCCUPANCYSENSOR = "OccupancySensor";
-
+    final public static String WINDOW = "Window";
     // unsupported uiClasses
     final public static String ALARM = "Alarm";
     final public static String POD = "Pod";

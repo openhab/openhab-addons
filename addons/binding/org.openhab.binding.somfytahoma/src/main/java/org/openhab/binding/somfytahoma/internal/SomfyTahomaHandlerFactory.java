@@ -49,7 +49,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_LIGHT,
             THING_TYPE_LIGHTSENSOR,
             THING_TYPE_SMOKESENSOR,
-            THING_TYPE_OCCUPANCYSENSOR
+            THING_TYPE_OCCUPANCYSENSOR,
+            THING_TYPE_WINDOW
     ));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -78,13 +79,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaRollerShutterHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
-            return new SomfyTahomaScreenHandler(thing);
+            return new SomfyTahomaRollerShutterHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND) || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
             return new SomfyTahomaVenetianBlindHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_GARAGEDOOR)) {
-            return new SomfyTahomaGarageDoorHandler(thing);
+            return new SomfyTahomaRollerShutterHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_AWNING)) {
             return new SomfyTahomaAwningHandler(thing);
@@ -106,6 +107,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_OCCUPANCYSENSOR)) {
             return new SomfyTahomaOccupancySensorHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
+            return new SomfyTahomaWindowHandler(thing);
         }
         return null;
     }

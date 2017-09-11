@@ -13,6 +13,7 @@ Currently supports these things
 - screens (UP, DOWN, STOP control of a screen). IO Homecontrol devices are allowed to set exact position of a screen (0-100%)
 - garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a garage door (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
+- windows (UP, DOWN, STOP control of a window). IO Homecontrol devices are allowed to set exact position of a window (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
 - light switches (similar to on/off)
 - light sensors (luminance value)
@@ -49,7 +50,7 @@ Gateways expose this read only channel:
 
 - version (this is a firmware version of your Tahoma gateway)
 
-Roller shutters, exterior screens, garage doors and awnings expose these channels:
+Roller shutters, screens, blinds, garage doors, awnings & windows expose these channels:
 
 - position (a percentual position of the device, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
 - control (a device controller which reacts to commands UP/DOWN/STOP)
@@ -101,7 +102,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
 }
 ```
 
-Awnings, garage doors and exterior screens have the same notation as roller shutters. Just use "awning", "garagedoor" or "exteriorscreen" instead of "rolleshutter" in thing definition. 
+Awnings, garage doors, screens, blinds, and windows have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition. 
 
 .items file
 

@@ -61,7 +61,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_LIGHT,
                 THING_TYPE_LIGHTSENSOR,
                 THING_TYPE_SMOKESENSOR,
-                THING_TYPE_OCCUPANCYSENSOR
+                THING_TYPE_OCCUPANCYSENSOR,
+                THING_TYPE_WINDOW
         ));
     }
 
@@ -114,6 +115,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 break;
             case VENETIANBLIND:
                 deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_VENETIANBLIND);
+                break;
+            case WINDOW:
+                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_WINDOW);
                 break;
             case ALARM:
             case POD:
