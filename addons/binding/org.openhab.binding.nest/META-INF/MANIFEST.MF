@@ -10,7 +10,7 @@ Import-Package: com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  org.openhab.binding.nest,
- org.openhab.binding.nest.handler,org.openhab.binding.nest.internal.config,org.openhab.binding.nest.internal.discovery,
+ org.openhab.binding.nest.handler,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,
@@ -34,5 +34,6 @@ Import-Package: com.google.common.collect,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.nest,
- org.openhab.binding.nest.handler,org.openhab.binding.nest.internal.config,org.openhab.binding.nest.internal.discoveryBundle-ActivationPolicy: lazy
+ org.openhab.binding.nest.handler
+Bundle-ActivationPolicy: lazy
 
