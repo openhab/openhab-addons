@@ -58,6 +58,9 @@ Id of your heatpump in NibeUplink (can be found in the URL after successful logi
 - **pollingInterval**  
 interval (seconds) in which values are retrieved from NibeUplink. Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink. (default = 60). 
 
+- **houseKeepingInterval**  
+interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600). Usually this settings should not be changed.
+
 ### Examples
 
 - minimum configuration

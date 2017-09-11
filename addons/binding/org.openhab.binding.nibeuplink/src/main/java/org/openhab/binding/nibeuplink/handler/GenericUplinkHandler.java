@@ -45,9 +45,14 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
     private Set<Channel> deadChannels = new HashSet<>(1000);
 
     /**
-     * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 60 s)
+     * Refresh interval which is used to poll values from the NibeUplink web interface (optional, defaults to 60 s)
      */
     private int refreshInterval;
+
+    /**
+     * Refresh interval which is used clean the dead channel list (optional, defaults to 1 h)
+     */
+    private int houseKeepingInterval = 1;
 
     /**
      * Interface object for querying the FRITZ!Box web interface
@@ -63,6 +68,11 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
+
+    /**
+     * Schedule for periodic cleaning dead channel list
+     */
+    private ScheduledFuture<?> deadChannelHouseKeeping;
 
     public GenericUplinkHandler(@NonNull Thing thing) {
         super(thing);
@@ -85,10 +95,11 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         logger.debug("Discovered NibeUplink initialized: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
+        this.houseKeepingInterval = config.getHouseKeepingInterval();
         this.webInterface = new UplinkWebInterface(config, this);
 
         if (config.getPassword() != null) {
-            this.onUpdate();
+            this.startPolling();
         } else {
             thing.setStatusInfo(
                     new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set"));
@@ -98,14 +109,25 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
     /**
      * Start the polling.
      */
-    private synchronized void onUpdate() {
-        // TODO: implement onUpdate
+    private synchronized void startPolling() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at intervall {}", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
         } else {
-            logger.debug("pollingJob active");
+            logger.debug("pollingJob already active");
         }
+        if (deadChannelHouseKeeping == null || deadChannelHouseKeeping.isCancelled()) {
+            logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
+            deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    deadChannels.clear();
+                }
+            }, 1, houseKeepingInterval, TimeUnit.SECONDS);
+        } else {
+            logger.debug("deadChannelHouseKeeping already active");
+        }
+
     }
 
     /**
@@ -118,6 +140,11 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
             logger.debug("stop polling job");
             pollingJob.cancel(true);
             pollingJob = null;
+        }
+        if (deadChannelHouseKeeping != null && !deadChannelHouseKeeping.isCancelled()) {
+            logger.debug("stop polling job");
+            deadChannelHouseKeeping.cancel(true);
+            deadChannelHouseKeeping = null;
         }
     }
 

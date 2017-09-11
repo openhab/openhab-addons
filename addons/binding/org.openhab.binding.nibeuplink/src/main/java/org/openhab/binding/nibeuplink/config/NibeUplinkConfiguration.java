@@ -25,6 +25,7 @@ public class NibeUplinkConfiguration {
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer pollingInterval = 60;
+    private Integer houseKeepingInterval = 3600;
 
     public String getUser() {
         return user;
@@ -74,10 +75,19 @@ public class NibeUplinkConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
+    public final Integer getHouseKeepingInterval() {
+        return houseKeepingInterval;
+    }
+
+    public final void setHouseKeepingInterval(Integer houseKeepingInterval) {
+        this.houseKeepingInterval = houseKeepingInterval;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("user", getUser()).append("password", getPassword())
                 .append("nibeId", getNibeId()).append("pollingInterval", getPollingInterval())
-                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
+                .append("houseKeepingInterval", getHouseKeepingInterval()).append("asyncTimeout", getAsyncTimeout())
+                .append("syncTimeout", getSyncTimeout()).toString();
     }
 }
