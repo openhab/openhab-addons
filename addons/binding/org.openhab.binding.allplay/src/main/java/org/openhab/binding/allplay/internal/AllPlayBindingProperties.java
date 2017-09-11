@@ -25,12 +25,15 @@ public class AllPlayBindingProperties {
     private final int rewindSkipTimeInSec;
     private final int fastForwardSkipTimeInSec;
     private final String callbackUrl;
+    private final String zoneMemberSeparator;
 
     private static final String REWIND_SKIP_TIME_PROPERTY = "rewindSkipTimeInSec";
     private static final int REWIND_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String FAST_FORWARD_SKIP_TIME_PROPERTY = "fastForwardSkipTimeInSec";
     private static final int FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE = 10;
     private static final String CALLBACK_URL = "callbackUrl";
+    private static final String ZONE_MEMBER_SEPARATOR_PROPERTY = "zoneMemberSeparator";
+    private static final String ZONE_MEMBER_SEPARATOR_DEFAULT_VALUE = ",";
 
     public AllPlayBindingProperties(Dictionary<String, Object> properties) {
 
@@ -38,6 +41,8 @@ public class AllPlayBindingProperties {
         fastForwardSkipTimeInSec = getIntegerProperty(properties, FAST_FORWARD_SKIP_TIME_PROPERTY,
                 FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE);
         callbackUrl = (String) properties.get(CALLBACK_URL);
+        zoneMemberSeparator = getStringProperty(properties, ZONE_MEMBER_SEPARATOR_PROPERTY,
+                ZONE_MEMBER_SEPARATOR_DEFAULT_VALUE);
     }
 
     public int getRewindSkipTimeInSec() {
@@ -66,5 +71,14 @@ public class AllPlayBindingProperties {
             value = (int) configValue;
         }
         return value;
+    }
+
+    public String getZoneMemberSeparator() {
+        return zoneMemberSeparator;
+    }
+
+    private String getStringProperty(Dictionary<String, Object> properties, String propertyKey, String defaultValue) {
+        String value = (String) properties.get(propertyKey);
+        return value != null ? value : defaultValue;
     }
 }
