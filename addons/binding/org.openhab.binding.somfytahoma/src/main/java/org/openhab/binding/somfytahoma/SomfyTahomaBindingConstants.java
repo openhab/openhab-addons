@@ -111,6 +111,8 @@ public class SomfyTahomaBindingConstants {
     final public static String COMMAND_OPEN = "open";
     final public static String COMMAND_CLOSE = "close";
     final public static String COMMAND_STOP = "stop";
+    final public static String STATUS_STATE = "core:StatusState";
+    final public static String UNAVAILABLE = "unavailable";
 
     // supproted uiClasses
     final public static String ROLLERSHUTTER = "RollerShutter";

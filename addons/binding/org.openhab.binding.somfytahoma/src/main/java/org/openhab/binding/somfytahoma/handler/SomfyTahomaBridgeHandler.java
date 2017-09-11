@@ -288,13 +288,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         this.discoveryService = somfyTahomaItemDiscoveryService;
     }
 
-    private List<SomfyTahomaState> getStates(SomfyTahomaThingHandler handler, String deviceUrl) {
+    private List<SomfyTahomaState> getAllStates(SomfyTahomaThingHandler handler, String deviceUrl) {
         String url = null;
 
-        logger.debug("Getting state for a device: {}", deviceUrl);
+        logger.debug("Getting states for a device: {}", deviceUrl);
         try {
             url = TAHOMA_URL + "getStates";
-            String urlParameters = "[{\"deviceURL\": \"" + deviceUrl + "\", \"states\": [" + gerFormattedParameters(handler.getStateNames().values()) + "]}]";
+            String urlParameters = "[{\"deviceURL\": \"" + deviceUrl + "\", \"states\": [" + getFormattedParameters(handler.getStateNames().values()) + "]}]";
 
             InputStream response = sendDataToTahomaWithCookie(url, urlParameters);
             String line = readResponse(response);
@@ -320,21 +320,16 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-    private String gerFormattedParameters(Collection<String> stateNames) {
+    private String getFormattedParameters(Collection<String> stateNames) {
         ArrayList<String> uniqueNames = new ArrayList<>();
         for (String name : stateNames) {
             if (!uniqueNames.contains(name)) {
                 uniqueNames.add(name);
             }
         }
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        StringBuilder sb = new StringBuilder("{\"name\": \"" + STATUS_STATE + "\"}");
         for (String name : uniqueNames) {
-            if (!first) {
-                sb.append(',');
-            } else {
-                first = false;
-            }
+            sb.append(',');
             sb.append("{\"name\": \"").append(name).append("\"}");
         }
         logger.debug("Formatted parameters: {}", sb.toString());
@@ -423,29 +418,45 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public void updateThingState(Thing thing, String url) {
-        SomfyTahomaThingHandler handler = (SomfyTahomaThingHandler) thing.getHandler();
+        SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) thing.getHandler();
         if (handler != null && handler.getStateNames() != null) {
-            List<SomfyTahomaState> state = getStates(handler, url);
-            if (state == null) {
+            List<SomfyTahomaState> states = getAllStates(handler, url);
+            if (states == null) {
                 //relogin
                 login();
-                state = getStates(handler, url);
+                states = getAllStates(handler, url);
             }
 
-            if (state == null) {
+            if (states == null) {
                 return;
             }
 
+            // update thing status
+            updateThingStatus(handler, states);
+
+            // update channel values
             for (Channel channel : thing.getChannels()) {
-                State channelState = getChannelState(handler, channel, state);
+                State channelState = getChannelState(handler, channel, states);
                 if (channelState != null) {
                     updateState(channel.getUID(), channelState);
                 } else {
-                    logger.warn("Cannot get state for channel {}", channel.getUID());
+                    logger.debug("Cannot find state for channel {}", channel.getUID());
                 }
             }
         }
+    }
 
+    private void updateThingStatus(SomfyTahomaBaseThingHandler handler, List<SomfyTahomaState> states) {
+        for (SomfyTahomaState state : states) {
+            if (state.getName().equals(STATUS_STATE) && state.getType() == TYPE_STRING) {
+                if (state.getValue().equals(UNAVAILABLE)) {
+                    handler.setUnavailable();
+                } else {
+                    handler.setAvailable();
+                }
+                return;
+            }
+        }
     }
 
     private State getChannelState(SomfyTahomaThingHandler handler, Channel channel, List<SomfyTahomaState> channelStates) {
@@ -587,7 +598,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (!StringUtils.isEmpty(data.getExecId())) {
                 logger.debug("Exec id: {}", data.getExecId());
             } else {
-                logger.warn("Command response: {}", line);
+                logger.warn("Apply command response: {}", line);
                 throw new SomfyTahomaException(line);
             }
             return true;
