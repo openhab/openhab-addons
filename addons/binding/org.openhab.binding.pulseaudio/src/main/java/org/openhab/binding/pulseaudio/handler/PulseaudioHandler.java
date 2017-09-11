@@ -27,6 +27,8 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -249,8 +251,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             updateState(PulseaudioBindingConstants.STATE_CHANNEL,
                     device.getState() != null ? new StringType(device.getState().toString()) : new StringType("-"));
             if (device instanceof SinkInput) {
-                updateState(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL, ((SinkInput) device).getSink() != null
-                        ? new StringType(((SinkInput) device).getSink().getPaName()) : new StringType("-"));
+                updateState(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL,
+                        ((SinkInput) device).getSink() != null
+                                ? new StringType(((SinkInput) device).getSink().getPaName())
+                                : new StringType("-"));
             }
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
                 updateState(PulseaudioBindingConstants.SLAVES_CHANNEL,
@@ -271,5 +275,15 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     @Override
     public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device) {
         logger.trace("new device discovered {} by {}", device, bridge);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
+                && ThingStatus.OFFLINE.equals(getThing().getStatusInfo().getStatus())
+                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        }
     }
 }
