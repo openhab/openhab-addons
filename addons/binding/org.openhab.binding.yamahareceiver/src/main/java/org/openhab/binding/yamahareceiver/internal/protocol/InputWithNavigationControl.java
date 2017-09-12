@@ -10,8 +10,8 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import java.io.IOException;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The navigation control protocol interface
@@ -24,8 +24,8 @@ public interface InputWithNavigationControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    Set<String> SUPPORTED_INPUTS = Sets.newHashSet("NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC", "Napster",
-            "Pandora", "SIRIUS", "Rhapsody", "iPod", "HD_RADIO");
+    Set<String> SUPPORTED_INPUTS = Stream.of("NET_RADIO", "NET RADIO", "USB", "DOCK", "iPOD_USB", "PC", "Napster",
+            "Pandora", "SIRIUS", "Rhapsody", "iPod", "HD_RADIO").collect(Collectors.toSet());
 
     /**
      * Navigate back

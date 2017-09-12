@@ -10,8 +10,9 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 
 /**
@@ -25,13 +26,11 @@ public interface InputWithPlayControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    Set<String> SUPPORTED_INPUTS = Sets.newHashSet(
-            YamahaReceiverBindingConstants.INPUT_TUNER,
-            "NET_RADIO", "USB", "DOCK", "iPOD_USB", "PC",
-            "Napster", "Pandora", "SIRIUS", "Rhapsody",
-            YamahaReceiverBindingConstants.INPUT_BLUETOOTH,
-            "iPod", "HD_RADIO",
-            YamahaReceiverBindingConstants.INPUT_SPOTIFY);
+    Set<String> SUPPORTED_INPUTS = Stream
+            .of(YamahaReceiverBindingConstants.INPUT_TUNER, "NET_RADIO", "NET RADIO", "USB", "DOCK", "iPOD_USB", "PC",
+                    "Napster", "Pandora", "SIRIUS", "Rhapsody", YamahaReceiverBindingConstants.INPUT_BLUETOOTH, "iPod",
+                    "HD_RADIO", YamahaReceiverBindingConstants.INPUT_SPOTIFY)
+            .collect(Collectors.toSet());
 
     /**
      * Start the playback of the content which is usually selected by the means of the Navigation control class or
