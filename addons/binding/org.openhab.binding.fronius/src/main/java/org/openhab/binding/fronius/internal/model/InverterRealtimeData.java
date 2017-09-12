@@ -38,7 +38,11 @@ public class InverterRealtimeData {
     private DateTimeType timestamp = new DateTimeType();
     private boolean deconstructed = false;
 
-    public InverterRealtimeData(final JsonObject json) {
+    public static InverterRealtimeData createInverterRealtimeData(final JsonObject json) {
+        return new InverterRealtimeData(json);
+    }
+
+    private InverterRealtimeData(final JsonObject json) {
         this.json = json;
     }
 

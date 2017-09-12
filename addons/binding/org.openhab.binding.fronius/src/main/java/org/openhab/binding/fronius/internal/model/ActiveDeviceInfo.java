@@ -38,7 +38,11 @@ public class ActiveDeviceInfo {
     private DateTimeType timestamp = new DateTimeType();
     private boolean deconstructed = false;
 
-    public ActiveDeviceInfo(final JsonObject json) {
+    public static ActiveDeviceInfo createActiveDeviceInfo(final JsonObject json) {
+        return new ActiveDeviceInfo(json);
+    }
+
+    private ActiveDeviceInfo(final JsonObject json) {
         this.json = json;
     }
 

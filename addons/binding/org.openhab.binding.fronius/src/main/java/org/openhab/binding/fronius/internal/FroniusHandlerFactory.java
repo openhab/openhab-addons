@@ -10,12 +10,18 @@ package org.openhab.binding.fronius.internal;
 
 import static org.openhab.binding.fronius.FroniusBindingConstants.*;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.fronius.handler.FroniusSymo;
-import org.openhab.binding.fronius.handler.FroniusSymoHybrid;
+import org.openhab.binding.fronius.handler.FroniusActiveDeviceInfoHandler;
+import org.openhab.binding.fronius.handler.FroniusInverterRealtimeDataHandler;
+import org.openhab.binding.fronius.handler.FroniusMeterRealtimeDataHandler;
+import org.openhab.binding.fronius.handler.FroniusStorageRealtimeDataHandler;
+import org.openhab.binding.fronius.handler.FroniusSymoBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link FroniusHandlerFactory} is responsible for creating things and thing
@@ -25,6 +31,8 @@ import org.openhab.binding.fronius.handler.FroniusSymoHybrid;
  */
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(FroniusHandlerFactory.class);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -32,13 +40,23 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(FRONIUS_SYMO)) {
-            return new FroniusSymo(thing);
-        } else if (thingTypeUID.equals(FRONIUS_SYMO_HYBRID)) {
-            return new FroniusSymoHybrid(thing);
+        logger.debug("Create Handler for Thing {}", thingTypeUID);
+
+        if (thingTypeUID.equals(FRONIUS_SYMO_BRIDGE)) {
+            return new FroniusSymoBridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(ACTIVE_DEVICE_INFO_THING)) {
+            return new FroniusActiveDeviceInfoHandler(thing);
+        } else if (thingTypeUID.equals(INVERTER_REALTIME_DATA_THING)) {
+            return new FroniusInverterRealtimeDataHandler(thing);
+        } else if (thingTypeUID.equals(STORAGE_REALTIME_DATA_THING)) {
+            return new FroniusStorageRealtimeDataHandler(thing);
+        } else if (thingTypeUID.equals(METER_REALTIME_DATA_THING)) {
+            return new FroniusMeterRealtimeDataHandler(thing);
         }
+
+        logger.error("Thing not supported: {}", thingTypeUID);
 
         return null;
     }

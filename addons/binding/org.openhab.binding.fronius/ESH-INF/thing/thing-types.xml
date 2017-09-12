@@ -4,52 +4,48 @@
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="symo">
-		<label>Fronius Symo</label>
-		<description>Fronius Symo Inverter</description>
+    <bridge-type id="symo">
+        <label>Fronius Symo Device</label>
+        <description>This bridge represents a Fronius Symo Device</description>
 
-        <channels>
-            <channel id="online" typeId="online"></channel>
-            <channel id="day_energy" typeId="energy"></channel>
-            <channel id="year_energy" typeId="energy"></channel>
-            <channel id="total_energy" typeId="energy"></channel>
-            <channel id="pac" typeId="power"></channel>
-            <channel id="iac" typeId="current"></channel>
-            <channel id="uac" typeId="voltage"></channel>
-            <channel id="fac" typeId="frequency"></channel>
-            <channel id="idc" typeId="current"></channel>
-            <channel id="udc" typeId="voltage"></channel>
-            <channel id="status_code" typeId="code"></channel>
-            <channel id="timestamp" typeId="timestamp"></channel>
-        </channels>
-        
         <config-description>
             <parameter name="hostname" type="text" required="true">
                 <label>Hostname or IP</label>
                 <description>Hostname or IP of the device</description>
+                <required>true</required>
             </parameter>
-
-            <parameter name="device" type="integer">
-                <label>Device</label>
-                <description>Device id of Fronius inverter</description>
-                <default>1</default>
-            </parameter>
-
             <parameter name="refresh_interval" type="integer">
                 <label>Refresh Interval</label>
-                <description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
-                <default>60000</default>
+                <description>States how long to wait after a device state update before the next refresh shall occur (in s)</description>
+                <default>60</default>
             </parameter>
         </config-description>
+    </bridge-type>
 
-	</thing-type>
+    <thing-type id="device_info">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="symo" />
+        </supported-bridge-type-refs>
 
-    <thing-type id="symo_hybrid">
-        <label>Fronius Symo Hybrid</label>
-        <description>Fronius Symo Hybrid Inverter</description>
+        <label>Active Device Info</label>
+        <description>This thring represents the active device info of a Fronius inverter</description>
 
         <channels>
-            <channel id="online" typeId="online"></channel>
+            <channel id="status_code" typeId="code"></channel>
+            <channel id="timestamp" typeId="timestamp"></channel>
+        </channels>
+
+    </thing-type>
+
+    <thing-type id="inverter_data">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="symo" />
+        </supported-bridge-type-refs>
+
+        <label>Inverter Realtime Data</label>
+        <description>This thring represents the inverter realtime data of a Fronius inverter</description>
+
+        <channels>
             <channel id="day_energy" typeId="energy"></channel>
             <channel id="year_energy" typeId="energy"></channel>
             <channel id="total_energy" typeId="energy"></channel>
@@ -61,36 +57,68 @@
             <channel id="udc" typeId="voltage"></channel>
             <channel id="status_code" typeId="code"></channel>
             <channel id="timestamp" typeId="timestamp"></channel>
-            <channel id="storage_current" typeId="current"></channel>
-            <channel id="storage_voltage" typeId="voltage"></channel>
-            <channel id="storage_charge" typeId="percent"></channel>
-            <channel id="storage_capacity" typeId="energy"></channel>
-            <channel id="storage_temperature" typeId="temperature"></channel>
-            <channel id="storage_code" typeId="code"></channel>
-            <channel id="storage_timestamp" typeId="timestamp"></channel>
         </channels>
-        
-        <config-description>
-            <parameter name="hostname" type="text" required="true">
-                <label>Hostname or IP</label>
-                <description>Hostname or IP of the device</description>
-            </parameter>
 
-            <parameter name="refresh_interval" type="integer">
-                <label>Refresh Interval</label>
-                <description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
-                <default>60000</default>
+        <config-description>
+            <parameter name="device" type="integer">
+                <label>Device</label>
+                <description>Fronius device id</description>
+                <required>true</required>
             </parameter>
         </config-description>
 
     </thing-type>
 
-    <channel-type id="online">
-        <item-type>Switch</item-type>
-        <label>Online</label>
-        <description>States whether a device is online or offline</description>
-        <state readOnly="true"></state>
-    </channel-type>
+    <thing-type id="meter_data">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="symo" />
+        </supported-bridge-type-refs>
+
+        <label>Meter Realtime Data</label>
+        <description>This thring represents the meter realtime data of a Fronius inverter</description>
+
+        <channels>
+            <channel id="status_code" typeId="code"></channel>
+            <channel id="timestamp" typeId="timestamp"></channel>
+        </channels>
+
+        <config-description>
+            <parameter name="device" type="integer">
+                <label>Device</label>
+                <description>Fronius device id</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+
+    </thing-type>
+
+    <thing-type id="storage_data">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="symo" />
+        </supported-bridge-type-refs>
+
+        <label>Storage Realtime Data</label>
+        <description>This thring represents the storage realtime data of a Fronius inverter</description>
+
+        <channels>
+            <channel id="current" typeId="current"></channel>
+            <channel id="voltage" typeId="voltage"></channel>
+            <channel id="charge" typeId="percent"></channel>
+            <channel id="capacity" typeId="energy"></channel>
+            <channel id="temperature" typeId="temperature"></channel>
+            <channel id="status_code" typeId="code"></channel>
+            <channel id="timestamp" typeId="timestamp"></channel>
+        </channels>
+
+        <config-description>
+            <parameter name="device" type="integer">
+                <label>Device</label>
+                <description>Fronius device id</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+
+    </thing-type>
 
     <channel-type id="energy">
         <item-type>Number</item-type>
@@ -118,21 +146,9 @@
     </channel-type>
 
     <channel-type id="frequency">
-        <item-type>Number</item-type>
+         <item-type>Number</item-type>
         <label>Frequency</label>
         <state readOnly="true" pattern="%.2f Hz"></state>
-    </channel-type>
-
-    <channel-type id="code">
-        <item-type>Number</item-type>
-        <label>Code</label>
-        <state readOnly="true"></state>
-    </channel-type>
-
-    <channel-type id="timestamp">
-        <item-type>String</item-type>
-        <label>Timestamp</label>
-        <state readOnly="true"></state>
     </channel-type>
 
     <channel-type id="temperature">
@@ -146,6 +162,18 @@
         <item-type>Number</item-type>
         <label>Percent</label>
         <state readOnly="true" pattern="%.1f %"></state>
+    </channel-type>
+
+    <channel-type id="code">
+        <item-type>Number</item-type>
+        <label>Code</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="timestamp">
+        <item-type>String</item-type>
+        <label>Timestamp</label>
+        <state readOnly="true"></state>
     </channel-type>
 
 </thing:thing-descriptions>

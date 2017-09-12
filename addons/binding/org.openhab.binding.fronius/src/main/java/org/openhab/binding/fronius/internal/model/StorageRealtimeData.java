@@ -34,7 +34,11 @@ public class StorageRealtimeData {
     private DateTimeType timestamp = new DateTimeType();
     private boolean deconstructed = false;
 
-    public StorageRealtimeData(final JsonObject json) {
+    public static StorageRealtimeData createStorageRealtimeData(final JsonObject json) {
+        return new StorageRealtimeData(json);
+    }
+
+    private StorageRealtimeData(final JsonObject json) {
         this.json = json;
     }
 
