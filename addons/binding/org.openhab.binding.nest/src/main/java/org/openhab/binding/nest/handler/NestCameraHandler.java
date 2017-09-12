@@ -15,6 +15,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.SmokeDetector;
+import org.openhab.binding.nest.internal.data.Structure;
+import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +57,13 @@ public class NestCameraHandler extends NestBaseHandler {
         }
     }
 
-    /**
-     * Updates the camera with data from nest.
-     *
-     * @param camera The new camera data
-     */
-    void updateCamera(Camera camera) {
+    @Override
+    public void onNewNestThermostatData(Thermostat thermostat) {
+        // ignore we are not a thermostat handler
+    }
+
+    @Override
+    public void onNewNestCameraData(Camera camera) {
         logger.debug("Updating camera {}", camera.getDeviceId());
         updateState(CHANNEL_STREAMING, camera.isStreaming() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_VIDEO_HISTORY_ENABLED, camera.isVideoHistoryEnabled() ? OnOffType.ON : OnOffType.OFF);
@@ -75,6 +79,16 @@ public class NestCameraHandler extends NestBaseHandler {
         // Setup the properties for this device.
         updateProperty(PROPERTY_ID, camera.getDeviceId());
         updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
+    }
+
+    @Override
+    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
+        // ignore we are note a smoke sensor
+    }
+
+    @Override
+    public void onNewNestStructureData(Structure struct) {
+        // ignore we are note a structure handler
     }
 
     private void addUpdateRequest(String field, Object value) {

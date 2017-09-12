@@ -16,32 +16,27 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
-import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.internal.NestAccessToken;
-import org.openhab.binding.nest.internal.NestDeviceAddedListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
-import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.NestDevices;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
 import org.openhab.binding.nest.internal.data.TopLevelData;
+import org.openhab.binding.nest.internal.exceptions.FailedRetrievingNestDataException;
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeoutException;
@@ -59,7 +54,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
-    private final List<NestDeviceAddedListener> listeners = new ArrayList<>();
+    private final List<NestDeviceDataListener> listeners = new ArrayList<>();
 
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
@@ -112,10 +107,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * polling intervals as well as re-doing the access token.
      */
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+    public void updateConfiguration(Configuration configuration) {
         logger.debug("Config update");
-        super.handleConfigurationUpdate(configurationParameters);
-
         stopAutomaticRefresh();
         startAutomaticRefresh(getConfigAs(NestBridgeConfiguration.class).refreshInterval);
     }
@@ -158,110 +151,49 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         try {
             String uri = buildQueryString(config);
-            String data = jsonFromGetUrl(uri, config);
+            String data = jsonFromGetUrl(uri);
             logger.debug("Data from nest {}", data);
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Received update from nest");
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from nest");
+
             // Now convert the incoming data into something more useful.
             Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
             if (newData != null) {
-                compareThings(newData.getDevices());
-                compareStructure(newData.getStructures().values());
+                broadcastDevices(newData.getDevices());
+                broadcastStructure(newData.getStructures().values());
             }
         } catch (InvalidAccessTokenException e) {
             logger.warn("Invalid access token", e);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.error("Error parsing data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
+        } catch (FailedRetrievingNestDataException e) {
+            logger.warn("Error retrieving data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error parsing data " + e.getMessage());
+                    "Error retrieving data " + e.getMessage());
         }
 
     }
 
-    private Thing getExistingDevice(String deviceId, List<Thing> things) {
-        for (Thing thing : things) {
-            String thingDeviceId = thing.getUID().getId();
-            if (thingDeviceId.equals(deviceId)) {
-                return thing;
-            }
-        }
-        return null;
+    private void broadcastDevices(NestDevices devices) {
+        listeners.forEach(listener -> {
+                    if (devices.getThermostats() != null) {
+                        devices.getThermostats().values().forEach(listener::onNewNestThermostatData);
+                    }
+                    if (devices.getCameras() != null) {
+                        devices.getCameras().values().forEach(listener::onNewNestCameraData);
+                    }
+                    if (devices.getSmokeDetectors() != null) {
+                        devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+                    }
+                }
+        );
     }
 
-    private void compareThings(NestDevices devices) {
-        Bridge bridge = getThing();
-        List<Thing> things = bridge.getThings();
-
-        if (devices.getThermostats() != null) {
-            for (Thermostat thermostat : devices.getThermostats().values()) {
-                Thing thingThermostat = getExistingDevice(thermostat.getDeviceId(), things);
-                if (thingThermostat != null) {
-                    NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
-                    if (handler != null) {
-                        handler.updateThermostat(thermostat);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new thermostat {}", thermostat.getDeviceId());
-                        listener.onThermostatAdded(thermostat);
-                    }
-                }
-            }
-        }
-
-        if (devices.getCameras() != null) {
-            for (Camera camera : devices.getCameras().values()) {
-                Thing thingCamera = getExistingDevice(camera.getDeviceId(), things);
-                if (thingCamera != null) {
-                    NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
-                    if (handler != null) {
-                        handler.updateCamera(camera);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new camera. {}", camera.getDeviceId());
-                        listener.onCameraAdded(camera);
-                    }
-                }
-            }
-        }
-
-        if (devices.getSmokeDetectors() != null) {
-            for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
-                Thing thingSmokeDetector = getExistingDevice(smokeDetector.getDeviceId(), things);
-                if (thingSmokeDetector != null) {
-                    NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
-                    if (handler != null) {
-                        handler.updateSmokeDetector(smokeDetector);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
-                        listener.onSmokeDetectorAdded(smokeDetector);
-                    }
-                }
-            }
-        }
-    }
-
-    private void compareStructure(Collection<Structure> structures) {
-        Bridge bridge = getThing();
-        List<Thing> things = bridge.getThings();
-
-        for (Structure struct : structures) {
-            Thing thingStructure = getExistingDevice(struct.getStructureId(), things);
-            if (thingStructure != null) {
-                NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
-                if (handler != null) {
-                    handler.updateStructure(struct);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new structure {}", struct.getStructureId());
-                    listener.onStructureAdded(struct);
-                }
-            }
-        }
+    private void broadcastStructure(Collection<Structure> structures) {
+        structures.forEach(
+                structure -> listeners.forEach(l -> l.onNewNestStructureData(structure))
+        );
     }
 
     private String buildQueryString(NestBridgeConfiguration config) throws InvalidAccessTokenException {
@@ -288,11 +220,14 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         return urlBuilder.toString();
     }
 
-    private String jsonFromGetUrl(final String url, NestBridgeConfiguration config)
-            throws InterruptedException, ExecutionException, TimeoutException {
-        logger.debug("Fetching data from {}", url);
-        ContentResponse response = this.httpClient.GET(url);
-        return response.getContentAsString();
+    private String jsonFromGetUrl(String url) throws FailedRetrievingNestDataException {
+        try {
+            logger.debug("Fetching data from {}", url);
+            ContentResponse response = this.httpClient.GET(url);
+            return response.getContentAsString();
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new FailedRetrievingNestDataException(e);
+        }
     }
 
     private synchronized void startAutomaticRefresh(int refreshInterval) {
@@ -309,20 +244,22 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @param nestDiscoveryService The device added listener to add
+     * @param nestDeviceDataListener The device added listener to add
      */
-    public void addDeviceAddedListener(NestDeviceAddedListener nestDiscoveryService) {
-        listeners.add(nestDiscoveryService);
+    public boolean addDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
+        return listeners.add(nestDeviceDataListener);
     }
 
     /**
-     * @param nestDiscoveryService The device added listener to remove
+     * @param nestDeviceDataListener The device added listener to remove
      */
-    public void removeDeviceAddedListener(NestDiscoveryService nestDiscoveryService) {
-        listeners.remove(nestDiscoveryService);
+    public boolean removeDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
+        return listeners.remove(nestDeviceDataListener);
     }
 
-    /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */
+    /**
+     * Adds the update request into the queue for doing something with, send immediately if the queue is empty.
+     */
     public void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
     }

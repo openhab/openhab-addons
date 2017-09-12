@@ -19,6 +19,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
+import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.SmokeDetector;
+import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,20 +108,12 @@ public class NestThermostatHandler extends NestBaseHandler {
         }
     }
 
-    /**
-     * Initialize the system.
-     */
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+    private void addUpdateRequest(String field, Object value) {
+        addUpdateRequest(NEST_THERMOSTAT_UPDATE_URL, field, value);
     }
 
-    /**
-     * Handlers an incoming update from the nest system.
-     *
-     * @param thermostat The thermostat to update
-     */
-    void updateThermostat(Thermostat thermostat) {
+    @Override
+    public void onNewNestThermostatData(Thermostat thermostat) {
         logger.debug("Updating thermostat {}", thermostat.getDeviceId());
         updateState(CHANNEL_TEMPERATURE, new DecimalType(thermostat.getAmbientTemperature()));
         updateState(CHANNEL_HUMIDITY, new PercentType(thermostat.getHumidity()));
@@ -149,7 +144,18 @@ public class NestThermostatHandler extends NestBaseHandler {
         updateProperty(PROPERTY_FIRMWARE_VERSION, thermostat.getSoftwareVersion());
     }
 
-    private void addUpdateRequest(String field, Object value) {
-        addUpdateRequest(NEST_THERMOSTAT_UPDATE_URL, field, value);
+    @Override
+    public void onNewNestCameraData(Camera camera) {
+        // ignore we are note a camera handler
+    }
+
+    @Override
+    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
+        // ignore we are note a smoke sensor
+    }
+
+    @Override
+    public void onNewNestStructureData(Structure struct) {
+        // ignore we are note a structure handler
     }
 }

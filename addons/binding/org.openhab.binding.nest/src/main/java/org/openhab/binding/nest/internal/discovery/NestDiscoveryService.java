@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.internal.NestDeviceAddedListener;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
@@ -41,7 +41,7 @@ import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE
  *
  * @author David Bennett - initial contribution
  */
-public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceAddedListener {
+public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceDataListener {
     private final Logger logger = LoggerFactory.getLogger(NestDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(
@@ -56,12 +56,12 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
     }
 
     public void activate() {
-        bridge.addDeviceAddedListener(this);
+        bridge.addDeviceDataListener(this);
     }
 
     @Override
     public void deactivate() {
-        bridge.removeDeviceAddedListener(this);
+        bridge.removeDeviceDataListener(this);
     }
 
     @Override
@@ -70,19 +70,19 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
     }
 
     @Override
-    public void onThermostatAdded(Thermostat thermostat) {
+    public void onNewNestThermostatData(Thermostat thermostat) {
         onNestDeviceAdded(thermostat, NestBindingConstants.THING_TYPE_THERMOSTAT);
         logger.debug("thingDiscovered called for thermostat");
     }
 
     @Override
-    public void onCameraAdded(Camera camera) {
+    public void onNewNestCameraData(Camera camera) {
         onNestDeviceAdded(camera, THING_TYPE_CAMERA);
         logger.debug("thingDiscovered called for camera");
     }
 
     @Override
-    public void onSmokeDetectorAdded(SmokeDetector smoke) {
+    public void onNewNestSmokeDetectorData(SmokeDetector smoke) {
         onNestDeviceAdded(smoke, THING_TYPE_SMOKE_DETECTOR);
         logger.debug("thingDiscovered called for smoke detector");
     }
@@ -102,7 +102,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
     }
 
     @Override
-    public void onStructureAdded(Structure struct) {
+    public void onNewNestStructureData(Structure struct) {
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId());
         Map<String, Object> properties = new HashMap<>();

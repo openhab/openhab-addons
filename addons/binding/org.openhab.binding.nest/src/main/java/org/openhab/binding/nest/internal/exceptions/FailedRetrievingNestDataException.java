@@ -9,16 +9,12 @@
 package org.openhab.binding.nest.internal.exceptions;
 
 /**
- * Will be thrown when there is no valid access token and it was not possible to refresh it
+ * Will be thrown when the bridge was unable to retrieve data
  *
- * @author Martin van Wingerden - Added more centralized handling of invalid access tokens
+ * @author Martin van Wingerden - Added more centralized handling of failure when retrieving data
  */
-public class InvalidAccessTokenException extends Exception {
-    public InvalidAccessTokenException(Exception cause) {
+public class FailedRetrievingNestDataException extends Exception {
+    public FailedRetrievingNestDataException(Throwable cause) {
         super(cause);
-    }
-
-    public InvalidAccessTokenException(String message) {
-        super(message);
     }
 }

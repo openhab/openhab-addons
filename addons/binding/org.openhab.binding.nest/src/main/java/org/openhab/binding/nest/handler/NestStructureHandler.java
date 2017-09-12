@@ -14,7 +14,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
+import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,18 +60,28 @@ public class NestStructureHandler extends NestBaseHandler {
             if (command instanceof StringType) {
                 StringType cmd = (StringType) command;
                 // Set the mode to be the cmd value.
-                addUpdateRequest("away", cmd.toString());
+                addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, "away", cmd.toString());
             }
         }
-
     }
 
-    /**
-     * Update the structure from the data we received from nest.
-     *
-     * @param structure The structure data to update with
-     */
-    void updateStructure(Structure structure) {
+    @Override
+    public void onNewNestThermostatData(Thermostat thermostat) {
+        // ignore we are not a thermostat handler
+    }
+
+    @Override
+    public void onNewNestCameraData(Camera camera) {
+        // ignore we are note a camera handler
+    }
+
+    @Override
+    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
+        // ignore we are note a smoke sensor
+    }
+
+    @Override
+    public void onNewNestStructureData(Structure structure) {
         logger.debug("Updating structure {}", structure.getStructureId());
         updateState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT,
                 structure.isRushHourRewardsEnrollement() ? OnOffType.ON : OnOffType.OFF);
@@ -86,9 +99,5 @@ public class NestStructureHandler extends NestBaseHandler {
 
         // Setup the properties for this structure.
         updateProperty(PROPERTY_ID, structure.getStructureId());
-    }
-
-    private void addUpdateRequest(String field, Object value) {
-        addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, field, value);
     }
 }

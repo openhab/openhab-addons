@@ -15,8 +15,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.SmokeDetector.BatteryHealth;
+import org.openhab.binding.nest.internal.data.Structure;
+import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +36,7 @@ import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
  *
  * @author David Bennett - Initial Contribution
  */
-public class NestSmokeDetectorHandler extends BaseThingHandler {
+public class NestSmokeDetectorHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
     public NestSmokeDetectorHandler(Thing thing) {
@@ -48,12 +51,18 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
         // There is nothing to update on the smoke detector.
     }
 
-    /**
-     * Updates the smoke detector on data from nest.
-     *
-     * @param smokeDetector The current smoke detector state
-     */
-    void updateSmokeDetector(SmokeDetector smokeDetector) {
+    @Override
+    public void onNewNestThermostatData(Thermostat thermostat) {
+        // ignore we are not a thermostat handler
+    }
+
+    @Override
+    public void onNewNestCameraData(Camera camera) {
+        // ignore we are note a camera handler
+    }
+
+    @Override
+    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
         logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
         updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
         updateState(CHANNEL_LOW_BATTERY,
@@ -67,6 +76,11 @@ public class NestSmokeDetectorHandler extends BaseThingHandler {
         // Setup the properties for this device.
         updateProperty(PROPERTY_ID, smokeDetector.getDeviceId());
         updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
+    }
+
+    @Override
+    public void onNewNestStructureData(Structure struct) {
+        // ignore we are note a structure handler
     }
 
 }

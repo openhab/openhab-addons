@@ -16,11 +16,11 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.TimeZone;
 
 /**
@@ -29,11 +29,26 @@ import java.util.TimeZone;
  * @author David Bennett - initial contribution
  * @author Martin van Wingerden - splitted of NestBaseHandler
  */
-abstract class NestBaseHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
-
+abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener {
     NestBaseHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        getNestBridgeHandler()
+                .map(b -> b.addDeviceDataListener(NestBaseHandler.this));
+    }
+
+    @Override
+    public void dispose() {
+        getNestBridgeHandler()
+                .map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
+    }
+
+    private Optional<NestBridgeHandler> getNestBridgeHandler() {
+        return Optional.ofNullable(getBridge())
+                .map(b -> (NestBridgeHandler) b.getHandler());
     }
 
     State getAsStringTypeOrNull(Object value) {
