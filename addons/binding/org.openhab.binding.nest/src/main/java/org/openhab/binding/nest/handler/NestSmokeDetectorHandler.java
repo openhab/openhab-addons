@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nest.handler;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
@@ -39,7 +39,7 @@ import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 public class NestSmokeDetectorHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
-    public NestSmokeDetectorHandler(Thing thing) {
+    public NestSmokeDetectorHandler(@NonNull Thing thing) {
         super(thing);
     }
 

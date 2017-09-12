@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.handler;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -42,7 +43,7 @@ import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 public class NestCameraHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
 
-    public NestCameraHandler(Thing thing) {
+    public NestCameraHandler(@NonNull Thing thing) {
         super(thing);
     }
 

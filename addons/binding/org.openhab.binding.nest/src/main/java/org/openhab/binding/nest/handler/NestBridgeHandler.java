@@ -10,8 +10,8 @@ package org.openhab.binding.nest.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -21,8 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestAccessToken;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.NestDevices;
@@ -30,16 +32,14 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.exceptions.FailedRetrievingNestDataException;
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
-import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -68,7 +68,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      *
      * @param bridge The bridge to connect to nest with.
      */
-    public NestBridgeHandler(Bridge bridge) {
+    public NestBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
         builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     }
@@ -93,9 +93,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
 
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
-        logger.debug("Client Id       {}.", config.clientId);
-        logger.debug("Client Secret   {}.", config.clientSecret);
-        logger.debug("Pincode         {}.", config.pincode);
+        logger.debug("Client Id       {}", config.clientId);
+        logger.debug("Client Secret   {}", config.clientSecret);
+        logger.debug("Pincode         {}", config.pincode);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
 
@@ -159,10 +159,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             // Now convert the incoming data into something more useful.
             Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
-            if (newData != null) {
-                broadcastDevices(newData.getDevices());
-                broadcastStructure(newData.getStructures().values());
-            }
+            broadcastDevices(newData.getDevices());
+            broadcastStructure(newData.getStructures().values());
         } catch (InvalidAccessTokenException e) {
             logger.warn("Invalid access token", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -223,10 +221,19 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private String jsonFromGetUrl(String url) throws FailedRetrievingNestDataException {
         try {
             logger.debug("Fetching data from {}", url);
-            ContentResponse response = this.httpClient.GET(url);
-            return response.getContentAsString();
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            return HttpUtil.executeUrl("GET", url, 5000);
+        } catch (IOException e) {
             throw new FailedRetrievingNestDataException(e);
+        }
+    }
+
+    private String jsonToPutUrl(NestUpdateRequest request) {
+        try {
+            logger.debug("Fetching data from {}", request.getUpdateUrl());
+            return HttpUtil.executeUrl("PUT", request.getUpdateUrl(), null, null, null, 5000);
+        } catch (IOException e) {
+            // FIXME
+            throw new RuntimeException(e);
         }
     }
 

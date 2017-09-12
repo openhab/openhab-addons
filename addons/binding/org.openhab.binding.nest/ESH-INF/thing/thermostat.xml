@@ -40,11 +40,11 @@
 			</channel>
 			<channel id="locked_max_set_point" typeId="LockedMaxSetPoint">
 				<label>Locked max set point</label>
-				<description>Locked max set point in celcius</description>
+				<description>Locked max set point in Celsius</description>
 			</channel>
 			<channel id="locked_min_set_point" typeId="LockedMinSetPoint">
 				<label>Locked Min set point</label>
-				<description>Locked min set point in celcius</description>
+				<description>Locked min set point in Celsius</description>
 			</channel>
 			<channel id="time_to_target_mins" typeId="TimeToTarget" />
 		</channels>

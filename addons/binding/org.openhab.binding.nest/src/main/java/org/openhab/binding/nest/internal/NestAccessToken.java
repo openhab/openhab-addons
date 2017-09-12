@@ -33,6 +33,7 @@ public class NestAccessToken {
 
     private final NestBridgeConfiguration config;
     private final HttpClient httpClient;
+    private final Gson gson;
 
     /**
      * Create the helper class for the nest access token. Also creates the folder
@@ -43,6 +44,7 @@ public class NestAccessToken {
     public NestAccessToken(NestBridgeConfiguration config, HttpClient httpClient) {
         this.config = config;
         this.httpClient = httpClient;
+        this.gson = new GsonBuilder().create();
     }
 
     /**
@@ -68,8 +70,6 @@ public class NestAccessToken {
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .timeout(10, TimeUnit.SECONDS);
 
-            // TODO should we store this instead of recreating it each and every time?
-            Gson gson = new GsonBuilder().create();
             String responseContentAsString = request.send().getContentAsString();
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);

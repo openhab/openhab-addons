@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -90,6 +91,9 @@ public class NestBindingConstants {
     public static final String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state"; // Also in structure
     public static final String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
 
+    // read/write channel (structure)
+    public static final String CHANNEL_AWAY = "away";
+
     // read only channels (structure)
     public static final String CHANNEL_COUNTRY_CODE = "country_code";
     public static final String CHANNEL_POSTAL_CODE = "postal_code";
@@ -98,9 +102,8 @@ public class NestBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "time_zone";
     public static final String CHANNEL_ETA_BEGIN = "eta_begin";
     public static final String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
-    public static final String CHANNEL_AWAY = "away";
 
     // Properties on things that are fixed.
-    public static final String PROPERTY_ID = "deviceId";
-    public static final String PROPERTY_FIRMWARE_VERSION = "firmware";
+    public static final @NonNull String PROPERTY_ID = "deviceId";
+    public static final @NonNull String PROPERTY_FIRMWARE_VERSION = "firmware";
 }

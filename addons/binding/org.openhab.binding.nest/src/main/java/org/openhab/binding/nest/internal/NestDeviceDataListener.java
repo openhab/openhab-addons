@@ -14,7 +14,7 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 
 /**
- * Used by the discovery service to track when devices are added.
+ * Used to track incoming data for devices
  *
  * @author David Bennett - Initial Contribution
  * @author Martin van Wingerden - Separated listeners to also use them for the handlers

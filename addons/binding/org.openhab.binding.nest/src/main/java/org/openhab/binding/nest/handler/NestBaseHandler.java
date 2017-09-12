@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.handler;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -15,8 +16,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
+import org.openhab.binding.nest.internal.NestUpdateRequest;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -30,7 +31,7 @@ import java.util.TimeZone;
  * @author Martin van Wingerden - splitted of NestBaseHandler
  */
 abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener {
-    NestBaseHandler(Thing thing) {
+    NestBaseHandler(@NonNull Thing thing) {
         super(thing);
     }
 

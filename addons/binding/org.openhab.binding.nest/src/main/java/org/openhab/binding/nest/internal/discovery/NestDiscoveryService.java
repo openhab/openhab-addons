@@ -8,10 +8,6 @@
  */
 package org.openhab.binding.nest.internal.discovery;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -27,7 +23,11 @@ import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
@@ -44,9 +44,9 @@ import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE
 public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceDataListener {
     private final Logger logger = LoggerFactory.getLogger(NestDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(
             NestBindingConstants.THING_TYPE_THERMOSTAT, NestBindingConstants.THING_TYPE_SMOKE_DETECTOR,
-            THING_TYPE_STRUCTURE, NestBindingConstants.THING_TYPE_CAMERA);
+            THING_TYPE_STRUCTURE, NestBindingConstants.THING_TYPE_CAMERA).collect(Collectors.toSet());
 
     private final NestBridgeHandler bridge;
 

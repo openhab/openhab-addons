@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.handler;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -15,10 +16,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
@@ -56,7 +54,7 @@ import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 public class NestThermostatHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
 
-    public NestThermostatHandler(Thing thing) {
+    public NestThermostatHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -75,7 +73,7 @@ public class NestThermostatHandler extends NestBaseHandler {
             }
         }
         if (CHANNEL_MAX_SET_POINT.equals(channelUID.getId())) {
-            // Change the set point (celcius).
+            // Change the set point (Celsius).
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
@@ -83,7 +81,7 @@ public class NestThermostatHandler extends NestBaseHandler {
             }
         }
         if (CHANNEL_MIN_SET_POINT.equals(channelUID.getId())) {
-            // Change the set point (celcius).
+            // Change the set point (Celsius).
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
@@ -91,7 +89,7 @@ public class NestThermostatHandler extends NestBaseHandler {
             }
         }
         if (CHANNEL_FAN_TIMER_ACTIVE.equals(channelUID.getId())) {
-            // Change the set point (celcius).
+            // Change the set point (Celsius).
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
@@ -99,7 +97,7 @@ public class NestThermostatHandler extends NestBaseHandler {
             }
         }
         if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
-            // Change the set point (celcius).
+            // Change the set point (Celsius).
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
