@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.opensprinkler.discovery;
+package org.openhab.binding.opensprinkler.internal.discovery;
 
 import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.DISCOVERY_DEFAULT_IP_TIMEOUT_RATE;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
