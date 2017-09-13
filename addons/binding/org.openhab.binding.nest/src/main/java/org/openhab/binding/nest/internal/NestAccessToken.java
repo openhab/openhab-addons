@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.nest.internal;
 
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;
@@ -33,7 +36,8 @@ public class NestAccessToken {
     private final Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
 
     private final NestBridgeConfiguration config;
-    private final HttpClient httpClient;
+    @Deprecated
+    private HttpClient httpClient;
     private final Gson gson;
 
     /**
@@ -42,9 +46,8 @@ public class NestAccessToken {
      *
      * @param config The configuration to use for the token
      */
-    public NestAccessToken(NestBridgeConfiguration config, HttpClient httpClient) {
+    public NestAccessToken(NestBridgeConfiguration config) {
         this.config = config;
-        this.httpClient = httpClient;
         this.gson = new GsonBuilder().create();
     }
 
@@ -68,12 +71,8 @@ public class NestAccessToken {
 
             logger.debug("Requesting accesstoken from url: {}", urlBuilder);
 
-            Request request = httpClient.POST(urlBuilder.toString())
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .timeout(10, TimeUnit.SECONDS);
-            // @formatter:on
-
-            String responseContentAsString = request.send().getContentAsString();
+            String responseContentAsString = HttpUtil.executeUrl("POST", urlBuilder.toString(), null,
+                    null, "application/x-www-form-urlencoded", 10_000);
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
             if (data.getAccessToken() != null) {
@@ -82,7 +81,7 @@ public class NestAccessToken {
             } else {
                 throw new InvalidAccessTokenException("Received empty token");
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (IOException e) {
             throw new InvalidAccessTokenException(e);
         }
     }

@@ -82,22 +82,11 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize the Nest bridge handler");
 
-        // Create the jetty client and configure for https.
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        httpClient = new HttpClient(sslContextFactory);
-        httpClient.setConnectTimeout(30000);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error starting HTTP client " + e.getMessage());
-            return;
-        }
-
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         logger.debug("Client Id       {}", config.clientId);
         logger.debug("Client Secret   {}", config.clientSecret);
         logger.debug("Pincode         {}", config.pincode);
+        accessToken = new NestAccessToken(config);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
 
@@ -124,14 +113,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         stopAutomaticRefresh();
         this.accessToken = null;
         this.pollingJob = null;
-        if (httpClient != null) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Failed to stop client", e);
-            }
-            httpClient = null;
-        }
     }
 
     /**
