@@ -65,6 +65,10 @@ public class NestCameraHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestCameraData(Camera camera) {
+        if (isNotHandling(camera)){
+            return;
+        }
+
         logger.debug("Updating camera {}", camera.getDeviceId());
         updateState(CHANNEL_STREAMING, camera.isStreaming() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_VIDEO_HISTORY_ENABLED, camera.isVideoHistoryEnabled() ? OnOffType.ON : OnOffType.OFF);

@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
+import org.openhab.binding.nest.internal.data.BaseNestDevice;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +53,11 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
 
     private Optional<NestBridgeHandler> getNestBridgeHandler() {
         return Optional.ofNullable(getBridge()).map(b -> (NestBridgeHandler) b.getHandler());
+    }
+
+    boolean isNotHandling(BaseNestDevice nestDevice) {
+        String thingDeviceId = getThing().getThingTypeUID().getId();
+        return !(thingDeviceId.equals(nestDevice.getDeviceId()));
     }
 
     State getAsStringTypeOrNull(Object value) {

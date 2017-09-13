@@ -112,6 +112,10 @@ public class NestThermostatHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestThermostatData(Thermostat thermostat) {
+        if (isNotHandling(thermostat)){
+            return;
+        }
+
         logger.debug("Updating thermostat {}", thermostat.getDeviceId());
         updateState(CHANNEL_TEMPERATURE, new DecimalType(thermostat.getAmbientTemperature()));
         updateState(CHANNEL_HUMIDITY, new PercentType(thermostat.getHumidity()));

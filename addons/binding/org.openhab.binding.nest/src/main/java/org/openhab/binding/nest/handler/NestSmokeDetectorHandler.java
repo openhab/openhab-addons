@@ -63,6 +63,10 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
+        if (isNotHandling(smokeDetector)){
+            return;
+        }
+
         logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
         updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
         updateState(CHANNEL_LOW_BATTERY,

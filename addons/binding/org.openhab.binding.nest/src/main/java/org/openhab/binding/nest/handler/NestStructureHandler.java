@@ -83,6 +83,10 @@ public class NestStructureHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestStructureData(Structure structure) {
+        if (isNotHandling(structure)){
+            return;
+        }
+
         logger.debug("Updating structure {}", structure.getStructureId());
         updateState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT,
                 structure.isRushHourRewardsEnrollement() ? OnOffType.ON : OnOffType.OFF);
@@ -102,5 +106,10 @@ public class NestStructureHandler extends NestBaseHandler {
 
         // Setup the properties for this structure.
         updateProperty(PROPERTY_MODEL_ID, structure.getStructureId());
+    }
+
+    private boolean isNotHandling(Structure nestDevice) {
+        String thingDeviceId = getThing().getThingTypeUID().getId();
+        return !(thingDeviceId.equals(nestDevice.getStructureId()));
     }
 }
