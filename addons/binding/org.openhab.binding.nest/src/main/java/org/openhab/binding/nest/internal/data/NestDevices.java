@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import java.util.Map;
-
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
 /**
- * All the nest devices broken up by type.
+ * All the Nest devices broken up by type.
  *
  * @author David Bennett - Initial Contribution
  */

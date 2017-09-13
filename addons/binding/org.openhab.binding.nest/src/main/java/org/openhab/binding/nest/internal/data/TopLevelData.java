@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import java.util.Map;
-
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
 /**
- * Top level data for all the nest stuff, this is the format the nest data comes back from nest in.
+ * Top level data for all the Nest stuff, this is the format the Nest data comes back from Nest in.
  *
  * @author David Bennett - Initial Contribution
  */

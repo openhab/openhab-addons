@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.nest.internal.data;
 
+import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
-
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The structure details from nest.
+ * The structure details from Nest.
  *
  * @author David Bennett - Initial Contribution
  */
@@ -138,7 +137,7 @@ public class Structure {
     }
 
     /**
-     * Used to set and update the eta values for nest.
+     * Used to set and update the eta values for Nest.
      */
     public class ETA {
         @SerializedName("trip_id")

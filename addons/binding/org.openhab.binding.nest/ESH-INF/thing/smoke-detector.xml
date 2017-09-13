@@ -18,15 +18,15 @@
 			</channel>
 			<channel id="low_battery" typeId="system.low-battery">
 				<label>Battery</label>
-				<description>Reports whether the battery of the nest protect is low (if it is battery powered)</description>
+				<description>Reports whether the battery of the Nest protect is low (if it is battery powered)</description>
 			</channel>
 			<channel id="co_alarm_state" typeId="CoAlarmState">
 				<label>CO alarm</label>
-				<description>The carbon monoxide alarm state of the nest protect.</description>
+				<description>The carbon monoxide alarm state of the Nest protect.</description>
 			</channel>
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState">
 				<label>Smoke Alarm</label>
-				<description>The smoke alarm state of the nest protect</description>
+				<description>The smoke alarm state of the Nest protect</description>
 			</channel>
 			<channel id="manual_test_active" typeId="ManualTestActive">
 				<label>Manual Test</label>

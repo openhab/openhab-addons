@@ -8,14 +8,8 @@
  */
 package org.openhab.binding.nest.internal;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
@@ -24,8 +18,7 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
 
 /**
  * Keeps track of the access token, refreshing it if needed.
@@ -39,7 +32,7 @@ public class NestAccessToken {
     private final Gson gson;
 
     /**
-     * Create the helper class for the nest access token. Also creates the folder
+     * Create the helper class for the Nest access token. Also creates the folder
      * to put the access token data in if it does not already exist.
      *
      * @param config The configuration to use for the token

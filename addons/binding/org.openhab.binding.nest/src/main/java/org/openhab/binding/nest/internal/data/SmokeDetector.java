@@ -11,7 +11,7 @@ package org.openhab.binding.nest.internal.data;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Data for the nest smoke detector.
+ * Data for the Nest smoke detector.
  *
  * @author David Bennett - Initial Contribution
  *

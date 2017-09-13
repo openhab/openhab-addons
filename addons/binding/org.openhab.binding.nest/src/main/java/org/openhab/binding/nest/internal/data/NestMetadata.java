@@ -11,7 +11,7 @@ package org.openhab.binding.nest.internal.data;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The meta data in the data downloads from nest.
+ * The meta data in the data downloads from Nest.
  *
  * @author David Bennett - Initial Contribution
  */

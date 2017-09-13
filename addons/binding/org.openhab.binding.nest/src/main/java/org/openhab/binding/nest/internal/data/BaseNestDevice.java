@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import java.util.Date;
-
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 /**
- * Default properties shared across all nest devices.
+ * Default properties shared across all Nest devices.
  *
  * @author David Bennett
  */

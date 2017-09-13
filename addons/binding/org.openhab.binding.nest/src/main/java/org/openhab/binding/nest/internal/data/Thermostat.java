@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import java.util.Date;
-
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 /**
- * Gson class to encapsulate the data for the nest thermostat.
+ * Gson class to encapsulate the data for the Nest thermostat.
  *
  * @author David Bennett - Initial Contribution
  */

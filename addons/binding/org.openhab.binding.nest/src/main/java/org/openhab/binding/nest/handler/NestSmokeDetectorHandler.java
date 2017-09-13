@@ -32,7 +32,7 @@ import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_
 import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_UI_COLOR_STATE;
 
 /**
- * The smoke detector handler, it handles the data from nest for the smoke detector.
+ * The smoke detector handler, it handles the data from Nest for the smoke detector.
  *
  * @author David Bennett - Initial Contribution
  */

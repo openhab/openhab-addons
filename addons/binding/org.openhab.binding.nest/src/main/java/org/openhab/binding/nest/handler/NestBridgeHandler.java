@@ -8,18 +8,11 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -42,11 +35,16 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * This bridge handler connects to nest and handles all the api requests. It pulls down the
+ * This bridge handler connects to Nest and handles all the api requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
  * to get the data updated to the correct things.
  *
@@ -66,9 +64,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private final GsonBuilder builder;
 
     /**
-     * Creates the bridge handler to connect to nest.
+     * Creates the bridge handler to connect to Nest.
      *
-     * @param bridge The bridge to connect to nest with.
+     * @param bridge The bridge to connect to Nest with.
      */
     public NestBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
@@ -76,7 +74,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Initialize the connection to nest.
+     * Initialize the connection to Nest.
      */
     @Override
     public void initialize() {
@@ -127,7 +125,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Read the data from nest and then parse it into something useful.
+     * Read the data from Nest and then parse it into something useful.
      */
     private void refreshData() {
         logger.trace("starting refreshData");
@@ -135,9 +133,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         try {
             String uri = buildQueryString(config);
             String data = jsonFromGetUrl(uri);
-            logger.debug("Data from nest {}", data);
+            logger.debug("Data from Nest {}", data);
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from nest");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
 
             // Now convert the incoming data into something more useful.
             Gson gson = builder.create();

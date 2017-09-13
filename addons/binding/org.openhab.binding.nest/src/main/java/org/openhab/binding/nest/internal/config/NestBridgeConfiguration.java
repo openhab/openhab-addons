@@ -9,20 +9,20 @@
 package org.openhab.binding.nest.internal.config;
 
 /**
- * This has the configuration for the nest bridge, allowing it to talk to nest.
+ * This has the configuration for the Nest bridge, allowing it to talk to Nest.
  *
  * @author David Bennett - initial contribution
  */
 public class NestBridgeConfiguration {
     public static final String ACCESS_TOKEN = "accessToken";
-    /** Client id from the nest product page. */
+    /** Client id from the Nest product page. */
     public String clientId;
-    /** Client secret from the nest product page. */
+    /** Client secret from the Nest product page. */
     public String clientSecret;
     /** Client secret from the auth page. */
     public String pincode;
-    /** The access token to use once retrieved from nest. */
+    /** The access token to use once retrieved from Nest. */
     public String accessToken;
-    /** How often to refresh data from nest. */
+    /** How often to refresh data from Nest. */
     public int refreshInterval;
 }

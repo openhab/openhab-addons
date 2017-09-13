@@ -60,7 +60,7 @@ public class NestThermostatHandler extends NestBaseHandler {
 
     /**
      * Handle the command to do things to the thermostat, this will change the
-     * value of a channel by sending the request to nest.
+     * value of a channel by sending the request to Nest.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

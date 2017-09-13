@@ -36,7 +36,7 @@ import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_TIME_ZONE;
 import static org.openhab.binding.nest.NestBindingConstants.NEST_STRUCTURE_UPDATE_URL;
 
 /**
- * Deals with the structures on the nest api, turning them into a thing in openhab.
+ * Deals with the structures on the Nest api, turning them into a thing in openHAB.
  *
  * @author David Bennett - initial contribution
  */
@@ -49,7 +49,7 @@ public class NestStructureHandler extends NestBaseHandler {
 
     /**
      * Handles updating the details on this structure by sending the request all the way
-     * to nest.
+     * to Nest.
      *
      * @param channelUID the channel to update
      * @param command the command to apply

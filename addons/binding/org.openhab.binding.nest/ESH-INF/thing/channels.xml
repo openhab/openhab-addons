@@ -210,7 +210,7 @@
     <channel-type id="Mode">
         <item-type>String</item-type>
         <label>Mode</label>
-        <description>Current mode of the nest thermostat</description>
+        <description>Current mode of the Nest thermostat</description>
         <state readOnly="false">
             <options>
                 <option value="OFF">off</option>
@@ -225,7 +225,7 @@
     <channel-type id="PreviousMode" advanced="true">
         <item-type>String</item-type>
         <label>Previous Mode</label>
-        <description>The previous mode of the nest thermostat</description>
+        <description>The previous mode of the Nest thermostat</description>
         <state readOnly="true">
             <options>
                 <option value="OFF">off</option>

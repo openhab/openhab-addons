@@ -36,7 +36,7 @@ import static org.openhab.binding.nest.NestBindingConstants.NEST_CAMERA_UPDATE_U
 
 /**
  * Handles all the updates to the camera as well as handling the commands that send
- * updates to nest.
+ * updates to Nest.
  *
  * @author David Bennett - initial contribution
  */

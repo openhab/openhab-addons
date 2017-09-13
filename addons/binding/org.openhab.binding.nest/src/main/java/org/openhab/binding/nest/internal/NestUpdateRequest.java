@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Contains the data needed to do an update request back to nest.
+ * Contains the data needed to do an update request back to Nest.
  *
  * @author David Bennett - Initial Contribution
  */

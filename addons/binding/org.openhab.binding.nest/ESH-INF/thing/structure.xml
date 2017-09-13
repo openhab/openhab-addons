@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Nest Structure</label>
-		<description>THe nest structure defines the house the account has setup on nest.  
+		<description>THe Nest structure defines the house the account has setup on Nest.
 		You will only have more than one structure if you have more than one house.</description>
 
 		<channels>

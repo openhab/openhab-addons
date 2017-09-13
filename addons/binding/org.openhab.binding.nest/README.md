@@ -14,8 +14,8 @@ Once you've created your [product](https://developer.nest.com/products) as above
 
 ## Binding Configuration
 
-To configure the binding you will add a thing in the UX, adding the nest api connection bridge thing.  This thing will have configuraton options set in it which you will fill in
-from the previous steps.  The client_id, client_secret and pincode.  There is also an access_token in the advanced section which is what you will actually use to talk to nest, the pincode is converted into this.
+To configure the binding you will add a thing in the UX, adding the Nest api connection bridge thing.  This thing will have configuraton options set in it which you will fill in
+from the previous steps.  The client_id, client_secret and pincode.  There is also an access_token in the advanced section which is what you will actually use to talk to Nest, the pincode is converted into this.
 
 ## Known Issues
 
@@ -25,4 +25,4 @@ from the previous steps.  The client_id, client_secret and pincode.  There is al
 
 ## Attribution
 
-This doc is written by John Cocula and copied from the 1.0 binding for nest.
+This doc is written by John Cocula and copied from the 1.0 binding for Nest.

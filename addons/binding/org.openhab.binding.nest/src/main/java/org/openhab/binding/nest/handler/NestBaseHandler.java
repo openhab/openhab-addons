@@ -28,7 +28,7 @@ import java.util.TimeZone;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 
 /**
- * Deals with the structures on the nest api, turning them into a thing in openhab.
+ * Deals with the structures on the Nest api, turning them into a thing in openHAB.
  *
  * @author David Bennett - initial contribution
  * @author Martin van Wingerden - Splitted of NestBaseHandler

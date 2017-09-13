@@ -36,7 +36,7 @@ import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_SMOKE_DET
 import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE;
 
 /**
- * This service connects to the nest bridge and creates the correct discovery results for nest devices
+ * This service connects to the Nest bridge and creates the correct discovery results for Nest devices
  * as they are found through the API.
  *
  * @author David Bennett - initial contribution
