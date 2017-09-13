@@ -36,8 +36,6 @@ public class NestAccessToken {
     private final Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
 
     private final NestBridgeConfiguration config;
-    @Deprecated
-    private HttpClient httpClient;
     private final Gson gson;
 
     /**
@@ -68,6 +66,7 @@ public class NestAccessToken {
                     .append("&code=")
                     .append(config.pincode)
                     .append("&grant_type=authorization_code");
+            // @formatter:on
 
             logger.debug("Requesting accesstoken from url: {}", urlBuilder);
 
@@ -76,7 +75,7 @@ public class NestAccessToken {
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
             if (data.getAccessToken() != null) {
-                logger.debug("Access token {}, expiration Time {} ", data.getAccessToken(), data.getExpiresIn());
+                logger.debug("Access token {}, expiration time {} ", data.getAccessToken(), data.getExpiresIn());
                 return data.getAccessToken();
             } else {
                 throw new InvalidAccessTokenException("Received empty token");
