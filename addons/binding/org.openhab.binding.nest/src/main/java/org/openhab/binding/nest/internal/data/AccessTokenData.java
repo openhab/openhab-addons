@@ -28,4 +28,9 @@ public class AccessTokenData {
     public Long getExpiresIn() {
         return expiresIn;
     }
+
+    @Override
+    public String toString() {
+        return "AccessTokenData{accessToken='" + accessToken + '\'' + ", expiresIn=" + expiresIn + '}';
+    }
 }

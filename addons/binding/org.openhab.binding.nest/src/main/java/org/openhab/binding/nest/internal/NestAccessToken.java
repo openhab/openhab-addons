@@ -74,8 +74,8 @@ public class NestAccessToken {
                     null, "application/x-www-form-urlencoded", 10_000);
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
+            logger.debug("Access token {}", data);
             if (data.getAccessToken() != null) {
-                logger.debug("Access token {}, expiration time {} ", data.getAccessToken(), data.getExpiresIn());
                 return data.getAccessToken();
             } else {
                 throw new InvalidAccessTokenException("Received empty token");
