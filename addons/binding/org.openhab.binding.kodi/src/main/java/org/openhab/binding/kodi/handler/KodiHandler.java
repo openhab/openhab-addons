@@ -13,6 +13,7 @@ import static org.openhab.binding.kodi.KodiBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -53,7 +54,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private ScheduledFuture<?> statusUpdaterFuture;
 
-    public KodiHandler(Thing thing) {
+    public KodiHandler(@NonNull Thing thing) {
         super(thing);
         connection = new KodiConnection(this);
     }
@@ -230,7 +231,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (channelID > 0) {
             connection.playPVRChannel(channelID);
         } else {
-            logger.error("Received unknown PVR channel {}", command.toString());
+            logger.debug("Received unknown PVR channel {}", command.toString());
         }
     }
 
@@ -265,8 +266,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                                 updateStatus(ThingStatus.OFFLINE);
                             }
                         } catch (Exception ex) {
-                            logger.warn("Exception in check connection to @{}. Cause: {}",
-                                    connection.getConnectionName(), ex.getMessage());
+                            logger.debug("Exception in check connection to @{}. Cause: {}",
+                                    connection.getConnectionName(), ex.getMessage(), ex);
 
                         }
                     }
@@ -279,8 +280,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
             }
         } catch (Exception e) {
-            logger.debug("error during opening connection: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("error during opening connection: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -292,7 +293,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
             } catch (Exception e) {
-                logger.error("error during reading version: {}", e.getMessage());
+                logger.debug("error during reading version: {}", e.getMessage(), e);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
