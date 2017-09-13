@@ -23,7 +23,6 @@ import com.google.gson.JsonObject;
 public class StorageRealtimeData {
 
     private final Logger logger = LoggerFactory.getLogger(StorageRealtimeData.class);
-    private final JsonObject json;
 
     private DecimalType capacity = DecimalType.ZERO;
     private DecimalType current = DecimalType.ZERO;
@@ -32,70 +31,51 @@ public class StorageRealtimeData {
     private DecimalType charge = DecimalType.ZERO;
     private DecimalType code = DecimalType.ZERO;
     private DateTimeType timestamp = new DateTimeType();
-    private boolean deconstructed = false;
+    private boolean empty = false;
 
     public static StorageRealtimeData createStorageRealtimeData(final JsonObject json) {
-        return new StorageRealtimeData(json);
+        final StorageRealtimeData srd = new StorageRealtimeData();
+        srd.deconstruct(json);
+        return new StorageRealtimeData();
     }
 
-    private StorageRealtimeData(final JsonObject json) {
-        this.json = json;
+    private StorageRealtimeData() {
+        super();
     }
 
     public boolean isEmpty() {
-        return !json.has("Body");
+        return empty;
     }
 
     public DecimalType getCapacity() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return capacity;
     }
 
     public DecimalType getCurrent() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return current;
     }
 
     public DecimalType getVoltage() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return voltage;
     }
 
     public DecimalType getTemperature() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return temperature;
     }
 
     public DecimalType getCharge() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return charge;
     }
 
     public DecimalType getCode() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return code;
     }
 
     public DateTimeType getTimestamp() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return timestamp;
     }
 
-    private synchronized void deconstruct() {
+    private synchronized void deconstruct(final JsonObject json) {
         try {
             if (json.has("Body")) {
                 final JsonObject body = json.get("Body").getAsJsonObject();
@@ -127,6 +107,7 @@ public class StorageRealtimeData {
                             logger.debug("Charge: {}", charge);
                         }
                     }
+                    empty = false;
                 }
             }
             if (json.has("Head")) {
@@ -148,6 +129,5 @@ public class StorageRealtimeData {
         } catch (Exception e) {
             logger.warn("{}", e.toString());
         }
-        deconstructed = true;
     }
 }

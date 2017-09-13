@@ -23,7 +23,6 @@ import com.google.gson.JsonObject;
 public class InverterRealtimeData {
 
     private final Logger logger = LoggerFactory.getLogger(InverterRealtimeData.class);
-    private final JsonObject json;
 
     private DecimalType dayEnergy = DecimalType.ZERO;
     private DecimalType yearEnergy = DecimalType.ZERO;
@@ -36,98 +35,67 @@ public class InverterRealtimeData {
     private DecimalType udc = DecimalType.ZERO;
     private DecimalType code = DecimalType.ZERO;
     private DateTimeType timestamp = new DateTimeType();
-    private boolean deconstructed = false;
+    private boolean empty = false;
 
     public static InverterRealtimeData createInverterRealtimeData(final JsonObject json) {
-        return new InverterRealtimeData(json);
+        final InverterRealtimeData ird = new InverterRealtimeData();
+        ird.deconstruct(json);
+        return ird;
     }
 
-    private InverterRealtimeData(final JsonObject json) {
-        this.json = json;
+    private InverterRealtimeData() {
+        super();
     }
 
     public boolean isEmpty() {
-        return !json.has("Body");
+        return empty;
     }
 
     public DecimalType getDayEnergy() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return dayEnergy;
     }
 
     public DecimalType getYearEnergy() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return yearEnergy;
     }
 
     public DecimalType getTotalEnergy() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return totalEnergy;
     }
 
     public DecimalType getPac() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return pac;
     }
 
     public DecimalType getIac() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return iac;
     }
 
     public DecimalType getUac() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return uac;
     }
 
     public DecimalType getFac() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return fac;
     }
 
     public DecimalType getIdc() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return idc;
     }
 
     public DecimalType getUdc() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return udc;
     }
 
     public DecimalType getCode() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return code;
     }
 
     public DateTimeType getTimestamp() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return timestamp;
     }
 
-    private synchronized void deconstruct() {
+    private synchronized void deconstruct(final JsonObject json) {
         try {
             if (json.has("Body")) {
                 final JsonObject body = json.get("Body").getAsJsonObject();
@@ -174,6 +142,7 @@ public class InverterRealtimeData {
                         udc = new DecimalType(data.get("UDC").getAsJsonObject().get("Value").getAsString());
                         logger.debug("UDC: {}", udc);
                     }
+                    empty = false;
                 }
             }
             if (json.has("Head")) {
@@ -195,6 +164,5 @@ public class InverterRealtimeData {
         } catch (Exception e) {
             logger.warn("{}", e.toString());
         }
-        deconstructed = true;
     }
 }

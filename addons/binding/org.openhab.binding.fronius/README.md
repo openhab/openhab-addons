@@ -19,24 +19,24 @@ If there are more than one Fronius devices are available with this hostname, the
 
 | Channel Type ID     | Item Type | Description                  | Available on thing |
 |---------------------|-----------|------------------------------|--------------------|
-| day_energy          | Number    | Wh                           | Symo, Symo Hybrid  |
-| year_energy         | Number    | Wh                           | Symo, Symo Hybrid  |
-| total_energy        | Number    | Wh                           | Symo, Symo Hybrid  |
-| pac                 | Number    | W - actual output power      | Symo, Symo Hybrid  |
-| iac                 | Number    | A - actual output current    | Symo, Symo Hybrid  |
-| uac                 | Number    | V - actual output voltage    | Symo, Symo Hybrid  |
-| fac                 | Number    | Hz - actual output frequency | Symo, Symo Hybrid  |
-| idc                 | Number    | A - acutal input current     | Symo, Symo Hybrid  |
-| udc                 | Number    | V - acutal input voltage     | Symo, Symo Hybrid  |
-| status_code         | Number    | Device state                 | Symo, Symo Hybrid  |
-| timestamp           | String    | Date & Time                  | Symo, Symo Hybrid  |
-| storage_current     | Number    | A - storage current          | Symo Hybrid        |
-| storage_voltage     | Number    | V - storage voltage          | Symo Hybrid        |
-| storage_charge      | Number    | % - storage charge state     | Symo Hybrid        |
-| storage_capacity    | Number    | Wh - storage capacity        | Symo Hybrid        |
-| storage_temperature | Number    | storage temperature          | Symo Hybrid        |
-| storage_code        | Number    | Device state.                | Symo Hybrid        |
-| storage_timestamp   | String    | Date & Time                  | Symo Hybrid        |
+| day_energy          | Number    | Wh                           | realtime_data      |
+| year_energy         | Number    | Wh                           | realtime_data      |
+| total_energy        | Number    | Wh                           | realtime_data      |
+| pac                 | Number    | W - actual output power      | realtime_data      |
+| iac                 | Number    | A - actual output current    | realtime_data      |
+| uac                 | Number    | V - actual output voltage    | realtime_data      |
+| fac                 | Number    | Hz - actual output frequency | realtime_data      |
+| idc                 | Number    | A - acutal input current     | realtime_data      |
+| udc                 | Number    | V - acutal input voltage     | realtime_data      |
+| status_code         | Number    | Device state                 | all                |
+| timestamp           | String    | Date & Time                  | all                |
+| current             | Number    | A - storage current          | storage_data       |
+| voltage             | Number    | V - storage voltage          | storage_data       |
+| charge              | Number    | % - storage charge state     | storage_data       |
+| capacity            | Number    | Wh - storage capacity        | storage_data       |
+| temperature         | Number    | storage temperature          | storage_data       |
+| code                | Number    | Device state                 | storage_data       |
+| timestamp           | String    | Date & Time                  | storage_data       |
 
 
 ## Full Example
@@ -44,9 +44,11 @@ If there are more than one Fronius devices are available with this hostname, the
 demo.things:
 
 ```
-fronius:symo_hybrid:hybrid_inverter [ hostname="my.hybrid.inverter" ]
-fronius:symo:inverter_1 [ hostname="my.inverter", device=1 ]
-fronius:symo:inverter_2 [ hostname="my.inverter", device=2 ]
+Bridge fronius:symo:speicer [ hostname="my.fronius.device" ] {
+    Thing device_info info
+    Thing inverter_data inverter [ device=1 ]
+    Thing storage_data storage [ device=0 ]
+}
 ```
 
 demo.items:

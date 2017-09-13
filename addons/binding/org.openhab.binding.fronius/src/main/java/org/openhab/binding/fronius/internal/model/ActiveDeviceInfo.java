@@ -29,77 +29,57 @@ import com.google.gson.JsonObject;
 public class ActiveDeviceInfo {
 
     private final Logger logger = LoggerFactory.getLogger(ActiveDeviceInfo.class);
-    private final JsonObject json;
     private final Set<Integer> inverters = new HashSet<>();
     private final Set<Integer> storages = new HashSet<>();
     private final Set<Integer> meters = new HashSet<>();
 
     private DecimalType code = DecimalType.ZERO;
     private DateTimeType timestamp = new DateTimeType();
-    private boolean deconstructed = false;
+    private boolean empty = true;
 
     public static ActiveDeviceInfo createActiveDeviceInfo(final JsonObject json) {
-        return new ActiveDeviceInfo(json);
+        final ActiveDeviceInfo adi = new ActiveDeviceInfo();
+        adi.deconstruct(json);
+        return adi;
     }
 
-    private ActiveDeviceInfo(final JsonObject json) {
-        this.json = json;
+    private ActiveDeviceInfo() {
+        super();
     }
 
     public boolean isEmpty() {
-        return !json.has("Body");
+        return this.empty;
     }
 
     public int inverterCount() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return inverters.size();
     }
 
     public int meterCount() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return meters.size();
     }
 
     public int storageCount() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return storages.size();
     }
 
     public Set<Integer> inverters() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return ImmutableSet.copyOf(inverters);
     }
 
     public Set<Integer> meters() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return ImmutableSet.copyOf(meters);
     }
 
     public Set<Integer> storages() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return ImmutableSet.copyOf(storages);
     }
 
     public DateTimeType getTimestamp() {
-        if (!deconstructed) {
-            deconstruct();
-        }
         return timestamp;
     }
 
-    private synchronized void deconstruct() {
+    private synchronized void deconstruct(final JsonObject json) {
         try {
             if (json.has("Body")) {
                 final JsonObject body = json.get("Body").getAsJsonObject();
@@ -134,6 +114,7 @@ public class ActiveDeviceInfo {
                             meters.add(Integer.valueOf(entry.getKey()));
                         }
                     }
+                    empty = false;
                 }
             }
             if (json.has("Head")) {
@@ -155,6 +136,5 @@ public class ActiveDeviceInfo {
         } catch (Exception e) {
             logger.warn("{}", e.toString());
         }
-        deconstructed = true;
     }
 }

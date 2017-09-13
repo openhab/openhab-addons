@@ -39,8 +39,7 @@ public class FroniusInverterRealtimeDataHandler extends FroniusDeviceThingHandle
             sb.append("?Scope=Device");
             sb.append("&DeviceId=");
             sb.append(getDevice());
-            // sb.append("&DataCollection=");
-            // sb.append(COLLECTION);
+            sb.append("&DataCollection=CommonInverterData");
             url = sb.toString();
         }
 
