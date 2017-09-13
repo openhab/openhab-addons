@@ -34,15 +34,15 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank
  *
  */
-@Component(immediate = true)
-public class KodiDiscoveryParticipant implements UpnpDiscoveryParticipant {
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(KodiDiscoveryParticipant.class);
+    private Logger logger = LoggerFactory.getLogger(KodiUpnpDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled;
     private Set<ThingTypeUID> supportedThingTypes;
 
-    public KodiDiscoveryParticipant() {
+    public KodiUpnpDiscoveryParticipant() {
         this.isAutoDiscoveryEnabled = true;
         this.supportedThingTypes = SUPPORTED_THING_TYPES_UIDS;
     }
