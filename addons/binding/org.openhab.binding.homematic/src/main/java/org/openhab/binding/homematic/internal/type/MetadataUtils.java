@@ -312,7 +312,8 @@ public class MetadataUtils {
         String dpName = dp.getName();
         String channelType = StringUtils.defaultString(dp.getChannel().getType());
 
-        if (dpName.equals(DATAPOINT_NAME_BATTERY_TYPE) || dpName.equals(DATAPOINT_NAME_LOWBAT)) {
+        if (dpName.equals(DATAPOINT_NAME_BATTERY_TYPE) || dpName.equals(DATAPOINT_NAME_LOWBAT)
+                || dpName.equals(DATAPOINT_NAME_LOWBAT_IP)) {
             return CATEGORY_BATTERY;
         } else if (dpName.equals(DATAPOINT_NAME_STATE) && channelType.equals(CHANNEL_TYPE_ALARMACTUATOR)) {
             return CATEGORY_ALARM;
