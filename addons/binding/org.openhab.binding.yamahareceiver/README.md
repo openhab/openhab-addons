@@ -7,9 +7,19 @@ If your hardware is on the list but still does not work, please fill a bug repor
 ## Configuration
 
 Just use the auto discovery feature or add a thing for the binding manually
-by providing host and port.
+by providing host (and port).
 Initially a thing for the main zone will be created. This will trigger a zone
 detection internally and all available additional zones will appear as new things.
+
+When using zones feature, to manually add a receiver, use 
+```
+Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [HOST="a.b.c.d"] {
+	Thing zone ZoneID1 "Main Zone Thing Name" @ "location" [ZONE="Main_Zone"]
+	Thing zone ZoneID2 "Zone 2 Thing Name" @ "location" [ZONE="Zone_2"]
+	Thing zone ZoneID3 "Zone 3 Thing Name" @ "location" [ZONE="Zone_3"]
+	Thing zone ZoneID4 "Zone 4 Thing Name" @ "location" [ZONE="Zone_4"]
+}
+```
 
 ## Features
 
