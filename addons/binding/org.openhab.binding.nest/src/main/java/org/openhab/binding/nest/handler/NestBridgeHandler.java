@@ -8,8 +8,15 @@
  */
 package org.openhab.binding.nest.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -35,13 +42,8 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This bridge handler connects to nest and handles all the api requests. It pulls down the
@@ -175,30 +177,26 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private void broadcastDevices(NestDevices devices) {
         listeners.forEach(listener -> {
-                    if (devices.getThermostats() != null) {
-                        devices.getThermostats().values().forEach(listener::onNewNestThermostatData);
-                    }
-                    if (devices.getCameras() != null) {
-                        devices.getCameras().values().forEach(listener::onNewNestCameraData);
-                    }
-                    if (devices.getSmokeDetectors() != null) {
-                        devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
-                    }
-                }
-        );
+            if (devices.getThermostats() != null) {
+                devices.getThermostats().values().forEach(listener::onNewNestThermostatData);
+            }
+            if (devices.getCameras() != null) {
+                devices.getCameras().values().forEach(listener::onNewNestCameraData);
+            }
+            if (devices.getSmokeDetectors() != null) {
+                devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+            }
+        });
     }
 
     private void broadcastStructure(Collection<Structure> structures) {
-        structures.forEach(
-                structure -> listeners.forEach(l -> l.onNewNestStructureData(structure))
-        );
+        structures.forEach(structure -> listeners.forEach(l -> l.onNewNestStructureData(structure)));
     }
 
     private String buildQueryString(NestBridgeConfiguration config) throws InvalidAccessTokenException {
         String stringAccessToken;
 
-        // FIXME should we ever expire access tokens?
-        if (config.accessToken == null) {
+        if (StringUtils.isEmpty(config.accessToken)) {
             stringAccessToken = accessToken.getAccessToken();
 
             // Update the configuration and persist to the database.
@@ -211,8 +209,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             logger.debug("Re-using access token from configuration: {}", stringAccessToken);
         }
 
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL)
-                .append("?auth=")
+        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL).append("?auth=")
                 .append(stringAccessToken);
         logger.debug("Constructed url: {}", urlBuilder);
         return urlBuilder.toString();

@@ -8,10 +8,17 @@
  */
 package org.openhab.binding.nest.handler;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -19,16 +26,11 @@ import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
-
 /**
  * Deals with the structures on the nest api, turning them into a thing in openhab.
  *
  * @author David Bennett - initial contribution
- * @author Martin van Wingerden - splitted of NestBaseHandler
+ * @author Martin van Wingerden - Splitted of NestBaseHandler
  */
 abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener {
     NestBaseHandler(@NonNull Thing thing) {
@@ -37,19 +39,18 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
 
     @Override
     public void initialize() {
-        getNestBridgeHandler()
-                .map(b -> b.addDeviceDataListener(NestBaseHandler.this));
+        getNestBridgeHandler().map(b -> b.addDeviceDataListener(NestBaseHandler.this));
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");
     }
 
     @Override
     public void dispose() {
-        getNestBridgeHandler()
-                .map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
+        getNestBridgeHandler().map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
     }
 
     private Optional<NestBridgeHandler> getNestBridgeHandler() {
-        return Optional.ofNullable(getBridge())
-                .map(b -> (NestBridgeHandler) b.getHandler());
+        return Optional.ofNullable(getBridge()).map(b -> (NestBridgeHandler) b.getHandler());
     }
 
     State getAsStringTypeOrNull(Object value) {

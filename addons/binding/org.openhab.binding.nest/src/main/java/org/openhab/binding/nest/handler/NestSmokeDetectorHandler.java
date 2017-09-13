@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -22,14 +24,6 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CO_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOW_BATTERY;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MANUAL_TEST_ACTIVE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_UI_COLOR_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 
 /**
  * The smoke detector handler, it handles the data from nest for the smoke detector.

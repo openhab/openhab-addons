@@ -8,6 +8,15 @@
  */
 package org.openhab.binding.nest.internal;
 
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,19 +31,6 @@ import org.openhab.binding.nest.handler.NestStructureHandler;
 import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_CAMERA;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_SMOKE_DETECTOR;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_THERMOSTAT;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
@@ -86,8 +82,8 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
             NestDiscoveryService service = new NestDiscoveryService(handler);
             service.activate();
             // Register the discovery service.
-            discoveryService.put(handler.getThing().getUID(), bundleContext
-                    .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
+            discoveryService.put(handler.getThing().getUID(),
+                    bundleContext.registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
             return handler;
         }
 

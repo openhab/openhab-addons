@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -21,19 +23,6 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_AWAY;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_COUNTRY_CODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CO_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_ETA_BEGIN;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PEAK_PERIOD_END_TIME;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PEAK_PERIOD_START_TIME;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_POSTAL_CODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_TIME_ZONE;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_STRUCTURE_UPDATE_URL;
-import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 
 /**
  * Deals with the structures on the nest api, turning them into a thing in openhab.
@@ -52,7 +41,7 @@ public class NestStructureHandler extends NestBaseHandler {
      * to nest.
      *
      * @param channelUID the channel to update
-     * @param command    the command to apply
+     * @param command the command to apply
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -86,6 +75,7 @@ public class NestStructureHandler extends NestBaseHandler {
         logger.debug("Updating structure {}", structure.getStructureId());
         updateState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT,
                 structure.isRushHourRewardsEnrollement() ? OnOffType.ON : OnOffType.OFF);
+        // @formatter:off
         updateState(CHANNEL_COUNTRY_CODE,           getAsStringTypeOrNull(structure.getCountryCode()));
         updateState(CHANNEL_POSTAL_CODE,            getAsStringTypeOrNull(structure.getPostalCode()));
         updateState(CHANNEL_PEAK_PERIOD_START_TIME, getAsDateTimeTypeOrNull(structure.getPeakPeriodStartTime()));
@@ -95,7 +85,8 @@ public class NestStructureHandler extends NestBaseHandler {
         updateState(CHANNEL_CO_ALARM_STATE,         getAsStringTypeOrNull(structure.getCoAlarmState()));
         updateState(CHANNEL_SMOKE_ALARM_STATE,      getAsStringTypeOrNull(structure.getSmokeAlarmState()));
         updateState(CHANNEL_AWAY,                   getAsStringTypeOrNull(structure.getAway()));
-
+        // @formatter:on
+        
         updateStatus(ThingStatus.ONLINE);
 
         // Setup the properties for this structure.

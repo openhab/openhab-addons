@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.nest.internal;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.nest.NestBindingConstants;
@@ -19,9 +21,8 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Keeps track of the access token, refreshing it if needed.
@@ -55,6 +56,7 @@ public class NestAccessToken {
      */
     public String getAccessToken() throws InvalidAccessTokenException {
         try {
+            // @formatter:off
             StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
                     .append("?client_id=")
                     .append(config.clientId)
@@ -69,6 +71,7 @@ public class NestAccessToken {
             Request request = httpClient.POST(urlBuilder.toString())
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .timeout(10, TimeUnit.SECONDS);
+            // @formatter:on
 
             String responseContentAsString = request.send().getContentAsString();
 

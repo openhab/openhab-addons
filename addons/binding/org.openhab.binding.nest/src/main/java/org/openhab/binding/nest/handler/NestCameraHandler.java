@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -21,18 +23,6 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_APP_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_AUDIO_INPUT_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SNAPSHOT_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_STREAMING;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_VIDEO_HISTORY_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_WEB_URL;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_CAMERA_UPDATE_URL;
-import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.nest.NestBindingConstants.PROPERTY_ID;
 
 /**
  * Handles all the updates to the camera as well as handling the commands that send
