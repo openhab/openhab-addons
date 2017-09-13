@@ -23,7 +23,7 @@ public class XiaomiSensorGasHandler extends XiaomiSensorBaseAlarmHandler {
     private static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
 
     static {
-        ALARM_STATUS_MAP.put(0, "Release alarm");
+        ALARM_STATUS_MAP.put(0, "OK");
         ALARM_STATUS_MAP.put(1, "Gas alarm");
         ALARM_STATUS_MAP.put(2, "Analog alarm");
         ALARM_STATUS_MAP.put(64, "Sensitivity fault alarm");

@@ -206,6 +206,12 @@
         <state pattern="%.3f kWh" readOnly="true"></state>
     </channel-type>
 
+    <channel-type id="density">
+        <item-type>Number</item-type>
+        <label>Particle Density</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
     <channel-type id="smoke_alarm">
         <item-type>Switch</item-type>
         <label>Smoke detected</label>
