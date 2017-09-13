@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nest;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -102,8 +101,4 @@ public class NestBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "time_zone";
     public static final String CHANNEL_ETA_BEGIN = "eta_begin";
     public static final String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
-
-    // Properties on things that are fixed.
-    public static final @NonNull String PROPERTY_ID = "deviceId";
-    public static final @NonNull String PROPERTY_FIRMWARE_VERSION = "firmware";
 }

@@ -8,14 +8,6 @@
  */
 package org.openhab.binding.nest.internal.discovery;
 
-import static org.openhab.binding.nest.NestBindingConstants.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,6 +22,18 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_CAMERA;
+import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_SMOKE_DETECTOR;
+import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE;
 
 /**
  * This service connects to the nest bridge and creates the correct discovery results for nest devices
@@ -88,7 +92,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID deviceUID = new ThingUID(typeUID, bridgeUID, device.getDeviceId());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_ID, device.getDeviceId());
+        properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
         properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(deviceUID)
@@ -106,7 +110,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_ID, struct.getStructureId());
+        properties.put(PROPERTY_MODEL_ID, struct.getStructureId());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                 .withThingType(THING_TYPE_STRUCTURE)

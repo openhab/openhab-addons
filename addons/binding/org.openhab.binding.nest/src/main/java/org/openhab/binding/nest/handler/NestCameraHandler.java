@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.openhab.binding.nest.NestBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -23,6 +21,18 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_APP_URL;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_AUDIO_INPUT_ENABLED;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_ENABLED;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_URL;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SNAPSHOT_URL;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_STREAMING;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_VIDEO_HISTORY_ENABLED;
+import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_WEB_URL;
+import static org.openhab.binding.nest.NestBindingConstants.NEST_CAMERA_UPDATE_URL;
 
 /**
  * Handles all the updates to the camera as well as handling the commands that send
@@ -68,7 +78,7 @@ public class NestCameraHandler extends NestBaseHandler {
         updateStatus(camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         // Setup the properties for this device.
-        updateProperty(PROPERTY_ID, camera.getDeviceId());
+        updateProperty(PROPERTY_MODEL_ID, camera.getDeviceId());
         updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
     }
 

@@ -113,7 +113,6 @@
     </channel-type>
 
     <!-- smoke detector -->
-    <!-- TODO could / should we use a real color item instead -->
     <channel-type id="UiColorState" advanced="true">
         <item-type>String</item-type>
         <label>Mode</label>
@@ -150,19 +149,6 @@
                 <option value="OK">ok</option>
                 <option value="EMERGENCY">emergency</option>
                 <option value="WARNING">warning</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <!-- FIXME use the system channel instead -->
-    <channel-type id="Battery">
-        <item-type>String</item-type>
-        <label>Battery</label>
-        <description>Battery state</description>
-        <state readOnly="true">
-            <options>
-                <option value="OK">ok</option>
-                <option value="REPLACE">replace</option>
             </options>
         </state>
     </channel-type>
