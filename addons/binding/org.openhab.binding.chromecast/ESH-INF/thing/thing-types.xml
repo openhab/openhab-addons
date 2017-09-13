@@ -16,20 +16,7 @@
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>Network Address</label>
-                <description>Network address of the Chromecast device.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="port" type="integer">
-                <label>Network Port</label>
-                <description>Network port of the Chromecast device.</description>
-                <advanced>true</advanced>
-                <default>8009</default>
-            </parameter>
-        </config-description>
+        <config-description-ref uri="thing-type:chromecast:device" />
     </thing-type>
     
     <!-- Chromecast Audio Thing Type -->
@@ -44,21 +31,9 @@
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>Network Address</label>
-                <description>Network address of the Chromecast device.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="port" type="integer">
-                <label>Network Port</label>
-                <description>Network port of the Chromecast device.</description>
-                <advanced>true</advanced>
-                <default>8009</default>
-            </parameter>
-        </config-description>
+        <config-description-ref uri="thing-type:chromecast:device" />
     </thing-type>
+
     <!-- Chromecast HDMI dongle Thing Type -->
     <thing-type id="chromecast">
         <label>Chromecast</label>
@@ -71,20 +46,7 @@
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>Network Address</label>
-                <description>Network address of the Chromecast device.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="port" type="integer">
-                <label>Network Port</label>
-                <description>Network port of the Chromecast device.</description>
-                <advanced>true</advanced>
-                <default>8009</default>
-            </parameter>
-        </config-description>
+        <config-description-ref uri="thing-type:chromecast:device" />
     </thing-type>
 
     <channel-type id="volume">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -73,7 +73,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_THERMOSTAT).withLabel(thermostat.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
-        logger.info("thingDiscovered called for thermostat");
+        logger.debug("thingDiscovered called for thermostat");
     }
 
     @Override
@@ -87,7 +87,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_CAMERA).withLabel(camera.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
-        logger.info("thingDiscovered called for camera");
+        logger.debug("thingDiscovered called for camera");
     }
 
     @Override
@@ -102,7 +102,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_SMOKE_DETECTOR).withLabel(smoke.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
-        logger.info("thingDiscovered called for smoke detector");
+        logger.debug("thingDiscovered called for smoke detector");
     }
 
     @Override
@@ -115,6 +115,6 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_STRUCTURE).withLabel(struct.getName())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
-        logger.info("thingDiscovered called for structure");
+        logger.debug("thingDiscovered called for structure");
     }
 }

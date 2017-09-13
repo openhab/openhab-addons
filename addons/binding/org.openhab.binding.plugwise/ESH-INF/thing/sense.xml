@@ -15,6 +15,7 @@
             <channel id="temperature" typeId="temperature" />
             <channel id="triggered" typeId="triggered" />
         </channels>
+        <representation-property>macAddress</representation-property>
         <config-description-ref uri="thing-type:plugwise:sense" />
     </thing-type>
 

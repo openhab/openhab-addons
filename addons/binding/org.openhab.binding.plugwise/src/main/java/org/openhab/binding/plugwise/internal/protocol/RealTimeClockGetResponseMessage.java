@@ -81,6 +81,7 @@ public class RealTimeClockGetResponseMessage extends Message {
         Matcher matcher = PAYLOAD_PATTERN.matcher(payload);
         if (matcher.matches()) {
             macAddress = new MACAddress(matcher.group(1));
+            // Real-time clock values in the message are decimals and not hexadecimals
             seconds = Integer.parseInt(matcher.group(2));
             minutes = Integer.parseInt(matcher.group(3));
             hour = Integer.parseInt(matcher.group(4));

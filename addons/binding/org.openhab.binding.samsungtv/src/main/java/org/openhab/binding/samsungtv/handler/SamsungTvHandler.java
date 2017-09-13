@@ -9,7 +9,7 @@
 package org.openhab.binding.samsungtv.handler;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.POWER;
-import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.HOST_NAME;
+import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
-import org.openhab.binding.samsungtv.config.SamsungTvConfiguration;
+import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.service.ServiceFactory;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.binding.samsungtv.internal.service.api.ValueReceiver;

@@ -37,10 +37,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
@@ -58,6 +58,10 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoxHandler.class);
 
+    /**
+     * Initial delay in s for polling job.
+     */
+    private static final int INITIAL_DELAY = 1;
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
@@ -137,6 +141,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             Thing thing = getThingByUID(thingUID);
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thingUID, device);
+                DeviceHandler handler = (DeviceHandler) thing.getHandler();
+                handler.setState(device);
                 updateThingFromDevice(thing, device);
             }
         } catch (Exception e) {
@@ -187,17 +193,12 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                                 : OpenClosedType.OPEN);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
-                final BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
-                if (HeatingModel.inCelsiusRange(settemp)) {
-                    thing.getConfiguration().put(THING_SETTEMP, settemp);
-                }
-                updateThingChannelState(thing, CHANNEL_SETTEMP, new DecimalType(settemp));
-                final BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
-                thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
-                updateThingChannelState(thing, CHANNEL_ECOTEMP, new DecimalType(ecotemp));
-                final BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
-                thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
-                updateThingChannelState(thing, CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
+                updateThingChannelState(thing, CHANNEL_SETTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTsoll())));
+                updateThingChannelState(thing, CHANNEL_ECOTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getAbsenk())));
+                updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getKomfort())));
                 updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
                         new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
@@ -285,8 +286,9 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+            logger.debug("start polling job at intervall {}s", refreshInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, INITIAL_DELAY, refreshInterval,
+                    TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
         }

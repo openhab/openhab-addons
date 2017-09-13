@@ -17,6 +17,7 @@
             <channel id="power" typeId="power" />
             <channel id="state" typeId="state" />
         </channels>
+        <representation-property>macAddress</representation-property>
         <config-description-ref uri="thing-type:plugwise:relay" />
     </thing-type>
 

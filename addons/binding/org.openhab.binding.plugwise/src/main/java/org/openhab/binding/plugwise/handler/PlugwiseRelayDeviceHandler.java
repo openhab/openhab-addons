@@ -47,6 +47,7 @@ import org.openhab.binding.plugwise.internal.protocol.PowerInformationResponseMe
 import org.openhab.binding.plugwise.internal.protocol.PowerLogIntervalSetRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.RealTimeClockGetRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.RealTimeClockGetResponseMessage;
+import org.openhab.binding.plugwise.internal.protocol.RealTimeClockSetRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
 import org.openhab.binding.plugwise.internal.protocol.field.Energy;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
@@ -194,12 +195,23 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
         @Override
         public void runTask() {
-            sendMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
+            if (deviceType == DeviceType.CIRCLE_PLUS) {
+                // The Circle+ real-time clock needs to be updated first to prevent clock sync issues
+                sendCommandMessage(new RealTimeClockSetRequestMessage(macAddress, LocalDateTime.now()));
+                scheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
+                    }
+                }, 5, TimeUnit.SECONDS);
+            } else {
+                sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
+            }
         }
 
         @Override
         public boolean shouldBeScheduled() {
-            return thing.getStatus() == ONLINE && deviceType == DeviceType.CIRCLE_PLUS;
+            return thing.getStatus() == ONLINE;
         }
     };
 
@@ -274,6 +286,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         switch (extensionCode) {
             case CLOCK_SET_ACK:
                 logger.debug("Received ACK for clock set of {} ({})", deviceType, macAddress);
+                sendMessage(new ClockGetRequestMessage(macAddress));
                 break;
             case ON_ACK:
                 logger.debug("Received ACK for switching on {} ({})", deviceType, macAddress);
@@ -289,6 +302,13 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             case POWER_LOG_INTERVAL_SET_ACK:
                 logger.debug("Received ACK for power log interval set of {} ({})", deviceType, macAddress);
                 updateMeasurementInterval = false;
+                break;
+            case REAL_TIME_CLOCK_SET_ACK:
+                logger.debug("Received ACK for setting real-time clock of {} ({})", deviceType, macAddress);
+                sendMessage(new RealTimeClockGetRequestMessage(macAddress));
+                break;
+            case REAL_TIME_CLOCK_SET_NACK:
+                logger.debug("Received NACK for setting real-time clock of {} ({})", deviceType, macAddress);
                 break;
             default:
                 logger.debug("{} ({}) {} acknowledgement", deviceType, macAddress, extensionCode);
@@ -321,8 +341,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     }
 
     private void handleClockGetResponse(ClockGetResponseMessage message) {
-        String clock = message.getTime();
-        updateState(CHANNEL_CLOCK, new StringType(clock));
+        updateState(CHANNEL_CLOCK, new StringType(message.getTime()));
     }
 
     @Override
@@ -407,7 +426,12 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
                 logger.trace("Updating {} ({}) energy with: {}", deviceType, macAddress, mostRecentEnergy);
                 updateState(CHANNEL_ENERGY, new DecimalType(correctSign(energy.tokWh(calibration))));
                 updateState(CHANNEL_ENERGY_STAMP, PlugwiseUtils.newDateTimeType(energy.getStart()));
+            } else {
+                logger.trace("Most recent energy in buffer of {} ({}) is older than one interval ago: {}", deviceType,
+                        macAddress, mostRecentEnergy);
             }
+        } else {
+            logger.trace("Most recent energy in buffer of {} ({}) is null", deviceType, macAddress);
         }
     }
 
@@ -434,7 +458,6 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     @Override
     public void handleReponseMessage(Message message) {
-
         updateLastSeen();
 
         switch (message.getType()) {

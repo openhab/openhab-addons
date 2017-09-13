@@ -18,6 +18,7 @@
             <channel id="realtimeclock" typeId="realtimeclock" />
             <channel id="state" typeId="state" />
         </channels>
+        <representation-property>macAddress</representation-property>
         <config-description-ref uri="thing-type:plugwise:relay" />
     </thing-type>
 

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.atlona.internal.pro3;
 
-import org.openhab.binding.atlona.discovery.AtlonaDiscovery;
+import org.openhab.binding.atlona.internal.discovery.AtlonaDiscovery;
 
 /**
  * Configuration class for the Atlona Pro3 line of switchers

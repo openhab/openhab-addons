@@ -11,6 +11,7 @@ package org.openhab.binding.netatmo.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAPlace;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
@@ -45,6 +46,16 @@ public abstract class NADeviceAdapter<DeviceClass> {
             this.device = (DeviceClass) stationDataBody.getDevices().get(0);
         } else {
             throw new IllegalArgumentException("stationDataBody can not be null");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public NADeviceAdapter(NAHealthyHomeCoachDataBody homecoachDataBody) {
+        if (homecoachDataBody != null) {
+            this.userAdministrative = homecoachDataBody.getUser().getAdministrative();
+            this.device = (DeviceClass) homecoachDataBody.getDevices().get(0);
+        } else {
+            throw new IllegalArgumentException("homecoachDataBody can not be null");
         }
     }
 

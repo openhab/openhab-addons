@@ -22,10 +22,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.config.PlayerConfig;
-import org.openhab.binding.minecraft.message.OHMessage;
-import org.openhab.binding.minecraft.message.data.PlayerData;
-import org.openhab.binding.minecraft.message.data.commands.PlayerCommandData;
+import org.openhab.binding.minecraft.internal.config.PlayerConfig;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
+import org.openhab.binding.minecraft.internal.message.data.PlayerData;
+import org.openhab.binding.minecraft.internal.message.data.commands.PlayerCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

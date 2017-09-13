@@ -119,7 +119,6 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService
             // "Thing " + thingUID.toString() + " already exists"
             // Ask this bridge for connected devices
             if (existing.getHandler() instanceof XiaomiBridgeHandler) {
-
                 ((XiaomiBridgeHandler) existing.getHandler()).discoverItems();
             }
         } else {

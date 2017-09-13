@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Patrick Boos - Initial contribution
  * @author Dieter Schmidt - added cube, gateway sound channels, window sensor alarm
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
+ * @author Kuba Wolanin - Added Water Leak sensor
  */
 public class XiaomiGatewayBindingConstants {
 
@@ -29,6 +30,7 @@ public class XiaomiGatewayBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_WEATHER_V1 = new ThingTypeUID(BINDING_ID,
             "sensor_weather_v1");
     public static final ThingTypeUID THING_TYPE_SENSOR_MOTION = new ThingTypeUID(BINDING_ID, "sensor_motion");
+    public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_MOTION = new ThingTypeUID(BINDING_ID, "sensor_motion_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_SWITCH = new ThingTypeUID(BINDING_ID, "sensor_switch");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_SWITCH = new ThingTypeUID(BINDING_ID, "sensor_switch_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet");
@@ -38,6 +40,7 @@ public class XiaomiGatewayBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA2 = new ThingTypeUID(BINDING_ID, "86sw2");
     public static final ThingTypeUID THING_TYPE_SENSOR_GAS = new ThingTypeUID(BINDING_ID, "natgas");
     public static final ThingTypeUID THING_TYPE_SENSOR_SMOKE = new ThingTypeUID(BINDING_ID, "smoke");
+    public static final ThingTypeUID THING_TYPE_SENSOR_WATER = new ThingTypeUID(BINDING_ID, "sensor_wleak_aq1");
 
     // actors
     public static final ThingTypeUID THING_TYPE_ACTOR_PLUG = new ThingTypeUID(BINDING_ID, "sensor_plug");
@@ -92,7 +95,8 @@ public class XiaomiGatewayBindingConstants {
     // gas & smoke sensor
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_ALARM_STATUS = "status";
-
+    // water leak sensor
+    public static final String CHANNEL_LEAK = "leak";
     // Bridge config properties
     public static final String SERIAL_NUMBER = "serialNumber";
     public static final String HOST = "ipAddress";

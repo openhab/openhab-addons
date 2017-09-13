@@ -11,17 +11,20 @@ The Kodi binding is the successor to the openHAB 1.x xbmc binding.
 ## Preparation
 
 In order to allow control of Kodi by this binding, you need to enable the Kodi application remote control feature.
-Please enable "Allow remote control form applications" in the Kodi Setting menu under:
+Please enable "Allow remote control from applications on this/other systems" in the Kodi settings menu under:
 
 * Settings ➔ Services ➔ Control ➔ Allow remote control from applications on this/other systems
+
+To make use of the auto-discovery feature, you additionally need to enable "Allow control of Kodi via UPnP" in the Kodi settings menu.
+
+* Settings ➔ Services ➔ UPnP / DLNA ➔ Allow remote control via UPnP
 
 ## Supported Things
 
 This binding provides only one thing type: The Kodi media center.
 Create one Kodi thing per Kodi instance available in your home automation system.
 
-All Kodi devices are registered as an audio sink in the ESH/openHAB 2 framework.
-
+All Kodi devices are registered as an audio sink in the ESH/openHAB2 framework.
 
 ## Discovery
 
@@ -37,9 +40,9 @@ org.openhab.kodi:enableAutoDiscovery=false
 
 The following configuration options are available for the Kodi binding:
 
-| Parameter | Name | Description | Required |
-|-----------|------|-------------|----------|
-| `callbackUrl` | Callback URL | URL to use for playing notification sounds, e.g. `http://192.168.0.2:8080` | no |
+| Parameter     | Name         | Description                                                                | Required |
+|---------------|--------------|----------------------------------------------------------------------------|----------|
+| `callbackUrl` | Callback URL | URL to use for playing notification sounds, e.g. `http://192.168.0.2:8080` | no       |
 
 
 ### Thing Configuration
@@ -50,7 +53,7 @@ These parameters will be found by the auto-discovery feature.
 A manual setup through a `things/kodi.things` file could look like this:
 
 ```
-kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
+Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port="9090"]
 ```
 
 ## Channels
@@ -84,9 +87,9 @@ The Kodi thing supports the following channels:
 A manual setup through a `things/kodi.things` file could look like this:
 
 ```
-kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"] {
+Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port="9090"] {
     Channels:
-        Type pvropentv : pvr-open-tv [
+        Type pvr-open-tv : pvr-open-tv [
             group="All channels"
         ]
 }

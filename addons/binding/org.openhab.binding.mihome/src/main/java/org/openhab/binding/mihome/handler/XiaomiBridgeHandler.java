@@ -155,7 +155,6 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     private synchronized void retend(String sid, JsonObject message) {
-
         synchronized (retentionBox) {
             retentionBox.remove(sid);
             retentionBox.put(sid, message);

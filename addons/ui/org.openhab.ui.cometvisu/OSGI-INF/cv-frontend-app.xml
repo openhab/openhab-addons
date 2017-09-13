@@ -23,4 +23,7 @@
    <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
    <reference bind="setPHProvider" cardinality="0..1" interface="org.openhab.ui.cometvisu.php.PHProvider" name="PHProvider" policy="dynamic" policyOption="greedy" unbind="unsetPHProvider"/>
    <property name="service.pid" type="String" value="org.openhab.cometvisu"/>
+   <property name="service.config.description.uri" type="String" value="ui:cometvisu"/>
+   <property name="service.config.label" type="String" value="CometVisu"/>
+   <property name="service.config.category" type="String" value="ui"/>
 </scr:component>

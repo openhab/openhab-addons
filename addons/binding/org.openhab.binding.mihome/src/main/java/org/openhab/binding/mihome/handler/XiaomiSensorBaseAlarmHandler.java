@@ -27,6 +27,8 @@ import com.google.gson.JsonObject;
 public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandler {
 
     private static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
+    private static final String ALARM = "alarm";
+    private static final String UNKNOWN = "unknown";
 
     public XiaomiSensorBaseAlarmHandler(Thing thing) {
         super(thing);
@@ -34,8 +36,8 @@ public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandl
 
     @Override
     void parseReport(JsonObject data) {
-        if (data.has("alarm")) {
-            int alarm = data.get("alarm").getAsInt();
+        if (data.has(ALARM)) {
+            int alarm = data.get(ALARM).getAsInt();
             if (alarm >= 1 && alarm <= 2) {
                 updateState(CHANNEL_ALARM, OnOffType.ON);
             } else {
@@ -45,7 +47,7 @@ public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandl
             if (status != null) {
                 updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(status));
             } else {
-                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf("unknown"));
+                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(UNKNOWN));
             }
         }
     }

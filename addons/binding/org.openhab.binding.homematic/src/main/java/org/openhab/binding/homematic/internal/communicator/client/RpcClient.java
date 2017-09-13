@@ -92,6 +92,15 @@ public abstract class RpcClient<T> {
     }
 
     /**
+     * Sends a ping to the specified interface.
+     */
+    public void ping(HmInterface hmInterface, String callerId) throws IOException {
+        RpcRequest<T> request = createRpcRequest("ping");
+        request.addArg(callerId);
+        sendMessage(config.getRpcPort(hmInterface), request);
+    }
+
+    /**
      * Returns all variable metadata and values from a Homegear gateway.
      */
     public void getAllSystemVariables(HmChannel channel) throws IOException {
@@ -113,14 +122,6 @@ public abstract class RpcClient<T> {
     public void checkInterface(HmInterface hmInterface) throws IOException {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg("http://openhab.validation:1000");
-        sendMessage(config.getRpcPort(hmInterface), request);
-    }
-
-    /**
-     * Validates the connection to the interface by calling the listBidcosInterfaces method.
-     */
-    public void validateConnection(HmInterface hmInterface) throws IOException {
-        RpcRequest<T> request = createRpcRequest("listBidcosInterfaces");
         sendMessage(config.getRpcPort(hmInterface), request);
     }
 

@@ -34,7 +34,6 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 public abstract class Message {
 
     public static String getCRC(String string) {
-
         int crc = 0x0000;
         int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 

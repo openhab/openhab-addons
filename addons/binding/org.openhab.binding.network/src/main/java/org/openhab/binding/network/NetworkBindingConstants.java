@@ -32,17 +32,19 @@ public class NetworkBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_LATENCY = "latency";
+    public static final String CHANNEL_DEPRECATED_TIME = "time";
     public static final String CHANNEL_LASTSEEN = "lastseen";
 
     // List of all Parameters
     public static final String PARAMETER_HOSTNAME = "hostname";
     public static final String PARAMETER_RETRY = "retry";
     public static final String PARAMETER_TIMEOUT = "timeout";
-    public static final String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
+    public static final String PARAMETER_REFRESH_INTERVAL = "refreshInterval";
     public static final String PARAMETER_PORT = "port";
 
-    public static final String PROPERTY_DHCP_ON = "uses_dhcp_listen";
-    public static final String PROPERTY_ARP_ON = "uses_arp_pings";
+    public static final String PROPERTY_DHCP_STATE = "dhcp_state";
+    public static final String PROPERTY_ARP_STATE = "arp_state";
+    public static final String PROPERTY_ICMP_STATE = "icmp_state";
     public static final String PROPERTY_PRESENCE_DETECTION_TYPE = "presence_detection_type";
     public static final String PROPERTY_IOS_WAKEUP = "uses_ios_wakeup";
 

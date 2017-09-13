@@ -140,7 +140,6 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
             logger.debug("The network is online: circlePlusMAC={}, stickMAC={}", circlePlusMAC, stickMAC);
             updateStatus(ONLINE);
             sendMessage(new InformationRequestMessage(stickMAC));
-
         } else {
             logger.debug("The network is offline: circlePlusMAC={}, stickMAC={}", circlePlusMAC, stickMAC);
             updateStatus(OFFLINE);

@@ -22,15 +22,16 @@ import com.google.gson.JsonObject;
  */
 public class XiaomiSensorSwitchHandler extends XiaomiSensorBaseHandler {
 
+    private static final String STATUS = "status";
+
     public XiaomiSensorSwitchHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     void parseReport(JsonObject data) {
-        if (data.has("status")) {
-            triggerChannel(CHANNEL_BUTTON,
-                    ChannelMapper.getChannelEvent(data.get("status").getAsString().toUpperCase()));
+        if (data.has(STATUS)) {
+            triggerChannel(CHANNEL_BUTTON, ChannelMapper.getChannelEvent(data.get(STATUS).getAsString().toUpperCase()));
         }
     }
 }

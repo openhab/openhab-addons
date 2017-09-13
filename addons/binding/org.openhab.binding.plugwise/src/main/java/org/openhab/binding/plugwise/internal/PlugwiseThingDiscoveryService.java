@@ -128,7 +128,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         return DiscoveryResultBuilder.create(thingUID).withBridge(stickHandler.getThing().getUID())
                 .withLabel("Plugwise " + node.deviceType.toString())
                 .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
-                .withProperties(new HashMap<>(node.properties)).withRepresentationProperty(mac).build();
+                .withProperties(new HashMap<>(node.properties))
+                .withRepresentationProperty(PlugwiseBindingConstants.PROPERTY_MAC_ADDRESS).build();
     }
 
     @Override

@@ -43,10 +43,10 @@ import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.matmaul.freeboxos.phone.PhoneStatus;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxAirPlayDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetInterfaceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxPhoneConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxPhoneConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

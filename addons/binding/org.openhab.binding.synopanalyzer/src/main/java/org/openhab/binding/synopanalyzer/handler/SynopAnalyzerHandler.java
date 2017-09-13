@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.synopanalyzer.config.SynopAnalyzerConfiguration;
+import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

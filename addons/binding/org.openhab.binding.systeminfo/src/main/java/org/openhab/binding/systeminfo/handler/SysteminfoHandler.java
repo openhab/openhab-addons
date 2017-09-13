@@ -30,9 +30,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.systeminfo.model.DeviceNotFoundException;
-import org.openhab.binding.systeminfo.model.OshiSysteminfo;
-import org.openhab.binding.systeminfo.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
+import org.openhab.binding.systeminfo.internal.model.OshiSysteminfo;
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

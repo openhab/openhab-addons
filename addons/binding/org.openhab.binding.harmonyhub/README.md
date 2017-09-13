@@ -68,6 +68,42 @@ Devices can send button presses
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
 ```
 
+Hubs can also trigger events when a new activity is starting (activityStarting channel) and after it is started (activityStarted channel).
+
+The name of the event is equal to the activity name, with all non-alphanumeric characters replaced with underscore.
+
+rules:
+
+```
+rule "Starting TV"
+when
+    Channel "harmonyhub:hub:GreatRoom:activityStarting" triggered Watch_TV
+then
+    logInfo("Harmony", "TV is starting...")
+end
+
+rule "TV started"
+when
+    Channel "harmonyhub:hub:GreatRoom:activityStarted" triggered Watch_TV
+then
+    logInfo("Harmony", "TV is started")
+end
+
+rule "Going off"
+when
+    Channel "harmonyhub:hub:GreatRoom:activityStarting" triggered PowerOff
+then
+    logInfo("Harmony", "Hub is going off...")
+end
+
+rule "Hub off"
+when
+    Channel "harmonyhub:hub:GreatRoom:activityStarted" triggered PowerOff
+then
+    logInfo("Harmony", "Hub is off - no activity")
+end
+```
+
 ## Example Sitemap
 
 Using the above things channels and items 

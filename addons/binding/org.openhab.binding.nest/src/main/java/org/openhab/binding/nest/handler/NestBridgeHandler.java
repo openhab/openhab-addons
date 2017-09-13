@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -97,16 +97,23 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         SslContextFactory sslContextFactory = new SslContextFactory();
         httpClient = new HttpClient(sslContextFactory);
         httpClient.setConnectTimeout(30000);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error starting HTTP client " + e.getMessage());
+            return;
+        }
 
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
-        startAutomaticRefresh(config.refreshInterval);
-        updateAccessToken();
-
         logger.debug("Client Id       {}.", config.clientId);
         logger.debug("Client Secret   {}.", config.clientSecret);
         logger.debug("Pincode         {}.", config.pincode);
 
+        updateAccessToken();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
+
+        startAutomaticRefresh(config.refreshInterval);
     }
 
     /**
@@ -157,7 +164,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         try {
             String uri = buildQueryString(config);
             String data = jsonFromGetUrl(uri, config);
-            logger.error("Data from nest {}", data);
+            logger.debug("Data from nest {}", data);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Received update from nest");
             // Now convert the incoming data into something more useful.
             Gson gson = builder.create();
@@ -178,7 +185,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private Thing getDevice(String deviceId, List<Thing> things) {
+    private Thing getExistingDevice(String deviceId, List<Thing> things) {
         for (Thing thing : things) {
             String thingDeviceId = thing.getUID().getId();
             if (thingDeviceId.equals(deviceId)) {
@@ -192,45 +199,53 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         Bridge bridge = getThing();
         List<Thing> things = bridge.getThings();
 
-        for (Thermostat thermostat : devices.getThermostats().values()) {
-            Thing thingThermostat = getDevice(thermostat.getDeviceId(), things);
-            if (thingThermostat != null) {
-                NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
-                if (handler != null) {
-                    handler.updateThermostat(thermostat);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new thermostat {}", thermostat.getDeviceId());
-                    listener.onThermostatAdded(thermostat);
-                }
-            }
-        }
-        for (Camera camera : devices.getCameras().values()) {
-            Thing thingCamera = getDevice(camera.getDeviceId(), things);
-            if (thingCamera != null) {
-                NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
-                if (handler != null) {
-                    handler.updateCamera(camera);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new camera. {}", camera.getDeviceId());
-                    listener.onCameraAdded(camera);
+        if (devices.getThermostats() != null) {
+            for (Thermostat thermostat : devices.getThermostats().values()) {
+                Thing thingThermostat = getExistingDevice(thermostat.getDeviceId(), things);
+                if (thingThermostat != null) {
+                    NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
+                    if (handler != null) {
+                        handler.updateThermostat(thermostat);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new thermostat {}", thermostat.getDeviceId());
+                        listener.onThermostatAdded(thermostat);
+                    }
                 }
             }
         }
-        for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
-            Thing thingSmokeDetector = getDevice(smokeDetector.getDeviceId(), things);
-            if (thingSmokeDetector != null) {
-                NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
-                if (handler != null) {
-                    handler.updateSmokeDetector(smokeDetector);
+
+        if (devices.getCameras() != null) {
+            for (Camera camera : devices.getCameras().values()) {
+                Thing thingCamera = getExistingDevice(camera.getDeviceId(), things);
+                if (thingCamera != null) {
+                    NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
+                    if (handler != null) {
+                        handler.updateCamera(camera);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new camera. {}", camera.getDeviceId());
+                        listener.onCameraAdded(camera);
+                    }
                 }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
-                    listener.onSmokeDetectorAdded(smokeDetector);
+            }
+        }
+
+        if (devices.getSmokeDetectors() != null) {
+            for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
+                Thing thingSmokeDetector = getExistingDevice(smokeDetector.getDeviceId(), things);
+                if (thingSmokeDetector != null) {
+                    NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
+                    if (handler != null) {
+                        handler.updateSmokeDetector(smokeDetector);
+                    }
+                } else {
+                    for (NestDeviceAddedListener listener : listeners) {
+                        logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
+                        listener.onSmokeDetectorAdded(smokeDetector);
+                    }
                 }
             }
         }
@@ -241,7 +256,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         List<Thing> things = bridge.getThings();
 
         for (Structure struct : structures) {
-            Thing thingStructure = getDevice(struct.getStructureId(), things);
+            Thing thingStructure = getExistingDevice(struct.getStructureId(), things);
             if (thingStructure != null) {
                 NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
                 if (handler != null) {
@@ -258,9 +273,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private String buildQueryString(NestBridgeConfiguration config)
             throws InterruptedException, TimeoutException, ExecutionException {
-        logger.debug("Making url with access token {}", config.accessToken);
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
-        urlBuilder.append("?auth=");
         String stringAccessToken;
         if (config.accessToken == null) {
             stringAccessToken = accessToken.getAccessToken();
@@ -271,6 +283,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         } else {
             stringAccessToken = config.accessToken;
         }
+        logger.debug("Making url with access token {}", stringAccessToken);
+        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
+        urlBuilder.append("?auth=");
         urlBuilder.append(stringAccessToken);
         logger.debug("Made url {}", urlBuilder.toString());
         return urlBuilder.toString();

@@ -17,4 +17,5 @@ Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
  org.slf4j
+Export-package: org.openhab.binding.kostal.inverter
 Service-Component: OSGI-INF/*.xml

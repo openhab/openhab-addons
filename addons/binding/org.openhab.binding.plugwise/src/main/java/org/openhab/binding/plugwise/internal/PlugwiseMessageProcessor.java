@@ -83,14 +83,12 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
         if (readBuffer != null) {
-
             String response = new String(readBuffer.array(), 0, readBuffer.limit());
             response = StringUtils.chomp(response);
 
             Matcher matcher = RESPONSE_PATTERN.matcher(response);
 
             if (matcher.matches()) {
-
                 String protocolHeader = matcher.group(1);
                 String messageTypeHex = matcher.group(2);
                 String sequence = matcher.group(3);
@@ -142,7 +140,6 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
     }
 
     private void processMessage(Message message) {
-
         context.getFilteredListeners().notifyListeners(message);
 
         // After processing the response to a message, we remove any reference to the original request

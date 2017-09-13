@@ -30,9 +30,6 @@ public class BindingConstants {
     public static final String BRIDGE_MODEL_NAME = "FRITZ!Box";
     public static final String PL546E_MODEL_NAME = "FRITZ!Powerline";
     public static final String THING_AIN = "ain";
-    public static final String THING_SETTEMP = "set";
-    public static final String THING_ECOTEMP = "eco";
-    public static final String THING_COMFORTTEMP = "comfort";
 
     // List of main device types
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";

@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -30,69 +30,93 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.discovery.ZoneDiscoveryService;
-import org.openhab.binding.yamahareceiver.internal.protocol.HttpXMLSendReceive;
+import org.openhab.binding.yamahareceiver.internal.discovery.ZoneDiscoveryService;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.protocol.ConnectionStateListener;
+import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
+import org.openhab.binding.yamahareceiver.internal.protocol.ProtocolFactory;
+import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link YamahaBridgeHandler} is responsible for fetching basic information about the
  * found AVR and start the zone detection.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
-public class YamahaBridgeHandler extends BaseBridgeHandler {
+public class YamahaBridgeHandler extends BaseBridgeHandler
+        implements ConnectionStateListener, SystemControlStateListener {
     private Logger logger = LoggerFactory.getLogger(YamahaBridgeHandler.class);
     private int refrehInterval = 60; // Default: Every 1min
     private float relativeVolumeChangeFactor = 0.5f; // Default: 0.5 percent
     private ScheduledFuture<?> refreshTimer;
     private ZoneDiscoveryService zoneDiscoveryService;
 
-    private HttpXMLSendReceive xml;
-    private SystemControl.State state = new SystemControl.State();
+    private AbstractConnection connection;
+    private SystemControlState systemControlState = new SystemControlState();
+    private DeviceInformationState deviceInformationState = new DeviceInformationState();
+    private final CountDownLatch loadingDone = new CountDownLatch(1);
 
     public YamahaBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
+    /**
+     * Return the relative volume change factor
+     */
     public float getRelativeVolumeChangeFactor() {
         return relativeVolumeChangeFactor;
     }
 
+    /**
+     * Wait until the loading is complete or the timeout occurred.
+     *
+     * @param timeoutInMs timeout in milliseconds
+     * @return Return true if the initial loading is done. This can either be after all requests have been answered by
+     *         the AVR or after an error occurred.
+     */
+    public boolean waitForLoadingDone(long timeoutInMs) throws InterruptedException {
+        return loadingDone.await(timeoutInMs, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * @return Return the protocol communication object. This may be null
+     *         if the bridge is offline.
+     */
+    public AbstractConnection getCommunication() {
+        return connection;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (xml == null || state.host == null) {
+        if (connection == null || deviceInformationState.host == null) {
             return;
         }
 
-        String id = channelUID.getId();
+        if (command instanceof RefreshType) {
+            refreshFromState(channelUID);
+            return;
+        }
 
         try {
-            if (command instanceof RefreshType) {
-                refreshFromState(channelUID);
-                return;
-            }
-
             // Might be extended in the future, therefore a switch statement
+            String id = channelUID.getId();
             switch (id) {
                 case YamahaReceiverBindingConstants.CHANNEL_POWER:
-                    boolean oldState = state.power;
-                    SystemControl basicDeviceInformation = new SystemControl();
-                    basicDeviceInformation.setPower(xml, ((OnOffType) command) == OnOffType.ON, state);
-                    if (!oldState && state.power) {
-                        // If the device was off and now turns on, we trigger a refresh of all zone things.
-                        // The user might have renamed some of the inputs etc.
-                        updateAllZoneInformation();
-                    }
+                    SystemControl systemControl = ProtocolFactory.SystemControl(connection, this);
+                    systemControl.setPower(((OnOffType) command) == OnOffType.ON);
                     break;
                 default:
-                    logger.error(
+                    logger.warn(
                             "Channel {} not supported on the yamaha device directly! Try with the zone things instead.",
                             id);
             }
-        } catch (Exception e) {
+        } catch (IOException | ReceivedMessageParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -101,7 +125,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler {
         // Might be extended in the future, therefore a switch statement
         switch (channelUID.getId()) {
             case YamahaReceiverBindingConstants.CHANNEL_POWER:
-                updateState(channelUID, state.power ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, systemControlState.power ? OnOffType.ON : OnOffType.OFF);
                 break;
             default:
                 logger.error("Channel refresh for {} not implemented!", channelUID.getId());
@@ -115,10 +139,6 @@ public class YamahaBridgeHandler extends BaseBridgeHandler {
      *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
-        if (state == null) {
-            return;
-        }
-
         BigDecimal intervalConfig = (BigDecimal) thing.getConfiguration()
                 .get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
         if (intervalConfig != null && intervalConfig.intValue() != refrehInterval) {
@@ -128,49 +148,60 @@ public class YamahaBridgeHandler extends BaseBridgeHandler {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateAllZoneInformation();
-            }
-        }, initialWaitTime, refrehInterval, TimeUnit.SECONDS);
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllZoneInformation(), initialWaitTime,
+                refrehInterval, TimeUnit.SECONDS);
     }
 
     /**
-     * Periodically and initially called. Updates
+     * Periodically and initially called. This must run in another thread, because
+     * all update calls are blocking.
      */
     void updateAllZoneInformation() {
+        logger.trace("updateAllZoneInformation");
         try {
-            SystemControl basicDeviceInformation = new SystemControl();
-            basicDeviceInformation.fetchDeviceInformation(xml, state);
-            basicDeviceInformation.fetchPowerInformation(xml, state);
+            DeviceInformation deviceInformation = ProtocolFactory.DeviceInformation(connection, deviceInformationState);
+            deviceInformation.update();
+            zoneDiscoveryService.publishZones(deviceInformationState, thing.getUID());
 
-            updateProperty(YamahaReceiverBindingConstants.PROPERTY_VERSION, state.version);
-            updateProperty(YamahaReceiverBindingConstants.PROPERTY_ASSIGNED_NAME, state.name);
+            SystemControl systemControl = ProtocolFactory.SystemControl(connection, this);
+            // Set power = true before calling systemControl.update(),
+            // otherwise the systemControlStateChanged method would call updateAllZoneInformation() again
+            systemControlState.power = true;
+            systemControl.update();
 
+            updateProperty(YamahaReceiverBindingConstants.PROPERTY_VERSION, deviceInformationState.version);
+            updateProperty(YamahaReceiverBindingConstants.PROPERTY_ASSIGNED_NAME, deviceInformationState.name);
+
+            updateStatus(ThingStatus.ONLINE);
+
+            Bridge bridge = (Bridge) thing;
+            for (Thing thing : bridge.getThings()) {
+                YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
+                handler.setDeviceInformationState(deviceInformationState);
+                // If thing still thinks that the bridge is offline, update its status.
+                if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+                    handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
+                } else if (handler.isCorrectlyInitialized()) {
+                    handler.updateZoneInformation();
+                }
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            state.invalidate();
+            systemControlState.invalidate();
+            deviceInformationState.invalidate();
             return;
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (ReceivedMessageParseException e) {
+            updateProperty(YamahaReceiverBindingConstants.PROPERTY_MENU_ERROR, e.getMessage());
             // Some AVRs send unexpected responses. We log parser exceptions therefore.
             logger.debug("Parse error!", e);
+        } finally {
+            loadingDone.countDown();
         }
-
-        Bridge bridge = (Bridge) thing;
-        List<Thing> things = bridge.getThings();
-        for (Thing thing : things) {
-            YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
-            // If thing still thinks that the bridge is offline, update its status.
-            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-                handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
-            } else {
-                handler.updateZoneInformation();
-            }
-        }
-        updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * We handle the update ourself to avoid a costly dispose/initialize
+     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         if (!isInitialized()) {
@@ -191,7 +222,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler {
         // Check if host configuration has changed
         String hostConfig = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
         if (hostConfig != null) {
-            xml.setHost(hostConfig);
+            connection.setHost(hostConfig);
         }
 
         // Check if refresh configuration has changed
@@ -232,35 +263,45 @@ public class YamahaBridgeHandler extends BaseBridgeHandler {
         }
 
         String host = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
+        BigDecimal port = (BigDecimal) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_PORT);
 
-        if (host == null || host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname not set!");
+        if (StringUtils.isEmpty(host) || port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname or port not set!");
             return;
         }
 
-        xml = new HttpXMLSendReceive(host);
+        zoneDiscoveryService = new ZoneDiscoveryService(bundleContext);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for data");
-        setupRefreshTimer(0);
-
-        zoneDiscoveryService = new ZoneDiscoveryService(state, thing.getUID());
-        zoneDiscoveryService.start(bundleContext);
-        zoneDiscoveryService.detectZones();
+        ProtocolFactory.createConnection(host + ":" + String.valueOf(port.intValue()), this);
     }
 
     @Override
-    public void dispose() {
-        if (zoneDiscoveryService != null) {
-            zoneDiscoveryService.stop();
-            zoneDiscoveryService = null;
+    public void connectionFailed(String host, Throwable throwable) {
+        if (throwable != null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, throwable.getMessage());
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
         }
+        this.connection = null;
     }
 
-    /**
-     * @return Return the protocol communication object. This may be null
-     *         if the bridge is offline.
-     */
-    public HttpXMLSendReceive getCommunication() {
-        return xml;
+    @Override
+    public void connectionEstablished(AbstractConnection connection) {
+        this.connection = connection;
+        setupRefreshTimer(0);
+    }
+
+    @Override
+    public void systemControlStateChanged(SystemControlState msg) {
+        // If the device was off and now turns on, we trigger a refresh of all zone things.
+        // The user might have renamed some of the inputs etc.
+        boolean needsCompleteRefresh = msg.power && !systemControlState.power;
+        systemControlState = msg;
+        updateState(YamahaReceiverBindingConstants.CHANNEL_POWER,
+                systemControlState.power ? OnOffType.ON : OnOffType.OFF);
+        if (needsCompleteRefresh) {
+            updateAllZoneInformation();
+        }
     }
 }

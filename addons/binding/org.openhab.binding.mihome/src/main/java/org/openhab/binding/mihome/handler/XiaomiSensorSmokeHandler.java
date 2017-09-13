@@ -26,6 +26,7 @@ public class XiaomiSensorSmokeHandler extends XiaomiSensorBaseAlarmHandler {
         ALARM_STATUS_MAP.put(0, "Release alarm");
         ALARM_STATUS_MAP.put(1, "Fire alarm");
         ALARM_STATUS_MAP.put(2, "Analog alarm");
+        ALARM_STATUS_MAP.put(8, "Battery fault alarm");
         ALARM_STATUS_MAP.put(64, "Sensitivity fault alarm");
         ALARM_STATUS_MAP.put(32768, "I2C communication failure");
     }

@@ -29,9 +29,10 @@ Once you'll get needed informations from the Netatmo API, you'll be able to conf
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readThermostat=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false] {
     Thing NAMain    inside  [ equipmentId="aa:aa:aa:aa:aa:aa", [refreshInterval=60000] ]
     Thing NAModule1 outside  [ equipmentId="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NHC       homecoach  [ equipmentId="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
     Thing NAPlug    plugtherm  [ equipmentId="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
     Thing NATherm1  thermostat [ equipmentId="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     ...
@@ -189,6 +190,34 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * RfStatus
 * BatteryVP
 
+### Healthy Home Coach Device
+
+Example item for the **Healthy Home Coach**:
+
+```
+String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:NHC:home:livingroom:HealthIndex" }
+```
+
+**Supported types for the healthy home coach device:**
+
+* HealthIndex
+* Temperature
+* TemperatureTrend
+* Humidity
+* Co2
+* Pressure
+* PressureTrend
+* AbsolutePressure
+* Noise
+* WifiStatus
+* Location
+* TimeStamp
+* LastStatusStore
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
+
 ### Thermostat Relay Device
 
 **Supported types for the thermostat relay device:**
@@ -263,7 +292,7 @@ Number Netatmo_Indoor_Co2                 "Co2 [%.0f ppm]"                 <carb
 Number Netatmo_Indoor_Pressure            "Pressure [%.1f mbar]"           <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
 Number Netatmo_Indoor_AbsolutePressure    "AbsolutePressure [%.1f mbar]"   <pressure>         { channel = "netatmo:NAMain:home:inside:AbsolutePressure" }
 Number Netatmo_Indoor_Noise               "Noise [%.0f db]"                <soundvolume>      { channel = "netatmo:NAMain:home:inside:Noise" }
-Number Netatmo_Indoor_WifiStatus          "WifiStatus [%d]"                <signal>           { channel = "netatmo:NAMain:home:inside:WifiStatus" }
+Number Netatmo_Indoor_WifiStatus          "WifiStatus [%s]"                <signal>           { channel = "netatmo:NAMain:home:inside:WifiStatus" }
 DateTime Netatmo_Indoor_TimeStamp         "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAMain:home:inside:TimeStamp" }
 Location Netatmo_Indoor_Location          "Location"                       <movecontrol>      { channel = "netatmo:NAMain:home:inside:Location" }
 DateTime Netatmo_Indoor_LastStatusStore   "LastStatusStore [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <text>  { channel = "netatmo:NAMain:home:inside:LastStatusStore" }
