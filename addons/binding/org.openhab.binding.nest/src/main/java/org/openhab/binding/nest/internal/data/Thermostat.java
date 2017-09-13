@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Gson class to encapsulate the data for the Nest thermostat.
@@ -45,11 +45,11 @@ public class Thermostat extends BaseNestDevice {
     @SerializedName("target_temperature_low_c")
     private Double targetTemperatureLow;
     @SerializedName("hvac_mode")
-    private String mode;
+    private Mode mode;
     @SerializedName("previous_hvac_mode")
-    private String previousMode;
+    private Mode previousMode;
     @SerializedName("hvac_state")
-    private String state;
+    private State state;
     @SerializedName("is_locked")
     private boolean isLocked;
     @SerializedName("locked_temp_max_c")
@@ -99,11 +99,11 @@ public class Thermostat extends BaseNestDevice {
         this.targetTemperatureLow = targetTemperatureLow;
     }
 
-    public String getMode() {
+    public Mode getMode() {
         return mode;
     }
 
-    public void setMode(String mode) {
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 
@@ -159,11 +159,11 @@ public class Thermostat extends BaseNestDevice {
         return hasLeaf;
     }
 
-    public String getPreviousMode() {
+    public Mode getPreviousMode() {
         return previousMode;
     }
 
-    public String getState() {
+    public State getState() {
         return state;
     }
 
@@ -203,6 +203,26 @@ public class Thermostat extends BaseNestDevice {
 
     public Integer getHumidity() {
         return humidity;
+    }
+
+    public enum Mode {
+        @SerializedName("heat")
+        HEAT,
+        @SerializedName("cool")
+        COOL,
+        @SerializedName("heat-cool")
+        HEATCOOL,
+        @SerializedName("off")
+        OFF
+    }
+
+    public enum State {
+        @SerializedName("heating")
+        HEATING,
+        @SerializedName("cooling")
+        COOLIMG,
+        @SerializedName("off")
+        OFF
     }
 
     @Override

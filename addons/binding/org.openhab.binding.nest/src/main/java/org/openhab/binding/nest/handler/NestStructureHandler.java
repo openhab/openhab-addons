@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nest.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -22,19 +24,6 @@ import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_AWAY;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_COUNTRY_CODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CO_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_ETA_BEGIN;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PEAK_PERIOD_END_TIME;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PEAK_PERIOD_START_TIME;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_POSTAL_CODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_TIME_ZONE;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_STRUCTURE_UPDATE_URL;
-
 /**
  * Deals with the structures on the Nest api, turning them into a thing in openHAB.
  *
@@ -43,7 +32,7 @@ import static org.openhab.binding.nest.NestBindingConstants.NEST_STRUCTURE_UPDAT
 public class NestStructureHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
 
-    public NestStructureHandler(@NonNull Thing thing) {
+    public NestStructureHandler(Thing thing) {
         super(thing);
     }
 
@@ -83,7 +72,7 @@ public class NestStructureHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestStructureData(Structure structure) {
-        if (isNotHandling(structure)){
+        if (isNotHandling(structure)) {
             return;
         }
 

@@ -8,10 +8,15 @@
  */
 package org.openhab.binding.nest.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,13 +40,8 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This bridge handler connects to Nest and handles all the api requests. It pulls down the
@@ -60,6 +60,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private NestAccessToken accessToken;
     private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
     private HttpClient httpClient;
+    private NestBridgeConfiguration config;
 
     private final GsonBuilder builder;
 
@@ -68,7 +69,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      *
      * @param bridge The bridge to connect to Nest with.
      */
-    public NestBridgeHandler(@NonNull Bridge bridge) {
+    public NestBridgeHandler(Bridge bridge) {
         super(bridge);
         builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     }
@@ -80,7 +81,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize the Nest bridge handler");
 
-        NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
+        config = getConfigAs(NestBridgeConfiguration.class);
         logger.debug("Client Id       {}", config.clientId);
         logger.debug("Client Secret   {}", config.clientSecret);
         logger.debug("Pincode         {}", config.pincode);
@@ -88,7 +89,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
 
-        startAutomaticRefresh(config.refreshInterval);
+        startAutomaticRefresh();
     }
 
     /**
@@ -98,8 +99,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     @Override
     public void updateConfiguration(Configuration configuration) {
         logger.debug("Config update");
-        stopAutomaticRefresh();
-        startAutomaticRefresh(getConfigAs(NestBridgeConfiguration.class).refreshInterval);
+        super.updateConfiguration(configuration);
+        restartAutomaticRefresh();
     }
 
     /**
@@ -125,13 +126,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Read the data from Nest and then parse it into something useful.
+     * Read the data from Nest and then forward it to anyone listening.
      */
-    private void refreshData() {
+    public void refreshData() {
         logger.trace("starting refreshData");
-        NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         try {
-            String uri = buildQueryString(config);
+            String uri = buildQueryString();
             String data = jsonFromGetUrl(uri);
             logger.debug("Data from Nest {}", data);
 
@@ -172,7 +172,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         structures.forEach(structure -> listeners.forEach(l -> l.onNewNestStructureData(structure)));
     }
 
-    private String buildQueryString(NestBridgeConfiguration config) throws InvalidAccessTokenException {
+    private String buildQueryString() throws InvalidAccessTokenException {
         String stringAccessToken;
 
         if (StringUtils.isEmpty(config.accessToken)) {
@@ -213,9 +213,14 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void startAutomaticRefresh(int refreshInterval) {
+    private synchronized void restartAutomaticRefresh() {
+        stopAutomaticRefresh();
+        startAutomaticRefresh();
+    }
+
+    private synchronized void startAutomaticRefresh() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshInterval, SECONDS);
         }
     }
 
@@ -230,7 +235,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * @param nestDeviceDataListener The device added listener to add
      */
     public boolean addDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
-        return listeners.add(nestDeviceDataListener);
+        boolean success = listeners.add(nestDeviceDataListener);
+        scheduler.schedule(this::refreshData, 2, SECONDS);
+        return success;
     }
 
     /**

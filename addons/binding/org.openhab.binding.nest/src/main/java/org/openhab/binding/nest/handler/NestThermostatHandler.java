@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nest.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -24,27 +26,6 @@ import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CAN_COOL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CAN_HEAT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_FAN_TIMER_ACTIVE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_FAN_TIMER_DURATION;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_HAS_FAN;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_HAS_LEAF;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOCKED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOCKED_MAX_SET_POINT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOCKED_MIN_SET_POINT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MAX_SET_POINT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MIN_SET_POINT;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PREVIOUS_MODE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_TIME_TO_TARGET_MINS;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_USING_EMERGENCY_HEAT;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_THERMOSTAT_UPDATE_URL;
-
 /**
  * The {@link NestThermostatHandler} is responsible for handling commands, which are
  * sent to one of the channels for the thermostat.
@@ -54,7 +35,7 @@ import static org.openhab.binding.nest.NestBindingConstants.NEST_THERMOSTAT_UPDA
 public class NestThermostatHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
 
-    public NestThermostatHandler(@NonNull Thing thing) {
+    public NestThermostatHandler(Thing thing) {
         super(thing);
     }
 
@@ -112,20 +93,20 @@ public class NestThermostatHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestThermostatData(Thermostat thermostat) {
-        if (isNotHandling(thermostat)){
+        if (isNotHandling(thermostat)) {
             return;
         }
 
         logger.debug("Updating thermostat {}", thermostat.getDeviceId());
         updateState(CHANNEL_TEMPERATURE, new DecimalType(thermostat.getAmbientTemperature()));
         updateState(CHANNEL_HUMIDITY, new PercentType(thermostat.getHumidity()));
-        updateState(CHANNEL_MODE, new StringType(thermostat.getMode()));
+        updateState(CHANNEL_MODE, new StringType(thermostat.getMode().name()));
 
-        String previousMode = thermostat.getPreviousMode();
-        if ("".equals(previousMode)) {
+        Thermostat.Mode previousMode = thermostat.getPreviousMode();
+        if (previousMode == null) {
             previousMode = thermostat.getMode();
         }
-        updateState(CHANNEL_PREVIOUS_MODE, new StringType(previousMode));
+        updateState(CHANNEL_PREVIOUS_MODE, new StringType(previousMode.name()));
         updateState(CHANNEL_MIN_SET_POINT, new DecimalType(thermostat.getTargetTemperatureLow()));
         updateState(CHANNEL_MAX_SET_POINT, new DecimalType(thermostat.getTargetTemperatureHigh()));
         updateState(CHANNEL_CAN_HEAT, thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);

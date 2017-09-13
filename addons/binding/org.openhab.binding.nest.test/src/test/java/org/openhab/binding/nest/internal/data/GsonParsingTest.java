@@ -182,12 +182,12 @@ public class GsonParsingTest {
         assertEquals(utcCal.getTime().toString(), thermostat.getFanTimerTimeout().toString());
         assertEquals(Double.valueOf(22.0), thermostat.getLockedTemperatureHigh());
         assertEquals(Double.valueOf(20.0), thermostat.getLockedTemperatureLow());
-        assertEquals("heat", thermostat.getMode());
+        assertEquals(Thermostat.Mode.HEAT, thermostat.getMode());
         assertEquals("Living Room (Living Room)", thermostat.getName());
         assertEquals("Living Room Thermostat (Living Room)", thermostat.getNameLong());
         assertEquals("", thermostat.getPreviousMode());
         assertEquals("5.6-7", thermostat.getSoftwareVersion());
-        assertEquals("off", thermostat.getState());
+        assertEquals(Thermostat.State.OFF, thermostat.getState());
         assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", thermostat.getStructureId());
         assertEquals(Double.valueOf(15.5), thermostat.getTargetTemperature());
         assertEquals(Double.valueOf(24.0), thermostat.getTargetTemperatureHigh());

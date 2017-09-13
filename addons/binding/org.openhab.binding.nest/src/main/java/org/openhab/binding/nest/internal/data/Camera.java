@@ -92,15 +92,15 @@ public class Camera extends BaseNestDevice {
 
     public static class ActivityZone {
         @SerializedName("name")
-        private boolean name;
+        private String name;
         @SerializedName("id")
-        private boolean id;
+        private int id;
 
-        public boolean isName() {
+        public String getName() {
             return name;
         }
 
-        public boolean isId() {
+        public int getId() {
             return id;
         }
     }

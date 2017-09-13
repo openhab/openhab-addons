@@ -8,7 +8,13 @@
  */
 package org.openhab.binding.nest.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,13 +26,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
-
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Deals with the structures on the Nest api, turning them into a thing in openHAB.
@@ -35,12 +36,15 @@ import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
  * @author Martin van Wingerden - Splitted of NestBaseHandler
  */
 abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener {
-    NestBaseHandler(@NonNull Thing thing) {
+    private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
+
+    NestBaseHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
+        logger.debug("Initializing handler for {}", getClass().getName());
         getNestBridgeHandler().map(b -> b.addDeviceDataListener(NestBaseHandler.this));
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");
@@ -81,10 +85,12 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     void addUpdateRequest(String updateUrl, String field, Object value) {
         String deviceId = getThing().getProperties().get(PROPERTY_MODEL_ID);
         NestBridgeHandler bridge = (NestBridgeHandler) getBridge();
+        // @formatter:off
         bridge.addUpdateRequest(new NestUpdateRequest.Builder()
                 .withBaseUrl(updateUrl)
                 .withIdentifier(deviceId)
                 .withAdditionalValue(field, value)
                 .build());
+        // @formatter:on
     }
 }

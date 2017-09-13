@@ -8,9 +8,9 @@
         <description>Away state of the structure</description>
         <state>
             <options>
-                <option value="away">Away</option>
-                <option value="home">Home</option>
-                <option value="autoaway">Auto Away</option>
+                <option value="AWAY">Away</option>
+                <option value="HOME">Home</option>
+                <option value="AUTOAWAY">Auto Away</option>
             </options>
         </state>
     </channel-type>
@@ -214,9 +214,8 @@
         <state readOnly="false">
             <options>
                 <option value="OFF">off</option>
-                <option value="HEATING">heating</option>
-                <option value="COOLING">cooling</option>
-                <option value="ECO">eco</option>
+                <option value="HEAT">heating</option>
+                <option value="COOL">cooling</option>
                 <option value="HEATCOOL">heat/cool</option>
             </options>
         </state>
@@ -229,9 +228,8 @@
         <state readOnly="true">
             <options>
                 <option value="OFF">off</option>
-                <option value="HEATING">heating</option>
-                <option value="COOLING">cooling</option>
-                <option value="ECO">eco</option>
+                <option value="HEAT">heating</option>
+                <option value="COOL">cooling</option>
                 <option value="HEATCOOL">heat/cool</option>
             </options>
         </state>

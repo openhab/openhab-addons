@@ -17,7 +17,7 @@
 				<description>The current color of the ring on the smoke detector</description>
 			</channel>
 			<channel id="low_battery" typeId="system.low-battery">
-				<label>Battery</label>
+				<label>Battery low</label>
 				<description>Reports whether the battery of the Nest protect is low (if it is battery powered)</description>
 			</channel>
 			<channel id="co_alarm_state" typeId="CoAlarmState">

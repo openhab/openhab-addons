@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nest.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,14 +25,6 @@ import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_CO_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_LOW_BATTERY;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_MANUAL_TEST_ACTIVE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SMOKE_ALARM_STATE;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_UI_COLOR_STATE;
-
 /**
  * The smoke detector handler, it handles the data from Nest for the smoke detector.
  *
@@ -39,7 +33,7 @@ import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_UI_COLOR_STA
 public class NestSmokeDetectorHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
-    public NestSmokeDetectorHandler(@NonNull Thing thing) {
+    public NestSmokeDetectorHandler(Thing thing) {
         super(thing);
     }
 
@@ -63,7 +57,7 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        if (isNotHandling(smokeDetector)){
+        if (isNotHandling(smokeDetector)) {
             return;
         }
 

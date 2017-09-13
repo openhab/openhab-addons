@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nest.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -22,18 +24,6 @@ import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_APP_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_AUDIO_INPUT_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_PUBLIC_SHARE_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_SNAPSHOT_URL;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_STREAMING;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_VIDEO_HISTORY_ENABLED;
-import static org.openhab.binding.nest.NestBindingConstants.CHANNEL_WEB_URL;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_CAMERA_UPDATE_URL;
-
 /**
  * Handles all the updates to the camera as well as handling the commands that send
  * updates to Nest.
@@ -43,7 +33,7 @@ import static org.openhab.binding.nest.NestBindingConstants.NEST_CAMERA_UPDATE_U
 public class NestCameraHandler extends NestBaseHandler {
     private Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
 
-    public NestCameraHandler(@NonNull Thing thing) {
+    public NestCameraHandler(Thing thing) {
         super(thing);
     }
 
@@ -65,7 +55,7 @@ public class NestCameraHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestCameraData(Camera camera) {
-        if (isNotHandling(camera)){
+        if (isNotHandling(camera)) {
             return;
         }
 
