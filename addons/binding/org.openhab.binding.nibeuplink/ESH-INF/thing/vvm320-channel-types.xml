@@ -190,7 +190,7 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         <item-type>Number</item-type>
         <label>BT63 Add Supply Temp</label>
         <description></description>
-        <state pattern="%.1f ºC" readOnly="true">
+        <state pattern="%.1f °C" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="vvm320-type-40127">

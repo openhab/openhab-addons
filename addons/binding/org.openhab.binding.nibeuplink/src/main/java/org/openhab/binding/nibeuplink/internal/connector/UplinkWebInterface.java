@@ -97,12 +97,12 @@ public class UplinkWebInterface {
             StatusUpdateListener statusUpdater = new StatusUpdateListener() {
 
                 @Override
-                public void update(Code status) {
-                    if (status.equals(Code.SERVICE_UNAVAILABLE)) {
+                public void update(CommunicationStatus status) {
+                    if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
                         setAuthenticated(false);
-                    } else if (!status.equals(Code.OK)) {
+                    } else if (!status.getHttpCode().equals(Code.OK)) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 status.getMessage());
                         setAuthenticated(false);
@@ -130,15 +130,15 @@ public class UplinkWebInterface {
             StatusUpdateListener statusUpdater = new StatusUpdateListener() {
 
                 @Override
-                public void update(Code status) {
-                    if (status.equals(Code.FOUND)) {
+                public void update(CommunicationStatus status) {
+                    if (status.getHttpCode().equals(Code.FOUND)) {
                         uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
                         setAuthenticated(true);
-                    } else if (status.equals(Code.OK)) {
+                    } else if (status.getHttpCode().equals(Code.OK)) {
                         uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "invalid username or password");
                         setAuthenticated(false);
-                    } else if (status.equals(Code.SERVICE_UNAVAILABLE)) {
+                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
                         setAuthenticated(false);

@@ -8,16 +8,14 @@
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 /**
  * callback interface to update the status of the {@link UplinkWebInterface}
- * 
+ *
  * @author afriese
  *
  */
 public interface StatusUpdateListener {
 
-    public void update(HttpStatus.Code status);
+    public void update(CommunicationStatus status);
 
 }

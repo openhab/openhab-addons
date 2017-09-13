@@ -60,6 +60,6 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
 
     @Override
     public void onComplete(Result result) {
-        listener.update(getHttpStatusCode());
+        listener.update(getCommunicationStatus());
     }
 }

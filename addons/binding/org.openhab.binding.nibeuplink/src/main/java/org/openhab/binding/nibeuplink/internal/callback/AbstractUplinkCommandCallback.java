@@ -12,6 +12,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -21,6 +22,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
+import org.openhab.binding.nibeuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     /**
      * status code of fulfilled request
      */
-    private int httpStatus = HttpStatus.IM_A_TEAPOT_418;
+    private CommunicationStatus communicationStatus;
 
     /**
      * listener to provide updates to the WebInterface class
@@ -59,6 +61,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
      * @param config
      */
     public AbstractUplinkCommandCallback(NibeUplinkConfiguration config) {
+        this.communicationStatus = new CommunicationStatus();
         this.config = config;
     }
 
@@ -68,7 +71,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     @Override
     public final void onSuccess(Response response) {
         super.onSuccess(response);
-        httpStatus = response.getStatus();
+        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
         logger.debug("HTTP response {}", response.getStatus());
     }
 
@@ -80,18 +83,19 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
         super.onFailure(response, failure);
         try {
             logger.warn("Request failed: {}", failure.toString());
-            httpStatus = HttpStatus.IM_A_TEAPOT_418;
+            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
 
             // as we are not allowed to catch Throwables we must only throw Exceptions!
             if (failure instanceof Exception) {
+                communicationStatus.setError((Exception) failure);
                 throw (Exception) failure;
             }
-        } catch (SocketTimeoutException e) {
-            httpStatus = HttpStatus.REQUEST_TIMEOUT_408;
+        } catch (SocketTimeoutException | TimeoutException e) {
+            communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
         } catch (UnknownHostException e) {
-            httpStatus = HttpStatus.BAD_GATEWAY_502;
+            communicationStatus.setHttpCode(Code.BAD_GATEWAY);
         } catch (Exception e) {
-            httpStatus = HttpStatus.IM_A_TEAPOT_418;
+            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -111,9 +115,11 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     /**
      * returns Http Status Code
      */
-    public Code getHttpStatusCode() {
-        Code code = HttpStatus.getCode(httpStatus);
-        return code == null ? Code.IM_A_TEAPOT : code;
+    public CommunicationStatus getCommunicationStatus() {
+        if (communicationStatus.getHttpCode() == null) {
+            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+        }
+        return communicationStatus;
     }
 
     /**

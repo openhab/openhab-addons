@@ -78,9 +78,9 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
     public void onComplete(Result result) {
         logger.debug("onComplete()");
 
-        if (!getHttpStatusCode().equals(HttpStatus.OK_200) && retries++ < MAX_RETRIES) {
+        if (!getCommunicationStatus().getHttpCode().equals(HttpStatus.OK_200) && retries++ < MAX_RETRIES) {
             if (getListener() != null) {
-                getListener().update(getHttpStatusCode());
+                getListener().update(getCommunicationStatus());
             }
             handler.getWebInterface().executeCommand(this);
         }
