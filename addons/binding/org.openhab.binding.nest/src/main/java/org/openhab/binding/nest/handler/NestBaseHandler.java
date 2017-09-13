@@ -56,7 +56,7 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     }
 
     boolean isNotHandling(BaseNestDevice nestDevice) {
-        String thingDeviceId = getThing().getThingTypeUID().getId();
+        String thingDeviceId = getThing().getUID().getId();
         return !(thingDeviceId.equals(nestDevice.getDeviceId()));
     }
 

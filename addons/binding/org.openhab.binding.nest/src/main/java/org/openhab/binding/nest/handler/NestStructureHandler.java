@@ -109,7 +109,7 @@ public class NestStructureHandler extends NestBaseHandler {
     }
 
     private boolean isNotHandling(Structure nestDevice) {
-        String thingDeviceId = getThing().getThingTypeUID().getId();
+        String thingDeviceId = getThing().getUID().getId();
         return !(thingDeviceId.equals(nestDevice.getStructureId()));
     }
 }
