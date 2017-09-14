@@ -1,7 +1,7 @@
 version: 2
 
 requirements:
-  signed_off_by:
+  signed_off_by: Udo Hartmann <udo1toni@gmail.com>
     required: true
 
 always_pending:
