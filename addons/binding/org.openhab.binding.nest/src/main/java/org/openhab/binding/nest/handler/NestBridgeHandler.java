@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.nest.handler;
 
+import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,10 +34,12 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -50,18 +52,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * @author David Bennett - initial contribution
  */
 public class NestBridgeHandler extends BaseBridgeHandler {
-
     private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
     private final List<NestDeviceDataListener> listeners = new ArrayList<>();
+    private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
+    private final Gson gson;
 
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
-    private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
-    private HttpClient httpClient;
     private NestBridgeConfiguration config;
-
-    private final GsonBuilder builder;
+    private ScheduledFuture<?> sender;
 
     /**
      * Creates the bridge handler to connect to Nest.
@@ -70,7 +70,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      */
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
-        builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
     }
 
     /**
@@ -99,7 +99,10 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void updateConfiguration(Configuration configuration) {
         logger.debug("Config update");
         super.updateConfiguration(configuration);
-        restartAutomaticRefresh();
+        synchronized (this) {
+            stopAutomaticRefresh();
+            startAutomaticRefresh();
+        }
     }
 
     /**
@@ -137,7 +140,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
 
             // Now convert the incoming data into something more useful.
-            Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
             broadcastDevices(newData.getDevices());
             broadcastStructure(newData.getStructures().values());
@@ -202,22 +204,13 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private String jsonToPutUrl(NestUpdateRequest request) {
-        try {
-            logger.debug("Fetching data from {}", request.getUpdateUrl());
-            return HttpUtil.executeUrl("PUT", request.getUpdateUrl(), null, null, null, 5000);
-        } catch (IOException e) {
-            // FIXME
-            throw new RuntimeException(e);
-        }
-    }
-
-    private synchronized void restartAutomaticRefresh() {
-        stopAutomaticRefresh();
-        startAutomaticRefresh();
-    }
-
     private synchronized void startAutomaticRefresh() {
+        if (config == null || config.refreshInterval < 60){
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Can not schedule polling job, refresh interval should be set and be more then 60 seconds");
+            return;
+        }
+
         if (pollingJob == null || pollingJob.isCancelled()) {
             pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshInterval, SECONDS);
         }
@@ -235,7 +228,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      */
     public boolean addDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
         boolean success = listeners.add(nestDeviceDataListener);
-        scheduler.schedule(this::refreshData, 2, SECONDS);
+        scheduler.schedule(this::refreshData, 1, SECONDS);
         return success;
     }
 
@@ -249,8 +242,37 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     /**
      * Adds the update request into the queue for doing something with, send immediately if the queue is empty.
      */
-    public void addUpdateRequest(NestUpdateRequest request) {
+    void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
+        if (sender == null || sender.isDone()) {
+            sender = scheduler.schedule(this::transmitQueue, 0, SECONDS);
+        }
+    }
+
+    private void transmitQueue() {
+        if (getBridge().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Not transmitting events because bridge is OFFLINE");
+            return;
+        }
+
+        for (NestUpdateRequest updateRequest : nestUpdateRequests) {
+            jsonToPutUrl(updateRequest);
+        }
+    }
+
+
+    private void jsonToPutUrl(NestUpdateRequest request) {
+        try {
+            logger.debug("Putting data to {}", request.getUpdateUrl());
+            String content = gson.toJson(request.getValues());
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
+            HttpUtil.executeUrl("PUT", request.getUpdateUrl(), null, inputStream, null, 5000);
+        } catch (IOException e) {
+            // TODO we could or maybe should check the cause for authentication failure.
+            // FIXME we should handle this here otherwise it will get lost
+            logger.error("Failed to send data", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**
