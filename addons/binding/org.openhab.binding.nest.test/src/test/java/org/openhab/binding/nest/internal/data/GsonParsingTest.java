@@ -185,7 +185,7 @@ public class GsonParsingTest {
         assertEquals(Thermostat.Mode.HEAT, thermostat.getMode());
         assertEquals("Living Room (Living Room)", thermostat.getName());
         assertEquals("Living Room Thermostat (Living Room)", thermostat.getNameLong());
-        assertEquals("", thermostat.getPreviousMode());
+        assertEquals(null, thermostat.getPreviousMode());
         assertEquals("5.6-7", thermostat.getSoftwareVersion());
         assertEquals(Thermostat.State.OFF, thermostat.getState());
         assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", thermostat.getStructureId());
@@ -225,19 +225,16 @@ public class GsonParsingTest {
         assertNull(camera.getLastConnection());
         assertEquals(utcCal.getTime().toString(), camera.getLastIsOnlineChange().toString());
         assertNull(camera.getPublicShareUrl());
-        assertEquals(
-                "https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V"
-                        + "2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQj"
-                        + "c2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9E"
-                        + "SvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
+        assertEquals("https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V"
+                + "2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQj"
+                + "c2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9E"
+                + "SvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
                 camera.getSnapshotUrl());
         assertEquals("205-600052", camera.getSoftwareVersion());
-        assertEquals(
-                "https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzR"
-                        + "lFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSW"
-                        + "x2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39z"
-                        + "X1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
-                camera.getWebUrl());
+        assertEquals("https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzR"
+                + "lFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSW"
+                + "x2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39z"
+                + "X1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc", camera.getWebUrl());
         assertEquals("animeted", camera.getLastEvent().getAnimatedImageUrl());
         assertEquals(2, camera.getLastEvent().getActivityZones().size());
         assertEquals("id1", camera.getLastEvent().getActivityZones().get(0));

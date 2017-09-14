@@ -24,8 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 
 /**
  * Tests cases for {@link NestBridgeHandler}.
@@ -58,7 +58,7 @@ public class NestBridgeHandlerTest {
         when(bridge.getConfiguration()).thenReturn(configuration);
         NestBridgeConfiguration bridgeConfig = new NestBridgeConfiguration();
         when(configuration.as(eq(NestBridgeConfiguration.class))).thenReturn(bridgeConfig);
-        bridgeConfig.refreshInterval = 30;
+        bridgeConfig.refreshInterval = 120;
         bridgeConfig.accessToken = "my token";
 
         // we expect the handler#initialize method to call the callback during execution and
