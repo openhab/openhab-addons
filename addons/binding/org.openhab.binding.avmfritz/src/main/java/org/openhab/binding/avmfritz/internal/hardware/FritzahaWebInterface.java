@@ -91,7 +91,7 @@ public class FritzahaWebInterface {
     public String authenticate() {
         if (this.config.getPassword() == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "no password set");
+                    "please configure password first");
             return null;
         }
         String loginXml = null;

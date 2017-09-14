@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.avmfritz.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.math.BigDecimal;
@@ -292,7 +293,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
         }
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-            updateThingProperty(thing, Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+            thing.setProperty(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
             if (device.isTempSensor() && device.getTemperature() != null) {
                 updateThingChannelState(thing, CHANNEL_TEMP, new DecimalType(device.getTemperature().getCelsius()));
             }
@@ -366,7 +367,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     /**
      * Updates thing channels.
      *
-     * @param thing Thing which channel to be updated.
+     * @param thing Thing which channels should be updated.
      * @param channelId ID of the channel to be updated.
      * @param state State to be set.
      */
@@ -376,19 +377,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             updateState(channel.getUID(), state);
         } else {
             logger.warn("Channel {} in thing {} does not exist, please recreate the thing", channelId, thing.getUID());
-        }
-    }
-
-    /**
-     * Updates thing properties.
-     * 
-     * @param thing Thing which property to be updated.
-     * @param propertyId ID of the property to be updated.
-     * @param propertyValue Value to be set.
-     */
-    private void updateThingProperty(Thing thing, @NonNull String propertyId, String propertyValue) {
-        if (thing.getProperties().containsKey(propertyId)) {
-            thing.setProperty(propertyId, propertyValue);
         }
     }
 

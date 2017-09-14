@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal.discovery;
 
+import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
@@ -108,10 +108,10 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             final Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
-            properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
-            properties.put(Thing.PROPERTY_MODEL_ID, device.getDeviceId());
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getIdentifier());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+            properties.put(PROPERTY_VENDOR, device.getManufacturer());
+            properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
+            properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
+            properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
 
             final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(device.getIdentifier()).withBridge(bridgeUID)
