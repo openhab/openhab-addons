@@ -83,9 +83,11 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     public void startScan() {
-        logger.debug("start manual scan on bridge {}", bridgeHandler.getThing().getUID());
-        FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
-        bridgeHandler.getWebInterface().asyncGet(callback);
+        if (bridgeHandler.getWebInterface() != null) {
+            logger.debug("start manual scan on bridge {}", bridgeHandler.getThing().getUID());
+            FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
+            bridgeHandler.getWebInterface().asyncGet(callback);
+        }
     }
 
     /**
@@ -131,10 +133,12 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         if (scanningJob == null || scanningJob.isCancelled()) {
             logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
             scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
-                FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
-                        this);
-                bridgeHandler.getWebInterface().asyncGet(callback);
+                if (bridgeHandler.getWebInterface() != null) {
+                    logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
+                    FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
+                            this);
+                    bridgeHandler.getWebInterface().asyncGet(callback);
+                }
             }, INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
         } else {
             logger.debug("scanningJob active");
