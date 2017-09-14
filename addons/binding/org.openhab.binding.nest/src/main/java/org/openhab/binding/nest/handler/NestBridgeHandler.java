@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -265,7 +265,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         try {
             logger.debug("Putting data to {}", request.getUpdateUrl());
             String content = gson.toJson(request.getValues());
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
             HttpUtil.executeUrl("PUT", request.getUpdateUrl(), null, inputStream, null, 5000);
         } catch (IOException e) {
             // TODO we could or maybe should check the cause for authentication failure.
