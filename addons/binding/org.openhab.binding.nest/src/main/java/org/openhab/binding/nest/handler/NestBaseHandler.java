@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
-
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,8 +22,15 @@ import org.openhab.binding.nest.internal.data.BaseNestDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+
 /**
- * Deals with the structures on the Nest api, turning them into a thing in openHAB.
+ * Deals with the structures on the Nest API, turning them into a thing in openHAB.
  *
  * @author David Bennett - initial contribution
  * @author Martin van Wingerden - Splitted of NestBaseHandler

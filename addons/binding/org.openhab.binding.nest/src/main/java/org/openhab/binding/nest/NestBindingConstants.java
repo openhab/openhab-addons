@@ -21,7 +21,7 @@ public class NestBindingConstants {
     public static final String BINDING_ID = "nest";
 
     /** The url to use to connect to Nest with. */
-    public static final String NEST_URL = "https://developer-api.nest.com/";
+    public static final String NEST_URL = "https://developer-api.nest.com";
 
     /** The url to get the access token when talking to Nest. */
     public static final String NEST_ACCESS_TOKEN_URL = "https://api.home.nest.com/oauth2/access_token";

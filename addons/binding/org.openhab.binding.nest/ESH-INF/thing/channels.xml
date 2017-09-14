@@ -90,20 +90,20 @@
 
     <channel-type id="WebUrl">
         <item-type>String</item-type>
-        <label>Web Url</label>
+        <label>Web URL</label>
         <description>The web url for the camera, allows you to see the camera in a web page.</description>
     </channel-type>
 
     <channel-type id="PublicShareUrl">
         <item-type>String</item-type>
         <label>Public Share Url</label>
-        <description>The url for the camera which is open for a public share.</description>
+        <description>The publicly available url for the camera</description>
     </channel-type>
 
     <channel-type id="SnapshotUrl" advanced="true">
         <item-type>String</item-type>
         <label>Snapshot Url</label>
-        <description>The url for the camera showing a snapshot of the camera.</description>
+        <description>The url showing a snapshot of the camera.</description>
     </channel-type>
 
     <channel-type id="AppUrl" advanced="true">

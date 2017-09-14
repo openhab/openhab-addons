@@ -8,14 +8,8 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -40,11 +34,16 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * This bridge handler connects to Nest and handles all the api requests. It pulls down the
+ * This bridge handler connects to Nest and handles all the API requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
  * to get the data updated to the correct things.
  *
@@ -190,7 +189,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
         StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL).append("?auth=")
                 .append(stringAccessToken);
-        logger.debug("Constructed url: {}", urlBuilder);
+        logger.debug("Constructed URL: {}", urlBuilder);
         return urlBuilder.toString();
     }
 

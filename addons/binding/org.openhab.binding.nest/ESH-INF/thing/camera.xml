@@ -26,11 +26,11 @@
 			</channel>
 			<channel id="web_url" typeId="WebUrl">
 				<label>Web URL</label>
-				<description>The web url to see the camera.</description>
+				<description>The web URL to see the camera.</description>
 			</channel>
 			<channel id="app_url" typeId="AppUrl">
 				<label>App URL</label>
-				<description>The app url to see the camera.</description>
+				<description>The app URL to see the camera.</description>
 			</channel>
 			<channel id="public_share_enabled" typeId="PublicShareEnabled">
 				<label>Public Share Enabled</label>
@@ -38,11 +38,11 @@
 			</channel>
 			<channel id="public_share_url" typeId="PublicShareUrl">
 				<label>Public share URL</label>
-				<description>The url to see the public share of the camera.</description>
+				<description>The URL to see the public share of the camera.</description>
 			</channel>
 			<channel id="snapshot_url" typeId="SnapshotUrl">
-				<label>Snapshot url</label>
-				<description>The url to use for a snapshot of the video stream.</description>
+				<label>Snapshot URL</label>
+				<description>The URL to use for a snapshot of the video stream.</description>
 			</channel>
 		</channels>
 
