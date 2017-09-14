@@ -9,40 +9,40 @@
 		</supported-bridge-type-refs>
 
 		<label>Nest Cam</label>
-		<description>A Nest Cam registered with your account.</description>
+		<description>A Nest Cam registered with your account</description>
 
 		<channels>
 			<channel id="audio_input_enabled" typeId="AudioInputEnabled">
 				<label>Audio Input Enabled</label>
-				<description>If the audio input is currently enabled.</description>
+				<description>If the audio input is currently enabled</description>
 			</channel>
 			<channel id="video_history_enabled" typeId="VideoHistoryEnabled">
 				<label>Video History Enabled</label>
-				<description>If the video history is currently enabled.</description>
+				<description>If the video history is currently enabled</description>
 			</channel>
 			<channel id="streaming" typeId="Streaming">
 				<label>Streaming</label>
-				<description>If the camera is currently streaming.</description>
+				<description>If the camera is currently streaming</description>
 			</channel>
 			<channel id="web_url" typeId="WebUrl">
 				<label>Web URL</label>
-				<description>The web URL to see the camera.</description>
+				<description>The web URL to see the camera</description>
 			</channel>
 			<channel id="app_url" typeId="AppUrl">
 				<label>App URL</label>
-				<description>The app URL to see the camera.</description>
+				<description>The app URL to see the camera</description>
 			</channel>
 			<channel id="public_share_enabled" typeId="PublicShareEnabled">
 				<label>Public Share Enabled</label>
-				<description>If public sharing is currently enabled.</description>
+				<description>If public sharing is currently enabled</description>
 			</channel>
 			<channel id="public_share_url" typeId="PublicShareUrl">
-				<label>Public share URL</label>
-				<description>The URL to see the public share of the camera.</description>
+				<label>Public Share URL</label>
+				<description>The URL to see the public share of the camera</description>
 			</channel>
 			<channel id="snapshot_url" typeId="SnapshotUrl">
 				<label>Snapshot URL</label>
-				<description>The URL to use for a snapshot of the video stream.</description>
+				<description>The URL to use for a snapshot of the video stream</description>
 			</channel>
 		</channels>
 

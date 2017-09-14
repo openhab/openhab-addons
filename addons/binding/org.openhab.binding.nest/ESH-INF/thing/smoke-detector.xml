@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Nest Protect</label>
-		<description>The smoke detector/Nest Protect for the account.</description>
+		<description>The smoke detector/Nest Protect for the account</description>
 
 		<channels>
 			<channel id="ui_color_state" typeId="UiColorState">
@@ -17,12 +17,12 @@
 				<description>The current color of the ring on the smoke detector</description>
 			</channel>
 			<channel id="low_battery" typeId="system.low-battery">
-				<label>Battery low</label>
+				<label>Battery Low</label>
 				<description>Reports whether the battery of the Nest protect is low (if it is battery powered)</description>
 			</channel>
 			<channel id="co_alarm_state" typeId="CoAlarmState">
-				<label>CO alarm</label>
-				<description>The carbon monoxide alarm state of the Nest protect.</description>
+				<label>CO Alarm</label>
+				<description>The carbon monoxide alarm state of the Nest protect</description>
 			</channel>
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState">
 				<label>Smoke Alarm</label>

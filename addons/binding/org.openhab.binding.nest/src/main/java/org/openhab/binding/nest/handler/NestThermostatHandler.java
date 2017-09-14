@@ -46,43 +46,29 @@ public class NestThermostatHandler extends NestBaseHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_MODE.equals(channelUID.getId())) {
-            // Change the mode.
             if (command instanceof StringType) {
-                StringType cmd = (StringType) command;
-                // Set the mode to be the cmd value.
-                addUpdateRequest("hvac_mode", cmd.toString());
+                // Update the HVAC mode to the command value
+                addUpdateRequest("hvac_mode", ((StringType) command).toString());
             }
-        }
-        if (CHANNEL_MAX_SET_POINT.equals(channelUID.getId())) {
-            // Change the set point (Celsius).
+        } else if (CHANNEL_MAX_SET_POINT.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType cmd = (DecimalType) command;
-                // Set the setpoint to be the cmd value.
-                addUpdateRequest("target_temperature_high_c", cmd.floatValue());
+                // Update maximum set point (Celsius) to the command value
+                addUpdateRequest("target_temperature_high_c", ((DecimalType) command).floatValue());
             }
-        }
-        if (CHANNEL_MIN_SET_POINT.equals(channelUID.getId())) {
-            // Change the set point (Celsius).
+        } else if (CHANNEL_MIN_SET_POINT.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType cmd = (DecimalType) command;
-                // Set the setpoint to be the cmd value.
-                addUpdateRequest("target_temperature_low_c", cmd.floatValue());
+                // Update minimum set point (Celsius) to the command value
+                addUpdateRequest("target_temperature_low_c", ((DecimalType) command).floatValue());
             }
-        }
-        if (CHANNEL_FAN_TIMER_ACTIVE.equals(channelUID.getId())) {
-            // Change the set point (Celsius).
+        } else if (CHANNEL_FAN_TIMER_ACTIVE.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType cmd = (DecimalType) command;
-                // Set the setpoint to be the cmd value.
-                addUpdateRequest("fan_timer_active", cmd.intValue() == 0 ? "false" : "true");
+                // Update fan timer active to the command value
+                addUpdateRequest("fan_timer_active", ((DecimalType) command).intValue() == 0 ? "false" : "true");
             }
-        }
-        if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
-            // Change the set point (Celsius).
+        } else if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType cmd = (DecimalType) command;
-                // Set the setpoint to be the cmd value.
-                addUpdateRequest("fan_timer_duration", cmd.intValue());
+                // Update fan timer duration to the command value
+                addUpdateRequest("fan_timer_duration", ((DecimalType) command).intValue());
             }
         }
     }

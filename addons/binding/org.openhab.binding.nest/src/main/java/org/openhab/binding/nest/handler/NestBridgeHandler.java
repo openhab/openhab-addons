@@ -8,8 +8,17 @@
  */
 package org.openhab.binding.nest.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,16 +42,8 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * This bridge handler connects to Nest and handles all the API requests. It pulls down the
@@ -152,7 +153,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error retrieving data " + e.getMessage());
         }
-
     }
 
     private void broadcastDevices(NestDevices devices) {
@@ -205,7 +205,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startAutomaticRefresh() {
-        if (config == null || config.refreshInterval < 60){
+        if (config == null || config.refreshInterval < 60) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not schedule polling job, refresh interval should be set and be more then 60 seconds");
             return;
@@ -251,7 +251,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private void transmitQueue() {
         if (getBridge().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Not transmitting events because bridge is OFFLINE");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Not transmitting events because bridge is OFFLINE");
             return;
         }
 
@@ -259,7 +260,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             jsonToPutUrl(updateRequest);
         }
     }
-
 
     private void jsonToPutUrl(NestUpdateRequest request) {
         try {

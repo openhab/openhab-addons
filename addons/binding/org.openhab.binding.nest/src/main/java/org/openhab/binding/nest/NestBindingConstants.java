@@ -45,7 +45,7 @@ public class NestBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_STRUCTURE = new ThingTypeUID(BINDING_ID, "structure");
 
-    // List of all Channel ids
+    // List of all Channel IDs
     // read/write channels (thermostat)
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_MAX_SET_POINT = "max_set_point";
@@ -83,7 +83,7 @@ public class NestBindingConstants {
 
     // read/write channels (smoke detector)
 
-    // readonly channels (smoke detector)
+    // read only channels (smoke detector)
     public static final String CHANNEL_UI_COLOR_STATE = "ui_color_state";
     public static final String CHANNEL_LOW_BATTERY = "low_battery";
     public static final String CHANNEL_CO_ALARM_STATE = "co_alarm_state"; // Also in structure

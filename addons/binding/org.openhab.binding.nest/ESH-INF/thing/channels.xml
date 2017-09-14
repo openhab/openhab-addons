@@ -52,14 +52,14 @@
         <label>ETA</label>
         <description>
             Estimated time of arrival at home, will setup the heat to turn on and be warm
-            by the time you arrive.
+            by the time you arrive
         </description>
     </channel-type>
 
     <channel-type id="RushHourRewardsEnrollment">
         <item-type>Switch</item-type>
         <label>Rush Hour Rewards</label>
-        <description>If rush hour rewards system is enabled or not.</description>
+        <description>If rush hour rewards system is enabled or not</description>
         <state readOnly="true" />
     </channel-type>
 
@@ -67,49 +67,49 @@
     <channel-type id="AudioInputEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Audio Input Enabled</label>
-        <description>If the audio input is enabled for this camera.</description>
+        <description>If the audio input is enabled for this camera</description>
     </channel-type>
 
     <channel-type id="VideoHistoryEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Video History Enabled</label>
-        <description>If the video history is enabled for this camera.</description>
+        <description>If the video history is enabled for this camera</description>
     </channel-type>
 
     <channel-type id="PublicShareEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Public Share Enabled</label>
-        <description>If the public sharing of this camera is enabled.</description>
+        <description>If the public sharing of this camera is enabled</description>
     </channel-type>
 
     <channel-type id="Streaming">
         <item-type>Switch</item-type>
         <label>Streaming</label>
-        <description>If the camera is currently streaming.</description>
+        <description>If the camera is currently streaming</description>
     </channel-type>
 
     <channel-type id="WebUrl">
         <item-type>String</item-type>
         <label>Web URL</label>
-        <description>The web url for the camera, allows you to see the camera in a web page.</description>
+        <description>The web URL for the camera, allows you to see the camera in a web page</description>
     </channel-type>
 
     <channel-type id="PublicShareUrl">
         <item-type>String</item-type>
-        <label>Public Share Url</label>
-        <description>The publicly available url for the camera</description>
+        <label>Public Share URL</label>
+        <description>The publicly available URL for the camera</description>
     </channel-type>
 
     <channel-type id="SnapshotUrl" advanced="true">
         <item-type>String</item-type>
-        <label>Snapshot Url</label>
-        <description>The url showing a snapshot of the camera.</description>
+        <label>Snapshot URL</label>
+        <description>The URL showing a snapshot of the camera</description>
     </channel-type>
 
     <channel-type id="AppUrl" advanced="true">
         <item-type>String</item-type>
-        <label>App Url</label>
-        <description>The app url for the camera, allows you to see the camera in an app.</description>
+        <label>App URL</label>
+        <description>The app URL for the camera, allows you to see the camera in an app</description>
     </channel-type>
 
     <!-- smoke detector -->
@@ -283,21 +283,21 @@
     <channel-type id="SunlightCorrectionEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Sunlight Correction Enabled</label>
-        <description>If sunlight correction is enabled.</description>
+        <description>If sunlight correction is enabled</description>
         <state readOnly="true" />
     </channel-type>
 
     <channel-type id="SunlightCorrectionActive" advanced="true">
         <item-type>Switch</item-type>
         <label>Sunlight Correction Active</label>
-        <description>If sunlight correction is active.</description>
+        <description>If sunlight correction is active</description>
         <state readOnly="true" />
     </channel-type>
 
     <channel-type id="UsingEmergencyHeat" advanced="true">
         <item-type>Switch</item-type>
         <label>Using Emergency Heat</label>
-        <description>If the system is currently using emergency heat.</description>
+        <description>If the system is currently using emergency heat</description>
         <state readOnly="true" />
     </channel-type>
 </thing:thing-descriptions>

@@ -14,7 +14,6 @@ import com.google.gson.annotations.SerializedName;
  * Data for the Nest smoke detector.
  *
  * @author David Bennett - Initial Contribution
- *
  */
 public class SmokeDetector extends BaseNestDevice {
     @SerializedName("battery_health")
