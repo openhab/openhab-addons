@@ -71,10 +71,6 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     private FritzahaWebInterface connection;
     /**
-     * Job which will do the FRITZ!Box polling
-     */
-    private final DeviceListPolling pollingRunnable;
-    /**
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
@@ -86,7 +82,6 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     public BoxHandler(@NonNull Bridge bridge) {
         super(bridge);
-        this.pollingRunnable = new DeviceListPolling(this);
     }
 
     /**
@@ -287,8 +282,13 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at intervall {}s", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, INITIAL_DELAY, refreshInterval,
-                    TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                if (getWebInterface() != null) {
+                    logger.debug("polling FRITZ!Box {}", getThing().getUID());
+                    FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(getWebInterface(), this);
+                    getWebInterface().asyncGet(callback);
+                }
+            }, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
         }
@@ -302,7 +302,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         logger.debug("command for {}: {}", channelUID, command);
         if (command instanceof RefreshType) {
             if (getWebInterface() != null) {
-                logger.debug("polling FRITZ!Box {}", getWebInterface().getConfig());
+                logger.debug("polling FRITZ!Box {}", getThing().getUID());
                 FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(getWebInterface(), this);
                 getWebInterface().asyncGet(callback);
             }

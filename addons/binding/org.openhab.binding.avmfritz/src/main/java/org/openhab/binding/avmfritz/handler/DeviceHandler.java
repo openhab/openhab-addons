@@ -43,6 +43,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +72,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     private FritzahaWebInterface connection;
     /**
-     * Job which will do the FRITZ! device polling
-     */
-    private final DeviceListPolling pollingRunnable;
-    /**
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
@@ -91,7 +88,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     public DeviceHandler(@NonNull Thing thing) {
         super(thing);
-        this.pollingRunnable = new DeviceListPolling(this);
     }
 
     /**
@@ -138,7 +134,13 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                if (getWebInterface() != null) {
+                    logger.debug("polling FRITZ!Box {}", getThing().getUID());
+                    FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(getWebInterface(), this);
+                    getWebInterface().asyncGet(callback);
+                }
+            }, 1, refreshInterval, TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
         }

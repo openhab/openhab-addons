@@ -60,10 +60,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      */
     private BoxHandler bridgeHandler;
     /**
-     * Job which will do the FRITZ!Box background scanning
-     */
-    private FritzScan scanningRunnable;
-    /**
      * Schedule for scanning
      */
     private ScheduledFuture<?> scanningJob;
@@ -72,7 +68,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         super(BindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
-        this.scanningRunnable = new FritzScan(this);
         if (bridgeHandler == null) {
             logger.warn("no bridge handler for scan given");
         }
@@ -135,8 +130,12 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
             logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
-            scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(scanningRunnable, INITIAL_DELAY,
-                    SCAN_INTERVAL, TimeUnit.SECONDS);
+            scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
+                FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
+                        this);
+                bridgeHandler.getWebInterface().asyncGet(callback);
+            }, INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
         } else {
             logger.debug("scanningJob active");
         }
@@ -151,36 +150,6 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             logger.debug("stop background scanning job");
             scanningJob.cancel(true);
             scanningJob = null;
-        }
-    }
-
-    /**
-     * Scanning worker class.
-     */
-    public class FritzScan implements Runnable {
-        /**
-         * Handler for delegation to callbacks.
-         */
-        private AVMFritzDiscoveryService service;
-
-        /**
-         * Constructor.
-         *
-         * @param handler
-         */
-        public FritzScan(AVMFritzDiscoveryService service) {
-            this.service = service;
-        }
-
-        /**
-         * Poll the FRITZ!Box websevice one time.
-         */
-        @Override
-        public void run() {
-            logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
-            FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
-                    service);
-            bridgeHandler.getWebInterface().asyncGet(callback);
         }
     }
 }
