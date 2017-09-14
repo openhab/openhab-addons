@@ -16,8 +16,6 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +43,7 @@ public class ValloxSerialInterface {
 
     public static final int MINUTE = 60000;
 
-    private Logger logger = LoggerFactory.getLogger(ValloxSerialInterface.class);
+    private final Logger logger = LoggerFactory.getLogger(ValloxSerialInterface.class);
 
     byte senderID = ValloxProtocol.ADDRESS_PANEL8; // we send commands in the name of panel8 (29)
     byte receiverID = ValloxProtocol.ADDRESS_PANEL1; // we always listen for the telegrams between the master and the
@@ -54,16 +52,19 @@ public class ValloxSerialInterface {
     private OutputStream outputStream;
     private InputStream inputStream;
     private Socket socket;
-    private ExecutorService listenerExecutor;
-    private ScheduledExecutorService heartbeatExecutor;
+    private ScheduledExecutorService scheduler;
     private boolean shutdownListening;
 
-    private List<ValueChangeListener> valueListener;
-    private List<StatusChangeListener> statusListener;
+    private final List<ValueChangeListener> valueListener = new ArrayList<>();;
+    private final List<StatusChangeListener> statusListener = new ArrayList<>();;
     private ValloxStore vallox = new ValloxStore();
 
     private String host;
     private int port;
+
+    public ValloxSerialInterface(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
+    }
 
     /**
      * Get a bean with all variable states of the vallox installations. Variables
@@ -78,16 +79,10 @@ public class ValloxSerialInterface {
     }
 
     public List<ValueChangeListener> getValueListener() {
-        if (valueListener == null) {
-            valueListener = new ArrayList<ValueChangeListener>();
-        }
         return valueListener;
     }
 
     public List<StatusChangeListener> getStatusListener() {
-        if (statusListener == null) {
-            statusListener = new ArrayList<>();
-        }
         return statusListener;
     }
 
@@ -140,129 +135,129 @@ public class ValloxSerialInterface {
      * @throws IOException
      */
     public void sendPoll(ValloxProperty prop) throws IOException {
-        if (listenerExecutor == null || listenerExecutor.isTerminated()) {
+        if (scheduler == null || scheduler.isTerminated()) {
             logger.error("Poll requested while no-one is listening for answers!");
         }
         Variable v = null;
         switch (prop) {
-            case AverageEfficiency:
-            case InEfficiency:
-            case OutEfficiency:
+            case AVERAGE_EFFICIENCY:
+            case IN_EFFICIENCY:
+            case OUT_EFFICIENCY:
                 // calculated
                 break;
-            case AdjustmentIntervalMinutes:
-            case AutomaticHumidityLevelSeekerState:
-            case BoostSwitchMode:
-            case CascadeAdjust:
-            case RadiatorType:
-            case Program:
+            case ADJUSTMENT_INTERVAL_MINUTES:
+            case AUTOMATIC_HUMIDITY_LEVEL_SEEKER_STATE:
+            case BOOST_SWITCH_MODE:
+            case CASCADE_ADJUST:
+            case RADIATOR_TYPE:
+            case PROGRAM:
                 v = Variable.PROGRAM;
                 break;
-            case MaxSpeedLimitMode:
-            case Program2:
+            case MAX_SPEED_LIMIT_MODE:
+            case PROGRAM_2:
                 v = Variable.PROGRAM2;
                 break;
-            case CO2AdjustState:
-            case PowerState:
-            case HumidityAdjustState:
-            case HeatingState:
-            case FilterGuardIndicator:
-            case HeatingIndicator:
-            case FaultIndicator:
-            case ServiceReminderIndicator:
-            case SelectStatus:
+            case CO2_ADJUST_STATE:
+            case POWER_STATE:
+            case HUMIDITY_ADJUST_STATE:
+            case HEATING_STATE:
+            case FILTER_GUARD_INDICATOR:
+            case HEATING_INDICATOR:
+            case FAULT_INDICATOR:
+            case SERVICE_REMINDER_INDICATOR:
+            case SELECT_STATUS:
                 v = Variable.SELECT;
                 break;
-            case PostHeatingOn:
+            case POST_HEATING_ON:
                 v = Variable.IOPORT_MULTI_PURPOSE_1;
                 break;
-            case DamperMotorPosition:
-            case FaultSignalRelayClosed:
-            case SupplyFanOff:
-            case PreHeatingOn:
-            case ExhaustFanOff:
-            case FirePlaceBoosterClosed:
+            case DAMPER_MOTOR_POSITION:
+            case FAULT_SIGNAL_RELAY_CLOSED:
+            case SUPPLY_FAN_OFF:
+            case PRE_HEATING_ON:
+            case EXHAUST_FAN_OFF:
+            case FIRE_PLACE_BOOSTER_CLOSED:
                 v = Variable.IOPORT_MULTI_PURPOSE_2;
                 break;
-            case BasicHumidityLevel:
+            case BASIC_HUMIDITY_LEVEL:
                 v = Variable.BASIC_HUMIDITY_LEVEL;
                 break;
-            case CellDefrostingThreshold:
+            case CELL_DEFROSTING_THRESHOLD:
                 v = Variable.CELL_DEFROSTING;
                 break;
-            case CO2High:
+            case CO2_HIGH:
                 v = Variable.CO2_HIGH;
                 break;
-            case CO2Low:
+            case CO2_LOW:
                 v = Variable.CO2_LOW;
                 break;
-            case CO2SetPointHigh:
+            case CO2_SETPOINT_HIGH:
                 v = Variable.CO2_SET_POINT_UPPER;
                 break;
-            case CO2SetPointLow:
+            case CO2_SETPOINT_LOW:
                 v = Variable.CO2_SET_POINT_LOWER;
                 break;
-            case DCFanInputAdjustment:
+            case DC_FAN_INPUT_ADJUSTMENT:
                 v = Variable.DC_FAN_INPUT_ADJUSTMENT;
                 break;
-            case DCFanOutputAdjustment:
+            case DC_FAN_OUTPUT_ADJUSTMENT:
                 v = Variable.DC_FAN_OUTPUT_ADJUSTMENT;
                 break;
-            case FanSpeed:
+            case FAN_SPEED:
                 v = Variable.FAN_SPEED;
                 break;
-            case FanSpeedMax:
+            case FAN_SPEED_MAX:
                 v = Variable.FAN_SPEED_MAX;
                 break;
-            case FanSpeedMin:
+            case FAN_SPEED_MIN:
                 v = Variable.FAN_SPEED_MIN;
                 break;
-            case HeatingSetPoint:
+            case HEATING_SETPOINT:
                 v = Variable.HEATING_SET_POINT;
                 break;
-            case HrcBypassThreshold:
+            case HRC_BYPASS_THRESHOLD:
                 v = Variable.HRC_BYPASS;
                 break;
-            case Humidity:
+            case HUMIDITY:
                 v = Variable.HUMIDITY;
                 break;
-            case HumiditySensor1:
+            case HUMIDITY_SENSOR_1:
                 v = Variable.HUMIDITY_SENSOR1;
                 break;
-            case HumiditySensor2:
+            case HUMIDITY_SENSOR_2:
                 v = Variable.HUMIDITY_SENSOR2;
                 break;
-            case IncommingCurrent:
+            case INCOMMING_CURRENT:
                 v = Variable.CURRENT_INCOMMING;
                 break;
-            case InputFanStopThreshold:
+            case INPUT_FAN_STOP_THRESHOLD:
                 v = Variable.INPUT_FAN_STOP;
                 break;
-            case IoPortMultiPurpose1:
+            case IO_PORT_MULTI_PURPOSE_1:
                 v = Variable.IOPORT_MULTI_PURPOSE_1;
                 break;
-            case IoPortMultiPurpose2:
+            case IO_PORT_MULTI_PURPOSE_2:
                 v = Variable.IOPORT_MULTI_PURPOSE_2;
                 break;
-            case LastErrorNumber:
+            case LAST_ERROR_NUMBER:
                 v = Variable.LAST_ERROR_NUMBER;
                 break;
-            case PreHeatingSetPoint:
+            case PRE_HEATING_SETPOINT:
                 v = Variable.PRE_HEATING_SET_POINT;
                 break;
-            case ServiceReminder:
+            case SERVICE_REMINDER:
                 v = Variable.SERVICE_REMINDER;
                 break;
-            case TempExhaust:
+            case TEMP_EXHAUST:
                 v = Variable.TEMP_EXHAUST;
                 break;
-            case TempIncomming:
+            case TEMP_INCOMMING:
                 v = Variable.TEMP_INCOMMING;
                 break;
-            case TempInside:
+            case TEMP_INSIDE:
                 v = Variable.TEMP_INSIDE;
                 break;
-            case TempOutside:
+            case TEMP_OUTSIDE:
                 v = Variable.TEMP_OUTSIDE;
                 break;
             default:
@@ -304,7 +299,7 @@ public class ValloxSerialInterface {
         send(variable, value, ValloxProtocol.ADDRESS_MASTER);
     }
 
-    private void serialWrite(byte[] telegram) throws IOException {
+    private void serialWrite(byte[] telegram) {
         try {
             if (outputStream != null) {
                 outputStream.write(telegram);
@@ -316,7 +311,6 @@ public class ValloxSerialInterface {
             for (StatusChangeListener l : this.getStatusListener()) {
                 l.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg + " " + e.toString());
             }
-            throw e;
         }
     }
 
@@ -333,8 +327,7 @@ public class ValloxSerialInterface {
      */
     public void startListening() {
         shutdownListening = false;
-        listenerExecutor = Executors.newSingleThreadExecutor();
-        listenerExecutor.submit(() -> {
+        scheduler.submit(() -> {
             long sleep = 0;
             while (!shutdownListening && !Thread.interrupted()) {
                 try {
@@ -373,14 +366,13 @@ public class ValloxSerialInterface {
      * automatically reconnects if it fails.
      */
     public void startHeartbeat() {
-        heartbeatExecutor = Executors.newScheduledThreadPool(1);
         final ValloxSerialInterface vallox = this;
         Runnable reconnecter = new Runnable() {
             @Override
             public void run() {
                 if (!shutdownListening) {
                     try {
-                        sendPoll(ValloxProperty.SelectStatus);
+                        sendPoll(ValloxProperty.SELECT_STATUS);
                     } catch (Exception e) {
                         String msg = "Exception sending heartbeat poll.";
                         logger.error(msg, e);
@@ -397,7 +389,7 @@ public class ValloxSerialInterface {
                 }
             }
         };
-        heartbeatExecutor.scheduleAtFixedRate(reconnecter, 1, 1, TimeUnit.MINUTES);
+        scheduler.scheduleWithFixedDelay(reconnecter, 1, 1, TimeUnit.MINUTES);
         logger.debug("Start heartbeat check to vallox!");
     }
 
@@ -451,20 +443,20 @@ public class ValloxSerialInterface {
      * threads get terminated.
      */
     public void stopListening() {
-        if (listenerExecutor != null) {
+        if (scheduler != null) {
             try {
                 logger.debug("attempt to shutdown listener");
                 shutdownListening = true;
-                listenerExecutor.shutdown();
-                listenerExecutor.awaitTermination(5, TimeUnit.SECONDS);
+                scheduler.shutdown();
+                scheduler.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Listener Thread interrupted");
                 Thread.currentThread().interrupt();
             } finally {
-                if (!listenerExecutor.isTerminated()) {
+                if (!scheduler.isTerminated()) {
                     logger.warn("Listener Thread cancel non-finished tasks");
                 }
-                listenerExecutor.shutdownNow();
+                scheduler.shutdownNow();
                 logger.debug("shutdown of vallox listener finished");
             }
         }

@@ -114,117 +114,40 @@ public class ValloxStore {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ValloxStore [fanSpeed=");
-        builder.append(fanSpeed);
-        builder.append(", tempInside=");
-        builder.append(tempInside);
-        builder.append(", tempOutside=");
-        builder.append(tempOutside);
-        builder.append(", tempExhaust=");
-        builder.append(tempExhaust);
-        builder.append(", tempIncomming=");
-        builder.append(tempIncomming);
-        builder.append(", powerState=");
-        builder.append(powerState);
-        builder.append(", cO2AdjustState=");
-        builder.append(cO2AdjustState);
-        builder.append(", humidityAdjustState=");
-        builder.append(humidityAdjustState);
-        builder.append(", heatingState=");
-        builder.append(heatingState);
-        builder.append(", filterGuardIndicator=");
-        builder.append(filterGuardIndicator);
-        builder.append(", heatingIndicator=");
-        builder.append(heatingIndicator);
-        builder.append(", faultIndicator=");
-        builder.append(faultIndicator);
-        builder.append(", serviceReminderIndicator=");
-        builder.append(serviceReminderIndicator);
-        builder.append(", humidity=");
-        builder.append(humidity);
-        builder.append(", basicHumidityLevel=");
-        builder.append(basicHumidityLevel);
-        builder.append(", humiditySensor1=");
-        builder.append(humiditySensor1);
-        builder.append(", humiditySensor2=");
-        builder.append(humiditySensor2);
-        builder.append(", cO2High=");
-        builder.append(cO2High);
-        builder.append(", cO2Low=");
-        builder.append(cO2Low);
-        builder.append(", cO2SetPointHigh=");
-        builder.append(cO2SetPointHigh);
-        builder.append(", cO2SetPointLow=");
-        builder.append(cO2SetPointLow);
-        builder.append(", fanSpeedMax=");
-        builder.append(fanSpeedMax);
-        builder.append(", fanSpeedMin=");
-        builder.append(fanSpeedMin);
-        builder.append(", dCFanInputAdjustment=");
-        builder.append(dCFanInputAdjustment);
-        builder.append(", dCFanOutputAdjustment=");
-        builder.append(dCFanOutputAdjustment);
-        builder.append(", inputFanStopThreshold=");
-        builder.append(inputFanStopThreshold);
-        builder.append(", heatingSetPoint=");
-        builder.append(heatingSetPoint);
-        builder.append(", preHeatingSetPoint=");
-        builder.append(preHeatingSetPoint);
-        builder.append(", hrcBypassThreshold=");
-        builder.append(hrcBypassThreshold);
-        builder.append(", cellDefrostingThreshold=");
-        builder.append(cellDefrostingThreshold);
-        builder.append(", adjustmentIntervalMinutes=");
-        builder.append(adjustmentIntervalMinutes);
-        builder.append(", automaticHumidityLevelSeekerState=");
-        builder.append(automaticHumidityLevelSeekerState);
-        builder.append(", boostSwitchMode=");
-        builder.append(boostSwitchMode);
-        builder.append(", radiatorType=");
-        builder.append(radiatorType);
-        builder.append(", cascadeAdjust=");
-        builder.append(cascadeAdjust);
-        builder.append(", maxSpeedLimitMode=");
-        builder.append(maxSpeedLimitMode);
-        builder.append(", serviceReminder=");
-        builder.append(serviceReminder);
-        builder.append(", postHeatingOn=");
-        builder.append(postHeatingOn);
-        builder.append(", damperMotorPosition=");
-        builder.append(damperMotorPosition);
-        builder.append(", faultSignalRelayClosed=");
-        builder.append(faultSignalRelayClosed);
-        builder.append(", supplyFanOff=");
-        builder.append(supplyFanOff);
-        builder.append(", preHeatingOn=");
-        builder.append(preHeatingOn);
-        builder.append(", exhaustFanOff=");
-        builder.append(exhaustFanOff);
-        builder.append(", firePlaceBoosterClosed=");
-        builder.append(firePlaceBoosterClosed);
-        builder.append(", incommingCurrent=");
-        builder.append(incommingCurrent);
-        builder.append(", lastErrorNumber=");
-        builder.append(lastErrorNumber);
-        builder.append(", inEfficiency=");
-        builder.append(inEfficiency);
-        builder.append(", outEfficiency=");
-        builder.append(outEfficiency);
-        builder.append(", averageEfficiency=");
-        builder.append(averageEfficiency);
-        builder.append(", selectStatus=");
-        builder.append(selectStatus);
-        builder.append(", program=");
-        builder.append(program);
-        builder.append(", program2=");
-        builder.append(program2);
-        builder.append(", ioPortMultiPurpose1=");
-        builder.append(ioPortMultiPurpose1);
-        builder.append(", ioPortMultiPurpose2=");
-        builder.append(ioPortMultiPurpose2);
-        builder.append(", suspended=");
-        builder.append(suspended);
-        builder.append("]");
+        builder.append("ValloxStore [fanSpeed=").append(fanSpeed).append(", tempInside=").append(tempInside)
+                .append(", tempOutside=").append(tempOutside).append(", tempExhaust=").append(tempExhaust)
+                .append(", tempIncomming=").append(tempIncomming).append(", powerState=").append(powerState)
+                .append(", cO2AdjustState=").append(cO2AdjustState).append(", humidityAdjustState=")
+                .append(humidityAdjustState).append(", heatingState=").append(heatingState)
+                .append(", filterGuardIndicator=").append(filterGuardIndicator).append(", heatingIndicator=")
+                .append(heatingIndicator).append(", faultIndicator=").append(faultIndicator)
+                .append(", serviceReminderIndicator=").append(serviceReminderIndicator).append(", humidity=")
+                .append(humidity).append(", basicHumidityLevel=").append(basicHumidityLevel)
+                .append(", humiditySensor1=").append(humiditySensor1).append(", humiditySensor2=")
+                .append(humiditySensor2).append(", cO2High=").append(cO2High).append(", cO2Low=").append(cO2Low)
+                .append(", cO2SetPointHigh=").append(cO2SetPointHigh).append(", cO2SetPointLow=").append(cO2SetPointLow)
+                .append(", fanSpeedMax=").append(fanSpeedMax).append(", fanSpeedMin=").append(fanSpeedMin)
+                .append(", dCFanInputAdjustment=").append(dCFanInputAdjustment).append(", dCFanOutputAdjustment=")
+                .append(dCFanOutputAdjustment).append(", inputFanStopThreshold=").append(inputFanStopThreshold)
+                .append(", heatingSetPoint=").append(heatingSetPoint).append(", preHeatingSetPoint=")
+                .append(preHeatingSetPoint).append(", hrcBypassThreshold=").append(hrcBypassThreshold)
+                .append(", cellDefrostingThreshold=").append(cellDefrostingThreshold)
+                .append(", adjustmentIntervalMinutes=").append(adjustmentIntervalMinutes)
+                .append(", automaticHumidityLevelSeekerState=").append(automaticHumidityLevelSeekerState)
+                .append(", boostSwitchMode=").append(boostSwitchMode).append(", radiatorType=").append(radiatorType)
+                .append(", cascadeAdjust=").append(cascadeAdjust).append(", maxSpeedLimitMode=")
+                .append(maxSpeedLimitMode).append(", serviceReminder=").append(serviceReminder)
+                .append(", postHeatingOn=").append(postHeatingOn).append(", damperMotorPosition=")
+                .append(damperMotorPosition).append(", faultSignalRelayClosed=").append(faultSignalRelayClosed)
+                .append(", supplyFanOff=").append(supplyFanOff).append(", preHeatingOn=").append(preHeatingOn)
+                .append(", exhaustFanOff=").append(exhaustFanOff).append(", firePlaceBoosterClosed=")
+                .append(firePlaceBoosterClosed).append(", incommingCurrent=").append(incommingCurrent)
+                .append(", lastErrorNumber=").append(lastErrorNumber).append(", inEfficiency=").append(inEfficiency)
+                .append(", outEfficiency=").append(outEfficiency).append(", averageEfficiency=")
+                .append(averageEfficiency).append(", selectStatus=").append(selectStatus).append(", program=")
+                .append(program).append(", program2=").append(program2).append(", ioPortMultiPurpose1=")
+                .append(ioPortMultiPurpose1).append(", ioPortMultiPurpose2=").append(ioPortMultiPurpose2)
+                .append(", suspended=").append(suspended).append("]");
         return builder.toString();
     }
 

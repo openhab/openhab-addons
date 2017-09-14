@@ -17,10 +17,10 @@ package org.openhab.binding.vallox.internal.exceptions;
  */
 public class MalformedTelegramException extends Exception {
 
+    private static final long serialVersionUID = -4292987672906522240L;
+
     public MalformedTelegramException(String message) {
         super(message);
     }
-
-    private static final long serialVersionUID = -4292987672906522240L;
 
 }

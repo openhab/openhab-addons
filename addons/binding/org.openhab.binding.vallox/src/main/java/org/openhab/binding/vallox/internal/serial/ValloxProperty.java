@@ -23,67 +23,67 @@ package org.openhab.binding.vallox.internal.serial;
  */
 public enum ValloxProperty {
     // sensor data
-    FanSpeed, // VALLOX_VARIABLE_FAN_SPEED
-    TempInside, // VALLOX_VARIABLE_TEMP_INSIDE
-    TempOutside, // VALLOX_VARIABLE_TEMP_OUTSIDE
-    TempExhaust, // VALLOX_VARIABLE_TEMP_EXHAUST
-    TempIncomming, // VALLOX_VARIABLE_TEMP_INCOMMING
+    FAN_SPEED("FanSpeed"), // VALLOX_VARIABLE_FAN_SPEED
+    TEMP_INSIDE("TempInside"), // VALLOX_VARIABLE_TEMP_INSIDE
+    TEMP_OUTSIDE("TempOutside"), // VALLOX_VARIABLE_TEMP_OUTSIDE
+    TEMP_EXHAUST("TempExhaust"), // VALLOX_VARIABLE_TEMP_EXHAUST
+    TEMP_INCOMMING("TempIncomming"), // VALLOX_VARIABLE_TEMP_INCOMMING
 
     // status bits
-    PowerState, // VALLOX_VARIABLE_SELECT
-    CO2AdjustState, // VALLOX_VARIABLE_SELECT
-    HumidityAdjustState, // VALLOX_VARIABLE_SELECT
-    HeatingState, // VALLOX_VARIABLE_SELECT
-    FilterGuardIndicator, // VALLOX_VARIABLE_SELECT
-    HeatingIndicator, // VALLOX_VARIABLE_SELECT
-    FaultIndicator, // VALLOX_VARIABLE_SELECT
-    ServiceReminderIndicator, // VALLOX_VARIABLE_SELECT
+    POWER_STATE("PowerState"), // VALLOX_VARIABLE_SELECT
+    CO2_ADJUST_STATE("CO2AdjustState"), // VALLOX_VARIABLE_SELECT
+    HUMIDITY_ADJUST_STATE("HumidityAdjustState"), // VALLOX_VARIABLE_SELECT
+    HEATING_STATE("HeatingState"), // VALLOX_VARIABLE_SELECT
+    FILTER_GUARD_INDICATOR("FilterGuardIndicator"), // VALLOX_VARIABLE_SELECT
+    HEATING_INDICATOR("HeatingIndicator"), // VALLOX_VARIABLE_SELECT
+    FAULT_INDICATOR("FaultIndicator"), // VALLOX_VARIABLE_SELECT
+    SERVICE_REMINDER_INDICATOR("ServiceReminderIndicator"), // VALLOX_VARIABLE_SELECT
 
-    Humidity, // VALLOX_VARIABLE_HUMIDITY
-    BasicHumidityLevel, // VALLOX_VARIABLE_BASIC_HUMIDITY_LEVEL
-    HumiditySensor1, // VALLOX_VARIABLE_HUMIDITY_SENSOR1
-    HumiditySensor2, // VALLOX_VARIABLE_HUMIDITY_SENSOR2
+    HUMIDITY("Humidity"), // VALLOX_VARIABLE_HUMIDITY
+    BASIC_HUMIDITY_LEVEL("BasicHumidityLevel"), // VALLOX_VARIABLE_BASIC_HUMIDITY_LEVEL
+    HUMIDITY_SENSOR_1("HumiditySensor1"), // VALLOX_VARIABLE_HUMIDITY_SENSOR1
+    HUMIDITY_SENSOR_2("HumiditySensor2"), // VALLOX_VARIABLE_HUMIDITY_SENSOR2
 
-    CO2High, // VALLOX_VARIABLE_CO2_HIGH
-    CO2Low, // VALLOX_VARIABLE_CO2_LOW
-    CO2SetPointHigh, // VALLOX_VARIABLE_CO2_SET_POINT_UPPER
-    CO2SetPointLow, // VALLOX_VARIABLE_CO2_SET_POINT_LOWER
+    CO2_HIGH("CO2High"), // VALLOX_VARIABLE_CO2_HIGH
+    CO2_LOW("CO2Low"), // VALLOX_VARIABLE_CO2_LOW
+    CO2_SETPOINT_HIGH("CO2SetPointHigh"), // VALLOX_VARIABLE_CO2_SET_POINT_UPPER
+    CO2_SETPOINT_LOW("CO2SetPointLow"), // VALLOX_VARIABLE_CO2_SET_POINT_LOWER
 
-    FanSpeedMax, // VALLOX_VARIABLE_FAN_SPEED_MAX
-    FanSpeedMin, // VALLOX_VARIABLE_FAN_SPEED_MIN
-    DCFanInputAdjustment, // VALLOX_VARIABLE_DC_FAN_INPUT_ADJUSTMENT
-    DCFanOutputAdjustment, // VALLOX_VARIABLE_DC_FAN_OUTPUT_ADJUSTMENT
-    InputFanStopThreshold, // VALLOX_VARIABLE_INPUT_FAN_STOP
-    HeatingSetPoint, // VALLOX_VARIABLE_HEATING_SET_POINT
-    PreHeatingSetPoint, // VALLOX_VARIABLE_PRE_HEATING_SET_POINT
-    HrcBypassThreshold, // VALLOX_VARIABLE_HRC_BYPASS
-    CellDefrostingThreshold, // VALLOX_VARIABLE_CELL_DEFROSTING
+    FAN_SPEED_MAX("FanSpeedMax"), // VALLOX_VARIABLE_FAN_SPEED_MAX
+    FAN_SPEED_MIN("FanSpeedMin"), // VALLOX_VARIABLE_FAN_SPEED_MIN
+    DC_FAN_INPUT_ADJUSTMENT("DCFanInputAdjustment"), // VALLOX_VARIABLE_DC_FAN_INPUT_ADJUSTMENT
+    DC_FAN_OUTPUT_ADJUSTMENT("DCFanOutputAdjustment"), // VALLOX_VARIABLE_DC_FAN_OUTPUT_ADJUSTMENT
+    INPUT_FAN_STOP_THRESHOLD("InputFanStopThreshold"), // VALLOX_VARIABLE_INPUT_FAN_STOP
+    HEATING_SETPOINT("HeatingSetPoint"), // VALLOX_VARIABLE_HEATING_SET_POINT
+    PRE_HEATING_SETPOINT("PreHeatingSetPoint"), // VALLOX_VARIABLE_PRE_HEATING_SET_POINT
+    HRC_BYPASS_THRESHOLD("HrcBypassThreshold"), // VALLOX_VARIABLE_HRC_BYPASS
+    CELL_DEFROSTING_THRESHOLD("CellDefrostingThreshold"), // VALLOX_VARIABLE_CELL_DEFROSTING
 
     // program
-    AdjustmentIntervalMinutes, // VALLOX_VARIABLE_PROGRAM
-    AutomaticHumidityLevelSeekerState, // VALLOX_VARIABLE_PROGRAM
-    BoostSwitchMode, // VALLOX_VARIABLE_PROGRAM
-    RadiatorType, // VALLOX_VARIABLE_PROGRAM
-    CascadeAdjust, // VALLOX_VARIABLE_PROGRAM
+    ADJUSTMENT_INTERVAL_MINUTES("AdjustmentIntervalMinutes"), // VALLOX_VARIABLE_PROGRAM
+    AUTOMATIC_HUMIDITY_LEVEL_SEEKER_STATE("AutomaticHumidityLevelSeekerState"), // VALLOX_VARIABLE_PROGRAM
+    BOOST_SWITCH_MODE("BoostSwitchMode"), // VALLOX_VARIABLE_PROGRAM
+    RADIATOR_TYPE("RadiatorType"), // VALLOX_VARIABLE_PROGRAM
+    CASCADE_ADJUST("CascadeAdjust"), // VALLOX_VARIABLE_PROGRAM
 
     // program2
-    MaxSpeedLimitMode, // VALLOX_VARIABLE_PROGRAM2
+    MAX_SPEED_LIMIT_MODE("MaxSpeedLimitMode"), // VALLOX_VARIABLE_PROGRAM2
 
-    ServiceReminder, // VALLOX_VARIABLE_SERVICE_REMINDER
+    SERVICE_REMINDER("ServiceReminder"), // VALLOX_VARIABLE_SERVICE_REMINDER
 
     // ioport multi purpose 1
-    PostHeatingOn, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_1
+    POST_HEATING_ON("PostHeatingOn"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_1
 
     // ioport multi purpose 2
-    DamperMotorPosition, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
-    FaultSignalRelayClosed, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
-    SupplyFanOff, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
-    PreHeatingOn, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
-    ExhaustFanOff, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
-    FirePlaceBoosterClosed, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    DAMPER_MOTOR_POSITION("DamperMotorPosition"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    FAULT_SIGNAL_RELAY_CLOSED("FaultSignalRelayClosed"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    SUPPLY_FAN_OFF("SupplyFanOff"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    PRE_HEATING_ON("PreHeatingOn"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    EXHAUST_FAN_OFF("ExhaustFanOff"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    FIRE_PLACE_BOOSTER_CLOSED("FirePlaceBoosterClosed"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
 
-    IncommingCurrent, // VALLOX_VARIABLE_CURRENT_INCOMMING
-    LastErrorNumber, // VALLOX_VARIABLE_LAST_ERROR_NUMBER
+    INCOMMING_CURRENT("IncommingCurrent"), // VALLOX_VARIABLE_CURRENT_INCOMMING
+    LAST_ERROR_NUMBER("LastErrorNumber"), // VALLOX_VARIABLE_LAST_ERROR_NUMBER
 
     // those variables might be implemented in future
     // VALLOX_VARIABLE_IOPORT_FANSPEED_RELAYS
@@ -101,14 +101,48 @@ public enum ValloxProperty {
     // VALLOX_VARIABLE_MAINTENANCE_MONTH_COUNTER
 
     // calculated properties
-    InEfficiency,
-    OutEfficiency,
-    AverageEfficiency,
+    IN_EFFICIENCY("InEfficiency"),
+    OUT_EFFICIENCY("OutEfficiency"),
+    AVERAGE_EFFICIENCY("AverageEfficiency"),
 
     // virtual properties to be able to poll for this variable
-    SelectStatus,
-    Program, // VALLOX_VARIABLE_PROGRAM
-    Program2, // VALLOX_VARIABLE_PROGRAM2
-    IoPortMultiPurpose1, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_1
-    IoPortMultiPurpose2, // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+    SELECT_STATUS("SelectStatus"),
+    PROGRAM("Program"), // VALLOX_VARIABLE_PROGRAM
+    PROGRAM_2("Program2"), // VALLOX_VARIABLE_PROGRAM2
+    IO_PORT_MULTI_PURPOSE_1("IoPortMultiPurpose1"), // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_1
+    IO_PORT_MULTI_PURPOSE_2("IoPortMultiPurpose2"); // VALLOX_VARIABLE_IOPORT_MULTI_PURPOSE_2
+
+    ValloxProperty(String channelName) {
+        this.channelName = channelName;
+    }
+
+    String channelName;
+
+    /**
+     * Get the String representation of the Property as used in the corresponding Channel Name in
+     * the channel XML declaration.
+     * 
+     * @return Channel name exactly as specified
+     */
+    public String getChannelName() {
+        return channelName;
+    }
+
+    /**
+     * Get the Vallox Property for the given channel name.
+     * Might throw IllegalArgumentException if no Property with the
+     * channel name is defined.
+     * 
+     * @param channelName
+     * @return ValloxProperty with given channelName
+     */
+    public static ValloxProperty getProperty(String channelName) {
+        for (ValloxProperty p : values()) {
+            if (p.getChannelName().equals(channelName)) {
+                return p;
+            }
+        }
+        // just like valueOf(String name) does
+        throw new IllegalArgumentException("There is no ValloxProperty with channelName " + channelName);
+    }
 }

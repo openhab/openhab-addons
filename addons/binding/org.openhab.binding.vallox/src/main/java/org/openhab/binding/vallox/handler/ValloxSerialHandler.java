@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class ValloxSerialHandler extends BaseThingHandler
         implements ThingHandler, ValueChangeListener, StatusChangeListener {
 
-    private Logger logger = LoggerFactory.getLogger(ValloxSerialHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ValloxSerialHandler.class);
     private ValloxSerialInterface vallox;
 
     public ValloxSerialHandler(Thing thing) {
@@ -78,7 +78,7 @@ public class ValloxSerialHandler extends BaseThingHandler
         logger.debug("initialize()");
         updateStatus(ThingStatus.UNKNOWN);
         if (vallox == null) {
-            vallox = new ValloxSerialInterface();
+            vallox = new ValloxSerialInterface(this.scheduler);
             try {
                 Configuration configuration = getThing().getConfiguration();
                 String host = (String) configuration.get(ValloxBindingConstants.PARAMETER_HOST);
@@ -103,16 +103,16 @@ public class ValloxSerialHandler extends BaseThingHandler
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 String message = "Failed to start connection to Vallox serial interface. ";
-                logger.error(message, e);
+                logger.warn(message, e);
                 // want a readable message here
                 // as thing status is shown in GUI to end users, it should be very comprehensible
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message + e.getMessage());
             } catch (NumberFormatException e) {
                 String message = "Failed to read input for port parameter of Vallox interface. Must be a plain positive integer.";
-                logger.error(message, e);
+                logger.warn(message, e);
                 // want a readable message here
                 // as thing status is shown in GUI to end users, it should be very comprehensible
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message + e.getMessage());
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message + e.getMessage());
             }
         }
     }
@@ -123,7 +123,7 @@ public class ValloxSerialHandler extends BaseThingHandler
             return;
         }
         try {
-            ValloxProperty channelProperty = ValloxProperty.valueOf(channelUID.getId());
+            ValloxProperty channelProperty = ValloxProperty.getProperty(channelUID.getId());
             if (command instanceof RefreshType) {
                 synchronized (this) {
                     vallox.sendPoll(channelProperty);
@@ -133,10 +133,10 @@ public class ValloxSerialHandler extends BaseThingHandler
                 handleDecimalCommand((DecimalType) command, channelProperty);
             } else if (command instanceof OnOffType) {
                 switch (channelProperty) {
-                    case PowerState:
-                    case CO2AdjustState:
-                    case HumidityAdjustState:
-                    case HeatingState:
+                    case POWER_STATE:
+                    case CO2_ADJUST_STATE:
+                    case HUMIDITY_ADJUST_STATE:
+                    case HEATING_STATE:
                         // send the first 4 bits of the Select byte; others are readonly
                         // 1 1 1 1 1 1 1 1
                         // | | | | | | | |
@@ -154,16 +154,16 @@ public class ValloxSerialHandler extends BaseThingHandler
                         byte v = 0;
                         // if the variable to set is the corresponding bit, set it; otherwise get the value from store
                         // Bit 4
-                        v += (c == ValloxProperty.HeatingState) ? newVal : (s.heatingState ? 1 : 0);
+                        v += (c == ValloxProperty.HEATING_STATE) ? newVal : (s.heatingState ? 1 : 0);
                         v = (byte) (v << 1);
                         // Bit 3
-                        v += (c == ValloxProperty.HumidityAdjustState) ? newVal : (s.humidityAdjustState ? 1 : 0);
+                        v += (c == ValloxProperty.HUMIDITY_ADJUST_STATE) ? newVal : (s.humidityAdjustState ? 1 : 0);
                         v = (byte) (v << 1);
                         // Bit 2
-                        v += (c == ValloxProperty.CO2AdjustState) ? newVal : (s.cO2AdjustState ? 1 : 0);
+                        v += (c == ValloxProperty.CO2_ADJUST_STATE) ? newVal : (s.cO2AdjustState ? 1 : 0);
                         v = (byte) (v << 1);
                         // Bit 1
-                        v += (c == ValloxProperty.PowerState) ? newVal : (s.powerState ? 1 : 0);
+                        v += (c == ValloxProperty.POWER_STATE) ? newVal : (s.powerState ? 1 : 0);
                         vallox.send(Variable.SELECT.getKey(), v);
                     default:
                         logger.warn(
@@ -173,7 +173,7 @@ public class ValloxSerialHandler extends BaseThingHandler
                 }
             }
         } catch (IOException | InterruptedException e) {
-            logger.error("Failed to handle command to Vallox serial interface. ", e);
+            logger.warn("Failed to handle command to Vallox serial interface. ", e);
         }
     }
 
@@ -181,40 +181,40 @@ public class ValloxSerialHandler extends BaseThingHandler
         byte value = command.byteValue();
         logger.debug("Setting channel {} to value {}.", channelProperty, value);
         switch (channelProperty) {
-            case FanSpeed:
+            case FAN_SPEED:
                 vallox.send(Variable.FAN_SPEED.getKey(), Telegram.convertBackFanSpeed(value));
                 break;
-            case FanSpeedMax:
+            case FAN_SPEED_MAX:
                 vallox.send(Variable.FAN_SPEED_MAX.getKey(), Telegram.convertBackFanSpeed(value));
                 break;
-            case FanSpeedMin:
+            case FAN_SPEED_MIN:
                 vallox.send(Variable.FAN_SPEED_MIN.getKey(), Telegram.convertBackFanSpeed(value));
                 break;
-            case DCFanOutputAdjustment:
+            case DC_FAN_OUTPUT_ADJUSTMENT:
                 vallox.send(Variable.DC_FAN_OUTPUT_ADJUSTMENT.getKey(), value);
                 break;
-            case DCFanInputAdjustment:
+            case DC_FAN_INPUT_ADJUSTMENT:
                 vallox.send(Variable.DC_FAN_INPUT_ADJUSTMENT.getKey(), value);
                 break;
-            case HrcBypassThreshold:
+            case HRC_BYPASS_THRESHOLD:
                 vallox.send(Variable.HRC_BYPASS.getKey(), Telegram.convertBackTemperature(value));
                 break;
-            case InputFanStopThreshold:
+            case INPUT_FAN_STOP_THRESHOLD:
                 vallox.send(Variable.INPUT_FAN_STOP.getKey(), Telegram.convertBackTemperature(value));
                 break;
-            case HeatingSetPoint:
+            case HEATING_SETPOINT:
                 vallox.send(Variable.HEATING_SET_POINT.getKey(), Telegram.convertBackTemperature(value));
                 break;
-            case PreHeatingSetPoint:
+            case PRE_HEATING_SETPOINT:
                 vallox.send(Variable.PRE_HEATING_SET_POINT.getKey(), Telegram.convertBackTemperature(value));
                 break;
-            case CellDefrostingThreshold:
+            case CELL_DEFROSTING_THRESHOLD:
                 vallox.send(Variable.CELL_DEFROSTING.getKey(), Telegram.convertBackTemperature(value));
                 break;
-            case PowerState:
-            case CO2AdjustState:
-            case HumidityAdjustState:
-            case HeatingState:
+            case POWER_STATE:
+            case CO2_ADJUST_STATE:
+            case HUMIDITY_ADJUST_STATE:
+            case HEATING_STATE:
                 logger.warn("Trying to send DecimalType command to OnOffType channel: {} Ignoring.", channelProperty);
                 break;
             default:
@@ -226,169 +226,169 @@ public class ValloxSerialHandler extends BaseThingHandler
     @Override
     public void notifyChanged(ValloxProperty prop) {
         ValloxStore vs = vallox.getValloxStore();
-        ChannelUID channel = new ChannelUID(this.getThing().getUID(), prop.toString());
+        ChannelUID channel = new ChannelUID(this.getThing().getUID(), prop.getChannelName());
         State state = null;
         switch (prop) {
-            case AdjustmentIntervalMinutes:
+            case ADJUSTMENT_INTERVAL_MINUTES:
                 state = new DecimalType(vs.adjustmentIntervalMinutes);
                 break;
-            case AutomaticHumidityLevelSeekerState:
+            case AUTOMATIC_HUMIDITY_LEVEL_SEEKER_STATE:
                 state = getOnOff(vs.automaticHumidityLevelSeekerState);
                 break;
-            case AverageEfficiency:
+            case AVERAGE_EFFICIENCY:
                 state = new DecimalType(vs.averageEfficiency);
                 break;
-            case BasicHumidityLevel:
+            case BASIC_HUMIDITY_LEVEL:
                 state = new DecimalType(vs.basicHumidityLevel);
                 break;
-            case BoostSwitchMode:
+            case BOOST_SWITCH_MODE:
                 state = getOnOff(vs.boostSwitchMode);
                 break;
-            case CascadeAdjust:
+            case CASCADE_ADJUST:
                 state = getOnOff(vs.cascadeAdjust);
                 break;
-            case CellDefrostingThreshold:
+            case CELL_DEFROSTING_THRESHOLD:
                 state = new DecimalType(vs.cellDefrostingThreshold);
                 break;
-            case CO2AdjustState:
+            case CO2_ADJUST_STATE:
                 state = getOnOff(vs.cO2AdjustState);
                 break;
-            case CO2High:
+            case CO2_HIGH:
                 state = new DecimalType(vs.cO2High);
                 break;
-            case CO2Low:
+            case CO2_LOW:
                 state = new DecimalType(vs.cO2Low);
                 break;
-            case CO2SetPointHigh:
+            case CO2_SETPOINT_HIGH:
                 state = new DecimalType(vs.cO2SetPointHigh);
                 break;
-            case CO2SetPointLow:
+            case CO2_SETPOINT_LOW:
                 state = new DecimalType(vs.cO2SetPointLow);
                 break;
-            case DamperMotorPosition:
+            case DAMPER_MOTOR_POSITION:
                 state = getOnOff(vs.damperMotorPosition);
                 break;
-            case DCFanInputAdjustment:
+            case DC_FAN_INPUT_ADJUSTMENT:
                 state = new DecimalType(vs.dCFanInputAdjustment);
                 break;
-            case DCFanOutputAdjustment:
+            case DC_FAN_OUTPUT_ADJUSTMENT:
                 state = new DecimalType(vs.dCFanOutputAdjustment);
                 break;
-            case ExhaustFanOff:
+            case EXHAUST_FAN_OFF:
                 state = getOnOff(vs.exhaustFanOff);
                 break;
-            case FanSpeed:
+            case FAN_SPEED:
                 state = new DecimalType(vs.fanSpeed);
                 break;
-            case FanSpeedMax:
+            case FAN_SPEED_MAX:
                 state = new DecimalType(vs.fanSpeedMax);
                 break;
-            case FanSpeedMin:
+            case FAN_SPEED_MIN:
                 state = new DecimalType(vs.fanSpeedMin);
                 break;
-            case FaultIndicator:
+            case FAULT_INDICATOR:
                 state = getOnOff(vs.faultIndicator);
                 break;
-            case FaultSignalRelayClosed:
+            case FAULT_SIGNAL_RELAY_CLOSED:
                 state = getOnOff(vs.faultSignalRelayClosed);
                 break;
-            case FilterGuardIndicator:
+            case FILTER_GUARD_INDICATOR:
                 state = getOnOff(vs.filterGuardIndicator);
                 break;
-            case FirePlaceBoosterClosed:
+            case FIRE_PLACE_BOOSTER_CLOSED:
                 state = getOnOff(vs.firePlaceBoosterClosed);
                 break;
-            case HeatingIndicator:
+            case HEATING_INDICATOR:
                 state = getOnOff(vs.heatingIndicator);
                 break;
-            case HeatingSetPoint:
+            case HEATING_SETPOINT:
                 state = new DecimalType(vs.heatingSetPoint);
                 break;
-            case HeatingState:
+            case HEATING_STATE:
                 state = getOnOff(vs.heatingState);
                 break;
-            case HrcBypassThreshold:
+            case HRC_BYPASS_THRESHOLD:
                 state = new DecimalType(vs.hrcBypassThreshold);
                 break;
-            case Humidity:
+            case HUMIDITY:
                 state = new DecimalType(vs.humidity);
                 break;
-            case HumidityAdjustState:
+            case HUMIDITY_ADJUST_STATE:
                 state = getOnOff(vs.humidityAdjustState);
                 break;
-            case HumiditySensor1:
+            case HUMIDITY_SENSOR_1:
                 state = new DecimalType(vs.humiditySensor1);
                 break;
-            case HumiditySensor2:
+            case HUMIDITY_SENSOR_2:
                 state = new DecimalType(vs.humiditySensor2);
                 break;
-            case IncommingCurrent:
+            case INCOMMING_CURRENT:
                 state = new DecimalType(vs.incommingCurrent);
                 break;
-            case InEfficiency:
+            case IN_EFFICIENCY:
                 state = new DecimalType(vs.inEfficiency);
                 break;
-            case InputFanStopThreshold:
+            case INPUT_FAN_STOP_THRESHOLD:
                 state = new DecimalType(vs.inputFanStopThreshold);
                 break;
-            case IoPortMultiPurpose1:
+            case IO_PORT_MULTI_PURPOSE_1:
                 state = new DecimalType(vs.ioPortMultiPurpose1);
                 break;
-            case IoPortMultiPurpose2:
+            case IO_PORT_MULTI_PURPOSE_2:
                 state = new DecimalType(vs.ioPortMultiPurpose2);
                 break;
-            case LastErrorNumber:
+            case LAST_ERROR_NUMBER:
                 state = new DecimalType(vs.lastErrorNumber);
                 break;
-            case MaxSpeedLimitMode:
+            case MAX_SPEED_LIMIT_MODE:
                 state = getOnOff(vs.maxSpeedLimitMode);
                 break;
-            case OutEfficiency:
+            case OUT_EFFICIENCY:
                 state = new DecimalType(vs.outEfficiency);
                 break;
-            case PostHeatingOn:
+            case POST_HEATING_ON:
                 state = getOnOff(vs.postHeatingOn);
                 break;
-            case PowerState:
+            case POWER_STATE:
                 state = getOnOff(vs.powerState);
                 break;
-            case PreHeatingOn:
+            case PRE_HEATING_ON:
                 state = getOnOff(vs.preHeatingOn);
                 break;
-            case PreHeatingSetPoint:
+            case PRE_HEATING_SETPOINT:
                 state = new DecimalType(vs.preHeatingSetPoint);
                 break;
-            case Program:
+            case PROGRAM:
                 state = new DecimalType(vs.program);
                 break;
-            case Program2:
+            case PROGRAM_2:
                 state = new DecimalType(vs.program2);
                 break;
-            case RadiatorType:
+            case RADIATOR_TYPE:
                 state = getOnOff(vs.radiatorType);
                 break;
-            case SelectStatus:
+            case SELECT_STATUS:
                 state = new DecimalType(vs.selectStatus);
                 break;
-            case ServiceReminder:
+            case SERVICE_REMINDER:
                 state = new DecimalType(vs.serviceReminder);
                 break;
-            case ServiceReminderIndicator:
+            case SERVICE_REMINDER_INDICATOR:
                 state = getOnOff(vs.serviceReminderIndicator);
                 break;
-            case SupplyFanOff:
+            case SUPPLY_FAN_OFF:
                 state = getOnOff(vs.supplyFanOff);
                 break;
-            case TempExhaust:
+            case TEMP_EXHAUST:
                 state = new DecimalType(vs.tempExhaust);
                 break;
-            case TempIncomming:
+            case TEMP_INCOMMING:
                 state = new DecimalType(vs.tempIncomming);
                 break;
-            case TempInside:
+            case TEMP_INSIDE:
                 state = new DecimalType(vs.tempInside);
                 break;
-            case TempOutside:
+            case TEMP_OUTSIDE:
                 state = new DecimalType(vs.tempOutside);
                 break;
             default:

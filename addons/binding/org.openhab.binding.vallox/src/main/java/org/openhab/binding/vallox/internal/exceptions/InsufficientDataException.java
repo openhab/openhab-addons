@@ -17,10 +17,10 @@ package org.openhab.binding.vallox.internal.exceptions;
  */
 public class InsufficientDataException extends Exception {
 
+    private static final long serialVersionUID = -4032987672908522240L;
+
     public InsufficientDataException(String message) {
         super(message);
     }
-
-    private static final long serialVersionUID = -4032987672908522240L;
 
 }

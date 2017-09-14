@@ -17,10 +17,10 @@ package org.openhab.binding.vallox.internal.exceptions;
  */
 public class InvalidRecepientException extends Exception {
 
+    private static final long serialVersionUID = -4032987672906522240L;
+
     public InvalidRecepientException(String message) {
         super(message);
     }
-
-    private static final long serialVersionUID = -4032987672906522240L;
 
 }

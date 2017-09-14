@@ -61,9 +61,11 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
-				<description>Host name or IP address of RS485-to-Ethernet gateway. The gateway needs to
-            be configured as TCP server and the serial connection to the vallox with 9600 baud, 8-N-1.
-            </description>
+				<description>
+				    Host name or IP address of RS485-to-Ethernet gateway. 
+				    The gateway needs to be configured as TCP server and the serial 
+				    connection to the vallox with 9600 baud, 8-N-1.
+                </description>
 				<default>lwip</default>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
@@ -190,7 +192,7 @@
 		<item-type>Number</item-type>
 		<label>HrcBypassThreshold</label>
 		<description>Heat recovery cell bypass setpoint temp</description>
-		<category>TEMPERATURE</category>
+		<category>Temperature</category>
 		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
 	</channel-type>
 
@@ -198,21 +200,21 @@
 		<item-type>Number</item-type>
 		<label>InputFanStopThreshold</label>
 		<description>Temp threshold: fan stops if input temp falls below this temp.</description>
-		<category>TEMPERATURE</category>
+		<category>Temperature</category>
 		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="HeatingSetPoint" advanced="true">
 		<item-type>Number</item-type>
 		<label>HeatingSetPoint</label>
-		<category>TEMPERATURE</category>
+		<category>Temperature</category>
 		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="PreHeatingSetPoint" advanced="true">
 		<item-type>Number</item-type>
 		<label>PreHeatingSetPoint</label>
-		<category>TEMPERATURE</category>
+		<category>Temperature</category>
 		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
 	</channel-type>
 
@@ -220,7 +222,7 @@
 		<item-type>Number</item-type>
 		<label>CellDefrostingThreshold</label>
 		<description>Defrosting starts when exhaust air drops below this setpoint temp (Hysteresis 4)</description>
-		<category>TEMPERATURE</category>
+		<category>Temperature</category>
 		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
 	</channel-type>
 
