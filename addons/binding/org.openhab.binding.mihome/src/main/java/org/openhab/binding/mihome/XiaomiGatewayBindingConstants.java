@@ -95,6 +95,8 @@ public class XiaomiGatewayBindingConstants {
     // gas & smoke sensor
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_ALARM_STATUS = "status";
+    // smoke sensor
+    public static final String CHANNEL_DENSITY = "density";
     // water leak sensor
     public static final String CHANNEL_LEAK = "leak";
     // Bridge config properties

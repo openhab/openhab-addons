@@ -38,11 +38,13 @@ public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandl
     void parseReport(JsonObject data) {
         if (data.has(ALARM)) {
             int alarm = data.get(ALARM).getAsInt();
-            if (alarm >= 1 && alarm <= 2) {
+            // alarm channel only receives the "real alarm"
+            if (alarm == 1) {
                 updateState(CHANNEL_ALARM, OnOffType.ON);
             } else {
                 updateState(CHANNEL_ALARM, OnOffType.OFF);
             }
+            // status shows faults
             String status = ALARM_STATUS_MAP.get(alarm);
             if (status != null) {
                 updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(status));
