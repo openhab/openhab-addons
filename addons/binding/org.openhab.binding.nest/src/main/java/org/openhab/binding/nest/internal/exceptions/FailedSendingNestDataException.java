@@ -9,20 +9,20 @@
 package org.openhab.binding.nest.internal.exceptions;
 
 /**
- * Will be thrown when the bridge was unable to retrieve data.
+ * Will be thrown when the bridge was unable to send data.
  *
- * @author Martin van Wingerden - Added more centralized handling of failure when retrieving data
+ * @author Wouter Born - Improve exception handling while sending data
  */
-public class FailedRetrievingNestDataException extends Exception {
-    public FailedRetrievingNestDataException(String message) {
+public class FailedSendingNestDataException extends Exception {
+    public FailedSendingNestDataException(String message) {
         super(message);
     }
 
-    public FailedRetrievingNestDataException(String message, Throwable cause) {
+    public FailedSendingNestDataException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FailedRetrievingNestDataException(Throwable cause) {
+    public FailedSendingNestDataException(Throwable cause) {
         super(cause);
     }
 }

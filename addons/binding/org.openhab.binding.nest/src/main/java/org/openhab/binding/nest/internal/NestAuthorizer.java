@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.nest.internal;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
@@ -18,18 +18,19 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
- * Keeps track of the access token, refreshing it if needed.
+ * Retrieves the Nest access token using the OAuth 2.0 protocol using pin-based authorization.
  *
  * @author David Bennett - Initial contribution
  */
-public class NestAccessToken {
-    private final Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
+public class NestAuthorizer {
+    private final Logger logger = LoggerFactory.getLogger(NestAuthorizer.class);
 
     private final NestBridgeConfiguration config;
-    private final Gson gson;
+    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Create the helper class for the Nest access token. Also creates the folder
@@ -37,18 +38,16 @@ public class NestAccessToken {
      *
      * @param config The configuration to use for the token
      */
-    public NestAccessToken(NestBridgeConfiguration config) {
+    public NestAuthorizer(NestBridgeConfiguration config) {
         this.config = config;
-        this.gson = new GsonBuilder().create();
     }
 
     /**
-     * Get the current access token, refreshing if needed. Also reads it from the disk
-     * if it is stored there.
+     * Get the current access token, refreshing if needed.
      *
      * @throws InvalidAccessTokenException thrown when the access token is invalid and could not be refreshed
      */
-    public String getAccessToken() throws InvalidAccessTokenException {
+    public String getNewAccessToken() throws InvalidAccessTokenException {
         try {
             // @formatter:off
             StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
@@ -61,10 +60,10 @@ public class NestAccessToken {
                     .append("&grant_type=authorization_code");
             // @formatter:on
 
-            logger.debug("Requesting accesstoken from url: {}", urlBuilder);
+            logger.debug("Requesting access token from URL: {}", urlBuilder);
 
-            String responseContentAsString = HttpUtil.executeUrl("POST", urlBuilder.toString(), null,
-                    null, "application/x-www-form-urlencoded", 10_000);
+            String responseContentAsString = HttpUtil.executeUrl("POST", urlBuilder.toString(), null, null,
+                    "application/x-www-form-urlencoded", 10_000);
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
             logger.debug("Access token {}", data);

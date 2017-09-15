@@ -13,7 +13,6 @@ import static org.openhab.binding.nest.NestBindingConstants.NEST_JSON_CONTENT_TY
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -42,14 +40,16 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.internal.NestAccessToken;
+import org.openhab.binding.nest.internal.NestAuthorizer;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.NestDevices;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.TopLevelData;
+import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
 import org.openhab.binding.nest.internal.exceptions.FailedRetrievingNestDataException;
+import org.openhab.binding.nest.internal.exceptions.FailedSendingNestDataException;
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,12 +69,13 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private final List<NestDeviceDataListener> listeners = new ArrayList<>();
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
-    private final Gson gson;
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
     private ScheduledFuture<?> pollingJob;
-    private NestAccessToken accessToken;
+    private NestAuthorizer authorizer;
     private NestBridgeConfiguration config;
     private ScheduledFuture<?> sender;
+    private String redirectUrl;
 
     /**
      * Creates the bridge handler to connect to Nest.
@@ -83,7 +84,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      */
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
-        gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
     }
 
     /**
@@ -97,7 +97,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Client ID       {}", config.clientId);
         logger.debug("Client Secret   {}", config.clientSecret);
         logger.debug("Pincode         {}", config.pincode);
-        accessToken = new NestAccessToken(config);
+
+        authorizer = new NestAuthorizer(config);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
 
@@ -125,8 +126,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Nest bridge disposed");
         stopAutomaticRefresh();
-        this.accessToken = null;
+        this.authorizer = null;
         this.pollingJob = null;
+        this.redirectUrl = null;
     }
 
     /**
@@ -144,11 +146,14 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * Read the data from Nest and then forward it to anyone listening.
      */
     public void refreshData() {
-        logger.trace("starting refreshData");
+        logger.trace("Refreshing data");
         try {
-            String uri = buildQueryString();
-            String data = jsonFromGetUrl(uri);
-            logger.debug("Data from Nest {}", data);
+            if (redirectUrl == null) {
+                redirectUrl = resolveRedirectUrl();
+            }
+
+            String data = jsonFromGetUrl();
+            logger.debug("Data from Nest: {}", data);
 
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
 
@@ -160,6 +165,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             logger.warn("Invalid access token", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Token is invalid and could not be refreshed: " + e.getMessage());
+        } catch (FailedResolvingNestUrlException e) {
+            logger.warn("Unable to resolve redirect URL", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (FailedRetrievingNestDataException e) {
             logger.warn("Error retrieving data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -185,32 +193,25 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         structures.forEach(structure -> listeners.forEach(l -> l.onNewNestStructureData(structure)));
     }
 
-    private String buildQueryString() throws InvalidAccessTokenException {
-        String stringAccessToken;
-
+    private String getExistingOrNewAccessToken() throws InvalidAccessTokenException {
         if (StringUtils.isEmpty(config.accessToken)) {
-            stringAccessToken = accessToken.getAccessToken();
-
-            // Update the configuration and persist to the database.
-            Configuration bridgeConfiguration = editConfiguration();
-            bridgeConfiguration.put(NestBridgeConfiguration.ACCESS_TOKEN, stringAccessToken);
-            updateConfiguration(bridgeConfiguration);
-            logger.debug("Retrieved fresh access token: {}", stringAccessToken);
+            String newAccessToken = authorizer.getNewAccessToken();
+            // Update and save the access token in the bridge configuration
+            Configuration configuration = editConfiguration();
+            configuration.put(NestBridgeConfiguration.ACCESS_TOKEN, newAccessToken);
+            updateConfiguration(configuration);
+            logger.debug("Retrieved new access token: {}", newAccessToken);
+            return newAccessToken;
         } else {
-            stringAccessToken = config.accessToken;
-            logger.debug("Re-using access token from configuration: {}", stringAccessToken);
+            logger.debug("Re-using access token from configuration: {}", config.accessToken);
+            return config.accessToken;
         }
-
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL).append("?auth=")
-                .append(stringAccessToken);
-        logger.debug("Constructed URL: {}", urlBuilder);
-        return urlBuilder.toString();
     }
 
-    private String jsonFromGetUrl(String url) throws FailedRetrievingNestDataException {
+    private String jsonFromGetUrl() throws FailedRetrievingNestDataException, InvalidAccessTokenException {
         try {
-            logger.debug("Fetching data from {}", url);
-            return HttpUtil.executeUrl("GET", url, 5000);
+            logger.debug("Fetching data from {}", redirectUrl);
+            return HttpUtil.executeUrl("GET", redirectUrl, getHttpHeaders(), null, null, 5000);
         } catch (IOException e) {
             throw new FailedRetrievingNestDataException(e);
         }
@@ -268,34 +269,37 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        for (NestUpdateRequest updateRequest : nestUpdateRequests) {
-            jsonToPutUrl(updateRequest);
+        try {
+            for (NestUpdateRequest updateRequest : nestUpdateRequests) {
+                jsonToPutUrl(updateRequest);
+            }
+        } catch (InvalidAccessTokenException | FailedSendingNestDataException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void jsonToPutUrl(NestUpdateRequest request) {
+    private void jsonToPutUrl(NestUpdateRequest request)
+            throws FailedSendingNestDataException, InvalidAccessTokenException {
         try {
-            logger.debug("Putting data to: {}", request.getUpdateUrl());
+            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL, redirectUrl);
+            logger.debug("Putting data to: {}", url);
 
             String content = gson.toJson(request.getValues());
             logger.debug("Content: {}", content);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-
-            Properties httpHeaders = new Properties();
-            httpHeaders.put("Authorization", "Bearer " + config.accessToken);
-
-            String redirectUrl = getRedirectUrl(request.getUpdateUrl(), httpHeaders, inputStream);
-            inputStream.reset();
-
-            String response = HttpUtil.executeUrl("PUT", redirectUrl, httpHeaders, inputStream, NEST_JSON_CONTENT_TYPE,
+            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, NEST_JSON_CONTENT_TYPE,
                     5000);
             logger.debug("PUT response: {}", response);
         } catch (IOException e) {
-            // TODO we could or maybe should check the cause for authentication failure.
-            // FIXME we should handle this here otherwise it will get lost
-            logger.error("Failed to send data", e);
-            throw new RuntimeException(e);
+            throw new FailedSendingNestDataException("Failed to send data", e);
         }
+    }
+
+    private Properties getHttpHeaders() throws InvalidAccessTokenException {
+        Properties httpHeaders = new Properties();
+        httpHeaders.put("Authorization", "Bearer " + getExistingOrNewAccessToken());
+        httpHeaders.put("Content-Type", NEST_JSON_CONTENT_TYPE);
+        return httpHeaders;
     }
 
     /**
@@ -306,40 +310,42 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      *
      * Note that this workaround currently does not use any configured proxy like {@link HttpUtil} does.
      *
+     * @throws InvalidAccessTokenException
+     *
      * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
      */
-    private String getRedirectUrl(String updateUrl, Properties httpHeaders, InputStream inputStream) {
+    private String resolveRedirectUrl() throws FailedResolvingNestUrlException, InvalidAccessTokenException {
         HttpClient httpClient = new HttpClient(new SslContextFactory());
         httpClient.setFollowRedirects(false);
 
-        Request request = httpClient.newRequest(updateUrl).method(HttpMethod.PUT)
-                .content(new InputStreamContentProvider(inputStream), NEST_JSON_CONTENT_TYPE)
-                .timeout(5, TimeUnit.SECONDS);
-        for (String httpHeaderKey : httpHeaders.stringPropertyNames()) {
-            request.header(httpHeaderKey, httpHeaders.getProperty(httpHeaderKey));
+        Request request = httpClient.newRequest(NestBindingConstants.NEST_URL).method(HttpMethod.GET).timeout(5,
+                TimeUnit.SECONDS);
+        for (String httpHeaderKey : getHttpHeaders().stringPropertyNames()) {
+            request.header(httpHeaderKey, getHttpHeaders().getProperty(httpHeaderKey));
         }
 
+        ContentResponse response;
         try {
             httpClient.start();
-            ContentResponse response = request.send();
-            int status = response.getStatus();
-            String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
-            logger.debug("Redirect URL: {}", redirectUrl);
+            response = request.send();
             httpClient.stop();
-
-            if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
-                logger.debug("Redirect status: {}", status);
-                logger.debug("Redirect response: {}", response.getContentAsString());
-                throw new FailedRetrievingNestDataException("Failed to get redirect URL, expected status "
-                        + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
-            }
-            return redirectUrl;
         } catch (Exception e) {
-            // TODO we could or maybe should check the cause for authentication failure.
-            // FIXME we should handle this here otherwise it will get lost
-            logger.error("Failed to get redirect URL", e);
-            throw new RuntimeException(e);
+            throw new FailedResolvingNestUrlException("Failed to resolve redirect URL", e);
         }
+
+        int status = response.getStatus();
+
+        String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
+        redirectUrl = redirectUrl.endsWith("/") ? redirectUrl.substring(0, redirectUrl.length() - 1) : redirectUrl;
+        logger.debug("Redirect URL: {}", redirectUrl);
+
+        if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
+            logger.debug("Redirect status: {}", status);
+            logger.debug("Redirect response: {}", response.getContentAsString());
+            throw new FailedResolvingNestUrlException("Failed to get redirect URL, expected status "
+                    + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
+        }
+        return redirectUrl;
     }
 
     /**

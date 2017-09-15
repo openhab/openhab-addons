@@ -9,20 +9,20 @@
 package org.openhab.binding.nest.internal.exceptions;
 
 /**
- * Will be thrown when the bridge was unable to retrieve data.
+ * Will be thrown when the bridge was unable to resolve the Nest redirect URL.
  *
- * @author Martin van Wingerden - Added more centralized handling of failure when retrieving data
+ * @author Wouter Born - Improve exception handling while sending data
  */
-public class FailedRetrievingNestDataException extends Exception {
-    public FailedRetrievingNestDataException(String message) {
+public class FailedResolvingNestUrlException extends Exception {
+    public FailedResolvingNestUrlException(String message) {
         super(message);
     }
 
-    public FailedRetrievingNestDataException(String message, Throwable cause) {
+    public FailedResolvingNestUrlException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FailedRetrievingNestDataException(Throwable cause) {
+    public FailedResolvingNestUrlException(Throwable cause) {
         super(cause);
     }
 }
