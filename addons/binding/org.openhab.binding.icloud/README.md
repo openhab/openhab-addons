@@ -5,6 +5,20 @@ To use this binding, you must have an apple account.
 
 The binding uses googles "[Geocode API](https://developers.google.com/maps/documentation/geocoding/)" to translate the coordinates into a address data.
 
+<!-- TOC -->
+
+- [iCloud Binding](#icloud-binding)
+    - [Supported Things](#supported-things)
+    - [Discovery](#discovery)
+    - [Binding Configuration](#binding-configuration)
+    - [Thing Configuration](#thing-configuration)
+        - [iCloud Binding Thing](#icloud-binding-thing)
+    - [Channels](#channels)
+    - [Full Example](#full-example)
+- [Configuration with Paper UI](#configuration-with-paper-ui)
+
+<!-- /TOC -->
+
 ## Supported Things
 
 The following devices are known to work with this binding:
