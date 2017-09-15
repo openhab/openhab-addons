@@ -37,7 +37,6 @@ public class iCloudBindingConstants {
     // List of all Channel IDs
     public static final String NUMBEROFDEVICES = "NumberOfDevices";
     public static final String OWNER = "Owner";
-    public static final String HTTPSTATUSCODE = "HttpStatusCode";
 
     public static final String BATTERYSTATUS = "BatteryStatus";
     public static final String BATTERYLEVEL = "BatteryLevel";

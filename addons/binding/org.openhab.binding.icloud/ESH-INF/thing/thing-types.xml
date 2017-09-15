@@ -10,7 +10,6 @@
 		<channels>
 		    <channel id="Owner" typeId="Owner" />
 			<channel id="NumberOfDevices" typeId="NumberOfDevices"/>
-			<channel id="HttpStatusCode" typeId="HttpStatusCode" />
 		</channels>
 		
 		<config-description>
@@ -64,11 +63,6 @@
 	   <item-type>String</item-type>
 	   <label>Owner</label>
 	   <description>Registered owner of this iCloud account.</description>
-	</channel-type>
-	<channel-type id="HttpStatusCode">
-	   <item-type>Number</item-type>
-	   <label>HTTP Response</label>
-	   <description>HTTP status code of the last request to iCloud (OK = 200)</description>
 	</channel-type>
 	<channel-type id="BatteryStatus">
 	   <item-type>String</item-type>
