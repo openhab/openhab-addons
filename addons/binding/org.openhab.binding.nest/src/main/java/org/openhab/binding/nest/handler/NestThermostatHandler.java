@@ -48,7 +48,7 @@ public class NestThermostatHandler extends NestBaseHandler {
         if (CHANNEL_MODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 // Update the HVAC mode to the command value
-                addUpdateRequest("hvac_mode", ((StringType) command).toString());
+                addUpdateRequest("hvac_mode", Thermostat.Mode.valueOf(((StringType) command).toString()));
             }
         } else if (CHANNEL_MAX_SET_POINT.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {

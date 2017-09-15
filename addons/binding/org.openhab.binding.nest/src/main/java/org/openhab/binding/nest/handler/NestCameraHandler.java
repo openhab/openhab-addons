@@ -43,7 +43,7 @@ public class NestCameraHandler extends NestBaseHandler {
             // Change the mode.
             if (command instanceof OnOffType) {
                 // Set the mode to be the cmd value.
-                addUpdateRequest("is_streaming", String.valueOf(command == OnOffType.ON));
+                addUpdateRequest("is_streaming", command == OnOffType.ON);
             }
         }
     }

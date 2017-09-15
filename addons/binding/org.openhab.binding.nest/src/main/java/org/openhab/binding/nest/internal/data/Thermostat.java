@@ -211,7 +211,9 @@ public class Thermostat extends BaseNestDevice {
         @SerializedName("cool")
         COOL,
         @SerializedName("heat-cool")
-        HEATCOOL,
+        HEAT_COOL,
+        @SerializedName("eco")
+        ECO,
         @SerializedName("off")
         OFF
     }
@@ -220,7 +222,7 @@ public class Thermostat extends BaseNestDevice {
         @SerializedName("heating")
         HEATING,
         @SerializedName("cooling")
-        COOLIMG,
+        COOLING,
         @SerializedName("off")
         OFF
     }

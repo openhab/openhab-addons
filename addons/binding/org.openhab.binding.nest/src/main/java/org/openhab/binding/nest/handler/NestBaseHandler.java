@@ -8,6 +8,13 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,13 +28,6 @@ import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
-
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 
 /**
  * Deals with the structures on the Nest API, turning them into a thing in openHAB.
@@ -76,15 +76,14 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         if (date == null) {
             return UnDefType.NULL;
         }
-        Calendar cal;
-        cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
         return new DateTimeType(cal);
     }
 
     void addUpdateRequest(String updateUrl, String field, Object value) {
         String deviceId = getThing().getProperties().get(PROPERTY_MODEL_ID);
-        NestBridgeHandler bridge = (NestBridgeHandler) getBridge();
+        NestBridgeHandler bridge = (NestBridgeHandler) getBridge().getHandler();
         // @formatter:off
         bridge.addUpdateRequest(new NestUpdateRequest.Builder()
                 .withBaseUrl(updateUrl)

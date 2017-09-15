@@ -9,17 +9,29 @@
 package org.openhab.binding.nest.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.nest.NestBindingConstants.NEST_JSON_CONTENT_TYPE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -82,7 +94,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initialize the Nest bridge handler");
 
         config = getConfigAs(NestBridgeConfiguration.class);
-        logger.debug("Client Id       {}", config.clientId);
+        logger.debug("Client ID       {}", config.clientId);
         logger.debug("Client Secret   {}", config.clientSecret);
         logger.debug("Pincode         {}", config.pincode);
         accessToken = new NestAccessToken(config);
@@ -250,7 +262,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     private void transmitQueue() {
-        if (getBridge().getStatus() == ThingStatus.OFFLINE) {
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Not transmitting events because bridge is OFFLINE");
             return;
@@ -263,14 +275,69 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private void jsonToPutUrl(NestUpdateRequest request) {
         try {
-            logger.debug("Putting data to {}", request.getUpdateUrl());
+            logger.debug("Putting data to: {}", request.getUpdateUrl());
+
             String content = gson.toJson(request.getValues());
+            logger.debug("Content: {}", content);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            HttpUtil.executeUrl("PUT", request.getUpdateUrl(), null, inputStream, null, 5000);
+
+            Properties httpHeaders = new Properties();
+            httpHeaders.put("Authorization", "Bearer " + config.accessToken);
+
+            String redirectUrl = getRedirectUrl(request.getUpdateUrl(), httpHeaders, inputStream);
+            inputStream.reset();
+
+            String response = HttpUtil.executeUrl("PUT", redirectUrl, httpHeaders, inputStream, NEST_JSON_CONTENT_TYPE,
+                    5000);
+            logger.debug("PUT response: {}", response);
         } catch (IOException e) {
             // TODO we could or maybe should check the cause for authentication failure.
             // FIXME we should handle this here otherwise it will get lost
             logger.error("Failed to send data", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the redirect URL for write calls which get redirected by Nest by default.
+     *
+     * The Jetty client used by {@link HttpUtil} will not pass the Authorization header after a redirect resulting in
+     * "401 Unauthorized error" issues.
+     *
+     * Note that this workaround currently does not use any configured proxy like {@link HttpUtil} does.
+     *
+     * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
+     */
+    private String getRedirectUrl(String updateUrl, Properties httpHeaders, InputStream inputStream) {
+        HttpClient httpClient = new HttpClient(new SslContextFactory());
+        httpClient.setFollowRedirects(false);
+
+        Request request = httpClient.newRequest(updateUrl).method(HttpMethod.PUT)
+                .content(new InputStreamContentProvider(inputStream), NEST_JSON_CONTENT_TYPE)
+                .timeout(5, TimeUnit.SECONDS);
+        for (String httpHeaderKey : httpHeaders.stringPropertyNames()) {
+            request.header(httpHeaderKey, httpHeaders.getProperty(httpHeaderKey));
+        }
+
+        try {
+            httpClient.start();
+            ContentResponse response = request.send();
+            int status = response.getStatus();
+            String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
+            logger.debug("Redirect URL: {}", redirectUrl);
+            httpClient.stop();
+
+            if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
+                logger.debug("Redirect status: {}", status);
+                logger.debug("Redirect response: {}", response.getContentAsString());
+                throw new FailedRetrievingNestDataException("Failed to get redirect URL, expected status "
+                        + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
+            }
+            return redirectUrl;
+        } catch (Exception e) {
+            // TODO we could or maybe should check the cause for authentication failure.
+            // FIXME we should handle this here otherwise it will get lost
+            logger.error("Failed to get redirect URL", e);
             throw new RuntimeException(e);
         }
     }
