@@ -57,17 +57,17 @@ The following channels are available (if supported by the device):
 
 | Channel ID    |Type           | Description |
 | ------------- | ------------- |-------------|
-| BatteryStatus | String        ||
-| Battery Level | Number        ||
-| FindMyPhone   | Switch        ||
-| Location      | Location      ||
-| Accuracy      | Number        ||
-| Distance from Home | Number   ||
-| Last Location Update | DateTime || 
-| Street        | String        ||
-| City          | String        ||
-| Country       | String        ||
-| Formatted Address | String    ||
+| BatteryStatus | String        |Current battery status (Charging, Charged, Unknown) |
+| BatteryLevel | Number        | Battery charge in %|
+| FindMyPhone   | Switch        | Triggers the "Find my phone" functionality of the device (if available). |
+| Location      | Location      | Location of the device.|
+| LocationAccuracy      | Number        | Accuracy of the last position report. |
+| DistanceFromHome | Number   | Device distance from home in meters.|
+| LastUpdate | DateTime | Timestamp of the last location update.| 
+| AddressStreet        | String        |Street|
+| AddressCity          | String        |City|
+| AddressCountry       | String        |Country|
+| FormattedAddress | String    |Formatted address string|
 
 ## Full Example
 
