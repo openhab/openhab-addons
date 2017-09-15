@@ -15,6 +15,8 @@ The binding uses googles "[Geocode API](https://developers.google.com/maps/docum
         - [iCloud Binding Thing](#icloud-binding-thing)
     - [Channels](#channels)
     - [Full Example](#full-example)
+        - [Items](#items)
+        - [Sitemap](#sitemap)
 - [Configuration with Paper UI](#configuration-with-paper-ui)
 
 <!-- /TOC -->
@@ -69,20 +71,39 @@ The following channels are available (if supported by the device):
 
 ## Full Example
 
+### Items
 icloud.items:
 
 ```php
-String iPhone_Battery_Status "Battery Status [%s]" <battery> (giPhone)  {channel="icloud:device:YourDeviceID:0:BatteryStatus"}
-Number iPhone_Battery_Level "Battery Level [%.0f]" <battery> (giPhone) {channel="icloud:device:YourDeviceID:0:BatteryLevel"}
-Switch Find_my_iPhone_A "Find iPhone [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:FindMyPhone"}
-Location iPhone_Coordinates "Coordinates" <suitcase> (giPhone)  {channel="icloud:device:YourDeviceID:0:Location"}
-Number iPhone_Coordinates_Accuracy "Coordinates Accuracy [%.0f]" <suitcase> (giPhone){channel="icloud:device:YourDeviceID:0:LocationAccuracy"}
-Number iPhone_Dist_from_Home "Distance from home [%.0f]" <suitcase> (giPhone_A){channel="icloud:device:YourDeviceID:0:DistanceFromHome"}
-DateTime iPhone_Location_Timestamp_A    "Letztes Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"   <suitcase>      (giPhone)   {channel="icloud:device:YourDeviceID:0:LastUpdate"}
-String iPhone_Street "Street [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID e789ef3:0:AddressStreet"}
-String iPhone_City "City [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:AddressCity"}
-String iPhone_Country "Country [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:AddressCountry"}
-String iPhone_Address "Address [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:FormattedAddress"}
+String JohnIPhone6_BatteryStatus "Battery Status [%s]" <battery> (giPhone)  {channel="icloud:device:YourDeviceID:0:BatteryStatus"}
+Number JohnIPhone6_BatteryLevel "Battery Level [%.0f]" <battery> (giPhone) {channel="icloud:device:YourDeviceID:0:BatteryLevel"}
+Switch JohnIPhone6_FindMyPhone "Find iPhone [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:FindMyPhone"}
+Location JohnIPhone6_Location "Coordinates" <suitcase> (giPhone)  {channel="icloud:device:YourDeviceID:0:Location"}
+Number JohnIPhone6_LocationAccuracy "Coordinates Accuracy [%.0f]" <suitcase> (giPhone){channel="icloud:device:YourDeviceID:0:LocationAccuracy"}
+Number JohnIPhone6_DistanceFromHome "Distance from home [%.0f]" <suitcase> (giPhone_A){channel="icloud:device:YourDeviceID:0:DistanceFromHome"}
+DateTime JohnIPhone6_LastLocationUpdate    "Letztes Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"   <suitcase>      (giPhone)   {channel="icloud:device:YourDeviceID:0:LastUpdate"}
+String JohnIPhone6_Street "Street [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID e789ef3:0:AddressStreet"}
+String JohnIPhone6_City "City [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:AddressCity"}
+String JohnIPhone6_Country "Country [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:AddressCountry"}
+String JohnIPhone6_FormattedAddress "Address [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:FormattedAddress"}
+```
+### Sitemap
+```
+sitemap icloud  label="iCloud Data" {
+        Frame label="John Doe"  {
+                Default item=JohnIPhone6_BatteryStatus icon="poweroutlet_uk"
+                Default item=JohnIPhone6_BatteryLevel label="Battery Level [%.0f %%]" icon="battery"
+                Default item=JohnIPhone6_Location label="Location [%s]"
+                Default item=JohnIPhone6_LocationAccuracy icon="movecontrol"
+                Default item=JohnIPhone6_DistanceFromHome label="Distance from Home [%.0f m]" icon="zoom"
+                Default item=JohnIPhone6_Street icon="house"
+                Default item=JohnIPhone6_City icon="house"
+                Default item=JohnIPhone6_Country icon="house"
+                Default item=JohnIPhone6_FormattedAddress
+                Default item=JohnIPhone6_LastLocationUpdate label="Updated [%1$td/%1$tm/%1$ty %1$tH:%1$tM]" icon="clock"
+                Switch  item=JohnIPhone6_FindMyPhone label="Find this device"
+        }
+}
 ```
 # Configuration with Paper UI 
 
