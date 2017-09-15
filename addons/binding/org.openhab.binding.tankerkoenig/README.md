@@ -48,7 +48,7 @@ Each Station needs to be configured with a LocationID and the Webservice to whic
 
 ## Channels
 
-The binding introduces the channel holiday for the Webservice and the channels e10, e5 and diesel for the Stations:
+The binding introduces the channel holiday for the Webservice and the channels e10, e5 ,diesel and station_open for the Stations:
 
 | Channel ID                                      | Channel Description                                          | Supported item type | Advanced |
 |-------------------------------------------------|--------------------------------------------------------------|---------------------|----------|
@@ -78,7 +78,7 @@ tankerkoenig.items:
 Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:e10" }
 Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:WebserviceName:StationName1:e5" }
 Number Diesel_1 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:diesel"}
-Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:WebserviceName:station:StationName2:e10"}
+Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e10"}
 Number E5_2 "E5 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e5"}
 Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:diesel"}
 ```
@@ -112,12 +112,12 @@ The required password is "changeit".
    
 -The Station(s) and Webservice go to OFFLINE after being ONLINE
 
-The web-request to Tankerkönig did either return a failure or no valid response was received.
-In both cases the Webservice and the Station(s) go OFFLINE.
-If the Tankerkönig return indicates an error a descriptive message (in German) is added which will be displayed on the Webservice and Station(s) pages on PaperUI. In this case the polling of price-data is stopped.  
-Users should check the log for any reports to solve the reason for this status. In order to restart the polling of price-data a change of the Webservice has to be saved (for example a change in the Refresh Interval). 
-next to the OFFLINE not return the status "OK", which could for an example be caused by a banned API-key. In such a case the polling of price-data is stopped. 
-If no valid response is received the polling will continue. On the next receipt of a valid message Webservice and Station(s) will go ONLINE again. 
+The web-request to Tankerkönig did either return a failure or no valid response was received (which could be caused by a banned API-key). In both cases the Webservice and the Station(s) go OFFLINE. If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on PaperUI.
+On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.
+The scheduled polling of price-data is canceled in case of no valid response.
+Users should check the log for any reports to solve the reason for the OFFLINE status. In order to restart the polling a change of the Webservice has to be saved (for example a change in the Refresh Interval).
+
+Note: If the API-key is banned by Tankerkönig, the reason has to be cleared with Tankerkönig!
 
 -How to set the switch item for the channel holiday?
 
