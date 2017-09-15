@@ -107,7 +107,9 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        ((iCloudDeviceHandler) childHandler).update(iCloudData.getContent());
+        if (iCloudData != null) {
+            ((iCloudDeviceHandler) childHandler).update(iCloudData.getContent());
+        }
     }
 
     /***
