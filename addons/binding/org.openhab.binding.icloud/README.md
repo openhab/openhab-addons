@@ -3,6 +3,8 @@
 This binding uses the Apple iCloud service for providing device based information such as battery details or location.
 To use this binding, you must have an apple account.
 
+The binding uses googles "[Geocode API](https://developers.google.com/maps/documentation/geocoding/)" to translate the coordinates into a address data.
+
 ## Supported Things
 
 The following devices are known to work with this binding:
