@@ -8,20 +8,8 @@
  */
 package org.openhab.binding.nest.internal.discovery;
 
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.internal.NestDeviceDataListener;
-import org.openhab.binding.nest.internal.data.BaseNestDevice;
-import org.openhab.binding.nest.internal.data.Camera;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
-import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +17,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_CAMERA;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_SMOKE_DETECTOR;
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_STRUCTURE;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
+import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
+import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
+import org.openhab.binding.nest.internal.data.BaseNestDevice;
+import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.SmokeDetector;
+import org.openhab.binding.nest.internal.data.Structure;
+import org.openhab.binding.nest.internal.data.Thermostat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This service connects to the Nest bridge and creates the correct discovery results for Nest devices
@@ -92,7 +91,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID deviceUID = new ThingUID(typeUID, bridgeUID, device.getDeviceId());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
+        properties.put(NestDeviceConfiguration.DEVICE_ID, device.getDeviceId());
         properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(deviceUID)
@@ -110,7 +109,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_MODEL_ID, struct.getStructureId());
+        properties.put(NestStructureConfiguration.STRUCTURE_ID, struct.getStructureId());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                 .withThingType(THING_TYPE_STRUCTURE)

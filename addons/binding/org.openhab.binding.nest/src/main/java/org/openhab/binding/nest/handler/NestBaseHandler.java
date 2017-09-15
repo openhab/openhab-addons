@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -25,6 +23,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
+import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +54,16 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         getNestBridgeHandler().map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
     }
 
+    private String getDeviceId() {
+        return getConfigAs(NestDeviceConfiguration.class).deviceId;
+    }
+
     private Optional<NestBridgeHandler> getNestBridgeHandler() {
         return Optional.ofNullable(getBridge()).map(b -> (NestBridgeHandler) b.getHandler());
     }
 
     boolean isNotHandling(BaseNestDevice nestDevice) {
-        String thingDeviceId = getThing().getUID().getId();
-        return !(thingDeviceId.equals(nestDevice.getDeviceId()));
+        return !(getDeviceId().equals(nestDevice.getDeviceId()));
     }
 
     State getAsStringTypeOrNull(Object value) {
@@ -82,12 +84,11 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     }
 
     void addUpdateRequest(String updateUrl, String field, Object value) {
-        String deviceId = getThing().getProperties().get(PROPERTY_MODEL_ID);
         NestBridgeHandler bridge = (NestBridgeHandler) getBridge().getHandler();
         // @formatter:off
         bridge.addUpdateRequest(new NestUpdateRequest.Builder()
                 .withBaseUrl(updateUrl)
-                .withIdentifier(deviceId)
+                .withIdentifier(getDeviceId())
                 .withAdditionalValue(field, value)
                 .build());
         // @formatter:on

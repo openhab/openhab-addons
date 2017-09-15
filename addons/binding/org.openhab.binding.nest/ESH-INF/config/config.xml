@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:nest:account">
+        <parameter-group name="nest">
+            <description>The pieces for talking to Nest</description>
+            <label>Nest Connection</label>
+        </parameter-group>
+        <parameter-group name="binding">
+            <description>Local settings</description>
+            <label>Binding Settings</label>
+        </parameter-group>
+
+        <parameter name="clientId" type="text" groupName="nest">
+            <label>Client ID</label>
+            <description>The client ID from the Nest product page</description>
+            <required>true</required>
+        </parameter>
+        <parameter name="clientSecret" type="text" groupName="nest">
+            <label>Client Secret</label>
+            <description>The client secret from the Nest product page</description>
+            <required>true</required>
+        </parameter>
+        <parameter name="pincode" type="text" groupName="nest">
+            <label>Pincode</label>
+            <description>The pincode to use after clicking on the authorization URL</description>
+            <required>true</required>
+        </parameter>
+        <parameter name="accessToken" type="text" groupName="nest">
+            <label>Access Token</label>
+            <description>The access token to use from Nest. Only need to set this value if you want to override
+            the value that is automatically retrieved from Nest. The automatic value is stored elsewhere</description>
+            <required>false</required>
+            <advanced>true</advanced>
+        </parameter>
+        <parameter name="refreshInterval" type="integer" groupName="binding">
+            <label>Refresh Interval</label>
+            <description>How often to refresh the data from Nest (in seconds). Don't make this too often or Nest will throttle
+            your account. The default of 2 minutes is roughly the most often you can do it</description>
+            <default>120</default>
+        </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:nest:device">
+        <parameter name="deviceId" type="text" required="true">
+            <label>Device ID</label>
+        </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:nest:structure">
+        <parameter name="structureId" type="text" required="true">
+            <label>Structure ID</label>
+        </parameter>
+    </config-description>
+
+</config-description:config-descriptions>

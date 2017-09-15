@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -17,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
@@ -35,6 +35,10 @@ public class NestStructureHandler extends NestBaseHandler {
 
     public NestStructureHandler(Thing thing) {
         super(thing);
+    }
+
+    private String getStructureId() {
+        return getConfigAs(NestStructureConfiguration.class).structureId;
     }
 
     /**
@@ -93,13 +97,9 @@ public class NestStructureHandler extends NestBaseHandler {
         // @formatter:on
 
         updateStatus(ThingStatus.ONLINE);
-
-        // Setup the properties for this structure.
-        updateProperty(PROPERTY_MODEL_ID, structure.getStructureId());
     }
 
     private boolean isNotHandling(Structure nestDevice) {
-        String thingDeviceId = getThing().getUID().getId();
-        return !(thingDeviceId.equals(nestDevice.getStructureId()));
+        return !(getStructureId().equals(nestDevice.getStructureId()));
     }
 }

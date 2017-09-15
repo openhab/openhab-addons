@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nest.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -72,7 +72,6 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
         updateStatus(smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         // Setup the properties for this device.
-        updateProperty(PROPERTY_MODEL_ID, smokeDetector.getDeviceId());
         updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
     }
 

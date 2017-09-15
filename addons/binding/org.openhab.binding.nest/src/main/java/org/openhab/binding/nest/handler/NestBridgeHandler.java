@@ -334,17 +334,19 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
 
         int status = response.getStatus();
-
         String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
-        redirectUrl = redirectUrl.endsWith("/") ? redirectUrl.substring(0, redirectUrl.length() - 1) : redirectUrl;
-        logger.debug("Redirect URL: {}", redirectUrl);
 
         if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
             logger.debug("Redirect status: {}", status);
             logger.debug("Redirect response: {}", response.getContentAsString());
             throw new FailedResolvingNestUrlException("Failed to get redirect URL, expected status "
                     + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
+        } else if (StringUtils.isEmpty(redirectUrl)) {
+            throw new FailedResolvingNestUrlException("Redirect URL is empty");
         }
+
+        redirectUrl = redirectUrl.endsWith("/") ? redirectUrl.substring(0, redirectUrl.length() - 1) : redirectUrl;
+        logger.debug("Redirect URL: {}", redirectUrl);
         return redirectUrl;
     }
 

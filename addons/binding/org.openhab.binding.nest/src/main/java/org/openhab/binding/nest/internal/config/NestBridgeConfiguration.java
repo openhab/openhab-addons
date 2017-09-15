@@ -9,7 +9,7 @@
 package org.openhab.binding.nest.internal.config;
 
 /**
- * This has the configuration for the Nest bridge, allowing it to talk to Nest.
+ * The configuration for the Nest bridge, allowing it to talk to Nest.
  *
  * @author David Bennett - initial contribution
  */
