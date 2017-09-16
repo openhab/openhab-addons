@@ -32,6 +32,7 @@ Import-Package: com.google.gson,
  org.openhab.binding.nest,
  org.openhab.binding.nest.handler,
  org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.nest,

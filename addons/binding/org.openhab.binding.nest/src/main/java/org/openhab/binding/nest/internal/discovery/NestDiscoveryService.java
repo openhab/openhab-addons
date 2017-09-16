@@ -99,6 +99,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withLabel(device.getNameLong())
                 .withBridge(bridgeUID)
                 .withProperties(properties)
+                .withRepresentationProperty(NestDeviceConfiguration.DEVICE_ID)
                 .build()
         );
         // @formatter:on
@@ -116,6 +117,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withLabel(struct.getName())
                 .withBridge(bridgeUID)
                 .withProperties(properties)
+                .withRepresentationProperty(NestStructureConfiguration.STRUCTURE_ID)
                 .build()
         );
         // @formatter:on
