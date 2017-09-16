@@ -112,10 +112,10 @@
             <channel id="capacity" typeId="energy"></channel>
             <channel id="temperature" typeId="temperature"></channel>
             <channel id="designed_capacity" typeId="energy"></channel>
-            <channel id="manufacturer" typeId="temperature"></channel>
+            <channel id="manufacturer" typeId="string"></channel>
             <channel id="model" typeId="string"></channel>
             <channel id="serial" typeId="string"></channel>
-            <channel id="enable" typeId="string"></channel>
+            <channel id="enable" typeId="code"></channel>
             <channel id="max_voltage" typeId="voltage"></channel>
             <channel id="min_voltage" typeId="voltage"></channel>
             <channel id="status_code" typeId="code"></channel>
