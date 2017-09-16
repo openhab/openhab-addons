@@ -231,9 +231,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
             }
             logger.error("Cannot send getActionGroups command!", e);
-            return UNAUTHORIZED;
         } catch (Exception e) {
             logger.error("Cannot send getActionGroups command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -274,9 +274,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return false;
             }
             logger.error("Cannot send listDevices command!", e);
-            return false;
         } catch (Exception e) {
             logger.error("Cannot send listDevices command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -310,6 +310,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return null;
             }
             logger.error("Cannot send getStates command!", e);
         } catch (Exception e) {
@@ -374,6 +375,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
                 return UnDefType.NULL;
             }
+            logger.error("Cannot send getStates command!", e);
         } catch (Exception e) {
             logger.error("Cannot send getStates command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -607,9 +609,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return false;
             }
             logger.error("Cannot send apply command {} with params {}!", command, params, e);
-            return false;
         } catch (Exception e) {
             logger.error("Cannot send apply command {} with params {}!", command, params, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -652,14 +654,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
             }
             logger.error("Cannot send getCurrentExecutions command!", e);
-            return UNAUTHORIZED;
         } catch (Exception e) {
             logger.error("Cannot send getCurrentExecutions command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
-
         return null;
     }
 
@@ -683,9 +684,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (IOException e) {
             if (e.toString().contains(UNAUTHORIZED)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return false;
             }
             logger.error("Cannot cancel execution!", e);
-            return false;
         } catch (Exception e) {
             logger.error("Cannot cancel execution!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -719,6 +720,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
         String version = getTahomaVersion(id);
+        if (StringUtils.equals(version, UNAUTHORIZED)) {
+            login();
+            version = getTahomaVersion(id);
+        }
+
+        if (version == null || version.equals(UNAUTHORIZED)) {
+            return;
+        }
+
         for (Channel channel : thing.getChannels()) {
             if (channel.getUID().getId().equals(VERSION)) {
                 logger.debug("Updating version channel");
@@ -737,9 +747,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("Tahoma version: {}", data.getResult());
 
             return data.getResult();
+        } catch (IOException e) {
+            if (e.toString().contains(UNAUTHORIZED)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            }
+            logger.error("Cannot cancel execution!", e);
         } catch (Exception e) {
             logger.error("Cannot get Tahoma gateway version!", e);
         }
-        return "";
+        return null;
     }
 }
