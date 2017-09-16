@@ -65,6 +65,12 @@ public class FroniusInverterRealtimeDataHandler extends FroniusDeviceThingHandle
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_FAC), model.getFac());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_IDC), model.getIdc());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_UDC), model.getUdc());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_ERROR_CODE), model.getErrorCode());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_LED_COLOR), model.getLedColor());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_LED_STATE), model.getLedState());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_MGMT_TIMER_REMAINING_TIME),
+                    model.getMgmtTimerRemainingTime());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_STATUS_CODE), model.getStatusCode());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATUS_CODE), model.getCode());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP), model.getTimestamp());
         }

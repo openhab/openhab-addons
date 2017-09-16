@@ -55,7 +55,12 @@
             <channel id="fac" typeId="frequency"></channel>
             <channel id="idc" typeId="current"></channel>
             <channel id="udc" typeId="voltage"></channel>
+            <channel id="error_code" typeId="code"></channel>
+            <channel id="led_color" typeId="number"></channel>
+            <channel id="led_state" typeId="number"></channel>
+            <channel id="mgmt_timer_remaining_time" typeId="number"></channel>
             <channel id="status_code" typeId="code"></channel>
+            <channel id="state_to_reset" typeId="boolean"></channel>
             <channel id="timestamp" typeId="timestamp"></channel>
         </channels>
 
@@ -106,6 +111,13 @@
             <channel id="charge" typeId="percent"></channel>
             <channel id="capacity" typeId="energy"></channel>
             <channel id="temperature" typeId="temperature"></channel>
+            <channel id="designed_capacity" typeId="energy"></channel>
+            <channel id="manufacturer" typeId="temperature"></channel>
+            <channel id="model" typeId="string"></channel>
+            <channel id="serial" typeId="string"></channel>
+            <channel id="enable" typeId="string"></channel>
+            <channel id="max_voltage" typeId="voltage"></channel>
+            <channel id="min_voltage" typeId="voltage"></channel>
             <channel id="status_code" typeId="code"></channel>
             <channel id="timestamp" typeId="timestamp"></channel>
         </channels>
@@ -167,6 +179,24 @@
     <channel-type id="code">
         <item-type>Number</item-type>
         <label>Code</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="number">
+        <item-type>Number</item-type>
+        <label>Number</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="string">
+        <item-type>String</item-type>
+        <label>String</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="boolean">
+        <item-type>Switch</item-type>
+        <label>Boolean</label>
         <state readOnly="true"></state>
     </channel-type>
 

@@ -24,6 +24,7 @@ public class InverterRealtimeData {
 
     private final Logger logger = LoggerFactory.getLogger(InverterRealtimeData.class);
 
+    // Device info
     private DecimalType dayEnergy = DecimalType.ZERO;
     private DecimalType yearEnergy = DecimalType.ZERO;
     private DecimalType totalEnergy = DecimalType.ZERO;
@@ -33,13 +34,21 @@ public class InverterRealtimeData {
     private DecimalType fac = DecimalType.ZERO;
     private DecimalType idc = DecimalType.ZERO;
     private DecimalType udc = DecimalType.ZERO;
+    private DecimalType errorCode = DecimalType.ZERO;
+    private DecimalType ledColor = DecimalType.ZERO;
+    private DecimalType ledState = DecimalType.ZERO;
+    private DecimalType mgmtTimerRemainingTime = DecimalType.ZERO;
+    private DecimalType statusCode = DecimalType.ZERO;
+    private boolean stateToReset = false;
+
+    // Request info
     private DecimalType code = DecimalType.ZERO;
     private DateTimeType timestamp = new DateTimeType();
     private boolean empty = false;
 
     public static InverterRealtimeData createInverterRealtimeData(final JsonObject json) {
         final InverterRealtimeData ird = new InverterRealtimeData();
-        ird.deconstruct(json);
+        ird.createFromJson(json);
         return ird;
     }
 
@@ -95,7 +104,31 @@ public class InverterRealtimeData {
         return timestamp;
     }
 
-    private synchronized void deconstruct(final JsonObject json) {
+    public DecimalType getErrorCode() {
+        return errorCode;
+    }
+
+    public DecimalType getLedColor() {
+        return ledColor;
+    }
+
+    public DecimalType getLedState() {
+        return ledState;
+    }
+
+    public DecimalType getMgmtTimerRemainingTime() {
+        return mgmtTimerRemainingTime;
+    }
+
+    public DecimalType getStatusCode() {
+        return statusCode;
+    }
+
+    public boolean isStateToReset() {
+        return stateToReset;
+    }
+
+    private synchronized void createFromJson(final JsonObject json) {
         try {
             if (json.has("Body")) {
                 final JsonObject body = json.get("Body").getAsJsonObject();
@@ -142,6 +175,37 @@ public class InverterRealtimeData {
                         udc = new DecimalType(data.get("UDC").getAsJsonObject().get("Value").getAsString());
                         logger.debug("UDC: {}", udc);
                     }
+                    if (data.has("DeviceStatus")) {
+                        final JsonObject deviceStatus = data.get("DeviceStatus").getAsJsonObject();
+                        logger.trace("{}", deviceStatus.toString());
+                        if (deviceStatus.has("ErrorCode")) {
+                            errorCode = new DecimalType(deviceStatus.get("ErrorCode").getAsString());
+                            logger.debug("ErrorCode: {}", errorCode);
+                        }
+                        if (deviceStatus.has("LEDColor")) {
+                            ledColor = new DecimalType(deviceStatus.get("LEDColor").getAsString());
+                            logger.debug("LEDColor: {}", ledColor);
+                        }
+                        if (deviceStatus.has("LEDState")) {
+                            ledState = new DecimalType(deviceStatus.get("LEDState").getAsString());
+                            logger.debug("LEDState: {}", ledState);
+                        }
+                        if (deviceStatus.has("MgmtTimerRemainingTime")) {
+                            mgmtTimerRemainingTime = new DecimalType(
+                                    deviceStatus.get("MgmtTimerRemainingTime").getAsString());
+                            logger.debug("MgmtTimerRemainingTime: {}", mgmtTimerRemainingTime);
+                        }
+                        if (deviceStatus.has("StateToReset")) {
+                            stateToReset = deviceStatus.get("StateToReset").getAsBoolean();
+                            logger.debug("StateToReset: {}", stateToReset);
+                        }
+                        if (deviceStatus.has("StatusCode")) {
+                            statusCode = new DecimalType(deviceStatus.get("StatusCode").getAsString());
+                            logger.debug("StatusCode: {}", statusCode);
+                        }
+
+                    }
+
                     empty = false;
                 } else {
                     empty = true;
