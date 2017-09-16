@@ -10,6 +10,7 @@ package org.openhab.binding.nest.internal;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
@@ -52,9 +53,9 @@ public class NestAuthorizer {
             // @formatter:off
             StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
                     .append("?client_id=")
-                    .append(config.clientId)
+                    .append(config.productId)
                     .append("&client_secret=")
-                    .append(config.clientSecret)
+                    .append(config.productSecret)
                     .append("&code=")
                     .append(config.pincode)
                     .append("&grant_type=authorization_code");
@@ -66,12 +67,13 @@ public class NestAuthorizer {
                     "application/x-www-form-urlencoded", 10_000);
 
             AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
-            logger.debug("Access token {}", data);
-            if (data.getAccessToken() != null) {
-                return data.getAccessToken();
-            } else {
-                throw new InvalidAccessTokenException("Received empty token");
+            logger.debug("Received: {}", data);
+
+            if (StringUtils.isEmpty(data.getAccessToken())) {
+                throw new InvalidAccessTokenException("Error obtaining access token (pincode already used or invalid)");
             }
+
+            return data.getAccessToken();
         } catch (IOException e) {
             throw new InvalidAccessTokenException(e);
         }

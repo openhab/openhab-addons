@@ -94,9 +94,10 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initialize the Nest bridge handler");
 
         config = getConfigAs(NestBridgeConfiguration.class);
-        logger.debug("Client ID       {}", config.clientId);
-        logger.debug("Client Secret   {}", config.clientSecret);
+        logger.debug("Product ID      {}", config.productId);
+        logger.debug("Product Secret  {}", config.productSecret);
         logger.debug("Pincode         {}", config.pincode);
+        logger.debug("Access Token    {}", config.accessToken);
 
         authorizer = new NestAuthorizer(config);
 
@@ -195,13 +196,15 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private String getExistingOrNewAccessToken() throws InvalidAccessTokenException {
         if (StringUtils.isEmpty(config.accessToken)) {
-            String newAccessToken = authorizer.getNewAccessToken();
+            config.accessToken = authorizer.getNewAccessToken();
+            config.pincode = "";
             // Update and save the access token in the bridge configuration
             Configuration configuration = editConfiguration();
-            configuration.put(NestBridgeConfiguration.ACCESS_TOKEN, newAccessToken);
+            configuration.put(NestBridgeConfiguration.ACCESS_TOKEN, config.accessToken);
+            configuration.put(NestBridgeConfiguration.PINCODE, config.pincode);
             updateConfiguration(configuration);
-            logger.debug("Retrieved new access token: {}", newAccessToken);
-            return newAccessToken;
+            logger.debug("Retrieved new access token: {}", config.accessToken);
+            return config.accessToken;
         } else {
             logger.debug("Re-using access token from configuration: {}", config.accessToken);
             return config.accessToken;
