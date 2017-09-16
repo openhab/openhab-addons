@@ -11,7 +11,7 @@ package org.openhab.binding.rotelra1x.internal;
 /**
  * Exception to indicate a failure due to incorrect or missing Thing configuration.
  *
- * @author Marius Bjørnstad
+ * @author Marius Bjørnstad - Initial contribution
  */
 
 public class ConfigurationError extends Exception {

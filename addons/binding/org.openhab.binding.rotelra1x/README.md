@@ -1,4 +1,4 @@
-# Rotel amplifier binding
+# Rotel Amplifier Binding
 
 Connects to a Rotel RA11 or RA12 integrated amplifier via a serial (RS232) interface. The Rotel amplifiers supported by this binding also include an integrated DAC unit.  To use the binding, connect a serial cable between the amplifier and the computer running openHAB.
 
