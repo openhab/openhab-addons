@@ -42,7 +42,7 @@ public class LxControlDimmer extends LxControl {
      */
     private static final String CMD_ON = "On";
     /**
-     * Command string used to set the dimmer e to OFF
+     * Command string used to set the dimmer to OFF
      */
     private static final String CMD_OFF = "Off";
 
@@ -52,7 +52,7 @@ public class LxControlDimmer extends LxControl {
      * @param client
      *            communication client used to send commands to the Miniserver
      * @param uuid
-     *            switch's UUID
+     *            dimmer's UUID
      * @param json
      *            JSON describing the control as received from the Miniserver
      * @param room
@@ -77,7 +77,8 @@ public class LxControlDimmer extends LxControl {
     }
 
     public void setPosition(Double position) throws IOException {
-        socketClient.sendAction(uuid, position.toString());
+        Double loxonePosition = mapOHToLoxone(position);
+        socketClient.sendAction(uuid, loxonePosition.toString());
     }
 
     public void on() throws IOException {
@@ -97,12 +98,12 @@ public class LxControlDimmer extends LxControl {
     public Double getPosition() {
         LxControlState state = getState(STATE_POSITION);
         if (state != null) {
-            return state.getValue();
+            return mapLoxoneToOH(state.getValue());
         }
         return null;
     }
 
-    public Double getMax() {
+    private Double getMax() {
         LxControlState state = getState(STATE_MAX);
         if (state != null) {
             return state.getValue();
@@ -110,7 +111,7 @@ public class LxControlDimmer extends LxControl {
         return null;
     }
 
-    public Double getMin() {
+    private Double getMin() {
         LxControlState state = getState(STATE_MIN);
         if (state != null) {
             return state.getValue();
@@ -118,4 +119,23 @@ public class LxControlDimmer extends LxControl {
         return null;
     }
 
+    private Double mapLoxoneToOH(Double loxoneValue) {
+        Double max = getMax();
+        Double min = getMin();
+        if (max != null && min != null && loxoneValue != null) {
+            return (loxoneValue - min) * ((max - min) / 100);
+
+        }
+        return null;
+    }
+
+    private Double mapOHToLoxone(Double ohValue) {
+        Double max = getMax();
+        Double min = getMin();
+        if (max != null && min != null && ohValue != null) {
+            double value = min + (ohValue / ((max - min) / 100));
+            return value; // no rounding to integer value is needed as loxone is accepting floating point values
+        }
+        return null;
+    }
 }

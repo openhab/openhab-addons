@@ -155,10 +155,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                         dimmer.off();
                     }
                 } else if (command instanceof PercentType) {
-
                     PercentType percentCmd = (PercentType) command;
                     dimmer.setPosition(percentCmd.doubleValue());
-
                 }
                 return;
             }
@@ -401,6 +399,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 tags = Collections.singleton("Lighting");
             }
             addChannel(channels, "Switch", switchTypeId, id, label, "Switch", tags);
+            // adding a deactivation delay channel for timed switch
+            if (control instanceof LxControlTimedSwitch) {
+                ChannelUID id2 = getChannelIdForControl(control, 1);
+                addChannel(channels, "Number", switchTypeId, id2, label + " / Decativiation Delay",
+                        "Deactiviation Delay", tags);
+            }
         } else if (control instanceof LxControlJalousie) {
             addChannel(channels, "Rollershutter", rollershutterTypeId, id, label, "Rollershutter", tags);
         } else if (control instanceof LxControlInfoOnlyDigital) {
@@ -438,13 +442,21 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 }
             }
         } else if (control instanceof LxControlTimedSwitch) {
-            Double value = ((LxControlTimedSwitch) control).getState();
+            LxControlTimedSwitch timedSwitch = ((LxControlTimedSwitch) control);
+            Double value = timedSwitch.getState();
             if (value != null) {
-                if (value == -1.0 || value > 0) {
+                if (value == 1d) {
                     updateState(channelId, OnOffType.ON);
-                } else if (value == 0) {
+                } else if (value == 0d) {
                     updateState(channelId, OnOffType.OFF);
                 }
+            }
+
+            // getting second channel for this control and update the state
+            ChannelUID channelId2 = getChannelIdForControl(control, 1);
+            Double deactivationValue = timedSwitch.getDeactivationDelay();
+            if (deactivationValue != null) {
+                updateState(channelId2, DecimalType.valueOf("" + deactivationValue));
             }
         } else if (control instanceof LxControlJalousie) {
             Double value = ((LxControlJalousie) control).getPosition();
@@ -457,9 +469,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         } else if (control instanceof LxControlDimmer) {
             Double value = ((LxControlDimmer) control).getPosition();
             if (value != null && value >= 0 && value <= 100) {
-                // state UP or DOWN from Loxone indicates blinds are moving up or down
-                // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
-                // so we will update only position and not up or down states
                 updateState(channelId, new PercentType(value.intValue()));
             }
         } else if (control instanceof LxControlInfoOnlyDigital) {

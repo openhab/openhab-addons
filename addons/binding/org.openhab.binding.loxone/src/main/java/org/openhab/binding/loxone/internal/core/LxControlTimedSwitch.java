@@ -37,12 +37,12 @@ public class LxControlTimedSwitch extends LxControl {
      * -1 = the output is permanently on
      * otherwise it will count down from deactivationDelayTotal
      */
-    private static final String STATE_DEACTIVATION_DELAY = "deactivationDelay";
+    private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
 
     /**
      * Command string used to set timed switch to ON
      */
-    private static final String CMD_ON = "On";
+    private static final String CMD_PULSE = "pulse";
     /**
      * Command string used to set timed switch to OFF
      */
@@ -87,7 +87,7 @@ public class LxControlTimedSwitch extends LxControl {
      *             when something went wrong with communication
      */
     public void on() throws IOException {
-        socketClient.sendAction(uuid, CMD_ON);
+        socketClient.sendAction(uuid, CMD_PULSE);
     }
 
     /**
@@ -109,14 +109,27 @@ public class LxControlTimedSwitch extends LxControl {
      *         0 - switch off, 1 - switch on
      */
     public Double getState() {
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null) {
 
+        /**
+         * 0 = the output is turned off
+         * -1 = the output is permanently on
+         * otherwise it will count down from deactivationDelayTotal
+         **/
+        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
+        if (state != null && state.getValue() != null) {
             if (state.getValue() == -1 || state.getValue() > 0) { // mapping
                 return 1d;
             } else if (state.getValue() == 0) {
                 return 0d;
             }
+        }
+        return null;
+    }
+
+    public Double getDeactivationDelay() {
+        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
+        if (state != null) {
+            return state.getValue();
         }
         return null;
     }
