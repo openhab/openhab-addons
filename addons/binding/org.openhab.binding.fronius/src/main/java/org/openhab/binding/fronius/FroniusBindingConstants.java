@@ -71,8 +71,6 @@ public class FroniusBindingConstants {
     public static final String STORAGE_REALTIME_DATA_URL = "/solar_api/v1/GetStorageRealtimeData.cgi";
     public static final String STRING_REALTIME_DATA_URL = "/solar_api/v1/GetStringRealtimeData.cgi";
 
-    public static final String INVERTER_REALTIME_DATA_COLLECTION = "CommonInverterData";
-
     // List of all service descriptions
     public static final String ACTIVE_DEVICE_INFO_DESCRIPTION = "Active Device Info";
     public static final String INVERTER_REALTIME_DATA_DESCRIPTION = "Inverter Realtime Data";

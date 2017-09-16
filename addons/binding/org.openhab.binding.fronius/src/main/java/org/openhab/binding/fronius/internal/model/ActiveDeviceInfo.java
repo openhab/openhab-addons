@@ -115,6 +115,8 @@ public class ActiveDeviceInfo {
                         }
                     }
                     empty = false;
+                } else {
+                    empty = true;
                 }
             }
             if (json.has("Head")) {

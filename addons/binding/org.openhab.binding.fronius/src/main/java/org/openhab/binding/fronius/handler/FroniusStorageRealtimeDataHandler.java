@@ -50,8 +50,8 @@ public class FroniusStorageRealtimeDataHandler extends FroniusDeviceThingHandler
     @Override
     protected void updateData(String data) {
         logger.debug("Refresh data {}", data);
-        JsonObject json = parser.parse(data).getAsJsonObject();
-        StorageRealtimeData model = StorageRealtimeData.createStorageRealtimeData(json);
+        final JsonObject json = parser.parse(data).getAsJsonObject();
+        final StorageRealtimeData model = StorageRealtimeData.createStorageRealtimeData(json);
         if (model.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {

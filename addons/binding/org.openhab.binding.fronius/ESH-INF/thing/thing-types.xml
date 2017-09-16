@@ -28,7 +28,7 @@
         </supported-bridge-type-refs>
 
         <label>Active Device Info</label>
-        <description>This thring represents the active device info of a Fronius inverter</description>
+        <description>This thing represents the active device info of a Fronius inverter</description>
 
         <channels>
             <channel id="status_code" typeId="code"></channel>
@@ -43,7 +43,7 @@
         </supported-bridge-type-refs>
 
         <label>Inverter Realtime Data</label>
-        <description>This thring represents the inverter realtime data of a Fronius inverter</description>
+        <description>This thing represents the inverter realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="day_energy" typeId="energy"></channel>
@@ -75,7 +75,7 @@
         </supported-bridge-type-refs>
 
         <label>Meter Realtime Data</label>
-        <description>This thring represents the meter realtime data of a Fronius inverter</description>
+        <description>This thing represents the meter realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="status_code" typeId="code"></channel>
@@ -98,7 +98,7 @@
         </supported-bridge-type-refs>
 
         <label>Storage Realtime Data</label>
-        <description>This thring represents the storage realtime data of a Fronius inverter</description>
+        <description>This thing represents the storage realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="current" typeId="current"></channel>

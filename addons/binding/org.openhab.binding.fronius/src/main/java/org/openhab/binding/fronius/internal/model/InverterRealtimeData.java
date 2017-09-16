@@ -143,6 +143,8 @@ public class InverterRealtimeData {
                         logger.debug("UDC: {}", udc);
                     }
                     empty = false;
+                } else {
+                    empty = true;
                 }
             }
             if (json.has("Head")) {

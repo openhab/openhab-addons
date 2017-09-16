@@ -36,7 +36,7 @@ public class StorageRealtimeData {
     public static StorageRealtimeData createStorageRealtimeData(final JsonObject json) {
         final StorageRealtimeData srd = new StorageRealtimeData();
         srd.deconstruct(json);
-        return new StorageRealtimeData();
+        return srd;
     }
 
     private StorageRealtimeData() {
@@ -108,7 +108,10 @@ public class StorageRealtimeData {
                         }
                     }
                     empty = false;
+                } else {
+                    empty = true;
                 }
+
             }
             if (json.has("Head")) {
                 final JsonObject head = json.get("Head").getAsJsonObject();

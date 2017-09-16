@@ -51,8 +51,8 @@ public class FroniusInverterRealtimeDataHandler extends FroniusDeviceThingHandle
     @Override
     protected void updateData(String data) {
         logger.debug("Refresh data {}", data);
-        JsonObject json = parser.parse(data).getAsJsonObject();
-        InverterRealtimeData model = InverterRealtimeData.createInverterRealtimeData(json);
+        final JsonObject json = parser.parse(data).getAsJsonObject();
+        final InverterRealtimeData model = InverterRealtimeData.createInverterRealtimeData(json);
         if (model.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
