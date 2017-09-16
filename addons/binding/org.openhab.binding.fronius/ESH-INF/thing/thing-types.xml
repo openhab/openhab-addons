@@ -161,7 +161,7 @@
     <channel-type id="percent">
         <item-type>Number</item-type>
         <label>Percent</label>
-        <state readOnly="true" pattern="%.1f %"></state>
+        <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
 
     <channel-type id="code">
