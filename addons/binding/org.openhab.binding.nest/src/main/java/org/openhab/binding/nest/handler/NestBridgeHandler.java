@@ -9,7 +9,7 @@
 package org.openhab.binding.nest.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.nest.NestBindingConstants.NEST_JSON_CONTENT_TYPE;
+import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
-    private ScheduledFuture<?> pollingJob;
+    private ScheduledFuture<?> refreshDataJob;
     private NestAuthorizer authorizer;
     private NestBridgeConfiguration config;
     private ScheduledFuture<?> sender;
@@ -91,19 +91,27 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("Initialize the Nest bridge handler");
+        logger.debug("Initializing Nest bridge handler");
 
         config = getConfigAs(NestBridgeConfiguration.class);
+        authorizer = new NestAuthorizer(config);
+
         logger.debug("Product ID      {}", config.productId);
         logger.debug("Product Secret  {}", config.productSecret);
         logger.debug("Pincode         {}", config.pincode);
-        logger.debug("Access Token    {}", config.accessToken);
 
-        authorizer = new NestAuthorizer(config);
+        try {
+            logger.debug("Access Token    {}", getExistingOrNewAccessToken());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
+        } catch (InvalidAccessTokenException e) {
+            logger.debug("Invalid access token", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
+        }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
+        restartAutomaticRefresh();
 
-        startAutomaticRefresh();
+        logger.debug("Finished initializing Nest bridge handler");
     }
 
     /**
@@ -114,6 +122,10 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void updateConfiguration(Configuration configuration) {
         logger.debug("Config update");
         super.updateConfiguration(configuration);
+        restartAutomaticRefresh();
+    }
+
+    private void restartAutomaticRefresh() {
         synchronized (this) {
             stopAutomaticRefresh();
             startAutomaticRefresh();
@@ -128,8 +140,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         logger.debug("Nest bridge disposed");
         stopAutomaticRefresh();
         this.authorizer = null;
-        this.pollingJob = null;
-        this.redirectUrl = null;
+        this.refreshDataJob = null;
     }
 
     /**
@@ -147,33 +158,33 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * Read the data from Nest and then forward it to anyone listening.
      */
     public void refreshData() {
-        logger.trace("Refreshing data");
+        logger.debug("Starting data refresh");
         try {
             if (redirectUrl == null) {
                 redirectUrl = resolveRedirectUrl();
             }
 
-            String data = jsonFromGetUrl();
-            logger.debug("Data from Nest: {}", data);
+            String jsonResponse = jsonFromGetUrl();
+            logger.debug("GET response: {}", jsonResponse);
 
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
 
-            // Now convert the incoming data into something more useful.
-            TopLevelData newData = gson.fromJson(data, TopLevelData.class);
-            broadcastDevices(newData.getDevices());
-            broadcastStructure(newData.getStructures().values());
+            TopLevelData data = gson.fromJson(jsonResponse, TopLevelData.class);
+            broadcastDevices(data.getDevices());
+            broadcastStructure(data.getStructures().values());
         } catch (InvalidAccessTokenException e) {
-            logger.warn("Invalid access token", e);
+            logger.debug("Invalid access token", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Token is invalid and could not be refreshed: " + e.getMessage());
         } catch (FailedResolvingNestUrlException e) {
-            logger.warn("Unable to resolve redirect URL", e);
+            logger.debug("Unable to resolve redirect URL", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (FailedRetrievingNestDataException e) {
-            logger.warn("Error retrieving data", e);
+            logger.debug("Error retrieving data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error retrieving data " + e.getMessage());
         }
+        logger.debug("Finished data refresh");
     }
 
     private void broadcastDevices(NestDevices devices) {
@@ -221,21 +232,27 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startAutomaticRefresh() {
-        if (config == null || config.refreshInterval < 60) {
+        if (config == null || config.refreshInterval < MIN_SECONDS_BETWEEN_API_CALLS) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not schedule polling job, refresh interval should be set and be more then 60 seconds");
             return;
         }
 
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshInterval, SECONDS);
+        if (refreshDataJob == null || refreshDataJob.isCancelled()) {
+            refreshDataJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshInterval, SECONDS);
+            logger.debug("Started refreshData job");
+        } else {
+            logger.debug("refreshData job is already scheduled");
         }
     }
 
     private synchronized void stopAutomaticRefresh() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        if (refreshDataJob != null && !refreshDataJob.isCancelled()) {
+            refreshDataJob.cancel(true);
+            refreshDataJob = null;
+            logger.debug("Stopping refreshDataJob");
+        } else {
+            logger.debug("refreshDataJob is already stopped");
         }
     }
 
@@ -276,7 +293,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             for (NestUpdateRequest updateRequest : nestUpdateRequests) {
                 jsonToPutUrl(updateRequest);
             }
-        } catch (InvalidAccessTokenException | FailedSendingNestDataException e) {
+        } catch (InvalidAccessTokenException e) {
+            logger.debug("Invalid access token", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
+        } catch (FailedSendingNestDataException e) {
+            logger.debug("Error sending data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -290,7 +312,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             String content = gson.toJson(request.getValues());
             logger.debug("Content: {}", content);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, NEST_JSON_CONTENT_TYPE,
+            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE,
                     5000);
             logger.debug("PUT response: {}", response);
         } catch (IOException e) {
@@ -301,19 +323,17 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private Properties getHttpHeaders() throws InvalidAccessTokenException {
         Properties httpHeaders = new Properties();
         httpHeaders.put("Authorization", "Bearer " + getExistingOrNewAccessToken());
-        httpHeaders.put("Content-Type", NEST_JSON_CONTENT_TYPE);
+        httpHeaders.put("Content-Type", JSON_CONTENT_TYPE);
         return httpHeaders;
     }
 
     /**
-     * Gets the redirect URL for write calls which get redirected by Nest by default.
+     * Resolves the redirect URL for calls using the {@link NestBindingConstants#NEST_URL}.
      *
      * The Jetty client used by {@link HttpUtil} will not pass the Authorization header after a redirect resulting in
      * "401 Unauthorized error" issues.
      *
      * Note that this workaround currently does not use any configured proxy like {@link HttpUtil} does.
-     *
-     * @throws InvalidAccessTokenException
      *
      * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
      */
@@ -323,8 +343,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
         Request request = httpClient.newRequest(NestBindingConstants.NEST_URL).method(HttpMethod.GET).timeout(5,
                 TimeUnit.SECONDS);
-        for (String httpHeaderKey : getHttpHeaders().stringPropertyNames()) {
-            request.header(httpHeaderKey, getHttpHeaders().getProperty(httpHeaderKey));
+        Properties httpHeaders = getHttpHeaders();
+        for (String httpHeaderKey : httpHeaders.stringPropertyNames()) {
+            request.header(httpHeaderKey, httpHeaders.getProperty(httpHeaderKey));
         }
 
         ContentResponse response;

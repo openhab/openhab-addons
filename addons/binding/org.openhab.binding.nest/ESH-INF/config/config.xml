@@ -15,7 +15,7 @@
 
         <parameter name="productId" type="text" groupName="oauth">
             <label>Product ID</label>
-            <description>The Product ID from the Nest product page</description>
+            <description>The product ID from the Nest product page</description>
             <required>true</required>
         </parameter>
         <parameter name="productSecret" type="text" groupName="oauth">
@@ -38,7 +38,7 @@
             <required>false</required>
             <advanced>true</advanced>
         </parameter>
-        <parameter name="refreshInterval" type="integer" groupName="binding">
+        <parameter name="refreshInterval" type="integer" groupName="binding" min="60">
             <label>Refresh Interval</label>
             <description>How often to refresh the data from Nest (in seconds). 
             Don't make this too often or Nest will throttle your account. 

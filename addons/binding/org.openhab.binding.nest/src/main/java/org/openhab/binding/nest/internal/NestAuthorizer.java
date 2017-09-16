@@ -50,6 +50,10 @@ public class NestAuthorizer {
      */
     public String getNewAccessToken() throws InvalidAccessTokenException {
         try {
+            if (StringUtils.isEmpty(config.pincode)) {
+                throw new InvalidAccessTokenException("Pincode is empty");
+            }
+
             // @formatter:off
             StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_ACCESS_TOKEN_URL)
                     .append("?client_id=")
@@ -70,12 +74,12 @@ public class NestAuthorizer {
             logger.debug("Received: {}", data);
 
             if (StringUtils.isEmpty(data.getAccessToken())) {
-                throw new InvalidAccessTokenException("Error obtaining access token (pincode already used or invalid)");
+                throw new InvalidAccessTokenException("Pincode to obtain access token is already used or invalid)");
             }
 
             return data.getAccessToken();
         } catch (IOException e) {
-            throw new InvalidAccessTokenException(e);
+            throw new InvalidAccessTokenException("Access token request failed", e);
         }
     }
 

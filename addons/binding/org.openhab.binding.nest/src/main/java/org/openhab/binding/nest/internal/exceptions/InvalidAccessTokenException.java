@@ -18,6 +18,10 @@ public class InvalidAccessTokenException extends Exception {
         super(cause);
     }
 
+    public InvalidAccessTokenException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public InvalidAccessTokenException(String message) {
         super(message);
     }
