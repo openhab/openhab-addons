@@ -22,4 +22,11 @@ public class RotelRa1xBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amp");
 
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_FREQUENCY = "frequency";
+    public static final String CHANNEL_SOURCE = "source";
+
 }
