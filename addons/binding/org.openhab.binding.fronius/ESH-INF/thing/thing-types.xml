@@ -201,7 +201,7 @@
     </channel-type>
 
     <channel-type id="timestamp">
-        <item-type>String</item-type>
+        <item-type>DateTime</item-type>
         <label>Timestamp</label>
         <state readOnly="true"></state>
     </channel-type>
