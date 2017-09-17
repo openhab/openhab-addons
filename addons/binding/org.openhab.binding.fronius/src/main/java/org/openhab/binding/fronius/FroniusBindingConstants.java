@@ -45,11 +45,24 @@ public class FroniusBindingConstants {
     public static final String CHANNEL_INVERTER_FAC = "fac";
     public static final String CHANNEL_INVERTER_IDC = "idc";
     public static final String CHANNEL_INVERTER_UDC = "udc";
+    public static final String CHANNEL_INVERTER_ERROR_CODE = "error_code";
+    public static final String CHANNEL_INVERTER_LED_COLOR = "led_color";
+    public static final String CHANNEL_INVERTER_LED_STATE = "led_state";
+    public static final String CHANNEL_INVERTER_MGMT_TIMER_REMAINING_TIME = "mgmt_timer_remaining_time";
+    public static final String CHANNEL_INVERTER_STATUS_CODE = "status_code";
+    public static final String CHANNEL_INVERTER_STATE_TO_RESET = "state_to_reset";
     public static final String CHANNEL_STORAGE_CURRENT = "current";
     public static final String CHANNEL_STORAGE_VOLTAGE = "voltage";
     public static final String CHANNEL_STORAGE_CHARGE = "charge";
     public static final String CHANNEL_STORAGE_CAPACITY = "capacity";
     public static final String CHANNEL_STORAGE_TEMPERATURE = "temperature";
+    public static final String CHANNEL_STORAGE_DESIGNED_CAPACITY = "designed_capacity";
+    public static final String CHANNEL_STORAGE_MANUFACTURER = "manufacturer";
+    public static final String CHANNEL_STORAGE_MODEL = "model";
+    public static final String CHANNEL_STORAGE_SERIAL = "serial";
+    public static final String CHANNEL_STORAGE_ENABLE = "enable";
+    public static final String CHANNEL_STORAGE_MAX_VOLTAGE = "max_voltage";
+    public static final String CHANNEL_STORAGE_MIN_VOLTAGE = "min_voltage";
     public static final String CHANNEL_STATUS_CODE = "status_code";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
 
@@ -70,8 +83,6 @@ public class FroniusBindingConstants {
     public static final String SENSOR_REALTIME_DATA_URL = "/solar_api/v1/GetSensorRealtimeData.cgi";
     public static final String STORAGE_REALTIME_DATA_URL = "/solar_api/v1/GetStorageRealtimeData.cgi";
     public static final String STRING_REALTIME_DATA_URL = "/solar_api/v1/GetStringRealtimeData.cgi";
-
-    public static final String INVERTER_REALTIME_DATA_COLLECTION = "CommonInverterData";
 
     // List of all service descriptions
     public static final String ACTIVE_DEVICE_INFO_DESCRIPTION = "Active Device Info";

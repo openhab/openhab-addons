@@ -63,8 +63,8 @@ public class FroniusStorageRealtimeDataHandler extends FroniusDeviceThingHandler
     @Override
     protected void updateData(String data) {
         logger.debug("Refresh data {}", data);
-        JsonObject json = parser.parse(data).getAsJsonObject();
-        StorageRealtimeData model = StorageRealtimeData.createStorageRealtimeData(json);
+        final JsonObject json = parser.parse(data).getAsJsonObject();
+        final StorageRealtimeData model = StorageRealtimeData.createStorageRealtimeData(json);
         if (model.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
@@ -73,6 +73,14 @@ public class FroniusStorageRealtimeDataHandler extends FroniusDeviceThingHandler
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_CHARGE), model.getCharge());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_CAPACITY), model.getCapacity());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_TEMPERATURE), model.getTemperature());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_DESIGNED_CAPACITY),
+                    model.getDesignedCapacity());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_MANUFACTURER), model.getManufacturer());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_MODEL), model.getModel());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_SERIAL), model.getSerial());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_ENABLE), model.getEnable());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_MAX_VOLTAGE), model.getMaxVoltage());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_STORAGE_MIN_VOLTAGE), model.getMinVoltage());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATUS_CODE), model.getCode());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP), model.getTimestamp());
         }

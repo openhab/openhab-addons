@@ -28,7 +28,7 @@
         </supported-bridge-type-refs>
 
         <label>Active Device Info</label>
-        <description>This thring represents the active device info of a Fronius inverter</description>
+        <description>This thing represents the active device info of a Fronius inverter</description>
 
         <channels>
             <channel id="status_code" typeId="code"></channel>
@@ -43,7 +43,7 @@
         </supported-bridge-type-refs>
 
         <label>Inverter Realtime Data</label>
-        <description>This thring represents the inverter realtime data of a Fronius inverter</description>
+        <description>This thing represents the inverter realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="day_energy" typeId="energy"></channel>
@@ -55,7 +55,12 @@
             <channel id="fac" typeId="frequency"></channel>
             <channel id="idc" typeId="current"></channel>
             <channel id="udc" typeId="voltage"></channel>
+            <channel id="error_code" typeId="code"></channel>
+            <channel id="led_color" typeId="number"></channel>
+            <channel id="led_state" typeId="number"></channel>
+            <channel id="mgmt_timer_remaining_time" typeId="number"></channel>
             <channel id="status_code" typeId="code"></channel>
+            <channel id="state_to_reset" typeId="boolean"></channel>
             <channel id="timestamp" typeId="timestamp"></channel>
         </channels>
 
@@ -75,7 +80,7 @@
         </supported-bridge-type-refs>
 
         <label>Meter Realtime Data</label>
-        <description>This thring represents the meter realtime data of a Fronius inverter</description>
+        <description>This thing represents the meter realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="status_code" typeId="code"></channel>
@@ -98,7 +103,7 @@
         </supported-bridge-type-refs>
 
         <label>Storage Realtime Data</label>
-        <description>This thring represents the storage realtime data of a Fronius inverter</description>
+        <description>This thing represents the storage realtime data of a Fronius inverter</description>
 
         <channels>
             <channel id="current" typeId="current"></channel>
@@ -106,6 +111,13 @@
             <channel id="charge" typeId="percent"></channel>
             <channel id="capacity" typeId="energy"></channel>
             <channel id="temperature" typeId="temperature"></channel>
+            <channel id="designed_capacity" typeId="energy"></channel>
+            <channel id="manufacturer" typeId="string"></channel>
+            <channel id="model" typeId="string"></channel>
+            <channel id="serial" typeId="string"></channel>
+            <channel id="enable" typeId="code"></channel>
+            <channel id="max_voltage" typeId="voltage"></channel>
+            <channel id="min_voltage" typeId="voltage"></channel>
             <channel id="status_code" typeId="code"></channel>
             <channel id="timestamp" typeId="timestamp"></channel>
         </channels>
@@ -161,7 +173,7 @@
     <channel-type id="percent">
         <item-type>Number</item-type>
         <label>Percent</label>
-        <state readOnly="true" pattern="%.1f %"></state>
+        <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
 
     <channel-type id="code">
@@ -170,8 +182,26 @@
         <state readOnly="true"></state>
     </channel-type>
 
-    <channel-type id="timestamp">
+    <channel-type id="number">
+        <item-type>Number</item-type>
+        <label>Number</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="string">
         <item-type>String</item-type>
+        <label>String</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="boolean">
+        <item-type>Switch</item-type>
+        <label>Boolean</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="timestamp">
+        <item-type>DateTime</item-type>
         <label>Timestamp</label>
         <state readOnly="true"></state>
     </channel-type>

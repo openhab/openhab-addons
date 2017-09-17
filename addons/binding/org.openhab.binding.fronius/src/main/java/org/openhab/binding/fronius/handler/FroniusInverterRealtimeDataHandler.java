@@ -64,8 +64,8 @@ public class FroniusInverterRealtimeDataHandler extends FroniusDeviceThingHandle
     @Override
     protected void updateData(String data) {
         logger.debug("Refresh data {}", data);
-        JsonObject json = parser.parse(data).getAsJsonObject();
-        InverterRealtimeData model = InverterRealtimeData.createInverterRealtimeData(json);
+        final JsonObject json = parser.parse(data).getAsJsonObject();
+        final InverterRealtimeData model = InverterRealtimeData.createInverterRealtimeData(json);
         if (model.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
@@ -78,6 +78,12 @@ public class FroniusInverterRealtimeDataHandler extends FroniusDeviceThingHandle
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_FAC), model.getFac());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_IDC), model.getIdc());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_UDC), model.getUdc());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_ERROR_CODE), model.getErrorCode());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_LED_COLOR), model.getLedColor());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_LED_STATE), model.getLedState());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_MGMT_TIMER_REMAINING_TIME),
+                    model.getMgmtTimerRemainingTime());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_INVERTER_STATUS_CODE), model.getStatusCode());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATUS_CODE), model.getCode());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP), model.getTimestamp());
         }
