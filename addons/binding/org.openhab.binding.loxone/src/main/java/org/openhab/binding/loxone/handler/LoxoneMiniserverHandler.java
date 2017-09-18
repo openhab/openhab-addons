@@ -80,6 +80,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     private ChannelTypeUID roTextTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
     private ChannelTypeUID roSwitchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH);
     private ChannelTypeUID roAnalogTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG);
+    private ChannelTypeUID roTimedSwitchDeactivationDelayTypeId = new ChannelTypeUID(BINDING_ID,
+            MINISERVER_CHANNEL_TYPE_RO_NUMBER);
 
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
     private Map<ChannelUID, LxControl> controls = new HashMap<>();
@@ -137,7 +139,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             if (control instanceof LxControlTimedSwitch) {
                 if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
-                        ((LxControlTimedSwitch) control).on();
+                        ((LxControlTimedSwitch) control).pulse();
 
                     } else {
                         ((LxControlTimedSwitch) control).off();
@@ -402,8 +404,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             // adding a deactivation delay channel for timed switch
             if (control instanceof LxControlTimedSwitch) {
                 ChannelUID id2 = getChannelIdForControl(control, 1);
-                addChannel(channels, "Number", switchTypeId, id2, label + " / Decativiation Delay",
-                        "Deactiviation Delay", tags);
+                addChannel(channels, "Number", roTimedSwitchDeactivationDelayTypeId, id2,
+                        label + " / Deactivation Delay", "Deactivation Delay", tags);
             }
         } else if (control instanceof LxControlJalousie) {
             addChannel(channels, "Rollershutter", rollershutterTypeId, id, label, "Rollershutter", tags);
@@ -453,10 +455,10 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             }
 
             // getting second channel for this control and update the state
-            ChannelUID channelId2 = getChannelIdForControl(control, 1);
             Double deactivationValue = timedSwitch.getDeactivationDelay();
             if (deactivationValue != null) {
-                updateState(channelId2, DecimalType.valueOf("" + deactivationValue));
+                ChannelUID channelId2 = getChannelIdForControl(control, 1);
+                updateState(channelId2, new DecimalType(deactivationValue));
             }
         } else if (control instanceof LxControlJalousie) {
             Double value = ((LxControlJalousie) control).getPosition();

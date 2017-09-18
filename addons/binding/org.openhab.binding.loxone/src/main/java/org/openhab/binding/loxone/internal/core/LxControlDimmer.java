@@ -78,7 +78,9 @@ public class LxControlDimmer extends LxControl {
 
     public void setPosition(Double position) throws IOException {
         Double loxonePosition = mapOHToLoxone(position);
-        socketClient.sendAction(uuid, loxonePosition.toString());
+        if (loxonePosition != null) {
+            socketClient.sendAction(uuid, loxonePosition.toString());
+        }
     }
 
     public void on() throws IOException {
@@ -124,7 +126,6 @@ public class LxControlDimmer extends LxControl {
         Double min = getMin();
         if (max != null && min != null && loxoneValue != null) {
             return (loxoneValue - min) * ((max - min) / 100);
-
         }
         return null;
     }

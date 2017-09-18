@@ -40,9 +40,15 @@ public class LxControlTimedSwitch extends LxControl {
     private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
 
     /**
-     * Command string used to set timed switch to ON
+     * Command string used to set timed switch to ON without deactivation delay
+     */
+    private static final String CMD_ON = "On";
+
+    /**
+     * Command string used to set timed switch to ON with deactivation delay
      */
     private static final String CMD_PULSE = "pulse";
+
     /**
      * Command string used to set timed switch to OFF
      */
@@ -79,7 +85,7 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
-     * Set timed switch to ON.
+     * Set timed switch to ON without deactivation delay.
      * <p>
      * Sends a command to operate the timed switch.
      *
@@ -87,6 +93,18 @@ public class LxControlTimedSwitch extends LxControl {
      *             when something went wrong with communication
      */
     public void on() throws IOException {
+        socketClient.sendAction(uuid, CMD_ON);
+    }
+
+    /**
+     * Set timed switch to ON with deactivation delay.
+     * <p>
+     * Sends a command to operate the timed switch.
+     *
+     * @throws IOException
+     *             when something went wrong with communication
+     */
+    public void pulse() throws IOException {
         socketClient.sendAction(uuid, CMD_PULSE);
     }
 
