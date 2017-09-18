@@ -1,6 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -26,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
  * @author Craig Hamilton
  *
  */
-public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandler {
+public class UpbUnitHandler extends AbstractOmnilinkHandler<UnitStatus> implements UnitHandler {
 
     private final static Map<Type, OmniLinkCmd> sCommandMappingMap = ImmutableMap.<Type, OmniLinkCmd> of(
             IncreaseDecreaseType.INCREASE, OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1, IncreaseDecreaseType.DECREASE,
@@ -72,7 +73,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
     }
 
     @Override
-    public void handleUnitStatus(UnitStatus unitStatus) {
+    public void updateChannels(UnitStatus unitStatus) {
 
         // TODO is dimmer, or just simple switch
         // assuming dimmer right now.
@@ -95,18 +96,22 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("UPB Unit channel linked: {}", channelUID);
-
+    protected Optional<UnitStatus> retrieveStatus() {
         try {
             int unitId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
                     unitId, false);
-            handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+            return Optional.of((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);
+            return Optional.empty();
         }
+    }
+
+    @Override
+    public void handleUnitStatus(UnitStatus unitStatus) {
+        updateChannels(unitStatus);
     }
 
 }

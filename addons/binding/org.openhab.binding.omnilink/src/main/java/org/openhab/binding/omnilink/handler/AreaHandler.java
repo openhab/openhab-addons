@@ -1,5 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -24,7 +26,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
  * @author Craig Hamilton
  *
  */
-public class AreaHandler extends AbstractOmnilinkHandler {
+public class AreaHandler extends AbstractOmnilinkHandler<AreaStatus> {
     private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
 
     public AreaHandler(Thing thing) {
@@ -127,7 +129,8 @@ public class AreaHandler extends AbstractOmnilinkHandler {
 
     }
 
-    public void handleAreaEvent(AreaStatus status) {
+    @Override
+    public void updateChannels(AreaStatus status) {
         logger.debug("handle area event: mode:{} alarms:{} entryTimer:{} exitTimer:{}", status.getMode(),
                 status.getAlarms(), status.getEntryTimer(), status.getExitTimer());
 
@@ -154,22 +157,23 @@ public class AreaHandler extends AbstractOmnilinkHandler {
         }
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {}", channelUID);
-        try {
-            int areaId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
-                    areaId, false);
-            handleAreaEvent((AreaStatus) objStatus.getStatuses()[0]);
-        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("Unexpected exception refreshing area:", e);
-        }
-    }
-
     public void handleAllOnOffEvent(AllOnOffEvent event) {
         ChannelUID activateChannel = new ChannelUID(getThing().getUID(),
                 OmnilinkBindingConstants.TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT);
         triggerChannel(activateChannel, event.isOn() ? "ON" : "OFF");
     }
+
+    @Override
+    protected Optional<AreaStatus> retrieveStatus() {
+        try {
+            int areaId = getThingNumber();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
+                    areaId, false);
+            return Optional.of((AreaStatus) objStatus.getStatuses()[0]);
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.debug("Unexpected exception refreshing area:", e);
+            return Optional.empty();
+        }
+    }
+
 }
