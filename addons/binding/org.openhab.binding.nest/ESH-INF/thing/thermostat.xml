@@ -20,8 +20,8 @@
 			<channel id="min_set_point" typeId="MinSetPoint" />
 			<channel id="can_heat" typeId="CanHeat" />
 			<channel id="can_cool" typeId="CanCool" />
-            <channel id="fan_timer_active" typeId="FanTimerActive" />
-            <channel id="fan_timer_duration" typeId="FanTimerDuration" />
+			<channel id="fan_timer_active" typeId="FanTimerActive" />
+			<channel id="fan_timer_duration" typeId="FanTimerDuration" />
 			<channel id="has_fan" typeId="HasFan" />
 			<channel id="has_leaf" typeId="HasLeaf" />
 			<channel id="sunlight_correction_enabled" typeId="SunlightCorrectionEnabled">
@@ -55,9 +55,8 @@
 			<property name="vendor">Nest</property>
 		</properties>
 
-        <representation-property>deviceId</representation-property>
+		<representation-property>deviceId</representation-property>
 
-        <config-description-ref uri="thing-type:nest:device" />
+		<config-description-ref uri="thing-type:nest:device" />
 	</thing-type>
 </thing:thing-descriptions>
-

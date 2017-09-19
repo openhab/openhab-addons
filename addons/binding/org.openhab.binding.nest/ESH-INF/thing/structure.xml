@@ -29,9 +29,9 @@
 			<property name="vendor">Nest</property>
 		</properties>
 
-        <representation-property>structureId</representation-property>
+		<representation-property>structureId</representation-property>
 
-        <config-description-ref uri="thing-type:nest:structure" />
+		<config-description-ref uri="thing-type:nest:structure" />
 	</thing-type>
 
 </thing:thing-descriptions>
