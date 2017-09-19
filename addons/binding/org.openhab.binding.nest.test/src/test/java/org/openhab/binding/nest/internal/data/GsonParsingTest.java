@@ -187,4 +187,15 @@ public class GsonParsingTest {
         assertEquals("America/Los_Angeles", structure.getTimeZone());
         assertFalse(structure.isRushHourRewardsEnrollement());
     }
+
+    @Test
+    public void verifyError() throws UnsupportedEncodingException {
+        ErrorData error = fromJson("error-data.json", ErrorData.class);
+
+        assertEquals("blocked", error.getError());
+        assertEquals("https://developer.nest.com/documentation/cloud/error-messages#blocked", error.getType());
+        assertEquals("blocked", error.getMessage());
+        assertEquals("bb514046-edc9-4bca-8239-f7a3cfb0925a", error.getInstance());
+    }
+
 }

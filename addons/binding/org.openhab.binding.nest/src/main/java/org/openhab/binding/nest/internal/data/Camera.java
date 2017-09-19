@@ -24,7 +24,7 @@ public class Camera extends BaseNestDevice {
     @SerializedName("is_audio_input_enabled")
     private boolean isAudioInputEnabled;
     @SerializedName("last_is_online_change")
-    private Date LastIsOnlineChange;
+    private Date lastIsOnlineChange;
     @SerializedName("is_video_history_enabled")
     private boolean isVideoHistoryEnabled;
     @SerializedName("web_url")
@@ -55,7 +55,7 @@ public class Camera extends BaseNestDevice {
     }
 
     public Date getLastIsOnlineChange() {
-        return LastIsOnlineChange;
+        return lastIsOnlineChange;
     }
 
     public boolean isVideoHistoryEnabled() {
@@ -179,7 +179,7 @@ public class Camera extends BaseNestDevice {
     @Override
     public String toString() {
         return "Camera [isStreaming=" + isStreaming + ", isAudioInputEnabled=" + isAudioInputEnabled
-                + ", LastIsOnlineChange=" + LastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
+                + ", LastIsOnlineChange=" + lastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
                 + ", webUrl=" + webUrl + ", appUrl=" + appUrl + ", isPublicShareEnabled=" + isPublicShareEnabled
                 + ", activityZones=" + activityZones + ", publicShareUrl=" + publicShareUrl + ", snapshotUrl="
                 + snapshotUrl + ", lastEvent=" + lastEvent + ", getName()=" + getName() + ", getDeviceId()="

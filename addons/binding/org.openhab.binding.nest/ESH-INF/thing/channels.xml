@@ -170,34 +170,34 @@
 
     <channel-type id="MaxSetPoint">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Max Set Point</label>
         <description>The max set point in degrees Celsius</description>
         <category>Temperature</category>
-        <state readOnly="false" min="9" max="32" />
+        <state readOnly="false" />
     </channel-type>
 
     <channel-type id="MinSetPoint">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Min Set Point</label>
         <description>The min set point in degrees Celsius</description>
         <category>Temperature</category>
-        <state readOnly="false" min="9" max="32" />
+        <state readOnly="false" />
     </channel-type>
 
     <channel-type id="LockedMaxSetPoint" advanced="true">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Locked Max Set Point</label>
         <description>The locked range max set point in degrees Celsius</description>
         <category>Temperature</category>
-        <state readOnly="false" min="9" max="32" />
+        <state readOnly="false" />
     </channel-type>
 
     <channel-type id="LockedMinSetPoint" advanced="true">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Locked Min Set Point</label>
         <description>The locked range min set point in degrees Celsius</description>
         <category>Temperature</category>
-        <state readOnly="false" min="9" max="32" />
+        <state readOnly="false" />
     </channel-type>
 
     <channel-type id="Locked" advanced="true">

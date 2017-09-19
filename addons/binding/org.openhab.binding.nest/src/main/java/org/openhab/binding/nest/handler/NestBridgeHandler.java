@@ -44,6 +44,7 @@ import org.openhab.binding.nest.internal.NestAuthorizer;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.TopLevelData;
@@ -167,11 +168,22 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             String jsonResponse = jsonFromGetUrl();
             logger.debug("GET response: {}", jsonResponse);
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
+            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            if (StringUtils.isBlank(error.getError())) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
 
-            TopLevelData data = gson.fromJson(jsonResponse, TopLevelData.class);
-            broadcastDevices(data.getDevices());
-            broadcastStructure(data.getStructures().values());
+                TopLevelData data = gson.fromJson(jsonResponse, TopLevelData.class);
+                if (data.getDevices() != null) {
+                    broadcastDevices(data.getDevices());
+                }
+                if (data.getStructures() != null) {
+                    broadcastStructure(data.getStructures().values());
+                }
+            } else {
+                logger.debug("Nest API error: {}", error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Nest API error: " + error.getMessage());
+            }
         } catch (InvalidAccessTokenException e) {
             logger.debug("Invalid access token", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -312,8 +324,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             String content = gson.toJson(request.getValues());
             logger.debug("Content: {}", content);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE,
-                    5000);
+            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE, 5000);
             logger.debug("PUT response: {}", response);
         } catch (IOException e) {
             throw new FailedSendingNestDataException("Failed to send data", e);
