@@ -32,6 +32,7 @@ public class KodiBindingConstants {
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
     public static final String PORT_PARAMETER = "port";
+    public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";

@@ -213,7 +213,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
         }
-
     }
 
     public void playURI(Command command) {
@@ -266,7 +265,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     if (KodiState.Play.equals(connection.getState())) {
                         connection.updatePlayerStatus();
                     }
-                }, 1, 10, TimeUnit.SECONDS);
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);
@@ -291,7 +290,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateScreenSaverState(boolean screenSaveActive) {
-
     }
 
     @Override

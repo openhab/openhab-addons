@@ -73,7 +73,6 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
-
             String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
                     : device.getDetails().getFriendlyName();
             Map<String, Object> properties = new HashMap<>(2, 1);
