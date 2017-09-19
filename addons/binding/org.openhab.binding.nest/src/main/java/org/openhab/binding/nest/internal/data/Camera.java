@@ -179,7 +179,7 @@ public class Camera extends BaseNestDevice {
     @Override
     public String toString() {
         return "Camera [isStreaming=" + isStreaming + ", isAudioInputEnabled=" + isAudioInputEnabled
-                + ", LastIsOnlineChange=" + lastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
+                + ", lastIsOnlineChange=" + lastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
                 + ", webUrl=" + webUrl + ", appUrl=" + appUrl + ", isPublicShareEnabled=" + isPublicShareEnabled
                 + ", activityZones=" + activityZones + ", publicShareUrl=" + publicShareUrl + ", snapshotUrl="
                 + snapshotUrl + ", lastEvent=" + lastEvent + ", getName()=" + getName() + ", getDeviceId()="
