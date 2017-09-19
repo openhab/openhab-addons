@@ -61,9 +61,9 @@ public class NestThermostatHandler extends NestBaseHandler {
                 addUpdateRequest("target_temperature_low_c", ((DecimalType) command).floatValue());
             }
         } else if (CHANNEL_FAN_TIMER_ACTIVE.equals(channelUID.getId())) {
-            if (command instanceof DecimalType) {
+            if (command instanceof OnOffType) {
                 // Update fan timer active to the command value
-                addUpdateRequest("fan_timer_active", ((DecimalType) command).intValue() == 0 ? "false" : "true");
+                addUpdateRequest("fan_timer_active", command == OnOffType.ON);
             }
         } else if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
@@ -97,6 +97,8 @@ public class NestThermostatHandler extends NestBaseHandler {
         updateState(CHANNEL_MAX_SET_POINT, new DecimalType(thermostat.getTargetTemperatureHigh()));
         updateState(CHANNEL_CAN_HEAT, thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_CAN_COOL, thermostat.isCanCool() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_FAN_TIMER_ACTIVE, thermostat.isFanTimerActive() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_FAN_TIMER_DURATION, new DecimalType(thermostat.getFanTimerDuration()));
         updateState(CHANNEL_HAS_FAN, thermostat.isHasFan() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_HAS_LEAF, thermostat.isHasLeaf() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_USING_EMERGENCY_HEAT, thermostat.isUsingEmergencyHeat() ? OnOffType.ON : OnOffType.OFF);
@@ -113,16 +115,16 @@ public class NestThermostatHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestCameraData(Camera camera) {
-        // ignore we are note a camera handler
+        // ignore we are not a camera handler
     }
 
     @Override
     public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        // ignore we are note a smoke sensor
+        // ignore we are not a smoke sensor handler
     }
 
     @Override
     public void onNewNestStructureData(Structure struct) {
-        // ignore we are note a structure handler
+        // ignore we are not a structure handler
     }
 }

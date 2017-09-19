@@ -268,6 +268,20 @@
         <state readOnly="true" />
     </channel-type>
 
+    <channel-type id="FanTimerActive" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Fan Timer Active</label>
+        <description>If the fan timer is engaged</description>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="FanTimerDuration" advanced="true">
+        <item-type>Number</item-type>
+        <label>Fan Timer Duration</label>
+        <description>Length of time (in minutes) that the fan is set to run</description>
+        <state readOnly="false" />
+    </channel-type>
+
     <channel-type id="HasFan" advanced="true">
         <item-type>Switch</item-type>
         <label>Has Fan</label>

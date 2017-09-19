@@ -67,11 +67,7 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     }
 
     State getAsStringTypeOrNull(Object value) {
-        if (value == null) {
-            return UnDefType.NULL;
-        }
-
-        return new StringType(value.toString());
+        return value == null ? UnDefType.NULL :  new StringType(value.toString());
     }
 
     State getAsDateTimeTypeOrNull(Date date) {

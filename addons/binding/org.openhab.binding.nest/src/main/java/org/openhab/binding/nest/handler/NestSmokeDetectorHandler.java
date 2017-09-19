@@ -52,7 +52,7 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestCameraData(Camera camera) {
-        // ignore we are note a camera handler
+        // ignore we are not a camera handler
     }
 
     @Override
@@ -77,7 +77,7 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
 
     @Override
     public void onNewNestStructureData(Structure struct) {
-        // ignore we are note a structure handler
+        // ignore we are not a structure handler
     }
 
 }
