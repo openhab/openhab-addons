@@ -28,6 +28,8 @@
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
+		<representation-property>ain</representation-property>
+
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
@@ -55,6 +57,8 @@
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
+		<representation-property>ain</representation-property>
+
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
@@ -76,6 +80,8 @@
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -99,6 +105,8 @@
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
+		<representation-property>ain</representation-property>
+
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
@@ -121,6 +129,8 @@
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
+		<representation-property>ain</representation-property>
+
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
@@ -138,6 +148,8 @@
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
 	</thing-type>
 
@@ -153,6 +165,8 @@
 		<channels>
 			<channel typeId="temperature" id="temperature"></channel>
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>

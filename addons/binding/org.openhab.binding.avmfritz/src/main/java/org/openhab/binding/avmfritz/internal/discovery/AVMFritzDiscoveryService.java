@@ -105,19 +105,18 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      * @param device Device model received from a FRITZ!Box
      */
     public void onDeviceAddedInternal(DeviceModel device) {
-        final ThingUID thingUID = bridgeHandler.getThingUID(device);
+        ThingUID thingUID = bridgeHandler.getThingUID(device);
         if (thingUID != null) {
-            final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            final Map<String, Object> properties = new HashMap<>();
+            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
             properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
 
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(device.getIdentifier()).withBridge(bridgeUID)
-                    .withLabel(device.getName()).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(THING_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
 
             thingDiscovered(discoveryResult);
         } else {
