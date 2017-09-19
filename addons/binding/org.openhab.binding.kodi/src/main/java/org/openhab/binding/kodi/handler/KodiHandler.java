@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
-import org.openhab.binding.kodi.internal.jobs.KodiStatusUpdaterRunnable;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,27 +256,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             } else {
                 connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090), scheduler);
 
-                // Start the connection checker
-                Runnable connectionChecker = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!connection.checkConnection()) {
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
-                        } catch (Exception ex) {
-                            logger.debug("Exception in check connection to @{}. Cause: {}",
-                                    connection.getConnectionName(), ex.getMessage(), ex);
-
-                        }
+                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (!connection.checkConnection()) {
+                        updateStatus(ThingStatus.OFFLINE);
                     }
-                };
-                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+                }, 1, 10, TimeUnit.SECONDS);
 
-                // Start the status updater
-                Runnable statusUpdater = new KodiStatusUpdaterRunnable(connection);
-                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
-
+                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (KodiState.Play.equals(connection.getState())) {
+                        connection.updatePlayerStatus();
+                    }
+                }, 1, 10, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);
