@@ -302,8 +302,11 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            for (NestUpdateRequest updateRequest : nestUpdateRequests) {
-                jsonToPutUrl(updateRequest);
+            while (nestUpdateRequests.size() > 0) {
+                // nestUpdateRequests is a CopyOnWriteArrayList so its iterator does not support remove operations
+                NestUpdateRequest request = nestUpdateRequests.get(0);
+                jsonToPutUrl(request);
+                nestUpdateRequests.remove(request);
             }
         } catch (InvalidAccessTokenException e) {
             logger.debug("Invalid access token", e);
@@ -321,11 +324,19 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL, redirectUrl);
             logger.debug("Putting data to: {}", url);
 
-            String content = gson.toJson(request.getValues());
-            logger.debug("Content: {}", content);
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            String response = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE, 5000);
-            logger.debug("PUT response: {}", response);
+            String jsonContent = gson.toJson(request.getValues());
+            logger.debug("PUT content: {}", jsonContent);
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
+            String jsonResponse = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE,
+                    5000);
+            logger.debug("PUT response: {}", jsonResponse);
+
+            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            if (StringUtils.isNotBlank(error.getError())) {
+                logger.debug("Nest API error: {}", error);
+                logger.warn("Nest API error: {}", error.getMessage());
+            }
         } catch (IOException e) {
             throw new FailedSendingNestDataException("Failed to send data", e);
         }
