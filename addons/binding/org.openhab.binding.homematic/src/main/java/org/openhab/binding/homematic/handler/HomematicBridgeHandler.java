@@ -63,9 +63,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         this.ipv4Address = ipv4Address;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         config = createHomematicConfig();
@@ -115,9 +112,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Disposing bridge '{}'", getThing().getUID().getId());
@@ -200,9 +194,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         return homematicConfig;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -239,9 +230,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
@@ -254,9 +242,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
@@ -267,44 +252,29 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         return new HmDatapointConfig();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onNewDevice(HmDevice device) {
         onDeviceLoaded(device);
         updateThing(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
         updateThing(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
         reloadAllDeviceValues();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceLoaded(HmDevice device) {
         typeGenerator.generate(device);
@@ -313,9 +283,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void reloadDeviceValues(HmDevice device) {
         updateThing(device);
@@ -324,9 +291,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void reloadAllDeviceValues() {
         for (Thing hmThing : getThing().getThings()) {

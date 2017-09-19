@@ -19,18 +19,11 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class FirmwareVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_FIRMWARE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (!device.isGatewayExtras()) {

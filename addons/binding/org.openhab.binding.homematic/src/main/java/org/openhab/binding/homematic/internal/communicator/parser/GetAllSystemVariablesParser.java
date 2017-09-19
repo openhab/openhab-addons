@@ -28,9 +28,6 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void>
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {

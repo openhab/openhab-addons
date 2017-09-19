@@ -50,17 +50,11 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BINDING_ID.equals(thingTypeUID.getBindingId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {

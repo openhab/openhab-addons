@@ -35,9 +35,6 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
         this.isHmIpDevice = channel.getDevice().getHmInterface() == HmInterface.HMIP;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {

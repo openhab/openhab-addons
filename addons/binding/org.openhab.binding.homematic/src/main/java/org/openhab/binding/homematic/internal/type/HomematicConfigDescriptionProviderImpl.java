@@ -26,25 +26,16 @@ import org.osgi.service.component.annotations.Component;
 public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<URI, ConfigDescription>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<ConfigDescription> getConfigDescriptions(Locale locale) {
         return configDescriptionsByURI.values();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ConfigDescription getConfigDescription(URI uri, Locale locale) {
         return configDescriptionsByURI.get(uri);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addConfigDescription(ConfigDescription configDescription) {
         configDescriptionsByURI.put(configDescription.getUID(), configDescription);

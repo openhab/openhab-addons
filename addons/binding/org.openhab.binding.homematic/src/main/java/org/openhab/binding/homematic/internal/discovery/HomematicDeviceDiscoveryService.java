@@ -51,26 +51,17 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
         super.activate(null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deactivate() {
         super.deactivate();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startScan() {
         logger.debug("Starting Homematic discovery scan");
         loadDevices();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");

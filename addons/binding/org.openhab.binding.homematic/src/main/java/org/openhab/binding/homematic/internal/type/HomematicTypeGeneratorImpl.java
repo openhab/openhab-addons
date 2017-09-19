@@ -110,18 +110,12 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         this.configDescriptionProvider = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Activate
     public void initialize() {
         MetadataUtils.initialize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void generate(HmDevice device) {
         if (thingTypeProvider != null) {
@@ -170,9 +164,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void validateFirmwares() {
         for (String deviceType : firmwaresByType.keySet()) {

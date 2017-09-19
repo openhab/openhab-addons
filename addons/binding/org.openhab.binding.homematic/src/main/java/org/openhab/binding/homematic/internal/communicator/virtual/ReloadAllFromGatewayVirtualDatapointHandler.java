@@ -27,18 +27,11 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
@@ -46,17 +39,11 @@ public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtual
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
         return getName().equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {

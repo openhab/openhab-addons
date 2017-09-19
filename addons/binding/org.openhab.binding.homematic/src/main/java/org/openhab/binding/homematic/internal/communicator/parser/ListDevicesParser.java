@@ -33,9 +33,6 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
         this.config = config;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Collection<HmDevice> parse(Object[] message) throws IOException {

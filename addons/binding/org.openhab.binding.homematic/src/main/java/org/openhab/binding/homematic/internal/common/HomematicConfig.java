@@ -292,9 +292,6 @@ public class HomematicConfig {
         return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_NOCCU);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);

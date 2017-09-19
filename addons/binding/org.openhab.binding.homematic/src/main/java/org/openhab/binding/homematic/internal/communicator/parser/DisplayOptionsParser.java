@@ -44,9 +44,6 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(Object value) throws IOException {
         String optionsString = StringUtils.remove(toString(value), ' ');

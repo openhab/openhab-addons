@@ -74,9 +74,6 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         return bd.setScale(scale > 2 ? 6 : 2, RoundingMode.HALF_UP);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException {
@@ -101,9 +98,6 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         return toBinding((T) type, dp);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public T convertFromBinding(HmDatapoint dp) throws ConverterException {

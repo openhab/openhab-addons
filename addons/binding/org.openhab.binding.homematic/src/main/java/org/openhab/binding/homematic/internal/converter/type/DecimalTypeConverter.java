@@ -21,18 +21,11 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
         return dp.isNumberType() && typeClass.isAssignableFrom(DecimalType.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Object toBinding(DecimalType type, HmDatapoint dp) throws ConverterException {
         if (dp.isIntegerType()) {
@@ -41,17 +34,11 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
         return round(type.doubleValue()).doubleValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
         return dp.isNumberType() && dp.getValue() instanceof Number;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected DecimalType fromBinding(HmDatapoint dp) throws ConverterException {
         Number number = ((Number) dp.getValue()).doubleValue();

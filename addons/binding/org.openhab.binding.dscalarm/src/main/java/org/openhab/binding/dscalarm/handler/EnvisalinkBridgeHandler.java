@@ -90,9 +90,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         super.dispose();
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void openConnection() {
         try {
@@ -125,9 +122,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void write(String writeString) {
         try {
@@ -143,9 +137,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public String read() {
         String message = "";
@@ -164,9 +155,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         return message;
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void closeConnection() {
         try {

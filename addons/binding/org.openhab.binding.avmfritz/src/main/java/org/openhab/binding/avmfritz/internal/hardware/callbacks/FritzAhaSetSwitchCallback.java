@@ -38,9 +38,6 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
         itemName = ain;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
