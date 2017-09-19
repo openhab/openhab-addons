@@ -69,7 +69,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start background discovery for RFXCOM transceivers");
-        discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0, REFRESH_INTERVAL_IN_SECONDS,
+        discoveryJob = scheduler.scheduleWithFixedDelay(discoverRunnable, 0, REFRESH_INTERVAL_IN_SECONDS,
                 TimeUnit.SECONDS);
     }
 

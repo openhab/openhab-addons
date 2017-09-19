@@ -211,7 +211,7 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        highPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
+        highPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 publishData(highPriorityChannels);
@@ -219,7 +219,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        mediumPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
+        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 systeminfo.updateStaticObjects();

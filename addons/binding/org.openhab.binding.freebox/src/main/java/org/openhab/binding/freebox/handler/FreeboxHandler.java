@@ -297,7 +297,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 if (globalJob == null || globalJob.isCancelled()) {
                     long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
                     logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
-                    globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+                    globalJob = scheduler.scheduleWithFixedDelay(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
                 }
             }
 

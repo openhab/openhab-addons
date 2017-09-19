@@ -101,7 +101,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Starting polling job at intervall {}",
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval());
-                    pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
+                    pollingJob = scheduler.scheduleWithFixedDelay(devicePolling, 10,
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
                 } else {
                     // Called when thing or bridge updated ...

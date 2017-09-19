@@ -116,7 +116,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     // Initialize bridge polling
                     if (pollingJob == null || pollingJob.isCancelled()) {
                         logger.debug("Starting polling job at intervall {}", mConfig.getPollingInterval());
-                        pollingJob = scheduler.scheduleAtFixedRate(bridgePolling, 10, mConfig.getPollingInterval(),
+                        pollingJob = scheduler.scheduleWithFixedDelay(bridgePolling, 10, mConfig.getPollingInterval(),
                                 TimeUnit.SECONDS);
                     } else {
                         // Called when thing or bridge updated ...

@@ -277,7 +277,7 @@ public class AutelisHandler extends BaseThingHandler {
      */
     private void initPolling() {
         stopPolling();
-        pollFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+        pollFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {

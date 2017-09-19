@@ -87,7 +87,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start Harmony Hub background discovery");
         if (discoveryFuture == null || discoveryFuture.isCancelled()) {
             logger.debug("Start Scan");
-            discoveryFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+            discoveryFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     startScan();
@@ -120,7 +120,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
             server = new HarmonyServer(serverSocket);
             server.start();
 
-            broadcastFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+            broadcastFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     sendDiscoveryMessage(String.format(DISCOVERY_STRING, serverSocket.getLocalPort()));

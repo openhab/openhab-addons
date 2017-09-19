@@ -122,7 +122,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             }
         };
 
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
     }
 
     private synchronized PulseaudioBridgeHandler getPulseaudioBridgeHandler() {

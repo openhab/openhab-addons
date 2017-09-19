@@ -216,7 +216,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         try {
             logger.debug("Connecting: host {}", host);
             client.connect(host);
-            heartBeatJob = scheduler.scheduleAtFixedRate(new Runnable() {
+            heartBeatJob = scheduler.scheduleWithFixedDelay(new Runnable() {
 
                 @Override
                 public void run() {

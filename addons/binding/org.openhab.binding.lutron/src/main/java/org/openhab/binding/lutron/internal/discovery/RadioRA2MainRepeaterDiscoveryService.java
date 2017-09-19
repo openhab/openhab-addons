@@ -85,7 +85,7 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
     @Override
     protected void startBackgroundDiscovery() {
         if (this.backgroundScan == null) {
-            this.backgroundScan = scheduler.scheduleAtFixedRate(new RepeaterScanner(), 1, 30 * 60, TimeUnit.SECONDS);
+            this.backgroundScan = scheduler.scheduleWithFixedDelay(new RepeaterScanner(), 1, 30 * 60, TimeUnit.SECONDS);
         }
     }
 

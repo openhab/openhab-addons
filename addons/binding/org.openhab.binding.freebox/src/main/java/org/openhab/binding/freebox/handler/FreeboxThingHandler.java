@@ -130,7 +130,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone state job every {} seconds...", pollingInterval);
-                            phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, pollingInterval,
+                            phoneJob = scheduler.scheduleWithFixedDelay(phoneRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
@@ -139,7 +139,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone calls job every {} seconds...", pollingInterval);
-                            callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, pollingInterval,
+                            callsJob = scheduler.scheduleWithFixedDelay(callsRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
