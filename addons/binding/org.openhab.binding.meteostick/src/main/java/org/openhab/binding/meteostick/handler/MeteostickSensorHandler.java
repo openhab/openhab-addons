@@ -75,7 +75,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
         // Scheduling a job on each hour to update the last hour rainfall
         long start = 3600 - ((System.currentTimeMillis() % 3600000) / 1000);
-        rainHourlyJob = scheduler.scheduleAtFixedRate(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, 3600, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
     }

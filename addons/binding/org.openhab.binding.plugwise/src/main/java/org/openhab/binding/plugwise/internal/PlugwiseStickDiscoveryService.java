@@ -261,7 +261,8 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         };
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleAtFixedRate(discoveryRunnable, 15, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 15, DISCOVERY_INTERVAL,
+                    TimeUnit.SECONDS);
         }
     }
 

@@ -123,7 +123,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        pollFuture = scheduler.scheduleAtFixedRate(pollingRunnable, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(pollingRunnable, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private synchronized void stopPoll() {

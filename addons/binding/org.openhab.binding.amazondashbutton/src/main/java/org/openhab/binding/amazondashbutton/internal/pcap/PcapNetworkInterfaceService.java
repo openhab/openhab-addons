@@ -193,7 +193,7 @@ public class PcapNetworkInterfaceService {
             return;
         }
         if (!isPolling && !listeners.isEmpty()) {
-            future = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 2, TimeUnit.SECONDS);
+            future = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 2, TimeUnit.SECONDS);
         }
     }
 

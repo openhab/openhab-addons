@@ -296,7 +296,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         };
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleAtFixedRate(discoveryRunnable, 0, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 0, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
@@ -342,7 +342,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         };
 
         if (watchJob == null || watchJob.isCancelled()) {
-            watchJob = scheduler.scheduleAtFixedRate(watchRunnable, WATCH_INTERVAL, WATCH_INTERVAL, TimeUnit.SECONDS);
+            watchJob = scheduler.scheduleWithFixedDelay(watchRunnable, WATCH_INTERVAL, WATCH_INTERVAL,
+                    TimeUnit.SECONDS);
         }
     }
 

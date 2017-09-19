@@ -147,7 +147,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(RFXComBridgeConfiguration.class);
 
         if (connectorTask == null || connectorTask.isCancelled()) {
-            connectorTask = scheduler.scheduleAtFixedRate(new Runnable() {
+            connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
 
                 @Override
                 public void run() {

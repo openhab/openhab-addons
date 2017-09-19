@@ -99,7 +99,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     public void start() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("Start refresh task, interval={}", pollingInterval);
-            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, pollingInterval, TimeUnit.MILLISECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MILLISECONDS);
         }
     }
 

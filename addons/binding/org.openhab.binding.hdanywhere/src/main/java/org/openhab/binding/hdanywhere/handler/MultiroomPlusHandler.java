@@ -156,7 +156,7 @@ public class MultiroomPlusHandler extends BaseThingHandler {
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
         }
     }
 }

@@ -179,7 +179,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        this.keepAlive = this.scheduler.scheduleAtFixedRate(new Runnable() {
+        this.keepAlive = this.scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 sendKeepAlive();

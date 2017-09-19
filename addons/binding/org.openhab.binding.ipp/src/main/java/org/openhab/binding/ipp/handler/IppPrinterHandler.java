@@ -119,7 +119,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
                 }
             }
         };
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
     }
 
     @Override

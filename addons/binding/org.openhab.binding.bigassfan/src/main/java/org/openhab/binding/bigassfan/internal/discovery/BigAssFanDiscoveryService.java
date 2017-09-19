@@ -251,7 +251,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
     private void schedulePollJob() {
         logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ, POLL_DELAY);
         cancelPollJob();
-        pollJob = scheduler.scheduleAtFixedRate(new Runnable() {
+        pollJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
