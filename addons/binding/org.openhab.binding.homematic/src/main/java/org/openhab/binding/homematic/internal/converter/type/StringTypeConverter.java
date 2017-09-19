@@ -20,18 +20,11 @@ import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
  * @author Gerhard Riegler - Initial contribution
  */
 public class StringTypeConverter extends AbstractTypeConverter<StringType> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
         return (dp.isStringType() || dp.isEnumType()) && typeClass.isAssignableFrom(StringType.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Object toBinding(StringType type, HmDatapoint dp) throws ConverterException {
         if (dp.isStringType()) {
@@ -46,17 +39,11 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
         return (dp.isStringType()) || (dp.isEnumType() && dp.getValue() instanceof Number);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected StringType fromBinding(HmDatapoint dp) throws ConverterException {
         if (dp.isStringType()) {

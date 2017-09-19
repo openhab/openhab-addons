@@ -20,10 +20,6 @@ import org.apache.commons.lang.StringUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<String> parse(Object[] message) throws IOException {
         List<String> adresses = new ArrayList<String>();

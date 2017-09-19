@@ -126,9 +126,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         this.gatewayAdapter = gatewayAdapter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() throws IOException {
         logger.debug("Initializing gateway with id '{}'", id);
@@ -176,9 +173,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         startServers();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         initialized = false;
@@ -252,9 +246,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         rpcServers.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void startWatchdogs() {
         ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
@@ -279,9 +270,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         return HmInterface.RF;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException {
         RpcClient<?> rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
@@ -316,9 +304,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     protected abstract void executeScript(HmDatapoint dp) throws IOException;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapoint getDatapoint(HmDatapointInfo dpInfo) throws HomematicClientException {
         HmDevice device = getDevice(dpInfo.getAddress());
@@ -334,9 +319,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         return dp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDevice getDevice(String address) throws HomematicClientException {
         HmDevice device = devices.get(address);
@@ -347,17 +329,11 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         return device;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void cancelLoadAllDeviceMetadata() {
         cancelLoadAllMetadata = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void loadAllDeviceMetadata() throws IOException {
         cancelLoadAllMetadata = false;
@@ -454,9 +430,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void loadChannelValues(HmChannel channel) throws IOException {
         if (channel.getDevice().isGatewayExtras()) {
@@ -501,9 +474,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void loadRssiValues() throws IOException {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
@@ -530,9 +500,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void triggerDeviceValuesReload(HmDevice device) {
         logger.debug("Triggering values reload for device '{}'", device.getAddress());
@@ -542,18 +509,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         gatewayAdapter.reloadDeviceValues(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sendDatapointIgnoreVirtual(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue)
             throws IOException, HomematicClientException {
         sendDatapoint(dp, dpConfig, newValue, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue)
             throws IOException, HomematicClientException {
@@ -624,9 +585,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void eventReceived(HmDatapointInfo dpInfo, Object newValue) {
         String className = newValue == null ? "Unknown" : newValue.getClass().getSimpleName();
@@ -665,9 +623,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void newDevices(List<String> adresses) {
         if (initialized) {
@@ -692,9 +647,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deleteDevices(List<String> addresses) {
         if (initialized) {
@@ -708,17 +660,11 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getId() {
         return id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HomematicGatewayAdapter getGatewayAdapter() {
         return gatewayAdapter;
@@ -776,9 +722,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void disableDatapoint(final HmDatapoint dp, double delay) {
         try {
@@ -808,9 +751,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         private boolean ping;
         private boolean pong;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void run() {
             try {

@@ -156,9 +156,6 @@ public class HmGatewayInfo {
         this.groupInterface = groupInterface;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)

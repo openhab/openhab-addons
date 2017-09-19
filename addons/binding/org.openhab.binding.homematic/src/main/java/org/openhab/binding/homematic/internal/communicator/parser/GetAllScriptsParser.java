@@ -28,9 +28,6 @@ public class GetAllScriptsParser extends CommonRpcParser<Object[], Void> {
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(Object[] message) throws IOException {
         message = (Object[]) message[0];

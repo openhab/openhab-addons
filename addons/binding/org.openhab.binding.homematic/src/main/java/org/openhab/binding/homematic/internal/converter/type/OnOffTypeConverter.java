@@ -21,34 +21,21 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  * @author Gerhard Riegler - Initial contribution
  */
 public class OnOffTypeConverter extends AbstractTypeConverter<OnOffType> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
         return dp.isBooleanType() && typeClass.isAssignableFrom(OnOffType.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Object toBinding(OnOffType type, HmDatapoint dp) throws ConverterException {
         return (type == OnOffType.OFF ? Boolean.FALSE : Boolean.TRUE) != isInvert(dp);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
         return dp.isBooleanType() && dp.getValue() instanceof Boolean;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected OnOffType fromBinding(HmDatapoint dp) throws ConverterException {
         return (((Boolean) dp.getValue()) == Boolean.FALSE) != isInvert(dp) ? OnOffType.OFF : OnOffType.ON;

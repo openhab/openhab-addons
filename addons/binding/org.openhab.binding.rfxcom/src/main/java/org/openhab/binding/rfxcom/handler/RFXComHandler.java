@@ -95,9 +95,6 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing thing {}", getThing().getUID());

@@ -27,9 +27,6 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
         this.devices = devices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {

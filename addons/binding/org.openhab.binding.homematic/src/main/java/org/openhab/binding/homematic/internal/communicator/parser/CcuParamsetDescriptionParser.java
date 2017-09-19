@@ -34,9 +34,6 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
         this.isHmIpDevice = channel.getDevice().getHmInterface() == HmInterface.HMIP;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {

@@ -49,9 +49,6 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         this.service = service;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);

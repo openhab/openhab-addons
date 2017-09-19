@@ -28,40 +28,25 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractVirtualDatapointHandler implements VirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractVirtualDatapointHandler.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapoint getVirtualDatapoint(HmChannel channel) {
         return channel.getDatapoint(HmParamsetType.VALUES, getName());

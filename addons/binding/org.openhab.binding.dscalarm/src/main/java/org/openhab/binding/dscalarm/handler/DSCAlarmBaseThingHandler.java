@@ -71,9 +71,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing DSC Alarm Thing handler - Thing Type: {}; Thing ID: {}.", dscAlarmThingType,
@@ -85,9 +82,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Thing {} disposed.", getThing().getUID());

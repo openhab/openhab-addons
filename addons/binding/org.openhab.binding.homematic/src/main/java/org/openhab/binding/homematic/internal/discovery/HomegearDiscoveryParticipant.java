@@ -35,17 +35,11 @@ import org.slf4j.LoggerFactory;
 public class HomegearDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(HomegearDiscoveryParticipant.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(THING_TYPE_BRIDGE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
@@ -61,9 +55,6 @@ public class HomegearDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
         if (device != null) {

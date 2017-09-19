@@ -32,9 +32,6 @@ public class BinRpcServer implements RpcServer {
         this.config = config;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void start() throws IOException {
         logger.debug("Initializing BIN-RPC server at port {}", config.getBinCallbackPort());
@@ -45,9 +42,6 @@ public class BinRpcServer implements RpcServer {
         networkServiceThread.start();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void shutdown() {
         if (networkService != null) {

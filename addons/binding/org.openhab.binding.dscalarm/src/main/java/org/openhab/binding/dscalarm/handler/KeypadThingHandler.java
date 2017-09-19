@@ -42,9 +42,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         setDSCAlarmThingType(DSCAlarmThingType.KEYPAD);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Keypad Channel UID: {}", channelUID);
@@ -134,9 +131,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
 

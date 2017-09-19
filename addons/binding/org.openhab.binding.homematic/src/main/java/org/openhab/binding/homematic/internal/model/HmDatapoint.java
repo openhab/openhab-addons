@@ -393,9 +393,6 @@ public class HmDatapoint implements Cloneable {
         return name != null && name.startsWith("PRESS_");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapoint clone() {
         HmDatapoint dp = new HmDatapoint(name, description, type, value, readOnly, paramsetType);
@@ -412,9 +409,6 @@ public class HmDatapoint implements Cloneable {
         return dp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", name).append("value", value)

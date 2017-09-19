@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
@@ -51,18 +50,12 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
         super(Collections.singleton(MinecraftBindingConstants.THING_TYPE_SERVER), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startScan() {
         logger.debug("Starting Minecraft discovery scan");
         discoverServers();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected synchronized void stopScan() {
         logger.debug("Stopping Minecraft discovery scan");

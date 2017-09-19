@@ -25,9 +25,6 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
 public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
     private Object value;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapointInfo parse(Object[] message) throws IOException {
         String address;

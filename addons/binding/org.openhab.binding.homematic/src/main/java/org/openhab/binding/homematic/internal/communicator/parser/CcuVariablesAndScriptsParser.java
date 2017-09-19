@@ -30,9 +30,6 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {

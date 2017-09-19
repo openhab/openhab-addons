@@ -63,9 +63,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         scheduler.execute(new Runnable() {
@@ -126,9 +123,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         handleRefresh(channelUID);
@@ -148,9 +142,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelUID);
@@ -349,9 +340,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         return ((HomematicBridgeHandler) bridge.getHandler()).getGateway();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {

@@ -127,9 +127,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
 

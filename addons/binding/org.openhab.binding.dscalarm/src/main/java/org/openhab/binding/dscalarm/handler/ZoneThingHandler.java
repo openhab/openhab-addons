@@ -45,9 +45,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         setDSCAlarmThingType(DSCAlarmThingType.ZONE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Zone Channel UID: {}", channelUID);
@@ -96,9 +93,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -132,9 +126,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         updateState(new ChannelUID(getThing().getUID(), ZONE_MESSAGE), new StringType(message));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
 

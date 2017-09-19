@@ -28,9 +28,6 @@ public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> 
         this.config = config;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public List<HmRssiInfo> parse(Object[] result) throws IOException {

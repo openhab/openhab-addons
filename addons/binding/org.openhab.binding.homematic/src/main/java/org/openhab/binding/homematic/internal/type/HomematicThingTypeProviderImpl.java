@@ -27,28 +27,18 @@ import org.osgi.service.component.annotations.Component;
 public class HomematicThingTypeProviderImpl implements HomematicThingTypeProvider {
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<ThingTypeUID, ThingType>();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<ThingType> getThingTypes(Locale locale) {
         return thingTypesByUID.values();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
         return thingTypesByUID.get(thingTypeUID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addThingType(ThingType thingType) {
         thingTypesByUID.put(thingType.getUID(), thingType);
     }
-
 }

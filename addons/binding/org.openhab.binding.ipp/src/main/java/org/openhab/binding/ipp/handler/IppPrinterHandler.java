@@ -61,9 +61,6 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();

@@ -8,19 +8,24 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithDabBandControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
-import org.openhab.binding.yamahareceiver.internal.state.*;
+import org.openhab.binding.yamahareceiver.internal.state.DabBandState;
+import org.openhab.binding.yamahareceiver.internal.state.DabBandStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
+import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
+import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 /**
  * This class implements the Yamaha Receiver protocol related to DAB tuners which allows to control band and preset.
@@ -30,7 +35,8 @@ import java.lang.ref.WeakReference;
  *
  * The XML nodes <DAB><Play_Control><Band>FM</Band></Play_Control></DAB> are used.
  *
- * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState} instead.
+ * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
+ * instead.
  *
  * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
  */
@@ -56,13 +62,12 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
     /**
      * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
      * as controlling the playback and choosing a preset item.
+     *
      * @param inputID The input ID - TUNER is going to be used here.
      * @param com The Yamaha communication object to send http requests.
      */
-    public InputWithDabControlXML(String inputID, AbstractConnection com,
-                                  DabBandStateListener observerForBand,
-                                  PresetInfoStateListener observerForPreset,
-                                  PlayInfoStateListener observerForPlayInfo) {
+    public InputWithDabControlXML(String inputID, AbstractConnection com, DabBandStateListener observerForBand,
+            PresetInfoStateListener observerForPreset, PlayInfoStateListener observerForPlayInfo) {
         this.inputID = inputID;
         this.comReference = new WeakReference<>(com);
         this.observerForBand = observerForBand;
@@ -85,9 +90,6 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
         return "<DAB>" + message + "</DAB>";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
         AbstractConnection com = comReference.get();
@@ -96,6 +98,8 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
         if (doc.getFirstChild() == null) {
             throw new ReceivedMessageParseException("<Play_Info>GetParam failed: " + response);
         }
+
+        // @formatter:off
 
         //Sample response:
         //<YAMAHA_AV rsp="GET" RC="0">
@@ -163,6 +167,8 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
         //    </DAB>
         //</YAMAHA_AV>
 
+     // @formatter:on
+
         DabBandState msgForBand = new DabBandState();
         PresetInfoState msgForPreset = new PresetInfoState();
         PlayInfoState msgForPlayInfo = new PlayInfoState();
@@ -174,7 +180,8 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
         bandState = msgForBand;
 
         if (StringUtils.isEmpty(msgForBand.band)) {
-            logger.warn("Band is unknown for input {}, therefore preset and playback information will not be available", inputID);
+            logger.warn("Band is unknown for input {}, therefore preset and playback information will not be available",
+                    inputID);
         } else {
             Node playInfoNode = XMLUtils.getNode(doc.getFirstChild(), "DAB/Play_Info/" + msgForBand.band);
 
@@ -183,14 +190,20 @@ public class InputWithDabControlXML implements InputWithDabBandControl, InputWit
 
             Node metaInfoNode = XMLUtils.getNode(playInfoNode, "Meta_Info");
             if (metaInfoNode != null) {
-                msgForPlayInfo.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Type", msgForPlayInfo.album);
+                msgForPlayInfo.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Type",
+                        msgForPlayInfo.album);
                 if (BAND_FM.equals(msgForBand.band)) {
-                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Service", msgForPlayInfo.station);
-                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Station", msgForPlayInfo.artist);
-                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Radio_Text", msgForPlayInfo.song);
+                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Program_Service",
+                            msgForPlayInfo.station);
+                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Station",
+                            msgForPlayInfo.artist);
+                    msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Radio_Text",
+                            msgForPlayInfo.song);
                 } else if (BAND_DAB.equals(msgForBand.band)) {
-                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Service_Label", msgForPlayInfo.station);
-                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Ensemble_Label", msgForPlayInfo.artist);
+                    msgForPlayInfo.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Service_Label",
+                            msgForPlayInfo.station);
+                    msgForPlayInfo.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Ensemble_Label",
+                            msgForPlayInfo.artist);
                     msgForPlayInfo.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, "DLS", msgForPlayInfo.song);
                 }
             }
