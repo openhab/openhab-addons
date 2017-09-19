@@ -78,11 +78,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         deviceOnlineWatchdog();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         if (refreshJob != null && !refreshJob.isCancelled()) {
