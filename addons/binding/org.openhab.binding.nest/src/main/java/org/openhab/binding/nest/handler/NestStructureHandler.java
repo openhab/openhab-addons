@@ -55,7 +55,7 @@ public class NestStructureHandler extends NestBaseHandler {
             if (command instanceof StringType) {
                 StringType cmd = (StringType) command;
                 // Set the mode to be the cmd value.
-                addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, "away", HomeAwayState.valueOf(cmd.toString()));
+                addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, "away", HomeAwayState.valueOf(cmd.toString().toLowerCase()));
             }
         }
     }

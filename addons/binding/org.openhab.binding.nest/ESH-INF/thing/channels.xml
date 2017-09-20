@@ -157,6 +157,7 @@
         <item-type>Switch</item-type>
         <label>Manual Test Active</label>
         <description>If the manual test is currently active</description>
+        <state readOnly="true" />
     </channel-type>
 
     <!-- Thermostat -->
@@ -289,12 +290,12 @@
         <state readOnly="true" />
     </channel-type>
 
-    <channel-type id="HasLeaf">
-        <item-type>Switch</item-type>
-        <label>Has Leaf</label>
-        <description>If the thermostat is currently in a leaf mode</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="HasLeaf">
+		<item-type>Switch</item-type>
+		<label>Has Leaf</label>
+		<description>If the thermostat is currently in a leaf mode</description>
+		<state readOnly="true" />
+	</channel-type>
 
     <channel-type id="SunlightCorrectionEnabled" advanced="true">
         <item-type>Switch</item-type>
