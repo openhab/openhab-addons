@@ -119,6 +119,13 @@
         <state readOnly="true"/>
     </channel-type>
     
+    <channel-type id="roNumberTypeId">
+        <item-type>Number</item-type>
+        <label>Loxone State Read-only Information</label>
+        <description>Loxone's state information controls (NumberState, read-only).</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
     <channel-type id="roAnalogTypeId">
         <item-type>Number</item-type>
         <label>Loxone Virtual Analog State Read-only Information</label>
