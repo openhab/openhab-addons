@@ -69,7 +69,8 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
             "0C:47:C9",
             "A0:02:DC",
             "74:75:48",
-            "AC:63:BE"
+            "AC:63:BE",
+            "FC:A6:67"
         );
     // @formatter:on
 
