@@ -185,7 +185,7 @@ Switch        Stair_Lights    "Stair Lights"                         <switch>   
 Number        Stair_Lights-1  "Stair Lights Deactivation Delay"      <clock>       ["lighting"] {channel="loxone:miniserver:504F2414780F:0EC5E0CF-0255-31BD-FFFF402FB0C24B9E-1"}
 Switch        Reset_Lights    "Switch all lights off"                <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0F2F2133-01AD-3282-FFFF201EB0C24B9E",autoupdate="false"}
 Rollershutter Kitchen_Blinds  "Kitchen blinds"                       <blinds>                   {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF204EB3C24B9E"}
-Dimmer        Kitchen_Dimmer  "Kitchen dimmer"                       <slider>      ["lighting"]       {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF207EB3C24B9E"}
+Dimmer        Kitchen_Dimmer  "Kitchen dimmer"                       <slider>      ["lighting"]{channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF207EB3C24B9E"}
 Number        Light_Scene     "Lighting scene"                       <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE403FB0C34B9E"}
 Number        Garden_Valve    "Garden watering section"              <garden>                   {channel="loxone:miniserver:504F2414780F:0FC5E0DF-0355-6AAD-FFFE403FB0C34B9E"}
 String        Alarm_State     "Alarm state [%s]"                     <alarm>                    {channel="loxone:miniserver:504F2414780F:0F2E2134-017D-3E82-FFFF433FB4A34B9E"}
