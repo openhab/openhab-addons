@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -53,7 +54,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      * Provides the supported thing types
      */
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
@@ -84,7 +85,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      * Remove handler of things.
      */
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
+    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof BoxHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {

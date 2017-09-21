@@ -35,6 +35,7 @@ public class HeatingModel {
     public static final BigDecimal TEMP_FRITZ_MAX = new BigDecimal("56.0");
     public static final BigDecimal TEMP_FRITZ_OFF = new BigDecimal("253.0");
     public static final BigDecimal TEMP_FRITZ_ON = new BigDecimal("254.0");
+    public static final BigDecimal TEMP_FRITZ_UNDEFINED = new BigDecimal("255.0");
     public static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
     public static final BigDecimal BATTERY_ON = BigDecimal.ONE;
 
@@ -149,8 +150,8 @@ public class HeatingModel {
     public String toString() {
         return new ToStringBuilder(this).append("tist", getTist()).append("tsoll", getTsoll())
                 .append("absenk", getAbsenk()).append("komfort", getKomfort()).append("lock", getLock())
-                .append("errorcode", getErrorcode()).append("batterylow", getBatterylow())
-                .append("nextchange", getNextchange()).toString();
+                .append("devicelock", getDevicelock()).append("errorcode", getErrorcode())
+                .append("batterylow", getBatterylow()).append("nextchange", getNextchange()).toString();
     }
 
     public static BigDecimal fromCelsius(BigDecimal celsiusValue) {

@@ -119,6 +119,10 @@ public class DeviceModel {
         this.ident = identifier;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
     public boolean isSwitchableOutlet() {
         return (bitmask & DeviceModel.SWITCH_BIT) > 0;
     }
@@ -164,7 +168,7 @@ public class DeviceModel {
         return new ToStringBuilder(this).append("ain", getIdentifier()).append("bitmask", bitmask)
                 .append("isDectRepeater", isDectRepeater()).append("isPowermeter", isPowermeter())
                 .append("isTempSensor", isTempSensor()).append("isSwitchableOutlet", isSwitchableOutlet())
-                .append("isHeatingThermostat", isHeatingThermostat()).append("id", deviceId)
+                .append("isHeatingThermostat", isHeatingThermostat()).append("id", getDeviceId())
                 .append("manufacturer", getManufacturer()).append("productname", getProductName())
                 .append("fwversion", getFirmwareVersion()).append("present", getPresent()).append("name", getName())
                 .append(getSwitch()).append(getPowermeter()).append(getTemperature()).append(getHkr()).toString();
