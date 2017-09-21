@@ -10,6 +10,11 @@ package org.openhab.binding.icloud.internal.json.iCloud;
 
 import java.util.ArrayList;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class Content {
     private Object msg;
 

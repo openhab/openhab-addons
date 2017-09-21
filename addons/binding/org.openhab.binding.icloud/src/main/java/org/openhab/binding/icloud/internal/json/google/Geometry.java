@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.icloud.internal.json.google;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class Geometry {
     private Bounds bounds;
 

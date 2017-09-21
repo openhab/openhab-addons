@@ -33,7 +33,7 @@ public class AddressLookupParser {
             Gson gson = new GsonBuilder().create();
             data = gson.fromJson(json, JSONRootObject.class);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e.getStackTrace().toString());
+            logger.error("{}", e.getMessage(), e.getStackTrace().toString());
         }
     }
 

@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.icloud.internal;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class Address {
     public String Street;
     public String City;

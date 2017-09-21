@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.icloud.internal.json.iCloud;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class Location {
     private boolean isOld;
 

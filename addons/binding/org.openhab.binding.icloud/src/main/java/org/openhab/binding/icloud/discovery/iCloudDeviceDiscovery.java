@@ -21,6 +21,11 @@ import org.openhab.binding.icloud.internal.json.iCloud.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class iCloudDeviceDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(iCloudBridgeHandler.class);
     private static final int timeout = 10;
@@ -39,7 +44,7 @@ public class iCloudDeviceDiscovery extends AbstractDiscoveryService {
 
                 String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
 
-                logger.debug("iCloud device discovery for [" + content.get(i).getDeviceDisplayName() + "]");
+                logger.debug("iCloud device discovery for [{}]", content.get(i).getDeviceDisplayName());
                 ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, Integer.toString(i));
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingLabel)
                         .build();

@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.icloud.internal;
 
+/**
+ *
+ * @author Patrik Gfeller
+ *
+ */
 public class iCloudConfiguration {
     public String AppleId;
     public String Password;

@@ -26,6 +26,7 @@ The binding uses googles "[Geocode API](https://developers.google.com/maps/docum
 ## Supported Things
 
 The following devices are known to work with this binding:
+
 * iPhone 6s
 * iPhone 5c
 * iPhone 7
@@ -110,7 +111,6 @@ sitemap icloud  label="iCloud Data" {
 # Configuration with Paper UI 
 
 First select iCloud Binding in "Paper UI > Configuration > Things" and provide your id, password and refresh interval. Devices are automatically discovered once the thing is configured and online.
-
 
 1.  Select the binding:  
 ![Select binding](./doc/Config_1.png "Step 1")

@@ -139,7 +139,7 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
         try {
             connection.pingPhone(deviceId);
         } catch (Exception e) {
-            logger.debug(e.getMessage(), e.getStackTrace().toString());
+            logger.debug("{}", e.getMessage(), e.getStackTrace().toString());
         }
     }
 
@@ -205,7 +205,7 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
     }
 
     private void logException(Exception exception) {
-        logger.error(exception.getMessage() + "\n" + exception.getStackTrace());
+        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace());
     }
 
 }
