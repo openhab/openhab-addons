@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * All the Nest devices broken up by type.
@@ -42,7 +42,10 @@ public class NestDevices {
 
     @Override
     public String toString() {
-        return "NestDevices [thermostats=" + thermostats + ", smokeDetector=" + smokeDetector + ", camera=" + camera
-                + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("NestDevices [thermostats=").append(thermostats).append(", smokeDetector=").append(smokeDetector)
+                .append(", camera=").append(camera).append("]");
+        return builder.toString();
     }
+
 }

@@ -207,12 +207,17 @@ public class Structure implements NestIdentifiable {
 
     @Override
     public String toString() {
-        return "Structure [structureId=" + structureId + ", thermostatIds=" + thermostatIds + ", smokeAlarmIds="
-                + smokeAlarmIds + ", cameraIds=" + cameraIds + ", countryCode=" + countryCode + ", postalCode="
-                + postalCode + ", peakPeriodStartTime=" + peakPeriodStartTime + ", peakPeriodEndTime="
-                + peakPeriodEndTime + ", timeZone=" + timeZone + ", etaBegin=" + etaBegin + ", coAlarmState="
-                + coAlarmState + ", smokeAlarmState=" + smokeAlarmState + ", rushHourRewardsEnrollement="
-                + rushHourRewardsEnrollement + ", whereIds=" + whereIds + ", away=" + away + ", name=" + name + ", eta="
-                + eta + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Structure [structureId=").append(structureId).append(", thermostatIds=").append(thermostatIds)
+                .append(", smokeAlarmIds=").append(smokeAlarmIds).append(", cameraIds=").append(cameraIds)
+                .append(", countryCode=").append(countryCode).append(", postalCode=").append(postalCode)
+                .append(", peakPeriodStartTime=").append(peakPeriodStartTime).append(", peakPeriodEndTime=")
+                .append(peakPeriodEndTime).append(", timeZone=").append(timeZone).append(", etaBegin=").append(etaBegin)
+                .append(", coAlarmState=").append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
+                .append(", rushHourRewardsEnrollement=").append(rushHourRewardsEnrollement).append(", whereIds=")
+                .append(whereIds).append(", away=").append(away).append(", name=").append(name).append(", eta=")
+                .append(eta).append("]");
+        return builder.toString();
     }
+
 }

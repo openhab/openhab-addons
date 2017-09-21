@@ -31,6 +31,10 @@ public class AccessTokenData {
 
     @Override
     public String toString() {
-        return "AccessTokenData{accessToken='" + accessToken + '\'' + ", expiresIn=" + expiresIn + '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("AccessTokenData [accessToken=").append(accessToken).append(", expiresIn=").append(expiresIn)
+                .append("]");
+        return builder.toString();
     }
+
 }

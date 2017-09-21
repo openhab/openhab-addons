@@ -28,4 +28,12 @@ public class NestMetadata {
     public String getClientVersion() {
         return clientVersion;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NestMetadata [accessToken=").append(accessToken).append(", clientVersion=")
+                .append(clientVersion).append("]");
+        return builder.toString();
+    }
 }

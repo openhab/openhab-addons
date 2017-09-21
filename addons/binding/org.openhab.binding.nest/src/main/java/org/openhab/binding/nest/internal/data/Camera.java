@@ -178,13 +178,20 @@ public class Camera extends BaseNestDevice {
 
     @Override
     public String toString() {
-        return "Camera [isStreaming=" + isStreaming + ", isAudioInputEnabled=" + isAudioInputEnabled
-                + ", lastIsOnlineChange=" + lastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
-                + ", webUrl=" + webUrl + ", appUrl=" + appUrl + ", isPublicShareEnabled=" + isPublicShareEnabled
-                + ", activityZones=" + activityZones + ", publicShareUrl=" + publicShareUrl + ", snapshotUrl="
-                + snapshotUrl + ", lastEvent=" + lastEvent + ", getName()=" + getName() + ", getDeviceId()="
-                + getDeviceId() + ", getLastConnection()=" + getLastConnection() + ", getNameLong()=" + getNameLong()
-                + ", getSoftwareVersion()=" + getSoftwareVersion() + ", isOnline()=" + isOnline()
-                + ", getStructureId()=" + getStructureId() + ", getWhereId()=" + getWhereId() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Camera [isStreaming=").append(isStreaming).append(", isAudioInputEnabled=")
+                .append(isAudioInputEnabled).append(", lastIsOnlineChange=").append(lastIsOnlineChange)
+                .append(", isVideoHistoryEnabled=").append(isVideoHistoryEnabled).append(", webUrl=").append(webUrl)
+                .append(", appUrl=").append(appUrl).append(", isPublicShareEnabled=").append(isPublicShareEnabled)
+                .append(", activityZones=").append(activityZones).append(", publicShareUrl=").append(publicShareUrl)
+                .append(", snapshotUrl=").append(snapshotUrl).append(", lastEvent=").append(lastEvent)
+                .append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
+                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
+                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
+                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
+                .append("]");
+        return builder.toString();
     }
+
 }

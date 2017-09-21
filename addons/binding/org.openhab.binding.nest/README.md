@@ -136,7 +136,7 @@ Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589
 
 ```
 /* Camera */
-String Cam_App_UrL               "App URL [%s]"          { channel="nest:camera:demo_account:fish_cam:app_url" }
+String Cam_App_URL               "App URL [%s]"          { channel="nest:camera:demo_account:fish_cam:app_url" }
 Switch Cam_Audio_Input_Enabled   "Audio Input Enabled"   { channel="nest:camera:demo_account:fish_cam:audio_input_enabled" }
 String Cam_Snapshot_URL          "Snapshot URL [%s]"     { channel="nest:camera:demo_account:fish_cam:snapshot_url" }
 Switch Cam_Streaming             "Streaming"             { channel="nest:camera:demo_account:fish_cam:streaming" }

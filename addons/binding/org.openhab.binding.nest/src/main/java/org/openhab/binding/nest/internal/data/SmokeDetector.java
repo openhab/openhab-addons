@@ -76,11 +76,17 @@ public class SmokeDetector extends BaseNestDevice {
 
     @Override
     public String toString() {
-        return "SmokeDetector [batteryHealth=" + batteryHealth + ", coAlarmState=" + coAlarmState + ", smokeAlarmState="
-                + smokeAlarmState + ", isManualTestActive=" + isManualTestActive + ", uiColorState=" + uiColorState
-                + ", getName()=" + getName() + ", getDeviceId()=" + getDeviceId() + ", getLastConnection()="
-                + getLastConnection() + ", getNameLong()=" + getNameLong() + ", getSoftwareVersion()="
-                + getSoftwareVersion() + ", getStructureId()=" + getStructureId() + ", isOnline()=" + isOnline()
-                + ", getWhereId()=" + getWhereId() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("SmokeDetector [batteryHealth=").append(batteryHealth).append(", coAlarmState=")
+                .append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
+                .append(", isManualTestActive=").append(isManualTestActive).append(", uiColorState=")
+                .append(uiColorState).append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
+                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
+                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
+                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
+                .append("]");
+        return builder.toString();
     }
+
 }

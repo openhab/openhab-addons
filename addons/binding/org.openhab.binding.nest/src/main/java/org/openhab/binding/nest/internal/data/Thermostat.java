@@ -229,19 +229,27 @@ public class Thermostat extends BaseNestDevice {
 
     @Override
     public String toString() {
-        return "Thermostat [canCool=" + canCool + ", canHeat=" + canHeat + ", isUsingEmergencyHeat="
-                + isUsingEmergencyHeat + ", hasFan=" + hasFan + ", fanTimerActive=" + fanTimerActive
-                + ", fanTimerTimeout=" + fanTimerTimeout + ", hasLeaf=" + hasLeaf + ", tempScale=" + tempScale
-                + ", ambientTemperature=" + ambientTemperature + ", humidity=" + humidity + ", targetTemperature="
-                + targetTemperature + ", targetTemperatureHigh=" + targetTemperatureHigh + ", targetTemperatureLow="
-                + targetTemperatureLow + ", mode=" + mode + ", previousMode=" + previousMode + ", state=" + state
-                + ", isLocked=" + isLocked + ", lockedTemperatureHigh=" + lockedTemperatureHigh
-                + ", lockedTemperatureLow=" + lockedTemperatureLow + ", sunlightCorrectionEnabled="
-                + sunlightCorrectionEnabled + ", sunlightCorrectionActive=" + sunlightCorrectionActive
-                + ", fanTimerDuration=" + fanTimerDuration + ", timeToTarget=" + timeToTarget + ", whereName="
-                + whereName + ", getName()=" + getName() + ", getDeviceId()=" + getDeviceId() + ", getLastConnection()="
-                + getLastConnection() + ", isOnline()=" + isOnline() + ", getNameLong()=" + getNameLong()
-                + ", getSoftwareVersion()=" + getSoftwareVersion() + ", getStructureId()=" + getStructureId()
-                + ", getWhereId()=" + getWhereId() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Thermostat [canCool=").append(canCool).append(", canHeat=").append(canHeat)
+                .append(", isUsingEmergencyHeat=").append(isUsingEmergencyHeat).append(", hasFan=").append(hasFan)
+                .append(", fanTimerActive=").append(fanTimerActive).append(", fanTimerTimeout=").append(fanTimerTimeout)
+                .append(", hasLeaf=").append(hasLeaf).append(", tempScale=").append(tempScale)
+                .append(", ambientTemperature=").append(ambientTemperature).append(", humidity=").append(humidity)
+                .append(", targetTemperature=").append(targetTemperature).append(", targetTemperatureHigh=")
+                .append(targetTemperatureHigh).append(", targetTemperatureLow=").append(targetTemperatureLow)
+                .append(", mode=").append(mode).append(", previousMode=").append(previousMode).append(", state=")
+                .append(state).append(", isLocked=").append(isLocked).append(", lockedTemperatureHigh=")
+                .append(lockedTemperatureHigh).append(", lockedTemperatureLow=").append(lockedTemperatureLow)
+                .append(", sunlightCorrectionEnabled=").append(sunlightCorrectionEnabled)
+                .append(", sunlightCorrectionActive=").append(sunlightCorrectionActive).append(", fanTimerDuration=")
+                .append(fanTimerDuration).append(", timeToTarget=").append(timeToTarget).append(", whereName=")
+                .append(whereName).append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
+                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
+                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
+                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
+                .append("]");
+        return builder.toString();
     }
+
 }

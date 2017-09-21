@@ -43,6 +43,10 @@ public class ErrorData {
 
     @Override
     public String toString() {
-        return "ErrorData [error=" + error + ", type=" + type + ", message=" + message + ", instance=" + instance + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("ErrorData [error=").append(error).append(", type=").append(type).append(", message=")
+                .append(message).append(", instance=").append(instance).append("]");
+        return builder.toString();
     }
+
 }

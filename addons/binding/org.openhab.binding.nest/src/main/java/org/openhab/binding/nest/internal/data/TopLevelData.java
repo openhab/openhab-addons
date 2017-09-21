@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Top level data for all the Nest stuff, this is the format the Nest data comes back from Nest in.
@@ -35,5 +35,13 @@ public class TopLevelData {
 
     public Map<String, Structure> getStructures() {
         return structures;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TopLevelData [devices=").append(devices).append(", metadata=").append(metadata)
+                .append(", structures=").append(structures).append("]");
+        return builder.toString();
     }
 }

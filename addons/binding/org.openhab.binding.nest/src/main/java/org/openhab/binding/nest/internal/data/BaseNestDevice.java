@@ -78,4 +78,14 @@ public class BaseNestDevice implements NestIdentifiable {
         return whereId;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("BaseNestDevice [deviceId=").append(deviceId).append(", name=").append(name)
+                .append(", nameLong=").append(nameLong).append(", lastConnection=").append(lastConnection)
+                .append(", isOnline=").append(isOnline).append(", softwareVersion=").append(softwareVersion)
+                .append(", structureId=").append(structureId).append(", whereId=").append(whereId).append("]");
+        return builder.toString();
+    }
+
 }
