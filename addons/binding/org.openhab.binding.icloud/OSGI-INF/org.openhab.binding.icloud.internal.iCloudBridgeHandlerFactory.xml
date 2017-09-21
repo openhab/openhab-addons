@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.icloud" immediate="true" name="org.openhab.binding.icloud.internal.iCloudBridgeHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.icloud" immediate="true" name="org.openhab.binding.icloud.internal.BridgeHandlerFactory">
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
-   <implementation class="org.openhab.binding.icloud.internal.iCloudBridgeHandlerFactory"/>
+   <implementation class="org.openhab.binding.icloud.internal.BridgeHandlerFactory"/>
    <reference bind="setLocationProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.i18n.LocationProvider" name="LocationProvider" policy="static" unbind="unsetLocationProvider"/>
 </scr:component>

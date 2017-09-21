@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.discovery;
 
-import static org.openhab.binding.icloud.iCloudBindingConstants.*;
+import static org.openhab.binding.icloud.BindingConstants.*;
 
 import java.util.ArrayList;
 
@@ -16,8 +16,8 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.icloud.handler.iCloudBridgeHandler;
-import org.openhab.binding.icloud.internal.json.iCloud.Content;
+import org.openhab.binding.icloud.handler.BridgeHandler;
+import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller
  *
  */
-public class iCloudDeviceDiscovery extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(iCloudBridgeHandler.class);
-    private static final int timeout = 10;
+public class DeviceDiscovery extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
 
-    public iCloudDeviceDiscovery(iCloudBridgeHandler iCloudBridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, timeout);
+    public DeviceDiscovery(BridgeHandler iCloudBridgeHandler) {
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.bridgeUID = iCloudBridgeHandler.getThing().getUID();
     }
 
@@ -56,6 +56,5 @@ public class iCloudDeviceDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
     }
 }

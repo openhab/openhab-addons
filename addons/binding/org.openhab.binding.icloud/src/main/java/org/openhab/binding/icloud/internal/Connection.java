@@ -26,7 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
  * @author Patrik Gfeller
  *
  */
-public class iCloudConnection {
+public class Connection {
     private final String iCloudURL = "https://www.icloud.com";
     private final String iCloudApiURL = "https://fmipmobile.icloud.com/fmipservice/device/";
     private final String iCloudAPIRequestDataCommand = "/initClient";
@@ -38,7 +38,7 @@ public class iCloudConnection {
     private URL iCloudDataRequestURL;
     private URL iCloudPingDeviceURL;
 
-    public iCloudConnection(String appleId, String password) throws MalformedURLException {
+    public Connection(String appleId, String password) throws MalformedURLException {
         authorization = Base64.getEncoder().encode((appleId + ":" + password).getBytes());
         iCloudDataRequestURL = new URL(iCloudApiURL + appleId + iCloudAPIRequestDataCommand);
         iCloudPingDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);

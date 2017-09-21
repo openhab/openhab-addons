@@ -11,8 +11,8 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.openhab.binding.icloud.handler.iCloudBridgeHandler;
-import org.openhab.binding.icloud.internal.json.iCloud.JSONRootObject;
+import org.openhab.binding.icloud.handler.BridgeHandler;
+import org.openhab.binding.icloud.internal.json.icloud.JSONRootObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +25,11 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Gfeller
  *
  */
-public class iCloudDeviceInformationParser {
-    private final Logger logger = LoggerFactory.getLogger(iCloudBridgeHandler.class);
+public class DeviceInformationParser {
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     public JSONRootObject data;
 
-    public iCloudDeviceInformationParser(String json) {
-
+    public DeviceInformationParser(String json) {
         try {
             Gson gson = new GsonBuilder().create();
             data = gson.fromJson(json, JSONRootObject.class);

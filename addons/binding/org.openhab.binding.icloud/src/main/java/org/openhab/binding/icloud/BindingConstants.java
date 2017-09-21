@@ -15,12 +15,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * The {@link iCloudBindingConstants} class defines common constants, which are
+ * The {@link BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
  */
-public class iCloudBindingConstants {
+public class BindingConstants {
 
     private static final String BINDING_ID = "icloud";
 
@@ -31,7 +31,7 @@ public class iCloudBindingConstants {
     public static final ThingTypeUID THING_TYPE_ICLOUD = new ThingTypeUID(BINDING_ID, BRIDGE_ID);
     public static final ThingTypeUID THING_TYPE_ICLOUDDEVICE = new ThingTypeUID(BINDING_ID, DEVICE_ID);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ICLOUD,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ICLOUD,
             THING_TYPE_ICLOUDDEVICE);
 
     // List of all Channel IDs

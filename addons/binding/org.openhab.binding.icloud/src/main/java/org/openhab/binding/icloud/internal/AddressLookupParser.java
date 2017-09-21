@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.openhab.binding.icloud.handler.iCloudBridgeHandler;
+import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.internal.json.google.AddressComponent;
 import org.openhab.binding.icloud.internal.json.google.JSONRootObject;
 import org.openhab.binding.icloud.internal.json.google.Result;
@@ -24,11 +24,10 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class AddressLookupParser {
-    private final Logger logger = LoggerFactory.getLogger(iCloudBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private JSONRootObject data;
 
     public AddressLookupParser(String json) {
-
         try {
             Gson gson = new GsonBuilder().create();
             data = gson.fromJson(json, JSONRootObject.class);

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import static org.openhab.binding.icloud.iCloudBindingConstants.*;
+import static org.openhab.binding.icloud.BindingConstants.*;
 
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -16,17 +16,17 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.icloud.handler.iCloudBridgeHandler;
-import org.openhab.binding.icloud.handler.iCloudDeviceHandler;
+import org.openhab.binding.icloud.handler.BridgeHandler;
+import org.openhab.binding.icloud.handler.DeviceHandler;
 
 /**
- * The {@link iCloudBridgeHandlerFactory} is responsible for creating things and thing
+ * The {@link BridgeHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Patrik Gfeller - Initial contribution
  */
 // @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
-public class iCloudBridgeHandlerFactory extends BaseThingHandlerFactory {
+public class BridgeHandlerFactory extends BaseThingHandlerFactory {
     private LocationProvider locationProvider;
 
     @Override
@@ -47,11 +47,11 @@ public class iCloudBridgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
-            return new iCloudBridgeHandler((Bridge) thing);
+            return new BridgeHandler((Bridge) thing);
         }
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUDDEVICE)) {
-            return new iCloudDeviceHandler(thing, locationProvider);
+            return new DeviceHandler(thing, locationProvider);
         }
         return null;
     }

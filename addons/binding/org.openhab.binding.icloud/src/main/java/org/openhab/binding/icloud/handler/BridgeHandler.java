@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.iCloudBindingConstants.*;
+import static org.openhab.binding.icloud.BindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,15 +31,15 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.icloud.discovery.iCloudDeviceDiscovery;
+import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.AddressLookup;
 import org.openhab.binding.icloud.internal.AddressLookupParser;
-import org.openhab.binding.icloud.internal.iCloudConfiguration;
-import org.openhab.binding.icloud.internal.iCloudConnection;
-import org.openhab.binding.icloud.internal.iCloudDeviceInformationParser;
-import org.openhab.binding.icloud.internal.json.iCloud.Content;
-import org.openhab.binding.icloud.internal.json.iCloud.JSONRootObject;
+import org.openhab.binding.icloud.internal.DeviceInformationParser;
+import org.openhab.binding.icloud.internal.Configuration;
+import org.openhab.binding.icloud.internal.Connection;
+import org.openhab.binding.icloud.internal.json.icloud.Content;
+import org.openhab.binding.icloud.internal.json.icloud.JSONRootObject;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,20 +48,19 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller
  * @author Hans-Jörg Merk
  */
-public class iCloudBridgeHandler extends BaseBridgeHandler {
+public class BridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(iCloudBridgeHandler.class);
-    private iCloudConnection connection;
-    private iCloudConfiguration config;
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private Connection connection;
+    private Configuration config;
     ServiceRegistration<?> service;
-    iCloudDeviceDiscovery discoveryService;
+    DeviceDiscovery discoveryService;
 
-    private List<iCloudDeviceHandler> iCloudDeviceHandlers = Collections
-            .synchronizedList(new ArrayList<iCloudDeviceHandler>());
+    private List<DeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<DeviceHandler>());
     ScheduledFuture<?> refreshJob;
     private JSONRootObject iCloudData;
 
-    public iCloudBridgeHandler(@NonNull Bridge bridge) {
+    public BridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
 
@@ -89,11 +88,11 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
         super.handleRemoval();
     }
 
-    public void registerDevice(iCloudDeviceHandler device) {
+    public void registerDevice(DeviceHandler device) {
         iCloudDeviceHandlers.add(device);
     }
 
-    public void unregisterDevice(iCloudDeviceHandler device) {
+    public void unregisterDevice(DeviceHandler device) {
         iCloudDeviceHandlers.remove(device);
     }
 
@@ -108,7 +107,7 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
         if (iCloudData != null) {
-            ((iCloudDeviceHandler) childHandler).update(iCloudData.getContent());
+            ((DeviceHandler) childHandler).update(iCloudData.getContent());
         }
     }
 
@@ -127,7 +126,6 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
                 AddressLookupParser parser = new AddressLookupParser(json);
                 address = parser.getAddress();
             }
-
         } catch (Exception e) {
             logException(e);
         }
@@ -145,7 +143,7 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
 
     private void startHandler() {
         logger.debug("iCloud bridge starting handler ...");
-        config = getConfigAs(iCloudConfiguration.class);
+        config = getConfigAs(Configuration.class);
 
         registerDeviceDiscoveryService();
 
@@ -153,11 +151,11 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
             try {
                 logger.debug("iCloud bridge refreshing data ...");
 
-                connection = new iCloudConnection(config.AppleId, config.Password);
+                connection = new Connection(config.AppleId, config.Password);
 
                 String json = connection.requestDeviceStatusJSON();
                 if (json != null && !json.equals("")) {
-                    iCloudDeviceInformationParser parser = new iCloudDeviceInformationParser(json);
+                    DeviceInformationParser parser = new DeviceInformationParser(json);
                     iCloudData = parser.data;
 
                     int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
@@ -186,10 +184,9 @@ public class iCloudBridgeHandler extends BaseBridgeHandler {
     }
 
     private void registerDeviceDiscoveryService() {
-        discoveryService = new iCloudDeviceDiscovery(this);
+        discoveryService = new DeviceDiscovery(this);
         service = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
-
     }
 
     private void updateDevices(ArrayList<Content> content) {

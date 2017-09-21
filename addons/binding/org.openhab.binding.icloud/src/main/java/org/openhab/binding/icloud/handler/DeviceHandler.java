@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.iCloudBindingConstants.*;
+import static org.openhab.binding.icloud.BindingConstants.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.icloud.internal.Address;
-import org.openhab.binding.icloud.internal.json.iCloud.Content;
+import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller
  * @author Hans-Jörg Merk
  */
-public class iCloudDeviceHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(iCloudDeviceHandler.class);
+public class DeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private int index;
     private String deviceId;
-    private iCloudBridgeHandler bridge;
+    private BridgeHandler bridge;
     private LocationProvider locationProvider;
 
-    public iCloudDeviceHandler(@NonNull Thing thing, LocationProvider locationProvider) {
+    public DeviceHandler(@NonNull Thing thing, LocationProvider locationProvider) {
         super(thing);
 
         String uid = thing.getUID().toString();
@@ -62,7 +62,6 @@ public class iCloudDeviceHandler extends BaseThingHandler {
 
             Double batteryLevel = deviceData.getBatteryLevel();
             if ((batteryLevel != null) && (batteryLevel != Double.NaN)) {
-
                 updateState(BATTERYLEVEL, new DecimalType(deviceData.getBatteryLevel() * 100));
             }
 
@@ -114,10 +113,8 @@ public class iCloudDeviceHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         if (channelId.equals(FINDMYPHONE)) {
             if (command == OnOffType.ON) {
-
                 bridge.pingPhone(deviceId);
                 updateState(FINDMYPHONE, OnOffType.OFF);
-
             }
         }
     }
@@ -131,7 +128,7 @@ public class iCloudDeviceHandler extends BaseThingHandler {
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
 
-        bridge = (iCloudBridgeHandler) getBridge().getHandler();
+        bridge = (BridgeHandler) getBridge().getHandler();
 
         if (bridge != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
@@ -143,7 +140,6 @@ public class iCloudDeviceHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
-
     }
 
     private Content getMyContent(ArrayList<Content> content) {

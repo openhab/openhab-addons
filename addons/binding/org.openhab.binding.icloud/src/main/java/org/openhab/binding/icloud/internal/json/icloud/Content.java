@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json.iCloud;
+package org.openhab.binding.icloud.internal.json.icloud;
 
 import java.util.ArrayList;
 
