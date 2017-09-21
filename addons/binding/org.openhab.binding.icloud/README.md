@@ -46,6 +46,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 ## Thing Configuration
 
 ### iCloud Binding Thing
+
 | Parameter	| Description |
 |-----------|-------------|
 |AppleId||
@@ -75,6 +76,7 @@ The following channels are available (if supported by the device):
 ## Full Example
 
 ### Items
+
 icloud.items:
 
 ```php
@@ -90,7 +92,9 @@ String JohnIPhone6_City "City [%s]" <suitcase> (giPhone) {channel="icloud:device
 String JohnIPhone6_Country "Country [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:AddressCountry"}
 String JohnIPhone6_FormattedAddress "Address [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:FormattedAddress"}
 ```
+
 ### Sitemap
+
 ```
 sitemap icloud  label="iCloud Data" {
         Frame label="John Doe"  {
@@ -108,13 +112,11 @@ sitemap icloud  label="iCloud Data" {
         }
 }
 ```
+
 # Configuration with Paper UI 
 
 First select iCloud Binding in "Paper UI > Configuration > Things" and provide your id, password and refresh interval. Devices are automatically discovered once the thing is configured and online.
 
-1.  Select the binding:  
-![Select binding](./doc/Config_1.png "Step 1")
-2.  Select the bridge:   
-![Select bridge](./doc/Config_2.png "Step 2") 
-3.  Configure your account and the desired refresh rate. 
-![Configure](./doc/Config_3.png "Step 3") 
+1.  Select the binding: ![Select binding](./doc/Config_1.png "Step 1")
+2.  Select the bridge: ![Select bridge](./doc/Config_2.png "Step 2") 
+3.  Configure your account and the desired refresh rate. ![Configure](./doc/Config_3.png "Step 3") 

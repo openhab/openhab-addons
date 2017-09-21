@@ -20,10 +20,12 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.icloud,
  org.openhab.binding.icloud.handler,
+ org.openhab.binding.icloud.discovery,
  org.osgi.framework,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.icloud,
- org.openhab.binding.icloud.handler
+ org.openhab.binding.icloud.handler,
+ org.openhab.binding.icloud.discovery; x-internal:=true
 Bundle-ActivationPolicy: lazy
