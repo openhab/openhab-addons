@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
  * Retrieves the Nest access token using the OAuth 2.0 protocol using pin-based authorization.
  *
  * @author David Bennett - Initial contribution
+ * @author Wouter Born - Improve exception handling
  */
 public class NestAuthorizer {
     private final Logger logger = LoggerFactory.getLogger(NestAuthorizer.class);

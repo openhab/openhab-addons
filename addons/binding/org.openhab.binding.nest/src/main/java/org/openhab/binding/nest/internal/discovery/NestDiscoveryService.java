@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * as they are found through the API.
  *
  * @author David Bennett - initial contribution
+ * @author Wouter Born - Add representation properties
  */
 public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceDataListener {
     private final Logger logger = LoggerFactory.getLogger(NestDiscoveryService.class);
