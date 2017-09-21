@@ -109,6 +109,7 @@ The account Thing Type does not have any channels.
 | using_emergency_heat        | Switch    | If the system is currently using emergency heat |     R      |
 
 Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App. The Nest API applies the following rounding:
+
 * degrees Celsius to 0.5 degrees
 * degrees Fahrenheit to whole degrees
 * humidity to 5%
