@@ -189,13 +189,13 @@ public class ServerContext {
         this.info = info;
     }
 
-    private int prefsUpdateTime;
+    private long prefsUpdateTime;
 
-    public int getPrefsUpdateTime() {
+    public long getPrefsUpdateTime() {
         return this.prefsUpdateTime;
     }
 
-    public void setPrefsUpdateTime(int prefsUpdateTime) {
+    public void setPrefsUpdateTime(long prefsUpdateTime) {
         this.prefsUpdateTime = prefsUpdateTime;
     }
 
