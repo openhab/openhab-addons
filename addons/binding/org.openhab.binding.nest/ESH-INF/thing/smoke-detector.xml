@@ -22,11 +22,11 @@
 			</channel>
 			<channel id="co_alarm_state" typeId="CoAlarmState">
 				<label>CO Alarm</label>
-				<description>The carbon monoxide alarm state of the Nest protect</description>
+				<description>The carbon monoxide alarm state of the Nest Protect</description>
 			</channel>
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState">
 				<label>Smoke Alarm</label>
-				<description>The smoke alarm state of the Nest protect</description>
+				<description>The smoke alarm state of the Nest Protect</description>
 			</channel>
 			<channel id="manual_test_active" typeId="ManualTestActive">
 				<label>Manual Test</label>

@@ -8,19 +8,21 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.openhab.binding.nest.internal.NestIdentifiable;
+import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The structure details from Nest.
  *
  * @author David Bennett - Initial Contribution
  */
-public class Structure {
+public class Structure implements NestIdentifiable {
     @SerializedName("structure_id")
     private String structureId;
     @SerializedName("thermostats")
@@ -55,6 +57,11 @@ public class Structure {
     private String name;
     @SerializedName("eta")
     private ETA eta;
+
+    @Override
+    public String getId() {
+        return structureId;
+    }
 
     public HomeAwayState getAway() {
         return away;
@@ -193,7 +200,7 @@ public class Structure {
         @SerializedName("away")
         AWAY,
         @SerializedName("autoaway")
-        AUTOAWAY,
+        AUTO_AWAY,
         @SerializedName("unknown")
         UNKNOWN
     }

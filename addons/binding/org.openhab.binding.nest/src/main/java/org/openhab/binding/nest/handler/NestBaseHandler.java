@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.NestDeviceDataListener;
+import org.openhab.binding.nest.internal.NestIdentifiable;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
-import org.openhab.binding.nest.internal.data.BaseNestDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - initial contribution
  * @author Martin van Wingerden - Splitted of NestBaseHandler
  */
-abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener {
+abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
 
     NestBaseHandler(Thing thing) {
@@ -54,6 +54,11 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         getNestBridgeHandler().map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
     }
 
+    @Override
+    public String getId() {
+        return getDeviceId();
+    }
+
     private String getDeviceId() {
         return getConfigAs(NestDeviceConfiguration.class).deviceId;
     }
@@ -62,12 +67,12 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         return Optional.ofNullable(getBridge()).map(b -> (NestBridgeHandler) b.getHandler());
     }
 
-    boolean isNotHandling(BaseNestDevice nestDevice) {
-        return !(getDeviceId().equals(nestDevice.getDeviceId()));
+    boolean isNotHandling(NestIdentifiable nestIdentifiable) {
+        return !(getId().equals(nestIdentifiable.getId()));
     }
 
     State getAsStringTypeOrNull(Object value) {
-        return value == null ? UnDefType.NULL :  new StringType(value.toString());
+        return value == null ? UnDefType.NULL : new StringType(value.toString());
     }
 
     State getAsDateTimeTypeOrNull(Date date) {
@@ -84,7 +89,7 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         // @formatter:off
         bridge.addUpdateRequest(new NestUpdateRequest.Builder()
                 .withBaseUrl(updateUrl)
-                .withIdentifier(getDeviceId())
+                .withIdentifier(getId())
                 .withAdditionalValue(field, value)
                 .build());
         // @formatter:on

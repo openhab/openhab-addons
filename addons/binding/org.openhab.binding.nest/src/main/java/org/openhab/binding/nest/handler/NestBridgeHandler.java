@@ -64,6 +64,8 @@ import com.google.gson.GsonBuilder;
  * to get the data updated to the correct things.
  *
  * @author David Bennett - initial contribution
+ * @author Martin van Wingerden - Use listeners not only for discovery but for all data processing
+ * @author Wouter Born - Improve exception and URL redirect handling
  */
 public class NestBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);

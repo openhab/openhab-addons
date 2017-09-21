@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
+
+import org.openhab.binding.nest.internal.NestIdentifiable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Default properties shared across all Nest devices.
  *
  * @author David Bennett
  */
-public class BaseNestDevice {
+public class BaseNestDevice implements NestIdentifiable {
     @SerializedName("device_id")
     private String deviceId;
     @SerializedName("name")
@@ -34,6 +36,11 @@ public class BaseNestDevice {
     private String structureId;
     @SerializedName("where_id")
     private String whereId;
+
+    @Override
+    public String getId() {
+        return deviceId;
+    }
 
     public String getName() {
         return name;
