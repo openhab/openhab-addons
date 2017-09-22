@@ -5,30 +5,31 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
     <config-description uri="thing-type:camera:camera">
         <parameter name="poll" unit="s" type="integer">
-            <label>Poll time:</label>
+            <label>Poll time</label>
             <description>Interval of image being refreshed in seconds</description>
             <default>5</default>
         </parameter>
         <parameter name="urlSnapshot" type="text">
-            <label>Snapshot Url:</label>
+            <label>Snapshot Url</label>
             <description>Url for receiving the camera snapshot</description>
             <default>http://ip/image.jpg</default>
         </parameter>
         <parameter name="urlUsername" type="text">
-            <label>Username:</label>
+            <label>Username</label>
             <description>Username for accessing camera (empty for standard)</description>
             <default></default>
         </parameter>
         <parameter name="urlPassword" type="text">
             <context>password</context>
-            <label>Password:</label>
+            <label>Password</label>
             <description>Password for accessing camera (empty for standard)</description>
             <default></default>
         </parameter>
-        <parameter name="urlVideo" type="text">
-            <label>Video Url:</label>
-            <description>Url for receiving the camera video. ..TODO..</description>
-            <default>http://ip/image.mjpg</default>
-        </parameter>
+<!--         //TODO: next release -->
+<!--         <parameter name="urlVideo" type="text"> -->
+<!--             <label>Video Url</label> -->
+<!--             <description>Url for receiving the camera video.</description> -->
+<!--             <default>http://ip/image.mjpg</default> -->
+<!--         </parameter> -->
     </config-description>
 </config-description:config-descriptions>
