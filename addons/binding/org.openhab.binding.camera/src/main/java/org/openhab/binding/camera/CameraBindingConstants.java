@@ -20,7 +20,7 @@ public class CameraBindingConstants {
     public static final String BINDING_ID = "camera";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
+    public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
 
     // List of all Channel ids
     public final static String CHANNEL_IMAGE = "image";
