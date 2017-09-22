@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ephemeris" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- An Holiday Thing Type -->
+	<thing-type id="holiday">
+
+		<label>Holiday entry</label>
+		<description>This things updates every day depending upon calendar</description>				
+		
+        <channels>
+            <channel id="eventName" typeId="eventName"/>
+            <channel id="eventDate" typeId="eventDate"/>
+            <channel id="isOfficial" typeId="isOfficial"/>
+        </channels>
+        
+        <config-description-ref uri="thing-type:ephemeris:holiday" />        
+	</thing-type>
+	
+    <!-- A Saint of the Day -->
+    <thing-type id="sotd">
+
+        <label>Saint of the Day entry</label>
+        <description>This things updates every day with the current saint of the day</description>                
+        
+        <channels>
+            <channel id="eventName" typeId="eventName"/>
+            <channel id="eventDate" typeId="eventDate"/>
+        </channels>
+        
+        <config-description-ref uri="thing-type:ephemeris:holiday" />        
+    </thing-type>
+    
+    <thing-type id="userfile">
+
+        <label>User defined</label>
+        <description>This things updates every day based on a user defined Holidays file</description>                
+        
+        <channels>
+            <channel id="eventName" typeId="eventName"/>
+            <channel id="eventDate" typeId="eventDate"/>
+        </channels>
+        
+        <config-description-ref uri="thing-type:ephemeris:userfile" />        
+    </thing-type>       	
+	
+    <channel-type id="eventName">
+        <item-type>String</item-type>
+        <label>Event Name</label>
+        <description>Localized name of the event</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="eventDate" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Event Date</label>
+        <description>Date of the Event</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="isOfficial" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Official</label>
+        <description>Indicates whether the event is official or not</description>
+        <state readOnly="true" />
+    </channel-type>        
+
+</thing:thing-descriptions>

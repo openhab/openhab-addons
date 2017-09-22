@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010-2017 by the respective copyright holders.
+
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+-->
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.ephemeris">
+
+   <implementation class="org.openhab.binding.ephemeris.internal.EphemerisHandlerFactory"/>
+
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+ 
+   <reference bind="setLocaleProvider" interface="org.eclipse.smarthome.core.i18n.LocaleProvider" name="LocaleProvider" unbind="unsetLocaleProvider"/>  
+
+</scr:component>
