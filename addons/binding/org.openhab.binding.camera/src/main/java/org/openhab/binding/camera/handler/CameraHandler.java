@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.camera.handler;
 
-import static org.openhab.binding.camera.CameraBindingConstants.*;
+import static org.openhab.binding.camera.CameraBindingConstants.CHANNEL_IMAGE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -89,13 +89,15 @@ public class CameraHandler extends BaseThingHandler {
         if (paramPassword != null) {
             urlPassword = String.valueOf(paramPassword);
         }
+        long polltime_ms = 5000;
         try {
             Object param = getConfig().get("poll");
-            CONFIGURATION_POLLTIME_MS = (int) (Double.parseDouble(String.valueOf(param)) * 1000);
-            logger.debug("Schedule update at fixed rate {} ms.", CONFIGURATION_POLLTIME_MS);
+            polltime_ms = (long) (Double.parseDouble(String.valueOf(param)) * 1000);
         } catch (Exception e1) {
-            logger.warn("could not read poll time", e1);
+            logger.warn("could not read poll time from configuration", e1);
         }
+        logger.debug("Schedule update at fixed rate {} ms.", polltime_ms);
+        final long polltime_ms_final = polltime_ms;
         if (initialized.compareAndSet(false, true)) {
             WeakReference<CameraHandler> weakReference = new WeakReference<>(this);
             serviceCached.submit(new Callable<Void>() {
@@ -107,7 +109,7 @@ public class CameraHandler extends BaseThingHandler {
                         } catch (Exception e) {
                             logger.error("error in refresh", e);
                         }
-                        Thread.sleep(Math.max(10, CONFIGURATION_POLLTIME_MS));
+                        Thread.sleep(Math.max(10, polltime_ms_final));
                     }
                     return null;
                 }

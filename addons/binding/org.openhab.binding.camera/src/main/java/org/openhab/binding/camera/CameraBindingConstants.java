@@ -23,7 +23,5 @@ public class CameraBindingConstants {
     public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
 
     // List of all Channel ids
-    public final static String CHANNEL_IMAGE = "image";
-    public static int CONFIGURATION_POLLTIME_MS = 10;
-
+    public static final String CHANNEL_IMAGE = "image";
 }
