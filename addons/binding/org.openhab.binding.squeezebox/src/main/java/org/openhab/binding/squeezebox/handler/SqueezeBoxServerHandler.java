@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.squeezebox.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
