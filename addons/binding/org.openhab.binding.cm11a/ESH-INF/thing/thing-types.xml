@@ -4,14 +4,14 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
+    <!-- Bridge which is the cm11a device -->
     <bridge-type id="cm11a">
-        <label>CM11a Binding for X10 devices</label>
+        <label>CM11a controller for X10 devices</label>
         <description>CM11 is a device that allows control of X10 devices for a computer. </description>
 
         <config-description>
             <parameter name="serialPort" type="text" required="true" >
-                <label>SerialPort</label>
+                <label>Serial port</label>
                 <description>Serial port used to communicate with the CM11a
                 </description>
             </parameter>
@@ -23,6 +23,7 @@
         </config-description>
     </bridge-type>
 
+    <!-- For dimable X10 devices attached to the cm11a -->
     <thing-type id="dimmer">
         <supported-bridge-type-refs>
             <bridge-type-ref id="cm11a"/>
@@ -36,17 +37,14 @@
         </channels>
 
         <config-description>
-            <parameter name="HouseUnitCode" type="text" required="true">
+            <parameter name="houseUnitCode" type="text" required="true">
                 <label>X10 House and Unit code</label>
                 <description>Address of dimmer in the X10 system</description>
-            </parameter>
-            <parameter name="Location" type="text">
-                <label>Location of the module</label>
-                <description>Where the X10 module is located</description>
             </parameter>
         </config-description>
     </thing-type>
 
+    <!-- For non-dimable X10 devices attached to the cm11a -->
     <thing-type id="switch">
         <supported-bridge-type-refs>
             <bridge-type-ref id="cm11a"/>
@@ -60,13 +58,9 @@
         </channels>
 
         <config-description>
-            <parameter name="HouseUnitCode" type="text" required="true">
+            <parameter name="houseUnitCode" type="text" required="true">
                 <label>X10 House and Unit code</label>
                 <description>Address of switch in the X10 system</description>
-            </parameter>
-            <parameter name="Location" type="text">
-                <label>Location of the module</label>
-                <description>Where the X10 module is located</description>
             </parameter>
         </config-description>
     </thing-type>
@@ -76,7 +70,7 @@
         <label>Light Level</label>
         <description>Increase/decrease the light level</description>
         <category>DimmableLight</category>
-        <state min="0" max="100" pattern="%d %%"/>
+        <state min="0" max="100" pattern="%.0f %%"/>
     </channel-type>
 
     <channel-type id="switchState">

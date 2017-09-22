@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for Appliance (also called Switch) modules. These modules only support ON and OFF states
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  *
  */
 public class Cm11aApplianceHandler extends Cm11aAbstractHandler {

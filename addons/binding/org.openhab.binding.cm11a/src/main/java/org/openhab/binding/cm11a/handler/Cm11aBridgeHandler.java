@@ -139,7 +139,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
         // which is the one that should be updated.
         synchronized (rd) {
             for (Thing thing : things) {
-                String houseUnitCode = (String) thing.getConfiguration().get("HouseUnitCode");
+                String houseUnitCode = (String) thing.getConfiguration().get("houseUnitCode");
                 for (String messageHouseUnitCode : rd.getAddr()) {
                     if (messageHouseUnitCode.equals(houseUnitCode)) {
                         // The channel we want should end in "switchstatus" or "lightlevel". In reality there is

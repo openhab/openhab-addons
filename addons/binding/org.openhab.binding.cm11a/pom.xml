@@ -11,7 +11,6 @@
 
   <groupId>org.openhab.binding</groupId>
   <artifactId>org.openhab.binding.cm11a</artifactId>
-  <version>2.2.0-SNAPSHOT</version>
 
   <name>CM11A Binding</name>
   <packaging>eclipse-plugin</packaging>

@@ -11,7 +11,7 @@ package org.openhab.binding.cm11a.config;
 /**
  * Configuration constants for Cm11A
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  *
  */
 public class Cm11aConfig {

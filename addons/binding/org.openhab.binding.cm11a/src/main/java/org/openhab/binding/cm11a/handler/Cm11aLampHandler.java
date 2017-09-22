@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for Lamp modules. These modules support ON, OFF and brightness level states
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  *
  */
 public class Cm11aLampHandler extends Cm11aAbstractHandler {
@@ -50,7 +50,7 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("**** Cm11aLampHandler handleCommand command = {}, channelUID = ", command.toString(),
+        logger.debug("**** Cm11aLampHandler handleCommand command = {}, channelUID = {}", command.toString(),
                 channelUID.getAsString());
 
         x10Function = 0;

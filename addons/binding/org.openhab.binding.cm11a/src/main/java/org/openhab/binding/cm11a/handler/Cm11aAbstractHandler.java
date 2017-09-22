@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.cm11a.internal.InvalidAddressException;
 import org.openhab.binding.cm11a.internal.X10Interface;
@@ -29,9 +28,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is an abstract base class for the "Thing" handlers (i.e. Cm11aApplianceHandler and Cm11aLampHandler).
- * It is not used the the Bridge handler (Cm11aHandler)
+ * It is not used by the Bridge handler (Cm11aHandler)
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  *
  */
 public abstract class Cm11aAbstractHandler extends BaseThingHandler {
@@ -60,8 +59,9 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
      * Number of CM11a dim increments for dimable devices
      */
     static final int X10_DIM_INCREMENTS = 22;
+    static final String HOUSE_UNIT_CODE = "houseUnitCode";
 
-    private Logger logger = LoggerFactory.getLogger(Cm11aAbstractHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(Cm11aAbstractHandler.class);
 
     /**
      * The construction
@@ -80,7 +80,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
             return;
         }
 
-        houseUnitCode = (String) config.get("HouseUnitCode");
+        houseUnitCode = (String) config.get(HOUSE_UNIT_CODE);
         Bridge bridge = getBridge();
         if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
@@ -91,7 +91,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        houseUnitCode = "";
+        houseUnitCode = null;
     }
 
     @Override
@@ -113,9 +113,6 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
             }
         }
     }
-
-    @Override
-    public abstract void handleCommand(ChannelUID channelUID, Command command);
 
     /**
      * Will be called by the X10Interface when it is ready for this X10 device to use the X10 bus.
@@ -145,7 +142,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
      * Subtract the specified number of X10 "dims" from the current state
      *
      * @param dims The number of dims to remove
-     * @return
+     * @return The updated current state
      */
     public State addDimsToCurrentState(int dims) {
         if (!(currentState instanceof PercentType)) {

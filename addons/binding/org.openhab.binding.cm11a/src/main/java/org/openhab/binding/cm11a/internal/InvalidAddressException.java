@@ -11,7 +11,7 @@ package org.openhab.binding.cm11a.internal;
 /**
  * Exception for invalid X10 House / Unit code
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  */
 public class InvalidAddressException extends Exception {
 

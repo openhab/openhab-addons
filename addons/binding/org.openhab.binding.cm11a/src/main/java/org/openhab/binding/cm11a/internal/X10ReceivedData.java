@@ -18,7 +18,7 @@ import java.util.Map;
  * Container for data received from the powerline by the cm11a interface. When data is received one of more of these
  * objects is created and then passed to interested objects.
  *
- * @author Bob Raker
+ * @author Bob Raker - Initial contribution
  */
 
 public class X10ReceivedData {
