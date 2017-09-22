@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +53,14 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Hartwig - Initial contribution
  */
 public class CameraHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(CameraHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
     private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final ExecutorService serviceCached = Executors.newCachedThreadPool();
     private String urlSnapshot;
-    private String urlUsername = "";
-    private String urlPassword = "";
+    private String urlUsername;
+    private String urlPassword;
+    private long polltime_ms = 5000;
 
     public CameraHandler(Thing thing) {
         super(thing);
@@ -67,7 +69,7 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_IMAGE.equals(channelUID.getId())) {
-            if ("REFRESH".equals(command.toString())) {
+            if (command instanceof RefreshType) {
                 refreshData();
             }
         }
@@ -76,20 +78,10 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Initialize thing: {}::{}", getThing().getLabel(), getThing().getUID());
-        }
-        Object paramUrl = getConfig().get("urlSnapshot");
-        urlSnapshot = String.valueOf(paramUrl);
-        Object paramUsername = getConfig().get("urlUsername");
-        if (paramUsername != null) {
-            urlUsername = String.valueOf(paramUsername);
-        }
-        Object paramPassword = getConfig().get("urlPassword");
-        if (paramPassword != null) {
-            urlPassword = String.valueOf(paramPassword);
-        }
-        long polltime_ms = 5000;
+        logger.debug("Initialize thing: {}::{}", getThing().getLabel(), getThing().getUID());
+        urlSnapshot = (String) getConfig().get("urlSnapshot");
+        urlUsername = (String) getConfig().get("urlUsername");
+        urlPassword = (String) getConfig().get("urlPassword");
         try {
             Object param = getConfig().get("poll");
             polltime_ms = (long) (Double.parseDouble(String.valueOf(param)) * 1000);
@@ -97,19 +89,14 @@ public class CameraHandler extends BaseThingHandler {
             logger.warn("could not read poll time from configuration", e1);
         }
         logger.debug("Schedule update at fixed rate {} ms.", polltime_ms);
-        final long polltime_ms_final = polltime_ms;
         if (initialized.compareAndSet(false, true)) {
             WeakReference<CameraHandler> weakReference = new WeakReference<>(this);
             serviceCached.submit(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
                     while (weakReference.get() != null) {
-                        try {
-                            refreshData();
-                        } catch (Exception e) {
-                            logger.error("error in refresh", e);
-                        }
-                        Thread.sleep(Math.max(10, polltime_ms_final));
+                        refreshData();
+                        Thread.sleep(Math.max(10, polltime_ms));
                     }
                     return null;
                 }
@@ -123,10 +110,8 @@ public class CameraHandler extends BaseThingHandler {
             try {
                 for (Channel cx : getThing().getChannels()) {
                     if ("Image".equals(cx.getAcceptedItemType())) {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Will update: {}::{}::{}", getThing().getUID().getId(),
-                                    cx.getChannelTypeUID().getId(), getThing().getLabel());
-                        }
+                        logger.trace("Will update: {}::{}::{}", getThing().getUID().getId(),
+                                cx.getChannelTypeUID().getId(), getThing().getLabel());
                         if (urlSnapshot != null) {
                             try {
                                 final URL url = new URL(urlSnapshot);
