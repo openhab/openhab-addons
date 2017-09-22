@@ -66,8 +66,8 @@ public class CameraHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_IMAGE)) {
-            if (command.toString().equals("REFRESH")) {
+        if (CHANNEL_IMAGE.equals(channelUID.getId())) {
+            if ("REFRESH".equals(command.toString())) {
                 refreshData();
             }
         }
@@ -122,7 +122,7 @@ public class CameraHandler extends BaseThingHandler {
         if (refreshInProgress.compareAndSet(false, true)) {
             try {
                 for (Channel cx : getThing().getChannels()) {
-                    if (cx.getAcceptedItemType().equals("Image")) {
+                    if ("Image".equals(cx.getAcceptedItemType())) {
                         if (logger.isTraceEnabled()) {
                             logger.trace("Will update: {}::{}::{}", getThing().getUID().getId(),
                                     cx.getChannelTypeUID().getId(), getThing().getLabel());
