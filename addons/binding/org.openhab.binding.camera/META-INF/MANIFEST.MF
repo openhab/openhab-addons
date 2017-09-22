@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Camera Binding
 Bundle-SymbolicName: org.openhab.binding.camera;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/commons-codec-1.10.jar,
@@ -11,8 +11,8 @@ Bundle-ClassPath: .,
  lib/httpcore-4.4.6.jar,
  lib/httpmime-4.5.2.jar
 Import-Package: 
- org.apache.commons.io;version="2.2.0",
- org.apache.commons.logging;version="1.1.1",
+ org.apache.commons.io,
+ org.apache.commons.logging,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
