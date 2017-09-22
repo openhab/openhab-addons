@@ -20,6 +20,7 @@
             <default></default>
         </parameter>
         <parameter name="urlPassword" type="text">
+            <context>password</context>
             <label>Password:</label>
             <description>Password for accessing camera (empty for standard)</description>
             <default></default>
