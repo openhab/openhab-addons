@@ -116,12 +116,6 @@ public class CameraHandler extends BaseThingHandler {
             });
         }
         updateStatus(ThingStatus.OFFLINE);
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     private void refreshData() {
