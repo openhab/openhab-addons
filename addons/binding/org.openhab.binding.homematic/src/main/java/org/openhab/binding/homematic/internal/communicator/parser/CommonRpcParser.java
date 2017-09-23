@@ -67,7 +67,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Number) {
             return (Number) object;
         }
-        return NumberUtils.createNumber(ObjectUtils.toString(object));
+        try {
+            return NumberUtils.createNumber(ObjectUtils.toString(object));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     /**
