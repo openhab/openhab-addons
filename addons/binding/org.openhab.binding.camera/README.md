@@ -3,9 +3,8 @@
 The binding integrates simple IP base cameras.  
 
 Almost every IP camera has a simple HTTP access API defined by Urls to access at least static images.
-Additionally video streams like H264.x oder MJPEG and others are very wide spread. This binding supports these types of cameras.
-
--- Thomas Hartwig 2016-07-24
+This binding supports these types of cameras for fetching and displaying images in a openHAB UI.
+At a later stage motion/change detectors might be added as well as video processing. 
 
 ## Supported Cameras
 
@@ -28,7 +27,7 @@ Currently a camera can be added and configured in the PaperUi for instance. Foll
 * Poll time: the update interval of the image to fetch from the camera
 * Snapshot Url: the url to fetch the image from see examples above
 * Username: username when the camera is protected
-* Password: password when the camer is protected
+* Password: password when the camera is protected
 
 ## Channels
 
