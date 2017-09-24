@@ -14,8 +14,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.loxone.LoxoneBindingConstants;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
 
@@ -24,6 +26,7 @@ import com.google.common.collect.Sets;
  *
  * @author Pawel Pieczul - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true)
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
