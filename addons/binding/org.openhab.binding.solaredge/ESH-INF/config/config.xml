@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solaredge:web">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>General</label>
+			<description>General settings.</description>
+		</parameter-group>
+
+		<parameter name="token" type="text" required="true" groupName="authentication">
+			<label>Token</label>
+			<description>A valid security token (can be generated when logging in with browser - stored as cookie)</description>
+		</parameter>
+		<parameter name="solarId" type="text" required="true" groupName="general">
+			<label>Solar ID</label>
+			<description>The ID to identify the solarplant at SolarEdge.</description>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" required="false" min="10" max="3600" unit="s" groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which data is polled from SolarEdge (in seconds).</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

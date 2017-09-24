@@ -16,7 +16,7 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.airquality</module>
+    <!--module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
@@ -126,6 +126,7 @@
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
-	<module>org.openhab.binding.zway</module>
+    <module>org.openhab.binding.zway</module-->
+    <module>org.openhab.binding.solaredge</module>
   </modules>
 </project>
