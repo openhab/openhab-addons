@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.internal;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -29,6 +31,8 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
+    @SuppressWarnings("null")
+    @NonNull
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
 
@@ -38,11 +42,13 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
-        ThingTypeUID uid = thing.getThingTypeUID();
-        if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
-            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing);
-            return handler;
+    protected @Nullable ThingHandler createHandler(@Nullable Thing thing) {
+        if (thing != null) {
+            ThingTypeUID uid = thing.getThingTypeUID();
+            if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
+                LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing);
+                return handler;
+            }
         }
         return null;
     }
