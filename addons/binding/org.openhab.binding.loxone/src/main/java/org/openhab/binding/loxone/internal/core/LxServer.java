@@ -21,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxServer {
 
     // Configuration

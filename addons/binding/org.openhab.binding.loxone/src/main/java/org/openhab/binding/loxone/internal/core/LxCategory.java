@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Category of Loxone Miniserver's {@link LxControl} object.
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxCategory extends LxContainer {
 
     /**

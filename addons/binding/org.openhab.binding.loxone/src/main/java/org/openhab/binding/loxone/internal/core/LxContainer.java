@@ -11,6 +11,8 @@ package org.openhab.binding.loxone.internal.core;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Container on Loxone Miniserver that groups {@link LxControl} objects.
  * <p>
@@ -19,6 +21,7 @@ import java.util.Set;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxContainer {
     private LxUuid uuid;
     private String name;

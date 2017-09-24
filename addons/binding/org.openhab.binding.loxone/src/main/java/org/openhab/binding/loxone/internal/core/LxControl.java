@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul
  *
  */
+@NonNullByDefault
 public abstract class LxControl {
     private String name = "unknown";
     private String typeName = "unknown";

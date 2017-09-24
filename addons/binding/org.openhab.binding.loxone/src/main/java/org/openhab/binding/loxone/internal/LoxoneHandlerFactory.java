@@ -11,6 +11,7 @@ package org.openhab.binding.loxone.internal;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,6 +29,7 @@ import com.google.common.collect.Sets;
  *
  * @author Pawel Pieczul - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 

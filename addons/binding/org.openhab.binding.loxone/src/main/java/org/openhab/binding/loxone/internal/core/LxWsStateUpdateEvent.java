@@ -11,6 +11,7 @@ package org.openhab.binding.loxone.internal.core;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxWsStateUpdateEvent {
     private LxUuid uuid;
     @SuppressWarnings("unused")

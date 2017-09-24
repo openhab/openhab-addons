@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxUuid {
     private String uuid;
     private String uuidOriginal;

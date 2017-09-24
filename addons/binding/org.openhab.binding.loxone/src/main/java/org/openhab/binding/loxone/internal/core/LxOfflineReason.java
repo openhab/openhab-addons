@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Reasons why Miniserver may be not reachable
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public enum LxOfflineReason {
     /**
      * No reason at all - should be reachable

@@ -11,7 +11,6 @@ package org.openhab.binding.loxone.internal.core;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonElement;
 
@@ -21,7 +20,6 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul - initial contribution
  *
  */
-@NonNullByDefault({})
 class LxJsonApp3 {
 
     LxJsonInfo msInfo;

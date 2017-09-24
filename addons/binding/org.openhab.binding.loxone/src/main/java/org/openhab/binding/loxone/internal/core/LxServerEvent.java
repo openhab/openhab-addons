@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
@@ -18,6 +19,7 @@ import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxServerEvent {
     /**
      * Type of {@link LxServerEvent} event

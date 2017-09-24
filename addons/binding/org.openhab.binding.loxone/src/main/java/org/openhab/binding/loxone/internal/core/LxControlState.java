@@ -11,6 +11,7 @@ package org.openhab.binding.loxone.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxControlState {
     private LxUuid uuid;
     private String name;

@@ -26,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -54,6 +55,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxWsClient {
     private final InetAddress host;
     private final int port;

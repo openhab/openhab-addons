@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
 
@@ -17,6 +18,7 @@ import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
  * @author Pawel Pieczul - Initial contribution
  *
  */
+@NonNullByDefault
 public class LoxoneMiniserverConfig {
     /**
      * Host address or IP of the Miniserver

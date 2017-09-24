@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public interface LxServerListener {
     /**
      * Called by {@link LxServer} thread when new configuration is received from Loxone Miniserver and stored in

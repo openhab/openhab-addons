@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -15,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Pawel Pieczul - Initial contribution
  */
+@NonNullByDefault
 public class LoxoneBindingConstants {
 
     public static final String BINDING_ID = "loxone";
