@@ -82,19 +82,12 @@ public class ValloxSerialHandler extends BaseThingHandler
             try {
                 Configuration configuration = getThing().getConfiguration();
                 String host = (String) configuration.get(ValloxBindingConstants.PARAMETER_HOST);
+                logger.debug("vallox.host={}", host);
                 BigDecimal port;
                 Object portObject = configuration.get(ValloxBindingConstants.PARAMETER_PORT);
-                // this is the case when parameter is set through Paper UI
-                if (portObject instanceof BigDecimal) {
-                    port = (BigDecimal) portObject;
-                }
-                // this is the case when parameter is set through .thing-File
-                else if (portObject instanceof String) {
-                    port = new BigDecimal((String) portObject); // might throw NumberFormatException
-                } else {
-                    throw new NumberFormatException(
-                            "Cannot read vallox port parameter of type " + portObject.getClass() + ": " + portObject);
-                }
+                logger.debug("vallox.port={} of type {}", portObject, portObject.getClass().getName());
+                // this might throw NumberFormatException if the object is passed as a different type, e.g. String
+                port = (BigDecimal) portObject;
                 vallox.connect(host, port.intValue());
                 vallox.getValueListener().add(this);
                 vallox.getStatusListener().add(this);
@@ -108,7 +101,7 @@ public class ValloxSerialHandler extends BaseThingHandler
                 // as thing status is shown in GUI to end users, it should be very comprehensible
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message + e.getMessage());
             } catch (NumberFormatException e) {
-                String message = "Failed to read input for port parameter of Vallox interface. Must be a plain positive integer.";
+                String message = "Failed to read input for port parameter of Vallox interface. Must be a plain positive integer. Don't use quotes in a .thing-File!";
                 logger.warn(message, e);
                 // want a readable message here
                 // as thing status is shown in GUI to end users, it should be very comprehensible
