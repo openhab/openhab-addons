@@ -26,7 +26,8 @@ Currently a camera can be added and configured in the PaperUi for instance. Foll
 
 * Poll time: the update interval of the image to fetch from the camera
 * Snapshot Url: the url to fetch the image from see examples above
-* Username: username when the camera is protected
+* Username: username when the camera is protected, this uses the standard HTTP authorization protocol,
+however username and password might be specified via the Snapshot Url as a parameter, please check camera model documentation for correct parameter syntax
 * Password: password when the camera is protected
 
 ## Channels
