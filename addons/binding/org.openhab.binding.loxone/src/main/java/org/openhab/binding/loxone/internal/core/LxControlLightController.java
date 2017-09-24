@@ -87,7 +87,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
             @Nullable LxCategory category) {
-
         super(client, uuid, json, room, category);
 
         if (json.details != null) {
@@ -112,7 +111,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     @Override
     void update(LxJsonControl json, @Nullable LxContainer room, @Nullable LxCategory category) {
-
         super.update(json, room, category);
 
         if (json.subControls != null) {

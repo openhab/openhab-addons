@@ -103,7 +103,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
     @Override
     public void handleCommand(ChannelUID channelUID, @Nullable Command command) {
-
         if (server == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No server attached to this thing");
@@ -223,7 +222,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             }
 
             logger.debug("Incompatible operation on control {}", control.getUuid());
-
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -357,7 +355,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");
                 break;
         }
-
     }
 
     @Override
@@ -388,7 +385,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *         created list of {@link Channel} object
      */
     private List<Channel> createChannelsForControl(LxControl control) {
-
         logger.trace("Creating channels for control: {}, {}", control.getClass().getSimpleName(), control.getUuid());
 
         String label;
