@@ -105,7 +105,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
         try {
             logger.debug("Access Token    {}", getExistingOrNewAccessToken());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Starting poll query");
         } catch (InvalidAccessTokenException e) {
             logger.debug("Invalid access token", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -144,6 +144,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         stopAutomaticRefresh();
         this.authorizer = null;
         this.refreshDataJob = null;
+        this.redirectUrl = null;
     }
 
     /**

@@ -10,7 +10,6 @@ package org.openhab.binding.nest.handler;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -44,14 +43,18 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     @Override
     public void initialize() {
         logger.debug("Initializing handler for {}", getClass().getName());
-        getNestBridgeHandler().map(b -> b.addDeviceDataListener(NestBaseHandler.this));
+        if (getNestBridgeHandler() != null) {
+            getNestBridgeHandler().addDeviceDataListener(this);
+        }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");
     }
 
     @Override
     public void dispose() {
-        getNestBridgeHandler().map(b -> b.removeDeviceDataListener(NestBaseHandler.this));
+        if (getNestBridgeHandler() != null) {
+            getNestBridgeHandler().removeDeviceDataListener(this);
+        }
     }
 
     @Override
@@ -63,8 +66,8 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         return getConfigAs(NestDeviceConfiguration.class).deviceId;
     }
 
-    private Optional<NestBridgeHandler> getNestBridgeHandler() {
-        return Optional.ofNullable(getBridge()).map(b -> (NestBridgeHandler) b.getHandler());
+    private NestBridgeHandler getNestBridgeHandler() {
+        return getBridge() != null ? (NestBridgeHandler) getBridge().getHandler() : null;
     }
 
     boolean isNotHandling(NestIdentifiable nestIdentifiable) {
@@ -85,13 +88,14 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     }
 
     void addUpdateRequest(String updateUrl, String field, Object value) {
-        NestBridgeHandler bridge = (NestBridgeHandler) getBridge().getHandler();
+        if (getNestBridgeHandler() != null) {
         // @formatter:off
-        bridge.addUpdateRequest(new NestUpdateRequest.Builder()
+            getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
                 .withBaseUrl(updateUrl)
                 .withIdentifier(getId())
                 .withAdditionalValue(field, value)
                 .build());
         // @formatter:on
+        }
     }
 }
