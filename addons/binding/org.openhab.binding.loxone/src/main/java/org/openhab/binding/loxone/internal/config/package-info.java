@@ -13,6 +13,6 @@
  *
  */
 @NonNullByDefault
-package org.openhab.binding.loxone.config;
+package org.openhab.binding.loxone.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
