@@ -62,7 +62,7 @@ Parameters are
 * port: TCP Port that the RS485-to-Ethernet Gateway listens to. Default: 26
 
 ```
-Thing vallox.kwl90se.main [ host="lwip", port="26" ]
+Thing vallox.kwl90se.main [ host="lwip", port=26 ]
 ```
 
 ### vallox.items
