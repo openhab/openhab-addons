@@ -414,6 +414,10 @@ public class RobonectHandler extends BaseThingHandler {
                         }
                         logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+                    } catch(com.google.gson.JsonSyntaxException jse){
+                        // the module sporadically sends invalid json responses. As this is usually recovered with the
+                        // next poll interval, we just log it to debug here.
+                        logger.debug("Failed to parse response.", jse);
                     } catch (Exception e) {
                         logger.error("Unexpected exception. Setting thing offline", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
