@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.nest.internal.NestIdentifiable;
 import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
 
 import com.google.gson.annotations.SerializedName;

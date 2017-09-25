@@ -50,6 +50,26 @@ public class GsonParsingTest {
     }
 
     @Test
+    public void verifyCompleteStreamingInput() throws UnsupportedEncodingException {
+        TopLevelStreamingData topLevelStreamingData = fromJson("top-level-streaming-data.json",
+                TopLevelStreamingData.class);
+
+        assertEquals("/", topLevelStreamingData.getPath());
+
+        TopLevelData data = topLevelStreamingData.getData();
+        assertEquals(data.getDevices().getThermostats().size(), 1);
+        assertNotNull(data.getDevices().getThermostats().get("therm1"));
+        assertEquals(data.getDevices().getCameras().size(), 2);
+        assertNotNull(data.getDevices().getCameras().get("camera1"));
+        assertNotNull(data.getDevices().getCameras().get("camera2"));
+        assertEquals(data.getDevices().getSmokeDetectors().size(), 4);
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke1"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke2"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke3"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke4"));
+    }
+
+    @Test
     public void verifyThermostat() throws UnsupportedEncodingException {
         Thermostat thermostat = fromJson("thermostat-data.json", Thermostat.class);
 

@@ -27,7 +27,4 @@ public class NestBridgeConfiguration {
 
     /** The access token to use once retrieved from Nest. */
     public String accessToken;
-
-    /** How often to refresh data from Nest. */
-    public int refreshInterval;
 }

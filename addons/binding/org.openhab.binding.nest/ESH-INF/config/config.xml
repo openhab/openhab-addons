@@ -37,14 +37,6 @@
             <required>false</required>
             <advanced>true</advanced>
         </parameter>
-        <parameter name="refreshInterval" type="integer" groupName="binding" min="60" unit="s">
-            <label>Refresh Interval</label>
-            <description>How often to refresh the data from Nest (in seconds). 
-            Don't make this too often or Nest will throttle your account. 
-            The default of 2 minutes is roughly the most often you can do it</description>
-            <default>120</default>
-            <unitLabel>s</unitLabel>
-        </parameter>
     </config-description>
 
     <config-description uri="thing-type:nest:device">

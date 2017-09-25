@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
 import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
@@ -31,6 +30,7 @@ import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
+import org.openhab.binding.nest.internal.listener.NestDeviceDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
