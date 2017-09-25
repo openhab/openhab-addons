@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sensebox.config;
+package org.openhab.binding.sensebox.internal.config;
 
 /**
  * The {@link SenseBoxConfiguration} is the base class for configuration
