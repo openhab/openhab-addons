@@ -13,7 +13,7 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * All the nest devices broken up by type.
+ * All the Nest devices broken up by type.
  *
  * @author David Bennett - Initial Contribution
  */
@@ -42,7 +42,10 @@ public class NestDevices {
 
     @Override
     public String toString() {
-        return "NestDevices [thermostats=" + thermostats + ", smokeDetector=" + smokeDetector + ", camera=" + camera
-                + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("NestDevices [thermostats=").append(thermostats).append(", smokeDetector=").append(smokeDetector)
+                .append(", camera=").append(camera).append("]");
+        return builder.toString();
     }
+
 }

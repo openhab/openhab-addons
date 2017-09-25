@@ -11,7 +11,7 @@ package org.openhab.binding.nest;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link NestBinding} class defines common constants, which are
+ * The {@link NestBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author David Bennett - Initial contribution
@@ -20,23 +20,29 @@ public class NestBindingConstants {
 
     public static final String BINDING_ID = "nest";
 
-    /** The url to use to connect to nest with. */
-    public static final String NEST_URL = "https://developer-api.nest.com/";
+    /** The URL to use to connect to Nest with. */
+    public static final String NEST_URL = "https://developer-api.nest.com";
 
-    /** The url to get the access token when talking to nest. */
+    /** The URL to get the access token when talking to Nest. */
     public static final String NEST_ACCESS_TOKEN_URL = "https://api.home.nest.com/oauth2/access_token";
 
-    /** The url to get set values on the thermostat when talking to nest. */
+    /** The URL to get set values on the thermostat when talking to Nest. */
     public static final String NEST_THERMOSTAT_UPDATE_URL = NEST_URL + "/devices/thermostats/";
 
-    /** The url to get set values on the structure when talking to nest. */
-    public static final Object NEST_STRUCTURE_UPDATE_URL = NEST_URL + "/structures/";
+    /** The URL to get set values on the structure when talking to Nest. */
+    public static final String NEST_STRUCTURE_UPDATE_URL = NEST_URL + "/structures/";
 
-    /** The url to get set values on the camera when talking to nest. */
-    public static final String NEST_CAMERA_UPDATE_URL = NEST_URL + "/devices/camera/";
+    /** The URL to get set values on the camera when talking to Nest. */
+    public static final String NEST_CAMERA_UPDATE_URL = NEST_URL + "/devices/cameras/";
 
-    /** The url to get set values on the camera when talking to nest. */
+    /** The URL to get set values on the camera when talking to Nest. */
     public static final String NEST_SMOKE_ALARM_UPDATE_URL = NEST_URL + "/devices/smoke_co_alarms/";
+
+    /** The JSON content type used when talking to Nest. */
+    public static final String JSON_CONTENT_TYPE = "application/json";
+
+    /** To avoid API throttling errors (429 Too Many Requests) Nest recommends making at most one call per minute. */
+    public static final int MIN_SECONDS_BETWEEN_API_CALLS = 60;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
@@ -45,7 +51,7 @@ public class NestBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_STRUCTURE = new ThingTypeUID(BINDING_ID, "structure");
 
-    // List of all Channel ids
+    // List of all Channel IDs
     // read/write channels (thermostat)
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_MAX_SET_POINT = "max_set_point";
@@ -83,12 +89,15 @@ public class NestBindingConstants {
 
     // read/write channels (smoke detector)
 
-    // readonly channels (smoke detector)
+    // read only channels (smoke detector)
     public static final String CHANNEL_UI_COLOR_STATE = "ui_color_state";
     public static final String CHANNEL_LOW_BATTERY = "low_battery";
     public static final String CHANNEL_CO_ALARM_STATE = "co_alarm_state"; // Also in structure
     public static final String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state"; // Also in structure
     public static final String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
+
+    // read/write channel (structure)
+    public static final String CHANNEL_AWAY = "away";
 
     // read only channels (structure)
     public static final String CHANNEL_COUNTRY_CODE = "country_code";
@@ -98,9 +107,4 @@ public class NestBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "time_zone";
     public static final String CHANNEL_ETA_BEGIN = "eta_begin";
     public static final String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
-    public static final String CHANNEL_AWAY = "away";
-
-    // Properties on things that are fixed.
-    public static final String PROPERTY_ID = "deviceId";
-    public static final String PROPERTY_FIRMWARE_VERSION = "firmware";
 }

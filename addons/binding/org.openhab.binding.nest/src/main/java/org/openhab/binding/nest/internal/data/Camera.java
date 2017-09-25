@@ -24,7 +24,7 @@ public class Camera extends BaseNestDevice {
     @SerializedName("is_audio_input_enabled")
     private boolean isAudioInputEnabled;
     @SerializedName("last_is_online_change")
-    private Date LastIsOnlineChange;
+    private Date lastIsOnlineChange;
     @SerializedName("is_video_history_enabled")
     private boolean isVideoHistoryEnabled;
     @SerializedName("web_url")
@@ -55,7 +55,7 @@ public class Camera extends BaseNestDevice {
     }
 
     public Date getLastIsOnlineChange() {
-        return LastIsOnlineChange;
+        return lastIsOnlineChange;
     }
 
     public boolean isVideoHistoryEnabled() {
@@ -92,15 +92,15 @@ public class Camera extends BaseNestDevice {
 
     public static class ActivityZone {
         @SerializedName("name")
-        private boolean name;
+        private String name;
         @SerializedName("id")
-        private boolean id;
+        private int id;
 
-        public boolean isName() {
+        public String getName() {
             return name;
         }
 
-        public boolean isId() {
+        public int getId() {
             return id;
         }
     }
@@ -174,114 +174,24 @@ public class Camera extends BaseNestDevice {
             return activityZones;
         }
 
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((activityZones == null) ? 0 : activityZones.hashCode());
-            result = prime * result + ((animatedImageUrl == null) ? 0 : animatedImageUrl.hashCode());
-            result = prime * result + ((appUrl == null) ? 0 : appUrl.hashCode());
-            result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
-            result = prime * result + (hasMotion ? 1231 : 1237);
-            result = prime * result + (hasPerson ? 1231 : 1237);
-            result = prime * result + (hasSound ? 1231 : 1237);
-            result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
-            result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
-            result = prime * result + ((urlsExpireTime == null) ? 0 : urlsExpireTime.hashCode());
-            result = prime * result + ((webUrl == null) ? 0 : webUrl.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            Event other = (Event) obj;
-            if (activityZones == null) {
-                if (other.activityZones != null) {
-                    return false;
-                }
-            } else if (!activityZones.equals(other.activityZones)) {
-                return false;
-            }
-            if (animatedImageUrl == null) {
-                if (other.animatedImageUrl != null) {
-                    return false;
-                }
-            } else if (!animatedImageUrl.equals(other.animatedImageUrl)) {
-                return false;
-            }
-            if (appUrl == null) {
-                if (other.appUrl != null) {
-                    return false;
-                }
-            } else if (!appUrl.equals(other.appUrl)) {
-                return false;
-            }
-            if (endTime == null) {
-                if (other.endTime != null) {
-                    return false;
-                }
-            } else if (!endTime.equals(other.endTime)) {
-                return false;
-            }
-            if (hasMotion != other.hasMotion) {
-                return false;
-            }
-            if (hasPerson != other.hasPerson) {
-                return false;
-            }
-            if (hasSound != other.hasSound) {
-                return false;
-            }
-            if (imageUrl == null) {
-                if (other.imageUrl != null) {
-                    return false;
-                }
-            } else if (!imageUrl.equals(other.imageUrl)) {
-                return false;
-            }
-            if (startTime == null) {
-                if (other.startTime != null) {
-                    return false;
-                }
-            } else if (!startTime.equals(other.startTime)) {
-                return false;
-            }
-            if (urlsExpireTime == null) {
-                if (other.urlsExpireTime != null) {
-                    return false;
-                }
-            } else if (!urlsExpireTime.equals(other.urlsExpireTime)) {
-                return false;
-            }
-            if (webUrl == null) {
-                if (other.webUrl != null) {
-                    return false;
-                }
-            } else if (!webUrl.equals(other.webUrl)) {
-                return false;
-            }
-            return true;
-        }
     }
 
     @Override
     public String toString() {
-        return "Camera [isStreaming=" + isStreaming + ", isAudioInputEnabled=" + isAudioInputEnabled
-                + ", LastIsOnlineChange=" + LastIsOnlineChange + ", isVideoHistoryEnabled=" + isVideoHistoryEnabled
-                + ", webUrl=" + webUrl + ", appUrl=" + appUrl + ", isPublicShareEnabled=" + isPublicShareEnabled
-                + ", activityZones=" + activityZones + ", publicShareUrl=" + publicShareUrl + ", snapshotUrl="
-                + snapshotUrl + ", lastEvent=" + lastEvent + ", getName()=" + getName() + ", getDeviceId()="
-                + getDeviceId() + ", getLastConnection()=" + getLastConnection() + ", getNameLong()=" + getNameLong()
-                + ", getSoftwareVersion()=" + getSoftwareVersion() + ", isOnline()=" + isOnline()
-                + ", getStructureId()=" + getStructureId() + ", getWhereId()=" + getWhereId() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Camera [isStreaming=").append(isStreaming).append(", isAudioInputEnabled=")
+                .append(isAudioInputEnabled).append(", lastIsOnlineChange=").append(lastIsOnlineChange)
+                .append(", isVideoHistoryEnabled=").append(isVideoHistoryEnabled).append(", webUrl=").append(webUrl)
+                .append(", appUrl=").append(appUrl).append(", isPublicShareEnabled=").append(isPublicShareEnabled)
+                .append(", activityZones=").append(activityZones).append(", publicShareUrl=").append(publicShareUrl)
+                .append(", snapshotUrl=").append(snapshotUrl).append(", lastEvent=").append(lastEvent)
+                .append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
+                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
+                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
+                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
+                .append("]");
+        return builder.toString();
     }
+
 }

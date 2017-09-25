@@ -14,29 +14,30 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 
 /**
- * Used by the discovery service to track when devices are added.
+ * Used to track incoming data for devices
  *
  * @author David Bennett - Initial Contribution
+ * @author Martin van Wingerden - Separated listeners to also use them for the handlers
  */
-public interface NestDeviceAddedListener {
+public interface NestDeviceDataListener {
 
     /**
      * Called when a thermostat is discovered.
      */
-    public void onThermostatAdded(Thermostat thermostat);
+    void onNewNestThermostatData(Thermostat thermostat);
 
     /**
      * Called when a camera is discovered.
      */
-    public void onCameraAdded(Camera thermostat);
+    void onNewNestCameraData(Camera camera);
 
     /**
      * Called when a smoke detector is discovered.
      */
-    public void onSmokeDetectorAdded(SmokeDetector thermostat);
+    void onNewNestSmokeDetectorData(SmokeDetector smokeDetector);
 
     /**
      * Called when a structure is discovered.
      */
-    public void onStructureAdded(Structure struct);
+    void onNewNestStructureData(Structure struct);
 }

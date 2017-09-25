@@ -8,39 +8,50 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.nest.NestBindingConstants.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
-import org.openhab.binding.nest.config.NestBridgeConfiguration;
-import org.openhab.binding.nest.discovery.NestDiscoveryService;
-import org.openhab.binding.nest.internal.NestAccessToken;
-import org.openhab.binding.nest.internal.NestDeviceAddedListener;
+import org.openhab.binding.nest.internal.NestAuthorizer;
+import org.openhab.binding.nest.internal.NestDeviceDataListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
-import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
 import org.openhab.binding.nest.internal.data.TopLevelData;
+import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
+import org.openhab.binding.nest.internal.exceptions.FailedRetrievingNestDataException;
+import org.openhab.binding.nest.internal.exceptions.FailedSendingNestDataException;
+import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,72 +59,62 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * This bridge handler connects to nest and handles all the api requests. It pulls down the
+ * This bridge handler connects to Nest and handles all the API requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
  * to get the data updated to the correct things.
  *
  * @author David Bennett - initial contribution
+ * @author Martin van Wingerden - Use listeners not only for discovery but for all data processing
+ * @author Wouter Born - Improve exception and URL redirect handling
  */
 public class NestBridgeHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
-    private Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
+    private final List<NestDeviceDataListener> listeners = new ArrayList<>();
+    private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
-    private List<NestDeviceAddedListener> listeners = new ArrayList<NestDeviceAddedListener>();
-
-    // Will refresh the data each time it runs.
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshData();
-        }
-    };
-
-    private ScheduledFuture<?> pollingJob;
-    private NestAccessToken accessToken;
-    private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
-    private TopLevelData lastDataQuery;
-    private HttpClient httpClient;
-
-    private final GsonBuilder builder;
+    private ScheduledFuture<?> refreshDataJob;
+    private NestAuthorizer authorizer;
+    private NestBridgeConfiguration config;
+    private ScheduledFuture<?> sender;
+    private String redirectUrl;
 
     /**
-     * Creates the bridge handler to connect to nest.
+     * Creates the bridge handler to connect to Nest.
      *
-     * @param bridge The bridge to connect to nest with.
+     * @param bridge The bridge to connect to Nest with.
      */
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
-        builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     }
 
     /**
-     * Initialize the connection to nest.
+     * Initialize the connection to Nest.
      */
     @Override
     public void initialize() {
-        logger.debug("Initialize the Nest bridge handler");
+        logger.debug("Initializing Nest bridge handler");
 
-        // Create the jetty client and configure for https.
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        httpClient = new HttpClient(sslContextFactory);
-        httpClient.setConnectTimeout(30000);
+        config = getConfigAs(NestBridgeConfiguration.class);
+        authorizer = new NestAuthorizer(config);
+
+        logger.debug("Product ID      {}", config.productId);
+        logger.debug("Product Secret  {}", config.productSecret);
+        logger.debug("Pincode         {}", config.pincode);
+
         try {
-            httpClient.start();
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error starting HTTP client " + e.getMessage());
-            return;
+            logger.debug("Access Token    {}", getExistingOrNewAccessToken());
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Starting poll query");
+        } catch (InvalidAccessTokenException e) {
+            logger.debug("Invalid access token", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
         }
 
-        NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
-        logger.debug("Client Id       {}.", config.clientId);
-        logger.debug("Client Secret   {}.", config.clientSecret);
-        logger.debug("Pincode         {}.", config.pincode);
+        restartAutomaticRefresh();
 
-        updateAccessToken();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
-
-        startAutomaticRefresh(config.refreshInterval);
+        logger.debug("Finished initializing Nest bridge handler");
     }
 
     /**
@@ -121,14 +122,17 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * polling intervals as well as re-doing the access token.
      */
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+    public void updateConfiguration(Configuration configuration) {
         logger.debug("Config update");
-        super.handleConfigurationUpdate(configurationParameters);
+        super.updateConfiguration(configuration);
+        restartAutomaticRefresh();
+    }
 
-        updateAccessToken();
-
-        stopAutomaticRefresh();
-        startAutomaticRefresh(getConfigAs(NestBridgeConfiguration.class).refreshInterval);
+    private void restartAutomaticRefresh() {
+        synchronized (this) {
+            stopAutomaticRefresh();
+            startAutomaticRefresh();
+        }
     }
 
     /**
@@ -138,10 +142,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Nest bridge disposed");
         stopAutomaticRefresh();
-        this.accessToken = null;
-        this.lastDataQuery = null;
-        this.pollingJob = null;
-        this.pollingRunnable = null;
+        this.authorizer = null;
+        this.refreshDataJob = null;
+        this.redirectUrl = null;
     }
 
     /**
@@ -156,188 +159,244 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Read the data from nest and then parse it into something useful.
+     * Read the data from Nest and then forward it to anyone listening.
      */
-    private void refreshData() {
-        logger.trace("starting refreshData");
-        NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
+    public void refreshData() {
+        logger.debug("Starting data refresh");
         try {
-            String uri = buildQueryString(config);
-            String data = jsonFromGetUrl(uri, config);
-            logger.debug("Data from nest {}", data);
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Received update from nest");
-            // Now convert the incoming data into something more useful.
-            Gson gson = builder.create();
-            TopLevelData newData = gson.fromJson(data, TopLevelData.class);
-            if (newData != null) {
-                lastDataQuery = newData;
-            } else {
-                newData = lastDataQuery;
+            if (redirectUrl == null) {
+                redirectUrl = resolveRedirectUrl();
             }
-            // Turn this new data into things and stuff.
-            compareThings(newData.getDevices());
-            compareStructure(newData.getStructures().values());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.error("Error parsing data", e);
+
+            String jsonResponse = jsonFromGetUrl();
+            logger.debug("GET response: {}", jsonResponse);
+
+            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            if (StringUtils.isBlank(error.getError())) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Successfully requested new data from Nest");
+
+                TopLevelData data = gson.fromJson(jsonResponse, TopLevelData.class);
+                if (data.getDevices() != null) {
+                    broadcastDevices(data.getDevices());
+                }
+                if (data.getStructures() != null) {
+                    broadcastStructure(data.getStructures().values());
+                }
+            } else {
+                logger.debug("Nest API error: {}", error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Nest API error: " + error.getMessage());
+            }
+        } catch (InvalidAccessTokenException e) {
+            logger.debug("Invalid access token", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
+        } catch (FailedResolvingNestUrlException e) {
+            logger.debug("Unable to resolve redirect URL", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (FailedRetrievingNestDataException e) {
+            logger.debug("Error retrieving data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error parsing data " + e.getMessage());
+                    "Error retrieving data " + e.getMessage());
         }
-
+        logger.debug("Finished data refresh");
     }
 
-    private Thing getExistingDevice(String deviceId, List<Thing> things) {
-        for (Thing thing : things) {
-            String thingDeviceId = thing.getUID().getId();
-            if (thingDeviceId.equals(deviceId)) {
-                return thing;
+    private void broadcastDevices(NestDevices devices) {
+        listeners.forEach(listener -> {
+            if (devices.getThermostats() != null) {
+                devices.getThermostats().values().forEach(listener::onNewNestThermostatData);
             }
-        }
-        return null;
+            if (devices.getCameras() != null) {
+                devices.getCameras().values().forEach(listener::onNewNestCameraData);
+            }
+            if (devices.getSmokeDetectors() != null) {
+                devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+            }
+        });
     }
 
-    private void compareThings(NestDevices devices) {
-        Bridge bridge = getThing();
-        List<Thing> things = bridge.getThings();
-
-        if (devices.getThermostats() != null) {
-            for (Thermostat thermostat : devices.getThermostats().values()) {
-                Thing thingThermostat = getExistingDevice(thermostat.getDeviceId(), things);
-                if (thingThermostat != null) {
-                    NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
-                    if (handler != null) {
-                        handler.updateThermostat(thermostat);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new thermostat {}", thermostat.getDeviceId());
-                        listener.onThermostatAdded(thermostat);
-                    }
-                }
-            }
-        }
-
-        if (devices.getCameras() != null) {
-            for (Camera camera : devices.getCameras().values()) {
-                Thing thingCamera = getExistingDevice(camera.getDeviceId(), things);
-                if (thingCamera != null) {
-                    NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
-                    if (handler != null) {
-                        handler.updateCamera(camera);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new camera. {}", camera.getDeviceId());
-                        listener.onCameraAdded(camera);
-                    }
-                }
-            }
-        }
-
-        if (devices.getSmokeDetectors() != null) {
-            for (SmokeDetector smokeDetector : devices.getSmokeDetectors().values()) {
-                Thing thingSmokeDetector = getExistingDevice(smokeDetector.getDeviceId(), things);
-                if (thingSmokeDetector != null) {
-                    NestSmokeDetectorHandler handler = (NestSmokeDetectorHandler) thingSmokeDetector.getHandler();
-                    if (handler != null) {
-                        handler.updateSmokeDetector(smokeDetector);
-                    }
-                } else {
-                    for (NestDeviceAddedListener listener : listeners) {
-                        logger.debug("Found new smoke detector. {}", smokeDetector.getDeviceId());
-                        listener.onSmokeDetectorAdded(smokeDetector);
-                    }
-                }
-            }
-        }
+    private void broadcastStructure(Collection<Structure> structures) {
+        structures.forEach(structure -> listeners.forEach(l -> l.onNewNestStructureData(structure)));
     }
 
-    private void compareStructure(Collection<Structure> structures) {
-        Bridge bridge = getThing();
-        List<Thing> things = bridge.getThings();
-
-        for (Structure struct : structures) {
-            Thing thingStructure = getExistingDevice(struct.getStructureId(), things);
-            if (thingStructure != null) {
-                NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
-                if (handler != null) {
-                    handler.updateStructure(struct);
-                }
-            } else {
-                for (NestDeviceAddedListener listener : listeners) {
-                    logger.debug("Found new structure {}", struct.getStructureId());
-                    listener.onStructureAdded(struct);
-                }
-            }
-        }
-    }
-
-    private String buildQueryString(NestBridgeConfiguration config)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        String stringAccessToken;
-        if (config.accessToken == null) {
-            stringAccessToken = accessToken.getAccessToken();
-            // Update the configuration and persist to the database.
-            Configuration bridgeConfiguration = editConfiguration();
-            bridgeConfiguration.put("accessToken", stringAccessToken);
-            updateConfiguration(bridgeConfiguration);
+    private String getExistingOrNewAccessToken() throws InvalidAccessTokenException {
+        if (StringUtils.isEmpty(config.accessToken)) {
+            config.accessToken = authorizer.getNewAccessToken();
+            config.pincode = "";
+            // Update and save the access token in the bridge configuration
+            Configuration configuration = editConfiguration();
+            configuration.put(NestBridgeConfiguration.ACCESS_TOKEN, config.accessToken);
+            configuration.put(NestBridgeConfiguration.PINCODE, config.pincode);
+            updateConfiguration(configuration);
+            logger.debug("Retrieved new access token: {}", config.accessToken);
+            return config.accessToken;
         } else {
-            stringAccessToken = config.accessToken;
+            logger.debug("Re-using access token from configuration: {}", config.accessToken);
+            return config.accessToken;
         }
-        logger.debug("Making url with access token {}", stringAccessToken);
-        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
-        urlBuilder.append("?auth=");
-        urlBuilder.append(stringAccessToken);
-        logger.debug("Made url {}", urlBuilder.toString());
-        return urlBuilder.toString();
     }
 
-    private String jsonFromGetUrl(final String url, NestBridgeConfiguration config)
-            throws InterruptedException, ExecutionException, TimeoutException {
-        logger.debug("connecting to {}", url);
-        ContentResponse response = this.httpClient.GET(url);
-        return response.getContentAsString();
+    private String jsonFromGetUrl() throws FailedRetrievingNestDataException, InvalidAccessTokenException {
+        try {
+            logger.debug("Fetching data from {}", redirectUrl);
+            return HttpUtil.executeUrl("GET", redirectUrl, getHttpHeaders(), null, null, 5000);
+        } catch (IOException e) {
+            throw new FailedRetrievingNestDataException(e);
+        }
     }
 
-    private synchronized void startAutomaticRefresh(int refreshInterval) {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+    private synchronized void startAutomaticRefresh() {
+        if (config == null || config.refreshInterval < MIN_SECONDS_BETWEEN_API_CALLS) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Can not schedule polling job, refresh interval should be set and be more then 60 seconds");
+            return;
+        }
+
+        if (refreshDataJob == null || refreshDataJob.isCancelled()) {
+            refreshDataJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshInterval, SECONDS);
+            logger.debug("Started refreshData job");
+        } else {
+            logger.debug("refreshData job is already scheduled");
         }
     }
 
     private synchronized void stopAutomaticRefresh() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        if (refreshDataJob != null && !refreshDataJob.isCancelled()) {
+            refreshDataJob.cancel(true);
+            refreshDataJob = null;
+            logger.debug("Stopping refreshDataJob");
+        } else {
+            logger.debug("refreshDataJob is already stopped");
         }
     }
 
-    private void updateAccessToken() {
-        accessToken = new NestAccessToken(getConfigAs(NestBridgeConfiguration.class), this.httpClient);
+    /**
+     * @param nestDeviceDataListener The device added listener to add
+     */
+    public boolean addDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
+        boolean success = listeners.add(nestDeviceDataListener);
+        scheduler.schedule(this::refreshData, 1, SECONDS);
+        return success;
+    }
+
+    /**
+     * @param nestDeviceDataListener The device added listener to remove
+     */
+    public boolean removeDeviceDataListener(NestDeviceDataListener nestDeviceDataListener) {
+        return listeners.remove(nestDeviceDataListener);
+    }
+
+    /**
+     * Adds the update request into the queue for doing something with, send immediately if the queue is empty.
+     */
+    void addUpdateRequest(NestUpdateRequest request) {
+        nestUpdateRequests.add(request);
+        if (sender == null || sender.isDone()) {
+            sender = scheduler.schedule(this::transmitQueue, 0, SECONDS);
+        }
+    }
+
+    private void transmitQueue() {
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Not transmitting events because bridge is OFFLINE");
+            return;
+        }
 
         try {
-            logger.debug("New Access Token {}.", accessToken.getAccessToken());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error getting Access Token.", e);
+            while (nestUpdateRequests.size() > 0) {
+                // nestUpdateRequests is a CopyOnWriteArrayList so its iterator does not support remove operations
+                NestUpdateRequest request = nestUpdateRequests.get(0);
+                jsonToPutUrl(request);
+                nestUpdateRequests.remove(request);
+            }
+        } catch (InvalidAccessTokenException e) {
+            logger.debug("Invalid access token", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Token is invalid and could not be refreshed: " + e.getMessage());
+        } catch (FailedSendingNestDataException e) {
+            logger.debug("Error sending data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    /**
-     * @param nestDiscoveryService The device added listener to add
-     */
-    public void addDeviceAddedListener(NestDeviceAddedListener nestDiscoveryService) {
-        this.listeners.add(nestDiscoveryService);
+    private void jsonToPutUrl(NestUpdateRequest request)
+            throws FailedSendingNestDataException, InvalidAccessTokenException {
+        try {
+            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL, redirectUrl);
+            logger.debug("Putting data to: {}", url);
+
+            String jsonContent = gson.toJson(request.getValues());
+            logger.debug("PUT content: {}", jsonContent);
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
+            String jsonResponse = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE,
+                    5000);
+            logger.debug("PUT response: {}", jsonResponse);
+
+            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            if (StringUtils.isNotBlank(error.getError())) {
+                logger.debug("Nest API error: {}", error);
+                logger.warn("Nest API error: {}", error.getMessage());
+            }
+        } catch (IOException e) {
+            throw new FailedSendingNestDataException("Failed to send data", e);
+        }
+    }
+
+    private Properties getHttpHeaders() throws InvalidAccessTokenException {
+        Properties httpHeaders = new Properties();
+        httpHeaders.put("Authorization", "Bearer " + getExistingOrNewAccessToken());
+        httpHeaders.put("Content-Type", JSON_CONTENT_TYPE);
+        return httpHeaders;
     }
 
     /**
-     * @param nestDiscoveryService The device added listener to remove
+     * Resolves the redirect URL for calls using the {@link NestBindingConstants#NEST_URL}.
+     *
+     * The Jetty client used by {@link HttpUtil} will not pass the Authorization header after a redirect resulting in
+     * "401 Unauthorized error" issues.
+     *
+     * Note that this workaround currently does not use any configured proxy like {@link HttpUtil} does.
+     *
+     * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
      */
-    public void removeDeviceAddedListener(NestDiscoveryService nestDiscoveryService) {
-        this.listeners.remove(nestDiscoveryService);
-    }
+    private String resolveRedirectUrl() throws FailedResolvingNestUrlException, InvalidAccessTokenException {
+        HttpClient httpClient = new HttpClient(new SslContextFactory());
+        httpClient.setFollowRedirects(false);
 
-    /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */
-    public void addUpdateRequest(NestUpdateRequest request) {
-        nestUpdateRequests.add(request);
+        Request request = httpClient.newRequest(NestBindingConstants.NEST_URL).method(HttpMethod.GET).timeout(5,
+                TimeUnit.SECONDS);
+        Properties httpHeaders = getHttpHeaders();
+        for (String httpHeaderKey : httpHeaders.stringPropertyNames()) {
+            request.header(httpHeaderKey, httpHeaders.getProperty(httpHeaderKey));
+        }
+
+        ContentResponse response;
+        try {
+            httpClient.start();
+            response = request.send();
+            httpClient.stop();
+        } catch (Exception e) {
+            throw new FailedResolvingNestUrlException("Failed to resolve redirect URL", e);
+        }
+
+        int status = response.getStatus();
+        String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
+
+        if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
+            logger.debug("Redirect status: {}", status);
+            logger.debug("Redirect response: {}", response.getContentAsString());
+            throw new FailedResolvingNestUrlException("Failed to get redirect URL, expected status "
+                    + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
+        } else if (StringUtils.isEmpty(redirectUrl)) {
+            throw new FailedResolvingNestUrlException("Redirect URL is empty");
+        }
+
+        redirectUrl = redirectUrl.endsWith("/") ? redirectUrl.substring(0, redirectUrl.length() - 1) : redirectUrl;
+        logger.debug("Redirect URL: {}", redirectUrl);
+        return redirectUrl;
     }
 
     /**

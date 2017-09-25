@@ -11,10 +11,9 @@ package org.openhab.binding.nest.internal.data;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Data for the nest smoke detector.
+ * Data for the Nest smoke detector.
  *
  * @author David Bennett - Initial Contribution
- *
  */
 public class SmokeDetector extends BaseNestDevice {
     @SerializedName("battery_health")
@@ -76,54 +75,18 @@ public class SmokeDetector extends BaseNestDevice {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((batteryHealth == null) ? 0 : batteryHealth.hashCode());
-        result = prime * result + ((coAlarmState == null) ? 0 : coAlarmState.hashCode());
-        result = prime * result + (isManualTestActive ? 1231 : 1237);
-        result = prime * result + ((smokeAlarmState == null) ? 0 : smokeAlarmState.hashCode());
-        result = prime * result + ((uiColorState == null) ? 0 : uiColorState.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SmokeDetector other = (SmokeDetector) obj;
-        if (batteryHealth != other.batteryHealth) {
-            return false;
-        }
-        if (coAlarmState != other.coAlarmState) {
-            return false;
-        }
-        if (isManualTestActive != other.isManualTestActive) {
-            return false;
-        }
-        if (smokeAlarmState != other.smokeAlarmState) {
-            return false;
-        }
-        if (uiColorState != other.uiColorState) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "SmokeDetector [batteryHealth=" + batteryHealth + ", coAlarmState=" + coAlarmState + ", smokeAlarmState="
-                + smokeAlarmState + ", isManualTestActive=" + isManualTestActive + ", uiColorState=" + uiColorState
-                + ", getName()=" + getName() + ", getDeviceId()=" + getDeviceId() + ", getLastConnection()="
-                + getLastConnection() + ", getNameLong()=" + getNameLong() + ", getSoftwareVersion()="
-                + getSoftwareVersion() + ", getStructureId()=" + getStructureId() + ", isOnline()=" + isOnline()
-                + ", getWhereId()=" + getWhereId() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("SmokeDetector [batteryHealth=").append(batteryHealth).append(", coAlarmState=")
+                .append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
+                .append(", isManualTestActive=").append(isManualTestActive).append(", uiColorState=")
+                .append(uiColorState).append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
+                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
+                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
+                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
+                .append("]");
+        return builder.toString();
     }
+
 }

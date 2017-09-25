@@ -5,45 +5,7 @@
 
 	<bridge-type id="account">
 		<label>Nest Account</label>
-		<description>An account for the Nest web service.</description>
-		<config-description>
-			<parameter-group name="nest">
-				<description>The pieces for talking to nest</description>
-				<label>Nest Connection</label>
-			</parameter-group>
-			<parameter-group name="binding">
-				<description>Local settings</description>
-				<label>Binding settings</label>
-			</parameter-group>
-
-			<parameter name="clientId" type="text" groupName="nest">
-				<label>Client id</label>
-				<description>The client id from the nest product page</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="clientSecret" type="text" groupName="nest">
-				<label>Client secret</label>
-				<description>The client secret from the nest product page</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="pincode" type="text" groupName="nest">
-				<label>Pincode</label>
-				<description>The pincode to use after clicking on the authorization url</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="accessToken" type="text" groupName="nest">
-				<label>Access Token</label>
-				<description>The access token to use from nest.  Only need to set this value if you want to override
-				the value that is automatically retrieved from nest.  The automatic value is stored elsewhere.</description>
-				<required>false</required>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" groupName="binding">
-				<label>Refresh Interval</label>
-				<description>How often to refresh the data from nest (in seconds). Don't make this too often or nest will throttle
-				your account. The default of 2 minutes is roughly the most often you can do it.</description>
-				<default>120</default>
-			</parameter>
-		</config-description>
+		<description>An account for using the Nest REST API</description>
+        <config-description-ref uri="thing-type:nest:account" />
 	</bridge-type>
 </thing:thing-descriptions>

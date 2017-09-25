@@ -12,16 +12,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.openhab.binding.nest.internal.NestIdentifiable;
 import org.openhab.binding.nest.internal.data.SmokeDetector.AlarmState;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The structure details from nest.
+ * The structure details from Nest.
  *
  * @author David Bennett - Initial Contribution
  */
-public class Structure {
+public class Structure implements NestIdentifiable {
     @SerializedName("structure_id")
     private String structureId;
     @SerializedName("thermostats")
@@ -56,6 +57,11 @@ public class Structure {
     private String name;
     @SerializedName("eta")
     private ETA eta;
+
+    @Override
+    public String getId() {
+        return structureId;
+    }
 
     public HomeAwayState getAway() {
         return away;
@@ -138,7 +144,7 @@ public class Structure {
     }
 
     /**
-     * Used to set and update the eta values for nest.
+     * Used to set and update the eta values for Nest.
      */
     public class ETA {
         @SerializedName("trip_id")
@@ -194,19 +200,24 @@ public class Structure {
         @SerializedName("away")
         AWAY,
         @SerializedName("autoaway")
-        AUTOAWAY,
+        AUTO_AWAY,
         @SerializedName("unknown")
         UNKNOWN
     }
 
     @Override
     public String toString() {
-        return "Structure [structureId=" + structureId + ", thermostatIds=" + thermostatIds + ", smokeAlarmIds="
-                + smokeAlarmIds + ", cameraIds=" + cameraIds + ", countryCode=" + countryCode + ", postalCode="
-                + postalCode + ", peakPeriodStartTime=" + peakPeriodStartTime + ", peakPeriodEndTime="
-                + peakPeriodEndTime + ", timeZone=" + timeZone + ", etaBegin=" + etaBegin + ", coAlarmState="
-                + coAlarmState + ", smokeAlarmState=" + smokeAlarmState + ", rushHourRewardsEnrollement="
-                + rushHourRewardsEnrollement + ", whereIds=" + whereIds + ", away=" + away + ", name=" + name + ", eta="
-                + eta + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Structure [structureId=").append(structureId).append(", thermostatIds=").append(thermostatIds)
+                .append(", smokeAlarmIds=").append(smokeAlarmIds).append(", cameraIds=").append(cameraIds)
+                .append(", countryCode=").append(countryCode).append(", postalCode=").append(postalCode)
+                .append(", peakPeriodStartTime=").append(peakPeriodStartTime).append(", peakPeriodEndTime=")
+                .append(peakPeriodEndTime).append(", timeZone=").append(timeZone).append(", etaBegin=").append(etaBegin)
+                .append(", coAlarmState=").append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
+                .append(", rushHourRewardsEnrollement=").append(rushHourRewardsEnrollement).append(", whereIds=")
+                .append(whereIds).append(", away=").append(away).append(", name=").append(name).append(", eta=")
+                .append(eta).append("]");
+        return builder.toString();
     }
+
 }

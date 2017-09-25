@@ -24,8 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.nest.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 
 /**
  * Tests cases for {@link NestBridgeHandler}.
@@ -58,7 +58,7 @@ public class NestBridgeHandlerTest {
         when(bridge.getConfiguration()).thenReturn(configuration);
         NestBridgeConfiguration bridgeConfig = new NestBridgeConfiguration();
         when(configuration.as(eq(NestBridgeConfiguration.class))).thenReturn(bridgeConfig);
-        bridgeConfig.refreshInterval = 30;
+        bridgeConfig.refreshInterval = 120;
         bridgeConfig.accessToken = "my token";
 
         // we expect the handler#initialize method to call the callback during execution and
@@ -73,7 +73,7 @@ public class NestBridgeHandlerTest {
         verify(callback).statusUpdated(eq(bridge), statusInfoCaptor.capture());
         // assert that the ThingStatusInfo given to the callback was build with the ONLINE status:
         ThingStatusInfo thingStatusInfo = statusInfoCaptor.getValue();
-        assertThat(thingStatusInfo.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(thingStatusInfo.getStatus(), is(equalTo(ThingStatus.UNKNOWN)));
     }
 
 }
