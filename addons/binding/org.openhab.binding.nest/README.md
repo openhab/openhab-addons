@@ -10,7 +10,7 @@ The table below lists the Nest binding thing types:
 
 | Things                                  | Description                              | Thing Type     |
 | --------------------------------------- | ---------------------------------------- | -------------- |
-| Nest Product Account                    | An account for a product that uses the Nest REST API | account        |
+| Nest Account                            | An account for using the Nest REST API   | account        |
 | Nest Cam (Indoor, IQ, Outdoor), Dropcam | A Nest Cam registered with your account  | camera         |
 | Nest Protect                            | The smoke detector/Nest Protect for the account | smoke_detector |
 | Structure                               | The Nest structure defines the house the account has setup on Nest.	You will only have more than one structure if you have more than one house | structure      |
@@ -33,9 +33,9 @@ You can return to the Product Overview page at a later time by opening the [Prod
 
 ## Discovery
 
-The binding will discover all Nest Things from your account when you add and configure a "Nest Product Account" Thing. See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
+The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing. See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
 
-Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode. The configured Pincode is cleared because it can only be used once. The obtained Access Token is saved as an advanced configuration parameter of the "Nest Product Account".
+Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode. The configured Pincode is cleared because it can only be used once. The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
 
 You can reuse an Access Token for authorization but not the Pincode. A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
 
