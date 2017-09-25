@@ -89,11 +89,6 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         if (refreshJob != null && !refreshJob.isCancelled()) {

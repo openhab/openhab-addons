@@ -77,11 +77,6 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
         startDiscovery();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
-     */
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Harmony Hub background discovery");
