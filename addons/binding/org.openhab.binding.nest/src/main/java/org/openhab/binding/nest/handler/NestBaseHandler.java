@@ -90,11 +90,11 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
     void addUpdateRequest(String updateUrl, String field, Object value) {
         if (getNestBridgeHandler() != null) {
         // @formatter:off
-            getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
-                .withBaseUrl(updateUrl)
-                .withIdentifier(getId())
-                .withAdditionalValue(field, value)
-                .build());
+        getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
+            .withBaseUrl(updateUrl)
+            .withIdentifier(getId())
+            .withAdditionalValue(field, value)
+            .build());
         // @formatter:on
         }
     }

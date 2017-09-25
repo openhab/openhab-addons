@@ -73,7 +73,7 @@ public class NestBridgeHandlerTest {
         verify(callback).statusUpdated(eq(bridge), statusInfoCaptor.capture());
         // assert that the ThingStatusInfo given to the callback was build with the ONLINE status:
         ThingStatusInfo thingStatusInfo = statusInfoCaptor.getValue();
-        assertThat(thingStatusInfo.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(thingStatusInfo.getStatus(), is(equalTo(ThingStatus.UNKNOWN)));
     }
 
 }
