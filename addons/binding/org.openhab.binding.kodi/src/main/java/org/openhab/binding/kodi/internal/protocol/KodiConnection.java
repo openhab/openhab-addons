@@ -60,15 +60,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
         try {
+            close();
             wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
+            socket = new KodiClientSocket(this, wsUri, scheduler);
+            checkConnection();
         } catch (URISyntaxException e) {
             logger.error("exception during constructing URI host={}, port={}", hostName, port, e);
         }
-
-        if (socket == null) {
-            socket = new KodiClientSocket(this, wsUri, scheduler);
-        }
-        checkConnection();
     }
 
     private int getActivePlayer() {
@@ -476,7 +474,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
-        if (socket.isConnected()) {
+        if (socket != null && socket.isConnected()) {
             socket.close();
         }
     }

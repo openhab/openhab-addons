@@ -248,7 +248,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void initialize() {
         try {
-            String host = this.getConfig().get(HOST_PARAMETER).toString();
+            String host = getConfig().get(HOST_PARAMETER).toString();
             if (host == null || host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "No network address specified");
