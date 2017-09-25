@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sleepiq.config;
+package org.openhab.binding.sleepiq.internal.config;
 
 /**
  * Configuration class for the SleepIQ cloud.

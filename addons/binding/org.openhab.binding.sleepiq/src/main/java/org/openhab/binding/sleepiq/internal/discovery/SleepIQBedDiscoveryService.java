@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sleepiq.discovery;
+package org.openhab.binding.sleepiq.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +16,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.sleepiq.SleepIQBindingConstants;
-import org.openhab.binding.sleepiq.config.SleepIQBedConfiguration;
 import org.openhab.binding.sleepiq.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.handler.SleepIQDualBedHandler;
+import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.model.Bed;
