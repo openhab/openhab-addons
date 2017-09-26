@@ -66,6 +66,17 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     }
 
     /**
+     * the constructor
+     *
+     * @param config
+     */
+    public AbstractUplinkCommandCallback(NibeUplinkConfiguration config, StatusUpdateListener listener) {
+        this.communicationStatus = new CommunicationStatus();
+        this.listener = listener;
+        this.config = config;
+    }
+
+    /**
      * Log request success
      */
     @Override

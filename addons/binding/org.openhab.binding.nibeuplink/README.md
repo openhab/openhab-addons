@@ -101,7 +101,7 @@ The "all channels" lists have been generated automatically from Nibe Modbus Mana
 ### Thing
 
 ```
-nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="geheim123", nibeId="4711", pollingInterval=300 ]
+nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300 ]
 ```
 
 ### Items

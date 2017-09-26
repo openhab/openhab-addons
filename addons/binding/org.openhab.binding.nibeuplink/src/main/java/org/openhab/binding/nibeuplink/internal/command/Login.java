@@ -29,12 +29,9 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
 
     private final NibeUplinkHandler handler;
 
-    private final StatusUpdateListener listener;
-
     public Login(NibeUplinkHandler handler, StatusUpdateListener listener) {
-        super(handler.getConfiguration());
+        super(handler.getConfiguration(), listener);
         this.handler = handler;
-        this.listener = listener;
     }
 
     @Override
@@ -60,6 +57,6 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
 
     @Override
     public void onComplete(Result result) {
-        listener.update(getCommunicationStatus());
+        getListener().update(getCommunicationStatus());
     }
 }
