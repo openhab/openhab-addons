@@ -144,6 +144,11 @@ public class LxControlTimedSwitch extends LxControl {
         return null;
     }
 
+    /**
+     *
+     * @return deactivation delay in seconds
+     *         Loxone also returns floating point values for the delay e.g. 9.99 seconds
+     */
     public Double getDeactivationDelay() {
         LxControlState state = getState(STATE_DEACTIVATION_DELAY);
         if (state != null) {

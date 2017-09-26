@@ -138,9 +138,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
             if (control instanceof LxControlTimedSwitch) {
                 if (command instanceof OnOffType) {
-                    if ((OnOffType) command == OnOffType.ON) {
+                    if (command == OnOffType.ON) {
                         ((LxControlTimedSwitch) control).pulse();
-
                     } else {
                         ((LxControlTimedSwitch) control).off();
                     }
@@ -151,7 +150,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             if (control instanceof LxControlDimmer) {
                 LxControlDimmer dimmer = (LxControlDimmer) control;
                 if (command instanceof OnOffType) {
-                    if ((OnOffType) command == OnOffType.ON) {
+                    if (command == OnOffType.ON) {
                         dimmer.on();
                     } else {
                         dimmer.off();
@@ -403,8 +402,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             addChannel(channels, "Switch", switchTypeId, id, label, "Switch", tags);
             // adding a deactivation delay channel for timed switch
             if (control instanceof LxControlTimedSwitch) {
-                ChannelUID id2 = getChannelIdForControl(control, 1);
-                addChannel(channels, "Number", roTimedSwitchDeactivationDelayTypeId, id2,
+                ChannelUID deactivationDelayChannelId = getChannelIdForControl(control, 1);
+                addChannel(channels, "Number", roTimedSwitchDeactivationDelayTypeId, deactivationDelayChannelId,
                         label + " / Deactivation Delay", "Deactivation Delay", tags);
             }
         } else if (control instanceof LxControlJalousie) {
@@ -457,8 +456,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             // getting second channel for this control and update the state
             Double deactivationValue = timedSwitch.getDeactivationDelay();
             if (deactivationValue != null) {
-                ChannelUID channelId2 = getChannelIdForControl(control, 1);
-                updateState(channelId2, new DecimalType(deactivationValue));
+                ChannelUID deactivationDelayChannelId = getChannelIdForControl(control, 1);
+                updateState(deactivationDelayChannelId, new DecimalType(deactivationValue));
             }
         } else if (control instanceof LxControlJalousie) {
             Double value = ((LxControlJalousie) control).getPosition();

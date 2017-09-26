@@ -73,7 +73,11 @@ public class LxControlDimmer extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
+        if (type != null) {
+            return TYPE_NAME.equalsIgnoreCase(type);
+        } else {
+            return false;
+        }
     }
 
     public void setPosition(Double position) throws IOException {
