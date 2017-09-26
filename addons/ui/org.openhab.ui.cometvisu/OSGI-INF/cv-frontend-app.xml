@@ -10,9 +10,9 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-policy="optional" immediate="true" name="org.openhab.cometvisu">
-   <implementation class="org.openhab.ui.cometvisu.servlet.CometVisuApp"/>
+   <implementation class="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
    <service>
-      <provide interface="org.openhab.ui.cometvisu.servlet.CometVisuApp"/>
+      <provide interface="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
    </service>
    <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
    <reference bind="setItemUIRegistry" cardinality="1..1" interface="org.eclipse.smarthome.ui.items.ItemUIRegistry" name="ItemUIRegistry" policy="static" unbind="unsetItemUIRegistry"/>

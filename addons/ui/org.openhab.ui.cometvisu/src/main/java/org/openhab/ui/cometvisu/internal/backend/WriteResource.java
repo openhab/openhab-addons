@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.backend;
+package org.openhab.ui.cometvisu.internal.backend;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.rest.RESTResource;
-import org.openhab.ui.cometvisu.backend.beans.SuccessBean;
 import org.openhab.ui.cometvisu.internal.Config;
+import org.openhab.ui.cometvisu.internal.backend.beans.SuccessBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,18 +6,18 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.backend.beans;
+package org.openhab.ui.cometvisu.internal.backend.beans;
 
 /**
- * Item bean for broadcasted item states.
- * 
- * @author Tobias Bräutigam - Initial Contribution and API
+ * This is a java bean that is used with JAXB to define the resources of backend configuration for the
+ * Cometvisu client.
+ *
+ * @author Tobias Bräutigam
  * @since 2.0.0
+ *
  */
-public class StateBean {
-
-    public String name;
-
-    public String state;
-
+public class ResourcesBean {
+    public String read;
+    public String rrd;
+    public String write;
 }

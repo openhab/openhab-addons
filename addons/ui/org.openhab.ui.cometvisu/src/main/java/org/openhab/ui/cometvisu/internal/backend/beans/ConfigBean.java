@@ -6,18 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.backend.beans;
+package org.openhab.ui.cometvisu.internal.backend.beans;
 
 /**
- * This is a java bean that is used with JAXB to define the resources of backend configuration for the
+ * This is a java bean that is used with JAXB to define the backend configurationfor the
  * Cometvisu client.
  *
  * @author Tobias Bräutigam
  * @since 2.0.0
  *
  */
-public class ResourcesBean {
-    public String read;
-    public String rrd;
-    public String write;
+public class ConfigBean {
+    public String name = "openhab2";
+    public String transport = "sse";
+    public String baseURL = "/rest/cv/";
+    public ResourcesBean resources;
 }

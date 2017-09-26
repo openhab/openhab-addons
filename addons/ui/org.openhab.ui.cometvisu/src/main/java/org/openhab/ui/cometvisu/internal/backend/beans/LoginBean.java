@@ -6,16 +6,18 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.backend.beans;
+package org.openhab.ui.cometvisu.internal.backend.beans;
 
 /**
  * This is a java bean that is used with JAXB to define the login entry
  * page of the Cometvisu interface.
- * 
+ *
  * @author Tobias Bräutigam
  * @since 2.0.0
  *
  */
-public class SuccessBean {
-    public int success;
+public class LoginBean {
+    public String v;
+    public String s;
+    public ConfigBean c;
 }
