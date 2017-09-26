@@ -1,12 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name:  Nest Binding Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.openhab.binding.nest;uses:="org.eclipse.smarthome.te
+ st"
 Fragment-Host: org.openhab.binding.nest
-Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.thing.util,
@@ -20,6 +23,7 @@ Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.junit,org.mockito,org.hamcrest
-Export-Package: 
- org.openhab.binding.nest;uses:="org.eclipse.smarthome.test"
+Require-Bundle: 
+ org.hamcrest,
+ org.junit,
+ org.mockito

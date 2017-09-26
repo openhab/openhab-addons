@@ -1,12 +1,16 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Homematic Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.homematic;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.collect,
+Export-Package: 
+ org.openhab.binding.homematic,
+ org.openhab.binding.homematic.handler
+Import-Package: 
+ com.google.common.collect,
  com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.io,
@@ -46,6 +50,4 @@ Import-Package: com.google.common.collect,
  org.osgi.service.component,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
-Export-Package: org.openhab.binding.homematic,
- org.openhab.binding.homematic.handler
 Service-Component: OSGI-INF/*.xml
