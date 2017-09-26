@@ -13,7 +13,7 @@
 This allows to test the communication and session handling of the addon implementation
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="false" immediate="true" name="org.openhab.binding.milight.test">
-   <implementation class="org.openhab.binding.milight.test.TestDiscovery"/>
+   <implementation class="org.openhab.binding.milight.internal.test.TestDiscovery"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>
