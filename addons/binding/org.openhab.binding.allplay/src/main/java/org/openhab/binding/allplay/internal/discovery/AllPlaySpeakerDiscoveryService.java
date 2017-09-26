@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.allplay.discovery;
+package org.openhab.binding.allplay.internal.discovery;
 
 import static org.openhab.binding.allplay.AllPlayBindingConstants.SPEAKER_THING_TYPE;
 
