@@ -1,12 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Onkyo Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.onkyo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.base,
+Export-Package: 
+ org.openhab.binding.onkyo,
+ org.openhab.binding.onkyo.handler
+Import-Package: 
+ com.google.common.base,
  com.google.common.collect,
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -30,6 +35,3 @@ Import-Package: com.google.common.base,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.onkyo,
- org.openhab.binding.onkyo.handler
-Bundle-ActivationPolicy: lazy

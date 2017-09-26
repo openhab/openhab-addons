@@ -1,12 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Nest Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.gson,
+Export-Package: 
+ org.openhab.binding.nest,
+ org.openhab.binding.nest.handler
+Import-Package: 
+ com.google.gson,
  com.google.gson.annotations,
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -35,6 +40,3 @@ Import-Package: com.google.gson,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.nest,
- org.openhab.binding.nest.handler
-Bundle-ActivationPolicy: lazy
