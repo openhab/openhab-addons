@@ -38,14 +38,15 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
 
     // The activate component call is used to access the bindings configuration
     @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
+    protected void activate(@NonNull ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
         modified(config);
     };
 
     @Deactivate
-    protected void deactivate() {
-        super.deactivate(null);
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
     }
 
     @Modified
