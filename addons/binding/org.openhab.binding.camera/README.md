@@ -14,7 +14,7 @@ Please contact the author Thomas Hartwig <thomas.hartwig@gmail.com> for camera U
 | Vendor    |      Single snapshot URL          | Video capture (not yet supported)     |
 |:------:   |:-----------------------------:    |:---------------------------------:    |
 | Axis      | http://<CAMERA>/jpg/image.jpg     |                                       |
-| Bosch     | http://<CAMER>/snap.jpg           |                                       |
+| Bosch     | http://<CAMERA>/snap.jpg           |                                       |
 
 ## Discovery
 
