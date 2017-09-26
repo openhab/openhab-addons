@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.kodi;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link KodiBinding} class defines common constants, which are used across
@@ -28,11 +27,12 @@ public class KodiBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KODI = new ThingTypeUID(BINDING_ID, "kodi");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_KODI);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KODI);
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
     public static final String PORT_PARAMETER = "port";
+    public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";

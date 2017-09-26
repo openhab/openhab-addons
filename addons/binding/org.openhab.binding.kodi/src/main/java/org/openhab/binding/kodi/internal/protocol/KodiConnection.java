@@ -9,6 +9,7 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * KodiConnection provides an api for accessing a kodi device.
+ * KodiConnection provides an api for accessing a Kodi device.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
@@ -59,11 +60,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
         try {
+            close();
             wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
             socket = new KodiClientSocket(this, wsUri, scheduler);
-            socket.open();
-        } catch (Throwable t) {
-            logger.error("exception during connect to {}", wsUri.toString(), t);
+            checkConnection();
+        } catch (URISyntaxException e) {
+            logger.error("exception during constructing URI host={}, port={}", hostName, port, e);
         }
     }
 
@@ -472,7 +474,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
-        socket = null;
+        if (socket != null && socket.isConnected()) {
+            socket.close();
+        }
     }
 
     public synchronized void updateVolume() {
@@ -583,21 +587,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public boolean checkConnection() {
         if (!socket.isConnected()) {
-            logger.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
+            logger.debug("checkConnection: try to connect to Kodi {}", wsUri);
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Throwable t) {
-                logger.error("exception during connect to {}", wsUri.toString(), t);
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                }
+            } catch (Exception e) {
+                logger.error("exception during connect to {}", wsUri, e);
+                socket.close();
                 return false;
             }
         } else {
-            // Ping kodi with the get version command. This prevents the idle
-            // timeout on the websocket
+            // Ping Kodi with the get version command. This prevents the idle
+            // timeout on the websocket.
             return !getVersion().isEmpty();
         }
     }

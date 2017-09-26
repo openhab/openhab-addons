@@ -13,6 +13,7 @@ import static org.openhab.binding.kodi.KodiBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -30,7 +31,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
-import org.openhab.binding.kodi.internal.jobs.KodiStatusUpdaterRunnable;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private ScheduledFuture<?> statusUpdaterFuture;
 
-    public KodiHandler(Thing thing) {
+    public KodiHandler(@NonNull Thing thing) {
         super(thing);
         connection = new KodiConnection(this);
     }
@@ -213,7 +213,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
         }
-
     }
 
     public void playURI(Command command) {
@@ -230,7 +229,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (channelID > 0) {
             connection.playPVRChannel(channelID);
         } else {
-            logger.error("Received unknown PVR channel {}", command.toString());
+            logger.debug("Received unknown PVR channel {}", command.toString());
         }
     }
 
@@ -249,38 +248,28 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void initialize() {
         try {
-            String host = this.getConfig().get(HOST_PARAMETER).toString();
+            String host = getConfig().get(HOST_PARAMETER).toString();
             if (host == null || host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "No network address specified");
             } else {
                 connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090), scheduler);
 
-                // Start the connection checker
-                Runnable connectionChecker = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!connection.checkConnection()) {
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
-                        } catch (Exception ex) {
-                            logger.warn("Exception in check connection to @{}. Cause: {}",
-                                    connection.getConnectionName(), ex.getMessage());
-
-                        }
+                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (!connection.checkConnection()) {
+                        updateStatus(ThingStatus.OFFLINE);
                     }
-                };
-                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+                }, 1, 10, TimeUnit.SECONDS);
 
-                // Start the status updater
-                Runnable statusUpdater = new KodiStatusUpdaterRunnable(connection);
-                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
-
+                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (KodiState.Play.equals(connection.getState())) {
+                        connection.updatePlayerStatus();
+                    }
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
             }
         } catch (Exception e) {
-            logger.debug("error during opening connection: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("error during opening connection: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -292,7 +281,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
             } catch (Exception e) {
-                logger.error("error during reading version: {}", e.getMessage());
+                logger.debug("error during reading version: {}", e.getMessage(), e);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -301,7 +290,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateScreenSaverState(boolean screenSaveActive) {
-
     }
 
     @Override

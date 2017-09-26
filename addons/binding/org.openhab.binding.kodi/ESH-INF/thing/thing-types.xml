@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="kodi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions bindingId="kodi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Kodi Thing Type -->
@@ -35,13 +35,20 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
-				<description>The IP or host name of the kodi</description>
+				<description>The IP or host name of the Kodi</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="true" min="1" max="65335">
 				<label>Web socket service port</label>
 				<description>Port for the web socket service</description>
 				<default>9090</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false"
+				unit="s">
+				<label>Refresh Interval</label>
+				<description>The refresh interval to poll Kodi API (in ms).</description>
+				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -56,13 +63,13 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
-		</state>
+		<state min="0" max="100" step="1" pattern="%d %%" />
 	</channel-type>
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind
+		</description>
 		<category>Player</category>
 	</channel-type>
 	<channel-type id="stop">
@@ -95,7 +102,8 @@
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a key</label>
-		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
+		<description>Sends a key stroke to the Kodi Player to navigate in the UI
+		</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>
@@ -115,12 +123,14 @@
 	<channel-type id="inputtext" advanced="true">
 		<item-type>String</item-type>
 		<label>Sends text as input</label>
-		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
+		<description>Sends a text to the Kodi Player to simulate keyboard text entry
+		</description>
 	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to kodi. This allows to shutdown/suspend/hibernate/reboot kodi</description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi
+		</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>

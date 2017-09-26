@@ -27,10 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes kodi to serve as an {@link AudioSink}-
+ * This makes Kodi to serve as an {@link AudioSink}-
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Paul Frank - Adapted for kodi
+ * @author Paul Frank - Adapted for Kodi
  *
  */
 public class KodiAudioSink implements AudioSink {
@@ -83,13 +83,14 @@ public class KodiAudioSink implements AudioSink {
                 String relativeUrl = audioHTTPServer.serve(fixedLengthAudioStream, 30);
                 url = callbackUrl + relativeUrl;
             } else {
-                logger.warn("We do not have any callback url, so kodi cannot play the audio stream!");
+                logger.warn("We do not have any callback url, so Kodi cannot play the audio stream!");
                 return;
             }
         } else {
             throw new UnsupportedAudioStreamException("Kodi can only handle URLAudioStream or FixedLengthAudioStreams.",
                     null);
         }
+        logger.trace("Using callback url: '{}'", url);
         handler.playURI(new StringType(url));
     }
 
