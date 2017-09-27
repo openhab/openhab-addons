@@ -9,7 +9,7 @@
 package org.openhab.binding.sleepiq.handler;
 
 import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.*;
+import static org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.sleepiq.SleepIQBindingConstants;
-import org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration;
 import org.openhab.binding.sleepiq.internal.SleepIQConfigStatusMessage;
+import org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.Configuration;
