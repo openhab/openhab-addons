@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Material IconSet
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.ui.iconset.material
+Bundle-Vendor: openHAB
+Bundle-Version: 2.2.0.qualifier
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.i18n,
+ org.eclipse.smarthome.ui.icon,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
