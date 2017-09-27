@@ -27,11 +27,13 @@ public class LoxoneBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_LIGHT_CTRL = "lightCtrlTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RADIO_BUTTON = "radioButtonTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER = "rollerShutterTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_DIMMER = "dimmerTypeId";
 
     // Channel Type IDs - read only
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_ANALOG = "roAnalogTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_NUMBER = "roNumberTypeId";
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";

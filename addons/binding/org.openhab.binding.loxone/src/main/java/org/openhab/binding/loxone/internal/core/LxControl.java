@@ -272,6 +272,12 @@ public abstract class LxControl {
         } else if (LxControlPushbutton.accepts(type)) {
             ctrl = new LxControlPushbutton(client, uuid, json, room, category);
 
+        } else if (LxControlTimedSwitch.accepts(type)) {
+            ctrl = new LxControlTimedSwitch(client, uuid, json, room, category);
+
+        } else if (LxControlDimmer.accepts(type)) {
+            ctrl = new LxControlDimmer(client, uuid, json, room, category);
+
         } else if (LxControlJalousie.accepts(type)) {
             ctrl = new LxControlJalousie(client, uuid, json, room, category);
 

@@ -81,14 +81,16 @@ This binding creates channels for controls that are [used in Loxone's user inter
 
 |[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|
 |----|----|----|----|
-|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|
+|Dimmer|[Dimmer](https://www.loxone.com/enen/kb/dimmer/)|`Dimmer`|`OnOffType.*`<br>`Percent`|
+|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)|`Number`|none (read-only value)|
 |InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|
-|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|
+|Jalousie|Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated|`Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|
 |LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|
 |Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|
 |Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|
 |Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|
 |TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|
+|TimedSwitch| [Stairwell light switch](https://www.loxone.com/enen/kb/stairwell-light-switch/) or [Multifunction switch](https://www.loxone.com/enen/kb/multifunction-switch/)| `Switch` <br> <br> `Number`|`OnOffType.*` (ON send pulse to Loxone) <br> <br> Read-only countdown value to off|
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 
@@ -179,8 +181,11 @@ loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.16
 Number        Miniserver_Temp "Miniserver temperature: [%.1f °C]"    <temperature>              {channel="loxone:miniserver:504F2414780F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}
 Switch        Garage_Door     "Garage door [MAP(garagedoor.map):%s]" <garagedoor>               {channel="loxone:miniserver:504F2414780F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}
 Switch        Kitchen_Lights  "Kitchen Lights"                       <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0EC5E0CF-0255-6ABD-FFFF402FB0C24B9E_AI1"}
+Switch        Stair_Lights    "Stair Lights"                         <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0EC5E0CF-0255-31BD-FFFF402FB0C24B9E"}
+Number        Stair_Lights-1  "Stair Lights Deactivation Delay"      <clock>       ["lighting"] {channel="loxone:miniserver:504F2414780F:0EC5E0CF-0255-31BD-FFFF402FB0C24B9E-1"}
 Switch        Reset_Lights    "Switch all lights off"                <switch>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0F2F2133-01AD-3282-FFFF201EB0C24B9E",autoupdate="false"}
 Rollershutter Kitchen_Blinds  "Kitchen blinds"                       <blinds>                   {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF204EB3C24B9E"}
+Dimmer        Kitchen_Dimmer  "Kitchen dimmer"                       <slider>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF207EB3C24B9E"}
 Number        Light_Scene     "Lighting scene"                       <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE403FB0C34B9E"}
 Number        Garden_Valve    "Garden watering section"              <garden>                   {channel="loxone:miniserver:504F2414780F:0FC5E0DF-0355-6AAD-FFFE403FB0C34B9E"}
 String        Alarm_State     "Alarm state [%s]"                     <alarm>                    {channel="loxone:miniserver:504F2414780F:0F2E2134-017D-3E82-FFFF433FB4A34B9E"}
@@ -197,6 +202,9 @@ sitemap loxone label="Loxone Example Menu"
         Switch    item=Kitchen_Lights
         Switch    item=Reset_Lights
         Switch    item=Kitchen_Blinds
+        Slider    item=Kitchen_Dimmer switchSupport
+        Switch    item=Stairs_Light
+        Text      item=Stairs_Light-1
         Selection item=Light_Scene mappings=[0="All off", 1="My scene 1", 2="My scene 2", 9="All on"]
         Setpoint  item=Garden_Valve minValue=0 maxValue=8 step=1
         Text      item=Alarm_State

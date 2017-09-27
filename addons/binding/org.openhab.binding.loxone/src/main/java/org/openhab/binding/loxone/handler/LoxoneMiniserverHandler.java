@@ -44,6 +44,7 @@ import org.openhab.binding.loxone.config.LoxoneMiniserverConfig;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxControl;
+import org.openhab.binding.loxone.internal.core.LxControlDimmer;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyAnalog;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyDigital;
 import org.openhab.binding.loxone.internal.core.LxControlJalousie;
@@ -52,6 +53,7 @@ import org.openhab.binding.loxone.internal.core.LxControlPushbutton;
 import org.openhab.binding.loxone.internal.core.LxControlRadio;
 import org.openhab.binding.loxone.internal.core.LxControlSwitch;
 import org.openhab.binding.loxone.internal.core.LxControlTextState;
+import org.openhab.binding.loxone.internal.core.LxControlTimedSwitch;
 import org.openhab.binding.loxone.internal.core.LxOfflineReason;
 import org.openhab.binding.loxone.internal.core.LxServer;
 import org.openhab.binding.loxone.internal.core.LxServerListener;
@@ -74,10 +76,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     private ChannelTypeUID lightCtrlTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL);
     private ChannelTypeUID radioButtonTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON);
     private ChannelTypeUID rollershutterTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER);
-
+    private ChannelTypeUID dimmerTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER);
     private ChannelTypeUID roTextTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT);
     private ChannelTypeUID roSwitchTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH);
     private ChannelTypeUID roAnalogTypeId = new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG);
+    private ChannelTypeUID roTimedSwitchDeactivationDelayTypeId = new ChannelTypeUID(BINDING_ID,
+            MINISERVER_CHANNEL_TYPE_RO_NUMBER);
 
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverHandler.class);
     private Map<ChannelUID, LxControl> controls = new HashMap<>();
@@ -128,6 +132,32 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                     } else {
                         ((LxControlSwitch) control).off();
                     }
+                }
+                return;
+            }
+
+            if (control instanceof LxControlTimedSwitch) {
+                if (command instanceof OnOffType) {
+                    if (command == OnOffType.ON) {
+                        ((LxControlTimedSwitch) control).pulse();
+                    } else {
+                        ((LxControlTimedSwitch) control).off();
+                    }
+                }
+                return;
+            }
+
+            if (control instanceof LxControlDimmer) {
+                LxControlDimmer dimmer = (LxControlDimmer) control;
+                if (command instanceof OnOffType) {
+                    if (command == OnOffType.ON) {
+                        dimmer.on();
+                    } else {
+                        dimmer.off();
+                    }
+                } else if (command instanceof PercentType) {
+                    PercentType percentCmd = (PercentType) command;
+                    dimmer.setPosition(percentCmd.doubleValue());
                 }
                 return;
             }
@@ -364,11 +394,18 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
         Set<String> tags = Collections.singleton("");
 
-        if (control instanceof LxControlPushbutton || control instanceof LxControlSwitch) {
+        if (control instanceof LxControlPushbutton || control instanceof LxControlSwitch
+                || control instanceof LxControlTimedSwitch) {
             if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
                 tags = Collections.singleton("Lighting");
             }
             addChannel(channels, "Switch", switchTypeId, id, label, "Switch", tags);
+            // adding a deactivation delay channel for timed switch
+            if (control instanceof LxControlTimedSwitch) {
+                ChannelUID deactivationDelayChannelId = getChannelIdForControl(control, 1);
+                addChannel(channels, "Number", roTimedSwitchDeactivationDelayTypeId, deactivationDelayChannelId,
+                        label + " / Deactivation Delay", "Deactivation Delay", tags);
+            }
         } else if (control instanceof LxControlJalousie) {
             addChannel(channels, "Rollershutter", rollershutterTypeId, id, label, "Rollershutter", tags);
         } else if (control instanceof LxControlInfoOnlyDigital) {
@@ -381,6 +418,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             addChannel(channels, "Number", radioButtonTypeId, id, label, "Radio button", tags);
         } else if (control instanceof LxControlTextState) {
             addChannel(channels, "String", roTextTypeId, id, label, "Text state", tags);
+        } else if (control instanceof LxControlDimmer) {
+            addChannel(channels, "Dimmer", dimmerTypeId, id, label, "Dimmer", tags);
         }
         return channels;
     }
@@ -403,6 +442,23 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                     updateState(channelId, OnOffType.OFF);
                 }
             }
+        } else if (control instanceof LxControlTimedSwitch) {
+            LxControlTimedSwitch timedSwitch = ((LxControlTimedSwitch) control);
+            Double value = timedSwitch.getState();
+            if (value != null) {
+                if (value == 1d) {
+                    updateState(channelId, OnOffType.ON);
+                } else if (value == 0d) {
+                    updateState(channelId, OnOffType.OFF);
+                }
+            }
+
+            // getting second channel for this control and update the state
+            Double deactivationValue = timedSwitch.getDeactivationDelay();
+            if (deactivationValue != null) {
+                ChannelUID deactivationDelayChannelId = getChannelIdForControl(control, 1);
+                updateState(deactivationDelayChannelId, new DecimalType(deactivationValue));
+            }
         } else if (control instanceof LxControlJalousie) {
             Double value = ((LxControlJalousie) control).getPosition();
             if (value != null && value >= 0 && value <= 1) {
@@ -410,6 +466,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
                 // so we will update only position and not up or down states
                 updateState(channelId, new PercentType((int) (value * 100)));
+            }
+        } else if (control instanceof LxControlDimmer) {
+            Double value = ((LxControlDimmer) control).getPosition();
+            if (value != null && value >= 0 && value <= 100) {
+                updateState(channelId, new PercentType(value.intValue()));
             }
         } else if (control instanceof LxControlInfoOnlyDigital) {
             Double value = ((LxControlInfoOnlyDigital) control).getValue();
