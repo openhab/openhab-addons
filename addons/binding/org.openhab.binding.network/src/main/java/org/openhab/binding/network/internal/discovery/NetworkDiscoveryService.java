@@ -46,7 +46,7 @@ import com.google.common.collect.Sets;
  * @author David Graeff - Rewritten
  * @author Marc Mettke - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class, name = "NetworkDiscovery")
+@Component(immediate = true, service = DiscoveryService.class)
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
     static final int PING_TIMEOUT_IN_MS = 500;
     static final int MAXIMUM_IPS_PER_INTERFACE = 255;

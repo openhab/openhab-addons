@@ -235,15 +235,23 @@ public class NetworkUtils {
             throws IOException, InterruptedException {
         Process proc;
         // Yes, all supported operating systems have their own ping utility with a different command line
-        if (SystemUtils.IS_OS_WINDOWS) {
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
-        } else if (SystemUtils.IS_OS_MAC) {
-            proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname).start();
-        } else if (SystemUtils.IS_OS_UNIX) {
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname).start();
-        } else {
-            // We cannot estimate the command line for any other operating system and just return false
-            return false;
+        switch (method) {
+            case IPUTILS_LINUX_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case MAC_OS_PING:
+                proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case WINDOWS_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
+                break;
+            case JAVA_PING:
+            default:
+                // We cannot estimate the command line for any other operating system and just return false
+                return false;
+
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
