@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.milight.test;
+package org.openhab.binding.milight.internal.test;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.openhab.binding.milight.MilightBindingConstants;
