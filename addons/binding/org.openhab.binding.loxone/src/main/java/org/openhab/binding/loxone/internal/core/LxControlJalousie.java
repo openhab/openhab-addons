@@ -207,11 +207,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      *         a floating point number from range 0-fully closed to 1-fully open or null if position not available
      */
     public @Nullable Double getPosition() {
-        LxControlState state = getState(LxControlJalousie.STATE_POSITION);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(LxControlJalousie.STATE_POSITION);
     }
 
     /**
@@ -223,21 +219,17 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
         // check position changes
         if (state.getName().equals(STATE_POSITION) && target != null && target > 0 && target < 1) {
             // see in which direction jalousie is moving
-            LxControlState up = getState(STATE_UP);
-            LxControlState down = getState(STATE_DOWN);
-            if (up != null && down != null) {
-                Double currentPosition = state.getValue();
-                Double upValue = up.getValue();
-                Double downValue = down.getValue();
-                if (currentPosition != null && upValue != null && downValue != null) {
-                    if (((upValue == 1) && (currentPosition <= target))
-                            || ((downValue == 1) && (currentPosition >= target))) {
-                        targetPosition = null;
-                        try {
-                            stop();
-                        } catch (IOException e) {
-                            logger.debug("Error stopping jalousie when meeting target position.");
-                        }
+            Double upValue = getStateValue(STATE_UP);
+            Double downValue = getStateValue(STATE_DOWN);
+            Double currentPosition = state.getValue();
+            if (currentPosition != null && upValue != null && downValue != null) {
+                if (((upValue == 1) && (currentPosition <= target))
+                        || ((downValue == 1) && (currentPosition >= target))) {
+                    targetPosition = null;
+                    try {
+                        stop();
+                    } catch (IOException e) {
+                        logger.debug("Error stopping jalousie when meeting target position.");
                     }
                 }
             }

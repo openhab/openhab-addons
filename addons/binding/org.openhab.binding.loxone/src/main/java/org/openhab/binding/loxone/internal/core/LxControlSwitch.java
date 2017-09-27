@@ -110,10 +110,6 @@ public class LxControlSwitch extends LxControl {
      *         0 - switch off, 1 - switch on
      */
     public @Nullable Double getState() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_ACTIVE);
     }
 }

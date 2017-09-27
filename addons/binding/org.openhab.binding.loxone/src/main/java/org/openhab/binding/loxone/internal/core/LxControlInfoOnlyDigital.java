@@ -77,15 +77,12 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *         string for on/off value of the state or null if current value is not available
      */
     public @Nullable String getFormattedValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                if (value == 0) {
-                    return textOff;
-                } else if (value == 1) {
-                    return textOn;
-                }
+        Double value = getStateValue(STATE_ACTIVE);
+        if (value != null) {
+            if (value == 0) {
+                return textOff;
+            } else if (value == 1) {
+                return textOn;
             }
         }
         return null;
@@ -98,10 +95,6 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *         1 for ON, 0 for OFF and -1 if current value is not available
      */
     public @Nullable Double getValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_ACTIVE);
     }
 }

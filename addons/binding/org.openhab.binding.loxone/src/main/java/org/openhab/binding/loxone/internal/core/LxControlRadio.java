@@ -118,12 +118,9 @@ public class LxControlRadio extends LxControl {
      *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or null if error occured
      */
     public @Nullable Integer getActiveOutput() {
-        LxControlState state = getState(STATE_ACTIVE_OUTPUT);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return value.intValue();
-            }
+        Double value = getStateValue(STATE_ACTIVE_OUTPUT);
+        if (value != null) {
+            return value.intValue();
         }
         return null;
     }

@@ -71,10 +71,6 @@ public class LxControlTextState extends LxControl {
      *         string with current value
      */
     public @Nullable String getText() {
-        LxControlState textState = getState(STATE_TEXT_AND_ICON);
-        if (textState != null) {
-            return textState.getTextValue();
-        }
-        return null;
+        return getStateTextValue(STATE_TEXT_AND_ICON);
     }
 }

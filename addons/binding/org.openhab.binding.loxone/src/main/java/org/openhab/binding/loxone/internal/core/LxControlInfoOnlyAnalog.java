@@ -84,12 +84,9 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      *         string for the value of the state or null if current value is not compatible with this control
      */
     public @Nullable String getFormattedValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return String.format(format, value);
-            }
+        Double value = getStateValue(STATE_VALUE);
+        if (value != null) {
+            return String.format(format, value);
         }
         return null;
     }
@@ -111,10 +108,6 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      *         value of the state or null if current value is not compatible with this control
      */
     public @Nullable Double getValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_VALUE);
     }
 }

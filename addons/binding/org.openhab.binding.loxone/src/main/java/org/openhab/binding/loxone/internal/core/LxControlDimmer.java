@@ -106,30 +106,19 @@ public class LxControlDimmer extends LxControl {
      *         0 - full off, 100 - full on
      */
     public @Nullable Double getPosition() {
-        LxControlState state = getState(STATE_POSITION);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return mapLoxoneToOH(value);
-            }
+        Double value = getStateValue(STATE_POSITION);
+        if (value != null) {
+            return mapLoxoneToOH(value);
         }
         return null;
     }
 
     private @Nullable Double getMax() {
-        LxControlState state = getState(STATE_MAX);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_MAX);
     }
 
     private @Nullable Double getMin() {
-        LxControlState state = getState(STATE_MIN);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_MIN);
     }
 
     private @Nullable Double mapLoxoneToOH(Double loxoneValue) {

@@ -226,12 +226,9 @@ public class LxControlLightController extends LxControl implements LxControlStat
      *         number of the active scene (0-9, 0-all off, 9-all on) or null if error
      */
     public @Nullable Integer getCurrentScene() {
-        LxControlState state = getState(STATE_ACTIVE_SCENE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return value.intValue();
-            }
+        Double value = getStateValue(STATE_ACTIVE_SCENE);
+        if (value != null) {
+            return value.intValue();
         }
         return null;
     }

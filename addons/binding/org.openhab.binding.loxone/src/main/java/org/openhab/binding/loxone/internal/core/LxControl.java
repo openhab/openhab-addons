@@ -99,6 +99,38 @@ public abstract class LxControl {
         return null;
     }
 
+    /**
+     * Gets value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's value
+     */
+    public @Nullable Double getStateValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getValue();
+        }
+        return null;
+    }
+
+    /**
+     * Gets text value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's textvalue
+     */
+    public @Nullable String getStateTextValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getTextValue();
+        }
+        return null;
+    }
+
     public Map<LxUuid, LxControl> getSubControls() {
         return subControls;
     }

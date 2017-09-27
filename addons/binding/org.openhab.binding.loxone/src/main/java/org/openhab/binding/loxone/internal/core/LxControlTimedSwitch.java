@@ -136,15 +136,12 @@ public class LxControlTimedSwitch extends LxControl {
          * -1 = the output is permanently on
          * otherwise it will count down from deactivationDelayTotal
          **/
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                if (value == -1 || value > 0) { // mapping
-                    return 1d;
-                } else if (state.getValue() == 0) {
-                    return 0d;
-                }
+        Double value = getStateValue(STATE_DEACTIVATION_DELAY);
+        if (value != null) {
+            if (value == -1 || value > 0) { // mapping
+                return 1d;
+            } else if (value == 0) {
+                return 0d;
             }
         }
         return null;
@@ -157,10 +154,6 @@ public class LxControlTimedSwitch extends LxControl {
      *         Loxone also returns floating point values for the delay e.g. 9.99 seconds
      */
     public @Nullable Double getDeactivationDelay() {
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_DEACTIVATION_DELAY);
     }
 }
