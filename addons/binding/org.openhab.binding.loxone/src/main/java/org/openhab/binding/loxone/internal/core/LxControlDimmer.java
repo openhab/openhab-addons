@@ -10,6 +10,9 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -23,6 +26,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Stephan Brunner
  *
  */
+@NonNullByDefault
 public class LxControlDimmer extends LxControl {
 
     /**
@@ -60,7 +64,8 @@ public class LxControlDimmer extends LxControl {
      * @param category
      *            category to which dimmer belongs
      */
-    LxControlDimmer(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlDimmer(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
     }
 
@@ -73,17 +78,16 @@ public class LxControlDimmer extends LxControl {
      *         true if this control is suitable for this type
      */
     public static boolean accepts(String type) {
-        if (type != null) {
-            return TYPE_NAME.equalsIgnoreCase(type);
-        } else {
-            return false;
-        }
+        return TYPE_NAME.equalsIgnoreCase(type);
     }
 
     public void setPosition(Double position) throws IOException {
         Double loxonePosition = mapOHToLoxone(position);
         if (loxonePosition != null) {
-            socketClient.sendAction(uuid, loxonePosition.toString());
+            @SuppressWarnings("null")
+            @NonNull
+            String positionString = loxonePosition.toString();
+            socketClient.sendAction(uuid, positionString);
         }
     }
 
@@ -101,15 +105,18 @@ public class LxControlDimmer extends LxControl {
      * @return
      *         0 - full off, 100 - full on
      */
-    public Double getPosition() {
+    public @Nullable Double getPosition() {
         LxControlState state = getState(STATE_POSITION);
         if (state != null) {
-            return mapLoxoneToOH(state.getValue());
+            Double value = state.getValue();
+            if (value != null) {
+                return mapLoxoneToOH(value);
+            }
         }
         return null;
     }
 
-    private Double getMax() {
+    private @Nullable Double getMax() {
         LxControlState state = getState(STATE_MAX);
         if (state != null) {
             return state.getValue();
@@ -117,7 +124,7 @@ public class LxControlDimmer extends LxControl {
         return null;
     }
 
-    private Double getMin() {
+    private @Nullable Double getMin() {
         LxControlState state = getState(STATE_MIN);
         if (state != null) {
             return state.getValue();
@@ -125,19 +132,19 @@ public class LxControlDimmer extends LxControl {
         return null;
     }
 
-    private Double mapLoxoneToOH(Double loxoneValue) {
+    private @Nullable Double mapLoxoneToOH(Double loxoneValue) {
         Double max = getMax();
         Double min = getMin();
-        if (max != null && min != null && loxoneValue != null) {
+        if (max != null && min != null) {
             return (loxoneValue - min) * ((max - min) / 100);
         }
         return null;
     }
 
-    private Double mapOHToLoxone(Double ohValue) {
+    private @Nullable Double mapOHToLoxone(Double ohValue) {
         Double max = getMax();
         Double min = getMin();
-        if (max != null && min != null && ohValue != null) {
+        if (max != null && min != null) {
             double value = min + (ohValue / ((max - min) / 100));
             return value; // no rounding to integer value is needed as loxone is accepting floating point values
         }
