@@ -1,11 +1,11 @@
 # iCloud Binding
 
 This binding uses the Apple iCloud service for providing device based information such as battery details or location.
-An apple account is required. Two factor authentication is supported.
+An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
 
-The binding uses googles "[Geocode API](https://developers.google.com/maps/documentation/geocoding/)" to translate the coordinates into a address data.
+The binding uses Google's "[Geocode API](https://developers.google.com/maps/documentation/geocoding/)" to translate the coordinates into a address data.
 
 <!-- TOC -->
 
@@ -47,11 +47,13 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ### iCloud Binding Thing
 
-| Parameter	| Description |
-|-----------|-------------|
-|AppleId||
-|Password||
-|RefreshTimeInMinutes||
+<!-- http://www.tablesgenerator.com/markdown_tables -->
+
+| Parameter            | Description |
+|----------------------|-------------|
+| AppleId              |             |
+| Password             |             |
+| RefreshTimeInMinutes |             |
 
 All parameters are mandatory.
 
@@ -59,19 +61,19 @@ All parameters are mandatory.
 
 The following channels are available (if supported by the device):
 
-| Channel ID    |Type           | Description |
-| ------------- | ------------- |-------------|
-| BatteryStatus | String        |Current battery status (Charging, Charged, Unknown) |
-| BatteryLevel | Number        | Battery charge in %|
-| FindMyPhone   | Switch        | Triggers the "Find my phone" functionality of the device (if available). |
-| Location      | Location      | Location of the device.|
-| LocationAccuracy      | Number        | Accuracy of the last position report. |
-| DistanceFromHome | Number   | Device distance from home in meters.|
-| LastUpdate | DateTime | Timestamp of the last location update.| 
-| AddressStreet        | String        |Street|
-| AddressCity          | String        |City|
-| AddressCountry       | String        |Country|
-| FormattedAddress | String    |Formatted address string|
+| Channel ID       | Type     | Description                                                              |
+|------------------|----------|--------------------------------------------------------------------------|
+| BatteryStatus    | String   | Current battery status (Charging, Charged, Unknown)                      |
+| BatteryLevel     | Number   | Battery charge in %                                                      |
+| FindMyPhone      | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
+| Location         | Location | Location of the device.                                                  |
+| LocationAccuracy | Number   | Accuracy of the last position report.                                    |
+| DistanceFromHome | Number   | Device distance from home in meters.                                     |
+| LastUpdate       | DateTime | Timestamp of the last location update.                                   |
+| AddressStreet    | String   | Street                                                                   |
+| AddressCity      | String   | City                                                                     |
+| AddressCountry   | String   | Country                                                                  |
+| FormattedAddress | String   | Formatted address string                                                 |
 
 ## Full Example
 
