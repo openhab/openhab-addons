@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LiveDataResponse {
+public class LiveDataResponse implements DataResponse {
     private static final String GRID = "GRID";
     private static final String LOAD = "LOAD";
     private static final String PV = "PV";
@@ -75,6 +75,7 @@ public class LiveDataResponse {
 
     private SiteCurrentPowerFlow siteCurrentPowerFlow;
 
+    @Override
     public Map<String, String> getValues() {
         Map<String, String> valueMap = new HashMap<>();
 

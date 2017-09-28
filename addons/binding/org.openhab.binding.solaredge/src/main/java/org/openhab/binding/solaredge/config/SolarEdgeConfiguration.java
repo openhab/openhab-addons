@@ -18,19 +18,28 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class SolarEdgeConfiguration {
 
-    private String token;
+    private String username;
+    private String password;
     private String solarId;
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer pollingInterval = 60;
 
-    public final String getToken() {
-        return token;
+    public final String getUsername() {
+        return username;
     }
 
-    public final void setToken(String token) {
-        this.token = token;
+    public final void setUsername(String username) {
+        this.username = username;
+    }
+
+    public final String getPassword() {
+        return password;
+    }
+
+    public final void setPassword(String password) {
+        this.password = password;
     }
 
     public final String getSolarId() {
@@ -41,35 +50,35 @@ public class SolarEdgeConfiguration {
         this.solarId = solarId;
     }
 
-    public Integer getAsyncTimeout() {
+    public final Integer getAsyncTimeout() {
         return asyncTimeout;
     }
 
-    public void setAsyncTimeout(Integer asyncTimeout) {
+    public final void setAsyncTimeout(Integer asyncTimeout) {
         this.asyncTimeout = asyncTimeout;
     }
 
-    public Integer getSyncTimeout() {
+    public final Integer getSyncTimeout() {
         return syncTimeout;
     }
 
-    public void setSyncTimeout(Integer syncTimeout) {
+    public final void setSyncTimeout(Integer syncTimeout) {
         this.syncTimeout = syncTimeout;
     }
 
-    public Integer getPollingInterval() {
+    public final Integer getPollingInterval() {
         return pollingInterval;
     }
 
-    public void setPollingInterval(Integer pollingInterval) {
+    public final void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("token", getToken()).append("solarId", getSolarId())
-                .append("pollingInterval", getPollingInterval()).append("asyncTimeout", getAsyncTimeout())
-                .append("syncTimeout", getSyncTimeout()).toString();
+        return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
+                .append("solarId", getSolarId()).append("pollingInterval", getPollingInterval())
+                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }
 
 }

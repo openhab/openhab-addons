@@ -25,8 +25,11 @@ solaredge:web:<NAME>
 
 There are a few settings this thing:
 
-- **token** (required)  
-token used to authenticate on SolarEdge
+- **username** (required)  
+username used to authenticate on SolarEdge
+
+- **password** (required)  
+password used to authenticate on SolarEdge
 
 - **solarId** (required)  
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
@@ -39,20 +42,20 @@ interval (seconds) in which values are retrieved from NibeUplink. Setting less t
 - minimum configuration
 
 ```
-solaredge:web:se2200 [ token="...", solarId="..."]
+solaredge:web:se2200 [ username="...", password="...", solarId="..."]
 ```
 
 - with pollingInterval
 
 ```
-solaredge:web:se2200[ token="...", solarId="...", pollingInterval=... ]
+solaredge:web:se2200[ username="...", password="...", solarId="...", pollingInterval=... ]
 ```
 
-- multiple heat pumps
+- multiple inverters
 
 ```
-solaredge:web:home1 [ token="...", solarId="..."]
-solaredge:web:home2  [ token="...", solarId="..."]
+solaredge:web:home1 [ username="...", password="...", solarId="..."]
+solaredge:web:home2  [ username="...", password="...", solarId="..."]
 ```
 
 ## Channels
@@ -85,7 +88,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 ### Thing
 
 ```
-solaredge:web:se2200     [ token="8787ca0366f4313586994b993aed4cab8787ca0366f4313586994b993aed4cab", nibeId="4711", pollingInterval=30 ]
+solaredge:web:se2200     [ username="solar@edge.de", password="secret", nibeId="4711", pollingInterval=30 ]
 ```
 
 ### Items

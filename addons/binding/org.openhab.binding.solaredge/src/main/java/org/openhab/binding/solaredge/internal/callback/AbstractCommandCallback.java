@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.solaredge.internal.callback;
 
-import java.net.CookieStore;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -25,8 +27,11 @@ import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
+import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * base class for all commands. common logic should be implemented here
@@ -115,14 +120,13 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("received content, length: {}", getContentAsString());
+        logger.debug("received content, length: {}", getContentAsString().length());
     }
 
     @Override
     public void performAction(HttpClient asyncclient) {
         Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
-        CookieStore cookieStore = asyncclient.getCookieStore();
-        prepareRequest(request, cookieStore).send(this);
+        prepareRequest(request).send(this);
     }
 
     /**
@@ -136,11 +140,34 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     }
 
     /**
+     * converts the json response into an object structure
+     *
+     * @param jsonInString
+     * @param clazz
+     * @return
+     */
+    protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        // not supported in v2.4.x
+        // mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+
+        @Nullable
+        T obj = null;
+        try {
+            logger.debug("JSON String: {}", jsonInString);
+            obj = mapper.readValue(jsonInString, clazz);
+        } catch (IOException e) {
+            logger.error("Caught IOException: {}", e.getMessage());
+        }
+        return obj;
+    }
+
+    /**
      * concrete implementation has to prepare the requests with additional parameters, etc
      *
      * @return
      */
-    protected abstract Request prepareRequest(Request requestToPrepare, CookieStore cookieStore);
+    protected abstract Request prepareRequest(Request requestToPrepare);
 
     /**
      * concrete implementation has to provide the URL

@@ -83,11 +83,11 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         this.refreshInterval = config.getPollingInterval();
         this.webInterface = new WebInterface(config, this);
 
-        if (config.getToken() != null) {
+        if (config.getPassword() != null && config.getUsername() != null) {
             this.startPolling();
         } else {
-            thing.setStatusInfo(
-                    new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no token set"));
+            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "no username/password set"));
         }
     }
 

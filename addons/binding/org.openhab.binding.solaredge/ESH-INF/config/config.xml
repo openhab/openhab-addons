@@ -17,10 +17,14 @@
 			<description>General settings.</description>
 		</parameter-group>
 
-		<parameter name="token" type="text" required="true" groupName="authentication">
-			<label>Token</label>
-			<description>A valid security token (can be generated when logging in with browser - stored as cookie)</description>
-		</parameter>
+        <parameter name="username" type="text" required="true" groupName="authentication">
+            <label>Username</label>
+            <description>The username to login</description>
+        </parameter>
+        <parameter name="password" type="text" required="true" groupName="authentication">
+            <label>Password</label>
+            <description>The password to login</description>
+        </parameter>
 		<parameter name="solarId" type="text" required="true" groupName="general">
 			<label>Solar ID</label>
 			<description>The ID to identify the solarplant at SolarEdge.</description>

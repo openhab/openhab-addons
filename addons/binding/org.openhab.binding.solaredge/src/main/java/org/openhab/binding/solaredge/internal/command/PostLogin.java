@@ -10,13 +10,11 @@ package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
-
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
@@ -27,39 +25,39 @@ import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
  * @author afriese
  *
  */
-public class Login extends AbstractCommandCallback implements SolarEdgeCommand {
+public class PostLogin extends AbstractCommandCallback implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
 
-    public Login(SolarEdgeHandler handler, StatusUpdateListener listener) {
+    public PostLogin(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
         this.handler = handler;
     }
 
     @Override
-    protected Request prepareRequest(Request requestToPrepare, CookieStore cookieStore) {
+    protected Request prepareRequest(Request requestToPrepare) {
 
-        // as a token is used no real login is to be done here. IT is just checked if a protected page can be retrieved
-        // and therefore the token is valid.
-        HttpCookie c = new HttpCookie(TOKEN_COOKIE_NAME, config.getToken());
-        c.setDomain(TOKEN_COOKIE_DOMAIN);
-        c.setPath(TOKEN_COOKIE_PATH);
-        cookieStore.add(URI.create(getURL()), c);
+        Fields fields = new Fields();
+        fields.add(LOGIN_USERNAME_FIELD, handler.getConfiguration().getUsername());
+        fields.add(LOGIN_PASSWORD_FIELD, handler.getConfiguration().getPassword());
+        FormContentProvider cp = new FormContentProvider(fields);
 
-        requestToPrepare.followRedirects(false);
-        requestToPrepare.method(HttpMethod.GET);
+        requestToPrepare.content(cp);
+        requestToPrepare.followRedirects(true);
+        requestToPrepare.method(HttpMethod.POST);
 
         return requestToPrepare;
     }
 
     @Override
     protected String getURL() {
-        return DATA_API_URL + config.getSolarId() + DATA_API_URL_LIVE_DATA_SUFFIX;
+        return POST_LOGIN_URL;
     }
 
     @Override
     public void onComplete(Result result) {
         getListener().update(getCommunicationStatus());
+
     }
 
 }

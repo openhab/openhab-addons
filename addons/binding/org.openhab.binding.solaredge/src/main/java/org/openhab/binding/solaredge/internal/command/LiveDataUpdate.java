@@ -10,10 +10,6 @@ package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
-import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.eclipse.jetty.client.api.Request;
@@ -23,8 +19,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
@@ -43,12 +37,7 @@ public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdge
     }
 
     @Override
-    protected Request prepareRequest(Request requestToPrepare, CookieStore cookieStore) {
-        HttpCookie c = new HttpCookie(TOKEN_COOKIE_NAME, config.getToken());
-        c.setDomain(TOKEN_COOKIE_DOMAIN);
-        c.setPath(TOKEN_COOKIE_PATH);
-        cookieStore.add(URI.create(getURL()), c);
-
+    protected Request prepareRequest(Request requestToPrepare) {
         requestToPrepare.followRedirects(false);
         requestToPrepare.method(HttpMethod.GET);
 
@@ -73,32 +62,11 @@ public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdge
 
         String json = getContentAsString(Charset.forName("UTF-8"));
         if (json != null) {
-            LiveDataResponse jsonObject = convertJson(json);
+            LiveDataResponse jsonObject = convertJson(json, LiveDataResponse.class);
             if (jsonObject != null) {
                 handler.updateChannelStatus(jsonObject.getValues());
             }
         }
-    }
-
-    /**
-     * converts the json response into an object
-     *
-     * @param jsonInString
-     * @return
-     */
-    private LiveDataResponse convertJson(String jsonInString) {
-        ObjectMapper mapper = new ObjectMapper();
-        // not supported in v2.4.x
-        // mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-
-        LiveDataResponse obj = null;
-        try {
-            logger.debug("JSON String: {}", jsonInString);
-            obj = mapper.readValue(jsonInString, LiveDataResponse.class);
-        } catch (IOException e) {
-            logger.error("Caught IOException: {}", e.getMessage());
-        }
-        return obj;
     }
 
 }

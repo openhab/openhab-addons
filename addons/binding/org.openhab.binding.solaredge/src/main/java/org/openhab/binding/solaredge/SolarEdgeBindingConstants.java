@@ -33,14 +33,21 @@ public class SolarEdgeBindingConstants {
     // List of all Channel ids ==> see DataChannels
 
     // // URLs
+    public static final String PRE_LOGIN_URL = "https://monitoring.solaredge.com/solaredge-web/p/submitLogin";
+    public static final String POST_LOGIN_URL = "https://monitoring.solaredge.com/solaredge-web/p/login";
+
     public static final String DATA_API_URL = "https://monitoring.solaredge.com/solaredge-apigw/api/site/";
     public static final String DATA_API_URL_AGGREGATE_DATA_SUFFIX = "/powerDashboardChart?chartField=DAY";
     public static final String DATA_API_URL_LIVE_DATA_SUFFIX = "/currentPowerFlow.json";
 
     // login field names
     public static final String TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
-    public static final String TOKEN_COOKIE_DOMAIN = "monitoring.solaredge.com";
-    public static final String TOKEN_COOKIE_PATH = "/";
+    public static final String LOGIN_COMMAND_FIELD = "cmd";
+    public static final String LOGIN_COMMAND_VALUE = "login";
+    public static final String LOGIN_DEMO_FIELD = "demo";
+    public static final String LOGIN_DEMO_VALUE = "false";
+    public static final String LOGIN_USERNAME_FIELD = "username";
+    public static final String LOGIN_PASSWORD_FIELD = "password";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_GENERIC);
 

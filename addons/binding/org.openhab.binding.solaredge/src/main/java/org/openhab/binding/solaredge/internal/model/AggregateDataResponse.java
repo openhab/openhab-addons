@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AggregateDataResponse {
+public class AggregateDataResponse implements DataResponse {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Value {
@@ -43,6 +43,7 @@ public class AggregateDataResponse {
 
     private UtilizationMeasures utilizationMeasures;
 
+    @Override
     public Map<String, String> getValues() {
         Map<String, String> valueMap = new HashMap<>();
 
