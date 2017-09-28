@@ -28,12 +28,12 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| apikey    | Data-platform token to access the co2signal.com service. Mandatory. |
-| location  | Geo coordinates to be considered by the service. |
-| countryCode | two-letter iso country code |
-| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes.  |
+| Parameter   | Description                                                              |
+|-------------|------------------------------------------------------------------------- |
+| apikey      | Data-platform token to access the co2signal.com service. Mandatory.      |
+| location    | Geo coordinates to be considered by the service.                         |
+| countryCode | two-letter iso country code                                              |
+| refresh     | Refresh interval in minutes. Optional, the default value is 60 minutes.  |
 
 You need to set either location or countryCode. If a location is set countryCode is ignored
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
