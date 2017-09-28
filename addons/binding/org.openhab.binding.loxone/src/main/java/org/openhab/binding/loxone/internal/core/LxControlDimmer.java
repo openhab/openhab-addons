@@ -10,7 +10,6 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
@@ -84,10 +83,7 @@ public class LxControlDimmer extends LxControl {
     public void setPosition(Double position) throws IOException {
         Double loxonePosition = mapOHToLoxone(position);
         if (loxonePosition != null) {
-            @SuppressWarnings("null")
-            @NonNull
-            String positionString = loxonePosition.toString();
-            socketClient.sendAction(uuid, positionString);
+            socketClient.sendAction(uuid, loxonePosition.toString());
         }
     }
 

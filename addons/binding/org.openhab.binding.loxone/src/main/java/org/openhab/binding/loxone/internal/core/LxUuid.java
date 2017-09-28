@@ -11,7 +11,6 @@ package org.openhab.binding.loxone.internal.core;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -43,8 +42,6 @@ public class LxUuid {
     }
 
     public LxUuid(byte data[], int offset) {
-        @SuppressWarnings("null")
-        @NonNull
         String id = String.format("%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
                 ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt(),
                 ByteBuffer.wrap(data, offset + 4, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(),
@@ -57,10 +54,7 @@ public class LxUuid {
     }
 
     String cleanupUuid(String uuid) {
-        @SuppressWarnings("null")
-        @NonNull
-        String newId = uuid.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
-        return newId;
+        return uuid.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
     }
 
     @Override

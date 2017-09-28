@@ -47,7 +47,7 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(@Nullable Thing thing) {
         if (thing != null) {
             ThingTypeUID uid = thing.getThingTypeUID();
-            if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
+            if (LoxoneBindingConstants.THING_TYPE_MINISERVER.equals(uid)) {
                 LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing);
                 return handler;
             }

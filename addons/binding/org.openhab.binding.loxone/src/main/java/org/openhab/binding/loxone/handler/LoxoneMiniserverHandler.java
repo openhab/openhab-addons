@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -73,7 +72,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServerListener {
 
-    @SuppressWarnings("null")
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
 
     private @Nullable LxServer server;
@@ -241,32 +239,14 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     @Override
     public void initialize() {
         logger.trace("Initializing thing");
-
-        // config.as does not put restrictions on the return time (it is nullable)
-        // but compiler figures out its implementation never returns null and gives a warning
-        // about redundant null check - so we do not check for null here even though this is nullable
-        @Nullable
         LoxoneMiniserverConfig cfg = getConfig().as(LoxoneMiniserverConfig.class);
-        String host = cfg.host;
-        String user = cfg.user;
-        String password = cfg.password;
-        int port = cfg.port;
-        if (user != null && password != null) {
-            try {
-                @SuppressWarnings("null")
-                @NonNull
-                InetAddress ip = InetAddress.getByName(host);
-                LxServer srv = new LxServer(ip, port, user, password);
-                srv.addListener(this);
-                srv.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
-                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
-                srv.start();
-                this.server = srv;
-            } catch (UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+        try {
+            server = createNewServer(cfg);
+            if (server == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error getting configuration");
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error getting configuration");
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
         }
     }
 
@@ -288,10 +268,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             List<Channel> newChannels = createChannelsForControl(control);
             channels.addAll(newChannels);
             for (Channel channel : newChannels) {
-                @SuppressWarnings("null")
-                @NonNull
-                ChannelUID id = channel.getUID();
-                controls.put(id, control);
+                controls.put(channel.getUID(), control);
             }
         }
 
@@ -373,6 +350,34 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             String channelLabel, String channelDescription, Set<String> tags) {
         channels.add(ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
                 .withDescription(channelDescription + " : " + channelLabel).withDefaultTags(tags).build());
+    }
+
+    /**
+     * Creates and initialized a new {@link LxServer} object, based on the provided configuration. In case configuration
+     * is insufficient, returns null.
+     *
+     * @param cfg
+     *            server configuration
+     * @return
+     *         created and initialized server object or null if insufficient configuration
+     * @throws UnknownHostException
+     *             server's address from the configuration failed to be resolved
+     */
+    private @Nullable LxServer createNewServer(LoxoneMiniserverConfig cfg) throws UnknownHostException {
+        LxServer srv = null;
+        String host = cfg.host;
+        String user = cfg.user;
+        String password = cfg.password;
+        int port = cfg.port;
+        if (user != null && password != null) {
+            InetAddress ip = InetAddress.getByName(host);
+            srv = new LxServer(ip, port, user, password);
+            srv.addListener(this);
+            srv.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
+                    cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
+            srv.start();
+        }
+        return srv;
     }
 
     /**

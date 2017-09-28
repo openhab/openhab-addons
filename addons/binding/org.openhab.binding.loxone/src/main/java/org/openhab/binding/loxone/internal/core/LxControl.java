@@ -66,10 +66,7 @@ public abstract class LxControl {
         socketClient = client;
         this.uuid = uuid;
         if (json.type != null) {
-            @SuppressWarnings("null")
-            @NonNull
-            String type = json.type.toLowerCase();
-            this.typeName = type;
+            this.typeName = json.type.toLowerCase();
         }
         update(json, room, category);
     }
@@ -271,13 +268,9 @@ public abstract class LxControl {
                 String value = element.getAsString();
                 if (value != null) {
                     LxUuid id = new LxUuid(value);
-                    @SuppressWarnings("null")
-                    @NonNull
                     String name = jsonState.getKey().toLowerCase();
                     if (states.containsKey(name)) {
                         logger.trace("Existing state for LxControl {}: {}", json.type, name);
-                        @SuppressWarnings("null")
-                        @NonNull
                         LxControlState state = states.get(name);
                         state.getUuid().setUpdate(true);
                     } else {
@@ -312,9 +305,6 @@ public abstract class LxControl {
             return null;
         }
         LxControl ctrl = null;
-
-        @SuppressWarnings("null")
-        @NonNull
         String type = json.type.toLowerCase();
 
         if (LxControlSwitch.accepts(type)) {

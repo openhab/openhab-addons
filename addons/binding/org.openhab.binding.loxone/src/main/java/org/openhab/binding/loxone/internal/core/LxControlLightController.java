@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
@@ -124,8 +123,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 if (jsonUuid != null) {
                     LxUuid uuid = new LxUuid(jsonUuid);
                     if (subControls.containsKey(uuid)) {
-                        @SuppressWarnings("null")
-                        @NonNull
                         LxControl control = subControls.get(uuid);
                         control.update(subControl, room, category);
                     } else {
@@ -212,10 +209,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
         if (scene == SCENE_ALL_ON) {
             allOn();
         } else if (scene >= 0 && scene < NUM_OF_SCENES) {
-            @SuppressWarnings("null")
-            @NonNull
-            String command = Long.toString(scene);
-            socketClient.sendAction(uuid, command);
+            socketClient.sendAction(uuid, Long.toString(scene));
         }
     }
 
@@ -278,13 +272,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
                 line = line.replaceAll("\"", "");
                 String[] params = line.split("=");
                 if (params.length == 2) {
-                    @SuppressWarnings("null")
-                    @NonNull
-                    String p0 = params[0];
-                    @SuppressWarnings("null")
-                    @NonNull
-                    String p1 = params[1];
-                    sceneNames.put(p0, p1);
+                    sceneNames.put(params[0], params[1]);
                 }
             }
             newSceneNames = true;

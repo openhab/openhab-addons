@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
@@ -104,10 +103,7 @@ public class LxControlRadio extends LxControl {
         if (output == 0) {
             socketClient.sendAction(uuid, CMD_RESET);
         } else if (output >= 1 && output <= MAX_RADIO_OUTPUTS) {
-            @SuppressWarnings("null")
-            @NonNull
-            String command = Long.toString(output);
-            socketClient.sendAction(uuid, command);
+            socketClient.sendAction(uuid, Long.toString(output));
         }
     }
 

@@ -20,7 +20,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
@@ -123,9 +122,8 @@ public class LxServer {
     public void start() {
         logger.debug("[{}] Server start", debugId);
         if (monitorThread == null) {
-            Thread thread = new LxServerThread(this);
-            monitorThread = thread;
-            thread.start();
+            monitorThread = new LxServerThread(this);
+            monitorThread.start();
         }
     }
 
@@ -348,7 +346,7 @@ public class LxServer {
 
             while (running) {
                 // wait until next connect attempt, this time depends on what happened before
-                synchronized (thread) {
+                synchronized (monitorThread) {
                     try {
                         thread.wait(waitTime);
                     } catch (InterruptedException e) {
@@ -369,8 +367,6 @@ public class LxServer {
 
                 while (connected) {
                     try {
-                        @SuppressWarnings("null")
-                        @NonNull
                         LxServerEvent wsMsg = queue.take();
                         EventType event = wsMsg.getEvent();
                         logger.trace("[{}] Server received event: {}", debugId, event);
@@ -490,6 +486,8 @@ public class LxServer {
                 String name = room.name;
                 if (uuid != null && name != null) {
                     addOrUpdateRoom(new LxUuid(uuid), name);
+                } else {
+                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", uuid, name);
                 }
             }
         }
@@ -501,6 +499,9 @@ public class LxServer {
                 String type = cat.type;
                 if (uuid != null && name != null && type != null) {
                     addOrUpdateCategory(new LxUuid(uuid), name, type);
+                } else {
+                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}", uuid,
+                            name, type);
                 }
             }
         }
@@ -537,14 +538,9 @@ public class LxServer {
      */
 
     private <T> void removeUnusedFromMap(Map<LxUuid, T> map) {
-        @SuppressWarnings("null")
-        @NonNull
         Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            @SuppressWarnings("null")
             Map.Entry<LxUuid, T> entry = it.next();
-            @SuppressWarnings("null")
-            @NonNull
             LxUuid key = entry.getKey();
             if (!key.getUpdate()) {
                 uuids.remove(entry.getKey());
