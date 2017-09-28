@@ -164,7 +164,7 @@ public class CO2SignalHandler extends BaseThingHandler {
             } else if (value instanceof Double) {
                 state = new DecimalType((Double) value);
             } else if (value instanceof String) {
-                state = new StringType(value.toString());
+                state = new StringType((String) value);
             } else {
                 logger.warn("Update channel {}: Unsupported value type {}", channelId,
                         value.getClass().getSimpleName());
