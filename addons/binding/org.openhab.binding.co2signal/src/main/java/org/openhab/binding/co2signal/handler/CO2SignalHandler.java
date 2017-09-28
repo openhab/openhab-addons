@@ -52,7 +52,7 @@ public class CO2SignalHandler extends BaseThingHandler {
 
     private static final String URL = "https://api.co2signal.com/v1/latest?%QUERY%";
 
-    private static final int DEFAULT_REFRESH_PERIOD = 30;
+    private static final int DEFAULT_REFRESH_MINUTES = 10;
 
     private ScheduledFuture<?> refreshJob;
 
@@ -121,7 +121,7 @@ public class CO2SignalHandler extends BaseThingHandler {
             };
 
             CO2SignalConfiguration config = getConfigAs(CO2SignalConfiguration.class);
-            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
+            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_MINUTES;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
         }
     }
