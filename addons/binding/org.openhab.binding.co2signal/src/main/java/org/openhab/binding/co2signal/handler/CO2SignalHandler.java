@@ -16,6 +16,8 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -50,7 +52,7 @@ public class CO2SignalHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(CO2SignalHandler.class);
 
-    private static final String URL = "https://api.co2signal.com/v1/latest?%QUERY%";
+    private static final String URL = "https://api.co2signal.com/v1/latest";
 
     private static final int DEFAULT_REFRESH_MINUTES = 10;
 
@@ -188,7 +190,7 @@ public class CO2SignalHandler extends BaseThingHandler {
      */
     private CO2SignalJsonResponse updateCO2SignalData() {
         CO2SignalConfiguration config = getConfigAs(CO2SignalConfiguration.class);
-        return getCO2SignalData(StringUtils.trimToEmpty(config.location), config.countryCode);
+        return getCO2SignalData(config);
     }
 
     /**
@@ -199,24 +201,13 @@ public class CO2SignalHandler extends BaseThingHandler {
      *
      * @return the CO2 Signal data object mapping the JSON response or null in case of error
      */
-    private CO2SignalJsonResponse getCO2SignalData(String location, String countryCode) {
+    private CO2SignalJsonResponse getCO2SignalData(CO2SignalConfiguration config) {
         CO2SignalJsonResponse result = null;
         boolean resultOk = false;
         String errorMsg = null;
 
         try {
-            // Build a valid URL for the co2signal.com service
-            CO2SignalConfiguration config = getConfigAs(CO2SignalConfiguration.class);
-
-            String urlStr = URL;
-
-            if (location != null && !"".equals(location)) {
-                location = location.replace(" ", "").replace("\"", "").replace("'", "").trim();
-                String[] latLon = location.split(",");
-                urlStr = urlStr.replace("%QUERY%", "lat=" + latLon[0] + "&lon=" + latLon[1]);
-            } else {
-                urlStr = urlStr.replace("%QUERY%", "countryCode=" + countryCode);
-            }
+            String urlStr = buildCO2SignalUrl(config);
 
             logger.debug("URL = {}", urlStr);
 
@@ -259,6 +250,23 @@ public class CO2SignalHandler extends BaseThingHandler {
         }
 
         return resultOk ? result : null;
+    }
+
+    private String buildCO2SignalUrl(CO2SignalConfiguration config) {
+        UriBuilder builder = UriBuilder.fromPath(URL);
+
+        String location = StringUtils.trimToEmpty(config.location);
+        String countryCode = StringUtils.trimToEmpty(config.countryCode);
+
+        if (location != null && !"".equals(location)) {
+            location = location.replace(" ", "").replace("\"", "").replace("'", "").trim();
+            String[] latLon = location.split(",");
+            builder = builder.queryParam("lat", latLon[0]).queryParam("lon", latLon[1]);
+        } else {
+            builder = builder.queryParam("countryCode", countryCode);
+        }
+        String urlStr = builder.build().toString();
+        return urlStr;
     }
 
     public static Object getValue(String channelId, CO2SignalJsonResponse data) throws Exception {
