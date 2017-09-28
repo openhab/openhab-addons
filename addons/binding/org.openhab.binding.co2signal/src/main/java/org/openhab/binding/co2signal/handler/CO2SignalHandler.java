@@ -84,7 +84,7 @@ public class CO2SignalHandler extends BaseThingHandler {
             validConfig = false;
         }
         if (config.refresh != null && config.refresh < 1) {
-            errorMsg = "Parameter 'refresh' must be at least 1 minute";
+            errorMsg = "Parameter 'refresh' is mandatory and must be at least 1 minute";
             validConfig = false;
         }
 
