@@ -10,13 +10,10 @@ package org.openhab.binding.co2signal.handler;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -31,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.co2signal.CO2SignalBindingConstants;
 import org.openhab.binding.co2signal.internal.CO2SignalConfiguration;
 import org.openhab.binding.co2signal.internal.json.CO2SignalJsonResponse;
@@ -220,21 +218,15 @@ public class CO2SignalHandler extends BaseThingHandler {
 
             logger.debug("URL = {}", urlStr);
 
-            // Run the HTTP request and get the JSON response from co2cn.org
-            URL url = new URL(urlStr);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            connection.setRequestProperty("auth-token", config.apikey);
+            Properties httpHeaders = new Properties();
+            httpHeaders.put("User-Agent", "Mozilla/5.0");
+            httpHeaders.put("auth-token", config.apikey);
 
-            try {
-                String response = IOUtils.toString(connection.getInputStream());
-                logger.debug("co2Response = {}", response);
+            String response = HttpUtil.executeUrl("GET", urlStr, httpHeaders, null, null, 5000);
+            logger.debug("co2Response = {}", response);
 
-                // Map the JSON response to an object
-                result = gson.fromJson(response, CO2SignalJsonResponse.class);
-            } finally {
-                IOUtils.closeQuietly(connection.getInputStream());
-            }
+            // Map the JSON response to an object
+            result = gson.fromJson(response, CO2SignalJsonResponse.class);
 
             if (result == null) {
                 errorMsg = "no data returned";
