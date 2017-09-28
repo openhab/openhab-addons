@@ -11,10 +11,10 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.co2signal">
 
-   <implementation class="org.openhab.binding.co2signal.internal.CO2SignalHandlerFactory"/>
+	<implementation class="org.openhab.binding.co2signal.internal.CO2SignalHandlerFactory" />
 
-   <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-   </service>
+	<service>
+		<provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory" />
+	</service>
 
 </scr:component>

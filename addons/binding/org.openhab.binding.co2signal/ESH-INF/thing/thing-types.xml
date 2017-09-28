@@ -12,7 +12,7 @@
         </description>
 
 		<channels>
-            <channel id="countryCode" typeId="countryCode" />
+			<channel id="countryCode" typeId="countryCode" />
 			<channel id="carbonIntensity" typeId="carbonIntensity" />
 			<channel id="fossilFuelPercentage" typeId="fossilFuelPercentage" />
 		</channels>
