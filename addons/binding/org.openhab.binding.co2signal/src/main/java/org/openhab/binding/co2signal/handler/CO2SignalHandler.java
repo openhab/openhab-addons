@@ -126,10 +126,7 @@ public class CO2SignalHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void dispose() {
-        logger.debug("Disposing the CO2 Signal handler.");
-
+    private void cancelAutomaticRefresh() {
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -137,9 +134,16 @@ public class CO2SignalHandler extends BaseThingHandler {
     }
 
     @Override
+    public void dispose() {
+        logger.debug("Disposing the CO2 Signal handler.");
+        cancelAutomaticRefresh();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannel(channelUID.getId(), co2Response);
+            cancelAutomaticRefresh();
+            startAutomaticRefresh();
         } else {
             logger.debug("The CO2 Signal binding is read-only and can not handle command {}", command);
         }
