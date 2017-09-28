@@ -58,11 +58,10 @@ public class CO2SignalHandler extends BaseThingHandler {
 
     private CO2SignalJsonResponse co2Response;
 
-    private Gson gson;
+    private final Gson gson = new Gson();
 
     public CO2SignalHandler(@NonNull Thing thing) {
         super(thing);
-        gson = new Gson();
     }
 
     @Override
