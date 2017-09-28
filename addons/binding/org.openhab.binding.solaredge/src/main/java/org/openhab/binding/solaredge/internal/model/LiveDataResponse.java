@@ -88,20 +88,23 @@ public class LiveDataResponse {
         valueMap.put(LiveDataChannels.LOAD_STATUS.getFQName(), siteCurrentPowerFlow.load.status);
         valueMap.put(LiveDataChannels.GRID_STATUS.getFQName(), siteCurrentPowerFlow.grid.status);
 
+        // init fields with zero
+        valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
+        valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
+        valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), ZERO_POWER);
+
         // determine power flow from connection list
         for (Connection con : siteCurrentPowerFlow.connections) {
             if (con.from.equalsIgnoreCase(GRID)) {
                 valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
-                valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
-            } else {
+            } else if (con.to.equalsIgnoreCase(GRID)) {
                 valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
-                valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
 
             }
             if (con.from.equalsIgnoreCase(STORAGE)) {
                 valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
                         "-" + siteCurrentPowerFlow.storage.currentPower);
-            } else {
+            } else if (con.to.equalsIgnoreCase(STORAGE)) {
                 valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), siteCurrentPowerFlow.storage.currentPower);
             }
         }
