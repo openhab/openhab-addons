@@ -8,10 +8,7 @@
  */
 package org.openhab.binding.co2signal.internal;
 
-import static org.openhab.binding.co2signal.CO2SignalBindingConstants.THING_TYPE_CO2;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.co2signal.CO2SignalBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -26,8 +23,6 @@ import org.openhab.binding.co2signal.handler.CO2SignalHandler;
  * @author Jens Viebig - Initial contribution
  */
 public class CO2SignalHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CO2);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
