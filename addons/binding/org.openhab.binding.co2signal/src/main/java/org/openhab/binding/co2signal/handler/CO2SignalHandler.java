@@ -10,6 +10,8 @@ package org.openhab.binding.co2signal.handler;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,18 +75,18 @@ public class CO2SignalHandler extends BaseThingHandler {
         logger.debug("config refresh = {}", config.refresh);
 
         boolean validConfig = true;
-        String errorMsg = null;
+        List<String> errorMsg = new ArrayList<>();
 
         if (StringUtils.trimToNull(config.apikey) == null) {
-            errorMsg = "Parameter 'apikey' is mandatory and must be configured";
+            errorMsg.add("Parameter 'apikey' is mandatory and must be configured");
             validConfig = false;
         }
         if (StringUtils.trimToNull(config.location) == null && config.countryCode == null) {
-            errorMsg = "Parameter 'location' or 'stationId' is mandatory and must be configured";
+            errorMsg.add("Parameter 'location' or 'stationId' is mandatory and must be configured");
             validConfig = false;
         }
         if (config.refresh != null && config.refresh < 1) {
-            errorMsg = "Parameter 'refresh' is mandatory and must be at least 1 minute";
+            errorMsg.add("Parameter 'refresh' is mandatory and must be at least 1 minute");
             validConfig = false;
         }
 
@@ -92,7 +94,7 @@ public class CO2SignalHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.join(",", errorMsg));
         }
     }
 
