@@ -9,10 +9,10 @@
 package org.openhab.binding.co2signal;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link CO2SignalBinding} class defines common constants, which are
@@ -32,8 +32,9 @@ public class CO2SignalBindingConstants {
     public static final String CARBONINTENSITY = "carbonIntensity";
     public static final String FOSSILFUELPERCENTAGE = "fossilFuelPercentage";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_CO2);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(COUNTRYCODE, CARBONINTENSITY,
-            FOSSILFUELPERCENTAGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_CO2)
+            .collect(Collectors.toSet());
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream
+            .of(COUNTRYCODE, CARBONINTENSITY, FOSSILFUELPERCENTAGE).collect(Collectors.toSet());
 
 }
