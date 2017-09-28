@@ -172,7 +172,7 @@ public class CO2SignalHandler extends BaseThingHandler {
                 logger.warn("Update channel {}: Unsupported value type {}", channelId,
                         value.getClass().getSimpleName());
             }
-            logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
+            logger.debug("Update channel {} with state {} ({})", channelId, state,
                     (value == null) ? "null" : value.getClass().getSimpleName());
 
             // Update the channel
