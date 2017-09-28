@@ -56,7 +56,7 @@ public class CO2SignalHandler extends BaseThingHandler {
 
     private ScheduledFuture<?> refreshJob;
 
-    CO2SignalJsonResponse co2Response;
+    private CO2SignalJsonResponse co2Response;
 
     private Gson gson;
 
