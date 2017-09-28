@@ -105,20 +105,18 @@ public class CO2SignalHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Request new CO2 Signal data to the co2cn.org service
-                        co2Response = updateCO2SignalData();
 
-                        // Update all channels from the updated co2 data
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId(), co2Response);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+            Runnable runnable = () -> {
+                try {
+                    // Request new CO2 Signal data to the co2cn.org service
+                    co2Response = updateCO2SignalData();
+
+                    // Update all channels from the updated co2 data
+                    for (Channel channel : getThing().getChannels()) {
+                        updateChannel(channel.getUID().getId(), co2Response);
                     }
+                } catch (Exception e) {
+                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
                 }
             };
 
