@@ -272,8 +272,14 @@ public class CO2SignalHandler extends BaseThingHandler {
             case CO2SignalBindingConstants.COUNTRYCODE:
                 return data.getCountryCode();
             case CO2SignalBindingConstants.CARBONINTENSITY:
+                if (data.getData() == null) {
+                    return null;
+                }
                 return data.getData().getCarbonIntensity();
             case CO2SignalBindingConstants.FOSSILFUELPERCENTAGE:
+                if (data.getData() == null) {
+                    return null;
+                }
                 return data.getData().getFossilFuelPercentage();
         }
 
