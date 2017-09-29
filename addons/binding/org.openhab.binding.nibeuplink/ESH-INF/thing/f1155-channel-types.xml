@@ -775,31 +775,31 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-40339">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S8</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-40340">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S7</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-40341">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S6</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-40342">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S5</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-40365">
@@ -1044,10 +1044,10 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-40942">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External ERS accessory block status</label>
         <description>Indicates if the ERS accessory is externaly blocked.</description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-40943">
@@ -1117,10 +1117,10 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-41191">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>AA20 PV Panel State</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-41210">
@@ -1605,31 +1605,31 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-43158">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S4</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43159">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S3</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43160">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S2</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43161">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>External adjustment activated via input S1</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43163">
@@ -1644,10 +1644,10 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-43164">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Cooling blocked</label>
         <description>Whether cooling is blocked</description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43171">
@@ -1882,17 +1882,17 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-43560">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Pool 2 blocked</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43561">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Pool 1 blocked</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-43563">
@@ -2167,10 +2167,10 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         </state>
     </channel-type>
     <channel-type id="f1155-type-44908">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>State smart price adaption</label>
         <description></description>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%s" readOnly="true">
         </state>
     </channel-type>
     <channel-type id="f1155-type-44910">
@@ -3851,10 +3851,10 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.
         <state readOnly="false"></state>
     </channel-type>
     <channel-type id="f1155-type-48189">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Cooling use mix. valve S1</label>
         <description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in the system</description>
-        <state min="0" max="255" step="1" pattern="%d" readOnly="false">
+        <state pattern="%s" readOnly="false">
         </state>
     </channel-type>
     <channel-type id="f1155-type-48190">

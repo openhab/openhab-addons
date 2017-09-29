@@ -110,10 +110,10 @@
 | sensor#40330 | Number | 0 | 65535 | Sensor | NIBE Inverter Mce version |  |
 | sensor#40331 | Number | 0 | 65535 | Sensor | NIBE Inverter Hw version |  |
 | sensor#40332 | Number | 0 | 65535 | Sensor | NIBE Inverter Hw type |  |
-| sensor#40339 | Number | 0 | 255 | Sensor | External adjustment activated via input S8 |  |
-| sensor#40340 | Number | 0 | 255 | Sensor | External adjustment activated via input S7 |  |
-| sensor#40341 | Number | 0 | 255 | Sensor | External adjustment activated via input S6 |  |
-| sensor#40342 | Number | 0 | 255 | Sensor | External adjustment activated via input S5 |  |
+| sensor#40339 | String | 0 | 255 | Sensor | External adjustment activated via input S8 |  |
+| sensor#40340 | String | 0 | 255 | Sensor | External adjustment activated via input S7 |  |
+| sensor#40341 | String | 0 | 255 | Sensor | External adjustment activated via input S6 |  |
+| sensor#40342 | String | 0 | 255 | Sensor | External adjustment activated via input S5 |  |
 | sensor#40365 | Number | 0 | 255 | Sensor | Extra heating system pump S8 |  |
 | sensor#40366 | Number | 0 | 255 | Sensor | Extra heating system pump S7 |  |
 | sensor#40367 | Number | 0 | 255 | Sensor | Extra heating system pump S6 |  |
@@ -147,7 +147,7 @@
 | sensor#40912 | String | 0 | 255 | Sensor | EQ1 State ACS Thermostat | 10=off, 40=active wait, 50=active |
 | sensor#40913 | String | 0 | 255 | Sensor | EQ1 State ACS Thermostat Heat Dump | 10=shunt off, 20=shunt open, 30=shunt closed |
 | setting#40940 | Number | -30000 | 30000 | Setting | Degree Minutes (32 bit) |  |
-| sensor#40942 | Number | 0 | 255 | Sensor | External ERS accessory block status |  |
+| sensor#40942 | String | 0 | 255 | Sensor | External ERS accessory block status |  |
 | sensor#40943 | String | 0 | 255 | Sensor | External ERS accessory EB17 | 0=open. |
 | sensor#40993 | Number | 0 | 65535 | Sensor | Inverter min speed |  |
 | sensor#40994 | Number | 0 | 65535 | Sensor | Inverter max speed |  |
@@ -157,7 +157,7 @@
 | sensor#41186 | Number | -32767 | 32767 | Sensor | Set point OPT boiler |  |
 | sensor#41189 | Number | -32767 | 32767 | Sensor | AA20-BE5 EME10 Current |  |
 | sensor#41190 | Number | -32767 | 32767 | Sensor | AA20-BE5 EME10 Average Current |  |
-| sensor#41191 | Number | 0 | 255 | Sensor | AA20 PV Panel State |  |
+| sensor#41191 | String | 0 | 255 | Sensor | AA20 PV Panel State |  |
 | sensor#41210 | Number | -32767 | 32767 | Sensor | AZ4-BT50 Room temp |  |
 | sensor#41211 | Number | -32767 | 32767 | Sensor | AZ3-BT50 Room temp |  |
 | sensor#41212 | Number | -32767 | 32767 | Sensor | AZ2-BT50 Room temp |  |
@@ -223,12 +223,12 @@
 | sensor#43141 | Number | 0 | 65535 | Sensor | compr. in power |  |
 | sensor#43147 | Number | -32767 | 32767 | Sensor | Compr. in current |  |
 | sensor#43152 | Number | 0 | 255 | Sensor | Internal cooling blocked |  |
-| sensor#43158 | Number | 0 | 255 | Sensor | External adjustment activated via input S4 |  |
-| sensor#43159 | Number | 0 | 255 | Sensor | External adjustment activated via input S3 |  |
-| sensor#43160 | Number | 0 | 255 | Sensor | External adjustment activated via input S2 |  |
-| sensor#43161 | Number | 0 | 255 | Sensor | External adjustment activated via input S1 |  |
+| sensor#43158 | String | 0 | 255 | Sensor | External adjustment activated via input S4 |  |
+| sensor#43159 | String | 0 | 255 | Sensor | External adjustment activated via input S3 |  |
+| sensor#43160 | String | 0 | 255 | Sensor | External adjustment activated via input S2 |  |
+| sensor#43161 | String | 0 | 255 | Sensor | External adjustment activated via input S1 |  |
 | sensor#43163 | String | 0 | 255 | Sensor | Blocking status of the shunt controlled add heat acc | 0=Unblocked, 1=Blocked |
-| sensor#43164 | Number | 0 | 255 | Sensor | Cooling blocked |  |
+| sensor#43164 | String | 0 | 255 | Sensor | Cooling blocked |  |
 | sensor#43171 | String | 0 | 255 | Sensor | Blocking status of the step controlled add heat acc | 0=Unblocked, 1=Blocked |
 | sensor#43180 | String | 0 | 255 | Sensor | HWC Pump Status GP11 | 1=on, 0=off |
 | sensor#43182 | Number | 0 | 65535 | Sensor | Compressor Frequency, Target |  |
@@ -253,8 +253,8 @@
 | sensor#43542 | Number | -32767 | 32767 | Sensor | Calculated supply air temp. |  |
 | sensor#43555 | String | 0 | 255 | Sensor | HW Comfort Shunt State | 10=shunt off, 20=shunt open, 30=shunt closed |
 | sensor#43556 | String | 0 | 255 | Sensor | HW Comfort Add Status | 1=on, 0=off |
-| sensor#43560 | Number | 0 | 255 | Sensor | Pool 2 blocked |  |
-| sensor#43561 | Number | 0 | 255 | Sensor | Pool 1 blocked |  |
+| sensor#43560 | String | 0 | 255 | Sensor | Pool 2 blocked |  |
+| sensor#43561 | String | 0 | 255 | Sensor | Pool 1 blocked |  |
 | sensor#43563 | Number | 0 | 255 | Sensor | GP9 Pool 2 Valve |  |
 | sensor#43564 | Number | 0 | 255 | Sensor | GP9 Pool 1 Valve |  |
 | setting#44266 | Number | -30000 | 30000 | Setting | Cool Degree Minutes |  |
@@ -289,7 +289,7 @@
 | sensor#44897 | String | -128 | 127 | Sensor | Smart Price Adaption HW Comfort Mode | 0=Eco, 1=Normal, 2=Luxury, 10=Normal+, 20=Mini |
 | sensor#44898 | Number | -128 | 127 | Sensor | Smart Price Adaption Pool Offset |  |
 | sensor#44899 | Number | -128 | 127 | Sensor | Smart Price Adaption Cool Offset |  |
-| sensor#44908 | Number | 0 | 255 | Sensor | State smart price adaption |  |
+| sensor#44908 | String | 0 | 255 | Sensor | State smart price adaption |  |
 | sensor#44910 | Number | -32767 | 32767 | Sensor | Brine Pump dT Actual |  |
 | sensor#44911 | Number | -32767 | 32767 | Sensor | Brine Pump dT Set Point |  |
 | sensor#45001 | Number | -32767 | 32767 | Sensor | Alarm |  |
@@ -526,7 +526,7 @@
 | setting#48186 | Switch | 0 | 1 | Setting | Cooling use mix. valve S4 |  |
 | setting#48187 | Switch | 0 | 1 | Setting | Cooling use mix. valve S3 |  |
 | setting#48188 | Switch | 0 | 1 | Setting | Cooling use mix. valve S2 |  |
-| setting#48189 | Number | 0 | 255 | Setting | Cooling use mix. valve S1 |  |
+| setting#48189 | String | 0 | 255 | Setting | Cooling use mix. valve S1 |  |
 | setting#48190 | Number | 10 | 500 | Setting | Heatdump mix. valve delay |  |
 | setting#48191 | Number | 1 | 100 | Setting | Heatdump mix. valve amp. |  |
 | setting#48192 | Number | 10 | 500 | Setting | Cooldump mix. valve delay |  |
