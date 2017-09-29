@@ -627,31 +627,31 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-40339">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S8</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-40340">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S7</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-40341">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S6</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-40342">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S5</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-40364">
@@ -926,10 +926,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-41191">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>AA20 PV Panel State</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-41214">
@@ -1391,31 +1391,31 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43158">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S4</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43159">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S3</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43160">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S2</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43161">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43180">
@@ -1554,10 +1554,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43444">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>State OEK</label>
 		<description>The state of the OEK accessory</description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43514">
@@ -1587,10 +1587,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-43561">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Pool 1 blocked</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-44258">
@@ -1743,10 +1743,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-44908">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>State smart price adaption</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f750-type-45001">

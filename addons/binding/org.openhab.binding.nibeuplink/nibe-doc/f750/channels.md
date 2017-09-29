@@ -89,10 +89,10 @@
 | sensor#40330 | Number | 0 | 65535 | Sensor | NIBE Inverter Mce version |  |
 | sensor#40331 | Number | 0 | 65535 | Sensor | NIBE Inverter Hw version |  |
 | sensor#40332 | Number | 0 | 65535 | Sensor | NIBE Inverter Hw type |  |
-| sensor#40339 | Number | 0 | 255 | Sensor | External adjustment activated via input S8 |  |
-| sensor#40340 | Number | 0 | 255 | Sensor | External adjustment activated via input S7 |  |
-| sensor#40341 | Number | 0 | 255 | Sensor | External adjustment activated via input S6 |  |
-| sensor#40342 | Number | 0 | 255 | Sensor | External adjustment activated via input S5 |  |
+| sensor#40339 | String | 0 | 255 | Sensor | External adjustment activated via input S8 |  |
+| sensor#40340 | String | 0 | 255 | Sensor | External adjustment activated via input S7 |  |
+| sensor#40341 | String | 0 | 255 | Sensor | External adjustment activated via input S6 |  |
+| sensor#40342 | String | 0 | 255 | Sensor | External adjustment activated via input S5 |  |
 | sensor#40364 | String | 0 | 255 | Sensor | AHPS Docking blocked | 0=unblocked, 1=blocked |
 | sensor#40365 | Number | 0 | 255 | Sensor | Extra heating system pump S8 |  |
 | sensor#40366 | Number | 0 | 255 | Sensor | Extra heating system pump S7 |  |
@@ -130,7 +130,7 @@
 | sensor#41186 | Number | -32767 | 32767 | Sensor | Set point OPT boiler |  |
 | sensor#41189 | Number | -32767 | 32767 | Sensor | AA20-BE5 EME10 Current |  |
 | sensor#41190 | Number | -32767 | 32767 | Sensor | AA20-BE5 EME10 Average Current |  |
-| sensor#41191 | Number | 0 | 255 | Sensor | AA20 PV Panel State |  |
+| sensor#41191 | String | 0 | 255 | Sensor | AA20 PV Panel State |  |
 | sensor#41214 | Number | 0 | 255 | Sensor | OEK accessory block status |  |
 | sensor#41256 | Number | 0 | 255 | Sensor | Fan speed current |  |
 | sensor#41257 | Number | 0 | 255 | Sensor | Fan speed current |  |
@@ -193,10 +193,10 @@
 | sensor#43141 | Number | 0 | 65535 | Sensor | compr. in power |  |
 | sensor#43144 | Number | 0 | 9999999 | Sensor | Compr. energy total |  |
 | sensor#43147 | Number | -32767 | 32767 | Sensor | Compr. in current |  |
-| sensor#43158 | Number | 0 | 255 | Sensor | External adjustment activated via input S4 |  |
-| sensor#43159 | Number | 0 | 255 | Sensor | External adjustment activated via input S3 |  |
-| sensor#43160 | Number | 0 | 255 | Sensor | External adjustment activated via input S2 |  |
-| sensor#43161 | Number | 0 | 255 | Sensor | External adjustment activated via input S1 |  |
+| sensor#43158 | String | 0 | 255 | Sensor | External adjustment activated via input S4 |  |
+| sensor#43159 | String | 0 | 255 | Sensor | External adjustment activated via input S3 |  |
+| sensor#43160 | String | 0 | 255 | Sensor | External adjustment activated via input S2 |  |
+| sensor#43161 | String | 0 | 255 | Sensor | External adjustment activated via input S1 |  |
 | sensor#43180 | String | 0 | 255 | Sensor | HWC Pump Status GP11 | 1=on, 0=off |
 | sensor#43181 | Number | 0 | 255 | Sensor | Chargepump speed |  |
 | sensor#43182 | Number | 0 | 65535 | Sensor | Compressor Frequency, Target |  |
@@ -213,11 +213,11 @@
 | sensor#43431 | String | 0 | 255 | Sensor | Supply Pump State EP14 | 10=off, 15=starting, 20=on, 40=10-day mode, 80=calibration |
 | sensor#43435 | String | 0 | 255 | Sensor | Cpr Status EP14 | 1=on, 0=off, 0=Off, 1=On |
 | sensor#43437 | Number | 0 | 255 | Sensor | Supply Pump Speed EP14 |  |
-| sensor#43444 | Number | 0 | 255 | Sensor | State OEK |  |
+| sensor#43444 | String | 0 | 255 | Sensor | State OEK |  |
 | sensor#43514 | String | 0 | 255 | Sensor | EB100 PCA Base Relays EP14 | 1=on, 0=off. Bit0 Compressor Bit1 Supply pump Bit2 Brine pump Bit3 Valve in hot water mode |
 | sensor#43516 | Number | 0 | 255 | Sensor | PCA-Power Relays EP14 |  |
 | sensor#43542 | Number | -32767 | 32767 | Sensor | Calculated supply air temp. |  |
-| sensor#43561 | Number | 0 | 255 | Sensor | Pool 1 blocked |  |
+| sensor#43561 | String | 0 | 255 | Sensor | Pool 1 blocked |  |
 | sensor#44258 | Number | 0 | 255 | Sensor | External supply air accessory relays |  |
 | sensor#44298 | Number | 0 | 9999999 | Sensor | Heat Meter - HW Cpr and Add EP14 |  |
 | sensor#44300 | Number | 0 | 9999999 | Sensor | Heat Meter - Heat Cpr and Add EP14 |  |
@@ -238,7 +238,7 @@
 | sensor#44897 | String | -128 | 127 | Sensor | Smart Price Adaption HW Comfort Mode | 0=Eco, 1=Normal, 2=Luxury, 10=Normal+, 20=Mini |
 | sensor#44898 | Number | -128 | 127 | Sensor | Smart Price Adaption Pool Offset |  |
 | sensor#44899 | Number | -128 | 127 | Sensor | Smart Price Adaption Cool Offset |  |
-| sensor#44908 | Number | 0 | 255 | Sensor | State smart price adaption |  |
+| sensor#44908 | String | 0 | 255 | Sensor | State smart price adaption |  |
 | sensor#45001 | Number | -32767 | 32767 | Sensor | Alarm |  |
 | setting#47062 | Number | -128 | 127 | Setting | HW charge offset |  |
 | sensor#47291 | Number | 0 | 10000 | Sensor | Floor drying timer |  |
