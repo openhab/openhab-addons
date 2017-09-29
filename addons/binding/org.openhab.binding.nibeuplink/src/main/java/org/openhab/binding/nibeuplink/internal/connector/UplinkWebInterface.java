@@ -162,17 +162,17 @@ public class UplinkWebInterface {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        if (this.config.getPassword() == null) {
+        if (this.config.getPassword() == null || this.config.getPassword().isEmpty()) {
             preCheckStatusMessage = "please configure password first";
-        } else if (this.config.getUser() == null) {
+        } else if (this.config.getUser() == null || this.config.getUser().isEmpty()) {
             preCheckStatusMessage = "please configure user first";
-        } else if (this.config.getNibeId() == null) {
+        } else if (this.config.getNibeId() == null || this.config.getNibeId().isEmpty()) {
             preCheckStatusMessage = "please configure nibeId first";
         } else {
             return true;
         }
 
-        this.uplinkHandler.setStatusInfo(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
+        this.uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 preCheckStatusMessage);
         return false;
 

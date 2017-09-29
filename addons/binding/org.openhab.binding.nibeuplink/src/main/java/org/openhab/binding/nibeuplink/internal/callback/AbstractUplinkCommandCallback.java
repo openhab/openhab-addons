@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.nibeuplink.internal.callback;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -24,8 +27,11 @@ import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.openhab.binding.nibeuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
+import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * base class for all commands. common logic should be implemented here
@@ -131,6 +137,29 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
         return communicationStatus;
+    }
+
+    /**
+     * converts the json response into an object structure
+     *
+     * @param jsonInString
+     * @param clazz
+     * @return
+     */
+    protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        // not supported in v2.4.x
+        // mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+
+        @Nullable
+        T obj = null;
+        try {
+            logger.debug("JSON String: {}", jsonInString);
+            obj = mapper.readValue(jsonInString, clazz);
+        } catch (IOException e) {
+            logger.error("Caught IOException: {}", e.getMessage());
+        }
+        return obj;
     }
 
     /**

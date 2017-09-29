@@ -10,7 +10,6 @@ package org.openhab.binding.nibeuplink.internal.command;
 
 import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.eclipse.jetty.client.api.Request;
@@ -23,10 +22,8 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.DataResponse;
+import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
 import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
@@ -87,32 +84,10 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         String json = getContentAsString(Charset.forName("UTF-8"));
         if (json != null) {
-            DataResponse jsonObject = convertJson(json);
+            GenericDataResponse jsonObject = convertJson(json, GenericDataResponse.class);
             if (jsonObject != null) {
                 handler.updateChannelStatus(jsonObject.getValues());
             }
         }
     }
-
-    /**
-     * converts the json response into an object
-     *
-     * @param jsonInString
-     * @return
-     */
-    private DataResponse convertJson(String jsonInString) {
-        ObjectMapper mapper = new ObjectMapper();
-        // not supported in v2.4.x
-        // mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-
-        DataResponse obj = null;
-        try {
-            logger.debug("JSON String: {}", jsonInString);
-            obj = mapper.readValue(jsonInString, DataResponse.class);
-        } catch (IOException e) {
-            logger.error("Caught IOException: {}", e.getMessage());
-        }
-        return obj;
-    }
-
 }

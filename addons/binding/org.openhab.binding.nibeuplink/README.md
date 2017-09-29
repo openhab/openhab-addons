@@ -1,4 +1,4 @@
-# <bindingName> NibeUplink Binding
+# NibeUplink Binding
 
 The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump. This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
 Currently only read access is supported. Ability to modify heat pump configuration might be added in a future version.
