@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mystrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Mystrom Account</label>
+		<description>An account for the Mystrom web service.</description>
+
+		<config-description>
+			<parameter-group name="mystrom">
+				<description>The pieces for talking to mystrom</description>
+				<label>Mystrom Connection</label>
+			</parameter-group>
+			<parameter-group name="binding">
+				<description>Local settings</description>
+				<label>Binding settings</label>
+			</parameter-group>
+
+			<parameter name="email" type="text" groupName="mystrom">
+				<label>Email</label>
+				<description>Mystrom Email</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text" groupName="mystrom">
+				<label>Password</label>
+				<description>Mystrom Password</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" groupName="binding">
+				<label>Refresh Interval</label>
+				<description>How often to refresh the data from mystrom (in seconds). Don't make this too often or mystrom will throttle
+				your account. The default of 2 minutes is roughly the most often you can do it.</description>
+				<default>120</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

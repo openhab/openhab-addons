@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="mystrom"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Mystrom Binding</name>
+	<description>This is the binding for mystrom.</description>
+	<author>Stéphane Raemy</author>
+	
+	<!-- <config-description>
+	   <parameter name="email" type="text">
+	       <label>Email</label>
+	       <description>Mystrom Email</description>
+	       <required>true</required>
+	   </parameter>
+	   <parameter name="password" type="text">
+	       <label>Password</label>
+           <description>Mystrom Password</description>
+	       <required>true</required>
+	   </parameter>
+	</config-description> -->
+
+</binding:binding>

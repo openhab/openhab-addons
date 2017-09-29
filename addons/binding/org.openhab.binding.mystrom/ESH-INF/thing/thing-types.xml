@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mystrom"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Type -->
+	<thing-type id="wifiswitch" listed="false">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+        
+		<label>Mystrom Wifi Switch</label>
+		<description>A Mystrom Wifi Switch registered with your account.</description>
+	
+		<channels>
+			<channel id="consumption" typeId="consumption"/>
+			<channel id="state" typeId="state" />
+		</channels>
+		
+		<config-description>
+            <parameter name="id" type="text" required="false">
+                <label>Device ID</label>
+                <description>Device ID associated with this Thing</description>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="consumption">
+        <item-type>Number</item-type>
+        <label>Consumption</label>
+        <description>Consumption in Watt </description>
+        <state readOnly="true" pattern="%.1f W" />
+    </channel-type>
+    <channel-type id="state">
+        <item-type>Switch</item-type>
+        <label>State</label>
+        <description>“On”, “Off”</description>
+    </channel-type>
+
+</thing:thing-descriptions>
