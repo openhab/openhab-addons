@@ -20,12 +20,13 @@ Auto-discovery is not supported -- things can be added manually.
 
 The thing has the following configuration parameter:
 
-| Parameter      | Description                                                                                     |
-|----------------|-------------------------------------------------------------------------------------------------|
-| Serial port    | Specifies the name of the serial port used to communicate with the device. (String)             |
-| Maximum volume | This is the value to send to the amplifier when the volume channel is set to 100 % *. (Integer) |
+| Parameter      | Parameter name |  Description                                                                                     |
+|----------------|-------------------------------------------------------------------------------------------------------------------|
+| Serial port    | port           | Specifies the name of the serial port used to communicate with the device. (String)              |
+| Maximum volume | maximum-volume | This is the value to send to the amplifier when the volume channel is set to 100 % *. (Integer)  |
 
 *The RA11's max. volume is 96, but it is still supported to use 100 as the maximum volume, only the volume will not increase when going beyond 96 %.
+
 
 ## Channel summary
 
@@ -40,6 +41,46 @@ The thing has the following configuration parameter:
 
 All channels are updated in real time if modified by other means, e.g. by the remote control.
 
+
+## Configuration example
+
+The following lines 
+can be added to the configuration files in order to set up an amplifier at serial port `/dev/ttyS0`.
+
+*demo.things
+
+```
+Thing rotelra1x:amp:living_room_amp [ port="/dev/ttyS0" ]
+```
+
+*demo.items
+
+```
+Switch  Amp_Power      { channel="rotelra1x:amp:living_room_amp:power" }
+Dimmer  Amp_Volume     { channel="rotelra1x:amp:living_room_amp:volume" }
+Switch  Amp_Mute       { channel="rotelra1x:amp:living_room_amp:mute" }
+String  Amp_Source     { channel="rotelra1x:amp:living_room_amp:source" }
+Number  Amp_Frequency  { channel="rotelra1x:amp:living_room_amp:frequency"}
+Dimmer  Amp_Brightness { channel="rotelra1x:amp:living_room_amp:brightness" }
+```
+
+
+*demo.sitemap:
+
+```
+sitemap demo label="Main Menu"
+{
+    Frame label="LG TV" {
+        Switch item=Amp_Power
+        Switch item=Amp_Mute
+        Slider item=Amp_Volume
+        Switch item=Amp_Source mappings=["cd"="CD", "coax1"="Coax 1", "coax2"="Coax 2", "opt1"="Opt 1", "opt2"="Opt 2", "tuner"="Tuner", "phono"="Phono", "usb"="USB", "aux1"="Aux 1", "aux2"="Aux 2"]
+        Text item=Amp_Frequency
+        Slider item=Amp_Brightness
+    }
+}
+```
+
 ## References
 
 Rotel serial protocol is available here: http://www.rotel.com/sites/default/files/product/rs232/RA12%20Protocol.pdf .
@@ -48,4 +89,5 @@ Rotel serial protocol is available here: http://www.rotel.com/sites/default/file
 ## Implementation strategy
 
 Because of the asynchronous and bidirectional nature of the protocol, it was considered best to use the lower level RxRxPort interface for serial communication, bypassing the NRSerialPort wrapper. The update of channels is handled independently of commands, in a separate thread. 
+
 
