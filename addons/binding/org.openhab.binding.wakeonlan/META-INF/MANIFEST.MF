@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Wake On LAN Binding OH2
 Bundle-SymbolicName: org.openhab.binding.wakeonlan;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.001
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: org.apache.commons.codec.binary,
