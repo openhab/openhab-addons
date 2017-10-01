@@ -56,12 +56,12 @@ Thing rotelra1x:amp:living_room_amp [ port="/dev/ttyS0" ]
 *demo.items
 
 ```
-Switch  Amp_Power      { channel="rotelra1x:amp:living_room_amp:power" }
-Dimmer  Amp_Volume     { channel="rotelra1x:amp:living_room_amp:volume" }
-Switch  Amp_Mute       { channel="rotelra1x:amp:living_room_amp:mute" }
-String  Amp_Source     { channel="rotelra1x:amp:living_room_amp:source" }
-Number  Amp_Frequency  { channel="rotelra1x:amp:living_room_amp:frequency"}
-Dimmer  Amp_Brightness { channel="rotelra1x:amp:living_room_amp:brightness" }
+Switch  Amp_Power      "On/off"                       { channel="rotelra1x:amp:living_room_amp:power" }
+Dimmer  Amp_Volume     "Volume"             <sound>   { channel="rotelra1x:amp:living_room_amp:volume" }
+Switch  Amp_Mute       "Mute"               <mute>    { channel="rotelra1x:amp:living_room_amp:mute" }
+String  Amp_Source     "Input"                        { channel="rotelra1x:amp:living_room_amp:source" }
+Number  Amp_Frequency  "Frequency"                    { channel="rotelra1x:amp:living_room_amp:frequency"}
+Dimmer  Amp_Brightness "Display brightness" <light>   { channel="rotelra1x:amp:living_room_amp:brightness" }
 ```
 
 
