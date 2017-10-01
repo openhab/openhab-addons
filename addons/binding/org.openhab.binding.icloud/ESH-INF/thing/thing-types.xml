@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="Owner" typeId="Owner" />
 			<channel id="NumberOfDevices" typeId="NumberOfDevices" />
+			<channel id="ForcedRefresh" typeId="ForcedRefresh" />
 		</channels>
 
 		<config-description>
@@ -62,6 +63,11 @@
 		<item-type>String</item-type>
 		<label>Owner</label>
 		<description>Registered owner of this iCloud account.</description>
+	</channel-type>
+	<channel-type id="ForcedRefresh">
+		<item-type>Switch</item-type>
+		<label>Forced refresh</label>
+		<description>Update all devices registered with this bridge immediately.</description>
 	</channel-type>
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>

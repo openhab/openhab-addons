@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,9 +36,9 @@ import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.AddressLookup;
 import org.openhab.binding.icloud.internal.AddressLookupParser;
-import org.openhab.binding.icloud.internal.DeviceInformationParser;
 import org.openhab.binding.icloud.internal.Configuration;
 import org.openhab.binding.icloud.internal.Connection;
+import org.openhab.binding.icloud.internal.DeviceInformationParser;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.openhab.binding.icloud.internal.json.icloud.JSONRootObject;
 import org.osgi.framework.ServiceRegistration;
@@ -56,6 +57,8 @@ public class BridgeHandler extends BaseBridgeHandler {
     ServiceRegistration<?> service;
     DeviceDiscovery discoveryService;
 
+    private Object synchronizeRefresh = new Object();
+
     private List<DeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<DeviceHandler>());
     ScheduledFuture<?> refreshJob;
     private JSONRootObject iCloudData;
@@ -66,6 +69,13 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getId();
+        if (channelId.equals(FORCEDREFRESH)) {
+            if (command == OnOffType.ON) {
+                refreshData();
+                updateState(FORCEDREFRESH, OnOffType.OFF);
+            }
+        }
     }
 
     @Override
@@ -148,6 +158,13 @@ public class BridgeHandler extends BaseBridgeHandler {
         registerDeviceDiscoveryService();
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            refreshData();
+        }, 0, config.RefreshTimeInMinutes, TimeUnit.MINUTES);
+        logger.debug("iCloud bridge handler started.");
+    }
+
+    private void refreshData() {
+        synchronized (synchronizeRefresh) {
             try {
                 logger.debug("iCloud bridge refreshing data ...");
 
@@ -179,8 +196,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 logException(e);
                 updateStatus(ThingStatus.OFFLINE);
             }
-        }, 0, config.RefreshTimeInMinutes, TimeUnit.MINUTES);
-        logger.debug("iCloud bridge handler started.");
+        }
     }
 
     private void registerDeviceDiscoveryService() {
