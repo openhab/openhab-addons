@@ -55,6 +55,13 @@ Things:
 ```
 smlreader:meter:heating  [ port="COM1", refresh=10 ]
 smlreader:meter:house [ port="rfc2217://xxx.xxx.xxx.xxx:3002" ]
+
+smlreader:meter:BinderPower     [port="/dev/ttyUSB0", refresh=20] {
+    Channels:
+        Type NumberChannel : 1-0#1-8-0 [
+            conversionRatio=1000
+        ]
+    }
 ```
 
 Items:
@@ -85,3 +92,6 @@ Any help/contribution is appreciated!
 The binding has been successfully tested with below hardware configuration:
 
 - EMH EDL300 meter connected the IR-Reader USB from open hardware project in volkszaehler
+- EMH eHZ-IW8E2A
+- ISKRA MT681
+- EMH eHZ-K

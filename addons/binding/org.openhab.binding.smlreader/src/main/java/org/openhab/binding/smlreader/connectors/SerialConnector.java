@@ -103,18 +103,18 @@ public final class SerialConnector extends ConnectorBase {
             is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
         } catch (PortInUseException e) {
             throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: port {} is already in use.", this.portName), e);
+                    .format("Error at SerialConnector.openConnection: port {0} is already in use.", this.portName), e);
         } catch (UnsupportedCommOperationException e) {
             throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: params for port {} are not supported.", this.portName),
+                    "Error at SerialConnector.openConnection: params for port {0} are not supported.", this.portName),
                     e);
         } catch (IOException e) {
             throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: unable to get inputstream for port {}.", this.portName),
+                    "Error at SerialConnector.openConnection: unable to get inputstream for port {0}.", this.portName),
                     e);
         } catch (NoSuchPortException e) {
             throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: serial port not found {}.", this.portName), e);
+                    .format("Error at SerialConnector.openConnection: serial port not found {0}.", this.portName), e);
         }
         // }
     }
