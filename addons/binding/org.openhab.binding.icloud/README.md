@@ -16,6 +16,8 @@ The binding uses Google's "[Geocode API](https://developers.google.com/maps/docu
     - [Thing Configuration](#thing-configuration)
         - [iCloud Binding Thing](#icloud-binding-thing)
     - [Channels](#channels)
+        - [Bridge](#bridge)
+        - [Device](#device)
     - [Full Example](#full-example)
         - [Items](#items)
         - [Sitemap](#sitemap)
@@ -32,6 +34,7 @@ The following devices are known to work with this binding:
 * iPhone 7
 * iWatch 2
 * iPad Air 2/2017/Pro
+* MacBook Pro
 
 Other devices should work as well. Please provide feedback if you have tested another device type. 
 
@@ -59,7 +62,19 @@ All parameters are mandatory.
 
 ## Channels
 
+### Bridge
+
+| Channel ID       | Type     | Description                                                              |
+|------------------|----------|--------------------------------------------------------------------------|
+| NumberOfDevices  | Number   | Number of registered devices with this iCloud account.                   |
+| Owner            | String   | Registered owner of this iCloud account.                                 |
+| ForcedRefresh    | Switch   | Update all devices registered with this bridge immediately.              |
+
+### Device
+
 The following channels are available (if supported by the device):
+
+<!-- http://www.tablesgenerator.com/markdown_tables -->
 
 | Channel ID       | Type     | Description                                                              |
 |------------------|----------|--------------------------------------------------------------------------|
