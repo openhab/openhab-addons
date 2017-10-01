@@ -28,23 +28,21 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Collections2;
-
 /**
  * An UpnpDiscoveryParticipant which allows to discover Onkyo AVRs.
  *
  * @author Paul Frank
  *
  */
-@Component(immediate = true)
-public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoDiscoveryParticipant.class);
+    private Logger logger = LoggerFactory.getLogger(OnkyoUpnpDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled;
     private Set<ThingTypeUID> supportedThingTypes;
 
-    public OnkyoDiscoveryParticipant() {
+    public OnkyoUpnpDiscoveryParticipant() {
         this.isAutoDiscoveryEnabled = true;
         this.supportedThingTypes = SUPPORTED_THING_TYPES_UIDS;
     }
@@ -102,8 +100,7 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             device.getType().getType());
 
                     String deviceModel = device.getDetails().getModelDetails() != null
-                            ? device.getDetails().getModelDetails().getModelName()
-                            : null;
+                            ? device.getDetails().getModelDetails().getModelName() : null;
 
                     logger.debug("Device model: {}.", deviceModel);
 
@@ -139,13 +136,8 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
      * @return
      */
     private boolean isSupportedDeviceModel(final String deviceModel) {
-        return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(SUPPORTED_DEVICE_MODELS, new com.google.common.base.Predicate<String>() {
-                    @Override
-                    public boolean apply(String input) {
-                        return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                    }
-                }).isEmpty();
+        return StringUtils.isNotBlank(deviceModel) && SUPPORTED_DEVICE_MODELS.stream()
+                .filter(device -> StringUtils.startsWithIgnoreCase(deviceModel, device)).count() > 0;
     }
 
 }
