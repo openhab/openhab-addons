@@ -127,7 +127,7 @@ public final class SmlValue {
             if (SmlBoolean.class.isInstance(choice)) {
                 value = Boolean.toString(((SmlBoolean) choice).getVal());
             } else if (choice instanceof OctetString) {
-                value = ((OctetString) choice).toString();
+                value = new String(((OctetString) choice).toBytes());
             } else if (Integer8.class.isInstance(choice)) {
                 value = String.format("0x%02x", ((Integer8) choice).getVal());
             } else if (Integer16.class.isInstance(choice) || Unsigned16.class.isInstance(choice)) {
@@ -143,4 +143,5 @@ public final class SmlValue {
 
         return value;
     }
+
 }
