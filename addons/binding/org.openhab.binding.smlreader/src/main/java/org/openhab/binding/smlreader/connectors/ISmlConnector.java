@@ -10,7 +10,7 @@ package org.openhab.binding.smlreader.connectors;
 
 import java.io.IOException;
 
-import org.openmuc.jsml.structures.SML_File;
+import org.openmuc.jsml.structures.SmlFile;
 
 /**
  * Specifies the generic method to retrieve SML values from a device
@@ -26,5 +26,5 @@ public interface ISmlConnector {
      * @return native encoded SML informations from a device.
      * @throws IOException
      */
-    SML_File getMeterValues() throws IOException;
+    SmlFile getMeterValues() throws IOException;
 }

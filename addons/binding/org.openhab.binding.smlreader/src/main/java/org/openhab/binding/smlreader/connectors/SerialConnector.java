@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 
-import org.openmuc.jsml.structures.SML_File;
-import org.openmuc.jsml.structures.SML_Message;
-import org.openmuc.jsml.tl.SMLMessageExtractor;
+import org.openmuc.jsml.structures.SmlFile;
+import org.openmuc.jsml.structures.SmlMessage;
+import org.openmuc.jsml.transport.MessageExtractor;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -57,19 +57,19 @@ public final class SerialConnector extends ConnectorBase {
      * @{inheritDoc}
      */
     @Override
-    protected SML_File getMeterValuesInternal() throws IOException {
-        SML_File smlFile = null;
+    protected SmlFile getMeterValuesInternal() throws IOException {
+        SmlFile smlFile = null;
 
-        SMLMessageExtractor extractor;
+        MessageExtractor extractor;
 
         try {
-            extractor = new SMLMessageExtractor(is, 5000);
+            extractor = new MessageExtractor(is, 5000);
             DataInputStream is = new DataInputStream(new ByteArrayInputStream(extractor.getSmlMessage()));
 
-            smlFile = new SML_File();
+            smlFile = new SmlFile();
 
             while (is.available() > 0) {
-                SML_Message message = new SML_Message();
+                SmlMessage message = new SmlMessage();
 
                 if (!message.decode(is)) {
                     throw new IOException("Could not decode message");

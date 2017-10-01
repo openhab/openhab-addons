@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.smlreader.internal;
 
+import org.openmuc.jsml.EUnit;
 import org.openmuc.jsml.structures.ASNObject;
 import org.openmuc.jsml.structures.Integer16;
 import org.openmuc.jsml.structures.Integer32;
 import org.openmuc.jsml.structures.Integer64;
 import org.openmuc.jsml.structures.Integer8;
 import org.openmuc.jsml.structures.OctetString;
-import org.openmuc.jsml.structures.SML_Boolean;
-import org.openmuc.jsml.structures.SML_ListEntry;
-import org.openmuc.jsml.structures.SML_Value;
+import org.openmuc.jsml.structures.SmlBoolean;
+import org.openmuc.jsml.structures.SmlListEntry;
 import org.openmuc.jsml.structures.Unsigned16;
 import org.openmuc.jsml.structures.Unsigned32;
 import org.openmuc.jsml.structures.Unsigned64;
@@ -32,12 +32,12 @@ public final class SmlValue {
     /**
      * Stores the original value object from jSML
      */
-    private SML_ListEntry smlListEntry;
+    private SmlListEntry smlListEntry;
 
     /**
      * Constructor
      */
-    public SmlValue(SML_ListEntry listEntry) {
+    public SmlValue(SmlListEntry listEntry) {
         smlListEntry = listEntry;
     }
 
@@ -65,7 +65,7 @@ public final class SmlValue {
         String unit = null;
 
         if (smlListEntry != null && smlListEntry.getUnit().getVal() > 0) {
-            SmlUnit smlUnit = SmlUnit.values()[smlListEntry.getUnit().getVal() - 1];
+            EUnit smlUnit = EUnit.idToEnum(smlListEntry.getUnit().getVal() - 1);
             unit = smlUnit.name();
         } else {
             unit = null;
@@ -121,11 +121,11 @@ public final class SmlValue {
         String value = null;
 
         if (smlListEntry != null) {
-            SML_Value smlValue = smlListEntry.getValue();
+            org.openmuc.jsml.structures.SmlValue smlValue = smlListEntry.getValue();
             ASNObject choice = smlValue.getChoice();
 
-            if (SML_Boolean.class.isInstance(choice)) {
-                value = Boolean.toString(((SML_Boolean) choice).getVal());
+            if (SmlBoolean.class.isInstance(choice)) {
+                value = Boolean.toString(((SmlBoolean) choice).getVal());
             } else if (choice instanceof OctetString) {
                 value = ((OctetString) choice).toString();
             } else if (Integer8.class.isInstance(choice)) {

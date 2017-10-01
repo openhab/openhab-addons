@@ -10,7 +10,7 @@ package org.openhab.binding.smlreader.connectors;
 
 import java.io.IOException;
 
-import org.openmuc.jsml.structures.SML_File;
+import org.openmuc.jsml.structures.SmlFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +56,11 @@ abstract class ConnectorBase implements ISmlConnector {
      * @throws ConnectorException
      *
      */
-    protected abstract SML_File getMeterValuesInternal() throws IOException;
+    protected abstract SmlFile getMeterValuesInternal() throws IOException;
 
     @Override
-    public SML_File getMeterValues() throws IOException {
-        SML_File smlFile = null;
+    public SmlFile getMeterValues() throws IOException {
+        SmlFile smlFile = null;
 
         try {
             openConnection();

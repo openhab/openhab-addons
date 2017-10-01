@@ -16,12 +16,12 @@ import java.util.Map.Entry;
 import org.openhab.binding.smlreader.SmlReaderBindingConstants;
 import org.openhab.binding.smlreader.connectors.ISmlConnector;
 import org.openhab.binding.smlreader.connectors.SerialConnector;
-import org.openmuc.jsml.structures.SML_File;
-import org.openmuc.jsml.structures.SML_GetListRes;
-import org.openmuc.jsml.structures.SML_List;
-import org.openmuc.jsml.structures.SML_ListEntry;
-import org.openmuc.jsml.structures.SML_Message;
-import org.openmuc.jsml.structures.SML_MessageBody;
+import org.openmuc.jsml.structures.EMessageBody;
+import org.openmuc.jsml.structures.SmlFile;
+import org.openmuc.jsml.structures.SmlList;
+import org.openmuc.jsml.structures.SmlListEntry;
+import org.openmuc.jsml.structures.SmlMessage;
+import org.openmuc.jsml.structures.responses.SmlGetListRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,9 +155,9 @@ public final class SmlDevice {
      *
      * @param smlFile the native SML informations from the device
      */
-    private void populateValueCache(SML_File smlFile) {
+    private void populateValueCache(SmlFile smlFile) {
         if (smlFile != null) {
-            List<SML_Message> smlMessages = smlFile.getMessages();
+            List<SmlMessage> smlMessages = smlFile.getMessages();
 
             if (smlMessages != null) {
                 int messageCount = smlMessages.size();
@@ -167,7 +167,7 @@ public final class SmlDevice {
                 }
 
                 for (int i = 0; i < messageCount; i++) {
-                    SML_Message smlMessage = smlMessages.get(i);
+                    SmlMessage smlMessage = smlMessages.get(i);
 
                     if (smlMessage == null) {
                         logger.warn("{}: no valid SML message.", this.toString());
@@ -176,16 +176,16 @@ public final class SmlDevice {
 
                     int tag = smlMessage.getMessageBody().getTag().getVal();
 
-                    if (tag != SML_MessageBody.GetListResponse) {
+                    if (tag != EMessageBody.GET_LIST_RESPONSE.id()) {
                         continue;
                     }
 
-                    SML_GetListRes listResponse = (SML_GetListRes) smlMessage.getMessageBody().getChoice();
-                    SML_List smlValueList = listResponse.getValList();
-                    SML_ListEntry[] smlListEntries = smlValueList.getValListEntry();
+                    SmlGetListRes listResponse = (SmlGetListRes) smlMessage.getMessageBody().getChoice();
+                    SmlList smlValueList = listResponse.getValList();
+                    SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
 
-                    for (SML_ListEntry entry : smlListEntries) {
-                        String obis = getObisAsString(entry.getObjName().getOctetString());
+                    for (SmlListEntry entry : smlListEntries) {
+                        String obis = getObisAsString(entry.getObjName().getValue());
 
                         SmlValue smlValue = valueCache.get(obis);
 
@@ -255,7 +255,7 @@ public final class SmlDevice {
      * @throws Exception
      */
     public void readValues() throws Exception {
-        SML_File smlFile = null;
+        SmlFile smlFile = null;
 
         if (connector == null) {
             logger.error("{}: connector is not instantiated", this.toString());
