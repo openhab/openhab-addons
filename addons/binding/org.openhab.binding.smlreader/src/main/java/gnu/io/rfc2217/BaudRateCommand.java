@@ -1,20 +1,20 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: BaudRateCommand.java 39 2011-03-22 17:21:53Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
-import static gnu.io.rfc2217.RFC2217.SET_BAUDRATE;
+import static gnu.io.rfc2217.RFC2217.*;
 
 /**
  * RFC 2217 {@code SET-BAUDRATE} command.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class BaudRateCommand extends ComPortCommand {
 
@@ -24,14 +24,15 @@ public class BaudRateCommand extends ComPortCommand {
      * Decoding constructor.
      *
      * @param bytes encoded option starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length that is too short or too long
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SET_BAUDRATE} (client or server)
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length that is too short or too long
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SET_BAUDRATE} (client or server)
      */
     public BaudRateCommand(int[] bytes) {
         super("SET-BAUDRATE", SET_BAUDRATE, bytes);
-        this.baudRate = ((bytes[2] & 0xff) << 24) | ((bytes[3] & 0xff) << 16) | ((bytes[4] & 0xff) << 8) | (bytes[5] & 0xff);
+        this.baudRate = ((bytes[2] & 0xff) << 24) | ((bytes[3] & 0xff) << 16) | ((bytes[4] & 0xff) << 8)
+                | (bytes[5] & 0xff);
     }
 
     /**
@@ -41,14 +42,8 @@ public class BaudRateCommand extends ComPortCommand {
      * @param client true for the client-to-server command, false for the server-to-client command
      */
     public BaudRateCommand(boolean client, int baudRate) {
-        this(new int[] {
-            COM_PORT_OPTION,
-            client ? SET_BAUDRATE : SET_BAUDRATE + SERVER_OFFSET,
-            (baudRate >> 24) & 0xff,
-            (baudRate >> 16) & 0xff,
-            (baudRate >> 8) & 0xff,
-            baudRate & 0xff,
-        });
+        this(new int[] { COM_PORT_OPTION, client ? SET_BAUDRATE : SET_BAUDRATE + SERVER_OFFSET, (baudRate >> 24) & 0xff,
+                (baudRate >> 16) & 0xff, (baudRate >> 8) & 0xff, baudRate & 0xff, });
     }
 
     @Override
@@ -75,4 +70,3 @@ public class BaudRateCommand extends ComPortCommand {
         return 4;
     }
 }
-

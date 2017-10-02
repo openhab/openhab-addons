@@ -1,18 +1,18 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: RFC2217.java 29 2010-11-22 21:57:58Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
-
-
 
 /**
  * RFC 2217 constants and utility methods.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public final class RFC2217 {
 
@@ -109,56 +109,57 @@ public final class RFC2217 {
     /**
      * Decode an RFC 2217 {@code COM-PORT-OPTION} command.
      *
-     *   IllegalArgumentException if the bytes are not a valid encoded RFC 2217 {@link #COM_PORT_OPTION}
+     * IllegalArgumentException if the bytes are not a valid encoded RFC 2217 {@link #COM_PORT_OPTION}
      */
     public static ComPortCommand decodeComPortCommand(int[] bytes) {
-        if (bytes.length < 2)
+        if (bytes.length < 2) {
             throw new IllegalArgumentException("length < 2");
-        if (bytes[0] != COM_PORT_OPTION)
+        }
+        if (bytes[0] != COM_PORT_OPTION) {
             throw new IllegalArgumentException("not a COM-PORT-OPTION (option = " + bytes[0] + ")");
+        }
         switch (bytes[1]) {
-        case SIGNATURE:
-        case SIGNATURE + SERVER_OFFSET:
-            return new SignatureCommand(bytes);
-        case SET_BAUDRATE:
-        case SET_BAUDRATE + SERVER_OFFSET:
-            return new BaudRateCommand(bytes);
-        case SET_DATASIZE:
-        case SET_DATASIZE + SERVER_OFFSET:
-            return new DataSizeCommand(bytes);
-        case SET_PARITY:
-        case SET_PARITY + SERVER_OFFSET:
-            return new ParityCommand(bytes);
-        case SET_STOPSIZE:
-        case SET_STOPSIZE + SERVER_OFFSET:
-            return new StopSizeCommand(bytes);
-        case SET_CONTROL:
-        case SET_CONTROL + SERVER_OFFSET:
-            return new ControlCommand(bytes);
-        case NOTIFY_LINESTATE:
-        case NOTIFY_LINESTATE + SERVER_OFFSET:
-            return new NotifyLineStateCommand(bytes);
-        case NOTIFY_MODEMSTATE:
-        case NOTIFY_MODEMSTATE + SERVER_OFFSET:
-            return new NotifyModemStateCommand(bytes);
-        case FLOWCONTROL_SUSPEND:
-        case FLOWCONTROL_SUSPEND + SERVER_OFFSET:
-            return new FlowControlSuspendCommand(bytes);
-        case FLOWCONTROL_RESUME:
-        case FLOWCONTROL_RESUME + SERVER_OFFSET:
-            return new FlowControlResumeCommand(bytes);
-        case SET_LINESTATE_MASK:
-        case SET_LINESTATE_MASK + SERVER_OFFSET:
-            return new LineStateMaskCommand(bytes);
-        case SET_MODEMSTATE_MASK:
-        case SET_MODEMSTATE_MASK + SERVER_OFFSET:
-            return new ModemStateMaskCommand(bytes);
-        case PURGE_DATA:
-        case PURGE_DATA + SERVER_OFFSET:
-            return new PurgeDataCommand(bytes);
-        default:
-            throw new IllegalArgumentException("unrecognized COM-PORT-OPTION command " + bytes[1]);
+            case SIGNATURE:
+            case SIGNATURE + SERVER_OFFSET:
+                return new SignatureCommand(bytes);
+            case SET_BAUDRATE:
+            case SET_BAUDRATE + SERVER_OFFSET:
+                return new BaudRateCommand(bytes);
+            case SET_DATASIZE:
+            case SET_DATASIZE + SERVER_OFFSET:
+                return new DataSizeCommand(bytes);
+            case SET_PARITY:
+            case SET_PARITY + SERVER_OFFSET:
+                return new ParityCommand(bytes);
+            case SET_STOPSIZE:
+            case SET_STOPSIZE + SERVER_OFFSET:
+                return new StopSizeCommand(bytes);
+            case SET_CONTROL:
+            case SET_CONTROL + SERVER_OFFSET:
+                return new ControlCommand(bytes);
+            case NOTIFY_LINESTATE:
+            case NOTIFY_LINESTATE + SERVER_OFFSET:
+                return new NotifyLineStateCommand(bytes);
+            case NOTIFY_MODEMSTATE:
+            case NOTIFY_MODEMSTATE + SERVER_OFFSET:
+                return new NotifyModemStateCommand(bytes);
+            case FLOWCONTROL_SUSPEND:
+            case FLOWCONTROL_SUSPEND + SERVER_OFFSET:
+                return new FlowControlSuspendCommand(bytes);
+            case FLOWCONTROL_RESUME:
+            case FLOWCONTROL_RESUME + SERVER_OFFSET:
+                return new FlowControlResumeCommand(bytes);
+            case SET_LINESTATE_MASK:
+            case SET_LINESTATE_MASK + SERVER_OFFSET:
+                return new LineStateMaskCommand(bytes);
+            case SET_MODEMSTATE_MASK:
+            case SET_MODEMSTATE_MASK + SERVER_OFFSET:
+                return new ModemStateMaskCommand(bytes);
+            case PURGE_DATA:
+            case PURGE_DATA + SERVER_OFFSET:
+                return new PurgeDataCommand(bytes);
+            default:
+                throw new IllegalArgumentException("unrecognized COM-PORT-OPTION command " + bytes[1]);
         }
     }
 }
-

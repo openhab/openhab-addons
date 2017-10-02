@@ -25,6 +25,8 @@ Import-Package:
  org.osgi.service.component;version="1.2.2",
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.smlreader,
+Export-Package: gnu.io.factory;x-internal:=true,
+ gnu.io.rfc2217;x-internal:=true,
+ org.openhab.binding.smlreader,
  org.openhab.binding.smlreader.handler
 Bundle-ActivationPolicy: lazy

@@ -1,20 +1,20 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: FlowControlSuspendCommand.java 39 2011-03-22 17:21:53Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.FLOWCONTROL_SUSPEND;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
+import static gnu.io.rfc2217.RFC2217.*;
 
 /**
  * RFC 2217 {@code FLOWCONTROL-SUSPEND} command.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class FlowControlSuspendCommand extends ComPortCommand {
 
@@ -22,10 +22,11 @@ public class FlowControlSuspendCommand extends ComPortCommand {
      * Decoding constructor.
      *
      * @param bytes encoded option starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length != 3
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#FLOWCONTROL_SUSPEND} (client or server)
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length != 3
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#FLOWCONTROL_SUSPEND} (client or
+     *            server)
      */
     public FlowControlSuspendCommand(int[] bytes) {
         super("FLOWCONTROL-SUSPEND", FLOWCONTROL_SUSPEND, bytes);
@@ -37,10 +38,7 @@ public class FlowControlSuspendCommand extends ComPortCommand {
      * @param client true for the client-to-server command, false for the server-to-client command
      */
     public FlowControlSuspendCommand(boolean client) {
-        this(new int[] {
-            COM_PORT_OPTION,
-            client ? FLOWCONTROL_SUSPEND : FLOWCONTROL_SUSPEND + SERVER_OFFSET,
-        });
+        this(new int[] { COM_PORT_OPTION, client ? FLOWCONTROL_SUSPEND : FLOWCONTROL_SUSPEND + SERVER_OFFSET, });
     }
 
     @Override
@@ -63,4 +61,3 @@ public class FlowControlSuspendCommand extends ComPortCommand {
         return 0;
     }
 }
-

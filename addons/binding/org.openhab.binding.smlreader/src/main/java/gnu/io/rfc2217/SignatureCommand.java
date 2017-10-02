@@ -1,22 +1,22 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: SignatureCommand.java 39 2011-03-22 17:21:53Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import java.io.UnsupportedEncodingException;
+import static gnu.io.rfc2217.RFC2217.*;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
-import static gnu.io.rfc2217.RFC2217.SIGNATURE;
+import java.io.UnsupportedEncodingException;
 
 /**
  * RFC 2217 {@code SIGNATURE} command.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class SignatureCommand extends ComPortCommand {
 
@@ -29,10 +29,10 @@ public class SignatureCommand extends ComPortCommand {
      * Decoding constructor.
      *
      * @param bytes encoded option starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length that is too short or too long
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SIGNATURE} (client or server)
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length that is too short or too long
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SIGNATURE} (client or server)
      */
     public SignatureCommand(int[] bytes) {
         super("SIGNATURE", SIGNATURE, bytes);
@@ -100,14 +100,14 @@ public class SignatureCommand extends ComPortCommand {
         try {
             buf = signature.getBytes(ENCODING);
         } catch (UnsupportedEncodingException e) {
-            buf = new byte[] { (byte)'?' };
+            buf = new byte[] { (byte) '?' };
         }
         int[] ibuf = new int[2 + buf.length];
         ibuf[0] = COM_PORT_OPTION;
         ibuf[1] = client ? SIGNATURE : SIGNATURE + SERVER_OFFSET;
-        for (int i = 0; i < buf.length; i++)
+        for (int i = 0; i < buf.length; i++) {
             ibuf[2 + i] = buf[i] & 0xff;
+        }
         return ibuf;
     }
 }
-

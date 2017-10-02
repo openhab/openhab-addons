@@ -1,16 +1,18 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: ComPortCommandSwitch.java 6 2010-11-20 23:37:06Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
 /**
  * Visitor pattern interface for {@link ComPortCommand} classes.
  *
  * @see ComPortCommand#visit
+ * @author jserv
  */
 public interface ComPortCommandSwitch {
 
@@ -40,4 +42,3 @@ public interface ComPortCommandSwitch {
 
     void casePurgeData(PurgeDataCommand command);
 }
-

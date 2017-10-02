@@ -1,23 +1,20 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: PurgeDataCommand.java 39 2011-03-22 17:21:53Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.PURGE_DATA;
-import static gnu.io.rfc2217.RFC2217.PURGE_DATA_BOTH_DATA_BUFFERS;
-import static gnu.io.rfc2217.RFC2217.PURGE_DATA_RECEIVE_DATA_BUFFER;
-import static gnu.io.rfc2217.RFC2217.PURGE_DATA_TRANSMIT_DATA_BUFFER;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
+import static gnu.io.rfc2217.RFC2217.*;
 
 /**
  * RFC 2217 {@code PURGE-DATA} command.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class PurgeDataCommand extends ComPortCommand {
 
@@ -27,22 +24,22 @@ public class PurgeDataCommand extends ComPortCommand {
      * Decoding constructor.
      *
      * @param bytes encoded option starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length != 3
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#PURGE_DATA} (client or server)
-     *   IllegalArgumentException if {@code bytes[2]} is not a valid RFC 2217 purge data value
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length != 3
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#PURGE_DATA} (client or server)
+     *            IllegalArgumentException if {@code bytes[2]} is not a valid RFC 2217 purge data value
      */
     public PurgeDataCommand(int[] bytes) {
         super("PURGE-DATA", PURGE_DATA, bytes);
         this.purgeData = bytes[2];
         switch (this.purgeData) {
-        case PURGE_DATA_RECEIVE_DATA_BUFFER:
-        case PURGE_DATA_TRANSMIT_DATA_BUFFER:
-        case PURGE_DATA_BOTH_DATA_BUFFERS:
-            break;
-        default:
-            throw new IllegalArgumentException("invalid purge data value " + this.purgeData);
+            case PURGE_DATA_RECEIVE_DATA_BUFFER:
+            case PURGE_DATA_TRANSMIT_DATA_BUFFER:
+            case PURGE_DATA_BOTH_DATA_BUFFERS:
+                break;
+            default:
+                throw new IllegalArgumentException("invalid purge data value " + this.purgeData);
         }
     }
 
@@ -51,32 +48,28 @@ public class PurgeDataCommand extends ComPortCommand {
      *
      * @param purgeData purge data value
      * @param client true for the client-to-server command, false for the server-to-client command
-     *   IllegalArgumentException if {@code purgeData} is not a valid RFC 2217 purge data value
+     *            IllegalArgumentException if {@code purgeData} is not a valid RFC 2217 purge data value
      */
     public PurgeDataCommand(boolean client, int purgeData) {
-        this(new int[] {
-            COM_PORT_OPTION,
-            client ? PURGE_DATA : PURGE_DATA + SERVER_OFFSET,
-            purgeData
-        });
+        this(new int[] { COM_PORT_OPTION, client ? PURGE_DATA : PURGE_DATA + SERVER_OFFSET, purgeData });
     }
 
     @Override
     public String toString() {
         String desc;
         switch (this.purgeData) {
-        case PURGE_DATA_RECEIVE_DATA_BUFFER:
-            desc = "RECEIVE-DATA-BUFFER";
-            break;
-        case PURGE_DATA_TRANSMIT_DATA_BUFFER:
-            desc = "TRANSMIT-DATA-BUFFER";
-            break;
-        case PURGE_DATA_BOTH_DATA_BUFFERS:
-            desc = "BOTH-DATA-BUFFERS";
-            break;
-        default:
-            desc = "?";
-            break;
+            case PURGE_DATA_RECEIVE_DATA_BUFFER:
+                desc = "RECEIVE-DATA-BUFFER";
+                break;
+            case PURGE_DATA_TRANSMIT_DATA_BUFFER:
+                desc = "TRANSMIT-DATA-BUFFER";
+                break;
+            case PURGE_DATA_BOTH_DATA_BUFFERS:
+                desc = "BOTH-DATA-BUFFERS";
+                break;
+            default:
+                desc = "?";
+                break;
         }
         return this.getName() + " " + desc;
     }
@@ -104,4 +97,3 @@ public class PurgeDataCommand extends ComPortCommand {
         return 1;
     }
 }
-

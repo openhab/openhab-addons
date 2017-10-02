@@ -1,10 +1,11 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: ComPortOptionHandler.java 46 2011-10-16 23:06:39Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
 import org.apache.commons.net.telnet.TelnetOptionHandler;
@@ -13,6 +14,7 @@ import org.apache.commons.net.telnet.TelnetOptionHandler;
  * RFC 2217 telnet COM-PORT-OPTION.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class ComPortOptionHandler extends TelnetOptionHandler {
 
@@ -20,8 +22,9 @@ public class ComPortOptionHandler extends TelnetOptionHandler {
 
     protected ComPortOptionHandler(TelnetSerialPort telnetSerialPort) {
         super(RFC2217.COM_PORT_OPTION, true, false, true, false);
-        if (telnetSerialPort == null)
+        if (telnetSerialPort == null) {
             throw new IllegalArgumentException("null telnetSerialPort");
+        }
         this.port = telnetSerialPort;
     }
 
@@ -60,4 +63,3 @@ public class ComPortOptionHandler extends TelnetOptionHandler {
         return null;
     }
 }
-

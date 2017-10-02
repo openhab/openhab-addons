@@ -1,20 +1,20 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: LineStateMaskCommand.java 39 2011-03-22 17:21:53Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
-import static gnu.io.rfc2217.RFC2217.SET_LINESTATE_MASK;
+import static gnu.io.rfc2217.RFC2217.*;
 
 /**
  * RFC 2217 {@code SET-LINESTATE-MASK} command.
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class LineStateMaskCommand extends ComPortCommand {
 
@@ -24,10 +24,11 @@ public class LineStateMaskCommand extends ComPortCommand {
      * Decoding constructor.
      *
      * @param bytes encoded option starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length != 3
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SET_LINESTATE_MASK} (client or server)
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length != 3
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@link RFC2217#SET_LINESTATE_MASK} (client or
+     *            server)
      */
     public LineStateMaskCommand(int[] bytes) {
         super("SET-LINESTATE-MASK", SET_LINESTATE_MASK, bytes);
@@ -41,11 +42,8 @@ public class LineStateMaskCommand extends ComPortCommand {
      * @param client true for the client-to-server command, false for the server-to-client command
      */
     public LineStateMaskCommand(boolean client, int lineStateMask) {
-        this(new int[] {
-            COM_PORT_OPTION,
-            client ? SET_LINESTATE_MASK : SET_LINESTATE_MASK + SERVER_OFFSET,
-            lineStateMask
-        });
+        this(new int[] { COM_PORT_OPTION, client ? SET_LINESTATE_MASK : SET_LINESTATE_MASK + SERVER_OFFSET,
+                lineStateMask });
     }
 
     @Override
@@ -72,4 +70,3 @@ public class LineStateMaskCommand extends ComPortCommand {
         return 1;
     }
 }
-

@@ -1,10 +1,11 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id$
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.util.Properties;
 
 /**
  * Contains library version information.
+ * 
+ * @author jserv
  */
 public final class Version {
 
@@ -27,8 +30,9 @@ public final class Version {
     static {
         Properties properties = new Properties();
         InputStream input = Version.class.getResourceAsStream(PROPERTIES_RESOURCE);
-        if (input == null)
+        if (input == null) {
             throw new RuntimeException("can't find resource " + PROPERTIES_RESOURCE);
+        }
         try {
             properties.load(input);
         } catch (IOException e) {

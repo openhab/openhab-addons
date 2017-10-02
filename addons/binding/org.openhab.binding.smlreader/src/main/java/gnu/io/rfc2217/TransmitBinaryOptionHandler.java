@@ -1,10 +1,11 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: TransmitBinaryOptionHandler.java 46 2011-10-16 23:06:39Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
 import org.apache.commons.net.telnet.TelnetOptionHandler;
@@ -13,12 +14,14 @@ import org.apache.commons.net.telnet.TelnetOptionHandler;
  * Handler for the telnet {@code TRANSMIT-BINARY} option defined by RFC 856.
  *
  * @see <a href="http://tools.ietf.org/html/rfc856">RFC 856</a>
+ * @author jserv
  */
 public class TransmitBinaryOptionHandler extends TelnetOptionHandler {
 
     public static final int TRANSMIT_BINARY_OPTION = 0;
 
-    public TransmitBinaryOptionHandler(boolean initlocal, boolean initremote, boolean acceptlocal, boolean acceptremote) {
+    public TransmitBinaryOptionHandler(boolean initlocal, boolean initremote, boolean acceptlocal,
+            boolean acceptremote) {
         super(TRANSMIT_BINARY_OPTION, initlocal, initremote, acceptlocal, acceptremote);
     }
 
@@ -37,4 +40,3 @@ public class TransmitBinaryOptionHandler extends TelnetOptionHandler {
         return null;
     }
 }
-

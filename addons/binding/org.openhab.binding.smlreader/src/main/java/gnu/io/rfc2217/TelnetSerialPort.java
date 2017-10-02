@@ -1,10 +1,11 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: TelnetSerialPort.java 48 2012-03-18 20:54:33Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
 import static gnu.io.rfc2217.RFC2217.*;
@@ -31,7 +32,7 @@ import gnu.io.UnsupportedCommOperationException;
  * Implements the client side of the <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
  * serial-over-Telnet protocol as as {@link SerialPort}.
  *
- * 
+ *
  * This class extends the {@link SerialPort} class and functions in the same way, however, there are
  * a couple of differences to be aware of:
  * <ul>
@@ -48,9 +49,9 @@ import gnu.io.UnsupportedCommOperationException;
  * {@link SerialPortEvent#DATA_AVAILABLE DATA_AVAILABLE} event will be immediately generated.
  * </li>
  * </ul>
- * 
  *
- * 
+ *
+ *
  * The following optional functionality is not implemented and/or inappropriate for a networked connection:
  * <ul>
  * <li>Receive threshold</li>
@@ -59,19 +60,20 @@ import gnu.io.UnsupportedCommOperationException;
  * <li>Input buffer size</li>
  * <li>Output buffer size</li>
  * </ul>
- * 
  *
- * 
+ *
+ *
  * In addition, access servers typically don't support {@link #notifyOnOutputEmpty}.
- * 
  *
- * 
+ *
+ *
  * Finally, {@link #sendBreak} is supported but the {@code millis} argument is ignored, as timing cannot be
  * assured over a TCP connection. Access servers typically enforce a fixed break time.
- * 
+ *
  *
  * @see SerialPort
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public class TelnetSerialPort extends SerialPort {
 

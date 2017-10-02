@@ -1,25 +1,26 @@
-
-/*
- * Copyright (C) 2010 Archie L. Cobbs. All rights reserved.
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
- * $Id: ComPortCommand.java 47 2011-12-07 15:56:28Z archie.cobbs $
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package gnu.io.rfc2217;
 
-import java.util.Arrays;
+import static gnu.io.rfc2217.RFC2217.*;
 
-import static gnu.io.rfc2217.RFC2217.COM_PORT_OPTION;
-import static gnu.io.rfc2217.RFC2217.SERVER_OFFSET;
+import java.util.Arrays;
 
 /**
  * Superclass for RFC 2217 commands.
  *
- *  
+ *
  * Instances of this class (and all subclasses) are immutable.
- *  
+ *
  *
  * @see <a href="http://tools.ietf.org/html/rfc2217">RFC 2217</a>
+ * @author jserv
  */
 public abstract class ComPortCommand {
 
@@ -32,28 +33,31 @@ public abstract class ComPortCommand {
      * @param name human readable name of this command
      * @param command required {@code COM-PORT-OPTION} command byte value (must be the client-to-server value)
      * @param bytes encoded command starting with the {@code COM-PORT-OPTION} byte
-     *   NullPointerException if {@code bytes} is null
-     *   IllegalArgumentException if {@code bytes} has length that is too short or too long
-     *   IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
-     *   IllegalArgumentException if {@code command} is greater than or equal to {@link RFC2217#SERVER_OFFSET}
-     *   IllegalArgumentException if {@code bytes[1]} is not {@code command}
-     *  or {@code command} + {@link RFC2217#SERVER_OFFSET}
+     *            NullPointerException if {@code bytes} is null
+     *            IllegalArgumentException if {@code bytes} has length that is too short or too long
+     *            IllegalArgumentException if {@code bytes[0]} is not {@link RFC2217#COM_PORT_OPTION}
+     *            IllegalArgumentException if {@code command} is greater than or equal to {@link RFC2217#SERVER_OFFSET}
+     *            IllegalArgumentException if {@code bytes[1]} is not {@code command}
+     *            or {@code command} + {@link RFC2217#SERVER_OFFSET}
      */
     protected ComPortCommand(String name, int command, int[] bytes) {
         this.name = name;
         int minLength = 2 + this.getMinPayloadLength();
         int maxLength = 2 + this.getMaxPayloadLength();
         if (bytes.length < minLength || bytes.length > maxLength) {
-            throw new IllegalArgumentException("command " + command + " length = "
-              + bytes.length + " is not in the range " + minLength + ".." + maxLength);
+            throw new IllegalArgumentException("command " + command + " length = " + bytes.length
+                    + " is not in the range " + minLength + ".." + maxLength);
         }
-        this.bytes = bytes.clone();                 // maintain immutability
-        if (this.bytes[0] != COM_PORT_OPTION)
+        this.bytes = bytes.clone(); // maintain immutability
+        if (this.bytes[0] != COM_PORT_OPTION) {
             throw new IllegalArgumentException("not a COM-PORT-OPTION");
-        if (command >= SERVER_OFFSET)
+        }
+        if (command >= SERVER_OFFSET) {
             throw new IllegalArgumentException("invalid command " + command);
-        if (this.getCommand() != command && this.getCommand() != command + SERVER_OFFSET)
+        }
+        if (this.getCommand() != command && this.getCommand() != command + SERVER_OFFSET) {
             throw new IllegalArgumentException("not a " + name + " option");
+        }
     }
 
     /**
@@ -71,7 +75,7 @@ public abstract class ComPortCommand {
      * @return encoding starting with {@code COM-PORT-OPTION}
      */
     public final int[] getBytes() {
-        return this.bytes.clone();                  // maintain immutability
+        return this.bytes.clone(); // maintain immutability
     }
 
     /**
@@ -108,8 +112,9 @@ public abstract class ComPortCommand {
      */
     byte[] getPayload() {
         byte[] buf = new byte[this.bytes.length - 2];
-        for (int i = 2; i < bytes.length; i++)
-            buf[i - 2] = (byte)this.bytes[i];
+        for (int i = 2; i < bytes.length; i++) {
+            buf[i - 2] = (byte) this.bytes[i];
+        }
         return buf;
     }
 
@@ -125,18 +130,19 @@ public abstract class ComPortCommand {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass())
+        if (obj == null || obj.getClass() != getClass()) {
             return false;
-        ComPortCommand that = (ComPortCommand)obj;
+        }
+        ComPortCommand that = (ComPortCommand) obj;
         return Arrays.equals(this.bytes, that.bytes);
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        for (int i = 0; i < this.bytes.length; i++)
+        for (int i = 0; i < this.bytes.length; i++) {
             hash = hash * 37 + this.bytes[i];
+        }
         return hash;
     }
 }
-
