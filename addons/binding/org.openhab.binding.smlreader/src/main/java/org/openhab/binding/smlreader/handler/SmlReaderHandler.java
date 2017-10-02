@@ -150,12 +150,12 @@ public class SmlReaderHandler extends BaseThingHandler {
                     Configuration configuration = new Configuration();
                     configuration.put(SmlReaderBindingConstants.CONFIGURATION_CONVERSION, 1);
                     channelBuilder.withConfiguration(configuration);
-                    channelBuilder.withLabel(obis);
+                    channelBuilder.withLabel(obis + " (" + obisType.obisValue.getObisName() + ")");
                     Map<String, String> channelProps = new HashMap<>();
                     channelProps.put(SmlReaderBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
                     channelBuilder.withProperties(channelProps);
-                    channelBuilder.withDescription(MessageFormat.format("Value for OBIS code: {0} with Unit: {1}", obis,
-                            obisType.obisValue.getUnitName()));
+                    channelBuilder.withDescription(MessageFormat.format("Value for OBIS code: {0} ({1}) with Unit: {2}",
+                            obis, obisType.obisValue.getObisName(), obisType.obisValue.getUnitName()));
                     channel = channelBuilder.build();
                     channelsToAdd.put(obisChannelString, channel);
                     channelsChanged = true;

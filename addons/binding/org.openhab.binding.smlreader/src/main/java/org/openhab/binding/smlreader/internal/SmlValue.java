@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.smlreader.internal;
 
+import org.openmuc.jsml.EObis;
 import org.openmuc.jsml.EUnit;
 import org.openmuc.jsml.structures.ASNObject;
 import org.openmuc.jsml.structures.Integer16;
@@ -63,7 +64,6 @@ public final class SmlValue {
      */
     public String getUnitName() {
         String unit = null;
-
         if (smlListEntry != null && smlListEntry.getUnit().getVal() > 0) {
             EUnit smlUnit = EUnit.idToEnum(smlListEntry.getUnit().getVal() - 1);
             unit = smlUnit.name();
@@ -72,6 +72,23 @@ public final class SmlValue {
         }
 
         return unit;
+    }
+
+    /**
+     * Gets a human readable name of the OBIS code.
+     * 
+     * @return
+     */
+    public String getObisName() {
+        String obisName = null;
+        if (smlListEntry != null && smlListEntry.getUnit().getVal() > 0) {
+            EObis smlUnit = EObis.getInstance(smlListEntry.getObjName());
+            obisName = smlUnit.name();
+        } else {
+            obisName = null;
+        }
+
+        return obisName;
     }
 
     /**
