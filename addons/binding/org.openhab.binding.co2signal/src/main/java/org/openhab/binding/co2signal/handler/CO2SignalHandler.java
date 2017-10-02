@@ -83,8 +83,8 @@ public class CO2SignalHandler extends BaseThingHandler {
             errorMsg.add("Parameter 'apikey' is mandatory and must be configured");
             validConfig = false;
         }
-        if (StringUtils.trimToNull(config.location) == null && config.countryCode == null) {
-            errorMsg.add("Parameter 'location' or 'stationId' is mandatory and must be configured");
+        if (StringUtils.trimToNull(config.location) == null && StringUtils.trimToNull(config.countryCode) == null) {
+            errorMsg.add("Parameter 'location' or 'countryCode' is mandatory and must be configured");
             validConfig = false;
         }
         if (config.refresh != null && config.refresh < 1) {
@@ -257,15 +257,14 @@ public class CO2SignalHandler extends BaseThingHandler {
     private String buildCO2SignalUrl(CO2SignalConfiguration config) {
         UriBuilder builder = UriBuilder.fromPath(URL);
 
-        String location = StringUtils.trimToEmpty(config.location);
-        String countryCode = StringUtils.trimToEmpty(config.countryCode);
+        String location = StringUtils.trimToNull(config.location);
 
-        if (location != null && !"".equals(location)) {
-            location = location.replace(" ", "").replace("\"", "").replace("'", "").trim();
+        if (location != null) {
+            location = location.replace("\"", "").replace("'", "");
             String[] latLon = location.split(",");
             builder = builder.queryParam("lat", latLon[0]).queryParam("lon", latLon[1]);
         } else {
-            builder = builder.queryParam("countryCode", countryCode);
+            builder = builder.queryParam("countryCode", StringUtils.trimToEmpty(config.countryCode));
         }
         String urlStr = builder.build().toString();
         return urlStr;
