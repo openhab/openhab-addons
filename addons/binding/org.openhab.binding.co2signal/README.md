@@ -43,10 +43,6 @@ For the location parameter, the following syntax is allowed (comma separated lat
 37.8255,-122.456
 ```
 
-If you always want to receive data from specific station and you know its unique ID, you can enter it
-instead of the coordinates. 
-
-
 ## Channels
 
 The CO2 information that is retrieved is available as these channels:
@@ -101,7 +97,7 @@ rule "Switch Item on CO2 threshold"
 when
     Item co2_CarbonIntensity changed
 then
-    if (co2_CarbonIntensity.state > 500) {
+    if (co2_CarbonIntensity.state > 300) {
        sendCommand(co2_LowCO2Intensity, OFF)
     } else {
        sendCommand(co2_LowCO2Intensity, ON)
