@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.eclipse.smarthome.core.thing.type.ThingTypeBuilder;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -219,8 +220,9 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
-        return new ThingType(thingTypeUID, supportedBridgeTypeUids, label, description, null, groupDefinitions,
-                properties, configDescriptionURI);
+        return ThingTypeBuilder.instance(thingTypeUID, label).withSupportedBridgeTypeUIDs(supportedBridgeTypeUids)
+                .withDescription(description).withChannelGroupDefinitions(groupDefinitions).withProperties(properties)
+                .withConfigDescriptionURI(configDescriptionURI).build();
     }
 
     /**
