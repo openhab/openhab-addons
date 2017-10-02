@@ -64,8 +64,8 @@ public final class SmlValue {
      */
     public String getUnitName() {
         String unit = null;
-        if (smlListEntry != null && smlListEntry.getUnit().getVal() > 0) {
-            EUnit smlUnit = EUnit.idToEnum(smlListEntry.getUnit().getVal() - 1);
+        if (smlListEntry != null) {
+            EUnit smlUnit = EUnit.idToEnum(smlListEntry.getUnit().getVal());
             unit = smlUnit.name();
         } else {
             unit = null;
@@ -76,12 +76,12 @@ public final class SmlValue {
 
     /**
      * Gets a human readable name of the OBIS code.
-     * 
+     *
      * @return
      */
     public String getObisName() {
         String obisName = null;
-        if (smlListEntry != null && smlListEntry.getUnit().getVal() > 0) {
+        if (smlListEntry != null) {
             EObis smlUnit = EObis.getInstance(smlListEntry.getObjName());
             obisName = smlUnit.name();
         } else {
