@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.slf4j.Logger;
@@ -79,14 +80,11 @@ public class DeviceHandler extends BaseThingHandler {
                 }
 
                 PointType location = new PointType(latitude, longitude);
-                Address address = bridge.getAddress(location);
 
                 updateState(LOCATION, location);
                 updateState(LOCATIONACCURACY, accuracy);
-                updateState(ADDRESSSTREET, new StringType(address.Street));
-                updateState(ADDRESSCITY, new StringType(address.City));
-                updateState(ADDRESSCOUNTRY, new StringType(address.Country));
-                updateState(FORMATTEDADDRESS, new StringType(address.FormattedAddress));
+
+                setAddressStates(location);
 
                 if (locationProvider != null) {
                     PointType homeLocation = locationProvider.getLocation();
@@ -99,6 +97,28 @@ public class DeviceHandler extends BaseThingHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    private void setAddressStates(PointType location) {
+        Address address = null;
+
+        try {
+            address = bridge.getAddress(location);
+        } catch (Exception e) {
+            logException(e);
+        }
+
+        if (address != null) {
+            updateState(ADDRESSSTREET, new StringType(address.Street));
+            updateState(ADDRESSCITY, new StringType(address.City));
+            updateState(ADDRESSCOUNTRY, new StringType(address.Country));
+            updateState(FORMATTEDADDRESS, new StringType(address.FormattedAddress));
+        } else {
+            updateState(ADDRESSSTREET, UnDefType.UNDEF);
+            updateState(ADDRESSCITY, UnDefType.UNDEF);
+            updateState(ADDRESSCOUNTRY, UnDefType.UNDEF);
+            updateState(FORMATTEDADDRESS, UnDefType.UNDEF);
         }
     }
 
@@ -144,6 +164,10 @@ public class DeviceHandler extends BaseThingHandler {
 
     private Content getMyContent(ArrayList<Content> content) {
         return content.get(index);
+    }
+
+    private void logException(Exception exception) {
+        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace());
     }
 
 }
