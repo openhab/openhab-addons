@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.osramlightify.handler;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -43,6 +45,7 @@ import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
+import org.openhab.binding.osramlightify.internal.messages.LightifyGetDeviceInfoMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyGetProbedTemperatureMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyListPairedDevicesMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetColorMessage;
@@ -154,13 +157,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         // the state polling.
         if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
         && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
-            bridgeHandler.sendMessage(new LightifySetLuminanceMessage(deviceAddress, new PercentType(1)));
+            bridgeHandler.sendMessage(new LightifySetLuminanceMessage(this, new PercentType(1)));
 
-            bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, new DecimalType(0)));
-            bridgeHandler.sendMessage(new LightifyGetProbedTemperatureMessage(thing, deviceAddress, PROPERTY_MINIMUM_WHITE_TEMPERATURE));
+            bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, new DecimalType(0)));
+            bridgeHandler.sendMessage(new LightifyGetProbedTemperatureMessage(this, PROPERTY_MINIMUM_WHITE_TEMPERATURE));
 
-            bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, new DecimalType(65535)));
-            bridgeHandler.sendMessage(new LightifyGetProbedTemperatureMessage(thing, deviceAddress, PROPERTY_MAXIMUM_WHITE_TEMPERATURE));
+            bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, new DecimalType(65535)));
+            bridgeHandler.sendMessage(new LightifyGetProbedTemperatureMessage(this, PROPERTY_MAXIMUM_WHITE_TEMPERATURE));
 
             // Re-poll to bring the device online again A.S.A.P. In fact, what we are
             // really saying is, bring the device online once all the above completes.
@@ -174,6 +177,9 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
             // was in a few moments ago or because we messed the device up by doing some
             // probes and now need to restore the initial state.
             if (lightifyDeviceState.isSaved()) {
+                // If we did probes we need to recheck what config values we should be using.
+                thingUpdated(thing);
+
                 // It may seem like we don't need to do both colour and temperature in each case
                 // as changing mode is done by simply writing the new value. However if we do
                 // not set both then the next poll will find a difference in state between what
@@ -181,15 +187,15 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                 // confused about what mode it is in and will generate bogus state updates on
                 // linked items.
                 if (lightifyDeviceState.getWhiteMode()) {
-                    bridgeHandler.sendMessage(new LightifySetColorMessage(deviceAddress, lightifyDeviceState.getRGBA()));
-                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, lightifyDeviceState.getTemperature()));
+                    bridgeHandler.sendMessage(new LightifySetColorMessage(this, lightifyDeviceState.getRGBA()));
+                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, lightifyDeviceState.getTemperature()));
                 } else {
-                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(deviceAddress, lightifyDeviceState.getTemperature()));
-                    bridgeHandler.sendMessage(new LightifySetColorMessage(deviceAddress, lightifyDeviceState.getRGBA()));
+                    bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, lightifyDeviceState.getTemperature()));
+                    bridgeHandler.sendMessage(new LightifySetColorMessage(this, lightifyDeviceState.getRGBA()));
                 }
 
-                bridgeHandler.sendMessage(new LightifySetLuminanceMessage(deviceAddress, lightifyDeviceState.getLuminance()));
-                bridgeHandler.sendMessage(new LightifySetSwitchMessage(deviceAddress, lightifyDeviceState.getPower()));
+                bridgeHandler.sendMessage(new LightifySetLuminanceMessage(this, lightifyDeviceState.getLuminance()));
+                bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, lightifyDeviceState.getPower(), lightifyDeviceState));
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -236,9 +242,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                     logger.debug("{}: set luminance: {}", channelUID, luminance);
 
                     bridgeHandler.sendMessage(
-                        new LightifySetLuminanceMessage(deviceAddress, luminance)
-                            .setTransitionTime((luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime))
+                        new LightifySetLuminanceMessage(this, luminance)
+                            .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
                     );
+
+                    if (configuration.debugTransitions) {
+                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
+                    }
                 }
 
                 hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(100));
@@ -246,9 +256,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                 logger.debug("{}: set HSB: {}", channelUID, hsb);
 
                 bridgeHandler.sendMessage(
-                    new LightifySetColorMessage(deviceAddress, hsb)
-                        .setTransitionTime((hsb.getBrightness().intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime))
+                    new LightifySetColorMessage(this, hsb)
+                        .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (hsb.getBrightness().intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
                 );
+
+                if (configuration.debugTransitions) {
+                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
+                }
 
             } else if (command instanceof PercentType) {
                 if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
@@ -264,9 +278,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                     logger.debug("{}: set temperature: {}", channelUID, temperature);
 
                     bridgeHandler.sendMessage(
-                        new LightifySetTemperatureMessage(deviceAddress, temperature)
-                            .setTransitionTime(configuration.transitionTime)
+                        new LightifySetTemperatureMessage(this, temperature)
+                            .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
                     );
+
+                    if (configuration.debugTransitions) {
+                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
+                    }
 
                     // A command on the percent temperature channel generates a matching command
                     // on the absolute temperature channel.
@@ -280,9 +298,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                     logger.debug("{}: set luminance: {}", channelUID, luminance);
 
                     bridgeHandler.sendMessage(
-                        new LightifySetLuminanceMessage(deviceAddress, luminance)
-                            .setTransitionTime((luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime))
+                        new LightifySetLuminanceMessage(this, luminance)
+                            .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
                     );
+
+                    if (configuration.debugTransitions) {
+                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
+                    }
                 }
 
             } else if (command instanceof DecimalType) {
@@ -291,9 +313,13 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
                 logger.debug("{}: set temperature: {}", channelUID, temperature);
 
                 bridgeHandler.sendMessage(
-                    new LightifySetTemperatureMessage(deviceAddress, temperature)
-                        .setTransitionTime(configuration.transitionTime)
+                    new LightifySetTemperatureMessage(this, temperature)
+                        .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
                 );
+
+                if (configuration.debugTransitions) {
+                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
+                }
 
                 // A command on the absolute temperature channel generates a matching command
                 // on the percent temperature channel.
@@ -304,7 +330,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
                 logger.debug("{}: set power: {}", channelUID, onoff);
 
-                bridgeHandler.sendMessage(new LightifySetSwitchMessage(deviceAddress, onoff));
+                bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, onoff, lightifyDeviceState));
 
             } else {
                 logger.error("Handling not implemented for: {}", command);
@@ -364,6 +390,10 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    public String getDeviceAddress() {
+        return deviceAddress;
     }
 
     public LightifyDeviceState getLightifyDeviceState() {

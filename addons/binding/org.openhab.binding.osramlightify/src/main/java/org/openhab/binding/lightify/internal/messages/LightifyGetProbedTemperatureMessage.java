@@ -16,26 +16,27 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
+import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
-import org.openhab.binding.osramlightify.internal.messages.LightifyGetDeviceInfoMessage;
+import org.openhab.binding.osramlightify.internal.messages.LightifyBaseGetDeviceInfoMessage;
 
 /**
  * Get a response to a temperature limits probe message.
  *
  * @author Mike Jagdis - Initial contribution
  */
-public final class LightifyGetProbedTemperatureMessage extends LightifyGetDeviceInfoMessage implements LightifyMessage {
+public final class LightifyGetProbedTemperatureMessage extends LightifyBaseGetDeviceInfoMessage implements LightifyMessage {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyGetProbedTemperatureMessage.class);
 
-    private final String propertyName;
     private final Thing thing;
+    private final String propertyName;
 
-    public LightifyGetProbedTemperatureMessage(Thing thing, String deviceAddress, String propertyName) {
-        super(deviceAddress);
+    public LightifyGetProbedTemperatureMessage(LightifyDeviceHandler deviceHandler, String propertyName) {
+        super(deviceHandler);
 
-        this.thing = thing;
+        this.thing = deviceHandler.getThing();
         this.propertyName = propertyName;
     }
 
@@ -58,18 +59,16 @@ public final class LightifyGetProbedTemperatureMessage extends LightifyGetDevice
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        super.handleResponse(bridgeHandler, data);
+        if (super.handleResponse(bridgeHandler, data)) {
+            logger.debug("{}: {} = {}", thing.getUID(), propertyName, state.temperature);
 
-        if (reachable) {
-            logger.debug("{}: {} = {}", thing.getUID(), propertyName, temperature);
+            thing.setProperty(propertyName, Integer.toString(state.temperature));
 
-            thing.setProperty(propertyName, Integer.toString(temperature));
-
-        } else {
-            logger.debug("{}: unreachable", thing.getUID());
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

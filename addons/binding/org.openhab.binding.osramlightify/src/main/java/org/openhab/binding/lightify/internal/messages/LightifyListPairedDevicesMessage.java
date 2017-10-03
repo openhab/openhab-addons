@@ -73,8 +73,16 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        long now = System.nanoTime();
+
+        try {
+            super.handleResponse(bridgeHandler, data);
+        } catch (LightifyException e) {
+            logger.warn("Error", e);
+            return false;
+        }
 
         short deviceCount = data.getShort();
 
@@ -117,7 +125,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
 
                 Thing thing = bridgeHandler.getThingByUID(thingUID);
 
-                if (thing != null && state.received(bridgeHandler, thing, deviceAddress)) {
+                if (thing != null && state.received(bridgeHandler, thing, deviceAddress, now)) {
                     changes = true;
                 }
 

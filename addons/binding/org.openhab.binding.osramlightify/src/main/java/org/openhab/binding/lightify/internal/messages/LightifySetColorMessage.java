@@ -14,49 +14,45 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
+import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
-import org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage;
 
 /**
  * Set the colour of a light.
  *
  * @author Mike Jagdis - Initial contribution
  */
-public final class LightifySetColorMessage extends LightifyBaseMessage implements LightifyMessage {
+public final class LightifySetColorMessage extends LightifyTransitionableMessage implements LightifyMessage {
 
-    byte r;
-    byte g;
-    byte b;
-    byte a;
-    short unknown1;
-    String deviceId;
+    private int[] rgba;
+    private short unknown1;
+    private String deviceId;
 
-    public LightifySetColorMessage(String deviceAddress, int[] rgba) {
-        super(deviceAddress, Command.SET_COLOR);
+    public LightifySetColorMessage(LightifyDeviceHandler deviceHandler, int[] rgba) {
+        super(deviceHandler, Command.SET_COLOR);
 
-        r = (byte) (rgba[0] & 0xff);
-        g = (byte) (rgba[1] & 0xff);
-        b = (byte) (rgba[2] & 0xff);
-        a = (byte) (rgba[3] & 0xff);
+        this.rgba = rgba;
     }
 
-    public LightifySetColorMessage(String deviceAddress, HSBType hsb) {
-        super(deviceAddress, Command.SET_COLOR);
+    public LightifySetColorMessage(LightifyDeviceHandler deviceHandler, HSBType hsb) {
+        super(deviceHandler, Command.SET_COLOR);
 
         PercentType[] rgb = hsb.toRGB();
 
-        r = (byte) ((int) ((rgb[0].doubleValue() * 255) / 100) & 0xff);
-        g = (byte) ((int) ((rgb[1].doubleValue() * 255) / 100) & 0xff);
-        b = (byte) ((int) ((rgb[2].doubleValue() * 255) / 100) & 0xff);
-        a = (byte) 255;
+        rgba = new int[]{
+            (int) ((rgb[0].doubleValue() * 255) / 100),
+            (int) ((rgb[1].doubleValue() * 255) / 100),
+            (int) ((rgb[2].doubleValue() * 255) / 100),
+            255
+        };
     }
 
     @Override
     public String toString() {
         String string = super.toString()
-            + ", Transition = " + transitionTime
-            + ", RGBA = " + (r & 0xff) + "," + (g & 0xff) + "," + (b & 0xff) + "," + (a & 0xff);
+            + ", RGBA = " + rgba[0] + "," + rgba[1] + "," + rgba[2] + "," + rgba[3];
 
         if (!isResponse()) {
             return string;
@@ -71,26 +67,31 @@ public final class LightifySetColorMessage extends LightifyBaseMessage implement
     //      Request transmission section
     // ****************************************
 
-    public LightifySetColorMessage setTransitionTime(Double transitionTime) {
-        return (LightifySetColorMessage) super.setTransitionTime(transitionTime);
+    @Override
+    public LightifySetColorMessage setTransitionEndNanos(long transitionEndNanos) {
+        super.setTransitionEndNanos(transitionEndNanos);
+        return this;
     }
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
+        state.setTransitionEndNanos(1, getThisTransitionEndNanos());
+
         return super.encodeMessage(6)
-            .put(r)
-            .put(g)
-            .put(b)
-            .put(a)
-            .putShort(transitionTime);
+            .put((byte) (rgba[0] & 0xff))
+            .put((byte) (rgba[1] & 0xff))
+            .put((byte) (rgba[2] & 0xff))
+            .put((byte) (rgba[3] & 0xff))
+            .putShort((short) (getThisTransitionTimeNanos() / 100000000L));
     }
 
     // ****************************************
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
         deviceId = decodeDeviceAddress(data);

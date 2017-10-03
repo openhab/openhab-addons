@@ -70,7 +70,7 @@ public interface LightifyMessage {
     public int getSeqNo();
 
     /**
-     * Handle a received respose message.
+     * Handle a received response message.
      * The handler is responsible for sending the relevant commands and/or
      * state updates on the channel(s) for the affected thing(s).
      *

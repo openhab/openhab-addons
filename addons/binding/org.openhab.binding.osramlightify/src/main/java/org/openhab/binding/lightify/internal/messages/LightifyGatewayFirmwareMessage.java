@@ -61,8 +61,9 @@ public final class LightifyGatewayFirmwareMessage extends LightifyBaseMessage im
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        super.handleResponse(bridgeHandler, data);
 
         firmwareVersion = new byte[4];
         data.get(firmwareVersion);

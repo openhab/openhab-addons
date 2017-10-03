@@ -11,10 +11,12 @@ package org.openhab.binding.osramlightify.internal.messages;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
+import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyUnsupportedValueException;
@@ -43,10 +45,6 @@ public abstract class LightifyBaseMessage {
 
         PacketType(int packetType) {
             this.packetType = packetType;
-        }
-
-        public boolean isResponse() {
-            return (packetType & 1) == 1;
         }
 
         public byte toByte() {
@@ -133,23 +131,21 @@ public abstract class LightifyBaseMessage {
         }
     }
 
+    private boolean haveResponse = false;
+
     private PacketType packetType;
     private Command command;
     private int seqNo;
     private StatusCode statusCode;
-    private String address;
     private byte[] addressBytes;
 
-    protected short transitionTime;
-
-    public LightifyBaseMessage(String deviceAddress, Command command) {
-        if (deviceAddress != null) {
-            address = deviceAddress;
-            byte[] bytes = DatatypeConverter.parseHexBinary(address.replaceAll(":", ""));
+    public LightifyBaseMessage(LightifyDeviceHandler deviceHandler, Command command) {
+        if (deviceHandler != null) {
+            byte[] bytes = DatatypeConverter.parseHexBinary(deviceHandler.getDeviceAddress().replaceAll(":", ""));
             addressBytes = new byte[] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0] };
         }
 
-        if (address != null
+        if (addressBytes != null
         && (addressBytes[2] != 0 || addressBytes[3] != 0 || addressBytes[4] != 0
         || addressBytes[5] != 0 || addressBytes[6] != 0 || addressBytes[7] != 0)) {
             packetType = PacketType.UNICAST;
@@ -167,7 +163,10 @@ public abstract class LightifyBaseMessage {
             + ", Command = " + command
             + ", Seq number = " + seqNo
             + (statusCode != null ? ", Status = " + statusCode : "")
-            + (address != null ? ", Address = " + address : "");
+            + (addressBytes == null ? "" : ", Address = "
+                + String.format("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+                    (addressBytes[7] & 0xff), (addressBytes[6] & 0xff), (addressBytes[5] & 0xff), (addressBytes[4] & 0xff),
+                    (addressBytes[3] & 0xff), (addressBytes[2] & 0xff), (addressBytes[1] & 0xff), (addressBytes[0] & 0xff)));
     }
 
     public boolean isPoller() {
@@ -175,7 +174,7 @@ public abstract class LightifyBaseMessage {
     }
 
     public boolean isResponse() {
-        return packetType.isResponse();
+        return haveResponse;
     }
 
     // ****************************************
@@ -183,10 +182,12 @@ public abstract class LightifyBaseMessage {
     // ****************************************
 
     protected ByteBuffer encodeMessage(int length) throws LightifyMessageTooLongException {
-        int messageLength = HEADER_LENGTH + (address != null ? ADDRESS_LENGTH : 0) + length;
+        int messageLength = HEADER_LENGTH + (addressBytes != null ? addressBytes.length : 0) + length;
         if ((messageLength & ~0xffff) != 0) {
             throw new LightifyMessageTooLongException("Requested message length of " + messageLength + " must be less than 65535");
         }
+
+        haveResponse = false;
 
         ByteBuffer encodedMessage = ByteBuffer.allocate(Short.BYTES + (messageLength & 0xffff))
             .order(ByteOrder.LITTLE_ENDIAN)
@@ -208,13 +209,6 @@ public abstract class LightifyBaseMessage {
         this.seqNo = seqNo;
     }
 
-    protected LightifyBaseMessage setTransitionTime(Double transitionTime) {
-        if (transitionTime != null) {
-            transitionTime *= 10.0;
-            this.transitionTime = (short) ((transitionTime < 65536.0 ? transitionTime.intValue() : 0xffff) & 0xffff);
-        }
-        return this;
-    }
 
     // ****************************************
     //        Response handling section
@@ -224,7 +218,8 @@ public abstract class LightifyBaseMessage {
         return seqNo;
     }
 
-    public void decodeHeader(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
+    public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
+
         data.rewind();
 
         data.getShort(); // message length
@@ -240,8 +235,8 @@ public abstract class LightifyBaseMessage {
             throw new LightifyException("status = " + statusCode + " response to " + this);
         }
 
-        this.packetType = packetType;
-        this.command = command;
+        haveResponse = true;
+        return true;
     }
 
     public String decodeDeviceAddress(ByteBuffer data) {

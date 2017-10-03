@@ -10,93 +10,65 @@ package org.openhab.binding.osramlightify.internal.messages;
 
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.eclipse.smarthome.core.thing.ThingStatus;
+
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
+import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
-import org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage;
+import org.openhab.binding.osramlightify.internal.messages.LightifyBaseGetDeviceInfoMessage;
 
 /**
  * Get the state of a single device.
  *
  * @author Mike Jagdis - Initial contribution
  */
-abstract public class LightifyGetDeviceInfoMessage extends LightifyBaseMessage implements LightifyMessage {
+public class LightifyGetDeviceInfoMessage extends LightifyBaseGetDeviceInfoMessage implements LightifyMessage {
 
-    protected int unknown0;
+    private final Logger logger = LoggerFactory.getLogger(LightifyGetDeviceInfoMessage.class);
 
-    protected boolean reachable;
-    protected int power;
-    protected int luminance;
-    protected int temperature;
-    protected int r;
-    protected int g;
-    protected int b;
-    protected int a;
+    private final LightifyDeviceHandler deviceHandler;
 
-    protected int unknown1;
-    protected int unknown2;
-    protected int unknown3;
+    public LightifyGetDeviceInfoMessage(LightifyDeviceHandler deviceHandler) {
+        super(deviceHandler);
 
-    public LightifyGetDeviceInfoMessage(String deviceAddress) {
-        super(deviceAddress, Command.GET_DEVICE_INFO);
-    }
-
-    @Override
-    public String toString() {
-        String string = super.toString();
-
-        if (!isResponse()) {
-            return string;
-        }
-
-        return string
-            + ", unknown0 = " + unknown0
-            + ", power = " + power
-            + ", luminance = " + luminance
-            + ", temperature = " + temperature
-            + ", r = " + r
-            + ", g = " + g
-            + ", b = " + b
-            + ", a = " + a
-            + ", unknown1 = " + unknown1
-            + ", unknown2 = " + unknown2
-            + ", unknown3 = " + unknown3;
-    }
-
-    // ****************************************
-    //      Request transmission section
-    // ****************************************
-
-    @Override
-    public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
-        return super.encodeMessage(0);
+        this.deviceHandler = deviceHandler;
     }
 
     // ****************************************
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        if (super.handleResponse(bridgeHandler, data)) {
+            boolean debug = deviceHandler.getConfiguration().debugTransitions;
 
-        data.getShort(); // deviceNumber
-        String deviceAddress = decodeDeviceAddress(data);
-        reachable = (data.get() == 0);
+            if (debug) {
+                // Log state for analysis purposes.
+                logger.debug("{}: TRANSITION {} {} {} {} {}", deviceHandler.getDeviceAddress(), state.r, state.g, state.b, state.luminance, state.temperature);
+            }
 
-        if (reachable) {
-            unknown0 = ((int) data.get() & 0xff);
-            power = ((int) data.get() & 0xff);
-            luminance = ((int) data.get() & 0xff);
-            temperature = ((int) data.getShort() & 0xffff);
-            r = ((int) data.get() & 0xff);
-            g = ((int) data.get() & 0xff);
-            b = ((int) data.get() & 0xff);
-            a = ((int) data.get() & 0xff);
-            unknown1 = ((int) data.get() & 0xff);
-            unknown2 = ((int) data.get() & 0xff);
-            unknown3 = ((int) data.get() & 0xff);
+            state.received(bridgeHandler, deviceHandler.getThing(), deviceHandler.getDeviceAddress(), System.nanoTime());
+
+            if (debug) {
+                // Poll state continuously throughout a transition for analysis purposes.
+                LightifyDeviceState state = deviceHandler.getLightifyDeviceState();
+                if (state.transitionEndNanos[0] != null || state.transitionEndNanos[1] != null) {
+                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(deviceHandler));
+                }
+            }
+
+            return true;
         }
 
-        return true;
+        // The poll failed (device busy?) but we only need to retry if the device is still online.
+        // If it has gone offline then the only way it will go back online is if/when the gateway
+        // gets updated state for it - which is what we were trying to get to happen.
+        return (deviceHandler.getThing().getStatus() != ThingStatus.ONLINE);
     }
 }

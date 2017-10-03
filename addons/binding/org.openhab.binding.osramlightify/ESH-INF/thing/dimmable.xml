@@ -25,6 +25,11 @@
 				<label>Transition To Off Time</label>
 				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
 			</parameter>
+
+			<parameter name="debugTransitions" type="boolean" required="false">
+				<label>Log stats during transitions for debug and analysis</label>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

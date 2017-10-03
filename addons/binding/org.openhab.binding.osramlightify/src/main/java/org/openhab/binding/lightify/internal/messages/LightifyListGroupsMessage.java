@@ -69,8 +69,9 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        super.handleResponse(bridgeHandler, data);
 
         short deviceCount = data.getShort();
 

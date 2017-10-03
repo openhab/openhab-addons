@@ -13,32 +13,32 @@ import java.nio.ByteBuffer;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
+import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
-import org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage;
 
 /**
  * Set the white temperature of a light.
  *
  * @author Mike Jagdis - Initial contribution
  */
-public final class LightifySetTemperatureMessage extends LightifyBaseMessage implements LightifyMessage {
+public final class LightifySetTemperatureMessage extends LightifyTransitionableMessage implements LightifyMessage {
 
-    short temperature;
-    short unknown1;
-    String deviceId;
+    private int temperature;
+    private short unknown1;
+    private String deviceId;
 
-    public LightifySetTemperatureMessage(String deviceAddress, DecimalType temperature) {
-        super(deviceAddress, Command.SET_TEMPERATURE);
+    public LightifySetTemperatureMessage(LightifyDeviceHandler deviceHandler, DecimalType temperature) {
+        super(deviceHandler, Command.SET_TEMPERATURE);
 
-        this.temperature = (short) (temperature.intValue() & 0xffff);
+        this.temperature = temperature.intValue();
     }
 
     @Override
     public String toString() {
         String string = super.toString()
-            + ", Transition = " + transitionTime
-            + ", Temperature = " + ((int) temperature & 0xffff);
+            + ", Temperature = " + temperature;
 
         if (!isResponse()) {
             return string;
@@ -53,23 +53,28 @@ public final class LightifySetTemperatureMessage extends LightifyBaseMessage imp
     //      Request transmission section
     // ****************************************
 
-    public LightifySetTemperatureMessage setTransitionTime(Double transitionTime) {
-        return (LightifySetTemperatureMessage) super.setTransitionTime(transitionTime);
+    @Override
+    public LightifySetTemperatureMessage setTransitionEndNanos(long transitionEndNanos) {
+        super.setTransitionEndNanos(transitionEndNanos);
+        return this;
     }
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
+        state.setTransitionEndNanos(1, getThisTransitionEndNanos());
+
         return super.encodeMessage(4)
-            .putShort(temperature)
-            .putShort(transitionTime);
+            .putShort((short) (temperature & 0xffff))
+            .putShort((short) (getThisTransitionTimeNanos() / 100000000L));
     }
 
     // ****************************************
     //        Response handling section
     // ****************************************
 
+    @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
-        decodeHeader(bridgeHandler, data);
+        super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
         deviceId = decodeDeviceAddress(data);

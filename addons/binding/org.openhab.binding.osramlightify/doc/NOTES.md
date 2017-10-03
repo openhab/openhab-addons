@@ -21,12 +21,25 @@
 
 * Zigbee indirect transmission timeout is 7.680 seconds. This suggests a commanded action may be delayed up to 7.680 seconds _within_ the Zigbee network. After that the message is discarded.
 
-* Once a transition has been started a subsequent message may update the target but not the transition time. i.e. the new target will be reached when the original transition time ends. Changing a value which was not a target of the original transition (e.g. start a colour transition then send a luminance change) will cause the new value to be set immediately and the transition will continue uninterrupted. I.e. lights can only have one transition outstanding at once although the transition target value can be modified.
-  * But... temperature and luminance can both transition at the same time?
+* Transitions:
+  * Gateway firmware >= 1.1.3.53 and light firmware >= 01020510 are both required. Otherwise overlapping transitions finish at the time specified by the _first_ transition command. i.e. the subsequent command(s) change the target state but not the transition time.
+  * Colour/temperature and luminance can both transition independently and in parallel.
 
-* In ZLL the way to abort a transition (or "move") is with a "stop move step" command. This has no payload. If the gateway exposes the capability we do not (yet) know of it.
+* White/colour mode switching
+  * If we are in colour mode and send a temperature change causing a switch to white mode the temperature jumps to maximum and then is brought down to the requested value.
+  * If we are in white mode and send a colour change causing a switch to colour mode all of RGBA jump to 255 and then are brought down to the requested colour.
+  * These jumps cause unpleasant flashes and unexpected transition direction which is especially noticable with larger transition intervals. Since they happen on the change we can avoid them by preceeding a transition that will cause a change by a an immediate switch to the current state values. However since it takes 100-200ms for a command this is only worth doing for longer transitions. Some experimentation will be necessary to tune the threshold. It may be necessary to have it in config.
+  * This may be fixed with 1.1.3.53 and 01020510?
+    * The change from white to colour appears to be - colour transitions from where it is.
+    * The change from colour to white is not - temperature jumps to max and then comes down to the requested value.
+      * We could fix this by doing an immediate change to the current temperature and then transitioning but this would add some latency before the transition. Although the latency might not be so obvious since it would be taken up with a change from colour to white?
+
+* It occurs to me that there is an alternative design in which a commanded change or state change noted in a LIST_PAIRED could trigger spamming with GET_DEVICE_INFO until no more changed were observed. This would enable us to track transitions, whether initiated by us or externally, very nicely. However it would be likely to put severe constraints on the maximum number of devices that could be changing at any one time. We would certainly need a priority queue.
 
 * Although we probe for the minimum and maximum colour temperatures for a device it is not clear whether what we see are device limits (i.e. the ZigBee ColorTempPhysical{Min,Max} attributes) or simply gateway capabilities.
+  * PAR16 RGBW firmware 01020510 reports white range to be 1501K to 8000K, firmware 01020412 reported 2702K to 6622K. The only difference is light firmware, there is no bridge change. That suggests we are probing device capabilities as per ZLL but why has it changed? The quoted range for PAR16 RGBW is 2000K to 6500K and surely that is dependent on hardware? Perhaps the firmware is generic and Osram have lights with a wider range in the pipeline? Or some of the existing devices were firmware-crippled?
+  * This appears to be an enhancement. From observation it appears that 1501K is definitely different from 2000K. It looks as though the new extended temperatures may be using the RGB (mainly R and B) LEDs to extend the range?
+
 
 * In LIST_PAIRED (unknown1 and unknown2 are the last two ints in each device state block - they have since been renamed):
   * unknown1 seems to be time since last seen with units of 5mins.
@@ -58,6 +71,8 @@
 
 * On firmware upgrade of a device the final step is for the device to reboot. When the reboot is initiated we receive a device state with reachable=0 and power=true (all else being as expected) - i.e. the device has powered up and become unreachable. Once the reboot is complete we receive reachable=2 with the rest of the state being the power on default.
 
-* PAR16 RGBW firmware 01020510 reports white range to be 1501K to 8000K, firmware 01020412 reported 2702K to 6622K. The only difference is light firmware, there is no bridge change. That suggests we are probing device capabilities as per ZLL but why has it changed? The quoted range for PAR16 RGBW is 2000K to 6500K and surely that is dependent on hardware? Perhaps the firmware is generic and Osram have lights with a wider range in the pipeline? Or some of the existing devices were firmware-crippled?
-
 * PAR16 RGBW firmware 01020510 causes lights to go offline and back online every 80-100 minutes or so due to the time since last seen becoming non-zero.
+  * This update may have been pulled by OSRAM. I have not seen it offered for my second set of lights which were not online at the time the first set received the update.
+  * This behaviour appears to be fixed when paired with gateway firmware 1.1.3.53. Lights already on 01020510 work correctly and the 01020510 firmware is being offered for other lights again.
+
+* Changing colour or temperature while a light is off (but powered) has no effect.

@@ -85,8 +85,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
      */
     private static final int RECONNECT_ATTEMPTS_BEFORE_OFFLINE = 3;
 
-    private static final int INITIAL_BACKOFF = 1000;
-    private static final int MAXIMUM_BACKOFF = 15000;
+    private static final int MAXIMUM_RESENDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(LightifyConnector.class);
 
@@ -102,7 +101,10 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     private InputStream in;
     private OutputStream out;
 
-    private int backoff = INITIAL_BACKOFF;
+    private long nextPoll;
+    private long pollInterval;
+
+    private int resendCount = 0;
     private int seqNo = 0;
 
     private class ExceptionHandler implements Thread.UncaughtExceptionHandler {
@@ -186,6 +188,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
         if (socket != null) {
             logger.debug("Connected");
 
+            resendCount = 0;
             seqNo = 0;
 
             transmitQueueSender(new LightifyGatewayFirmwareMessage());
@@ -214,8 +217,9 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     @Override
     public void run() {
         boolean havePoll = false;
-        long nextPoll = System.nanoTime();
-        long pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
+
+        nextPoll = System.nanoTime();
+        pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
 
         logger.debug("Lightify connector started");
 
@@ -312,44 +316,46 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                                         disconnect();
                                         continue;
                                     } else if (request.handleResponse(bridgeHandler, messageBuffer)) {
-                                        backoff = INITIAL_BACKOFF;
-                                        transmitQueue.sendNext();
-                                    } else {
-                                        logger.debug("handler failed, backoff {}, message {}", backoff, request);
+                                        if (request instanceof LightifyListPairedDevicesMessage) {
+                                            LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
 
-                                        try {
-                                            Thread.sleep(backoff);
-                                        } catch (InterruptedException ie) {
-                                        }
+                                            havePoll = false;
+                                            bridgeHandler.getDiscoveryService().scanComplete();
 
-                                        backoff *= 2;
-
-                                        transmitQueue.send();
-                                    }
-
-                                    if (request instanceof LightifyListPairedDevicesMessage) {
-                                        LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
-
-                                        havePoll = false;
-                                        bridgeHandler.getDiscoveryService().scanComplete();
-
-                                        if (pollResponse.hasChanges()) {
-                                            // If there are changes happening that we didn't initiate we
-                                            // poll quickly to track what is happening.
-                                            pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
-                                        } else {
-                                            // If nothing unexpected is happening we grow the poll interval
-                                            // in order to reduce load.
-                                            long maxPollInterval = bridgeHandler.getConfiguration().maxPollIntervalNanos;
-                                            if (maxPollInterval - pollInterval > 0) {
-                                                pollInterval *= 2;
-                                                if (maxPollInterval - pollInterval < 0) {
-                                                    pollInterval = maxPollInterval;
+                                            if (pollResponse.hasChanges()) {
+                                                // If there are changes happening that we didn't initiate we
+                                                // poll quickly to track what is happening.
+                                                pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
+                                            } else {
+                                                // If nothing unexpected is happening we grow the poll interval
+                                                // in order to reduce load.
+                                                long maxPollInterval = bridgeHandler.getConfiguration().maxPollIntervalNanos;
+                                                if (maxPollInterval - pollInterval > 0) {
+                                                    pollInterval *= 2;
+                                                    if (maxPollInterval - pollInterval < 0) {
+                                                        pollInterval = maxPollInterval;
+                                                    }
                                                 }
                                             }
+
+                                            nextPoll = System.nanoTime() + pollInterval;
                                         }
 
-                                        nextPoll = System.nanoTime() + pollInterval;
+                                        resendCount = 0;
+                                        transmitQueue.sendNext();
+                                    } else {
+                                        if (resendCount++ == MAXIMUM_RESENDS) {
+                                            if (request instanceof LightifyListPairedDevicesMessage) {
+                                                havePoll = false;
+                                                pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
+                                                nextPoll = System.nanoTime() + pollInterval;
+                                            }
+
+                                            resendCount = 0;
+                                            transmitQueue.sendNext();
+                                        } else {
+                                            transmitQueue.send();
+                                        }
                                     }
                                 }
                             } catch (LightifyException e) {
@@ -382,18 +388,26 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
             try {
                 message.setSeqNo(seqNo++);
 
+                ByteBuffer messageBuffer = message.encodeMessage();
+
                 if (message.isPoller()) {
                     logger.trace("TX: {}", message);
                 } else {
                     logger.debug("TX: {}", message);
                 }
 
-                ByteBuffer messageBuffer = message.encodeMessage();
-
                 logger.trace("TX: {}", DatatypeConverter.printHexBinary(messageBuffer.array()));
 
                 out.write(messageBuffer.array());
                 out.flush();
+
+                // While it is possible for a thread other than the connector thread to do a
+                // transmit this only happens when a message is added to an empty queue.
+                // And if the queue is empty then the connector thread cannot be processing
+                // a response and cannot be attempting to update either pollInterval or
+                // nextPoll at the same time as us. Therefore we do not need any synchronization.
+                pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
+                nextPoll = System.nanoTime() + pollInterval;
 
             } catch (LightifyMessageTooLongException lmtle) {
                 logger.warn("Message too long", lmtle);
