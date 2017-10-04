@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
@@ -101,25 +102,30 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void setAddressStates(PointType location) {
-        Address address = null;
+
+        State streetState = UnDefType.UNDEF;
+        State cityState = UnDefType.UNDEF;
+        State countryState = UnDefType.UNDEF;
+        State formattedAddressState = UnDefType.UNDEF;
 
         try {
+            Address address = null;
             address = bridge.getAddress(location);
+            if (address != null) {
+                streetState = (address.Street != null) ? new StringType(address.Street) : UnDefType.UNDEF;
+                cityState = (address.City != null) ? new StringType(address.City) : UnDefType.UNDEF;
+                countryState = (address.Country != null) ? new StringType(address.Country) : UnDefType.UNDEF;
+                formattedAddressState = (address.FormattedAddress != null) ? new StringType(address.FormattedAddress)
+                        : UnDefType.UNDEF;
+            }
         } catch (Exception e) {
             logException(e);
         }
 
-        if (address != null) {
-            updateState(ADDRESSSTREET, new StringType(address.Street));
-            updateState(ADDRESSCITY, new StringType(address.City));
-            updateState(ADDRESSCOUNTRY, new StringType(address.Country));
-            updateState(FORMATTEDADDRESS, new StringType(address.FormattedAddress));
-        } else {
-            updateState(ADDRESSSTREET, UnDefType.UNDEF);
-            updateState(ADDRESSCITY, UnDefType.UNDEF);
-            updateState(ADDRESSCOUNTRY, UnDefType.UNDEF);
-            updateState(FORMATTEDADDRESS, UnDefType.UNDEF);
-        }
+        updateState(ADDRESSSTREET, streetState);
+        updateState(ADDRESSCITY, cityState);
+        updateState(ADDRESSCOUNTRY, countryState);
+        updateState(FORMATTEDADDRESS, formattedAddressState);
     }
 
     @Override
