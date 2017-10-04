@@ -10,6 +10,13 @@
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
+	<channel-type id="position_silent">
+		<item-type>Dimmer</item-type>
+		<label>Somfy Device Position - silent mode</label>
+		<description>Position of the device - silent and low speed mode (only for IO devices)</description>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+
 	<channel-type id="control">
 		<item-type>Rollershutter</item-type>
 		<label>Somfy Device Control</label>

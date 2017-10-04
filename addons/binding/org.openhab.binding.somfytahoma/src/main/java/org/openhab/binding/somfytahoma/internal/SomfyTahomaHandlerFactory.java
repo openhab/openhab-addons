@@ -38,6 +38,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_BRIDGE,
             THING_TYPE_GATEWAY,
             THING_TYPE_ROLLERSHUTTER,
+            THING_TYPE_ROLLERSHUTTER_SILENT,
             THING_TYPE_SCREEN,
             THING_TYPE_VENETIANBLIND,
             THING_TYPE_EXTERIORSCREEN,
@@ -77,6 +78,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER)) {
             return new SomfyTahomaRollerShutterHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_SILENT)) {
+            return new SomfyTahomaSilentRollerShutterHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);

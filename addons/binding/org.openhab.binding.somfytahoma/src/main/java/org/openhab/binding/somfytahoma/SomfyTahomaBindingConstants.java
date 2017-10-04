@@ -30,6 +30,9 @@ public class SomfyTahomaBindingConstants {
     // Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
+    // Silent Roller Shutter
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SILENT = new ThingTypeUID(BINDING_ID, "rollershutter_silent");
+
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
 
@@ -78,6 +81,9 @@ public class SomfyTahomaBindingConstants {
     public static final String POSITION = "position";
     public static final String CONTROL = "control";
 
+    // Silent roller shutter
+    public static final String POSITION_SILENT = "position_silent";
+
     // Blind
     public static final String ORIENTATION = "orientation";
 
@@ -106,6 +112,7 @@ public class SomfyTahomaBindingConstants {
     final public static String COMMAND_SET_CLOSURE = "setClosure";
     final public static String COMMAND_SET_DEPLOYMENT = "setDeployment";
     final public static String COMMAND_SET_ORIENTATION = "setOrientation";
+    final public static String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     final public static String COMMAND_UP = "up";
     final public static String COMMAND_DOWN = "down";
     final public static String COMMAND_OPEN = "open";

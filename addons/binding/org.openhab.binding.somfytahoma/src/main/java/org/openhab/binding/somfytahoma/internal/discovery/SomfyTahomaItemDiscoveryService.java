@@ -16,6 +16,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.model.SomfyTahomaDeviceDefinition;
+import org.openhab.binding.somfytahoma.model.SomfyTahomaDeviceDefinitionCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         return new HashSet<>(Arrays.asList(
                 THING_TYPE_GATEWAY,
                 THING_TYPE_ROLLERSHUTTER,
+                THING_TYPE_ROLLERSHUTTER_SILENT,
                 THING_TYPE_SCREEN,
                 THING_TYPE_VENETIANBLIND,
                 THING_TYPE_EXTERIORSCREEN,
@@ -79,45 +82,49 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     public void discoverDevice(SomfyTahomaDevice device) {
-        switch(device.getUiClass()) {
+        switch (device.getUiClass()) {
             case AWNING:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_AWNING);
+                deviceDiscovered(device, THING_TYPE_AWNING);
                 break;
             case EXTERIORSCREEN:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_EXTERIORSCREEN);
+                deviceDiscovered(device, THING_TYPE_EXTERIORSCREEN);
                 break;
             case EXTERIORVENETIANBLIND:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_EXTERIORVENETIANBLIND);
+                deviceDiscovered(device, THING_TYPE_EXTERIORVENETIANBLIND);
                 break;
             case GARAGEDOOR:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_GARAGEDOOR);
+                deviceDiscovered(device, THING_TYPE_GARAGEDOOR);
                 break;
             case LIGHT:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_LIGHT);
+                deviceDiscovered(device, THING_TYPE_LIGHT);
                 break;
             case LIGHTSENSOR:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_LIGHTSENSOR);
+                deviceDiscovered(device, THING_TYPE_LIGHTSENSOR);
                 break;
             case OCCUPANCYSENSOR:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_OCCUPANCYSENSOR);
+                deviceDiscovered(device, THING_TYPE_OCCUPANCYSENSOR);
                 break;
             case ONOFF:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_ONOFF);
+                deviceDiscovered(device, THING_TYPE_ONOFF);
                 break;
             case ROLLERSHUTTER:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_ROLLERSHUTTER);
+                if (isSilentRollerShutter(device)) {
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_SILENT);
+                } else {
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER);
+                }
                 break;
             case SCREEN:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_SCREEN);
+                deviceDiscovered(device, THING_TYPE_SCREEN);
                 break;
             case SMOKESENSOR:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_SMOKESENSOR);
+                deviceDiscovered(device, THING_TYPE_SMOKESENSOR);
                 break;
             case VENETIANBLIND:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_VENETIANBLIND);
+                deviceDiscovered(device, THING_TYPE_VENETIANBLIND);
                 break;
             case WINDOW:
-                deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), THING_TYPE_WINDOW);
+                deviceDiscovered(device, THING_TYPE_WINDOW);
                 break;
             case ALARM:
             case POD:
@@ -127,6 +134,20 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 logger.warn("Detected a new unsupported device: {}", device.getUiClass());
                 logger.warn("Supported commands: {}", device.getDefinition().toString());
         }
+    }
+
+    private boolean isSilentRollerShutter(SomfyTahomaDevice device) {
+        SomfyTahomaDeviceDefinition def = device.getDefinition();
+        for (SomfyTahomaDeviceDefinitionCommand cmd : def.getCommands()) {
+            if (cmd.getCommandName().equals(COMMAND_SET_CLOSURESPEED)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {
+        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID);
     }
 
     private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID) {
