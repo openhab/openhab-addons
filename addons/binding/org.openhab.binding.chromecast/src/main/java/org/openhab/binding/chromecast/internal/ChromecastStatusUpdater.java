@@ -231,7 +231,12 @@ public class ChromecastStatusUpdater {
         // Channel name and metadata key don't match.
         Object imagesValue = metadata.get("images");
 
-        if (imagesValue == null || !(callback.isLinked(CHANNEL_IMAGE) || (callback.isLinked(CHANNEL_IMAGE_SRC)) )) {
+        if (!(callback.isLinked(CHANNEL_IMAGE) || (callback.isLinked(CHANNEL_IMAGE_SRC)) )) {
+            return;
+        }
+
+        if (imagesValue == null) {
+            callback.updateState(CHANNEL_IMAGE_SRC, UNDEF);
             return;
         }
 

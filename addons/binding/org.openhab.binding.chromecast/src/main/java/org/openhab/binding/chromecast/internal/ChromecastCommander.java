@@ -8,11 +8,7 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import org.eclipse.smarthome.core.library.types.NextPreviousType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
@@ -139,6 +135,15 @@ public class ChromecastCommander {
             statusUpdater.updateStatus(ThingStatus.ONLINE);
             if (app == null) {
                 logger.debug("{} command ignored because media player app is not running", command);
+                return;
+            }
+
+            if (command instanceof StopMoveType) {
+                final StopMoveType stopMoveType = (StopMoveType) command;
+                if (stopMoveType == StopMoveType.STOP) {
+                    chromeCast.stopApp();
+                    statusUpdater.updateMediaStatus(null);
+                }
                 return;
             }
 
