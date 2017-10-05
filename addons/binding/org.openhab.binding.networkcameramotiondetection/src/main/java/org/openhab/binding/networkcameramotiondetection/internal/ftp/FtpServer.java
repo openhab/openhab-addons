@@ -107,9 +107,9 @@ public class FtpServer {
         }
     }
 
-    public synchronized void addEventListener(FtpServerEventListener rfxComEventListener) {
-        if (!listeners.contains(rfxComEventListener)) {
-            listeners.add(rfxComEventListener);
+    public synchronized void addEventListener(FtpServerEventListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
         }
     }
 

@@ -1,6 +1,6 @@
 # Network Camera Motion Detection Binding
 
-This binding integrates large number of network cameras which can send image to FTP server when motion or sound is detected. Binding acts as a FTP server. Images are not saved to file system, therefore binding shouldn't cause any problems on flash based devices.
+This binding integrates large number of network cameras which can send image to FTP server when motion or sound is detected. Binding acts as a FTP server. Images are not saved to file system, therefore binding shouldn't cause any problems on flash based openHAB installations.
 
 
 ## Supported Things
