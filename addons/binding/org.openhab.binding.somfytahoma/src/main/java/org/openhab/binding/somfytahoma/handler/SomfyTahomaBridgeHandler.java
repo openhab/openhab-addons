@@ -752,7 +752,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
                 return UNAUTHORIZED;
             }
-            logger.error("Cannot cancel execution!", e);
+            logger.error("Cannot get Tahoma gateway version!", e);
         } catch (Exception e) {
             logger.error("Cannot get Tahoma gateway version!", e);
         }
