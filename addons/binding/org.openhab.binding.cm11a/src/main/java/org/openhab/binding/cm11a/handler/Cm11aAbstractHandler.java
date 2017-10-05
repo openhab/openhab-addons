@@ -168,7 +168,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
      * Add the specified number of X10 "dims" from the current state
      *
      * @param dims The number of dims to remove
-     * @return
+     * @return The updated current state
      */
     public State addBrightsToCurrentState(int dims) {
         return addDimsToCurrentState(-dims);
