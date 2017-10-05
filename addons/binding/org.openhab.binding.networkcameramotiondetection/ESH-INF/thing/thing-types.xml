@@ -5,8 +5,8 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="networkcamera">
-		<label>NetworkCameraMotionDetection Binding Thing</label>
-		<description>NetworkCameraMotionDetection Binding</description>
+		<label>Network Camera Motion Detection Binding</label>
+		<description>Network Camera Motion Detection Binding</description>
 
 		<channels>
 			<channel id="image" typeId="image-channel" />

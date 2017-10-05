@@ -3,8 +3,8 @@
 	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>NetworkCameraMotionDetection Binding</name>
-	<description>This is the binding for NetworkCameraMotionDetection.</description>
+	<name>Network Camera Motion Detection Binding</name>
+	<description>This is the binding for network camera motion detection.</description>
 	<author>Pauli Anttila</author>
 
 	<config-description>
