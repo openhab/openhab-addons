@@ -49,6 +49,11 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bigassfan/${project.version}</bundle>
     </feature>
+	
+	  <feature name="openhab-binding-blebox" description="Blebox Devices Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.blebox/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
