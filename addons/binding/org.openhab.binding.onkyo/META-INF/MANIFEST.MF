@@ -11,8 +11,6 @@ Export-Package:
  org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler
 Import-Package: 
- com.google.common.base,
- com.google.common.collect,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
