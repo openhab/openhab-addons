@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
@@ -257,7 +256,6 @@ public abstract class LxControl {
 
             for (Map.Entry<String, JsonElement> jsonState : json.states.entrySet()) {
                 @SuppressWarnings("null")
-                @NonNull
                 JsonElement element = jsonState.getValue();
                 if (element instanceof JsonArray) {
                     // temperature state of intelligent home controller object is the only

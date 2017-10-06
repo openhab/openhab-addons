@@ -53,7 +53,7 @@ public class LxUuid {
         updated = true;
     }
 
-    String cleanupUuid(String uuid) {
+    private String cleanupUuid(String uuid) {
         return uuid.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
     }
 

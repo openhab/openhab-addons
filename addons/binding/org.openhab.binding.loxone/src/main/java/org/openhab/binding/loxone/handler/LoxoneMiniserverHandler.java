@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.ConfigurationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -242,11 +244,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         LoxoneMiniserverConfig cfg = getConfig().as(LoxoneMiniserverConfig.class);
         try {
             server = createNewServer(cfg);
-            if (server == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error getting configuration");
-            }
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+        } catch (UnknownHostException | ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -362,8 +361,10 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *         created and initialized server object or null if insufficient configuration
      * @throws UnknownHostException
      *             server's address from the configuration failed to be resolved
+     * @throws ConfigurationException
+     *             missing user or password in the configuration
      */
-    private @Nullable LxServer createNewServer(LoxoneMiniserverConfig cfg) throws UnknownHostException {
+    private LxServer createNewServer(LoxoneMiniserverConfig cfg) throws UnknownHostException, ConfigurationException {
         LxServer srv = null;
         String host = cfg.host;
         String user = cfg.user;
@@ -376,8 +377,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             srv.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
                     cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
             srv.start();
+            return srv;
         }
-        return srv;
+        throw new ConfigurationException("Incorrect configuration - missing user name or password");
     }
 
     /**

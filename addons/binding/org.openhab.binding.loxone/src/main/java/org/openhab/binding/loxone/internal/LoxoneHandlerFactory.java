@@ -10,7 +10,6 @@ package org.openhab.binding.loxone.internal;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -34,7 +33,6 @@ import com.google.common.collect.Sets;
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
     @SuppressWarnings("null")
-    @NonNull
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
 

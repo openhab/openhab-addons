@@ -25,7 +25,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -662,7 +661,6 @@ class LxWsClient {
                             // expecting a key to hash credentials
                             try {
                                 @SuppressWarnings("null")
-                                @NonNull
                                 LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
                                 LxJsonSubResponse subResp = resp.subResponse;
                                 if (subResp != null) {
@@ -690,7 +688,6 @@ class LxWsClient {
                         case AUTHENTICATING:
                             try {
                                 @SuppressWarnings("null")
-                                @NonNull
                                 LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
 
                                 LxJsonSubResponse subResp = resp.subResponse;
@@ -717,7 +714,6 @@ class LxWsClient {
                         case UPDATING_CONFIGURATION:
                             try {
                                 @SuppressWarnings("null")
-                                @NonNull
                                 LxJsonApp3 config = gson.fromJson(msg, LxJsonApp3.class);
                                 logger.debug("[{}] Received configuration from server", debugId);
                                 notifyMaster(EventType.RECEIVED_CONFIG, null, config);
