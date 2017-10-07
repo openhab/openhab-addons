@@ -15,6 +15,8 @@ import java.net.URLEncoder;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 import org.slf4j.Logger;
@@ -269,14 +271,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     channel = item.get("channel").getAsString();
                 }
 
-                String thumbnail = "";
+                String thumbnailUrl = "";
                 if (item.has("thumbnail")) {
-                    thumbnail = convertToImageUrl(item.get("thumbnail"));
+                    thumbnailUrl = convertToImageUrl(item.get("thumbnail"));
                 }
 
-                String fanart = "";
+                String fanartUrl = "";
                 if (item.has("fanart")) {
-                    fanart = convertToImageUrl(item.get("fanart"));
+                    fanartUrl = convertToImageUrl(item.get("fanart"));
                 }
 
                 try {
@@ -286,8 +288,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     listener.updateArtist(artist);
                     listener.updateMediaType(mediaType);
                     listener.updatePVRChannel(channel);
-                    listener.updateThumbnail(thumbnail);
-                    listener.updateFanart(fanart);
+                    listener.updateThumbnail(downloadImage(thumbnailUrl));
+                    listener.updateFanart(downloadImage(fanartUrl));
                 } catch (Exception e) {
                     logger.error("Event listener invoking error", e);
                 }
@@ -336,10 +338,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } catch (UnsupportedEncodingException e) {
                 return text;
             }
-        } else {
-            return text;
         }
+        return text;
+    }
 
+    private RawType downloadImage(String url) {
+        if (url != null && !url.isEmpty()) {
+            logger.debug("Try to download the content of URL {}", url);
+            RawType image = HttpUtil.downloadImage(url);
+            if (image == null) {
+                logger.debug("Failed to download the content of URL {}", url);
+                return null;
+            } else {
+                return image;
+            }
+        }
+        return null;
     }
 
     public KodiState getState() {
@@ -361,8 +375,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateArtist("");
                 listener.updateMediaType("");
                 listener.updatePVRChannel("");
-                listener.updateThumbnail("");
-                listener.updateFanart("");
+                listener.updateThumbnail(null);
+                listener.updateFanart(null);
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);

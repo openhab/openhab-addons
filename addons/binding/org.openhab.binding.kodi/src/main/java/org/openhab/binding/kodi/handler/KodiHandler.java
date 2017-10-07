@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,7 +33,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
@@ -385,12 +385,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
-    public void updateThumbnail(String thumbnail) {
+    public void updateThumbnail(RawType thumbnail) {
         updateState(CHANNEL_THUMBNAIL, createImage(thumbnail));
     }
 
     @Override
-    public void updateFanart(String fanart) {
+    public void updateFanart(RawType fanart) {
         updateState(CHANNEL_FANART, createImage(fanart));
     }
 
@@ -406,17 +406,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     /**
-     * Download the image from the URL and return it as {@link State}. If the given link does not resolve to an image,
-     * return {@link UnDefType#UNDEF}.
+     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
      */
-    private State createImage(String url) {
-        if (url == null || url.isEmpty()) {
-            return UnDefType.UNDEF;
-        }
-        logger.debug("Try to download the content of URL {}", url);
-        final State image = HttpUtil.downloadImage(url);
+    private State createImage(RawType image) {
         if (image == null) {
-            logger.debug("Failed to download the content of URL {}", url);
             return UnDefType.UNDEF;
         } else {
             return image;
