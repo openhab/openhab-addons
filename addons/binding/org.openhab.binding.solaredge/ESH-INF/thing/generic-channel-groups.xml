@@ -28,6 +28,7 @@
             <channel id="production" typeId="aggregate-type-production" />
             <channel id="consumption" typeId="aggregate-type-consumption" />
             <channel id="selfConsumptionForConsumption" typeId="aggregate-type-selfConsumptionForConsumption" />
+            <channel id="selfConsumptionCoverage" typeId="aggregate-type-selfConsumptionCoverage" />
             <channel id="batterySelfConsumption" typeId="aggregate-type-batterySelfConsumption" />
             <channel id="import" typeId="aggregate-type-import" />
             <channel id="export" typeId="aggregate-type-export" />

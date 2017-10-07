@@ -23,6 +23,9 @@ public enum AggregateDataChannels implements Channel {
     SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "self consumption", ChannelType.Aggregate,
             ChannelGroup.Aggregate, Double.class),
 
+    SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "self consumption coverage", ChannelType.Aggregate,
+            ChannelGroup.Aggregate, Double.class),
+
     BATTERYSELFCONSUMPTION("batterySelfConsumption", "battery self consumption", ChannelType.Aggregate,
             ChannelGroup.Aggregate, Double.class),
 
