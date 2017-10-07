@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import com.connectsdk.service.capability.PowerControl;
 /**
  * Handles Power Control Command.
  * Note: Connect SDK only supports powering OFF for most devices.
- * 
+ *
  * @author Sebastian Prehn
  * @since 1.8.0
  */
@@ -36,17 +36,15 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
         OnOffType onOffType;
         if (command instanceof OnOffType) {
             onOffType = (OnOffType) command;
-        } else if (command instanceof StringType) {
-            onOffType = OnOffType.valueOf(command.toString());
         } else {
             logger.warn("only accept OnOffType");
             return;
         }
 
-        if (OnOffType.ON.equals(onOffType) && d.hasCapabilities(PowerControl.On)) {
+        if (OnOffType.ON == onOffType && d.hasCapabilities(PowerControl.On)) {
             getControl(d).powerOn(createDefaultResponseListener());
         }
-        if (OnOffType.OFF.equals(onOffType) && d.hasCapabilities(PowerControl.Off)) {
+        if (OnOffType.OFF == onOffType && d.hasCapabilities(PowerControl.Off)) {
             getControl(d).powerOff(createDefaultResponseListener());
         }
     }
@@ -59,7 +57,7 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
 
     @Override
     public void onDeviceRemoved(ConnectableDevice device, final String channelId, final LGWebOSHandler handler) {
-        super.onDeviceReady(device, channelId, handler);
+        super.onDeviceRemoved(device, channelId, handler);
         handler.postUpdate(channelId, OnOffType.OFF);
     }
 }

@@ -46,6 +46,8 @@ import com.connectsdk.service.command.ServiceCommandError;
  */
 @Component(service = { DiscoveryService.class, LGWebOSDiscovery.class }, immediate = true, name = "binding.lgwebos")
 public class LGWebOSDiscovery extends AbstractDiscoveryService implements DiscoveryManagerListener, Context {
+    private static final int DISCOVERY_TIMEOUT = 5; // in seconds
+
     private Logger logger = LoggerFactory.getLogger(LGWebOSDiscovery.class);
 
     private DiscoveryManager discoveryManager;
@@ -53,7 +55,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     private InetAddress localInetAddresses;
 
     public LGWebOSDiscovery() {
-        super(LGWebOSBindingConstants.SUPPORTED_THING_TYPES_UIDS, 60, true);
+        super(LGWebOSBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT, true);
         DiscoveryManager.init(this);
     }
 
@@ -148,11 +150,13 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public String getApplicationName() {
-        return "Openhab";
+        return "openHAB";
     }
 
     @Override
     public String getPackageName() {
+        // In combination with ApplicationName this is used by LG TVs to identify the client application.
+        // We don't want the actual package name. We need a constant namespace here.
         return "org.openhab";
     }
 
@@ -175,7 +179,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
                 logger.debug("localIP parameter explicitly set to: {}", localIP);
                 return InetAddress.getByName(localIP.trim());
             } catch (UnknownHostException e) {
-                logger.warn("localIP config parameter could not be parsed: {}", localIP);
+                logger.warn("localIP config parameter could not be parsed: {} Details: {}", localIP, e.getMessage());
             }
         }
 

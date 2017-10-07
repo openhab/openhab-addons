@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +39,11 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
             OnOffType onOffType;
             if (command instanceof OnOffType) {
                 onOffType = (OnOffType) command;
-            } else if (command instanceof StringType) {
-                onOffType = OnOffType.valueOf(command.toString());
             } else {
                 logger.warn("only accept OnOffType");
                 return;
             }
-            getControl(d).setMute(OnOffType.ON.equals(onOffType), createDefaultResponseListener());
+            getControl(d).setMute(OnOffType.ON == onOffType, createDefaultResponseListener());
         }
     }
 

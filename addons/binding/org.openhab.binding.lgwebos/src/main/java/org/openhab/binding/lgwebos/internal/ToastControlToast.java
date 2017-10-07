@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -43,10 +43,11 @@ public class ToastControlToast extends BaseChannelHandler<Void> {
             final ToastControl control = getControl(d);
             try {
                 BufferedImage bi = ImageIO.read(getClass().getResource("/openhab-logo-square.png"));
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                OutputStream b64 = Base64.getEncoder().wrap(os);
-                ImageIO.write(bi, "png", b64);
-                control.showToast(value, os.toString("UTF-8"), "png", createDefaultResponseListener());
+                try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+                        OutputStream b64 = Base64.getEncoder().wrap(os);) {
+                    ImageIO.write(bi, "png", b64);
+                    control.showToast(value, os.toString("UTF-8"), "png", createDefaultResponseListener());
+                }
             } catch (IOException ex) {
                 logger.warn("Failed to load toast icon: {}", ex.getMessage());
             }

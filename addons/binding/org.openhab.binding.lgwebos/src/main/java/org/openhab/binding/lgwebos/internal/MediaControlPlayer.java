@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -41,24 +41,21 @@ public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener> {
     @Override
     public void onReceiveCommand(final ConnectableDevice d, Command command) {
         if (command instanceof NextPreviousType) {
-            if (NextPreviousType.NEXT.equals(command) && d.hasCapabilities(PlaylistControl.Next)) {
+            if (NextPreviousType.NEXT == command && d.hasCapabilities(PlaylistControl.Next)) {
                 getPlayListControl(d).next(createDefaultResponseListener());
-            }
-            if (NextPreviousType.PREVIOUS.equals(command) && d.hasCapabilities(PlaylistControl.Previous)) {
+            } else if (NextPreviousType.PREVIOUS == command && d.hasCapabilities(PlaylistControl.Previous)) {
                 getPlayListControl(d).previous(createDefaultResponseListener());
             }
         } else if (command instanceof PlayPauseType) {
-            if (PlayPauseType.PLAY.equals(command) && d.hasCapabilities(MediaControl.Play)) {
+            if (PlayPauseType.PLAY == command && d.hasCapabilities(MediaControl.Play)) {
                 getMediaControl(d).play(createDefaultResponseListener());
-            }
-            if (PlayPauseType.PAUSE.equals(command) && d.hasCapabilities(MediaControl.Pause)) {
+            } else if (PlayPauseType.PAUSE == command && d.hasCapabilities(MediaControl.Pause)) {
                 getMediaControl(d).pause(createDefaultResponseListener());
             }
         } else if (command instanceof RewindFastforwardType) {
-            if (RewindFastforwardType.FASTFORWARD.equals(command) && d.hasCapabilities(MediaControl.FastForward)) {
+            if (RewindFastforwardType.FASTFORWARD == command && d.hasCapabilities(MediaControl.FastForward)) {
                 getMediaControl(d).fastForward(createDefaultResponseListener());
-            }
-            if (RewindFastforwardType.REWIND.equals(command) && d.hasCapabilities(MediaControl.Rewind)) {
+            } else if (RewindFastforwardType.REWIND == command && d.hasCapabilities(MediaControl.Rewind)) {
                 getMediaControl(d).rewind(createDefaultResponseListener());
             }
         } else {

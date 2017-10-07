@@ -5,13 +5,13 @@
 	<name>LG webOS Binding</name>
 	<description>Binding to connect LG's WebOS based smart TVs based on Connect SDK</description>
 	<author>Sebastian Prehn</author>
-	
+
 
 	<config-description>
 		<parameter name="localIP" type="text">
 			<label>Local IP</label>
 			<description>Local IP to bind to. This is optional and only has to be set if the binding is unable to detect it.</description>
-		    <required>false</required>
+			<required>false</required>
 		</parameter>
 	</config-description>
 </binding:binding>

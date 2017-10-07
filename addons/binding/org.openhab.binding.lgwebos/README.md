@@ -24,7 +24,7 @@ The binding has only one configuration parameter, which is only required if the 
 | --- | --- |
 | LocalIP |  This is the local IP of your OpenHAB host on the network. (Optional) |
 
-The binding will attempt to auto detect your IP, if LocalIP is not set. This works when your hostname resolves to this IP and not to the loopback interface or, if the system has exactly one non-loop back network interface. Otherwise this has to be explicitly set. If you are unable to discover devices please check the log file for error messages.e.g.: 
+The binding will attempt to auto detect your IP, if LocalIP is not set. This works when your hostname resolves to this IP and not to the loopback interface or, if the system has exactly one non-loopback network interface. Otherwise this has to be explicitly set. If you are unable to discover devices please check the log file for error messages.e.g.: 
 
 ```
 Autodetection of local IP (via getNetworkInterfaces) failed, as multiple interfaces where detected.
@@ -32,7 +32,7 @@ Autodetection of local IP (via getNetworkInterfaces) failed, as multiple interfa
 
 ## Discovery
 
-TVs are auto discovered through SSDP in the local network. The binding broadcast a search message via UDP on the network. 
+TVs are auto discovered through SSDP in the local network. The binding broadcasts a search message via UDP on the network. 
 
 ## Thing Configuration
 
@@ -44,7 +44,7 @@ WebOS TV has no configuration parameters. Please note that at least one channel 
 | --------------- | ------------ | ------------ | ---------- |
 | power | Switch | Current power setting. TV can only be powered off, not on.  | RW |
 | mute | Switch | Current mute setting.  |  RW |
-| volume | Dimmer | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. Connected to an external amp the volume should be controlled using increase and decrease relative commands. |  RW |
+| volume | Dimmer | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. |  RW |
 | channel | String | Current channel | RW | 
 | channelUp | Switch | One channel up |  W |
 | channelDown | Switch | One channel down  |  W |
@@ -99,6 +99,18 @@ Opens the application with given appId. To find out what appId constant matches 
 The first parameter is the IP address of your TV. 
 The second parameter is the application id that you want to open.
 
+### Launch an Application with Parameter
+
+```
+launchApplicationWithParam(String deviceId, String appId, Object param)
+```
+
+Opens the application with given appId. To find out what appId constant matches which app, bind the appLauncher channel to a String item and turn the TV to the desired application.
+
+The first parameter is the IP address of your TV. 
+The second parameter is the application id that you want to open.
+The third parameter is an application specific value that will be passed on to the application.
+
 
 ## Full Example
 
@@ -107,10 +119,10 @@ This example assumes the IP of your smart TV is 192.168.2.119.
 demo.items:
 
 ```
-Switch LG_TV0_Power "TV Power" <television> { channel="lgwebos:WebOSTV:192_168_2_119:power" }
+Switch LG_TV0_Power "TV Power" <television> { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:power" }
 Switch LG_TV0_Mute  "TV Mute" { channel="lgwebos:WebOSTV:192_168_2_119:mute"}
 Dimmer LG_TV0_Volume "Volume [%S]" { channel="lgwebos:WebOSTV:192_168_2_119:volume" }
-Number LG_TV0_VolDummy "VolumeUpDown" { autoupdate="false" }
+Number LG_TV0_VolDummy "VolumeUpDown" 
 Number LG_TV0_ChannelNo "Channel #" { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
 Switch LG_TV0_ChannelDown "Channel -"  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelDown"  }
 Switch LG_TV0_ChannelUp "Channel +"  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelUp"  }

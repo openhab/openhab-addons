@@ -20,6 +20,18 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.lgwebos.internal.ChannelHandler;
+import org.openhab.binding.lgwebos.internal.LauncherApplication;
+import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
+import org.openhab.binding.lgwebos.internal.MediaControlStop;
+import org.openhab.binding.lgwebos.internal.PowerControlPower;
+import org.openhab.binding.lgwebos.internal.TVControlChannel;
+import org.openhab.binding.lgwebos.internal.TVControlChannelName;
+import org.openhab.binding.lgwebos.internal.TVControlDown;
+import org.openhab.binding.lgwebos.internal.TVControlUp;
+import org.openhab.binding.lgwebos.internal.ToastControlToast;
+import org.openhab.binding.lgwebos.internal.VolumeControlMute;
+import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +71,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("internalReceiveCommand({},{}) is called", channelUID, command);
+        logger.debug("handleCommand({},{}) is called", channelUID, command);
         ChannelHandler handler = channelHandlers.get(channelUID.getId());
         if (handler == null) {
             logger.warn(
@@ -94,7 +106,10 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
             if (device.isConnected()) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
             } else {
-                device.connect();
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connecting ...");
+                device.connect(); // on success onDeviceReady will be called,
+                                  // if pairing is required onPairingRequired,
+                                  // otherwise onConnectionFailed
             }
         }
     }
@@ -107,7 +122,6 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
             device.removeListener(this);
         }
         this.discoveryManager.removeListener(this);
-        this.discoveryManager = null;
     }
     // Connectable Device Listener
 
@@ -115,7 +129,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     public void onDeviceReady(ConnectableDevice device) { // this gets called on connection success
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
         refreshAllChannelSubscriptions(device);
-        channelHandlers.entrySet().forEach(e -> e.getValue().onDeviceReady(device, e.getKey(), this));
+        channelHandlers.forEach((k, v) -> v.onDeviceReady(device, k, this));
     }
 
     @Override
@@ -189,7 +203,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
      * @param device must not be <code>null</code>
      */
     private void refreshAllChannelSubscriptions(ConnectableDevice device) {
-        channelHandlers.entrySet().forEach(e -> e.getValue().refreshSubscription(device, e.getKey(), this));
+        channelHandlers.forEach((k, v) -> v.refreshSubscription(device, k, this));
     }
 
     // just to make sure, this device is registered, if it was powered off during initialization

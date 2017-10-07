@@ -17,7 +17,10 @@
 				<description>Current Mute Setting</description>
 			</channel>
 			<channel id="volume" typeId="volumeChannelType" />
-			<channel id="channel" typeId="channelChannelType" />
+			<channel id="channel" typeId="stringType">
+				<label>Channel Number</label>
+				<description>Current Channel Setting</description>
+			</channel>
 			<channel id="channelUp" typeId="commandType">
 				<label>Channel Up</label>
 				<description>One Channel Up</description>
@@ -27,12 +30,19 @@
 				<description>One Channel Down</description>
 			</channel>
 			<channel id="channelName" typeId="channelNameChannelType" />
-			<channel id="toast" typeId="toastChannelType" />
+			<channel id="toast" typeId="stringType">
+				<label>Toast</label>
+				<description>Send a message onto the TV screen.</description>
+			</channel>
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="commandType">
-                <label>Stop</label>
-            </channel>
-			<channel id="appLauncher" typeId="appLauncherChannelType" />
+				<label>Stop</label>
+				<description>Stop Playback</description>
+			</channel>
+			<channel id="appLauncher" typeId="stringType">
+				<label>Application</label>
+				<description>Start application and monitor running applications.</description>
+			</channel>
 		</channels>
 
 		<!-- property as IP must not be changed -->
@@ -47,20 +57,16 @@
 		<label>Command</label>
 		<description>Used to send ON commands to trigger an action. Or send ON and OFF commands to toggle state. Similar to buttons on a remote control.</description>
 	</channel-type>
+	<channel-type id="stringType">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>Used to read and write string values.</description>
+	</channel-type>
 	<channel-type id="volumeChannelType">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Current Volume Setting</description>
 		<state min="0" max="100" step="1"></state>
-	</channel-type>
-	<channel-type id="channelChannelType">
-		<item-type>String</item-type>
-		<label>Channel Number</label>
-		<description>Current Channel Setting</description>
-	</channel-type>
-	<channel-type id="toastChannelType">
-		<item-type>String</item-type>
-		<label>Toast</label>
 	</channel-type>
 	<channel-type id="channelNameChannelType">
 		<item-type>String</item-type>
@@ -69,14 +75,9 @@
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="mediaPlayerType">
-	   <item-type>Player</item-type>
-	   <label>Media Control</label>
-	   <description>Control media (e.g. audio or video) playback</description>
-	</channel-type>
-	<channel-type id="appLauncherChannelType">
-		<item-type>String</item-type>
-		<label>Application</label>
-		<description>Start application and monitor running applications.</description>
+		<item-type>Player</item-type>
+		<label>Media Control</label>
+		<description>Control media (e.g. audio or video) playback</description>
 	</channel-type>
 
 </thing:thing-descriptions>

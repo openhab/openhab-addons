@@ -14,12 +14,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -88,10 +84,11 @@ public class LGWebOSAction implements ActionService {
         ToastControl control = getControl(ToastControl.class, deviceId);
         if (control != null) {
             BufferedImage bi = ImageIO.read(new URL(icon));
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            OutputStream b64 = Base64.getEncoder().wrap(os);
-            ImageIO.write(bi, "png", b64);
-            control.showToast(text, os.toString("UTF-8"), "png", responseListenerObject);
+            try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    OutputStream b64 = Base64.getEncoder().wrap(os);) {
+                ImageIO.write(bi, "png", b64);
+                control.showToast(text, os.toString("UTF-8"), "png", responseListenerObject);
+            }
         }
     }
 
@@ -114,7 +111,7 @@ public class LGWebOSAction implements ActionService {
     }
 
     @ActionDoc(text = "opens the application with given appId and passes additional parameters")
-    public static void launchApplicationWithParams(@ParamDoc(name = "deviceId") String deviceId,
+    public static void launchApplicationWithParam(@ParamDoc(name = "deviceId") String deviceId,
             @ParamDoc(name = "appId") final String appId, Object param) {
         Launcher control = getControl(Launcher.class, deviceId);
         if (control != null) {
@@ -137,48 +134,6 @@ public class LGWebOSAction implements ActionService {
         }
     }
 
-    @ActionDoc(text = "returns a list of all application in the format \"<appId> - <human readable name>\"")
-    public static List<String> getApplications(@ParamDoc(name = "deviceId") String deviceId) {
-        Launcher control = getControl(Launcher.class, deviceId);
-        if (control == null) {
-            return Collections.emptyList();
-        }
-        BlockingQueue<List<String>> result = new ArrayBlockingQueue<>(1);
-        control.getAppList(new Launcher.AppListListener() {
-            @Override
-            public void onError(ServiceCommandError error) {
-                LOGGER.warn("Error {}", error.getMessage());
-                try {
-                    result.put(Collections.emptyList());
-                } catch (InterruptedException e) {
-                    LOGGER.warn("interruppted", e);
-                }
-            }
-
-            @Override
-            public void onSuccess(List<AppInfo> appInfos) {
-                if (LOGGER.isDebugEnabled()) {
-                    for (AppInfo a : appInfos) {
-                        LOGGER.debug("AppInfo {} - {}", a.getId(), a.getName());
-                    }
-                }
-                try {
-                    result.put(appInfos.stream()
-                            .map((appInfo) -> String.format("%s - %s", appInfo.getId(), appInfo.getName()))
-                            .collect(Collectors.toList()));
-                } catch (InterruptedException e) {
-                    LOGGER.warn("interruppted", e);
-                }
-            }
-        });
-        try {
-            return result.take();
-        } catch (InterruptedException e) {
-            LOGGER.warn("interruppted", e);
-            return Collections.emptyList();
-        }
-    }
-
     @ActionDoc(text = "sends a text input to a web os device")
     public static void sendText(@ParamDoc(name = "deviceId") String deviceId,
             @ParamDoc(name = "text") final String text) {
@@ -188,7 +143,7 @@ public class LGWebOSAction implements ActionService {
         }
     }
 
-    @ActionDoc(text = "sends the ender key to a web os device")
+    @ActionDoc(text = "sends the enter key to a web os device")
     public static void sendEnter(@ParamDoc(name = "deviceId") String deviceId) {
         TextInputControl control = getControl(TextInputControl.class, deviceId);
         if (control != null) {

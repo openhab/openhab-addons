@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +56,10 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
             }
         } else if (command instanceof IncreaseDecreaseType) {
             if (d.hasCapabilities(VolumeControl.Volume_Up_Down)) {
-                if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                if (IncreaseDecreaseType.INCREASE == command) {
                     getControl(d).volumeUp(createDefaultResponseListener());
                 }
-                if (IncreaseDecreaseType.DECREASE.equals(command)) {
+                if (IncreaseDecreaseType.DECREASE == command) {
                     getControl(d).volumeDown(createDefaultResponseListener());
                 }
             } else {
@@ -67,7 +68,7 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
             }
         } else if (command instanceof OnOffType) {
             if (d.hasCapabilities(VolumeControl.Mute_Set)) {
-                getControl(d).setMute(OnOffType.OFF.equals(command), createDefaultResponseListener());
+                getControl(d).setMute(OnOffType.OFF == command, createDefaultResponseListener());
             } else {
                 logger.warn("Device does not have the capability to set mute. Ignoring command {}.", command);
             }
