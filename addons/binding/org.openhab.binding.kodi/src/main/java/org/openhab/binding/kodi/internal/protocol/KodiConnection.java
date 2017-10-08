@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
@@ -40,6 +41,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(15 * 60 * 1000); // 15min
 
     private URI wsUri;
     private URI imageUri;
@@ -344,8 +346,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private RawType downloadImage(String url) {
         if (url != null && !url.isEmpty()) {
-            logger.debug("Try to download the content of URL {}", url);
-            RawType image = HttpUtil.downloadImage(url);
+            if (!IMAGE_CACHE.containsKey(url)) {
+                IMAGE_CACHE.put(url, () -> {
+                    logger.debug("Try to download the content of URL {}", url);
+                    return HttpUtil.downloadImage(url);
+                });
+            }
+            RawType image = IMAGE_CACHE.get(url);
             if (image == null) {
                 logger.debug("Failed to download the content of URL {}", url);
                 return null;
