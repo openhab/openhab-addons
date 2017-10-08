@@ -86,8 +86,3 @@ sitemap demo label="Main Menu"
 Rotel serial protocol is available here: http://www.rotel.com/sites/default/files/product/rs232/RA12%20Protocol.pdf .
 
 
-## Implementation strategy
-
-Because of the asynchronous and bidirectional nature of the protocol, it was considered best to use the lower level RxRxPort interface for serial communication, bypassing the NRSerialPort wrapper. The update of channels is handled independently of commands, in a separate thread. 
-
-
