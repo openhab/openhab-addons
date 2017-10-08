@@ -17,6 +17,7 @@ import java.util.Base64;
 import javax.imageio.ImageIO;
 
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,10 @@ public class ToastControlToast extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(ToastControl.Show_Toast)) {
             final String value = command.toString();
             final ToastControl control = getControl(d);

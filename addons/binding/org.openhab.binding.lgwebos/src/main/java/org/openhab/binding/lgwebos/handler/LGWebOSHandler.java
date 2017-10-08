@@ -49,6 +49,7 @@ import com.google.common.collect.ImmutableMap;
  * sent to one of the channels.
  *
  * @author Sebastian Prehn - Initial contribution
+ * @since 1.8.0
  */
 public class LGWebOSHandler extends BaseThingHandler implements ConnectableDeviceListener, DiscoveryManagerListener {
 
@@ -79,24 +80,22 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
                     command, channelUID);
             return;
         }
-        final ConnectableDevice device = getDevice();
+        ConnectableDevice device = getDevice();
         if (device == null) {
-            logger.warn(
-                    "Unable to handle command {} for channel {}. Device {} not found. This should not happen at this point.",
-                    command, channelUID, getThing().getUID());
-            return;
+            logger.debug("Device {} not found - most likely is is currently offline. Details: Channel {}, Command {}.",
+                    getThing().getProperties().get(PROPERTY_IP_ADDRESS), channelUID.getId(), command);
         }
-        handler.onReceiveCommand(device, command);
+        handler.onReceiveCommand(device, channelUID.getId(), this, command);
     }
 
     private ConnectableDevice getDevice() {
-        String ip = this.getThing().getProperties().get(PROPERTY_IP_ADDRESS);
-        return this.discoveryManager.getCompatibleDevices().get(ip);
+        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        return discoveryManager.getCompatibleDevices().get(ip);
     }
 
     @Override
     public void initialize() {
-        this.discoveryManager.addListener(this);
+        discoveryManager.addListener(this);
 
         ConnectableDevice device = getDevice();
         if (device == null) {
@@ -121,7 +120,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         if (device != null) {
             device.removeListener(this);
         }
-        this.discoveryManager.removeListener(this);
+        discoveryManager.removeListener(this);
     }
     // Connectable Device Listener
 
@@ -144,7 +143,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void onPairingRequired(ConnectableDevice device, DeviceService service, PairingType pairingType) {
-        updateStatus(this.thing.getStatus(), ThingStatusDetail.CONFIGURATION_PENDING, "Pairing Required");
+        updateStatus(thing.getStatus(), ThingStatusDetail.CONFIGURATION_PENDING, "Pairing Required");
     }
 
     @Override
@@ -161,11 +160,11 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     // callback methods for commandHandlers
     public void postUpdate(String channelUID, State state) {
-        this.updateState(channelUID, state);
+        updateState(channelUID, state);
     }
 
     public boolean isChannelInUse(String channelId) {
-        return this.isLinked(channelId);
+        return isLinked(channelId);
     }
 
     // channel linking modifications
@@ -209,7 +208,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     // just to make sure, this device is registered, if it was powered off during initialization
     @Override
     public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-        String ip = this.getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
         if (device.getIpAddress().equals(ip)) {
             device.addListener(this);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device Ready");
@@ -219,7 +218,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
-        String ip = this.getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
         if (device.getIpAddress().equals(ip)) {
             device.addListener(this);
         }

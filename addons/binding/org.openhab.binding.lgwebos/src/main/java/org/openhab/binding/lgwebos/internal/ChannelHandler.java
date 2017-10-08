@@ -25,10 +25,12 @@ public interface ChannelHandler {
      * This method will be called whenever a command is received for this handler.
      * All implementations provide custom logic here.
      *
-     * @param device must not be <code>null</code>
+     * @param device may be <code>null</code> in case the device is currently offline
+     * @param channelId must not be <code>null</code>
+     * @param handler must not be <code>null</code>
      * @param command must not be <code>null</code>
      */
-    void onReceiveCommand(ConnectableDevice device, Command command);
+    void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command);
 
     /**
      * Handle underlying subscription status if device changes online state, capabilities or channel gets linked or
@@ -54,9 +56,9 @@ public interface ChannelHandler {
     /**
      * Callback method whenever a device disappears.
      *
-     * @param device
-     * @param channelId
-     * @param handler
+     * @param device must not be <code>null</code>
+     * @param channelId must not be <code>null</code>
+     * @param handler must not be <code>null</code>
      */
     void onDeviceRemoved(final ConnectableDevice device, final String channelId, final LGWebOSHandler handler);
 

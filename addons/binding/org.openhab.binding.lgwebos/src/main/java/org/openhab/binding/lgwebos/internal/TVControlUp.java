@@ -9,6 +9,7 @@
 package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.TVControl;
@@ -26,7 +27,10 @@ public class TVControlUp extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(TVControl.Channel_Up)) {
             getControl(d).channelUp(createDefaultResponseListener());
         }

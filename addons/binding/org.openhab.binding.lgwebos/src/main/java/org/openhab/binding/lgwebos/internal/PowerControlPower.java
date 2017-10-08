@@ -32,7 +32,17 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            /*
+             * Unable to send anything to a null device. Unless the user configured autoupdate="false" neither
+             * onDeviceReady nor onDeviceRemoved will be called and item state would be permanently inconsistent.
+             * Therefore setting state to OFF
+             */
+            handler.postUpdate(channelId, OnOffType.OFF);
+            return;
+        }
+
         OnOffType onOffType;
         if (command instanceof OnOffType) {
             onOffType = (OnOffType) command;
@@ -43,8 +53,7 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
 
         if (OnOffType.ON == onOffType && d.hasCapabilities(PowerControl.On)) {
             getControl(d).powerOn(createDefaultResponseListener());
-        }
-        if (OnOffType.OFF == onOffType && d.hasCapabilities(PowerControl.Off)) {
+        } else if (OnOffType.OFF == onOffType && d.hasCapabilities(PowerControl.Off)) {
             getControl(d).powerOff(createDefaultResponseListener());
         }
     }

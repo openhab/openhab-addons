@@ -119,21 +119,21 @@ This example assumes the IP of your smart TV is 192.168.2.119.
 demo.items:
 
 ```
-Switch LG_TV0_Power "TV Power" <television> { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:power" }
-Switch LG_TV0_Mute  "TV Mute" { channel="lgwebos:WebOSTV:192_168_2_119:mute"}
-Dimmer LG_TV0_Volume "Volume [%S]" { channel="lgwebos:WebOSTV:192_168_2_119:volume" }
+Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:power" }
+Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:192_168_2_119:mute"}
+Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:192_168_2_119:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown" 
-Number LG_TV0_ChannelNo "Channel #" { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
-Switch LG_TV0_ChannelDown "Channel -"  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelDown"  }
-Switch LG_TV0_ChannelUp "Channel +"  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelUp"  }
-String LG_TV0_Channel "Channel [%S]"  { channel="lgwebos:WebOSTV:192_168_2_119:channelName"}
-String LG_TV0_Toast { channel="lgwebos:WebOSTV:192_168_2_119:toast"}
-Switch LG_TV0_Stop "Stop" { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:mediaStop" }
-String LG_TV0_Application "Application [%s]"  {channel="lgwebos:WebOSTV:192_168_2_119:appLauncher"} 
-Player LG_TV0_Player {channel="lgwebos:WebOSTV:192_168_2_119:mediaPlayer"}
+Number LG_TV0_ChannelNo "Channel #"          { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
+Switch LG_TV0_ChannelDown "Channel -"        { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelDown"  }
+Switch LG_TV0_ChannelUp "Channel +"          { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelUp"  }
+String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:192_168_2_119:channelName"}
+String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:192_168_2_119:toast"}
+Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:mediaStop" }
+String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:192_168_2_119:appLauncher"} 
+Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:192_168_2_119:mediaPlayer"}
 
 // this assumes you also have the wake on lan binding configured & You need to update your broadcast and mac address
-Switch LG_TV0_WOL   { wol="192.168.2.255#3c:cd:93:c2:20:e0" }
+Switch LG_TV0_WOL                            { wol="192.168.2.255#3c:cd:93:c2:20:e0" }
 ```
 
 demo.sitemap:

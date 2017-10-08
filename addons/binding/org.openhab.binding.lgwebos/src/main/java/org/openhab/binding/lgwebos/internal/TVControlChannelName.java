@@ -36,7 +36,7 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
         // nothing to do, this is read only.
     }
 
@@ -48,7 +48,7 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener> {
 
                 @Override
                 public void onError(ServiceCommandError error) {
-                    logger.warn("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
                 }
 
                 @Override

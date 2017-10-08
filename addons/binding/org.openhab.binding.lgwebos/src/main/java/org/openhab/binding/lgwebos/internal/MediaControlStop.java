@@ -9,13 +9,14 @@
 package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.MediaControl;
 
 /**
  * Handles Media Control Command Stop.
- * 
+ *
  * @author Sebastian Prehn
  * @since 1.8.0
  */
@@ -26,7 +27,10 @@ public class MediaControlStop extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(MediaControl.Stop)) {
             getControl(d).stop(createDefaultResponseListener());
         }

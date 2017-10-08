@@ -39,7 +39,10 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         PercentType percent = null;
         if (command instanceof PercentType) {
             percent = (PercentType) command;
@@ -86,7 +89,7 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
 
                 @Override
                 public void onError(ServiceCommandError error) {
-                    logger.warn("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
                 }
 
                 @Override

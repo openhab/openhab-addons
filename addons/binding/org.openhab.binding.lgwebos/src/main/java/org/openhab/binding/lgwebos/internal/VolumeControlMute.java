@@ -34,7 +34,10 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(VolumeControl.Mute_Set)) {
             OnOffType onOffType;
             if (command instanceof OnOffType) {
@@ -55,7 +58,7 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
 
                 @Override
                 public void onError(ServiceCommandError error) {
-                    logger.warn("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
                 }
 
                 @Override

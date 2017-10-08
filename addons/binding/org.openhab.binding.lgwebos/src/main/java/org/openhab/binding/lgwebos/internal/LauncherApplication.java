@@ -39,7 +39,10 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(Launcher.Application_List, Launcher.Application)) {
             final String value = command.toString();
             final Launcher control = getControl(d);
@@ -77,7 +80,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
 
                 @Override
                 public void onError(ServiceCommandError error) {
-                    logger.warn("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
                 }
 
                 @Override

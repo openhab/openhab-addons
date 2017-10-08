@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,10 @@ public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (command instanceof NextPreviousType) {
             if (NextPreviousType.NEXT == command && d.hasCapabilities(PlaylistControl.Next)) {
                 getPlayListControl(d).next(createDefaultResponseListener());

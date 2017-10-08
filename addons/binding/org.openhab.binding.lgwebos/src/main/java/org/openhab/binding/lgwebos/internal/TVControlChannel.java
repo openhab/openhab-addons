@@ -40,7 +40,10 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, Command command) {
+    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
+        if (d == null) {
+            return;
+        }
         if (d.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
             final String value = command.toString();
             final TVControl control = getControl(d);
