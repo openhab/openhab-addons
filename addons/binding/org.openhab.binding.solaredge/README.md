@@ -78,6 +78,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 | aggregate#production                     | Number       | Aggregate PV production                    |
 | aggregate#consumption                    | Number       | Aggregate power consumption                |
 | aggregate#selfConsumptionForConsumption  | Number       | Aggregate self consumption (incl battery)  |
+| aggregate#selfConsumptionCoverage        | Number       | Coverage of consumption by self production |
 | aggregate#batterySelfConsumption         | Number       | Aggregate self consumption from battery    |
 | aggregate#import                         | Number       | Aggregate import from grid                 |
 | aggregate#export                         | Number       | Aggregate export to grid                   |
