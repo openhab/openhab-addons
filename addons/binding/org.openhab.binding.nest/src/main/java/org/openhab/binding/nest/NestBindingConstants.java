@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author David Bennett - Initial contribution
  */
+@NonNullByDefault
 public class NestBindingConstants {
 
     public static final String BINDING_ID = "nest";
@@ -54,6 +56,7 @@ public class NestBindingConstants {
     // List of all Channel IDs
     // read/write channels (thermostat)
     public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_SET_POINT = "set_point";
     public static final String CHANNEL_MAX_SET_POINT = "max_set_point";
     public static final String CHANNEL_MIN_SET_POINT = "min_set_point";
     public static final String CHANNEL_FAN_TIMER_ACTIVE = "fan_timer_active";

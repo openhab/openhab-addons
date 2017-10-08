@@ -16,6 +16,7 @@
 			<channel id="humidity" typeId="Humidity" />
 			<channel id="mode" typeId="Mode" />
 			<channel id="previous_mode" typeId="PreviousMode" />
+			<channel id="set_point" typeId="SetPoint" />
 			<channel id="max_set_point" typeId="MaxSetPoint" />
 			<channel id="min_set_point" typeId="MinSetPoint" />
 			<channel id="can_heat" typeId="CanHeat" />

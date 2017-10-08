@@ -27,7 +27,7 @@
 		<description>Postal code of the structure</description>
 	</channel-type>
 
-	<channel-type id="TimeZone" advanced="false">
+	<channel-type id="TimeZone">
 		<item-type>String</item-type>
 		<label>Time Zone</label>
 		<description>The time zone for the structure</description>
@@ -166,7 +166,15 @@
 		<label>Temperature</label>
 		<description>Current temperature in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="SetPoint">
+		<item-type>Number</item-type>
+		<label>Set Point</label>
+		<description>The set point in degrees Celsius</description>
+		<category>Temperature</category>
+        <state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MaxSetPoint">
@@ -174,7 +182,7 @@
 		<label>Max Set Point</label>
 		<description>The max set point in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="false" />
+        <state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MinSetPoint">
@@ -182,7 +190,7 @@
 		<label>Min Set Point</label>
 		<description>The min set point in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="false" />
+        <state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="LockedMaxSetPoint" advanced="true">
@@ -190,7 +198,7 @@
 		<label>Locked Max Set Point</label>
 		<description>The locked range max set point in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="false" />
+		<state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="LockedMinSetPoint" advanced="true">
@@ -198,7 +206,7 @@
 		<label>Locked Min Set Point</label>
 		<description>The locked range min set point in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="false" />
+        <state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="Locked" advanced="true">
@@ -212,7 +220,7 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode of the Nest thermostat</description>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="OFF">off</option>
 				<option value="ECO">eco</option>
@@ -243,7 +251,7 @@
 		<label>Humidity</label>
 		<description>Indicates the current relative humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f" readOnly="true" />
+		<state pattern="%.1f %%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="TimeToTarget">
@@ -271,14 +279,14 @@
 		<item-type>Switch</item-type>
 		<label>Fan Timer Active</label>
 		<description>If the fan timer is engaged</description>
-		<state readOnly="false" />
+		<state/>
 	</channel-type>
 
 	<channel-type id="FanTimerDuration" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan Timer Duration</label>
 		<description>Length of time (in minutes) that the fan is set to run</description>
-		<state readOnly="false" />
+		<state/>
 	</channel-type>
 
 	<channel-type id="HasFan" advanced="true">
@@ -288,7 +296,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="HasLeaf">
+	<channel-type id="HasLeaf" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Leaf</label>
 		<description>If the thermostat is currently in a leaf mode</description>

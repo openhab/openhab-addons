@@ -10,8 +10,6 @@ package org.openhab.binding.nest.internal.data;
 
 import java.util.Date;
 
-import org.openhab.binding.nest.internal.NestIdentifiable;
-
 import com.google.gson.annotations.SerializedName;
 
 /**

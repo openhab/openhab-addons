@@ -104,6 +104,7 @@ The account Thing Type does not have any channels.
 | previous_mode               | String    | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF) |     R      |
 | temperature                 | Number    | Current temperature in degrees Celsius   |     R      |
 | time_to_target_mins         | Number    | Time left to the target temperature (mins) approximately |     R      |
+| set_point                   | Number    | The set point in degrees Celsius         |    R/W     |
 | sunlight_correction_active  | Switch    | If sunlight correction is active         |     R      |
 | sunlight_correction_enabled | Switch    | If sunlight correction is enabled        |     R      |
 | using_emergency_heat        | Switch    | If the system is currently using emergency heat |     R      |
@@ -123,7 +124,7 @@ Another way to get the deviceId and structureId values is by querying the Nest A
 ### demo.things:
 
 ```
-Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589e0", productSecret="QITLR3iyUlWaj9dbvCxsCKp4f", accessToken="c.6rse1xtRk2UANErcY0XazaqPHgbvSSB6owOrbZrZ6IXrmqhsr9QTmcfaiLX1l0ULvlI5xLp01xmKeiojHqozLQbNM8yfITj1LSdK28zsUft1aKKH2mDlOeoqZKBdVIsxyZk4orH0AvKEZ5aY", refreshInterval="120" ] {
+Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589e0", productSecret="QITLR3iyUlWaj9dbvCxsCKp4f", accessToken="c.6rse1xtRk2UANErcY0XazaqPHgbvSSB6owOrbZrZ6IXrmqhsr9QTmcfaiLX1l0ULvlI5xLp01xmKeiojHqozLQbNM8yfITj1LSdK28zsUft1aKKH2mDlOeoqZKBdVIsxyZk4orH0AvKEZ5aY" ] {
     camera         fish_cam           [ deviceId="qw0NNE8ruxA9AGJkTaFH3KeUiJaONWKiH9Gh3RwwhHClonIexTtufQ" ]
     smoke_detector hallway_smoke      [ deviceId="Tzvibaa3lLKnHpvpi9OQeCI_z5rfkBAV" ]
     structure      home               [ structureId="20wKjydArmMV3kOluTA7JRcZg8HKBzTR-G_2nRXuIN1Bd6laGLOJQw" ]
@@ -165,6 +166,7 @@ Number Thermostat_Max_SP       "Max Set Point [%.1f °C]"        { channel="nest
 Number Thermostat_Min_SP       "Min Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
 String Thermostat_Mode         "Mode [%s]"                      { channel="nest:thermostat:demo_account:living_thermostat:mode" }
 String Thermostat_PreviousMode "Previous Mode [%s]"             { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
+Number Thermostat_Set_Point    "Set Point [%.1f °C]"            { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
 Switch Thermostat_SunlightCA   "Sunlight Correction Active"     { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
 Switch Thermostat_SunlightCE   "Sunlight Correction Enabled"    { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
 Number Thermostat_Temperature  "Temperature [%.1f °C]"          { channel="nest:thermostat:demo_account:living_thermostat:temperature" }

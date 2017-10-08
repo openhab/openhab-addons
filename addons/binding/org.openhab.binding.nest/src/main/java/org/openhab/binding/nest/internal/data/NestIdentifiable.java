@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.internal;
+package org.openhab.binding.nest.internal.data;
 
 /**
  * Interface for uniquely identifiable Nest objects (device or a structure).

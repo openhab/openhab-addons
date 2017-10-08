@@ -8,20 +8,19 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
-import org.openhab.binding.nest.internal.data.Camera;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Structure.HomeAwayState;
-import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +28,42 @@ import org.slf4j.LoggerFactory;
  * Deals with the structures on the Nest API, turning them into a thing in openHAB.
  *
  * @author David Bennett - initial contribution
+ * @author Wouter Born - Handle channel refresh command
  */
-public class NestStructureHandler extends NestBaseHandler {
-    private Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
+public class NestStructureHandler extends NestBaseHandler<Structure> {
+    private final Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
 
     public NestStructureHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected State getChannelState(ChannelUID channelUID, Structure structure) {
+        switch (channelUID.getId()) {
+            case CHANNEL_AWAY:
+                return getAsStringTypeOrNull(structure.getAway());
+            case CHANNEL_CO_ALARM_STATE:
+                return getAsStringTypeOrNull(structure.getCoAlarmState());
+            case CHANNEL_COUNTRY_CODE:
+                return getAsStringTypeOrNull(structure.getCountryCode());
+            case CHANNEL_ETA_BEGIN:
+                return getAsDateTimeTypeOrNull(structure.getEtaBegin());
+            case CHANNEL_PEAK_PERIOD_END_TIME:
+                return getAsDateTimeTypeOrNull(structure.getPeakPeriodEndTime());
+            case CHANNEL_PEAK_PERIOD_START_TIME:
+                return getAsDateTimeTypeOrNull(structure.getPeakPeriodStartTime());
+            case CHANNEL_POSTAL_CODE:
+                return getAsStringTypeOrNull(structure.getPostalCode());
+            case CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT:
+                return getAsOnOffType(structure.isRushHourRewardsEnrollement());
+            case CHANNEL_SMOKE_ALARM_STATE:
+                return getAsStringTypeOrNull(structure.getSmokeAlarmState());
+            case CHANNEL_TIME_ZONE:
+                return getAsStringTypeOrNull(structure.getTimeZone());
+            default:
+                logger.error("Unsupported channelId '{}'", channelUID.getId());
+                return UnDefType.UNDEF;
+        }
     }
 
     @Override
@@ -55,7 +84,11 @@ public class NestStructureHandler extends NestBaseHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_AWAY)) {
+        if (REFRESH.equals(command)) {
+            if (getLastUpdate() != null) {
+                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            }
+        } else if (CHANNEL_AWAY.equals(channelUID.getId())) {
             // Change the home/away state.
             if (command instanceof StringType) {
                 StringType cmd = (StringType) command;
@@ -66,41 +99,16 @@ public class NestStructureHandler extends NestBaseHandler {
     }
 
     @Override
-    public void onNewNestThermostatData(Thermostat thermostat) {
-        // ignore we are not a thermostat handler
-    }
-
-    @Override
-    public void onNewNestCameraData(Camera camera) {
-        // ignore we are not a camera handler
-    }
-
-    @Override
-    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        // ignore we are not a smoke sensor handler
-    }
-
-    @Override
     public void onNewNestStructureData(Structure structure) {
         if (isNotHandling(structure)) {
+            logger.debug("Structure {} is not handling update for {}", getStructureId(), structure.getStructureId());
             return;
         }
 
         logger.debug("Updating structure {}", structure.getStructureId());
-        updateState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT,
-                structure.isRushHourRewardsEnrollement() ? OnOffType.ON : OnOffType.OFF);
-        // @formatter:off
-        updateState(CHANNEL_COUNTRY_CODE,           getAsStringTypeOrNull(structure.getCountryCode()));
-        updateState(CHANNEL_POSTAL_CODE,            getAsStringTypeOrNull(structure.getPostalCode()));
-        updateState(CHANNEL_PEAK_PERIOD_START_TIME, getAsDateTimeTypeOrNull(structure.getPeakPeriodStartTime()));
-        updateState(CHANNEL_PEAK_PERIOD_END_TIME,   getAsDateTimeTypeOrNull(structure.getPeakPeriodEndTime()));
-        updateState(CHANNEL_TIME_ZONE,              getAsStringTypeOrNull(structure.getTimeZone()));
-        updateState(CHANNEL_ETA_BEGIN,              getAsDateTimeTypeOrNull(structure.getEtaBegin()));
-        updateState(CHANNEL_CO_ALARM_STATE,         getAsStringTypeOrNull(structure.getCoAlarmState()));
-        updateState(CHANNEL_SMOKE_ALARM_STATE,      getAsStringTypeOrNull(structure.getSmokeAlarmState()));
-        updateState(CHANNEL_AWAY,                   getAsStringTypeOrNull(structure.getAway()));
-        // @formatter:on
 
+        setLastUpdate(structure);
+        updateChannels(structure);
         updateStatus(ThingStatus.ONLINE);
     }
 

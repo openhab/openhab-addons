@@ -13,17 +13,23 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.nest.internal.NestDeviceDataListener;
-import org.openhab.binding.nest.internal.NestIdentifiable;
-import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
+import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.NestIdentifiable;
+import org.openhab.binding.nest.internal.data.SmokeDetector;
+import org.openhab.binding.nest.internal.data.Structure;
+import org.openhab.binding.nest.internal.data.Thermostat;
+import org.openhab.binding.nest.internal.listener.NestDeviceDataListener;
+import org.openhab.binding.nest.internal.rest.NestUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,19 +38,35 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - initial contribution
  * @author Martin van Wingerden - Splitted of NestBaseHandler
+ * @author Wouter Born - Add generic update data type
+ *
+ * @param <T> the type of update data
  */
-abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDataListener, NestIdentifiable {
+abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDeviceDataListener, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
+    private T lastUpdate;
 
     NestBaseHandler(Thing thing) {
         super(thing);
+    }
+
+    protected T getLastUpdate() {
+        return lastUpdate;
+    }
+
+    protected void setLastUpdate(T lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for {}", getClass().getName());
         if (getNestBridgeHandler() != null) {
-            getNestBridgeHandler().addDeviceDataListener(this);
+            boolean success = getNestBridgeHandler().addDeviceDataListener(this);
+            logger.debug("Adding {} with ID '{}' as device data listener, result: {}", getClass().getSimpleName(),
+                    getId(), success);
+        } else {
+            logger.debug("Unable to add {} with ID '{}' as device data listener because bridge is null");
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");
@@ -57,37 +79,7 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
         }
     }
 
-    @Override
-    public String getId() {
-        return getDeviceId();
-    }
-
-    private String getDeviceId() {
-        return getConfigAs(NestDeviceConfiguration.class).deviceId;
-    }
-
-    private NestBridgeHandler getNestBridgeHandler() {
-        return getBridge() != null ? (NestBridgeHandler) getBridge().getHandler() : null;
-    }
-
-    boolean isNotHandling(NestIdentifiable nestIdentifiable) {
-        return !(getId().equals(nestIdentifiable.getId()));
-    }
-
-    State getAsStringTypeOrNull(Object value) {
-        return value == null ? UnDefType.NULL : new StringType(value.toString());
-    }
-
-    State getAsDateTimeTypeOrNull(Date date) {
-        if (date == null) {
-            return UnDefType.NULL;
-        }
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.setTime(date);
-        return new DateTimeType(cal);
-    }
-
-    void addUpdateRequest(String updateUrl, String field, Object value) {
+    protected void addUpdateRequest(String updateUrl, String field, Object value) {
         if (getNestBridgeHandler() != null) {
         // @formatter:off
         getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
@@ -97,5 +89,65 @@ abstract class NestBaseHandler extends BaseThingHandler implements NestDeviceDat
             .build());
         // @formatter:on
         }
+    }
+
+    @Override
+    public String getId() {
+        return getDeviceId();
+    }
+
+    protected String getDeviceId() {
+        return getConfigAs(NestDeviceConfiguration.class).deviceId;
+    }
+
+    protected NestBridgeHandler getNestBridgeHandler() {
+        return getBridge() != null ? (NestBridgeHandler) getBridge().getHandler() : null;
+    }
+
+    protected abstract State getChannelState(ChannelUID channelUID, T data);
+
+    protected State getAsDateTimeTypeOrNull(Date date) {
+        if (date == null) {
+            return UnDefType.NULL;
+        }
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.setTime(date);
+        return new DateTimeType(cal);
+    }
+
+    protected OnOffType getAsOnOffType(boolean value) {
+        return value ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    protected State getAsStringTypeOrNull(Object value) {
+        return value == null ? UnDefType.NULL : new StringType(value.toString());
+    }
+
+    protected boolean isNotHandling(NestIdentifiable nestIdentifiable) {
+        return !(getId().equals(nestIdentifiable.getId()));
+    }
+
+    protected void updateChannels(T data) {
+        getThing().getChannels().forEach(c -> updateState(c.getUID(), getChannelState(c.getUID(), data)));
+    }
+
+    @Override
+    public void onNewNestCameraData(Camera camera) {
+        // can be overridden by subclasses for handling new camera data
+    }
+
+    @Override
+    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
+        // can be overridden by subclasses for handling new smoke detector data
+    }
+
+    @Override
+    public void onNewNestStructureData(Structure structure) {
+        // can be overridden by subclasses for handling new structure data
+    }
+
+    @Override
+    public void onNewNestThermostatData(Thermostat thermostat) {
+        // can be overridden by subclasses for handling new thermostat data
     }
 }

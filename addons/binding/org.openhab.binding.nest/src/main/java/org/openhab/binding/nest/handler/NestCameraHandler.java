@@ -9,18 +9,17 @@
 package org.openhab.binding.nest.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.data.Camera;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
-import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +28,47 @@ import org.slf4j.LoggerFactory;
  * updates to Nest.
  *
  * @author David Bennett - initial contribution
+ * @author Wouter Born - Handle channel refresh command
  */
-public class NestCameraHandler extends NestBaseHandler {
-    private Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
+public class NestCameraHandler extends NestBaseHandler<Camera> {
+    private final Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
 
     public NestCameraHandler(Thing thing) {
         super(thing);
     }
 
     @Override
+    protected State getChannelState(ChannelUID channelUID, Camera camera) {
+        switch (channelUID.getId()) {
+            case CHANNEL_APP_URL:
+                return getAsStringTypeOrNull(camera.getAppUrl());
+            case CHANNEL_AUDIO_INPUT_ENABLED:
+                return getAsOnOffType(camera.isAudioInputEnabled());
+            case CHANNEL_PUBLIC_SHARE_ENABLED:
+                return getAsOnOffType(camera.isPublicShareEnabled());
+            case CHANNEL_PUBLIC_SHARE_URL:
+                return getAsStringTypeOrNull(camera.getPublicShareUrl());
+            case CHANNEL_SNAPSHOT_URL:
+                return getAsStringTypeOrNull(camera.getSnapshotUrl());
+            case CHANNEL_STREAMING:
+                return getAsOnOffType(camera.isStreaming());
+            case CHANNEL_VIDEO_HISTORY_ENABLED:
+                return getAsOnOffType(camera.isVideoHistoryEnabled());
+            case CHANNEL_WEB_URL:
+                return getAsStringTypeOrNull(camera.getWebUrl());
+            default:
+                logger.error("Unsupported channelId '{}'", channelUID.getId());
+                return UnDefType.UNDEF;
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_STREAMING.equals(channelUID.getId())) {
+        if (REFRESH.equals(command)) {
+            if (getLastUpdate() != null) {
+                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            }
+        } else if (CHANNEL_STREAMING.equals(channelUID.getId())) {
             // Change the mode.
             if (command instanceof OnOffType) {
                 // Set the mode to be the cmd value.
@@ -49,40 +78,18 @@ public class NestCameraHandler extends NestBaseHandler {
     }
 
     @Override
-    public void onNewNestThermostatData(Thermostat thermostat) {
-        // ignore we are not a thermostat handler
-    }
-
-    @Override
     public void onNewNestCameraData(Camera camera) {
         if (isNotHandling(camera)) {
+            logger.debug("Camera {} is not handling update for {}", getDeviceId(), camera.getDeviceId());
             return;
         }
 
         logger.debug("Updating camera {}", camera.getDeviceId());
-        updateState(CHANNEL_STREAMING, camera.isStreaming() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_VIDEO_HISTORY_ENABLED, camera.isVideoHistoryEnabled() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_AUDIO_INPUT_ENABLED, camera.isAudioInputEnabled() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_PUBLIC_SHARE_ENABLED, camera.isPublicShareEnabled() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_PUBLIC_SHARE_URL, new StringType(camera.getPublicShareUrl()));
-        updateState(CHANNEL_WEB_URL, new StringType(camera.getWebUrl()));
-        updateState(CHANNEL_APP_URL, new StringType(camera.getAppUrl()));
-        updateState(CHANNEL_SNAPSHOT_URL, new StringType(camera.getSnapshotUrl()));
 
+        setLastUpdate(camera);
+        updateChannels(camera);
         updateStatus(camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-
-        // Setup the properties for this device.
         updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
-    }
-
-    @Override
-    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        // ignore we are not a smoke sensor handler
-    }
-
-    @Override
-    public void onNewNestStructureData(Structure struct) {
-        // ignore we are not a structure handler
     }
 
     private void addUpdateRequest(String field, Object value) {

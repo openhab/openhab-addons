@@ -9,19 +9,18 @@
 package org.openhab.binding.nest.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nest.internal.data.Camera;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.SmokeDetector.BatteryHealth;
-import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +28,32 @@ import org.slf4j.LoggerFactory;
  * The smoke detector handler, it handles the data from Nest for the smoke detector.
  *
  * @author David Bennett - Initial Contribution
+ * @author Wouter Born - Handle channel refresh command
  */
-public class NestSmokeDetectorHandler extends NestBaseHandler {
-    private Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
+public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
+    private final Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
     public NestSmokeDetectorHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected State getChannelState(ChannelUID channelUID, SmokeDetector smokeDetector) {
+        switch (channelUID.getId()) {
+            case CHANNEL_CO_ALARM_STATE:
+                return new StringType(smokeDetector.getCoAlarmState().toString());
+            case CHANNEL_LOW_BATTERY:
+                return getAsOnOffType(smokeDetector.getBatteryHealth() == BatteryHealth.REPLACE);
+            case CHANNEL_MANUAL_TEST_ACTIVE:
+                return getAsOnOffType(smokeDetector.isManualTestActive());
+            case CHANNEL_SMOKE_ALARM_STATE:
+                return new StringType(smokeDetector.getSmokeAlarmState().toString());
+            case CHANNEL_UI_COLOR_STATE:
+                return new StringType(smokeDetector.getUiColorState().toString());
+            default:
+                logger.error("Unsupported channelId '{}'", channelUID.getId());
+                return UnDefType.UNDEF;
+        }
     }
 
     /**
@@ -42,42 +61,26 @@ public class NestSmokeDetectorHandler extends NestBaseHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // There is nothing to update on the smoke detector.
-    }
-
-    @Override
-    public void onNewNestThermostatData(Thermostat thermostat) {
-        // ignore we are not a thermostat handler
-    }
-
-    @Override
-    public void onNewNestCameraData(Camera camera) {
-        // ignore we are not a camera handler
+        if (REFRESH.equals(command)) {
+            if (getLastUpdate() != null) {
+                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            }
+        }
     }
 
     @Override
     public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
         if (isNotHandling(smokeDetector)) {
+            logger.debug("Smoke detector {} is not handling update for {}", getDeviceId(), smokeDetector.getDeviceId());
             return;
         }
 
         logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
-        updateState(CHANNEL_UI_COLOR_STATE, new StringType(smokeDetector.getUiColorState().toString()));
-        updateState(CHANNEL_LOW_BATTERY,
-                smokeDetector.getBatteryHealth() == BatteryHealth.OK ? OnOffType.OFF : OnOffType.ON);
-        updateState(CHANNEL_CO_ALARM_STATE, new StringType(smokeDetector.getCoAlarmState().toString()));
-        updateState(CHANNEL_SMOKE_ALARM_STATE, new StringType(smokeDetector.getSmokeAlarmState().toString()));
-        updateState(CHANNEL_MANUAL_TEST_ACTIVE, smokeDetector.isManualTestActive() ? OnOffType.ON : OnOffType.OFF);
 
+        setLastUpdate(smokeDetector);
+        updateChannels(smokeDetector);
         updateStatus(smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-
-        // Setup the properties for this device.
         updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
-    }
-
-    @Override
-    public void onNewNestStructureData(Structure struct) {
-        // ignore we are not a structure handler
     }
 
 }
