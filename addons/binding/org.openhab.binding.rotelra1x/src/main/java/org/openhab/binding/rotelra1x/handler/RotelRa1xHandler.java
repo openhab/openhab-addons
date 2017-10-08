@@ -312,11 +312,11 @@ public class RotelRa1xHandler extends BaseThingHandler {
                 }
             }
         } catch (IOException e) {
-            logger.info("An I/O error occurred while processing the command {}.", command, e);
+            logger.debug("An I/O error occurred while processing the command {}.", command, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
         } catch (ConfigurationError e) {
-            logger.info("There is an error in the configuration of the thing.", e);
+            logger.debug("There is an error in the configuration of the thing.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             disconnect();
         }
