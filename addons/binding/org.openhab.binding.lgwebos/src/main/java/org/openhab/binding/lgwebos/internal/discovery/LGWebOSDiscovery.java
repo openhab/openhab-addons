@@ -44,7 +44,8 @@ import com.connectsdk.service.command.ServiceCommandError;
  * @author Sebastian Prehn
  * @since 1.8.0
  */
-@Component(service = { DiscoveryService.class, LGWebOSDiscovery.class }, immediate = true, name = "binding.lgwebos")
+@Component(service = { DiscoveryService.class,
+        LGWebOSDiscovery.class }, immediate = true, configurationPid = "binding.lgwebos")
 public class LGWebOSDiscovery extends AbstractDiscoveryService implements DiscoveryManagerListener, Context {
     private static final int DISCOVERY_TIMEOUT = 5; // in seconds
 

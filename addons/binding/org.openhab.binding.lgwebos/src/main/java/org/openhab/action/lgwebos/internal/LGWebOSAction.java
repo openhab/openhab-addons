@@ -45,7 +45,7 @@ import com.google.common.collect.Iterables;
  * @author Sebastian Prehn
  * @since 2.1.0
  */
-@Component(service = ActionService.class, immediate = true, name = "action.lgwebos")
+@Component(service = ActionService.class, immediate = true)
 public class LGWebOSAction implements ActionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LGWebOSAction.class);
 
