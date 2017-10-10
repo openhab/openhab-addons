@@ -27,6 +27,8 @@ allowSystemPings=false
 
 Auto discovery can be used to scan the local network for **pingdevice** things by sending a ping to every IP on the network. Some network tools will identify this as a network intruder alarm, therefore automatic background discovery is disabled and a manual scan needs to be issued.
 
+Please note: things discovered by the network binding will be provided with a time to live (TTL) and will automatically disappear from the Inbox after 10 minutes. 
+
 ## Thing Configuration
 
 ```

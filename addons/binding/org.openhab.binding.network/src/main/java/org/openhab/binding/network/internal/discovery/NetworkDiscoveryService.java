@@ -50,6 +50,7 @@ import com.google.common.collect.Sets;
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
     static final int PING_TIMEOUT_IN_MS = 500;
     static final int MAXIMUM_IPS_PER_INTERFACE = 255;
+    private static final long DISCOVERY_RESULT_TTL = TimeUnit.MINUTES.toSeconds(10);
     private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
 
     // TCP port 548 (Apple Filing Protocol (AFP))
@@ -208,7 +209,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);
         properties.put(PARAMETER_PORT, tcpPort);
-        thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip, tcpPort)).withTTL(120)
+        thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip, tcpPort)).withTTL(DISCOVERY_RESULT_TTL)
                 .withProperties(properties).withLabel(label).build());
     }
 
