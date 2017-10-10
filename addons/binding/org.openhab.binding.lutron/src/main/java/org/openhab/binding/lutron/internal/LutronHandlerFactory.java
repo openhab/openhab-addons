@@ -25,6 +25,9 @@ import org.openhab.binding.lutron.handler.SwitchHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
+import org.openhab.binding.lutron.internal.radiora.handler.RS232Handler;
+import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -42,7 +45,9 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE);
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
+            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
+            RadioRAConstants.THING_TYPE_PHANTOM);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,6 +74,14 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
             return new GrafikEyeHandler(thing);
+        } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_RS232)) {
+            return new RS232Handler((Bridge) thing);
+        } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_DIMMER)) {
+            return new org.openhab.binding.lutron.internal.radiora.handler.DimmerHandler(thing);
+        } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_SWITCH)) {
+            return new org.openhab.binding.lutron.internal.radiora.handler.SwitchHandler(thing);
+        } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_PHANTOM)) {
+            return new PhantomButtonHandler(thing);
         }
 
         return null;

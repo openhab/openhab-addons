@@ -6,12 +6,11 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.lutron;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Export-Package: 
- org.openhab.binding.lutron,
+Export-Package: org.openhab.binding.lutron,
  org.openhab.binding.lutron.handler
-Import-Package: 
- com.google.common.collect,
+Import-Package: com.google.common.collect,
  com.thoughtworks.xstream,
+ gnu.io,
  org.apache.commons.lang,
  org.apache.commons.net,
  org.apache.commons.net.telnet,
