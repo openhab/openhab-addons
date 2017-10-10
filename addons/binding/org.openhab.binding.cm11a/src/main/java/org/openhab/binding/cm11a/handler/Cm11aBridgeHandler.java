@@ -20,10 +20,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.cm11a.config.Cm11aConfig;
 import org.openhab.binding.cm11a.internal.X10Interface;
 import org.openhab.binding.cm11a.internal.X10ReceivedData;
 import org.openhab.binding.cm11a.internal.X10ReceivedData.X10COMMAND;
+import org.openhab.binding.cm11a.internal.config.Cm11aConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
