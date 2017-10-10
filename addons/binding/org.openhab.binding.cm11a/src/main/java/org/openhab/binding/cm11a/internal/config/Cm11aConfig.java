@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.cm11a.config;
+package org.openhab.binding.cm11a.internal.config;
 
 /**
  * Configuration constants for Cm11A
