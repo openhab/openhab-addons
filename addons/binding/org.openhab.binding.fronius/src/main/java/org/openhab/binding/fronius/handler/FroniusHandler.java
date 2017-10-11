@@ -53,8 +53,8 @@ public class FroniusHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusHandler.class);
 
-    private static final String InverterRealtimeDataUrl = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
-    private static final String PowerFlowRealtimeData = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
+    private static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
+    private static final String POWERFLOW_REALTIME_DATA = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
     private static final int DEFAULT_REFRESH_PERIOD = 5;
 
     private ScheduledFuture<?> refreshJob;
@@ -267,7 +267,7 @@ public class FroniusHandler extends BaseThingHandler {
 
         try {
 
-            String location = PowerFlowRealtimeData.replace("%IP%", StringUtils.trimToEmpty(ip));
+            String location = POWERFLOW_REALTIME_DATA.replace("%IP%", StringUtils.trimToEmpty(ip));
             logger.debug("URL = {}", location);
             URL url = new URL(location);
             URLConnection connection = url.openConnection();
@@ -318,7 +318,7 @@ public class FroniusHandler extends BaseThingHandler {
 
         try {
 
-            String location = InverterRealtimeDataUrl.replace("%IP%", StringUtils.trimToEmpty(ip));
+            String location = INVERTER_REALTIME_DATA_URL.replace("%IP%", StringUtils.trimToEmpty(ip));
             location = location.replace("%DEVICEID%", StringUtils.trimToEmpty(deviceId));
             logger.debug("URL = {}", location);
 

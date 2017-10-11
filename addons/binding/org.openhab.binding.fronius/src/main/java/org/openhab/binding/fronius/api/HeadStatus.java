@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HeadStatus} is responsible for storing
- * the "status" node in from the head
+ * the "status" node from the head
  *
  * @author Thomas Rokohl - Initial contribution
  */

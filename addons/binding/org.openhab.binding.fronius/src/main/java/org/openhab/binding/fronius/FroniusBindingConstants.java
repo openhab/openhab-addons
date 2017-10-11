@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class FroniusBindingConstants {
 
-    private static final String BINDING_ID = "fronius";
+    private static final String BINDING_ID = "powerinverter";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "fronius");

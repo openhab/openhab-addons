@@ -1,13 +1,12 @@
 # Fronius Binding
 
-This binding uses the [Fronius Solar API V1](http://www.fronius.com/cps/rde/xchg/SID-50921547-DF4684B5/fronius_international/hs.xsl/83_28911_DEU_HTML.htm) to obtain data of a Fronius devices
+This binding uses the [Fronius Solar API V1](http://www.fronius.com/cps/rde/xchg/SID-50921547-DF4684B5/fronius_international/hs.xsl/83_28911_DEU_HTML.htm) to obtain data from a Fronius devices
 
 
 ## Supported Things
 
 There is exactly one supported thing type, which represents a fronius device. 
 You can add multiple Things with different "DeviceIds". ( Default 1 ) 
-
 
 ## Discovery
 
@@ -27,9 +26,7 @@ The thing has a few configuration parameters:
 | DeviceId  | The identifier of your device ( Default: 1) |
 | refresh   | Refresh interval in seconds |
 
-
 ## Channels
-
 
 | Channel ID | Item Type    | Description              |
 |------------|--------------|------------------------- |
