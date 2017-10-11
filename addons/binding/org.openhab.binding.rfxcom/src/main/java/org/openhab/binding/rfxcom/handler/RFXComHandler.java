@@ -59,15 +59,12 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         if (bridgeHandler != null) {
-
             if (command instanceof RefreshType) {
                 logger.trace("Received unsupported Refresh command");
             } else {
-
                 try {
-
                     PacketType packetType = RFXComMessageFactory
-                            .convertPacketType(channelUID.getThingUID().getThingTypeId().toUpperCase());
+                            .convertPacketType(getThing().getThingTypeUID().getId().toUpperCase());
 
                     RFXComMessage msg = RFXComMessageFactory.createMessage(packetType);
 
@@ -81,7 +78,6 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                     logger.error("Transmitting error", e);
                 }
             }
-
         }
     }
 
@@ -106,7 +102,6 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "RFXCOM device missing deviceId or subType");
         } else if (thingHandler != null && bridgeStatus != null) {
-
             bridgeHandler = (RFXComBridgeHandler) thingHandler;
             bridgeHandler.registerDeviceStatusListener(this);
 
@@ -145,12 +140,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         String channelId = channel.getUID().getId();
 
                         try {
-                            if (channelId.equals( CHANNEL_LOW_BATTERY)) {
-                                    updateState(channelId,
-                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
-                                    } else {
-                                    updateState(channelId,
-                                            message.convertToState(channelId));
+                            if (channelId.equals(CHANNEL_LOW_BATTERY)) {
+                                updateState(channelId, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                            } else {
+                                updateState(channelId, message.convertToState(channelId));
                             }
                         } catch (RFXComException e) {
                             logger.trace("{} does not handle {}", channelId, message);

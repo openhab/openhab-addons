@@ -20,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Martin van Wingerden
  */
-public interface RFXComDeviceMessage extends RFXComMessage {
+public interface RFXComDeviceMessage<T> extends RFXComMessage {
     /**
      * Procedure for converting RFXCOM value to openHAB state.
      *
@@ -59,14 +59,14 @@ public interface RFXComDeviceMessage extends RFXComMessage {
      * @return sub type object.
      * @throws RFXComUnsupportedValueException if the given subType cannot be converted
      */
-    Object convertSubType(String subType) throws RFXComUnsupportedValueException;
+    T convertSubType(String subType) throws RFXComUnsupportedValueException;
 
     /**
      * Procedure to set sub type.
-
+     *
      * @param subType
      */
-    void setSubType(Object subType);
+    void setSubType(T subType);
 
     /**
      * Procedure to set device id.
@@ -82,5 +82,6 @@ public interface RFXComDeviceMessage extends RFXComMessage {
      * @param config
      * @throws RFXComException
      */
+    @Override
     void setConfig(RFXComDeviceConfiguration config) throws RFXComException;
 }

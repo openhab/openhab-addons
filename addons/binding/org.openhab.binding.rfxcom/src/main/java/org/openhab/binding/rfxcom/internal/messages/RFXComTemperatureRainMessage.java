@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -25,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Martin van Wingerden - ported to openHAB 2.0
  * @since 1.9.0
  */
-public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
+public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage<RFXComTemperatureRainMessage.SubType> {
 
     public enum SubType {
         WS1200(1);
@@ -84,7 +83,6 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -127,7 +125,6 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
                 return new DecimalType(temperature);
@@ -146,7 +143,7 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;
@@ -162,7 +159,7 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException();
     }
 

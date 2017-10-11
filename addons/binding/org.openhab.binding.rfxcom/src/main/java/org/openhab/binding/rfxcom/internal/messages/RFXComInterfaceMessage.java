@@ -10,7 +10,6 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import java.io.UnsupportedEncodingException;
 
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;

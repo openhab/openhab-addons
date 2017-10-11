@@ -9,12 +9,12 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
 
 
 /**

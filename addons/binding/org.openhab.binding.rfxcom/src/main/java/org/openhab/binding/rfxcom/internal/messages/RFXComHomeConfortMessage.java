@@ -8,13 +8,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_COMMAND;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -24,7 +22,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
+public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHomeConfortMessage.SubType> {
 
     public enum SubType {
         TEL_010(0);
@@ -93,11 +91,8 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Device Id = " + getDeviceId()
-            + ", Command = " + command
-            + ", Signal level = " + signalLevel;
+        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", Command = "
+                + command + ", Signal level = " + signalLevel;
     }
 
     @Override
@@ -117,7 +112,6 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[13];
 
         data[0] = 0x0C;
@@ -152,13 +146,12 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-
         String[] ids = deviceId.split("\\" + ID_DELIMITER);
         if (ids.length != 3) {
             throw new RFXComException("Invalid device id '" + deviceId + "'");
@@ -190,8 +183,7 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

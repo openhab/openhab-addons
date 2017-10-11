@@ -25,8 +25,6 @@ import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
 import org.openhab.binding.rfxcom.handler.RFXComHandler;
 import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 

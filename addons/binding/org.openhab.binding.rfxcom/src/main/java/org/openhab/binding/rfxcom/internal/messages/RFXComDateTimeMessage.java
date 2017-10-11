@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_DATE_TIME;
+
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -24,7 +23,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant
  * @since 1.9.0
  */
-public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage {
+public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage<RFXComDateTimeMessage.SubType> {
 
     public enum SubType {
         RTGR328N(1);
@@ -84,7 +83,6 @@ public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -147,12 +145,12 @@ public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;
@@ -168,7 +166,7 @@ public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = (SubType) subType;
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 }

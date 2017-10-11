@@ -150,6 +150,6 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     @Override
     public void setConfig(RFXComDeviceConfiguration deviceConfiguration) throws RFXComException {
-        //noop
+        // noop
     }
 }

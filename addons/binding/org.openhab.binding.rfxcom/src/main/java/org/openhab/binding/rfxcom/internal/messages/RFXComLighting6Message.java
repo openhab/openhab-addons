@@ -8,14 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -26,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComLighting6Message extends RFXComDeviceMessageImpl {
+public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighting6Message.SubType> {
 
     public enum SubType {
         BLYSS(0);
@@ -185,8 +183,8 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -221,7 +219,7 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

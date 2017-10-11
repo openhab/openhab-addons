@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -15,15 +17,12 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_BBQ_TEMPERATURE;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_FOOD_TEMPERATURE;
-
 /**
  * RFXCOM data class for BBQ temperature message.
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage {
+public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage<RFXComBBQTemperatureMessage.SubType> {
 
     public enum SubType {
         BBQ1(1); // Maverick ET-732
@@ -66,29 +65,24 @@ public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Device Id = " + getDeviceId()
-            + ", Food temperature = " + foodTemperature
-            + ", BBQ temperature = " + bbqTemperature
-            + ", Signal level = " + signalLevel
-            + ", Battery level = " + batteryLevel;
+        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", Food temperature = "
+                + foodTemperature + ", BBQ temperature = " + bbqTemperature + ", Signal level = " + signalLevel
+                + ", Battery level = " + batteryLevel;
     }
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
-        foodTemperature = (double) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF));
+        foodTemperature = (data[6] & 0x7F) << 8 | (data[7] & 0xFF);
         if ((data[6] & 0x80) != 0) {
             foodTemperature = -foodTemperature;
         }
 
-        bbqTemperature = (double) ((data[8] & 0x7F) << 8 | (data[9] & 0xFF));
+        bbqTemperature = (data[8] & 0x7F) << 8 | (data[9] & 0xFF);
         if ((data[8] & 0x80) != 0) {
             bbqTemperature = -bbqTemperature;
         }
@@ -144,7 +138,7 @@ public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType)  {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException("Not supported");
     }
 
@@ -159,8 +153,7 @@ public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

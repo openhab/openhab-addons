@@ -9,8 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_DATE_TIME;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import javax.xml.bind.DatatypeConverter;
 

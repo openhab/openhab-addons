@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
@@ -15,22 +17,20 @@ import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
-
 /**
  * A base class for all device messages, so this is not about things as interface messages
  *
  * @author Martin van Wingerden
  */
-abstract class RFXComDeviceMessageImpl extends RFXComBaseMessage implements RFXComDeviceMessage  {
+abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements RFXComDeviceMessage<T> {
     byte signalLevel;
 
     RFXComDeviceMessageImpl(PacketType packetType) {
         super(packetType);
     }
 
-    RFXComDeviceMessageImpl(){
-
+    RFXComDeviceMessageImpl() {
+        // deliberately empty
     }
 
     @Override
@@ -50,13 +50,12 @@ abstract class RFXComDeviceMessageImpl extends RFXComBaseMessage implements RFXC
         }
     }
 
+    @Override
     public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
         String subTypeString = convertSubType(String.valueOf(subType)).toString();
         String label = getPacketType() + "-" + getDeviceId();
 
-        discoveryResultBuilder
-                .withLabel(label)
-                .withProperty(RFXComDeviceConfiguration.DEVICE_ID_LABEL, getDeviceId())
+        discoveryResultBuilder.withLabel(label).withProperty(RFXComDeviceConfiguration.DEVICE_ID_LABEL, getDeviceId())
                 .withProperty(RFXComDeviceConfiguration.SUB_TYPE_LABEL, subTypeString);
     }
 

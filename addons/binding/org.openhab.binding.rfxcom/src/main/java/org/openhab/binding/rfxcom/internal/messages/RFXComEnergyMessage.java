@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -24,7 +23,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Unknown - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage {
+public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage<RFXComEnergyMessage.SubType> {
 
     private static final double TOTAL_USAGE_CONVERSION_FACTOR = 223.666d;
     private static final double WATTS_TO_AMPS_CONVERSION_FACTOR = 230d;
@@ -90,7 +89,6 @@ public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -151,7 +149,6 @@ public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage {
 
     @Override
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_INSTANT_POWER:
                 return new DecimalType(instantPower);
@@ -171,22 +168,22 @@ public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

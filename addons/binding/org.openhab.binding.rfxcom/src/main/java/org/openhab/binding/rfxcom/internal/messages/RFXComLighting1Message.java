@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -25,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Evert van Es, Cycling Engineer - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
+public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighting1Message.SubType> {
 
     public enum SubType {
         X10(0),
@@ -121,7 +120,6 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -163,7 +161,6 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
 
     @Override
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -209,13 +206,12 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-
         String[] ids = deviceId.split("\\" + ID_DELIMITER);
         if (ids.length != 2) {
             throw new RFXComException("Invalid device id '" + deviceId + "'");
@@ -233,7 +229,6 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
@@ -255,8 +250,7 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

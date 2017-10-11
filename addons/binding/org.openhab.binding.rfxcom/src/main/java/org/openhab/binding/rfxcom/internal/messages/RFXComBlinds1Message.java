@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -26,7 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Peter Janson / Pål Edman - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage {
+public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlinds1Message.SubType> {
 
     public enum SubType {
         T0(0), // Hasta new/RollerTrol
@@ -125,7 +124,6 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -189,8 +187,8 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -209,25 +207,20 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage {
         if (CHANNEL_SHUTTER.equals(channelId)) {
             if (type instanceof OpenClosedType) {
                 command = (type == OpenClosedType.CLOSED ? Commands.CLOSE : Commands.OPEN);
-
             } else if (type instanceof UpDownType) {
                 command = (type == UpDownType.UP ? Commands.OPEN : Commands.CLOSE);
-
             } else if (type instanceof StopMoveType) {
                 command = Commands.STOP;
-
             } else {
                 throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
             }
-
         } else {
             throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

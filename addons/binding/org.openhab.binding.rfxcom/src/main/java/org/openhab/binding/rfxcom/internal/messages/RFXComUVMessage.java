@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -25,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant - OpenHAB1 version
  * @author Mike Jagdis - Initial contribution, OpenHAB2 version
  */
-public class RFXComUVMessage extends RFXComBatteryDeviceMessage {
+public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.SubType> {
 
     public enum SubType {
         UV1(1), // UVN128, UV138
@@ -141,7 +140,7 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException();
     }
 
@@ -156,7 +155,7 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -27,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Les Ashworth - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComThermostat1Message extends RFXComDeviceMessageImpl {
+public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComThermostat1Message.SubType> {
 
     public enum SubType {
         DIGIMAX(0),
@@ -141,7 +140,6 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -203,7 +201,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException();
     }
 
@@ -218,8 +216,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.UNDECODED_RF_MESSAGE;
 
 import java.util.Arrays;
@@ -17,9 +18,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
@@ -32,7 +30,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author James Hewitt-Thomas
  * @since 1.9.0
  */
-public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
+public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUndecodedRFMessage.SubType> {
 
     public enum SubType {
         AC(0x00),
@@ -104,7 +102,6 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
 
     @Override
     public void encodeMessage(byte[] message) throws RFXComException {
-
         super.encodeMessage(message);
 
         subType = SubType.fromByte(super.subType);
@@ -136,7 +133,6 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
 
     @Override
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_RAW_MESSAGE:
                 return new StringType(DatatypeConverter.printHexBinary(rawMessage));
@@ -150,7 +146,7 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
+    public void setSubType(SubType subType) {
         throw new UnsupportedOperationException();
     }
 
@@ -165,8 +161,7 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

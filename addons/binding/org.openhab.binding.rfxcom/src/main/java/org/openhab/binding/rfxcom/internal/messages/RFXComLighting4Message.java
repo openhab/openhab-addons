@@ -8,23 +8,15 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
@@ -59,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila
  * @author Martin van Wingerden - Extended support for more complex PT2262 devices
  */
-public class RFXComLighting4Message extends RFXComDeviceMessageImpl {
+public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighting4Message.SubType> {
     // this logger is used from a static context, so is static as well
     private static final Logger LOGGER = LoggerFactory.getLogger(RFXComLighting4Message.class);
 
@@ -228,8 +220,8 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -266,7 +258,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

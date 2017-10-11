@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -16,9 +17,6 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -30,7 +28,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Pauli Anttila - Ported from OpenHAB1
  * @author Mike Jagdis - Added venetian support and sun+wind detector
  */
-public class RFXComRfyMessage extends RFXComDeviceMessageImpl {
+public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.SubType> {
 
     public enum Commands {
         STOP(0x00),
@@ -109,12 +107,8 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl {
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Unit Id = " + getDeviceId()
-            + ", Unit Code = " + unitCode
-            + ", Command = " + command
-            + ", Signal level = " + signalLevel;
+        return super.toString() + ", Sub type = " + subType + ", Unit Id = " + getDeviceId() + ", Unit Code = "
+                + unitCode + ", Command = " + command + ", Signal level = " + signalLevel;
     }
 
     @Override
@@ -166,8 +160,8 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -240,7 +234,7 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

@@ -9,10 +9,8 @@
 package org.openhab.binding.rfxcom.handler;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -25,7 +23,6 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
@@ -68,7 +65,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private RFXComBridgeConfiguration configuration = null;
     private ScheduledFuture<?> connectorTask;
-    private Set<ThingUID> knownDevices = new HashSet<>();
 
     private class TransmitQueue {
         private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<RFXComBaseMessage>();
@@ -291,15 +287,16 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 } else if (message instanceof RFXComDeviceMessage) {
                     for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
                         try {
-                            deviceStatusListener.onDeviceMessageReceived(getThing().getUID(), (RFXComDeviceMessage)message);
+                            deviceStatusListener.onDeviceMessageReceived(getThing().getUID(),
+                                    (RFXComDeviceMessage) message);
                         } catch (Exception e) {
                             // catch all exceptions give all handlers a fair chance of handling the messages
                             logger.error("An exception occurred while calling the DeviceStatusListener", e);
                         }
                     }
                 } else {
-                    logger.warn("The received message cannot be processed, please create an " +
-                            "issue at the relevant tracker. Received message: {}", message);
+                    logger.warn("The received message cannot be processed, please create an "
+                            + "issue at the relevant tracker. Received message: {}", message);
                 }
             } catch (RFXComMessageNotImplementedException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));

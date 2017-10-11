@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import java.util.Arrays;
 
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -26,7 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
+public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSecurity2Message.SubType> {
 
     public enum SubType {
         RAW_CLASSIC_KEELOQ(0),
@@ -80,7 +79,6 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
@@ -95,7 +93,6 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[29];
 
         Arrays.fill(data, (byte) 0);
@@ -122,7 +119,6 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
 
     @Override
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_CONTACT:
                 return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
@@ -142,8 +138,8 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -153,7 +149,6 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_CONTACT:
                 if (type instanceof OpenClosedType) {
@@ -213,8 +208,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
-
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

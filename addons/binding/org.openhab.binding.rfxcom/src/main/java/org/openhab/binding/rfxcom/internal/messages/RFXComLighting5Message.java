@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.*;
 
 import java.math.BigDecimal;
@@ -21,9 +22,6 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -35,7 +33,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Pauli Anttila
  * @author Martin van Wingerden - added support for IT and some other subtypes
  */
-public class RFXComLighting5Message extends RFXComDeviceMessageImpl {
+public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighting5Message.SubType> {
 
     public enum SubType {
         LIGHTWAVERF(0),
@@ -252,7 +250,8 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl {
                     case MOOD5:
                         return new DecimalType(5);
                     default:
-                        throw new RFXComUnsupportedChannelException("Unexpected mood command: " + command + " for " + channelId);
+                        throw new RFXComUnsupportedChannelException(
+                                "Unexpected mood command: " + command + " for " + channelId);
                 }
 
             case CHANNEL_DIMMING_LEVEL:
@@ -294,8 +293,8 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public void setSubType(Object subType) {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -352,7 +351,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl {
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComUnsupportedValueException {
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
 
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {

@@ -8,18 +8,18 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_BATTERY_LEVEL;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_BATTERY_LEVEL;
 
 /**
  * A base class for all battery device messages
  *
  * @author Martin van Wingerden
  */
-abstract class RFXComBatteryDeviceMessage extends RFXComDeviceMessageImpl {
+abstract class RFXComBatteryDeviceMessage<T> extends RFXComDeviceMessageImpl<T> {
     int batteryLevel;
 
     RFXComBatteryDeviceMessage(PacketType packetType) {
@@ -27,7 +27,7 @@ abstract class RFXComBatteryDeviceMessage extends RFXComDeviceMessageImpl {
     }
 
     RFXComBatteryDeviceMessage() {
-
+        // deliberately empty
     }
 
     @Override
