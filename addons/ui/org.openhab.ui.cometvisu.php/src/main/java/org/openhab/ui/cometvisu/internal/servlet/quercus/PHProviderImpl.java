@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.servlet.quercus;
+package org.openhab.ui.cometvisu.internal.servlet.quercus;
 
 import java.io.File;
 import java.io.FileNotFoundException;
