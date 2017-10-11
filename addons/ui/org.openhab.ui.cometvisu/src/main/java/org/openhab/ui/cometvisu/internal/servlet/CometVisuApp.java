@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.servlet;
+package org.openhab.ui.cometvisu.internal.servlet;
 
 import java.util.ArrayList;
 import java.util.Dictionary;

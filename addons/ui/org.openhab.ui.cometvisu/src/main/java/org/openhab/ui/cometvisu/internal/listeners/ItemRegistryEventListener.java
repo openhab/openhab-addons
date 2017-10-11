@@ -13,7 +13,7 @@ import java.util.Collection;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
-import org.openhab.ui.cometvisu.backend.EventBroadcaster;
+import org.openhab.ui.cometvisu.internal.backend.EventBroadcaster;
 
 /**
  * Listener responsible for notifying the CometVisu backend about changes

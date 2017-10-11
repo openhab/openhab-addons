@@ -14,8 +14,8 @@ import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.StateChangeListener;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.ui.cometvisu.backend.EventBroadcaster;
-import org.openhab.ui.cometvisu.backend.beans.StateBean;
+import org.openhab.ui.cometvisu.internal.backend.EventBroadcaster;
+import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
 
 /**
  * listens to state changes on items and send them to an EventBroadcaster
