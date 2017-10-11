@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.toon.config;
+package org.openhab.binding.toon.internal.config;
 
 /**
  * The {@link ToonBridgeConfiguration} class defines the configuration properties as used by the bridge.
