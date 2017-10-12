@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
@@ -45,7 +46,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
         ReadingPublisher<Ec3kReading> publisher = new ReadingPublisher<Ec3kReading>() {
             @Override
             public void publish(Ec3kReading reading) {
-                if (reading != null) {
+                if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
                     BigDecimal currentWatt = new BigDecimal(reading.getCurrentWatt()).setScale(1, RoundingMode.HALF_UP);
                     BigDecimal maxWatt = new BigDecimal(reading.getMaxWatt()).setScale(1, RoundingMode.HALF_UP);
 
