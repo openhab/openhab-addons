@@ -11,6 +11,7 @@ package org.openhab.binding.feican;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,7 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class FeicanBindingConstants {
+@NonNullByDefault
+public final class FeicanBindingConstants {
 
     private static final String BINDING_ID = "feican";
 
@@ -40,4 +42,8 @@ public class FeicanBindingConstants {
     // List of al property ids
     public static final String CONFIG_IP = "ipAddress";
     public static final String PROPERTY_MAC = "mac";
+
+    private FeicanBindingConstants() {
+        // Constants class.
+    }
 }

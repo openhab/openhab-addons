@@ -12,7 +12,8 @@ import static org.openhab.binding.feican.FeicanBindingConstants.*;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -34,11 +35,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class FeicanHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FeicanHandler.class);
     private final Commands commands = new Commands();
 
+    @Nullable
     private Connection connection;
 
     /**
@@ -46,7 +49,7 @@ public class FeicanHandler extends BaseThingHandler {
      *
      * @param thing The thing to create the handler for
      */
-    public FeicanHandler(@NonNull Thing thing) {
+    public FeicanHandler(Thing thing) {
         super(thing);
     }
 
@@ -104,7 +107,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @param command color to set
      * @throws IOException Connection to the bulb failed
      */
-    private void handleColor(@NonNull ChannelUID channelUID, HSBType command) throws IOException {
+    private void handleColor(ChannelUID channelUID, HSBType command) throws IOException {
         if (CHANNEL_COLOR.equals(channelUID.getId())) {
             handleBrightness(command.getBrightness());
             connection.sendCommand(
@@ -122,7 +125,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @param command The percentType command
      * @throws IOException Connection to the bulb failed
      */
-    private void handlePercentage(@NonNull ChannelUID channelUID, PercentType command) throws IOException {
+    private void handlePercentage(ChannelUID channelUID, PercentType command) throws IOException {
         String id = channelUID.getId();
 
         switch (id) {

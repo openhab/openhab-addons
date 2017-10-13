@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true)
 public class FeicanDiscoveryService extends AbstractDiscoveryService {
 
@@ -49,9 +52,10 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(FeicanDiscoveryService.class);
 
     ///// Network
-    private final DatagramPacket discoverPacket;
     private final byte[] buffer = new byte[32];
     private final DatagramPacket receivePacket;
+    private final DatagramPacket discoverPacket;
+    @Nullable
     private DatagramSocket discoverSocket;
 
     public FeicanDiscoveryService() throws UnknownHostException {

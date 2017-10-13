@@ -10,6 +10,7 @@ package org.openhab.binding.feican.internal;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class Commands {
     private static final byte[] DISCOVER_COMMAND = { 126, 7, 9, -128, -128, -128, -128, -128, -17 };
     private static final byte[] ON_COMMAND = { 126, 4, 4, 1, 0, -128, -128, 0, -17 };

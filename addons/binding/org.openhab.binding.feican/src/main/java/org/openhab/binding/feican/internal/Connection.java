@@ -13,11 +13,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Manages the connection to a Feican bulb.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class Connection {
 
     /**
