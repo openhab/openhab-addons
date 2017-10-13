@@ -238,7 +238,6 @@ public class MySensorsMessage {
      */
     public boolean isIdRequestMessage() {
         return (nodeId == MySensorsNode.MYSENSORS_NODE_ID_RESERVED_255)
-                && (childId == MySensorsChild.MYSENSORS_CHILD_ID_RESERVED_255)
                 && (msgType == MySensorsMessageType.INTERNAL) && (ack == MySensorsMessageAck.FALSE)
                 && (subType == MySensorsMessageSubType.I_ID_REQUEST);
     }
