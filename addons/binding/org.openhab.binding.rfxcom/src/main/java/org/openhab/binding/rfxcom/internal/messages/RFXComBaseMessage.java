@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import javax.xml.bind.DatatypeConverter;
 
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * Base class for RFXCOM data classes. All other data classes should extend this class.
@@ -23,7 +24,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     public static final String ID_DELIMITER = ".";
 
-    public enum PacketType {
+    public enum PacketType implements ByteEnumWrapper {
         INTERFACE_CONTROL(0),
         INTERFACE_MESSAGE(1),
         TRANSMITTER_MESSAGE(2),
@@ -80,20 +81,10 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
             this.packetType = packetType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) packetType;
         }
-
-        public static PacketType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (PacketType packetType : PacketType.values()) {
-                if (packetType.packetType == input) {
-                    return packetType;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(PacketType.class, input);
-        }
-
     }
 
     public byte[] rawMessage;
@@ -118,7 +109,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         rawMessage = data;
 
         packetId = data[1];
-        packetType = PacketType.fromByte(data[1]);
+        packetType = fromByte(PacketType.class, data[1]);
         subType = data[2];
         seqNbr = data[3];
         id1 = data[4];

@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -27,7 +28,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurtain1Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         HARRISON(0);
 
         private final int subType;
@@ -36,22 +37,13 @@ public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurt
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OPEN(0),
         CLOSE(1),
         STOP(2),
@@ -63,18 +55,9 @@ public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurt
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
-        }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -109,10 +92,10 @@ public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurt
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (char) data[4];
         unitCode = data[5];
-        command = Commands.fromByte(data[6]);
+        command = fromByte(Commands.class, data[6]);
 
         signalLevel = (byte) ((data[7] & 0xF0) >> 4);
         batteryLevel = (byte) ((data[7] & 0x0F));
@@ -186,16 +169,6 @@ public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurt
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

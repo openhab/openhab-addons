@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for transmitter message.
@@ -19,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         ERROR_RECEIVER_DID_NOT_LOCK(0),
         RESPONSE(1);
 
@@ -29,22 +30,13 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Response {
+    public enum Response implements ByteEnumWrapper {
         ACK(0), // ACK, transmit OK
         ACK_DELAYED(1), // ACK, but transmit started after 3 seconds delay
                         // anyway with RF receive data
@@ -59,18 +51,9 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.response = response;
         }
 
+        @Override
         public byte toByte() {
             return (byte) response;
-        }
-
-        public static Response fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Response response : Response.values()) {
-                if (response.response == input) {
-                    return response;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Response.class, input);
         }
     }
 
@@ -106,8 +89,8 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
-        response = Response.fromByte(data[4]);
+        subType = fromByte(SubType.class, super.subType);
+        response = fromByte(Response.class, data[4]);
     }
 
     @Override

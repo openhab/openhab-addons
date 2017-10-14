@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
@@ -26,7 +27,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         UV1(1), // UVN128, UV138
         UV2(2), // UVN800
         UV3(3); // TFA
@@ -37,18 +38,9 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
-        }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -80,7 +72,7 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         uv = (data[6] & 0xFF) * 0.1;
@@ -156,16 +148,6 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

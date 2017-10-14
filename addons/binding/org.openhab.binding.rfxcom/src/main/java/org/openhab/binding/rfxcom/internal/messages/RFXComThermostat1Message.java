@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -28,7 +29,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComThermostat1Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         DIGIMAX(0),
         DIGIMAX_SHORT(1);
 
@@ -38,23 +39,14 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
-        }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
     /* Added item for ContactTypes */
-    public enum Status {
+    public enum Status implements ByteEnumWrapper {
         NO_STATUS(0),
         DEMAND(1),
         NO_DEMAND(2),
@@ -66,23 +58,14 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
             this.status = status;
         }
 
+        @Override
         public byte toByte() {
             return (byte) status;
-        }
-
-        public static Status fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Status contact : Status.values()) {
-                if (contact.status == input) {
-                    return contact;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Status.class, input);
         }
     }
 
     /* Operating mode */
-    public enum Mode {
+    public enum Mode implements ByteEnumWrapper {
         HEATING(0),
         COOLING(1);
 
@@ -92,18 +75,9 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
             this.mode = mode;
         }
 
+        @Override
         public byte toByte() {
             return (byte) mode;
-        }
-
-        public static Mode fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Mode mode : Mode.values()) {
-                if (mode.mode == input) {
-                    return mode;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Mode.class, input);
         }
     }
 
@@ -142,13 +116,13 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         temperature = data[6];
         set = data[7];
-        mode = Mode.fromByte((data[8] & 0xF0) >> 7);
+        mode = fromByte(Mode.class, (data[8] & 0xF0) >> 7);
 
-        status = Status.fromByte(data[8] & 0x03);
+        status = fromByte(Status.class, data[8] & 0x03);
         signalLevel = (byte) ((data[9] & 0xF0) >> 4);
     }
 
@@ -217,16 +191,6 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

@@ -32,7 +32,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUndecodedRFMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         AC(0x00),
         ARC(0x01),
         ATI(0x02),
@@ -65,6 +65,7 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
@@ -162,17 +163,6 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        // try to find sub type by number
-        try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

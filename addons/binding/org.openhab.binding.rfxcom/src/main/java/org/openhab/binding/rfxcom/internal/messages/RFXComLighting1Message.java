@@ -26,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighting1Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         X10(0),
         ARC(1),
         AB400D(2),
@@ -46,22 +46,13 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OFF(0),
         ON(1),
         DIM(2),
@@ -76,18 +67,9 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
-        }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -122,9 +104,9 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = ByteEnumUtil.fromByte(SubType.class, super.subType);
         houseCode = (char) data[4];
-        command = Commands.fromByte(data[6]);
+        command = ByteEnumUtil.fromByte(Commands.class, data[6]);
 
         if ((command == Commands.GROUP_ON) || (command == Commands.GROUP_OFF)) {
             unitCode = 0;
@@ -251,16 +233,6 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

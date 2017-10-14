@@ -18,7 +18,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 /**
  * An interface for message about devices, so interface message do not (have to) implement this
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
  */
 public interface RFXComDeviceMessage<T> extends RFXComMessage {
     /**

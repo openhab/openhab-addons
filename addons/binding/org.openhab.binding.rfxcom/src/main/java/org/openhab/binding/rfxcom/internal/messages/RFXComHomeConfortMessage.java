@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
@@ -24,7 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHomeConfortMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         TEL_010(0);
 
         private final int subType;
@@ -33,22 +34,13 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OFF(0),
         ON(1),
         GROUP_OFF(2),
@@ -60,18 +52,9 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
-        }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -99,11 +82,11 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         deviceId = (((data[4] << 8) | data[5]) << 8) | data[6];
         houseCode = (char) data[7];
         unitCode = data[8];
-        command = Commands.fromByte(data[9]);
+        command = fromByte(Commands.class, data[9]);
         if (command == Commands.GROUP_ON || command == Commands.GROUP_OFF) {
             unitCode = 0;
         }
@@ -184,16 +167,6 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

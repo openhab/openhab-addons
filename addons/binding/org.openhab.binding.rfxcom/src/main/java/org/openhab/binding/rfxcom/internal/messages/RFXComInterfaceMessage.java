@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for interface message.
@@ -22,7 +23,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         UNKNOWN_COMMAND(-1),
         RESPONSE(0),
         UNKNOWN_RTS_REMOTE(1),
@@ -37,22 +38,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType subType : SubType.values()) {
-                if (subType.subType == input) {
-                    return subType;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         RESET(0), // Reset the receiver/transceiver. No answer is transmitted!
         GET_STATUS(2), // Get Status, return firmware versions and configuration of the interface
         SET_MODE(3), // Set mode msg1-msg5, return firmware versions and configuration of the interface
@@ -71,22 +63,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands command : Commands.values()) {
-                if (command.command == input) {
-                    return command;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
-        }
     }
 
-    public enum TransceiverType {
+    public enum TransceiverType implements ByteEnumWrapper {
         _310MHZ(80),
         _315MHZ(81),
         _433_92MHZ_RECEIVER_ONLY(82),
@@ -105,22 +88,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.type = type;
         }
 
+        @Override
         public byte toByte() {
             return (byte) type;
         }
-
-        public static TransceiverType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (TransceiverType type : TransceiverType.values()) {
-                if (type.type == input) {
-                    return type;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(TransceiverType.class, input);
-        }
     }
 
-    public enum FirmwareType {
+    public enum FirmwareType implements ByteEnumWrapper {
         TYPE1_RX_ONLY(0),
         TYPE1(1),
         TYPE2(2),
@@ -133,18 +107,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.type = type;
         }
 
+        @Override
         public byte toByte() {
             return (byte) type;
-        }
-
-        public static FirmwareType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (FirmwareType type : FirmwareType.values()) {
-                if (type.type == input) {
-                    return type;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(FirmwareType.class, input);
         }
     }
 
@@ -252,11 +217,11 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
 
         if (subType == SubType.RESPONSE) {
-            command = Commands.fromByte(data[4]);
-            transceiverType = TransceiverType.fromByte(data[5]);
+            command = fromByte(Commands.class, data[4]);
+            transceiverType = fromByte(TransceiverType.class, data[5]);
 
             firmwareVersion = data[6] & 0xFF;
 
@@ -304,7 +269,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
                 hardwareVersion2 = data[12];
 
                 outputPower = data[13] - 18;
-                firmwareType = FirmwareType.fromByte(data[14]);
+                firmwareType = fromByte(FirmwareType.class, data[14]);
             } else {
                 hardwareVersion1 = data[10];
                 hardwareVersion2 = data[11];
@@ -313,7 +278,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             text = "";
 
         } else if (subType == SubType.START_RECEIVER) {
-            command = Commands.fromByte(data[4]);
+            command = fromByte(Commands.class, data[4]);
 
             final int len = 16;
             final int dataOffset = 5;

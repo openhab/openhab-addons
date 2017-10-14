@@ -67,7 +67,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> connectorTask;
 
     private class TransmitQueue {
-        private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<RFXComBaseMessage>();
+        private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<>();
 
         public synchronized void enqueue(RFXComBaseMessage msg) throws IOException {
             boolean wasEmpty = queue.isEmpty();

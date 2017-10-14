@@ -22,7 +22,7 @@ public interface DeviceMessageListener {
 
     /**
      * This method is called whenever the message is received from the bridge.
-     * 
+     *
      * @param bridge
      *            The RFXCom bridge where message is received.
      * @param message

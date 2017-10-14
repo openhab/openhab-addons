@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -28,7 +29,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 public class RFXComTemperatureHumidityBarometricMessage
         extends RFXComBatteryDeviceMessage<RFXComTemperatureHumidityBarometricMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         THB1(1), // BTHR918, BTHGN129
         THB2(2); // BTHR918N, BTHR968
 
@@ -38,22 +39,13 @@ public class RFXComTemperatureHumidityBarometricMessage
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum HumidityStatus {
+    public enum HumidityStatus implements ByteEnumWrapper {
         NORMAL(0),
         COMFORT(1),
         DRY(2),
@@ -65,22 +57,13 @@ public class RFXComTemperatureHumidityBarometricMessage
             this.humidityStatus = humidityStatus;
         }
 
+        @Override
         public byte toByte() {
             return (byte) humidityStatus;
         }
-
-        public static HumidityStatus fromByte(int input) throws RFXComUnsupportedValueException {
-            for (HumidityStatus status : HumidityStatus.values()) {
-                if (status.humidityStatus == input) {
-                    return status;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(HumidityStatus.class, input);
-        }
     }
 
-    public enum ForecastStatus {
+    public enum ForecastStatus implements ByteEnumWrapper {
         NO_INFO_AVAILABLE(0),
         SUNNY(1),
         PARTLY_CLOUDY(2),
@@ -93,18 +76,9 @@ public class RFXComTemperatureHumidityBarometricMessage
             this.forecastStatus = forecastStatus;
         }
 
+        @Override
         public byte toByte() {
             return (byte) forecastStatus;
-        }
-
-        public static ForecastStatus fromByte(int input) throws RFXComUnsupportedValueException {
-            for (ForecastStatus status : ForecastStatus.values()) {
-                if (status.forecastStatus == input) {
-                    return status;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(ForecastStatus.class, input);
         }
     }
 
@@ -144,7 +118,7 @@ public class RFXComTemperatureHumidityBarometricMessage
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         temperature = (short) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF)) * 0.1;
@@ -153,10 +127,10 @@ public class RFXComTemperatureHumidityBarometricMessage
         }
 
         humidity = data[8];
-        humidityStatus = HumidityStatus.fromByte(data[9]);
+        humidityStatus = fromByte(HumidityStatus.class, data[9]);
 
         pressure = (data[10] & 0xFF) << 8 | (data[11] & 0xFF);
-        forecastStatus = ForecastStatus.fromByte(data[12]);
+        forecastStatus = fromByte(ForecastStatus.class, data[12]);
 
         signalLevel = (byte) ((data[13] & 0xF0) >> 4);
         batteryLevel = (byte) (data[13] & 0x0F);
@@ -229,18 +203,7 @@ public class RFXComTemperatureHumidityBarometricMessage
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        // try to find sub type by number
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 
     @Override

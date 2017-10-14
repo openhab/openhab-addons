@@ -17,7 +17,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
 /**
  * A base class for all battery device messages
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
  */
 abstract class RFXComBatteryDeviceMessage<T> extends RFXComDeviceMessageImpl<T> {
     int batteryLevel;

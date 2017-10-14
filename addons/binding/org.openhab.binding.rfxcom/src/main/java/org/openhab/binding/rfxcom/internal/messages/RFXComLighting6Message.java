@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -26,7 +27,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighting6Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         BLYSS(0);
 
         private final int subType;
@@ -35,22 +36,13 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         ON(0),
         OFF(1),
         GROUP_ON(2),
@@ -62,18 +54,9 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
-        }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -108,11 +91,11 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         groupCode = (char) data[6];
         unitCode = data[7];
-        command = Commands.fromByte(data[8]);
+        command = fromByte(Commands.class, data[8]);
 
         signalLevel = (byte) ((data[11] & 0xF0) >> 4);
     }
@@ -220,17 +203,6 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }
