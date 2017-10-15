@@ -188,7 +188,7 @@ public class RotelRa1xHandler extends BaseThingHandler {
     }
 
     private void inputLoop() {
-        while (!exit) {
+        while (!exit && !Thread.currentThread().isInterrupted()) {
             try {
                 if (serialPort == null) {
                     connect();
