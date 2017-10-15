@@ -153,9 +153,9 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             Thing thing = bridgeHandler.getThingByUID(thingUID);
 
             if (thing != null) {
-                if (thing.getStatus() != ThingStatus.OFFLINE) {
+                if (thing.getStatus() != ThingStatus.UNKNOWN) {
                     LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
-                    thingHandler.setStatus(ThingStatus.OFFLINE);
+                    thingHandler.setStatus(ThingStatus.UNKNOWN);
                 }
             } else {
                 bridgeHandler.getDiscoveryService().removeThing(thingUID);

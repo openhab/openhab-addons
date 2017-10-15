@@ -71,3 +71,13 @@
 
 * Add a config switch to allow items to be updated during transitions. Sometimes, especially with long-preiod transitions you may want to have the current state reflected by items.
   * Might there be any way to make it a per-command option? Maybe a time threshold above which updates are done? Or maybe it is something that could be part of the (TBD) priority queuing framework?
+
+* Groups should ignore reachable in state - they always show as 0
+
+* Changing the luminance via the color channel should update the dimmer channel and vice versa - groups have both
+  * Would it be too confusing if groups only had the color channel bearing in mind they may not have _any_ RGBW members?
+
+* Currently groups never update state themselves. This means that a transition on a group will transition each individual member but the members do not know about the transition and thus do not suppress updates during it and do not force an update after it.
+  * We could record group membership and use that when starting transitions to start the transition on each member. Then they would suppress updates and force a GET_DEVICE_INFO on completion. Of course, that means there are potentially lots of GET_DEVICE_INFOs all at the same time...
+  * Can we groupcast a GET_DEVICE_INFO? What would the response look like?
+  * We should have a per-device option to switch update suppression on and off and should be able to override it from the group level.

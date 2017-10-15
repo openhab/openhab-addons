@@ -28,13 +28,13 @@
 			</parameter>
 
 			<parameter name="whiteTemperatureMin" type="integer" min="1000" max="10000">
-				<default>1900</default>
+				<default>1500</default>
 				<label>Minimum white temperature</label>
 				<description>Default minimum white temperature in Kelvin for devices unless otherwise specified.</description>
 			</parameter>
 
 			<parameter name="whiteTemperatureMax" type="integer" min="1000" max="10000">
-				<default>6500</default>
+				<default>8000</default>
 				<label>Maximum white temperature</label>
 				<description>Default maximum white temperature in Kelvin for devices unless otherwise specified.</description>
 			</parameter>

@@ -95,7 +95,7 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
             Thing thing = bridgeHandler.getThingByUID(thingUID);
 
             if (thing != null) {
-                if (thing.getStatus() == ThingStatus.OFFLINE) {
+                if (thing.getStatus() != ThingStatus.ONLINE) {
                     LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
                     thingHandler.setStatus(ThingStatus.ONLINE);
                 }
@@ -116,8 +116,10 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
             Thing thing = bridgeHandler.getThingByUID(thingUID);
 
             if (thing != null) {
-                LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
-                thingHandler.setStatus(ThingStatus.OFFLINE);
+                if (thing.getStatus() != ThingStatus.UNKNOWN) {
+                    LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
+                    thingHandler.setStatus(ThingStatus.UNKNOWN);
+                }
             } else {
                 bridgeHandler.getDiscoveryService().removeThing(thingUID);
             }

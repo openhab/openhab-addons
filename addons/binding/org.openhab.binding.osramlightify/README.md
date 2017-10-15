@@ -30,7 +30,9 @@ This binding supports OSRAM Lightify gateways along with lights and power switch
 * CLA 60 RGBW - 10W, 810lm, Ra > 85, quoted white range of 2000K - 6500K
 * PAR16 50 RGBW - 6W, 300lm, Ra 80, quoted white range of 2000K - 6500K
 
-Both of these show a probed white range of 1801K - 6622K. It isn't clear whether we see the actual ZigBee limits or some gateway concept of what lights should be capable of. No attempt has been made to verify the range via external measurement.
+Both of these show a probed white range of 1801K - 6622K with firmware 01020412 and 1501K - 8000K with firmware 01020510. It isn't clear whether we see the actual ZigBee limits or some gateway concept of what lights should be capable of. No attempt has been made to verify the range via external measurement. However the increased range with the newer firmware is very real. The lower end of the range could now be described as golden firelight!
+
+(This extended range looks as though it may be using the RGB LEDs so may not be available with non-RGBW lights)
 
 The PAR16s exhibit somewhat choppy colour transitions and, in some cases, significant steps. This is probably due to having fewer LEDs internally and thus struggling to handle mixes with lower component levels relative to the other(s). To be fair the quoted Ra is 80 so no one is claiming high accuracy and it does all fit into a standard size PAR16/GU10 package. The fully saturated primary and secondary colours are satisfyingly bold, with the exception of yellow which seems pretty much unobtainable.
 
