@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -52,18 +53,24 @@ import com.nwpi.synop.SynopShip;
  * @author Gaël L'hopital - Initial contribution
  * @author Mark Herwege - Correction for timezone treatment
  */
+
 public class SynopAnalyzerHandler extends BaseThingHandler {
 
     private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=";
     private static final int REQUEST_TIMEOUT = 5000;
     private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
+    private static final String MPS = "m/s";
+    private static final String KNOTS = "knots";
+    private static final String UTC = "UTC";
+    private static final double KASTEN_POWER = 3.4;
+    private static final double OCTA_MAX = 8.0;
 
     private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private ScheduledFuture<?> executionJob;
     private SynopAnalyzerConfiguration configuration;
 
-    public SynopAnalyzerHandler(Thing thing) {
+    public SynopAnalyzerHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -126,7 +133,12 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility());
             case OCTA:
-                return new DecimalType(synop.getOcta());
+                return new DecimalType(Math.max(0, synop.getOcta()));
+            case ATTENUATION_FACTOR:
+                double kc = Math.max(0, synop.getOcta()) / OCTA_MAX;
+                kc = Math.pow(kc, KASTEN_POWER);
+                kc = 1 - 0.75 * kc;
+                return new DecimalType(kc);
             case OVERCAST:
                 return new StringType(synop.getOvercast());
             case PRESSURE:
@@ -140,14 +152,14 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 String direction = getWindDirection(angle);
                 return new StringType(direction);
             case WIND_SPEED_MS:
-                if (synop.getWindUnit().equalsIgnoreCase("m/s")) {
+                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
                     return new DecimalType(synop.getWindSpeed());
                 } else {
                     Double kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
                     return new DecimalType(kmhToMps(kmhSpeed));
                 }
             case WIND_SPEED_KNOTS:
-                if (synop.getWindUnit().equalsIgnoreCase("knots")) {
+                if (synop.getWindUnit().equalsIgnoreCase(KNOTS)) {
                     return new DecimalType(synop.getWindSpeed());
                 } else {
                     Double kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
@@ -156,7 +168,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 }
             case WIND_SPEED_BEAUFORT:
                 Double kmhSpeed;
-                if (synop.getWindUnit().equalsIgnoreCase("m/s")) {
+                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
                     kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
                 } else {
                     kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
@@ -164,7 +176,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 Double beaufort = kmhToBeaufort(kmhSpeed);
                 return new DecimalType(beaufort);
             case TIME_UTC:
-                Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone(UTC));
                 observationTime.set(Calendar.DAY_OF_MONTH, synop.getDay());
                 observationTime.set(Calendar.HOUR_OF_DAY, synop.getHour());
                 observationTime.set(Calendar.MINUTE, 0);
