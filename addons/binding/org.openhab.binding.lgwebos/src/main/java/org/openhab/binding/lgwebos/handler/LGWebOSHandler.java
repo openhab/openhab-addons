@@ -13,6 +13,7 @@ import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -65,7 +66,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
             .put(CHANNEL_MEDIA_STOP, new MediaControlStop()).put(CHANNEL_TOAST, new ToastControlToast())
             .put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer()).build();
 
-    public LGWebOSHandler(Thing thing, DiscoveryManager discoveryManager) {
+    public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
         super(thing);
         this.discoveryManager = discoveryManager;
     }

@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.model.script.engine.action.ActionDoc;
 import org.eclipse.smarthome.model.script.engine.action.ActionService;
 import org.eclipse.smarthome.model.script.engine.action.ParamDoc;
@@ -159,7 +160,7 @@ public class LGWebOSAction implements ActionService {
         }
     }
 
-    private static <C extends CapabilityMethods> C getControl(Class<C> clazz, String deviceId) {
+    private static <C extends CapabilityMethods> @Nullable C getControl(Class<C> clazz, String deviceId) {
         final ConnectableDevice d = discovery.getDiscoveryManager().getCompatibleDevices().get(deviceId);
         if (d == null) {
             LOGGER.warn("No device found with id: {}", deviceId);

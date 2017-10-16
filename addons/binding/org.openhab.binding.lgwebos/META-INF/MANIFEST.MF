@@ -13,6 +13,7 @@ Bundle-ClassPath: .,
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
+ org.eclipse.jdt.annotation;resolution:=optional,
  javax.jmdns,
  org.apache.commons.lang,
  org.apache.http.client.methods,

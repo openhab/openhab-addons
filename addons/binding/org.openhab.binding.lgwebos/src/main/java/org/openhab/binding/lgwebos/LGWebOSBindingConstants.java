@@ -10,6 +10,7 @@ package org.openhab.binding.lgwebos;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -21,7 +22,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class LGWebOSBindingConstants {
 
-    public static final String BINDING_ID = "lgwebos";
+    public static final @NonNull String BINDING_ID = "lgwebos";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WEBOSTV = new ThingTypeUID(BINDING_ID, "WebOSTV");
