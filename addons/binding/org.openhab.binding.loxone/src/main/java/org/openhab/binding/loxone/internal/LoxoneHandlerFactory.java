@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.loxone.LoxoneBindingConstants;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.Sets;
 
@@ -32,6 +33,8 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
 
+    private LoxoneDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -41,9 +44,18 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID uid = thing.getThingTypeUID();
         if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
-            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing);
+            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing, dynamicStateDescriptionProvider);
             return handler;
         }
         return null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(LoxoneDynamicStateDescriptionProvider provider) {
+        this.dynamicStateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(LoxoneDynamicStateDescriptionProvider provider) {
+        this.dynamicStateDescriptionProvider = null;
     }
 }

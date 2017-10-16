@@ -195,7 +195,6 @@ public abstract class LxControl {
      *            New category that this control belongs to
      */
     void update(LxJsonControl json, LxContainer room, LxCategory category) {
-
         logger.trace("Updating LxControl: {}", json.type);
 
         this.name = json.name;
@@ -211,7 +210,6 @@ public abstract class LxControl {
 
         // retrieve all states from the configuration
         if (json.states != null) {
-
             logger.trace("Reading states for LxControl: {}", json.type);
 
             for (Map.Entry<String, JsonElement> jsonState : json.states.entrySet()) {
@@ -259,7 +257,6 @@ public abstract class LxControl {
      */
     static LxControl createControl(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
-
         if (json == null || json.type == null || json.name == null) {
             return null;
         }
@@ -268,33 +265,23 @@ public abstract class LxControl {
 
         if (LxControlSwitch.accepts(type)) {
             ctrl = new LxControlSwitch(client, uuid, json, room, category);
-
         } else if (LxControlPushbutton.accepts(type)) {
             ctrl = new LxControlPushbutton(client, uuid, json, room, category);
-
         } else if (LxControlTimedSwitch.accepts(type)) {
             ctrl = new LxControlTimedSwitch(client, uuid, json, room, category);
-
         } else if (LxControlDimmer.accepts(type)) {
             ctrl = new LxControlDimmer(client, uuid, json, room, category);
-
         } else if (LxControlJalousie.accepts(type)) {
             ctrl = new LxControlJalousie(client, uuid, json, room, category);
-
         } else if (LxControlTextState.accepts(type)) {
             ctrl = new LxControlTextState(client, uuid, json, room, category);
-
         } else if (json.details != null) {
-
             if (LxControlInfoOnlyDigital.accepts(type) && json.details.text != null) {
                 ctrl = new LxControlInfoOnlyDigital(client, uuid, json, room, category);
-
             } else if (LxControlInfoOnlyAnalog.accepts(type)) {
                 ctrl = new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
-
             } else if (LxControlLightController.accepts(type)) {
                 ctrl = new LxControlLightController(client, uuid, json, room, category);
-
             } else if (LxControlRadio.accepts(type)) {
                 ctrl = new LxControlRadio(client, uuid, json, room, category);
             }

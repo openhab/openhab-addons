@@ -173,7 +173,6 @@ public class LxServer {
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int connectTimeout,
             int userErrorDelay, int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
-
         logger.debug("[{}] Server update configuration", debugId);
 
         if (firstConDelay >= 0 && this.firstConDelay != firstConDelay) {
