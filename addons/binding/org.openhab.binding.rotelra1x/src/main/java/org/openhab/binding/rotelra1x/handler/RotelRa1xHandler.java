@@ -267,6 +267,11 @@ public class RotelRa1xHandler extends BaseThingHandler {
                         return;
                     }
                 }
+            } catch (ConfigurationError e) {
+                logger.warn("Unexpected error", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration error in input loop: " + e.getMessage());
+                return;
             }
         }
     }
