@@ -101,6 +101,23 @@ public abstract class RpcClient<T> {
     }
 
     /**
+     * Returns the info of all BidCos interfaces available on the gateway.
+     */
+    public ListBidcosInterfacesParser listBidcosInterfaces(HmInterface hmInterface) throws IOException {
+        RpcRequest<T> request = createRpcRequest("listBidcosInterfaces");
+        return new ListBidcosInterfacesParser().parse(sendMessage(config.getRpcPort(hmInterface), request));
+    }
+
+    /**
+     * Returns some infos of the gateway.
+     */
+    private GetDeviceDescriptionParser getDeviceDescription(HmInterface hmInterface) throws IOException {
+        RpcRequest<T> request = createRpcRequest("getDeviceDescription");
+        request.addArg("BidCoS-RF");
+        return new GetDeviceDescriptionParser().parse(sendMessage(config.getRpcPort(hmInterface), request));
+    }
+
+    /**
      * Returns all variable metadata and values from a Homegear gateway.
      */
     public void getAllSystemVariables(HmChannel channel) throws IOException {
@@ -195,16 +212,10 @@ public abstract class RpcClient<T> {
      * Tries to identify the gateway and returns the GatewayInfo.
      */
     public HmGatewayInfo getGatewayInfo(String id) throws IOException {
-        RpcRequest<T> request = createRpcRequest("getDeviceDescription");
-        request.addArg("BidCoS-RF");
-        GetDeviceDescriptionParser ddParser = new GetDeviceDescriptionParser();
-        ddParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
-
+        GetDeviceDescriptionParser ddParser = getDeviceDescription(HmInterface.RF);
         boolean isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
 
-        request = createRpcRequest("listBidcosInterfaces");
-        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser();
-        biParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
+        ListBidcosInterfacesParser biParser = listBidcosInterfaces(HmInterface.RF);
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();
         gatewayInfo.setAddress(biParser.getGatewayAddress());
