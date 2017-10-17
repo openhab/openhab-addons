@@ -66,6 +66,9 @@ public class SomfyTahomaBindingConstants {
     // Smoke sensor
     public static final ThingTypeUID THING_TYPE_SMOKESENSOR = new ThingTypeUID(BINDING_ID, "smokesensor");
 
+    // Contact sensor
+    public static final ThingTypeUID THING_TYPE_CONTACTSENSOR = new ThingTypeUID(BINDING_ID, "contactsensor");
+
     // Occupancy sensor
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
 
@@ -93,7 +96,7 @@ public class SomfyTahomaBindingConstants {
     // OnOff, Light
     public static final String SWITCH = "switch";
 
-    // Smoke sensor, Occupancy sensor
+    // Smoke sensor, Occupancy sensor, Contact sensor
     public static final String CONTACT = "contact";
 
     // Light sensor
@@ -133,6 +136,7 @@ public class SomfyTahomaBindingConstants {
     final public static String LIGHT = "Light";
     final public static String LIGHTSENSOR = "LightSensor";
     final public static String SMOKESENSOR = "SmokeSensor";
+    final public static String CONTACTSENSOR = "ContactSensor";
     final public static String OCCUPANCYSENSOR = "OccupancySensor";
     final public static String WINDOW = "Window";
     // unsupported uiClasses

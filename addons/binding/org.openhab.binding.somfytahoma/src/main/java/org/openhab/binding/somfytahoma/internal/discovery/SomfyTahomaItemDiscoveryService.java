@@ -18,6 +18,7 @@ import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.model.SomfyTahomaDevice;
 import org.openhab.binding.somfytahoma.model.SomfyTahomaDeviceDefinition;
 import org.openhab.binding.somfytahoma.model.SomfyTahomaDeviceDefinitionCommand;
+import org.openhab.binding.somfytahoma.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_LIGHT,
                 THING_TYPE_LIGHTSENSOR,
                 THING_TYPE_SMOKESENSOR,
+                THING_TYPE_CONTACTSENSOR,
                 THING_TYPE_OCCUPANCYSENSOR,
                 THING_TYPE_WINDOW
         ));
@@ -85,6 +87,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         switch (device.getUiClass()) {
             case AWNING:
                 deviceDiscovered(device, THING_TYPE_AWNING);
+                break;
+            case CONTACTSENSOR:
+                deviceDiscovered(device, THING_TYPE_CONTACTSENSOR);
                 break;
             case EXTERIORSCREEN:
                 deviceDiscovered(device, THING_TYPE_EXTERIORSCREEN);
@@ -133,6 +138,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             default:
                 logger.warn("Detected a new unsupported device: {}", device.getUiClass());
                 logger.warn("Supported commands: {}", device.getDefinition().toString());
+
+                StringBuilder sb = new StringBuilder().append('\n');
+                for (SomfyTahomaState state : device.getStates()) {
+                    sb.append(state.toString()).append('\n');
+                }
+                logger.warn("Device states: {}", sb.toString());
         }
     }
 

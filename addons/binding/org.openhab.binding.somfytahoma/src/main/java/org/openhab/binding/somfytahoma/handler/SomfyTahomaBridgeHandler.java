@@ -352,18 +352,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             SomfyTahomaDeviceWithState device = data.getDevices().get(0);
             if (device.hasStates()) {
                 SomfyTahomaState state = device.getStates().get(0);
-                if (state.getType() == TYPE_PERCENT) {
-                    Double value = (Double) state.getValue();
-                    return new PercentType(value.intValue());
-                }
-                if (state.getType() == TYPE_DECIMAL) {
-                    Double value = (Double) state.getValue();
-                    return new DecimalType(value);
-                }
-                if (state.getType() == TYPE_STRING) {
-                    String value = state.getValue().toString().toLowerCase();
-                    return parseStringState(value.toLowerCase());
-                }
+                return parseTahomaState(state);
             } else {
                 logger.debug("Device: {} has not returned any state", deviceUrl);
                 return UnDefType.UNDEF;
@@ -383,6 +372,22 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
+    private State parseTahomaState(SomfyTahomaState state) {
+        switch (state.getType()) {
+            case TYPE_PERCENT:
+                Double valPct = (Double) state.getValue();
+                return new PercentType(valPct.intValue());
+            case TYPE_DECIMAL:
+                Double valDec = (Double) state.getValue();
+                return new DecimalType(valDec);
+            case TYPE_STRING:
+                String value = state.getValue().toString().toLowerCase();
+                return parseStringState(value.toLowerCase());
+            default:
+                return null;
+        }
+    }
+
     private State parseStringState(String value) {
         switch (value) {
             case "on":
@@ -391,9 +396,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 return OnOffType.OFF;
             case "notdetected":
             case "nopersoninside":
+            case "closed":
                 return OpenClosedType.CLOSED;
             case "detected":
             case "personinside":
+            case "open":
                 return OpenClosedType.OPEN;
             default:
                 logger.warn("Unknown thing state returned: {}", value);
@@ -470,18 +477,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String stateName = handler.getStateNames().get(channelUID.getId());
         for (SomfyTahomaState state : channelStates) {
             if (state.getName().equals(stateName)) {
-                if (state.getType() == TYPE_PERCENT) {
-                    Double value = (Double) state.getValue();
-                    return new PercentType(value.intValue());
-                }
-                if (state.getType() == TYPE_DECIMAL) {
-                    Double value = (Double) state.getValue();
-                    return new DecimalType(value);
-                }
-                if (state.getType() == TYPE_STRING) {
-                    String value = state.getValue().toString().toLowerCase();
-                    return value.equals("on") ? OnOffType.ON : OnOffType.OFF;
-                }
+                return parseTahomaState(state);
             }
         }
         return null;

@@ -28,12 +28,19 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.COMMAN
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public abstract class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler  {
+public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler  {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaContactSensorHandler.class);
 
     public SomfyTahomaContactSensorHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public Hashtable<String, String> getStateNames() {
+        return new Hashtable<String, String>() {{
+            put(CONTACT, "core:ContactState");
+        }};
     }
 
     @Override

@@ -19,6 +19,7 @@ Currently supports these things
 - light sensors (luminance value)
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact)
+- contact sensors (OPEN/CLOSE contact)
 - action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
 
 Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
@@ -68,15 +69,15 @@ An action group thing has this channel:
 
 - trigger (a switch which reacts to ON command and triggers the predefined Tahoma action)
 
-An on/off and light thing has this channel:
+An on/off and light things have this channel:
 
 - switch (reacts to standard ON/OFF commands)
 
-A smoke sensor and occupancy sensor has this channel:
+A smoke sensor, occupancy sensor and contact sensor things have this channel:
 
 - contact (normal value is CLOSE, changes to OPEN when detection triggered)
 
-A light sensors exposes this channel:
+A light sensors thing exposes this channel:
 
 - luminance (light luminance value in luxes) 
 
@@ -102,7 +103,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
 }
 ```
 
-Awnings, garage doors, screens, blinds, and windows have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition. 
+Awnings, garage doors, screens, blinds, and windows things have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition. 
 
 .items file
 
@@ -130,6 +131,7 @@ Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:
 
 Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupancysensor:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:contact" }
 Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
+Contact ContactSensor "Contact Sensor is [%s]" { channel="somfytahoma:contactsensor:237dbae7:6612f2e3-d23d-21dd-b3a6-13ef7abcd134:contact" }
 ```
 
 ## Alexa compatibility

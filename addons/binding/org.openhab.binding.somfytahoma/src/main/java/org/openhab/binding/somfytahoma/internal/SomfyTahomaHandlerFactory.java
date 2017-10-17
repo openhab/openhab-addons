@@ -50,6 +50,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_LIGHT,
             THING_TYPE_LIGHTSENSOR,
             THING_TYPE_SMOKESENSOR,
+            THING_TYPE_CONTACTSENSOR,
             THING_TYPE_OCCUPANCYSENSOR,
             THING_TYPE_WINDOW
     ));
@@ -111,6 +112,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_OCCUPANCYSENSOR)) {
             return new SomfyTahomaOccupancySensorHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_CONTACTSENSOR)) {
+            return new SomfyTahomaContactSensorHandler(thing);
         }
         if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);

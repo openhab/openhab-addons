@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.somfytahoma.model;
 
+import java.util.ArrayList;
+
 /**
  * The {@link SomfyTahomaDevice} holds information about a device bound
  * to TahomaLink account.
@@ -21,6 +23,7 @@ public class SomfyTahomaDevice {
     private String label;
     private String oid;
     private SomfyTahomaDeviceDefinition definition;
+    private ArrayList<SomfyTahomaState> states;
 
     public String getLabel() {
         return label;
@@ -40,5 +43,9 @@ public class SomfyTahomaDevice {
 
     public SomfyTahomaDeviceDefinition getDefinition() {
         return definition;
+    }
+
+    public ArrayList<SomfyTahomaState> getStates() {
+        return states;
     }
 }
