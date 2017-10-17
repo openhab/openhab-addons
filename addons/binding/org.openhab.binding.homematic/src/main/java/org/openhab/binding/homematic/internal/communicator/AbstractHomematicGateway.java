@@ -762,8 +762,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 if (config.getGatewayInfo().isCCU1()) {
                     // the CCU1 does not support the ping command, we need a workaround
                     getRpcClient(getDefaultInterface()).listBidcosInterfaces(getDefaultInterface());
-                    // if there is no exception, connection is valid and we have to simulate a received pong
-                    pongReceived();
+                    // if there is no exception, connection is valid
+                    connectionConfirmed();
                 } else {
                     getRpcClient(getDefaultInterface()).ping(getDefaultInterface(), id);
                 }
@@ -779,6 +779,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
         public void pongReceived() {
             pong = true;
+            connectionConfirmed();
+        }
+
+        private void connectionConfirmed() {
             if (connectionLost) {
                 connectionLost = false;
                 logger.info("Connection resumed on gateway '{}'", id);
