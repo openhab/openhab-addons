@@ -16,14 +16,14 @@ import java.util.Map;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], Void> {
+public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBidcosInterfacesParser> {
     private String type;
     private String gatewayAddress;
     private String firmware;
 
     @SuppressWarnings("unchecked")
     @Override
-    public Void parse(Object[] message) throws IOException {
+    public ListBidcosInterfacesParser parse(Object[] message) throws IOException {
         if (message != null && message.length > 0) {
             message = (Object[]) message[0];
             for (int i = 0; i < message.length; i++) {
@@ -37,7 +37,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], Void> 
                 }
             }
         }
-        return null;
+        return this;
     }
 
     /**
