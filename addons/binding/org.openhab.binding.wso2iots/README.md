@@ -1,52 +1,87 @@
-# <bindingName> Binding
+# wso2iots Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding is used to connect with a locally hosted WSO2 IoT Server 3.1.0 (https://wso2.com/iot) and get temperature, humidity, light, motion data from the devices enrolled in the WSO2 IoTS building monitor plugin. The binding allows communication between the openHAB server and WSO2 IoT server.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+WSO2 is an opensource middleware company and IoTS is one of the five products offered by the company.(https://wso2.com/)
+
+To use the binding, first the user have to locally setup the WSO2 IoTS (https://wso2.com/iot) and deploy the building monitor plugin (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo). The building monitor agent uses ESP8266 12E, DHT 11, PIR SR501, LM393. (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo/BuildingMonitorDevice). After enrolling the device agent access token has to be obtained from https://localhost:9443/api-store/.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+There is exactly one supported thing type, which represents one device agent. It has the `buildingMonitor` id. Of course, you can add multiple Things, e.g. Devices enrolled in different floors and different buildings.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+There is no discovery implemented. You have to create your things manually.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The binding has no configuration options, all configuration is done at Thing level.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The thing has a few configuration parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Parameter | Description                                                              |
+|-----------|------------------------------------------------------------------------- |
+| apikey    | Access token to invoke the WSO2 IoTS API for building monitor. Mandatory. |
+| deviceId  | Unique ID of the device agent |
+| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes.  |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The information that is retrieved is available as these channels:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+
+| Channel ID | Item Type    | Description              |
+|------------|--------------|------------------------- |
+| motion | Number | Motion level in the range 0-1 |
+| temperature | Number | Temperature in Celsius degrees |
+| light | Number | Light level in the range 0-1024|
+| humidity | Number | Humidity level |
+
+Note that light level 0 mean high brightness and 1024 means very dark
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+wso2iots.things:
+
+```
+wso2iots:buildingMonitor:<thingId> "Home" [ apikey="XXXXXXXXXXXX", deviceId=2940205, refresh=60 ]
+wso2iots:buildingMonitor:<thingId> "Office" [ apikey="XXXXXXXXXXXX", deviceId=776895, refresh=60 ]
+```
+
+wso2iots.items:
+
+```
+Group Wso2iots <flow>
+
+Number	wso2_Temperature	"Temperature" <temperature> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:temperature"}
+Number	wso2_Humidity		"Humidity" <humidity> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:humidity"}
+Number	wso2_Light		"Light" <light> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:light"}
+Number	wso2_Motion		"Motion" <motion> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:motion"}
+
+```
+
+wso2iots.sitemap:
+
+```
+sitemap wso2iots label="Building Monitor Application"{
+
+	Frame label="Home"{
+		Text item=wso2_Temperature label="Temperature [%.1f °C]" icon="temperature"
+		Text item=wso2_Motion label="Motion [%.1f ]" icon="motion"
+		Text item=wso2_Humidity label="Humidity [%.1f %%]" icon="humidity"
+		Text item=wso2_Light label="Light [%.1f ]" icon="light"
+		
+	}
+
+
+}
+
+```
+
 
 ## Any custom content here!
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+
