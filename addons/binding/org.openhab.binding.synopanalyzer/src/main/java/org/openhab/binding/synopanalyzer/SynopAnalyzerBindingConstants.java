@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.synopanalyzer;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class SynopAnalyzerBindingConstants {
 
+    @NonNull
     public static final String BINDING_ID = "synopanalyzer";
 
     // List of all Thing Type UIDs
@@ -26,6 +28,7 @@ public class SynopAnalyzerBindingConstants {
     // List of all Channel ids
     public static final String HORIZONTAL_VISIBILITY = "horizontal-visibility";
     public static final String OCTA = "octa";
+    public static final String ATTENUATION_FACTOR = "attenuation-factor";
     public static final String OVERCAST = "overcast";
     public static final String PRESSURE = "pressure";
     public static final String TEMPERATURE = "temperature";
