@@ -4,7 +4,8 @@ This binding is used to connect with a locally hosted WSO2 IoT Server 3.1.0 (htt
 
 WSO2 is an opensource middleware company and IoTS is one of the five products offered by the company.(https://wso2.com/)
 
-To use the binding, first the user have to locally setup the WSO2 IoTS (https://wso2.com/iot) and deploy the building monitor plugin (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo). The building monitor agent uses ESP8266 12E, DHT 11, PIR SR501, LM393. (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo/BuildingMonitorDevice). After enrolling the device agent access token has to be obtained from https://localhost:9443/api-store/.
+To use the binding, first the user have to locally setup the WSO2 IoTS (https://wso2.com/iot) and deploy the building monitor plugin (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo). The building monitor agent uses ESP8266 12E, DHT 11, PIR SR501, LM393. (https://github.com/wso2/samples-iots/tree/master/floor-analytics-demo/BuildingMonitorDevice). 
+After enrolling the device agent, an access token has to be obtained from https://localhost:9443/api-store/.
 
 ## Supported Things
 
@@ -81,7 +82,5 @@ sitemap wso2iots label="Building Monitor Application"{
 
 ```
 
-
-## Any custom content here!
 
 
