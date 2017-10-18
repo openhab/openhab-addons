@@ -66,10 +66,15 @@ public class HomekitImpl implements Homekit {
 
     protected void deactivate() {
         changeListener.clearAccessories();
-        bridge.stop();
-        homekit.stop();
-        bridge = null;
-        homekit = null;
+        if (bridge != null) {
+            bridge.stop();
+            bridge = null;
+        }
+        if (homekit != null){
+            homekit.stop();
+            homekit = null;
+        }
+
         changeListener.setBridge(null);
         changeListener.stop();
     }
