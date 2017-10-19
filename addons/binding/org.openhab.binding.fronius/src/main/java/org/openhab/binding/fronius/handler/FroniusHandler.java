@@ -271,7 +271,7 @@ public class FroniusHandler extends BaseThingHandler {
             }
 
             if (!resultOk) {
-                logger.warn("Error in fronius response: {}", errorMsg);
+                logger.error("Error in fronius response: {}", errorMsg);
             }
 
         } catch (JsonSyntaxException e) {
