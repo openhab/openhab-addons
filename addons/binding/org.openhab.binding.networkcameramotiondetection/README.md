@@ -51,7 +51,7 @@ Rules:
 ```
 rule "example trigger rule"
 when
-    Channel 'networkcameramotiondetection:NetworkCamera:garage:motion-trigger' triggered MOTION_DETECTED 
+    Channel 'networkcameramotiondetection:networkcamera:garage:motion-trigger' triggered MOTION_DETECTED 
 then
     logInfo("Test","MOTION DETECTED trigger example")
 end
