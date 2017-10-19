@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link PowerFlowRealtimeInverter} is responsible for storing
- * the "inverter" node
+ * the "inverter" node of the JSON response
  *
  * @author Thomas Rokohl - Initial contribution
  */

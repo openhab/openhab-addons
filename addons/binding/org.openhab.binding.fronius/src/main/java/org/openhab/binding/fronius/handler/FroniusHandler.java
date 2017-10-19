@@ -10,14 +10,10 @@ package org.openhab.binding.fronius.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.fronius.FroniusBindingConstants;
 import org.openhab.binding.fronius.FroniusConfiguration;
 import org.openhab.binding.fronius.api.InverterRealtimeResponse;
@@ -55,6 +52,7 @@ public class FroniusHandler extends BaseThingHandler {
 
     private static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
     private static final String POWERFLOW_REALTIME_DATA = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
+    private static final int API_TIMEOUT = 5000;
     private static final int DEFAULT_REFRESH_PERIOD = 5;
 
     private ScheduledFuture<?> refreshJob;
@@ -97,7 +95,7 @@ public class FroniusHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
-            startAutomaticRefresh();
+            startAutomaticRefresh(config);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -106,25 +104,21 @@ public class FroniusHandler extends BaseThingHandler {
     /**
      * Start the job refreshing the data
      */
-    private void startAutomaticRefresh() {
+    private void startAutomaticRefresh(FroniusConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        // Request
-                        updateData();
-                        // Update all channels
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId());
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    // Request
+                    updateData(config);
+                    // Update all channels
+                    for (Channel channel : getThing().getChannels()) {
+                        updateChannel(channel.getUID().getId());
                     }
+
                 }
             };
 
-            FroniusConfiguration config = getConfigAs(FroniusConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
         }
@@ -146,43 +140,38 @@ public class FroniusHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel to be updated
      */
     private void updateChannel(String channelId) {
-        if (isLinked(channelId)) {
-            Object value;
-            try {
-                value = getValue(channelId);
-            } catch (Exception e) {
-                logger.debug("Station doesn't provide {} measurement", channelId.toUpperCase());
-                return;
-            }
-
-            State state = null;
-            if (value == null) {
-                state = UnDefType.UNDEF;
-            } else if (value instanceof Calendar) {
-                state = new DateTimeType((Calendar) value);
-            } else if (value instanceof BigDecimal) {
-                state = new DecimalType((BigDecimal) value);
-            } else if (value instanceof Integer) {
-                state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
-            } else if (value instanceof String) {
-                state = new StringType(value.toString());
-            } else if (value instanceof Double) {
-                state = new DecimalType((double) value);
-            } else if (value instanceof ValueUnit) {
-                state = new DecimalType(((ValueUnit) value).getValue());
-
-            } else {
-                logger.warn("Update channel {}: Unsupported value type {}", channelId,
-                        value.getClass().getSimpleName());
-            }
-            logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
-                    (value == null) ? "null" : value.getClass().getSimpleName());
-
-            // Update the channel
-            if (state != null) {
-                updateState(channelId, state);
-            }
+        if (!isLinked(channelId)) {
+            return;
         }
+        Object value;
+        value = getValue(channelId);
+
+        State state = null;
+        if (value == null) {
+            state = UnDefType.UNDEF;
+        } else if (value instanceof Calendar) {
+            state = new DateTimeType((Calendar) value);
+        } else if (value instanceof BigDecimal) {
+            state = new DecimalType((BigDecimal) value);
+        } else if (value instanceof Integer) {
+            state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
+        } else if (value instanceof String) {
+            state = new StringType(value.toString());
+        } else if (value instanceof Double) {
+            state = new DecimalType((double) value);
+        } else if (value instanceof ValueUnit) {
+            state = new DecimalType(((ValueUnit) value).getValue());
+        } else {
+            logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
+        }
+        logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
+                (value == null) ? "null" : value.getClass().getSimpleName());
+
+        // Update the channel
+        if (state != null) {
+            updateState(channelId, state);
+        }
+
     }
 
     /**
@@ -191,9 +180,8 @@ public class FroniusHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel to be updated
      * @param data
      * @return
-     * @throws Exception
      */
-    public Object getValue(String channelId) throws Exception {
+    public Object getValue(String channelId) {
         String[] fields = StringUtils.split(channelId, "#");
 
         if (inverterRealtimeResponse == null) {
@@ -248,8 +236,7 @@ public class FroniusHandler extends BaseThingHandler {
      * Get new data
      *
      */
-    private void updateData() {
-        FroniusConfiguration config = getConfigAs(FroniusConfiguration.class);
+    private void updateData(FroniusConfiguration config) {
         inverterRealtimeResponse = getRealtimeData(config.ip, config.deviceId);
         powerFlowResponse = getPowerFlowRealtime(config.ip);
     }
@@ -269,15 +256,10 @@ public class FroniusHandler extends BaseThingHandler {
 
             String location = POWERFLOW_REALTIME_DATA.replace("%IP%", StringUtils.trimToEmpty(ip));
             logger.debug("URL = {}", location);
-            URL url = new URL(location);
-            URLConnection connection = url.openConnection();
-
-            try {
-                String response = IOUtils.toString(connection.getInputStream());
+            String response = HttpUtil.executeUrl("GET", location, API_TIMEOUT);
+            if (response != null) {
                 logger.debug("aqiResponse = {}", response);
                 result = gson.fromJson(response, PowerFlowRealtimeResponse.class);
-            } finally {
-                IOUtils.closeQuietly(connection.getInputStream());
             }
 
             if (result == null) {
@@ -292,14 +274,12 @@ public class FroniusHandler extends BaseThingHandler {
                 logger.warn("Error in fronius response: {}", errorMsg);
             }
 
-        } catch (MalformedURLException e) {
-            errorMsg = e.getMessage();
-            logger.warn("Constructed url is not valid: {}", errorMsg);
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.warn("Error running fronius request: {}", errorMsg);
+            logger.error("Error running fronius request: {}", errorMsg);
         } catch (IOException | IllegalStateException e) {
             errorMsg = e.getMessage();
+            logger.error("Error running fronius request: {}", errorMsg);
         }
 
         return resultOk ? result : null;
@@ -322,15 +302,10 @@ public class FroniusHandler extends BaseThingHandler {
             location = location.replace("%DEVICEID%", StringUtils.trimToEmpty(deviceId));
             logger.debug("URL = {}", location);
 
-            URL url = new URL(location);
-            URLConnection connection = url.openConnection();
-
-            try {
-                String response = IOUtils.toString(connection.getInputStream());
+            String response = HttpUtil.executeUrl("GET", location, API_TIMEOUT);
+            if (response != null) {
                 logger.debug("aqiResponse = {}", response);
                 result = gson.fromJson(response, InverterRealtimeResponse.class);
-            } finally {
-                IOUtils.closeQuietly(connection.getInputStream());
             }
 
             if (result == null) {
@@ -342,17 +317,15 @@ public class FroniusHandler extends BaseThingHandler {
             }
 
             if (!resultOk) {
-                logger.warn("Error in fronius response: {}", errorMsg);
+                logger.error("Error in fronius response: {}", errorMsg);
             }
 
-        } catch (MalformedURLException e) {
-            errorMsg = e.getMessage();
-            logger.warn("Constructed url is not valid: {}", errorMsg);
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.warn("Error running fronius request: {}", errorMsg);
+            logger.error("Error running fronius request: {}", errorMsg);
         } catch (IOException | IllegalStateException e) {
             errorMsg = e.getMessage();
+            logger.error("Error running fronius request: {}", errorMsg);
         }
 
         // Update the thing status

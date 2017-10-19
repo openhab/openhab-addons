@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link PowerFlowRealtimeBody} is responsible for storing
- * the "body" node
+ * the "body" node of the JSON response
  *
  * @author Thomas Rokohl - Initial contribution
  */

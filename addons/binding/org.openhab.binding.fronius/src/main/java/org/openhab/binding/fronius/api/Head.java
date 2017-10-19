@@ -12,7 +12,10 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Head} is responsible for storing
- * the "head" node
+ * the "head" node of the JSON response from the Fronius Solar APIs (V1)
+ *
+ * The contents of the response object will vary depending on the preceding request but it always contains a common
+ * response header and a request body.
  *
  * @author Thomas Rokohl - Initial contribution
  */

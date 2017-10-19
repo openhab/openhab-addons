@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HeadRequestArguments} is responsible for storing
- * the "RequestArguments" node from the head
+ * the "RequestArguments" node from the {@link Head}
  *
  * @author Thomas Rokohl - Initial contribution
  */

@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link PowerFlowRealtimeBodyData} is responsible for storing
- * the "data" node
+ * the "data" node of the JSON response
  *
  * @author Thomas Rokohl - Initial contribution
  */

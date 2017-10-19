@@ -43,8 +43,6 @@ The thing has a few configuration parameters:
 | pLoad | Number | Power + generator, - consumer |
 | pAkku | Number | Power + charge, - discharge |
 
-
-
 ## Full Example
 
 

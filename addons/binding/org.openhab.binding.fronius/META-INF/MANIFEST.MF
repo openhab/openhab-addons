@@ -11,7 +11,7 @@ Import-Package:
  com.google.gson,
  com.google.gson.annotations,
  org.apache.commons.io,
- org.apache.commons.lang, 
+ org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -19,6 +19,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.openhab.binding.fronius,
  org.openhab.binding.fronius.handler,
  org.slf4j
