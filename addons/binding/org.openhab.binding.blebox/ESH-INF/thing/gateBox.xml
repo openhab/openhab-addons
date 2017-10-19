@@ -14,29 +14,8 @@
             <channel id="position" typeId="position" />
         </channels>
 
-        <config-description>
+        <config-description-ref uri="blebox:config" />
 
-            <parameter name="ip" type="text">
-                <label>IP Address</label>
-                <description>IP address of device</description>
-                <default>192.168.1.X</default>
-            </parameter>
-            
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>Serial number of the device.</description>
-                <required>false</required>
-            </parameter>
-            
-            <parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
-                <label>Polling Interval</label>
-                <description>Seconds between fetching values from the device.</description>
-                <required>true</required>
-                <default>10</default>
-            </parameter>
-
-       
-        </config-description>
 
     </thing-type>
 
