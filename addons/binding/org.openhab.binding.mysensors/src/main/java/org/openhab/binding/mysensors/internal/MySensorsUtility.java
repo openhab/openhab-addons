@@ -71,7 +71,6 @@ public class MySensorsUtility {
         }
 
         map1.putAll(map2);
-
     }
 
     public static <K, V> boolean containsSameKey(Map<K, V> map1, Map<K, V> map2) {

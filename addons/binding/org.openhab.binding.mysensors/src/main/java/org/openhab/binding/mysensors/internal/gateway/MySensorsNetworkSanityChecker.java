@@ -103,7 +103,6 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
             scheduler.shutdownNow();
             scheduler = null;
         }
-
     }
 
     @Override
@@ -111,22 +110,17 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
         Thread.currentThread().setName(MySensorsNetworkSanityChecker.class.getName());
 
         try {
-
             myEventRegister.addEventListener(this);
 
             if (checkConnectionStatus()) { // Connection is ok, let's go on with other check
-
                 if (sendHeartbeat) {
                     logger.debug("Sending I_HEARTBEAT_REQUESTs");
                     sendHeartbeatRequest();
                     Thread.sleep(SEND_DELAY);
                     checkHeartbeatsResponse();
                 }
-
                 checkExpectedUpdate();
-
             }
-
         } catch (Exception e) {
             logger.error("Exception in network sanity thread checker", e);
         } finally {
@@ -200,12 +194,10 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
                                     logger.debug("Node {} is not receiving hearbeat response (miss {} of {})", nodeId,
                                             missingHearbeat, maxHeartbeatAttemptsBeforeDisconnecting);
                                 }
-
                             }
                         }
                     }
                 }
-
             }
         }
     }
@@ -218,7 +210,6 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
                             MySensorsMessageType.INTERNAL, MySensorsMessageAck.FALSE, false,
                             MySensorsMessageSubType.I_HEARTBEAT_REQUEST, "");
                     myGateway.sendMessage(msg);
-
                 }
             }
         }
@@ -238,7 +229,6 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
         Thread.sleep(SEND_DELAY);
 
         synchronized (missedIVersionMessages) {
-
             if (!iVersionMessageArrived) {
                 logger.warn("I_VERSION message response is not arrived. Remained attempts before disconnection {}",
                         maxAttemptsBeforeDisconnecting - missedIVersionMessages);
@@ -248,7 +238,6 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
 
                     myCon.requestDisconnection(true);
                     ret = false;
-
                 } else {
                     missedIVersionMessages++;
                 }
@@ -256,10 +245,8 @@ public class MySensorsNetworkSanityChecker implements MySensorsGatewayEventListe
                 logger.debug("Network sanity check: PASSED");
                 missedIVersionMessages = 0;
             }
-
             iVersionMessageArrived = false;
         }
-
         return ret;
     }
 

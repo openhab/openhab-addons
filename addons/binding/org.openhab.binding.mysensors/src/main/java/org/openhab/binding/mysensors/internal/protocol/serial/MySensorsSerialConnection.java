@@ -8,17 +8,21 @@
  */
 package org.openhab.binding.mysensors.internal.protocol.serial;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
+import java.io.IOException;
+import java.util.TooManyListenersException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.mysensors.internal.event.MySensorsEventRegister;
 import org.openhab.binding.mysensors.internal.gateway.MySensorsGatewayConfig;
 import org.openhab.binding.mysensors.internal.protocol.MySensorsAbstractConnection;
 
+import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
-import gnu.io.NRSerialPort;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Connection to the serial interface where the MySensors Gateway is connected.
@@ -27,9 +31,9 @@ import gnu.io.NRSerialPort;
  * @author Andrea Cioni
  *
  */
-public class MySensorsSerialConnection extends MySensorsAbstractConnection {
+public class MySensorsSerialConnection extends MySensorsAbstractConnection implements SerialPortEventListener {
 
-    private NRSerialPort serialConnection = null;
+    private SerialPort serialConnection = null;
 
     public MySensorsSerialConnection(MySensorsGatewayConfig myConf, MySensorsEventRegister myEventRegister) {
         super(myConf, myEventRegister);
@@ -41,31 +45,43 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection {
     @Override
     public boolean establishConnection() {
         logger.debug("Connecting to {} [baudRate:{}]", myGatewayConfig.getSerialPort(), myGatewayConfig.getBaudRate());
+        
+        CommPortIdentifier portIdentifier;
+        try {
+            portIdentifier = CommPortIdentifier.getPortIdentifier(myGatewayConfig.getSerialPort());
+            
+            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-        boolean ret = false;
-        updateSerialProperties(myGatewayConfig.getSerialPort());
+            serialConnection = (SerialPort) commPort;
+            serialConnection.setSerialPortParams(myGatewayConfig.getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            serialConnection.enableReceiveThreshold(1);
+            serialConnection.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
-        serialConnection = new NRSerialPort(myGatewayConfig.getSerialPort(), myGatewayConfig.getBaudRate());
-        if (serialConnection.connect()) {
-            logger.debug("Successfully connected to serial port.");
-
+            // RXTX serial port library causes high CPU load
+            // Start event listener, which will just sleep and slow down event loop
             try {
-                logger.debug("Waiting {} seconds to allow correct reset trigger on serial connection opening",
-                        RESET_TIME_IN_MILLISECONDS / 1000);
-                Thread.sleep(RESET_TIME_IN_MILLISECONDS);
-            } catch (InterruptedException e) {
-                logger.error("Interrupted reset time wait");
+                serialConnection.addEventListener(this);
+                serialConnection.notifyOnDataAvailable(true);
+                logger.debug("Serial port event listener started");
+            } catch (TooManyListenersException e) {
             }
+
+            logger.debug("Successfully connected to serial port.");
 
             mysConReader = new MySensorsReader(serialConnection.getInputStream());
             mysConWriter = new MySensorsWriter(serialConnection.getOutputStream());
 
-            ret = startReaderWriterThread(mysConReader, mysConWriter);
-        } else {
-            logger.error("Can't connect to serial port. Wrong port?");
+            return startReaderWriterThread(mysConReader, mysConWriter);
+        } catch (NoSuchPortException e) {
+            logger.error("No such port: {}", myGatewayConfig.getSerialPort(), e);
+        } catch (PortInUseException e) {
+            logger.error("Port: {} is already in use", myGatewayConfig.getSerialPort(), e);
+        } catch (UnsupportedCommOperationException e) {
+            logger.error("Comm operation on port: {} not supported", myGatewayConfig.getSerialPort(), e);
+        } catch (IOException e) {
+            logger.error("IOException on port: {}", myGatewayConfig.getSerialPort(), e);
         }
-
-        return ret;
+        return false;
     }
 
     /**
@@ -85,72 +101,47 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection {
             mysConReader = null;
         }
 
+        if(myGatewayConfig.isHardReset())
+            resetAttachedGateway();
+        
         if (serialConnection != null) {
             try {
-                serialConnection.disconnect();
+                serialConnection.removeEventListener();
+                serialConnection.close();
             } catch (Exception e) {
             }
             serialConnection = null;
         }
-
+    }
+    
+    @Override
+    public void serialEvent(SerialPortEvent arg0) {
+        try {
+            /*
+             * See more details from
+             * https://github.com/NeuronRobotics/nrjavaserial/issues/22
+             */
+            logger.trace("RXTX library CPU load workaround, sleep forever");
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            logger.warn("RXTX library CPU load workaround, sleep forever", e);
+        }
     }
     
     /**
-     * By default, RXTX searches only devices /dev/ttyS* and
-     * /dev/ttyUSB*, and will therefore not find devices that
-     * have been symlinked. Adding them however is tricky, see below.
-     *
-     * @param devName is the device used as COM/UART port
+     * Try to reset the attached gateway by using DTR
+     * 
      */
-    private void updateSerialProperties(String devName) {
-
-        //
-        // first go through the port identifiers to find any that are not in
-        // "gnu.io.rxtx.SerialPorts"
-        //
-        ArrayList<String> allPorts = new ArrayList<String>();
-        @SuppressWarnings("rawtypes")
-        Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-        while (portList.hasMoreElements()) {
-            CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-            if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                allPorts.add(id.getName());
-            }
+    public void resetAttachedGateway() {
+        logger.debug("Trying to reset of attached gateway with DTR");
+        serialConnection.setDTR(true);
+        try {
+            Thread.sleep(RESET_TIME_IN_MILLISECONDS);
+        } catch (InterruptedException e) {
+            logger.warn("Wait for reset of attached gateway interrupted!", e);
         }
-        logger.trace("Ports found from identifiers: {}", StringUtils.join(allPorts, ":"));
-        //
-        // now add our port so it's in the list
-        //
-        if (!allPorts.contains(devName)) {
-            allPorts.add(devName);
-        }
-        //
-        // add any that are already in "gnu.io.rxtx.SerialPorts"
-        // so we don't accidentally overwrite some of those ports
-
-        String ports = System.getProperty("gnu.io.rxtx.SerialPorts");
-        if (ports != null) {
-            ArrayList<String> propPorts = new ArrayList<String>(Arrays.asList(ports.split(":")));
-            for (String p : propPorts) {
-                if (!allPorts.contains(p)) {
-                    allPorts.add(p);
-                }
-            }
-        }
-        String finalPorts = StringUtils.join(allPorts, ":");
-        logger.debug("Final port list: {}", finalPorts);
-
-        //
-        // Finally overwrite the "gnu.io.rxtx.SerialPorts" System property.
-        //
-        // Note: calling setProperty() is not threadsafe. All bindings run in
-        // the same address space, System.setProperty() is globally visible
-        // to all bindings.
-        // This means if multiple bindings use the serial port there is a
-        // race condition where two bindings could be changing the properties
-        // at the same time
-        //
-        System.setProperty("gnu.io.rxtx.SerialPorts", finalPorts);
+        serialConnection.setDTR(false);
+        logger.debug("Finished reset of attached gateway with DTR");
     }
 
     @Override
@@ -158,5 +149,4 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection {
         return "MySensorsSerialConnection [serialPort=" + myGatewayConfig.getSerialPort() + ", baudRate="
                 + myGatewayConfig.getBaudRate() + "]";
     }
-
 }

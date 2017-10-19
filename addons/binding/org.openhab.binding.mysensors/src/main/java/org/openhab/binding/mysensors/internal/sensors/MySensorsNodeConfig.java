@@ -57,7 +57,6 @@ public class MySensorsNodeConfig implements Mergeable {
         if (expectUpdateTimeout <= 0) {
             expectUpdateTimeout = nodeConfig.expectUpdateTimeout;
         }
-
     }
 
     @Override

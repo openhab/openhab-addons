@@ -54,7 +54,6 @@ public class MySensorsIpConnection extends MySensorsAbstractConnection {
             } catch (IOException e) {
                 logger.error("Error while trying to connect InputStreamReader", e);
             }
-
         } else {
             logger.error("IP must be not null/empty");
         }
@@ -88,7 +87,6 @@ public class MySensorsIpConnection extends MySensorsAbstractConnection {
         } catch (IOException e) {
             logger.error("cannot disconnect from socket, message: {}", e.getMessage());
         }
-
     }
 
     @Override

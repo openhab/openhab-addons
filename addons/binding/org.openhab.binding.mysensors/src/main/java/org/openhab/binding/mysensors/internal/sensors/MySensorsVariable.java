@@ -77,7 +77,6 @@ public abstract class MySensorsVariable {
         } else {
             throw new RevertVariableStateException();
         }
-
     }
 
     @Override

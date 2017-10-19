@@ -8,6 +8,15 @@
  */
 package org.openhab.binding.mysensors.internal.event;
 
+/**
+ * Enum of possible node update events
+ * REVERT == return to old status
+ * BATTERY == for battery info (in percent)
+ * UPDATE == new value for the node
+ * 
+ * @author Tim Oberföll
+ *
+ */
 public enum MySensorsNodeUpdateEventType {
     REVERT,
     BATTERY,

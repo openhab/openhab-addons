@@ -8,7 +8,19 @@
  */
 package org.openhab.binding.mysensors.handler;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_BATTERY;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_COVER;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_LAST_UPDATE;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_MAP;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_MYSENSORS_MESSAGE;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_PERCENTAGE;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_RGB;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_RGBW;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_STATUS;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.INVERSE_THING_UID_MAP;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.MYSENSORS_CHILD_ID_ALL_KNOWING;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.MYSENSORS_NODE_ID_ALL_KNOWING;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.TYPE_MAP;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +28,8 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -93,7 +107,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                 getThing().getUID().toString());
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 || bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-
             if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
                 registerListeners();
             } else {
@@ -140,7 +153,24 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                 }
             }
         } else {
-            MySensorsTypeConverter adapter = loadAdapterForChannelType(channelUID.getId());
+            MySensorsTypeConverter adapter;
+            
+            // RGB && RGBW only:
+            // if the brightness (Percentage) is changed it must be send via V_PERCENTAGE 
+            // and another converter must be used
+            boolean rgbPercentageValue = false;
+            boolean rgbOnOffValue = false;
+            if ((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW)) && (command instanceof OnOffType)) {
+                adapter = loadAdapterForChannelType(CHANNEL_STATUS);
+                rgbOnOffValue = true;
+            } else if((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW)) && !(command instanceof HSBType)) {
+                adapter = loadAdapterForChannelType(CHANNEL_PERCENTAGE);
+                rgbPercentageValue = true;
+            } else {
+                adapter = loadAdapterForChannelType(channelUID.getId());
+            }
+            
+            logger.debug("Adapter: {} loaded", adapter.getClass());
 
             if (adapter != null) {
                 logger.trace("Adapter {} found for type {}", adapter.getClass().getSimpleName(), channelUID.getId());
@@ -154,8 +184,15 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                     MySensorsVariable var = myGateway.getVariable(configuration.nodeId, configuration.childId, type);
 
                     if (var != null) {
-
-                        MySensorsMessageSubType subType = var.getType();
+                        MySensorsMessageSubType subType;
+                        if(rgbPercentageValue) {
+                            subType = MySensorsMessageSubType.V_PERCENTAGE;
+                        } else if(rgbOnOffValue) {
+                            subType = MySensorsMessageSubType.V_STATUS;
+                        } else {
+                            subType = var.getType();
+                        }
+                        
 
                         // Create the real message to send
                         MySensorsMessage newMsg = new MySensorsMessage(configuration.nodeId, configuration.childId,
@@ -165,7 +202,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                         newMsg.setMsg(adapter.fromCommand(command));
 
                         myGateway.sendMessage(newMsg);
-
                     } else {
                         logger.warn("Variable not found, cannot handle command for thing {} of type {}", thing.getUID(),
                                 channelUID.getId());
@@ -174,18 +210,15 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                     logger.error("Could not get type of variable for channel: {}, command: {} of thing {}",
                             thing.getUID(), command, thing.getUID());
                 }
-
             } else {
                 logger.error("Type adapter not found for {}", channelUID.getId());
             }
-
         }
     }
 
     @Override
     public void messageReceived(MySensorsMessage message) throws Exception {
         handleIncomingMessageEvent(message);
-
     }
 
     @Override
@@ -206,7 +239,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                 }
                 break;
         }
-
     }
 
     @Override
@@ -227,7 +259,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                 updateStatus(ThingStatus.ONLINE);
             }
         }
-
     }
 
     /**
@@ -277,7 +308,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
         if(myGateway.getNode(configuration.nodeId).getChild(configuration.childId).getPresentationCode() == MySensorsMessageSubType.S_COVER)
             updateState(CHANNEL_COVER, newState);
         updateState(channelName, newState);
-
     }
 
     private void handleBatteryUpdateEvent(MySensorsNode node) {
@@ -309,7 +339,6 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
         if (configuration.nodeId == MYSENSORS_NODE_ID_ALL_KNOWING && configuration.childId == MYSENSORS_CHILD_ID_ALL_KNOWING) {
             updateState(CHANNEL_MYSENSORS_MESSAGE,
                     new StringType(MySensorsMessage.generateAPIString(msg).replaceAll("(\\r|\\n)", "")));
-
         }
     }
 
@@ -343,7 +372,7 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
 
                 MySensorsChild child = MySensorsChild.fromPresentation(presentation, childId);
                 if (child != null) {
-                	child.setChildConfig(generateChildConfig(configuration));
+                    child.setChildConfig(generateChildConfig(configuration));
                     node = new MySensorsNode(nodeId);
                     node.setNodeConfig(generateNodeConfig(configuration));
                     node.addChild(child);
@@ -352,13 +381,11 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
                 logger.error("Error on building sensors from thing: {}, node: {}, child: {}, presentation: {}",
                         t.getUID(), nodeId, childId, presentation);
             }
-
         } catch (Exception e) {
             logger.error("Failing on create node/child for thing {}", thing.getUID(), e);
         }
 
         return node;
-
     }
 
     private MySensorsChildConfig generateChildConfig(MySensorsSensorConfiguration configuration) {

@@ -11,6 +11,12 @@ package org.openhab.binding.mysensors.internal.protocol.message;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Enum of MessageSubTypes and the corresponding id
+ * 
+ * @author Tim Oberföll
+ *
+ */
 public enum MySensorsMessageSubType {
 
     S_DOOR                          (MySensorsMessageSubTypes.S, 0),

@@ -11,8 +11,14 @@ package org.openhab.binding.mysensors.internal.sensors.child;
 import org.openhab.binding.mysensors.internal.exception.NoContentException;
 import org.openhab.binding.mysensors.internal.protocol.message.MySensorsMessageSubType;
 import org.openhab.binding.mysensors.internal.sensors.MySensorsChild;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVPercentage;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVRgbw;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVStatus;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar1;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar2;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar3;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar4;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar5;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVWatt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +40,14 @@ public class MySensorsChildSRgbwLight extends MySensorsChild {
         setPresentationCode(MySensorsMessageSubType.S_RGBW_LIGHT);
         try {
             addVariable(new MySensorsVariableVRgbw());
+            addVariable(new MySensorsVariableVPercentage());
             addVariable(new MySensorsVariableVWatt());
             addVariable(new MySensorsVariableVStatus());
+            addVariable(new MySensorsVariableVVar1());
+            addVariable(new MySensorsVariableVVar2());
+            addVariable(new MySensorsVariableVVar3());
+            addVariable(new MySensorsVariableVVar4());
+            addVariable(new MySensorsVariableVVar5());
         } catch (NoContentException e) {
             logger.debug("No content to add: {}", e);
         }

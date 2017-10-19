@@ -45,8 +45,11 @@ serialPort=$1
 #echo "172;0;1;0;1;87" > $serialPort
 
 # Set Humidty status
-echo "173;0;0;0;7;1.4.1" > $serialPort
+echo "173;0;0;0;7;2.1.1" > $serialPort
 echo "173;0;1;0;1;44" > $serialPort
+
+# Set var 4 of humidity child
+echo "173;0;1;0;27;0815" > $serialPort
 
 # Set Temperature status
 #echo "172;1;1;0;0;27" > $serialPort

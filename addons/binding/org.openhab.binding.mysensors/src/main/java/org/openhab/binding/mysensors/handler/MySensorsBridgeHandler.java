@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.mysensors.handler;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_ETH;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_MQTT;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_SER;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +58,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     // Configuration from thing file
     private MySensorsBridgeConfiguration myBridgeConfiguration;
-
+    
     // Service discovery registration
     private ServiceRegistration<?> discoveryServiceRegistration;
 
@@ -64,16 +66,17 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     private MySensorsDiscoveryService discoveryService;
     
     private MySensorsCacheFactory cacheFactory;
+    
 
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
         cacheFactory = new MySensorsCacheFactory(ConfigConstants.getUserDataFolder());
     }
-
+    
     @Override
     public void initialize() {
         logger.debug("Initialization of the MySensors bridge");
-
+        
         myBridgeConfiguration = getConfigAs(MySensorsBridgeConfiguration.class);
 
         myGateway = new MySensorsGateway(loadCacheFile());
@@ -82,14 +85,13 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             myGateway.startup();
 
             myGateway.addEventListener(this);
-
+            
             registerDeviceDiscoveryService();
 
             logger.debug("Initialization of the MySensors bridge DONE!");
         } else {
             logger.error("Failed to initialize MySensors bridge");
         }
-
     }
 
     @Override
@@ -108,7 +110,6 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     /**
@@ -158,7 +159,6 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     }
 
     private void updateCacheFile() {
-
         List<Integer> givenIds = myGateway.getGivenIds();
 
         cacheFactory.writeCache(MySensorsCacheFactory.GIVEN_IDS_CACHE_FILE, givenIds.toArray(new Integer[] {}),
@@ -189,10 +189,16 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             gatewayConfig.setGatewayType(MySensorsGatewayType.SERIAL);
             gatewayConfig.setBaudRate(conf.baudRate);
             gatewayConfig.setSerialPort(conf.serialPort);
+            gatewayConfig.setHardReset(conf.hardReset);
         } else if (bridgeuid.equals(THING_TYPE_BRIDGE_ETH)) {
             gatewayConfig.setGatewayType(MySensorsGatewayType.IP);
             gatewayConfig.setIpAddress(conf.ipAddress);
             gatewayConfig.setTcpPort(conf.tcpPort);
+        } else if (bridgeuid.equals(THING_TYPE_BRIDGE_MQTT)) {
+            gatewayConfig.setGatewayType(MySensorsGatewayType.MQTT);
+            gatewayConfig.setBrokerName(conf.brokerName);
+            gatewayConfig.setTopicPublish(conf.topicPublish);
+            gatewayConfig.setTopicSubscribe(conf.topicSubscribe);
         } else {
             throw new IllegalArgumentException("BridgeUID is unknown: " + bridgeuid);
         }
@@ -208,7 +214,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         return gatewayConfig;
     }
-
+    
     private void registerDeviceDiscoveryService() {
         if (bundleContext != null) {
             logger.trace("Registering MySensorsDiscoveryService for bridge '{}'", getThing().getUID().getId());
@@ -218,7 +224,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             discoveryService.activate();
         }
     }
-
+    
     private void unregisterDeviceDiscoveryService() {
         if (discoveryServiceRegistration != null && discoveryService != null) {
             logger.trace("Unregistering MySensorsDiscoveryService for bridge '{}'", getThing().getUID().getId());

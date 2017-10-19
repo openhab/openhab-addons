@@ -38,13 +38,11 @@ public class MySensorsEventRegister extends EventRegister<MySensorsGatewayEventL
     @Override
     public void addEventListener(MySensorsGatewayEventListener listener) {
         eventRegister.addEventListener(listener);
-
     }
 
     @Override
     public void clearAllListeners() {
         eventRegister.clearAllListeners();
-
     }
 
     @Override
@@ -88,7 +86,6 @@ public class MySensorsEventRegister extends EventRegister<MySensorsGatewayEventL
                 }
             });
         }
-
     }
 
     public void notifyNewNodeDiscovered(MySensorsNode node, MySensorsChild child) {
@@ -160,7 +157,6 @@ public class MySensorsEventRegister extends EventRegister<MySensorsGatewayEventL
                 }
             });
         }
-
     }
 
 }

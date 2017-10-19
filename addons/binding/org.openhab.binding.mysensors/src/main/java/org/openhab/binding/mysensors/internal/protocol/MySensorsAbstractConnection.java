@@ -134,11 +134,9 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                 numOfRetry++;
                 disconnect();
             }
-
         } else {
             logger.trace("Bridge is connected, connection skipped");
         }
-
     }
 
     /**
@@ -159,7 +157,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
      * Shutdown method that allows the correct disconnection with the used bridge
      */
     private void disconnect() {
-
         if (netSanityChecker != null) {
             netSanityChecker.stop();
             netSanityChecker = null;
@@ -174,7 +171,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
     }
 
     protected abstract void stopConnection();
-
+    
     /**
      * Stop all threads holding the connection (serial/tcp).
      */
@@ -194,7 +191,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             watchdogExecutor.shutdown();
             watchdogExecutor.shutdownNow();
         }
-
     }
 
     /**
@@ -204,7 +200,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
      * @return true if the gateway test pass successfully
      */
     protected boolean startReaderWriterThread(MySensorsReader reader, MySensorsWriter writer) {
-
         reader.startReader();
         writer.startWriter();
 
@@ -243,7 +238,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
      * @param msg The message that should be send.
      */
     public void sendMessage(MySensorsMessage msg) {
-
         if (msg.isSmartSleep()) {
             mysConWriter.addMySensorsOutboundSmartSleepMessage(msg);
         } else {
@@ -326,7 +320,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
 
             while (!stopReader) {
                 // Is there something to read?
-
                 try {
                     if (!reads.ready()) {
                         Thread.sleep(10);
@@ -364,24 +357,19 @@ public abstract class MySensorsAbstractConnection implements Runnable {
 
                         myEventRegister.notifyMessageReceived(msg);
                     }
-
                 } catch (InterruptedException e) {
                     logger.warn("Interrupted MySensorsReader");
                 } catch (Exception e) {
                     logger.warn("Exception on reading from connection", e);
                     handleReaderWriterException();
-
                 }
-
             }
-
         }
 
         /**
          * Stops the reader process of the bridge that receives messages from the MySensors network.
          */
         public void stopReader() {
-
             logger.debug("Stopping Reader thread");
 
             this.stopReader = true;
@@ -410,7 +398,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             } catch (IOException e) {
                 logger.error("Cannot close reader stream");
             }
-
         }
 
         private void iVersionMessageReceived(String msg) {
@@ -441,7 +428,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
         private void handleSmartSleepMessage(MySensorsMessage msg) {
             mysConWriter.checkPendingSmartSleepMessage(msg.getNodeId());
         }
-
     }
 
     /**
@@ -491,12 +477,10 @@ public abstract class MySensorsAbstractConnection implements Runnable {
         public void run() {
             Thread.currentThread().setName(MySensorsWriter.class.getName());
             while (!stopWriting) {
-
                 try {
                     MySensorsMessage msg = pollMySensorsOutboundQueue();
                     synchronized (outboundMessageQueue) {
                         if (msg != null) {
-
                             if (msg.getNextSend() < System.currentTimeMillis()) {
                                 /*
                                  * if we request an ACK we will wait for it and keep the message in the queue (at the
@@ -520,16 +504,13 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                                                 MySensorsMessage.generateAPIString(msg));
                                         continue;
                                     }
-
                                 }
                                 String output = MySensorsMessage.generateAPIString(msg);
                                 logger.debug("Sending to MySensors: {}", output.trim());
-
                                 sendMessage(output);
                             } else {
                                 addMySensorsOutboundMessage(msg);
                             }
-
                         } else {
                             logger.warn("Message returned from queue is null");
                         }
@@ -552,7 +533,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
          * Stops the writer process.
          */
         public void stopWriting() {
-
             logger.debug("Stopping Writer thread");
 
             this.stopWriting = true;
@@ -582,7 +562,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             } catch (IOException e) {
                 logger.error("Cannot close writer stream");
             }
-
         }
 
         /**
@@ -636,7 +615,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                     }
                 }
             }
-
             return acknowledgementReceived;
         }
 
@@ -652,7 +630,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             } catch (InterruptedException e) {
                 logger.error("Interrupted message while running");
             }
-
         }
 
         /**
@@ -664,14 +641,12 @@ public abstract class MySensorsAbstractConnection implements Runnable {
          * @param msg the message that should be added to the queue.
          */
         private void addMySensorsOutboundSmartSleepMessage(MySensorsMessage msg) {
-
             // Only one pending message is allowed in the queue.
             removeSmartSleepMessage(msg.getNodeId(), msg.getChildId());
 
             synchronized (smartSleepMessageQueue) {
                 smartSleepMessageQueue.add(msg);
             }
-
         }
 
         /**
@@ -704,7 +679,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                     }
                 }
             }
-
         }
 
         /**
@@ -733,7 +707,6 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             synchronized (smartSleepMessageQueue) {
                 Iterator<MySensorsMessage> iterator = smartSleepMessageQueue.iterator();
                 if (iterator != null) {
-
                     logger.debug("####### START SmartSleep queue #####");
                     int i = 1;
                     while (iterator.hasNext()) {
@@ -748,5 +721,4 @@ public abstract class MySensorsAbstractConnection implements Runnable {
             }
         }
     }
-
 }

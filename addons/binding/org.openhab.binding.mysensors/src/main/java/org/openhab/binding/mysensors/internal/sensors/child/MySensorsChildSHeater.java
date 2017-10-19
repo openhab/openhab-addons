@@ -15,6 +15,11 @@ import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariable
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVHvacSetpointHeat;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVStatus;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVTemp;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar1;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar2;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar3;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar4;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +43,11 @@ public class MySensorsChildSHeater extends MySensorsChild {
             addVariable(new MySensorsVariableVHvacFlowState());
             addVariable(new MySensorsVariableVTemp());
             addVariable(new MySensorsVariableVStatus());
+            addVariable(new MySensorsVariableVVar1());
+            addVariable(new MySensorsVariableVVar2());
+            addVariable(new MySensorsVariableVVar3());
+            addVariable(new MySensorsVariableVVar4());
+            addVariable(new MySensorsVariableVVar5());
         } catch (NoContentException e) {
             logger.debug("No content to add: {}", e);
         }

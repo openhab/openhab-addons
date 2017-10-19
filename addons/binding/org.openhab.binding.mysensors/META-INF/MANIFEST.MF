@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: MySensors Binding
 Bundle-SymbolicName: org.openhab.binding.mysensors;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
@@ -23,12 +23,21 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mqtt,
  org.openhab.binding.mysensors,
  org.openhab.binding.mysensors.handler,
+ org.openhab.binding.mysensors.config,
+ org.openhab.binding.mysensors.converter,
+ org.openhab.binding.mysensors.discovery,
+ org.openhab.binding.mysensors.factory,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.mysensors,
+ org.openhab.binding.mysensors.config;x-internal:=true,
+ org.openhab.binding.mysensors.converter;x-internal:=true,
+ org.openhab.binding.mysensors.discovery;x-internal:=true,
+ org.openhab.binding.mysensors.factory;x-internal:=true,
  org.openhab.binding.mysensors.handler

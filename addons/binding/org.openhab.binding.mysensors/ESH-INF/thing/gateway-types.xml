@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mysensors" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GATEWAY -->
+
+	<bridge-type id="bridge-ser">
+		<label>MySensors Serial Gateway</label>
+		<description>MySensors Gateway connected via serial port
+		</description>
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<description>The serial port the MySensors Gateway is connected to
+				</description>
+			</parameter>
+			<parameter name="baudRate" type="integer" required="false" min="300" max="250000">
+				<label>Baudrate</label>
+				<description>Baudrate for serial port
+				</description>
+				<default>115200</default>
+			</parameter>
+			<parameter name="hardReset" type="boolean" required="false">
+				<label>Hard Reset</label>
+				<description>Try to hard reset an attached gateway with DTR on disconnect and reconnect
+				</description>
+				<default>false</default>
+			</parameter>
+
+			<!-- COMMON PARAMS STARTS HERE -->
+
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
+				<label>Send Delay</label>
+				<description>The delay between messages send to the gateway
+				</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="startupCheckEnabled" type="boolean" required="false">
+				<label>Enables the startup check</label>
+				<description>The software version is requested from the gateway at startup to ensure it's up and running</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckEnabled" type="boolean" required="false">
+				<label>Enables network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckInterval" type="integer" required="false">
+				<label>Interval to launch network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckConnectionFailAttempts" type="integer" required="false">
+				<label>Attempts before disconnecting the bridge</label>
+				<description>Number of retries to establish a connection to the gateway</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeat" type="boolean" required="false">
+				<label>Send heartbeat to all nodes when network sanity checker is running</label>
+				<description>If network sanity checker is running, send heartbeat to all nodes</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeatFailAttempts" type="integer" required="false" min="1">
+				<label>Attempts before disconnecting nodes</label>
+				<description>If nodes do not respond to heartbeat, you could configure how many retries the sanity check will do before
+					disconnecting them
+				</description>
+				<default>10</default>
+			</parameter>
+
+			<!-- COMMON PARAMS ENDS HERE -->
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="bridge-eth">
+		<label>MySensors Ethernet Gateway</label>
+		<description>MySensors Gateway connected via ethernet/IP
+		</description>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>The IP Address the MySensors Gateway uses
+				</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="tcpPort" type="integer" required="true" min="1" max="65535">
+				<label>TCP Port</label>
+				<description>The TCP Port the MySensors Gateway uses (usually 5003)
+				</description>
+				<default>5003</default>
+			</parameter>
+
+			<!-- COMMON PARAMS STARTS HERE -->
+
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
+				<label>Send Delay</label>
+				<description>The delay between messages send to the gateway
+				</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="startupCheckEnabled" type="boolean" required="false">
+				<label>Enables the startup check</label>
+				<description>The software version is requested from the gateway at startup to ensure it's up and running</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckEnabled" type="boolean" required="false">
+				<label>Enables network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckInterval" type="integer" required="false">
+				<label>Interval to launch network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckConnectionFailAttempts" type="integer" required="false">
+				<label>Attempts before disconnecting the bridge</label>
+				<description>Number of retries to establish a connection to the gateway</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeat" type="boolean" required="false">
+				<label>Send heartbeat to all nodes when network sanity checker is running</label>
+				<description>If network sanity checker is running, send heartbeat to all nodes</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeatFailAttempts" type="integer" required="false" min="1">
+				<label>Attempts before disconnecting nodes</label>
+				<description>If nodes do not respond to heartbeat, you could configure how many retries the sanity check will do before
+					disconnecting them
+				</description>
+				<default>10</default>
+			</parameter>
+
+			<!-- COMMON PARAMS ENDS HERE -->
+
+		</config-description>
+	</bridge-type>
+	
+	<bridge-type id="bridge-mqtt">
+		<label>MySensors MQTT Gateway</label>
+		<description>MySensors Gateway connected MQTT broker
+		</description>
+		<config-description>
+			<parameter name="brokerName" type="text" required="true">
+                <label>Broker Name</label>
+                <description>name of the MQTT broker as defined in the org.eclipse.smarthome.mqtt.cfg file
+                </description>
+                <default>mosquitto</default>
+            </parameter>
+            <parameter name="topicSubscribe" type="text" required="true">
+                <label>Subscription Topic</label>
+                <description>MQTT topic to subscribe to
+                </description>
+                <default>mygateway1-out</default>
+            </parameter>
+            <parameter name="topicPublish" type="text" required="true">
+                <label>Publish Topic</label>
+                <description>MQTT topic to publish to
+                </description>
+                <default>mygateway1-in</default>
+            </parameter>
+
+			<!-- COMMON PARAMS STARTS HERE -->
+
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
+				<label>Send Delay</label>
+				<description>The delay between messages send to the gateway
+				</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="startupCheckEnabled" type="boolean" required="false">
+				<label>Enables the startup check</label>
+				<description>The software version is requested from the gateway at startup to ensure it's up and running</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckEnabled" type="boolean" required="false">
+				<label>Enables network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckInterval" type="integer" required="false">
+				<label>Interval to launch network sanity check</label>
+				<description>Network sanity check periodically ensure that gateway is up and running</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckConnectionFailAttempts" type="integer" required="false">
+				<label>Attempts before disconnecting the bridge</label>
+				<description>Number of retries to establish a connection to the gateway</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeat" type="boolean" required="false">
+				<label>Send heartbeat to all nodes when network sanity checker is running</label>
+				<description>If network sanity checker is running, send heartbeat to all nodes</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="networkSanCheckSendHeartbeatFailAttempts" type="integer" required="false" min="1">
+				<label>Attempts before disconnecting nodes</label>
+				<description>If nodes do not respond to heartbeat, you could configure how many retries the sanity check will do before
+					disconnecting them
+				</description>
+				<default>10</default>
+			</parameter>
+
+			<!-- COMMON PARAMS ENDS HERE -->
+
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

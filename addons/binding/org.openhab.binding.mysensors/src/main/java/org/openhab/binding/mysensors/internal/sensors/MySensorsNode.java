@@ -194,7 +194,6 @@ public class MySensorsNode {
      * @throws MergeException if try to merge to node with same child/children
      */
     public void merge(Object o) throws MergeException {
-
         if (o == null || !(o instanceof MySensorsNode)) {
             throw new MergeException("Invalid object to merge");
         }
@@ -216,7 +215,6 @@ public class MySensorsNode {
                     return child1;
                 });
             }
-
         }
     }
 
@@ -258,9 +256,7 @@ public class MySensorsNode {
                 msg.setRevert(childConfig.getRevertState());
                 msg.setSmartSleep(childConfig.getSmartSleep());
             }
-        
         }
-
         return msg;
     }
 

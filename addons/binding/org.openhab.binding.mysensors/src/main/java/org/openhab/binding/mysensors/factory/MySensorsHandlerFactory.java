@@ -8,7 +8,11 @@
  */
 package org.openhab.binding.mysensors.factory;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_ETH;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_MQTT;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_SER;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,7 +48,9 @@ public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             handler = new MySensorsThingHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_BRIDGE_SER) || thingTypeUID.equals(THING_TYPE_BRIDGE_ETH)) {
+        } else if (thingTypeUID.equals(THING_TYPE_BRIDGE_SER) 
+                || thingTypeUID.equals(THING_TYPE_BRIDGE_ETH)
+                || thingTypeUID.equals(THING_TYPE_BRIDGE_MQTT)) {
             handler = new MySensorsBridgeHandler((Bridge) thing);
         } else {
             logger.error("Thing {} cannot be configured, is this thing supported by the binding?", thingTypeUID);
@@ -51,4 +58,5 @@ public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
         return handler;
     }
+    
 }

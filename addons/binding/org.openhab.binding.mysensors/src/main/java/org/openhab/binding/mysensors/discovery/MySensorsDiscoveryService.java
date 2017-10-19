@@ -39,7 +39,7 @@ public class MySensorsDiscoveryService extends AbstractDiscoveryService implemen
     private MySensorsBridgeHandler bridgeHandler = null;
 
     public MySensorsDiscoveryService(MySensorsBridgeHandler bridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 0, true);
+        super(SUPPORTED_THING_TYPES_UIDS, 500, true);
         this.bridgeHandler = bridgeHandler;
     }
 

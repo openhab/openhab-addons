@@ -13,6 +13,11 @@ import org.openhab.binding.mysensors.internal.protocol.message.MySensorsMessageS
 import org.openhab.binding.mysensors.internal.sensors.MySensorsChild;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVCurrent;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVImpedance;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar1;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar2;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar3;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar4;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar5;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVoltage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +41,11 @@ public class MySensorsChildSMultimeter extends MySensorsChild {
             addVariable(new MySensorsVariableVVoltage());
             addVariable(new MySensorsVariableVCurrent());
             addVariable(new MySensorsVariableVImpedance());
+            addVariable(new MySensorsVariableVVar1());
+            addVariable(new MySensorsVariableVVar2());
+            addVariable(new MySensorsVariableVVar3());
+            addVariable(new MySensorsVariableVVar4());
+            addVariable(new MySensorsVariableVVar5());
         } catch (NoContentException e) {
             logger.debug("No content to add: {}", e);
         }

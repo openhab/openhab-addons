@@ -12,6 +12,11 @@ import org.openhab.binding.mysensors.internal.exception.NoContentException;
 import org.openhab.binding.mysensors.internal.protocol.message.MySensorsMessageSubType;
 import org.openhab.binding.mysensors.internal.sensors.MySensorsChild;
 import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVUv;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar1;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar2;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar3;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar4;
+import org.openhab.binding.mysensors.internal.sensors.variable.MySensorsVariableVVar5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,11 @@ public class MySensorsChildSUv extends MySensorsChild {
         setPresentationCode(MySensorsMessageSubType.S_UV);
         try {
             addVariable(new MySensorsVariableVUv());
+            addVariable(new MySensorsVariableVVar1());
+            addVariable(new MySensorsVariableVVar2());
+            addVariable(new MySensorsVariableVVar3());
+            addVariable(new MySensorsVariableVVar4());
+            addVariable(new MySensorsVariableVVar5());
         } catch (NoContentException e) {
             logger.debug("No content to add: {}", e);
         }

@@ -24,7 +24,5 @@ public class MySensorsChildSArduinoRepeaterNode extends MySensorsChild {
     public MySensorsChildSArduinoRepeaterNode(int childId) {
         super(childId);
         setPresentationCode(MySensorsMessageSubType.S_ARDUINO_REPEATER_NODE);
-
     }
-
 }

@@ -8,6 +8,16 @@
  */
 package org.openhab.binding.mysensors.internal.protocol.message;
 
+/**
+ * SubType categories:
+ * 
+ * S == sensor
+ * V == variable
+ * I == internal
+ * 
+ * @author Tim Oberföll
+ *
+ */
 public enum MySensorsMessageSubTypes {
     S,
     V,

@@ -42,7 +42,6 @@ public class MySensorsOnOffTypeConverter implements MySensorsTypeConverter {
             }
         }
         throw new IllegalArgumentException("Passed command: " + value + " is not an OnOff command");
-      
     }
 
 }

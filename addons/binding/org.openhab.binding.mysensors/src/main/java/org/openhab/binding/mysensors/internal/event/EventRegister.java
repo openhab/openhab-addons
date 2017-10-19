@@ -45,7 +45,6 @@ public class EventRegister<T extends EventListener> implements Register<T> {
 
     @Override
     public void addEventListener(T listener) {
-
         if (listener == null) {
             return;
         }
@@ -62,7 +61,6 @@ public class EventRegister<T extends EventListener> implements Register<T> {
 
     @Override
     public void removeEventListener(T listener) {
-
         if (listener == null) {
             return;
         }
@@ -91,7 +89,6 @@ public class EventRegister<T extends EventListener> implements Register<T> {
         synchronized (registeredEventListener) {
             registeredEventListener.clear();
         }
-
     }
 
     @Override

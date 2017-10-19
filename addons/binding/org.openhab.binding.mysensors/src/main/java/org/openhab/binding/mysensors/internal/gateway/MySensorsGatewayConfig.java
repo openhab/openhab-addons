@@ -73,6 +73,11 @@ public class MySensorsGatewayConfig {
      * Baud rate used to connect the serial port
      */
     private Integer baudRate;
+    
+    /**
+    * try hard reset of serial port using DTR
+    */
+    private boolean hardReset;
 
     // Ip
     /**
@@ -84,6 +89,21 @@ public class MySensorsGatewayConfig {
      * tcp port the gateway is running at
      */
     private Integer tcpPort;
+    
+    /**
+     * Name of the MQTT broker defined
+     */
+    private String brokerName;
+    
+    /**
+     * Name of the MQTT topic to subscribe to
+     */
+    private String topicSubscribe;
+    
+    /**
+     * Name of the MQTT topic to publish to
+     */
+    private String topicPublish;
 
     public MySensorsGatewayType getGatewayType() {
         return gatewayType;
@@ -188,15 +208,57 @@ public class MySensorsGatewayConfig {
     public void setSanCheckSendHeartbeatFailAttempts(Integer sanCheckSendHeartbeatFailAttempts) {
         this.networkSanCheckSendHeartbeatFailAttempts = sanCheckSendHeartbeatFailAttempts;
     }
+    
+    public String getBrokerName() {
+        return brokerName;
+    }
+
+    public void setBrokerName(String brokerName) {
+        this.brokerName = brokerName;
+    }
+
+    public String getTopicSubscribe() {
+        return topicSubscribe;
+    }
+
+    public void setTopicSubscribe(String topicSubscribe) {
+        this.topicSubscribe = topicSubscribe;
+    }
+
+    public String getTopicPublish() {
+        return topicPublish;
+    }
+
+    public void setTopicPublish(String topicPublish) {
+        this.topicPublish = topicPublish;
+    }
+    
+    public boolean isHardReset() {
+        return hardReset;
+    }
+
+    public void setHardReset(boolean hardReset) {
+        this.hardReset = hardReset;
+    }
 
     @Override
     public String toString() {
-        return "MySensorsGatewayConfig [gatewayType=" + gatewayType + ", sendDelay=" + sendDelay + ", imperial="
-                + imperial + ", skipStartupCheck=" + startupCheckEnabled + ", enableNetworkSanCheck="
-                + networkSanCheckEnabled + ", sanityCheckerInterval=" + networkSanCheckInterval
-                + ", sanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts + ", sanCheckSendHeartbeat="
-                + networkSanCheckSendHeartbeat + ", sanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts
-                + ", serialPort=" + serialPort + ", baudRate=" + baudRate + ", ipAddress=" + ipAddress + ", tcpPort="
-                + tcpPort + "]";
+        return "MySensorsGatewayConfig [gatewayType=" + gatewayType 
+                                        + ", sendDelay=" + sendDelay
+                                        + ", imperial=" + imperial 
+                                        + ", skipStartupCheck=" + startupCheckEnabled 
+                                        + ", enableNetworkSanCheck=" + networkSanCheckEnabled 
+                                        + ", sanityCheckerInterval=" + networkSanCheckInterval
+                                        + ", sanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts 
+                                        + ", sanCheckSendHeartbeat=" + networkSanCheckSendHeartbeat 
+                                        + ", sanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts
+                                        + ", serialPort=" + serialPort 
+                                        + ", baudRate=" + baudRate 
+                                        + ", ipAddress=" + ipAddress 
+                                        + ", tcpPort=" + tcpPort 
+                                        + ", brokerName=" + brokerName
+                                        + ", topicSubscribe=" + topicSubscribe
+                                        + ", topicPublish=" + topicPublish
+                                        + "]";
     }
 }
