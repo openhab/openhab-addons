@@ -11,7 +11,7 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.coolmasternet">
 
-   <implementation class="org.openhab.binding.coolmasternet.internal.coolmasternetHandlerFactory"/>
+   <implementation class="org.openhab.binding.coolmasternet.internal.CoolMasterNetHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
