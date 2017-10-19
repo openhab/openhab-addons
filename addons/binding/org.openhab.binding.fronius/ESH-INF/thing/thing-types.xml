@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="fronius">
+	<thing-type id="powerinverter">
 		<label>Fronius</label>
 		<description>Fronius Symo Binding</description>
 

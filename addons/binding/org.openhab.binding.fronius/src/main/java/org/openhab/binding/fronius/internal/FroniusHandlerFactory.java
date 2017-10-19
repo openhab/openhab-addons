@@ -8,16 +8,19 @@
  */
 package org.openhab.binding.fronius.internal;
 
-import static org.openhab.binding.fronius.FroniusBindingConstants.*;
+import static org.openhab.binding.fronius.FroniusBindingConstants.THING_TYPE_INVERTER;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.fronius.handler.FroniusHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.fronius.handler.FroniusHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link FroniusHandlerFactory} is responsible for creating things and thing
@@ -25,9 +28,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.fronius", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INVERTER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,7 +42,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
             return new FroniusHandler(thing);
         }
 
