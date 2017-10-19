@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.blebox.devices;
 
 import java.net.URI;
@@ -13,8 +21,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * The {@link BaseDevice} class defines a base class for Blebox devices
+ * used across the whole binding.
+ *
+ * @author Szymon Tokarski - Initial contribution
+ */
 public abstract class BaseDevice {
-
     public String Name;
     public String Type;
 
@@ -25,12 +38,11 @@ public abstract class BaseDevice {
         this.IpAddress = ipAddress;
     }
 
-    public <T extends BaseResponse, N extends BaseRequest> T PostJson(N requestObject, String path, Class<T> type,
+    public <T extends BaseResponse, N extends BaseRequest> T postJson(N requestObject, String path, Class<T> type,
             String responseRoot) {
         try {
-
             Gson gson = new Gson();
-            URI url = BuildUrl(path);
+            URI url = buildUrl(path);
             String json = null;
 
             JsonElement je = gson.toJsonTree(requestObject);
@@ -58,17 +70,15 @@ public abstract class BaseDevice {
             } else {
                 return gson.fromJson(response.asString(), type);
             }
-
         } catch (Exception ex) {
             return null;
         }
     }
 
-    public <T extends BaseResponse> T GetJson(String path, Class<T> type, String responseRoot) {
+    public <T extends BaseResponse> T getJson(String path, Class<T> type, String responseRoot) {
         try {
-
             Gson gson = new Gson();
-            URI url = BuildUrl(path);
+            URI url = buildUrl(path);
 
             final Request request = Request.Get(url).connectTimeout(2000).socketTimeout(2000);
             Content response = request.execute().returnContent();
@@ -82,17 +92,15 @@ public abstract class BaseDevice {
             } else {
                 return gson.fromJson(response.asString(), type);
             }
-
         } catch (Exception ex) {
             return null;
         }
     }
 
-    public <T extends BaseResponse> T[] GetJsonArray(String path, Class<T[]> type, String responseRoot) {
+    public <T extends BaseResponse> T[] getJsonArray(String path, Class<T[]> type, String responseRoot) {
         try {
-
             Gson gson = new Gson();
-            URI url = BuildUrl(path);
+            URI url = buildUrl(path);
 
             final Request request = Request.Get(url).connectTimeout(2000).socketTimeout(2000);
             Content response = request.execute().returnContent();
@@ -106,13 +114,12 @@ public abstract class BaseDevice {
             } else {
                 return gson.fromJson(response.asString(), type);
             }
-
         } catch (Exception ex) {
             return null;
         }
     }
 
-    public URI BuildUrl(String path) {
+    public URI buildUrl(String path) {
         URIBuilder builder = new URIBuilder();
         builder.setScheme("http").setHost(IpAddress).setPath(path);
         URI requestURL = null;

@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,14 +39,12 @@ public class GateBoxHandler extends BaseThingHandler {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (gateBox != null) {
-
-                    GateBox.StateResponse state = gateBox.GetStatus();
+                    GateBox.StateResponse state = gateBox.getStatus();
 
                     if (state != null) {
-                        updateState(BleboxBindingConstants.CHANNEL_POSITION, state.GetPosition());
+                        updateState(BleboxBindingConstants.CHANNEL_POSITION, state.getPosition());
                         // updateState(BleboxBindingConstants.CHANNEL_COLOR, state.GetColor());
 
                         if (getThing().getStatus() == ThingStatus.OFFLINE) {
@@ -54,7 +53,6 @@ public class GateBoxHandler extends BaseThingHandler {
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
-
                 }
             } catch (Exception e) {
                 logger.info("Polling device state failed: {}", e.toString());
@@ -69,7 +67,6 @@ public class GateBoxHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
             case BleboxBindingConstants.CHANNEL_POSITION:
 
@@ -77,20 +74,17 @@ public class GateBoxHandler extends BaseThingHandler {
                     UpDownType upDownCommand = (UpDownType) command;
 
                     if (upDownCommand == UpDownType.UP) {
-                        gateBox.SetPosition(PercentType.HUNDRED);
+                        gateBox.setPosition(PercentType.HUNDRED);
                     } else if (upDownCommand == UpDownType.DOWN) {
-                        gateBox.SetPosition(PercentType.ZERO);
+                        gateBox.setPosition(PercentType.ZERO);
                     }
                 }
-
                 break;
         }
-
     }
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -111,10 +105,8 @@ public class GateBoxHandler extends BaseThingHandler {
                 logger.info("Wrong configuration value for polling interval. Using default value: {}s",
                         pollingInterval);
             }
-
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

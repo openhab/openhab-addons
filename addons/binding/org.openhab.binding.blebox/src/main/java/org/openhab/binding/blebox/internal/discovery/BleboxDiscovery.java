@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.blebox.internal.discovery;
 
 import java.util.HashMap;
@@ -12,9 +20,14 @@ import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link BleboxDiscovery} is responsible for find
+ * and add Blebox devices to Smarthome Inbox
+ *
+ * @author Szymon Tokarski - Initial contribution
+ */
 public class BleboxDiscovery extends AbstractDiscoveryService {
-    private final static Logger logger = LoggerFactory.getLogger(BleboxDiscovery.class);
-
+    private Logger logger = LoggerFactory.getLogger(BleboxDiscovery.class);
     private BleboxScanner scanner = new BleboxScanner(this);
 
     public BleboxDiscovery() {
@@ -37,8 +50,6 @@ public class BleboxDiscovery extends AbstractDiscoveryService {
 
     /**
      * Method to add an Blebox device to the Smarthome Inbox.
-     *
-     * @param port
      */
     public void addDevice(String ip, String deviceType, String deviceId, String deviceName) {
         logger.trace("addBridge(): Adding new Blebox device on IP {} to Smarthome inbox", ip);
@@ -51,7 +62,6 @@ public class BleboxDiscovery extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(BleboxBindingConstants.BINDING_ID, deviceType, deviceId);
 
             if (thingUID != null) {
-
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withLabel("Blebox - " + deviceName).build();
                 thingDiscovered(result);

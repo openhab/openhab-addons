@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,17 +31,15 @@ import org.slf4j.LoggerFactory;
  * @author Szymon Tokarski - Initial contribution
  */
 public class SwitchBoxDHandler extends BaseThingHandler {
-
     private Logger logger = LoggerFactory.getLogger(SwitchBoxDHandler.class);
     private SwitchBoxD switchBoxD;
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (switchBoxD != null) {
-                    OnOffType[] switchStates = switchBoxD.GetSwitchesState();
+                    OnOffType[] switchStates = switchBoxD.getSwitchesState();
 
                     if (switchStates != null) {
                         updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchStates[0]);
@@ -67,21 +66,18 @@ public class SwitchBoxDHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(BleboxBindingConstants.CHANNEL_SWITCH0)) {
-
             if (command instanceof OnOffType) {
-                switchBoxD.SetSwitchState(0, (OnOffType) command);
+                switchBoxD.setSwitchState(0, (OnOffType) command);
             }
         } else if (channelUID.getId().equals(BleboxBindingConstants.CHANNEL_SWITCH1)) {
-
             if (command instanceof OnOffType) {
-                switchBoxD.SetSwitchState(1, (OnOffType) command);
+                switchBoxD.setSwitchState(1, (OnOffType) command);
             }
         }
     }
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -105,7 +101,6 @@ public class SwitchBoxDHandler extends BaseThingHandler {
 
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

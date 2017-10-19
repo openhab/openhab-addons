@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +13,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,22 +33,19 @@ import org.slf4j.LoggerFactory;
  * @author Szymon Tokarski - Initial contribution
  */
 public class LightBoxHandler extends BaseThingHandler {
-
     private Logger logger = LoggerFactory.getLogger(LightBoxHandler.class);
     private LightBox lightBox;
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (lightBox != null) {
-
-                    LightBox.StateResponse state = lightBox.GetStatus();
+                    LightBox.StateResponse state = lightBox.getStatus();
 
                     if (state != null) {
-                        updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.GetWhiteBrightness());
-                        updateState(BleboxBindingConstants.CHANNEL_COLOR, state.GetColor());
+                        updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
+                        updateState(BleboxBindingConstants.CHANNEL_COLOR, state.getColor());
 
                         if (getThing().getStatus() == ThingStatus.OFFLINE) {
                             updateStatus(ThingStatus.ONLINE);
@@ -56,7 +53,6 @@ public class LightBoxHandler extends BaseThingHandler {
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
-
                 }
             } catch (Exception e) {
                 logger.info("Polling device state failed: {}", e.toString());
@@ -71,42 +67,31 @@ public class LightBoxHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
             case BleboxBindingConstants.CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
                         // lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
-                        lightBox.SetColor(HSBType.BLACK);
+                        lightBox.setColor(HSBType.BLACK);
                     } else {
-                        lightBox.SetColor(hsbCommand);
+                        lightBox.setColor(hsbCommand);
                     }
-                } else if (command instanceof PercentType) {
-                    // lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                } else if (command instanceof OnOffType) {
-                    // lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    // lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
                 }
                 break;
             case BleboxBindingConstants.CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     // lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightBox.SetWhiteBrightness((PercentType) command);
+                    lightBox.setWhiteBrightness((PercentType) command);
                 } else if (command instanceof OnOffType) {
-                    lightBox.SetWhiteBrightness((OnOffType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    // lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    lightBox.setWhiteBrightness((OnOffType) command);
                 }
                 break;
         }
-
     }
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -127,10 +112,8 @@ public class LightBoxHandler extends BaseThingHandler {
                 logger.info("Wrong configuration value for polling interval. Using default value: {}s",
                         pollingInterval);
             }
-
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.blebox.internal.discovery;
 
 import java.net.Inet4Address;
@@ -28,8 +36,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link BleboxScanner} is responsible for scan local network for Blebox devices
+ *
+ * @author Szymon Tokarski - Initial contribution
+ */
 public class BleboxScanner {
-    private final static Logger logger = LoggerFactory.getLogger(BleboxScanner.class);
+    private Logger logger = LoggerFactory.getLogger(BleboxScanner.class);
 
     static final int ENVISALINK_BRIDGE_PORT = 4025;
     static final int CONNECTION_TIMEOUT = 10;
@@ -38,15 +51,8 @@ public class BleboxScanner {
 
     private BleboxDiscovery bleboxDiscovery = null;
 
-    /**
-     * Constructor.
-     */
     public BleboxScanner(BleboxDiscovery bleboxDiscovery) {
         this.bleboxDiscovery = bleboxDiscovery;
-    }
-
-    public void test() {
-
     }
 
     /**
@@ -61,7 +67,6 @@ public class BleboxScanner {
         long highIP = 0;
 
         try {
-
             List<Inet4Address> inet4 = getInet4Addresses();
             logger.error("discoverBridge(): ip addresses - {}", inet4.size());
             logger.error("discoverBridge(): ip main ip - {}", inet4.get(0));
@@ -73,7 +78,6 @@ public class BleboxScanner {
             subnetInfo = subnetUtils.getInfo();
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
-
         } catch (IllegalArgumentException e) {
             logger.error("discoverBridge(): Illegal Argument Exception - {}", e.toString());
             return;
@@ -95,15 +99,10 @@ public class BleboxScanner {
         Async async = Async.newInstance().use(threadpool);
 
         for (long ip = lowIP; ip <= highIP; ip++) {
-
             try {
                 final String ipAddress = convertNumberToIP(ip);
 
                 Gson gson = new Gson();
-
-                // RequestConfig.Builder requestBuilder = RequestConfig.custom();
-                // requestBuilder = requestBuilder.setConnectTimeout(TIMEOUT);
-                // requestBuilder = requestBuilder.setConnectionRequestTimeout(TIMEOUT);
 
                 URIBuilder builder = new URIBuilder();
                 builder.setScheme("http").setHost(ipAddress).setPath("/api/device/state");
@@ -118,20 +117,16 @@ public class BleboxScanner {
                 Future<Content> future = async.execute(request, new FutureCallback<Content>() {
                     @Override
                     public void failed(final Exception e) {
-                        System.out.println(e.getMessage() + ": " + request);
+                        logger.debug("Error: {}", e.getMessage());
                     }
 
                     @Override
                     public void completed(final Content content) {
-                        // content.
-                        System.out.println("Request completed: " + request);
-
                         try {
                             // Standard response for every blebox device, except gateBox
                             StatusResponse statusResp = gson.fromJson(content.asString(), StatusResponse.class);
 
                             if (statusResp.device != null) {
-
                                 logger.debug("Found blebox device: {}", statusResp.device.id);
                                 bleboxDiscovery.addDevice(ipAddress, statusResp.device.type, statusResp.device.id,
                                         statusResp.device.deviceName);
@@ -144,8 +139,8 @@ public class BleboxScanner {
                                             deviceInfo.deviceName);
                                 }
                             }
-
                         } catch (Exception ex) {
+                            logger.debug("Error: {}", ex.getMessage());
                         }
                     }
 
@@ -153,12 +148,8 @@ public class BleboxScanner {
                     public void cancelled() {
                     }
                 });
-
             } catch (Exception ex) {
-                logger.debug("Error" + ex.getMessage());
-                // handle exception here
-            } finally {
-                // httpClient.close();
+                logger.debug("Error: {}", ex.getMessage());
             }
         }
     }
@@ -181,7 +172,6 @@ public class BleboxScanner {
                 }
             }
         }
-
         return ret;
     }
 
@@ -204,7 +194,6 @@ public class BleboxScanner {
      * @return
      */
     private long convertIPToNumber(String ipAddress) {
-
         String octets[] = ipAddress.split("\\.");
 
         if (octets.length != 4) {
@@ -222,7 +211,6 @@ public class BleboxScanner {
 
             ip |= octet << (i * 8);
         }
-
         return ip;
     }
 

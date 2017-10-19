@@ -67,6 +67,4 @@ blebox.items:
 Group Blebox <flow>
 
 Dimmer   KitchenLight              "Kitchen light" <line> (Blebox) { channel="blebox:dimmerBox:kitchen:brightness" }
-
 ```
-

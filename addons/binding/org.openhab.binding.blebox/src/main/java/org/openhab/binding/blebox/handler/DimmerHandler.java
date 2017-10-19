@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,10 +40,9 @@ public class DimmerHandler extends BaseThingHandler {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (dimmer != null) {
-                    PercentType brightness = dimmer.GetBrightness();
+                    PercentType brightness = dimmer.getBrightness();
 
                     if (brightness != null) {
                         updateState(CHANNEL_BRIGHTNESS, brightness);
@@ -68,14 +68,13 @@ public class DimmerHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
-
             if (command instanceof PercentType) {
-                dimmer.SetBrightness((PercentType) command);
+                dimmer.setBrightness((PercentType) command);
             } else if (command instanceof OnOffType) {
                 if (((OnOffType) command).equals(OnOffType.ON)) {
-                    dimmer.SetBrightness(PercentType.HUNDRED);
+                    dimmer.setBrightness(PercentType.HUNDRED);
                 } else {
-                    dimmer.SetBrightness(PercentType.ZERO);
+                    dimmer.setBrightness(PercentType.ZERO);
                 }
             }
         }
@@ -83,7 +82,6 @@ public class DimmerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -107,7 +105,6 @@ public class DimmerHandler extends BaseThingHandler {
 
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

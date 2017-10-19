@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,21 +32,18 @@ import org.slf4j.LoggerFactory;
  * @author Szymon Tokarski - Initial contribution
  */
 public class LightBoxSHandler extends BaseThingHandler {
-
     private Logger logger = LoggerFactory.getLogger(LightBoxSHandler.class);
     private LightBoxS lightBoxS;
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (lightBoxS != null) {
-
-                    LightBoxS.StateResponse state = lightBoxS.GetStatus();
+                    LightBoxS.StateResponse state = lightBoxS.getStatus();
 
                     if (state != null) {
-                        updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.GetWhiteBrightness());
+                        updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
 
                         if (getThing().getStatus() == ThingStatus.OFFLINE) {
                             updateStatus(ThingStatus.ONLINE);
@@ -54,7 +51,6 @@ public class LightBoxSHandler extends BaseThingHandler {
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
-
                 }
             } catch (Exception e) {
                 logger.info("Polling device state failed: {}", e.toString());
@@ -69,26 +65,19 @@ public class LightBoxSHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
-
             case BleboxBindingConstants.CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    // lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightBoxS.SetWhiteBrightness((PercentType) command);
+                    lightBoxS.setWhiteBrightness((PercentType) command);
                 } else if (command instanceof OnOffType) {
-                    lightBoxS.SetWhiteBrightness((OnOffType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    // lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    lightBoxS.setWhiteBrightness((OnOffType) command);
                 }
                 break;
         }
-
     }
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -112,7 +101,6 @@ public class LightBoxSHandler extends BaseThingHandler {
 
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,17 +31,15 @@ import org.slf4j.LoggerFactory;
  * @author Szymon Tokarski - Initial contribution
  */
 public class SwitchBoxHandler extends BaseThingHandler {
-
     private Logger logger = LoggerFactory.getLogger(SwitchBoxHandler.class);
     private SwitchBox switchBox;
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             try {
                 if (switchBox != null) {
-                    OnOffType switchState = switchBox.GetSwitchState(0);
+                    OnOffType switchState = switchBox.getSwitchState(0);
 
                     if (switchState != null) {
                         updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchState);
@@ -66,16 +65,14 @@ public class SwitchBoxHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(BleboxBindingConstants.CHANNEL_SWITCH0)) {
-
             if (command instanceof OnOffType) {
-                switchBox.SetSwitchState((OnOffType) command);
+                switchBox.setSwitchState((OnOffType) command);
             }
         }
     }
 
     @Override
     public void initialize() {
-
         final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
 
         if (ipAddress != null) {
@@ -99,7 +96,6 @@ public class SwitchBoxHandler extends BaseThingHandler {
 
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
         }
-
     }
 
     @Override

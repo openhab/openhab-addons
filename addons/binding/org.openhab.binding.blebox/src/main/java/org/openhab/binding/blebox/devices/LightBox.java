@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.openhab.binding.blebox.devices;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -5,12 +14,16 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
 
+/**
+ * The {@link LightBox} class defines a logic for LightBox device
+ *
+ * @author Szymon Tokarski - Initial contribution
+ */
 public class LightBox extends BaseDevice {
 
     public static final float MAX_CHANNEL_VALUE = 2.55f;
-
-    public static final String SetUrl = "/api/rgbw/set";
-    public static final String StateUrl = "/api/rgbw/state";
+    public static final String SET_URL = "/api/rgbw/set";
+    public static final String STATE_URL = "/api/rgbw/state";
 
     public HSBType LastKnownColor = null;
     public PercentType LastKnownBrigthness = null;
@@ -24,7 +37,7 @@ public class LightBox extends BaseDevice {
     }
 
     public class StateResponse extends BaseResponse {
-        public static final String RootElement = "rgbw";
+        public static final String ROOT_ELEMENT = "rgbw";
 
         public String currentColor;
         public String desiredColor;
@@ -33,71 +46,70 @@ public class LightBox extends BaseDevice {
 
         @Override
         public String getRootElement() {
-            return RootElement;
+            return ROOT_ELEMENT;
         }
 
-        public HSBType GetColor() {
-            return FromHexToHSB(currentColor);
+        public HSBType getColor() {
+            return fromHexToHSB(currentColor);
         }
 
-        public PercentType GetWhiteBrightness() {
-            return FromHexToPercentType(currentColor.substring(6, 8));
+        public PercentType getWhiteBrightness() {
+            return fromHexToPercentType(currentColor.substring(6, 8));
         }
     }
 
     public class SetRequest extends BaseRequest {
-        public static final String RootElement = "rgbw";
+        public static final String ROOT_ELEMENT = "rgbw";
 
         public String desiredColor;
 
         @Override
         public String getRootElement() {
-            return RootElement;
+            return ROOT_ELEMENT;
         }
-
     }
 
-    public StateResponse GetStatus() {
-        StateResponse response = GetJson(StateUrl, StateResponse.class, StateResponse.RootElement);
+    public StateResponse getStatus() {
+        StateResponse response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
 
         return response;
     }
 
-    public void SetColor(HSBType hsb) {
+    public void setColor(HSBType hsb) {
         if (LastKnownBrigthness == null) {
             LastKnownBrigthness = PercentType.ZERO;
         }
 
         SetRequest request = new SetRequest();
-        request.desiredColor = FromHSBToHex(hsb) + PercentToHex(LastKnownBrigthness);
+        request.desiredColor = fromHSBToHex(hsb) + percentToHex(LastKnownBrigthness);
 
-        StateResponse response = PostJson(request, SetUrl, StateResponse.class, StateResponse.RootElement);
+        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
 
         LastKnownColor = hsb;
     }
 
-    public void SetWhiteBrightness(PercentType p) {
+    public void setWhiteBrightness(PercentType p) {
         if (LastKnownColor == null) {
             LastKnownColor = HSBType.BLACK;
         }
 
         SetRequest request = new SetRequest();
-        request.desiredColor = FromHSBToHex(LastKnownColor) + PercentToHex(p);
+        request.desiredColor = fromHSBToHex(LastKnownColor) + percentToHex(p);
 
-        StateResponse response = PostJson(request, SetUrl, StateResponse.class, StateResponse.RootElement);
+        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
 
         LastKnownBrigthness = p;
     }
 
-    public void SetWhiteBrightness(OnOffType p) {
+    public void setWhiteBrightness(OnOffType p) {
         if (p == OnOffType.ON) {
-            SetWhiteBrightness(PercentType.HUNDRED);
+            setWhiteBrightness(PercentType.HUNDRED);
         } else {
-            SetWhiteBrightness(PercentType.ZERO);
+            setWhiteBrightness(PercentType.ZERO);
         }
     }
 
-    public static String FromHSBToHex(HSBType hsb) {
+    public static String fromHSBToHex(HSBType hsb) {
         int r = Math.round(hsb.getRed().intValue() * MAX_CHANNEL_VALUE);
         int g = Math.round(hsb.getGreen().intValue() * MAX_CHANNEL_VALUE);
         int b = Math.round(hsb.getBlue().intValue() * MAX_CHANNEL_VALUE);
@@ -107,8 +119,7 @@ public class LightBox extends BaseDevice {
         return toRet;
     }
 
-    public static HSBType FromHexToHSB(String color) {
-
+    public static HSBType fromHexToHSB(String color) {
         int r = Integer.parseInt(color.substring(0, 2), 16);
         int g = Integer.parseInt(color.substring(2, 4), 16);
         int b = Integer.parseInt(color.substring(4, 6), 16);
@@ -117,14 +128,13 @@ public class LightBox extends BaseDevice {
         return HSBType.fromRGB(r, g, b);
     }
 
-    public static String PercentToHex(PercentType percent) {
+    public static String percentToHex(PercentType percent) {
         int p = (int) (percent.doubleValue() * MAX_CHANNEL_VALUE);
 
         return String.format("%02X", p);
     }
 
-    public static PercentType FromHexToPercentType(String hex) {
-
+    public static PercentType fromHexToPercentType(String hex) {
         int w = Integer.parseInt(hex, 16);
 
         return new PercentType(Math.round(w / MAX_CHANNEL_VALUE));
