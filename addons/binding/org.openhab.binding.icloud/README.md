@@ -19,8 +19,8 @@ The binding uses Google's "[Geocode API](https://developers.google.com/maps/docu
         - [Bridge](#bridge)
         - [Device](#device)
     - [Full Example](#full-example)
+        - [iCloud.things:](#icloudthings)
         - [Items](#items)
-        - [Sitemap](#sitemap)
 - [Configuration with Paper UI](#configuration-with-paper-ui)
 
 <!-- /TOC -->
@@ -92,42 +92,38 @@ The following channels are available (if supported by the device):
 
 ## Full Example
 
+### iCloud.things:
+
+```php
+Bridge icloud:bridge:account1 [AppleId="abc@xyz.tld", Password="secure", RefreshTimeInMinutes=10]
+{
+    Thing device 0 "My iPhone 7" @ "World"
+    Thing device 1 "My iWatch 2" @ "World"
+}
+```
+The refresh time is optional and has a default of 5. The "label" @ "location" part is optional (as always).
+
 ### Items
 
 icloud.items:
 
 ```php
-String JohnIPhone6_BatteryStatus "Battery Status [%s]" <battery> (giPhone)  {channel="icloud:device:YourDeviceID:0:BatteryStatus"}
-Number JohnIPhone6_BatteryLevel "Battery Level [%.0f]" <battery> (giPhone) {channel="icloud:device:YourDeviceID:0:BatteryLevel"}
-Switch JohnIPhone6_FindMyPhone "Find iPhone [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:FindMyPhone"}
-Location JohnIPhone6_Location "Coordinates" <suitcase> (giPhone)  {channel="icloud:device:YourDeviceID:0:Location"}
-Number JohnIPhone6_LocationAccuracy "Coordinates Accuracy [%.0f]" <suitcase> (giPhone){channel="icloud:device:YourDeviceID:0:LocationAccuracy"}
-Number JohnIPhone6_DistanceFromHome "Distance from home [%.0f]" <suitcase> (giPhone_A){channel="icloud:device:YourDeviceID:0:DistanceFromHome"}
-DateTime JohnIPhone6_LastLocationUpdate    "Letztes Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"   <suitcase>      (giPhone)   {channel="icloud:device:YourDeviceID:0:LastUpdate"}
-String JohnIPhone6_Street "Street [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID e789ef3:0:AddressStreet"}
-String JohnIPhone6_City "City [%s]" <suitcase> (giPhone) {channel="icloud:device:YourDeviceID:0:AddressCity"}
-String JohnIPhone6_Country "Country [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:AddressCountry"}
-String JohnIPhone6_FormattedAddress "Address [%s]" <suitcase> (giPhone)   {channel="icloud:device:YourDeviceID:0:FormattedAddress"}
-```
+Group iCloud_Group (Whg)
+String iCloud_Account1_Owner "iCloud Account Owner [%s]" (iCloud_Group) {channel="icloud:bridge:account1:Owner"}
+Number iCloud_Account1_NumberOfDevices "iCloud Account NumberOfDevices [%d]" (iCloud_Group) {channel="icloud:bridge:account1:NumberOfDevices"}
+Switch iCloud_Account1_ForceRefresh "iCloud Account Force Refresh" (iCloud_Group) {channel="icloud:bridge:account1:ForcedRefresh"}
 
-### Sitemap
-
-```
-sitemap icloud  label="iCloud Data" {
-        Frame label="John Doe"  {
-                Default item=JohnIPhone6_BatteryStatus icon="poweroutlet_uk"
-                Default item=JohnIPhone6_BatteryLevel label="Battery Level [%.0f %%]" icon="battery"
-                Default item=JohnIPhone6_Location label="Location [%s]"
-                Default item=JohnIPhone6_LocationAccuracy icon="movecontrol"
-                Default item=JohnIPhone6_DistanceFromHome label="Distance from Home [%.0f m]" icon="zoom"
-                Default item=JohnIPhone6_Street icon="house"
-                Default item=JohnIPhone6_City icon="house"
-                Default item=JohnIPhone6_Country icon="house"
-                Default item=JohnIPhone6_FormattedAddress
-                Default item=JohnIPhone6_LastLocationUpdate label="Updated [%1$td/%1$tm/%1$ty %1$tH:%1$tM]" icon="clock"
-                Switch  item=JohnIPhone6_FindMyPhone label="Find this device"
-        }
-}
+String iPhone_BatteryStatus "Battery Status [%s]" <battery> (iCloud_Group)  {channel="icloud:device:account1:0:BatteryStatus"}
+Number iPhone_BatteryLevel "Battery Level [%.0f]" <battery> (iCloud_Group) {channel="icloud:device:account1:0:BatteryLevel"}
+Switch iPhone_FindMyPhone "Find iPhone [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:FindMyPhone"}
+Location iPhone_Location "Coordinates" <suitcase> (iCloud_Group)  {channel="icloud:device:account1:0:Location"}
+Number iPhone_LocationAccuracy "Coordinates Accuracy [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:LocationAccuracy"}
+Number iPhone_DistanceFromHome "Distance from home [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:DistanceFromHome"}
+DateTime iPhone_LastLocationUpdate "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:LastUpdate"}
+String iPhone_Street "Street [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:AddressStreet"}
+String iPhone_City "City [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:AddressCity"}
+String iPhone_Country "Country [%s]" <suitcase> (iCloud_Group)   {channel="icloud:device:account1:0:AddressCountry"}
+String iPhone_FormattedAddress "Address [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:FormattedAddress"}
 ```
 
 # Configuration with Paper UI 
