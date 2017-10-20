@@ -20,7 +20,7 @@ The binding uses Google's "[Geocode API](https://developers.google.com/maps/docu
         - [Device](#device)
     - [Full Example](#full-example)
         - [iCloud.things:](#icloudthings)
-        - [Items](#items)
+        - [icloud.items:](#iclouditems)
 - [Configuration with Paper UI](#configuration-with-paper-ui)
 
 <!-- /TOC -->
@@ -103,9 +103,7 @@ Bridge icloud:bridge:account1 [AppleId="abc@xyz.tld", Password="secure", Refresh
 ```
 The refresh time is optional and has a default of 5. The "label" @ "location" part is optional (as always).
 
-### Items
-
-icloud.items:
+### icloud.items:
 
 ```php
 Group iCloud_Group (Whg)
@@ -130,6 +128,6 @@ String iPhone_FormattedAddress "Address [%s]" <suitcase> (iCloud_Group) {channel
 
 First select iCloud Binding in "Paper UI > Configuration > Things" and provide your id, password and refresh interval. Devices are automatically discovered once the thing is configured and online.
 
-1.  Select the binding: ![Select binding](./doc/Config_1.png "Step 1")
-2.  Select the bridge: ![Select bridge](./doc/Config_2.png "Step 2") 
+1.  Select the "iCloud Binding": ![Select binding](./doc/Config_1.png "Step 1")
+2.  Select the "iCloud Account: ![Select bridge](./doc/Config_2.png "Step 2") 
 3.  Configure your account and the desired refresh rate. ![Configure](./doc/Config_3.png "Step 3") 

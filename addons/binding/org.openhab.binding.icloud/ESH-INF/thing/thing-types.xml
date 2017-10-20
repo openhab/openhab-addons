@@ -3,8 +3,8 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="bridge">
-		<label>iCloud Binding</label>
-		<description>Provides various information about an iCloud device.</description>
+		<label>iCloud Account</label>
+		<description>Provides various information for iCloud devices registered with this account.</description>
 
 		<channels>
 			<channel id="Owner" typeId="Owner" />
