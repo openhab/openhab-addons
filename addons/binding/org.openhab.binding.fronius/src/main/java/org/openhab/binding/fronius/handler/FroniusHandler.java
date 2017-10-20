@@ -291,7 +291,7 @@ public class FroniusHandler extends BaseThingHandler {
      * @param ip
      * @return {InverterRealtimeResponse}
      */
-    private InverterRealtimeResponse getRealtimeData(String ip, String deviceId) {
+    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
         InverterRealtimeResponse result = null;
         boolean resultOk = false;
         String errorMsg = null;
@@ -299,7 +299,7 @@ public class FroniusHandler extends BaseThingHandler {
         try {
 
             String location = INVERTER_REALTIME_DATA_URL.replace("%IP%", StringUtils.trimToEmpty(ip));
-            location = location.replace("%DEVICEID%", StringUtils.trimToEmpty(deviceId));
+            location = location.replace("%DEVICEID%", Integer.toString(deviceId));
             logger.debug("URL = {}", location);
 
             String response = HttpUtil.executeUrl("GET", location, API_TIMEOUT);
