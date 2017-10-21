@@ -6,10 +6,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SwitchBox} class defines a logic for SwitchBox device
@@ -19,6 +21,7 @@ import org.openhab.binding.blebox.BleboxBindingConstants;
 public class SwitchBox extends BaseDevice {
     public static final String SET_URL = "/s/";
     public static final String STATE_URL = "/api/relay/state";
+    private Logger logger = LoggerFactory.getLogger(SwitchBox.class);
 
     public SwitchBox(String ipAddress) {
         super(BleboxBindingConstants.SWITCHBOX, ipAddress);
@@ -28,7 +31,7 @@ public class SwitchBox extends BaseDevice {
         super(itemType, ipAddress);
     }
 
-    public class StateResponse extends BaseResponse {
+    public class StateResponse implements BaseResponse {
 
         public Relay[] relays;
 
@@ -39,7 +42,7 @@ public class SwitchBox extends BaseDevice {
 
     }
 
-    public class Relay extends BaseResponse {
+    public class Relay implements BaseResponse {
         public int relay;
         public int state;
         public int stateAfterRestart;
@@ -52,12 +55,21 @@ public class SwitchBox extends BaseDevice {
 
     public void setSwitchState(OnOffType onOff) {
         String url = SET_URL + (onOff.equals(OnOffType.ON) ? "1" : "0");
-
-        getJson(url, StateResponse.class, null);
+        try {
+            getJson(url, StateResponse.class, null);
+        } catch (Exception e) {
+            logger.error("setSwitchState(): Error: {}", e);
+        }
     }
 
     public OnOffType getSwitchState(int switchIndex) {
-        Relay[] response = getJsonArray(STATE_URL, Relay[].class, null);
+        Relay[] response = null;
+
+        try {
+            response = getJsonArray(STATE_URL, Relay[].class, null);
+        } catch (Exception e) {
+            logger.error("getSwitchState(): Error: {}", e);
+        }
 
         if (response != null && response.length > switchIndex) {
             return response[switchIndex].state > 0 ? OnOffType.ON : OnOffType.OFF;

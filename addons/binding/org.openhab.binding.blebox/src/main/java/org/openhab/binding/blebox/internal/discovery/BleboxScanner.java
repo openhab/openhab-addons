@@ -29,8 +29,8 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.concurrent.FutureCallback;
-import org.openhab.binding.blebox.devices.DeviceInfo;
-import org.openhab.binding.blebox.devices.StatusResponse;
+import org.openhab.binding.blebox.internal.devices.DeviceInfo;
+import org.openhab.binding.blebox.internal.devices.StatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,25 +40,25 @@ import com.google.gson.Gson;
  * The {@link BleboxScanner} is responsible for scan local network for Blebox devices
  *
  * @author Szymon Tokarski - Initial contribution
+ * @author Russell Stephens - network scanning method from EnvisalinkBridgeDiscovery
  */
 public class BleboxScanner {
     private Logger logger = LoggerFactory.getLogger(BleboxScanner.class);
 
-    static final int ENVISALINK_BRIDGE_PORT = 4025;
-    static final int CONNECTION_TIMEOUT = 10;
-    static final int TIMEOUT = 2500;
-    static final String ENVISALINK_DISCOVERY_RESPONSE = "505";
+    static final int TIMEOUT = 2000;
+    static final int THREADS_NUMER = 50;
 
     private BleboxDiscovery bleboxDiscovery = null;
+    private Gson gson = new Gson();
 
     public BleboxScanner(BleboxDiscovery bleboxDiscovery) {
         this.bleboxDiscovery = bleboxDiscovery;
     }
 
     /**
-     * Method for Bridge Discovery.
+     * Method for devices discovery.
      */
-    public synchronized void discoverBridge() {
+    public synchronized void discoverDevices() {
         logger.debug("Starting Blebox Discovery.");
 
         SubnetUtils subnetUtils = null;
@@ -68,21 +68,21 @@ public class BleboxScanner {
 
         try {
             List<Inet4Address> inet4 = getInet4Addresses();
-            logger.error("discoverBridge(): ip addresses - {}", inet4.size());
-            logger.error("discoverBridge(): ip main ip - {}", inet4.get(0));
+            logger.debug("discoverDevices(): ip addresses - {}", inet4.size());
+            logger.debug("discoverDevices(): ip main ip - {}", inet4.get(0));
 
             NetworkInterface networkInterfacee = NetworkInterface.getByInetAddress(inet4.get(0));
-            logger.error("discoverBridge(): networkInterface - {}", networkInterfacee.toString());
+            logger.debug("discoverDevices(): networkInterface - {}", networkInterfacee.toString());
             String hostAddress = inet4.get(0).getHostAddress();
             subnetUtils = new SubnetUtils(hostAddress + "/" + "24");
             subnetInfo = subnetUtils.getInfo();
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
         } catch (IllegalArgumentException e) {
-            logger.error("discoverBridge(): Illegal Argument Exception - {}", e.toString());
+            logger.error("discoverDevices(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("discoverBridge(): Error - Unable to get Subnet Information! {}", e.toString());
+            logger.error("discoverDevices(): Error - Unable to get Subnet Information! {}", e.toString());
             return;
         }
 
@@ -95,24 +95,23 @@ public class BleboxScanner {
         logger.debug("   Low IP:           {}", convertNumberToIP(lowIP));
         logger.debug("   High IP:          {}", convertNumberToIP(highIP));
 
-        ExecutorService threadpool = Executors.newFixedThreadPool(50);
+        ExecutorService threadpool = Executors.newFixedThreadPool(THREADS_NUMER);
         Async async = Async.newInstance().use(threadpool);
 
         for (long ip = lowIP; ip <= highIP; ip++) {
             try {
                 final String ipAddress = convertNumberToIP(ip);
 
-                Gson gson = new Gson();
-
                 URIBuilder builder = new URIBuilder();
                 builder.setScheme("http").setHost(ipAddress).setPath("/api/device/state");
                 URI requestURL = null;
                 try {
                     requestURL = builder.build();
-                } catch (URISyntaxException use) {
+                } catch (URISyntaxException e) {
+                    logger.warn("discoverDevices(): requestURL - {}", e.toString());
                 }
 
-                final Request request = Request.Get(requestURL).connectTimeout(2000).socketTimeout(2000);
+                final Request request = Request.Get(requestURL).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT);
 
                 Future<Content> future = async.execute(request, new FutureCallback<Content>() {
                     @Override
@@ -173,18 +172,6 @@ public class BleboxScanner {
             }
         }
         return ret;
-    }
-
-    /**
-     * Returns this host's first non-loopback IPv4 address string in textual
-     * representation.
-     *
-     * @return
-     * @throws SocketException
-     */
-    private static String getHost4Address() throws SocketException {
-        List<Inet4Address> inet4 = getInet4Addresses();
-        return !inet4.isEmpty() ? inet4.get(0).getHostAddress() : null;
     }
 
     /**

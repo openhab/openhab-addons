@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.blebox.handler;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blebox.BleboxBindingConstants;
-import org.openhab.binding.blebox.devices.LightBox;
 import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
+import org.openhab.binding.blebox.internal.devices.LightBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,23 +38,19 @@ public class LightBoxHandler extends BaseThingHandler {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            try {
-                if (lightBox != null) {
-                    LightBox.StateResponse state = lightBox.getStatus();
+            if (lightBox != null) {
+                LightBox.StateResponse state = lightBox.getStatus();
 
-                    if (state != null) {
-                        updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
-                        updateState(BleboxBindingConstants.CHANNEL_COLOR, state.getColor());
+                if (state != null) {
+                    updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
+                    updateState(BleboxBindingConstants.CHANNEL_COLOR, state.getColor());
 
-                        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.info("Polling device state failed: {}", e.toString());
             }
         }
     };
@@ -72,16 +67,22 @@ public class LightBoxHandler extends BaseThingHandler {
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        // lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                         lightBox.setColor(HSBType.BLACK);
                     } else {
                         lightBox.setColor(hsbCommand);
+                    }
+                } else if (command instanceof PercentType) {
+                    lightBox.setWhiteBrightness((PercentType) command);
+                } else if (command instanceof OnOffType) {
+                    if (((OnOffType) command) == OnOffType.ON) {
+                        lightBox.setColor(lightBox.LastKnownColor != null ? lightBox.LastKnownColor : HSBType.BLUE);
+                    } else {
+                        lightBox.setColor(HSBType.BLACK);
                     }
                 }
                 break;
             case BleboxBindingConstants.CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    // lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
                     lightBox.setWhiteBrightness((PercentType) command);
                 } else if (command instanceof OnOffType) {
                     lightBox.setWhiteBrightness((OnOffType) command);
@@ -92,28 +93,15 @@ public class LightBoxHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
+        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
 
-        if (ipAddress != null) {
-            lightBox = new LightBox(ipAddress);
-            updateStatus(ThingStatus.ONLINE);
+        lightBox = new LightBox(config.ip);
+        updateStatus(ThingStatus.ONLINE);
 
-            int pollingInterval = BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
+        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
+                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
 
-            try {
-                Object pollingIntervalConfig = getConfig().get(BleboxDeviceConfiguration.POLL_INTERVAL);
-                if (pollingIntervalConfig != null) {
-                    pollingInterval = ((BigDecimal) pollingIntervalConfig).intValue();
-                } else {
-                    logger.info("Polling interval not configured for this device. Using default value: {}s",
-                            pollingInterval);
-                }
-            } catch (NumberFormatException ex) {
-                logger.info("Wrong configuration value for polling interval. Using default value: {}s",
-                        pollingInterval);
-            }
-            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
-        }
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
     }
 
     @Override

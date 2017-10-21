@@ -6,10 +6,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Dimmer} class defines a logic for Dimmer device
@@ -17,17 +19,16 @@ import org.openhab.binding.blebox.BleboxBindingConstants;
  * @author Szymon Tokarski - Initial contribution
  */
 public class Dimmer extends BaseDevice {
-
     public static final float MAX_BRIGHTNESS = 255;
-
     public static final String SET_URL = "/api/dimmer/set";
     public static final String STATE_URL = "/api/dimmer/state";
+    private Logger logger = LoggerFactory.getLogger(Dimmer.class);
 
     public Dimmer(String ipAddress) {
         super(BleboxBindingConstants.DIMMERBOX, ipAddress);
     }
 
-    public class SetRequest extends BaseRequest {
+    public class SetRequest implements BaseRequest {
         public static final String ROOT_ELEMENT = "dimmer";
 
         public Integer loadType;
@@ -47,7 +48,7 @@ public class Dimmer extends BaseDevice {
         }
     }
 
-    public class StateResponse extends BaseResponse {
+    public class StateResponse implements BaseResponse {
         public static final String ROOT_ELEMENT = "dimmer";
 
         public Integer loadType;
@@ -66,7 +67,11 @@ public class Dimmer extends BaseDevice {
     public void setBrightness(Integer value) {
         SetRequest request = new SetRequest().setBrightness(value);
 
-        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        try {
+            postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("setBrightness(): Error: {}", e);
+        }
     }
 
     public void setBrightness(PercentType percent) {
@@ -76,14 +81,17 @@ public class Dimmer extends BaseDevice {
     }
 
     public PercentType getBrightness() {
-        StateResponse response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        try {
+            StateResponse response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
 
-        if (response != null) {
-            float percent = response.currentBrightness / MAX_BRIGHTNESS;
+            if (response != null) {
+                float percent = response.currentBrightness / MAX_BRIGHTNESS;
 
-            return new PercentType(Math.round(percent * 100));
-        } else {
-            return null;
+                return new PercentType(Math.round(percent * 100));
+            }
+        } catch (Exception e) {
+            logger.error("getBrightness(): Error: {}", e);
         }
+        return null;
     }
 }

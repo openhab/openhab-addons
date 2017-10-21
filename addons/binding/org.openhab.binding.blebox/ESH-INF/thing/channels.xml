@@ -1,75 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="blebox"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <!-- Color Channel -->
-    <channel-type id="color">
-        <item-type>Color</item-type>
-        <label>Color</label>
-        <description>The color channel allows to control the color of a light.
+<thing:thing-descriptions bindingId="blebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- Color Channel -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color channel allows to control the color of a light.
             It is also possible to dim values and switch the light on and off.
         </description>
-        <category>ColorLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
-
-    <!-- Brightness Channel -->
-    <channel-type id="brightness">
-        <item-type>Dimmer</item-type>
-        <label>Brightness</label>
-        <description>The brightness channel allows to control the brightness of a light.
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light.
             It is also possible to switch the light on and off.
         </description>
-        <category>DimmableLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
-
-    <!-- Switch Channel -->
-    <channel-type id="switch0">
-        <item-type>Switch</item-type>
-        <label>Switch</label>
-        <description>The switch channel allows to switch the light on and off.
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Switch Channel -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>The switch channel allows to switch the light on and off.
         </description>
-        <category>Light</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
-    
-      <!-- Switch Channel -->
-    <channel-type id="switch1">
-        <item-type>Switch</item-type>
-        <label>Switch</label>
-        <description>The switch channel allows to switch the light on and off.
-        </description>
-        <category>Light</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
-    
-    <!-- Color Temperature Channel -->
-    <channel-type id="color_temperature">
-        <item-type>Dimmer</item-type>
-        <label>Color Temperature</label>
-        <description>The color temperature channel allows to set the color
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Color Temperature Channel -->
+	<channel-type id="color_temperature">
+		<item-type>Dimmer</item-type>
+		<label>Color Temperature</label>
+		<description>The color temperature channel allows to set the color
             temperature of a light from 0 (cold) to 100 (warm).</description>
-        <category>ColorLight</category>
-    </channel-type>
-
-
- <!--  Channel -->
-    <channel-type id="position">
-        <item-type>Rollershutter</item-type>
-        <label>Gate position</label>
-        <description></description>
-        <category>Rollershutter</category>
-    </channel-type>
-
- </thing:thing-descriptions>
+		<category>ColorLight</category>
+	</channel-type>
+	<!-- Position Channel -->
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter/Gate position</label>
+		<description>Position of rollershutter/gate</description>
+		<category>Rollershutter</category>
+	</channel-type>
+</thing:thing-descriptions>

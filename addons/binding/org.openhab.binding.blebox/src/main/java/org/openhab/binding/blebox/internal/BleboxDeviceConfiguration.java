@@ -20,4 +20,6 @@ public class BleboxDeviceConfiguration {
 
     public static final int DEFAULT_POLL_INTERVAL = 10;
 
+    public String ip;
+    public Integer pollingInterval;
 }

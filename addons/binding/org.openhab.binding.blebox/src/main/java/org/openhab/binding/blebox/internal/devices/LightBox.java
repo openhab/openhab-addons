@@ -7,12 +7,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightBox} class defines a logic for LightBox device
@@ -20,10 +22,10 @@ import org.openhab.binding.blebox.BleboxBindingConstants;
  * @author Szymon Tokarski - Initial contribution
  */
 public class LightBox extends BaseDevice {
-
     public static final float MAX_CHANNEL_VALUE = 2.55f;
     public static final String SET_URL = "/api/rgbw/set";
     public static final String STATE_URL = "/api/rgbw/state";
+    private Logger logger = LoggerFactory.getLogger(LightBox.class);
 
     public HSBType LastKnownColor = null;
     public PercentType LastKnownBrigthness = null;
@@ -36,7 +38,7 @@ public class LightBox extends BaseDevice {
         super(itemType, ipAddress);
     }
 
-    public class StateResponse extends BaseResponse {
+    public class StateResponse implements BaseResponse {
         public static final String ROOT_ELEMENT = "rgbw";
 
         public String currentColor;
@@ -58,7 +60,7 @@ public class LightBox extends BaseDevice {
         }
     }
 
-    public class SetRequest extends BaseRequest {
+    public class SetRequest implements BaseRequest {
         public static final String ROOT_ELEMENT = "rgbw";
 
         public String desiredColor;
@@ -70,8 +72,12 @@ public class LightBox extends BaseDevice {
     }
 
     public StateResponse getStatus() {
-        StateResponse response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
-
+        StateResponse response = null;
+        try {
+            response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("getStatus(): Error: {}", e);
+        }
         return response;
     }
 
@@ -83,7 +89,11 @@ public class LightBox extends BaseDevice {
         SetRequest request = new SetRequest();
         request.desiredColor = fromHSBToHex(hsb) + percentToHex(LastKnownBrigthness);
 
-        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        try {
+            postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("setColor(): Error: {}", e);
+        }
 
         LastKnownColor = hsb;
     }
@@ -96,7 +106,11 @@ public class LightBox extends BaseDevice {
         SetRequest request = new SetRequest();
         request.desiredColor = fromHSBToHex(LastKnownColor) + percentToHex(p);
 
-        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        try {
+            postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("setWhiteBrightness(): Error: {}", e);
+        }
 
         LastKnownBrigthness = p;
     }

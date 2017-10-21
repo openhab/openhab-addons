@@ -6,24 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 /**
- * The {@link DeviceInfo} class defines common device info repsonse
+ * The {@link BaseResponse} class defines a interface for http Json response classes
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public class DeviceInfo {
-    public String deviceName;
-    public String type;
-    // Firmware version
-    public String fv;
-    // Hardware version
-    public String hv;
-
-    public String id;
-
-    public String ip;
-
+public interface BaseResponse {
+    String getRootElement();
 }

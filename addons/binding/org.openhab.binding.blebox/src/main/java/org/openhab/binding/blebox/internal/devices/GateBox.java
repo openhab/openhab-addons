@@ -6,11 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GateBox} class defines a logic for GateBox device
@@ -18,10 +20,10 @@ import org.openhab.binding.blebox.BleboxBindingConstants;
  * @author Szymon Tokarski - Initial contribution
  */
 public class GateBox extends BaseDevice {
-
     public static final float MAX_CHANNEL_VALUE = 2.55f;
     public static final String SET_URL = "/s/p";
     public static final String STATE_URL = "/api/gate/state";
+    private Logger logger = LoggerFactory.getLogger(GateBox.class);
 
     public GateBox(String ipAddress) {
         super(BleboxBindingConstants.GATEBOX, ipAddress);
@@ -31,7 +33,7 @@ public class GateBox extends BaseDevice {
         super(itemType, ipAddress);
     }
 
-    public class StateResponse extends BaseResponse {
+    public class StateResponse implements BaseResponse {
         public String currentPos;
         public String desiredPos;
 
@@ -45,7 +47,7 @@ public class GateBox extends BaseDevice {
         }
     }
 
-    public class SetRequest extends BaseRequest {
+    public class SetRequest implements BaseRequest {
         public String desiredPos;
 
         @Override
@@ -55,13 +57,22 @@ public class GateBox extends BaseDevice {
     }
 
     public StateResponse getStatus() {
-        StateResponse response = getJson(STATE_URL, StateResponse.class, null);
+        StateResponse response = null;
+        try {
+            response = getJson(STATE_URL, StateResponse.class, null);
+        } catch (Exception e) {
+            logger.error("getStatus(): Error: {}", e);
+        }
 
         return response;
     }
 
     public void setPosition(PercentType p) {
-        getJson(SET_URL, StateResponse.class, "gate");
+        try {
+            getJson(SET_URL, StateResponse.class, "gate");
+        } catch (Exception e) {
+            logger.error("setPosition(): Error: {}", e);
+        }
     }
 
     public void setState(OnOffType p) {

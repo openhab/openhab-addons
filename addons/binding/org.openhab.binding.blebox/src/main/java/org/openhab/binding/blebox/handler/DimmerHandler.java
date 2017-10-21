@@ -10,7 +10,6 @@ package org.openhab.binding.blebox.handler;
 
 import static org.openhab.binding.blebox.BleboxBindingConstants.CHANNEL_BRIGHTNESS;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +20,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.blebox.devices.Dimmer;
 import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
+import org.openhab.binding.blebox.internal.devices.Dimmer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,22 +39,18 @@ public class DimmerHandler extends BaseThingHandler {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            try {
-                if (dimmer != null) {
-                    PercentType brightness = dimmer.getBrightness();
+            if (dimmer != null) {
+                PercentType brightness = dimmer.getBrightness();
 
-                    if (brightness != null) {
-                        updateState(CHANNEL_BRIGHTNESS, brightness);
+                if (brightness != null) {
+                    updateState(CHANNEL_BRIGHTNESS, brightness);
 
-                        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.info("Polling device state failed: {}", e.toString());
             }
         }
     };
@@ -71,40 +66,22 @@ public class DimmerHandler extends BaseThingHandler {
             if (command instanceof PercentType) {
                 dimmer.setBrightness((PercentType) command);
             } else if (command instanceof OnOffType) {
-                if (((OnOffType) command).equals(OnOffType.ON)) {
-                    dimmer.setBrightness(PercentType.HUNDRED);
-                } else {
-                    dimmer.setBrightness(PercentType.ZERO);
-                }
+                dimmer.setBrightness((PercentType) ((OnOffType) command).as(PercentType.class));
             }
         }
     }
 
     @Override
     public void initialize() {
-        final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
+        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
 
-        if (ipAddress != null) {
-            dimmer = new Dimmer(ipAddress);
-            updateStatus(ThingStatus.ONLINE);
+        dimmer = new Dimmer(config.ip);
+        updateStatus(ThingStatus.ONLINE);
 
-            int pollingInterval = BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
+        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
+                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
 
-            try {
-                Object pollingIntervalConfig = getConfig().get(BleboxDeviceConfiguration.POLL_INTERVAL);
-                if (pollingIntervalConfig != null) {
-                    pollingInterval = ((BigDecimal) pollingIntervalConfig).intValue();
-                } else {
-                    logger.info("Polling interval not configured for this device. Using default value: {}s",
-                            pollingInterval);
-                }
-            } catch (NumberFormatException ex) {
-                logger.info("Wrong configuration value for polling interval. Using default value: {}s",
-                        pollingInterval);
-            }
-
-            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
-        }
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
     }
 
     @Override

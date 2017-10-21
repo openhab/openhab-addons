@@ -14,9 +14,11 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.blebox.BleboxBindingConstants;
 import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szymon Tokarski - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true)
 public class BleboxDiscovery extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(BleboxDiscovery.class);
     private BleboxScanner scanner = new BleboxScanner(this);
@@ -44,7 +47,7 @@ public class BleboxDiscovery extends AbstractDiscoveryService {
     private Runnable scannerRunnable = new Runnable() {
         @Override
         public void run() {
-            scanner.discoverBridge();
+            scanner.discoverDevices();
         }
     };
 
@@ -52,9 +55,9 @@ public class BleboxDiscovery extends AbstractDiscoveryService {
      * Method to add an Blebox device to the Smarthome Inbox.
      */
     public void addDevice(String ip, String deviceType, String deviceId, String deviceName) {
-        logger.trace("addBridge(): Adding new Blebox device on IP {} to Smarthome inbox", ip);
+        logger.trace("addDevice(): Adding new Blebox device on IP {} to Smarthome inbox", ip);
 
-        Map<String, Object> properties = new HashMap<>(0);
+        Map<String, Object> properties = new HashMap<>();
         properties.put(BleboxDeviceConfiguration.IP, ip);
         properties.put(BleboxDeviceConfiguration.POLL_INTERVAL, BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL);
 

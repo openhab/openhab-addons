@@ -6,11 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.blebox.BleboxBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightBoxS} class defines a logic for LightBoxS device
@@ -18,11 +20,10 @@ import org.openhab.binding.blebox.BleboxBindingConstants;
  * @author Szymon Tokarski - Initial contribution
  */
 public class LightBoxS extends BaseDevice {
-
     public static final float MAX_CHANNEL_VALUE = 2.55f;
-
     public static final String SET_URL = "/api/light/set";
     public static final String STATE_URL = "/api/light/state";
+    private Logger logger = LoggerFactory.getLogger(LightBoxS.class);
 
     public PercentType LastKnownBrigthness = null;
 
@@ -30,7 +31,7 @@ public class LightBoxS extends BaseDevice {
         super(BleboxBindingConstants.WLIGHTBOXS, ipAddress);
     }
 
-    public class StateResponse extends BaseResponse {
+    public class StateResponse implements BaseResponse {
         public static final String ROOT_ELEMENT = "light";
 
         public String currentColor;
@@ -46,7 +47,7 @@ public class LightBoxS extends BaseDevice {
         }
     }
 
-    public class SetRequest extends BaseRequest {
+    public class SetRequest implements BaseRequest {
         public static final String ROOT_ELEMENT = "light";
 
         public String desiredColor;
@@ -58,17 +59,24 @@ public class LightBoxS extends BaseDevice {
     }
 
     public StateResponse getStatus() {
-        StateResponse response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        StateResponse response = null;
 
+        try {
+            response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("getStatus(): Error: {}", e);
+        }
         return response;
     }
 
     public void setWhiteBrightness(PercentType p) {
         SetRequest request = new SetRequest();
         request.desiredColor = percentToHex(p);
-
-        StateResponse response = postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
-
+        try {
+            postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
+        } catch (Exception e) {
+            logger.error("setWhiteBrightness(): Error: {}", e);
+        }
         LastKnownBrigthness = p;
     }
 

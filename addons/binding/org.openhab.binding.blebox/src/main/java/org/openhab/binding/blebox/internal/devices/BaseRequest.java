@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 /**
- * The {@link BaseRequest} class defines a base class for Blebox devices Http request
+ * The {@link BaseRequest} class defines a interface for class for http Json requests classes
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public abstract class BaseRequest {
-    public abstract String getRootElement();
+public interface BaseRequest {
+    String getRootElement();
 }

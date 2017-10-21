@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="blebox"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <thing-type id="switchBoxD">
-
-        
-        <label>switchBoxD</label>
-        <description>Blebox wSwitchBoxD</description>
-
-        <channels>
-            <channel id="switch0" typeId="switch0" >
-                <label>Switch 0</label>
-            </channel>
-            <channel id="switch1" typeId="switch1">
-                <label>Switch 1</label>
-            </channel>
-        </channels>
-
-        <config-description-ref uri="blebox:config" />
-     
-
-    </thing-type>
-
-  
-
+<thing:thing-descriptions bindingId="blebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="switchBoxD">
+		<label>switchBoxD</label>
+		<description>Blebox wSwitchBoxD</description>
+		<channels>
+			<channel id="switch0" typeId="switch">
+				<label>Switch 0</label>
+			</channel>
+			<channel id="switch1" typeId="switch">
+				<label>Switch 1</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="blebox:config" />
+	</thing-type>
 </thing:thing-descriptions>

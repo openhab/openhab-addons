@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.blebox.handler;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,8 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blebox.BleboxBindingConstants;
-import org.openhab.binding.blebox.devices.SwitchBox;
 import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
+import org.openhab.binding.blebox.internal.devices.SwitchBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,22 +36,18 @@ public class SwitchBoxHandler extends BaseThingHandler {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            try {
-                if (switchBox != null) {
-                    OnOffType switchState = switchBox.getSwitchState(0);
+            if (switchBox != null) {
+                OnOffType switchState = switchBox.getSwitchState(0);
 
-                    if (switchState != null) {
-                        updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchState);
+                if (switchState != null) {
+                    updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchState);
 
-                        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.info("Polling device state failed: {}", e.toString());
             }
         }
     };
@@ -73,29 +68,15 @@ public class SwitchBoxHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final String ipAddress = (String) getConfig().get(BleboxDeviceConfiguration.IP);
+        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
 
-        if (ipAddress != null) {
-            switchBox = new SwitchBox(ipAddress);
-            updateStatus(ThingStatus.ONLINE);
+        switchBox = new SwitchBox(config.ip);
+        updateStatus(ThingStatus.ONLINE);
 
-            int pollingInterval = BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
+        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
+                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
 
-            try {
-                Object pollingIntervalConfig = getConfig().get(BleboxDeviceConfiguration.POLL_INTERVAL);
-                if (pollingIntervalConfig != null) {
-                    pollingInterval = ((BigDecimal) pollingIntervalConfig).intValue();
-                } else {
-                    logger.info("Polling interval not configured for this device. Using default value: {}s",
-                            pollingInterval);
-                }
-            } catch (NumberFormatException ex) {
-                logger.info("Wrong configuration value for polling interval. Using default value: {}s",
-                        pollingInterval);
-            }
-
-            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollingInterval, TimeUnit.SECONDS);
-        }
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
     }
 
     @Override

@@ -54,4 +54,6 @@ public class BleboxBindingConstants {
 
     public static final String CHANNEL_POSITION = "position";
 
+    public static final int TIMEOUT = 2000;
+
 }

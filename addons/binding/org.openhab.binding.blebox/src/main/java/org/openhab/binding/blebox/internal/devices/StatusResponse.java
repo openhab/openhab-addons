@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.blebox.devices;
+package org.openhab.binding.blebox.internal.devices;
 
 /**
- * The {@link BaseResponse} class defines a base class for Blebox devices Http response
+ * The {@link BaseRequest} class defines a class for Blebox device status response
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public abstract class BaseResponse {
-    public abstract String getRootElement();
+public class StatusResponse {
+    public DeviceInfo device;
 }
