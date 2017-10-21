@@ -57,20 +57,31 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      */
     // @formatter:off
     private static final Set<String> vendorPrefixes = Sets.newHashSet(
-            "44:65:0D",
-            "50:F5:DA",
-            "84:D6:D0",
-            "34:D2:70",
             "F0:D2:F1",
             "88:71:E5",
+            "FC:A1:83",
+            "F0:27:2D",
             "74:C2:46",
-            // This is an Amazon MAC address, but it has been used by my Fire TV...
-            // "F0:27:2D",
-            "0C:47:C9",
+            "68:37:E9",
+            "78:E1:03",
+            "38:F7:3D",
+            "50:DC:E7",
             "A0:02:DC",
+            "0C:47:C9",
             "74:75:48",
             "AC:63:BE",
-            "FC:A6:67"
+            "FC:A6:67",
+            "18:74:2E",
+            "00:FC:8B",
+            "FC:65:DE",
+            "6C:56:97",
+            "44:65:0D",
+            "50:F5:DA",
+            "68:54:FD",
+            "40:B4:CD",
+            "84:D6:D0",
+            "34:D2:70",
+            "B4:7C:9C"
         );
     // @formatter:on
 
