@@ -14,7 +14,7 @@ import org.eclipse.jetty.http.HttpStatus.Code;
  * this class contains the HTTP status of the communication and an optional exception that might occoured during
  * communication
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class CommunicationStatus {

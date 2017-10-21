@@ -11,7 +11,7 @@ package org.openhab.binding.solaredge.internal.model;
 /**
  * Live = current values, Aggregate = aggregated data by day/month/year
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public enum ChannelType {

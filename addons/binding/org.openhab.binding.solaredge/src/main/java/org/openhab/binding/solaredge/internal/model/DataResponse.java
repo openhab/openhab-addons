@@ -12,10 +12,10 @@ import java.util.Map;
 
 /**
  * common interface for all data response classes
- * 
- * @author afriese
+ *
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface DataResponse {
-    public Map<String, String> getValues();
+    Map<String, String> getValues();
 }

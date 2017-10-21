@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * this class is used to map the live data json response
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -21,7 +21,7 @@ import org.openhab.binding.solaredge.internal.model.Channel;
 /**
  * public interface of the {@link SolarEdgeHandler}
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface SolarEdgeHandler extends ThingHandler {
@@ -33,18 +33,18 @@ public interface SolarEdgeHandler extends ThingHandler {
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
     /**
      * Provides the web interface object.
      *
      * @return The web interface object
      */
-    public WebInterface getWebInterface();
+    WebInterface getWebInterface();
 
-    public void updateChannelStatus(Map<String, String> values);
+    void updateChannelStatus(Map<String, String> values);
 
-    public SolarEdgeConfiguration getConfiguration();
+    SolarEdgeConfiguration getConfiguration();
 
-    public List<Channel> getChannels();
+    List<Channel> getChannels();
 }

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * this class is used to map the login response
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  * The {@link SolarEdgeBaseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author afriese - Initial contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler {
 

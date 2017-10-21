@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The connector is responsible for communication with the solaredge webportal
  *
- * @author afriese - Initial contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 public class WebInterface {
 

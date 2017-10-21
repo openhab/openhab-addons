@@ -17,7 +17,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Polling worker class. This is responsible for periodic polling of sensor data.
  *
- * @author afriese - Initial Contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 public class SolarEdgePolling implements Runnable {
     /**
@@ -54,7 +55,7 @@ public class SolarEdgePolling implements Runnable {
                 handler.getWebInterface().executeCommand(ldu);
                 handler.getWebInterface().executeCommand(adu);
             } catch (Exception e) {
-                logger.error("Caught Error: {}", e.getMessage());
+                logger.warn("Caught Exception: {}", e.getMessage());
             }
 
         }

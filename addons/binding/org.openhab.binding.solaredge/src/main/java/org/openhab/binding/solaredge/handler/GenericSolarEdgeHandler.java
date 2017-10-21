@@ -21,7 +21,7 @@ import org.openhab.binding.solaredge.internal.model.LiveDataChannels;
 /**
  * generic thing handler for solaredge
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class GenericSolarEdgeHandler extends SolarEdgeBaseHandler {

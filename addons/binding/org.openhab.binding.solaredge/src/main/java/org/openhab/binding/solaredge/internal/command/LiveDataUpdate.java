@@ -23,7 +23,7 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {

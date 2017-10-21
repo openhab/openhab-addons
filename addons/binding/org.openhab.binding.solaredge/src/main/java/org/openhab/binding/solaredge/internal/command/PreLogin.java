@@ -27,7 +27,7 @@ import org.openhab.binding.solaredge.internal.model.PreLoginResponse;
 /**
  * implements the login to the webinterface
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class PreLogin extends AbstractCommandCallback implements SolarEdgeCommand {
