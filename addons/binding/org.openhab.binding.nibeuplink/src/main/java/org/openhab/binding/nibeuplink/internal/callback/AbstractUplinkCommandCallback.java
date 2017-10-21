@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * base class for all commands. common logic should be implemented here
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public abstract class AbstractUplinkCommandCallback extends BufferingResponseListener implements NibeUplinkCommand {

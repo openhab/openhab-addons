@@ -13,7 +13,7 @@ package org.openhab.binding.nibeuplink.handler;
  * "Special" for a special set of
  * common channels
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public enum ChannelSet {

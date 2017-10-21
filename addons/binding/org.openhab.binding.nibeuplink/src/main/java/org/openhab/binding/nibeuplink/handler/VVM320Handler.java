@@ -21,7 +21,7 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320SpecialChannels;
 /**
  * VVM320 specific implementation part of handler logic
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class VVM320Handler extends GenericUplinkHandler {

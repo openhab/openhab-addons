@@ -22,7 +22,7 @@ import org.openhab.binding.nibeuplink.internal.model.Channel;
 /**
  * public interface of the {@link GenericUplinkHandler}
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface NibeUplinkHandler extends ThingHandler {
@@ -34,21 +34,21 @@ public interface NibeUplinkHandler extends ThingHandler {
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
     /**
      * Provides the web interface object.
      *
      * @return The web interface object
      */
-    public UplinkWebInterface getWebInterface();
+    UplinkWebInterface getWebInterface();
 
-    public void updateChannelStatus(Map<String, String> values);
+    void updateChannelStatus(Map<String, String> values);
 
-    public NibeUplinkConfiguration getConfiguration();
+    NibeUplinkConfiguration getConfiguration();
 
-    public List<Channel> getChannels();
+    List<Channel> getChannels();
 
-    public Set<Channel> getDeadChannels();
+    Set<Channel> getDeadChannels();
 
 }

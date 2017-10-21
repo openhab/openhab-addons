@@ -11,7 +11,7 @@ package org.openhab.binding.nibeuplink.internal.model;
 /**
  * list of all available channels
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public enum VVM320SpecialChannels implements Channel {

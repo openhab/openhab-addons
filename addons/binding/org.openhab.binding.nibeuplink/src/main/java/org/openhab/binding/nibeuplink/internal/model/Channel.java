@@ -11,21 +11,21 @@ package org.openhab.binding.nibeuplink.internal.model;
 /**
  * interface to be implemented by all Channel Enumerations
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface Channel {
 
-    public String getName();
+    String getName();
 
-    public String getId();
+    String getId();
 
-    public ChannelType getChannelType();
+    ChannelType getChannelType();
 
-    public ChannelGroup getChannelGroup();
+    ChannelGroup getChannelGroup();
 
-    public Class<?> getJavaType();
+    Class<?> getJavaType();
 
-    public String getFQName();
+    String getFQName();
 
 }

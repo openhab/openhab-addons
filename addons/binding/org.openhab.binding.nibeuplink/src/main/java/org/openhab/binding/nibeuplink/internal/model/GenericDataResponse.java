@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * data class to map the json status response
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class GenericDataResponse implements DataResponse {

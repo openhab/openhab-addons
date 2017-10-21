@@ -22,7 +22,7 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 /**
  * implements the login to the webinterface
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCommand {

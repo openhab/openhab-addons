@@ -18,7 +18,7 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 /**
  * public interface for all commands
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface NibeUplinkCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
@@ -30,20 +30,20 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
      *
      * @param asyncclient
      */
-    public void performAction(HttpClient asyncclient);
+    void performAction(HttpClient asyncclient);
 
     /**
      * get the current listener
      *
      * @return
      */
-    public StatusUpdateListener getListener();
+    StatusUpdateListener getListener();
 
     /**
      * register a listener
      *
      * @param listener
      */
-    public void setListener(StatusUpdateListener listener);
+    void setListener(StatusUpdateListener listener);
 
 }

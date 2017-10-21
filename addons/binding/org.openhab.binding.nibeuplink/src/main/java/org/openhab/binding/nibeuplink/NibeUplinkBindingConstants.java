@@ -18,7 +18,8 @@ import com.google.common.collect.ImmutableSet;
  * The {@link NibeUplinkBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author afriese - Initial contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 public final class NibeUplinkBindingConstants {
 

@@ -11,11 +11,11 @@ package org.openhab.binding.nibeuplink.internal.connector;
 /**
  * callback interface to update the status of the {@link UplinkWebInterface}
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public interface StatusUpdateListener {
 
-    public void update(CommunicationStatus status);
+    void update(CommunicationStatus status);
 
 }

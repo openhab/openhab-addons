@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
  * The {@link GenericUplinkHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author afriese - Initial contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 public abstract class GenericUplinkHandler extends BaseThingHandler implements NibeUplinkHandler {
 

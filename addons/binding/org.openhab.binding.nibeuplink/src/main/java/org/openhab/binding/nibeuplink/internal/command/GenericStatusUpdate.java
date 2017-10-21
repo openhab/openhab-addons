@@ -28,7 +28,7 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class GenericStatusUpdate extends AbstractUplinkCommandCallback implements NibeUplinkCommand {

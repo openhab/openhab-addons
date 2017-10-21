@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles requests to the NibeUplink web interface. It manages authentication and wraps commands.
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public class UplinkWebInterface {

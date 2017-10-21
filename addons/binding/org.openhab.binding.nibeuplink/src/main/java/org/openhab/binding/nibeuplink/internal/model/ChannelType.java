@@ -11,7 +11,7 @@ package org.openhab.binding.nibeuplink.internal.model;
 /**
  * Sensor = readonly, Setting = read/write
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  *
  */
 public enum ChannelType {

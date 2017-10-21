@@ -28,7 +28,8 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * The {@link NibeUplinkHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author afriese - Initial contribution
+ * @author Alexander Friese - initial contribution
+ *
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL, name = "binding.nibeuplink")
 public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
