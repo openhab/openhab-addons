@@ -9,6 +9,7 @@ Bundle-ClassPath: .
 Import-Package: 
  org.apache.commons.collections,
  org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
