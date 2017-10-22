@@ -656,12 +656,13 @@ class LxWsClient {
                                 LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
                                 LxJsonSubResponse subResp = resp.subResponse;
                                 if (subResp != null && subResp.code != null) {
+                                    String value = subResp.value;
                                     if (subResp.code == 420) {
                                         notifyAndClose(LxOfflineReason.AUTHENTICATION_TIMEOUT,
                                                 "Timeout on authentication procedure, response : " + subResp.value);
                                     } else if (CMD_GET_KEY.equals(subResp.control) && subResp.code == 200
-                                            && subResp.value != null) {
-                                        String credentials = hashCredentials(subResp.value);
+                                            && value != null) {
+                                        String credentials = hashCredentials(value);
                                         if (credentials != null) {
                                             sendString(CMD_AUTHENTICATE + credentials);
                                             setClientState(ClientState.AUTHENTICATING);

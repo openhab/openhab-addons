@@ -57,8 +57,11 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
             @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
-        if (json.details != null && json.details.format != null) {
-            format = json.details.format;
+        if (json.details != null) {
+            String format = json.details.format;
+            if (format != null) {
+                this.format = format;
+            }
         }
     }
 

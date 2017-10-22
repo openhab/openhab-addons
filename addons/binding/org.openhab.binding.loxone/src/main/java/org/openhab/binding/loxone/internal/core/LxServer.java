@@ -479,22 +479,26 @@ public class LxServer {
         if (config.rooms != null) {
             logger.trace("[{}] creating rooms", debugId);
             for (LxJsonApp3.LxJsonRoom room : config.rooms.values()) {
-                if (room.uuid != null && room.name != null) {
-                    addOrUpdateRoom(new LxUuid(room.uuid), room.name);
+                String name = room.name;
+                String uuid = room.uuid;
+                if (uuid != null && name != null) {
+                    addOrUpdateRoom(new LxUuid(uuid), name);
                 } else {
-                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", room.uuid,
-                            room.name);
+                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", uuid, name);
                 }
             }
         }
         if (config.cats != null) {
             logger.trace("[{}] creating categories", debugId);
             for (LxJsonApp3.LxJsonCat cat : config.cats.values()) {
-                if (cat.uuid != null && cat.name != null && cat.type != null) {
-                    addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type);
+                String uuid = cat.uuid;
+                String name = cat.name;
+                String type = cat.type;
+                if (uuid != null && name != null && type != null) {
+                    addOrUpdateCategory(new LxUuid(uuid), name, type);
                 } else {
-                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}",
-                            cat.uuid, cat.name, cat.type);
+                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}", uuid,
+                            name, type);
                 }
             }
         }
@@ -668,16 +672,19 @@ public class LxServer {
      */
     private void addOrUpdateControl(LxJsonApp3.LxJsonControl json) {
         LxCategory category = null;
-        if (json.cat != null) {
-            category = findCategory(new LxUuid(json.cat));
+        String jsonCat = json.cat;
+        if (jsonCat != null) {
+            category = findCategory(new LxUuid(jsonCat));
         }
         LxContainer room = null;
-        if (json.room != null) {
-            room = findRoom(new LxUuid(json.room));
+        String jsonRoom = json.room;
+        if (jsonRoom != null) {
+            room = findRoom(new LxUuid(jsonRoom));
         }
 
-        if (json.uuidAction != null) {
-            LxUuid id = new LxUuid(json.uuidAction);
+        String uuid = json.uuidAction;
+        if (uuid != null) {
+            LxUuid id = new LxUuid(uuid);
             LxControl control = findControl(id);
             if (control != null) {
                 control.update(json, room, category);

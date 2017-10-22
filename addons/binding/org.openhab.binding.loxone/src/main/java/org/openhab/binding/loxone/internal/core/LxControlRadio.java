@@ -69,8 +69,11 @@ public class LxControlRadio extends LxControl {
         } else {
             outputs = new TreeMap<>();
         }
-        if (json.details != null && json.details.allOff != null) {
-            outputs.put("0", json.details.allOff);
+        if (json.details != null) {
+            String allOff = json.details.allOff;
+            if (allOff != null) {
+                outputs.put("0", allOff);
+            }
         }
     }
 
