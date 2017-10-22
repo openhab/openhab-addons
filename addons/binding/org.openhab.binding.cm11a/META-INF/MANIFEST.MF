@@ -9,6 +9,7 @@ Bundle-ClassPath: .
 Import-Package: gnu.io,
  org.openhab.binding.cm11a,
  org.openhab.binding.cm11a.handler,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
