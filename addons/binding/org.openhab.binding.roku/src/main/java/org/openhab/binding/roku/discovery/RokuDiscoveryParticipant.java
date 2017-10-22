@@ -65,7 +65,7 @@ public class RokuDiscoveryParticipant implements UpnpDiscoveryParticipant {
         properties.put(RokuBindingConstants.PORT, Integer.toString(port));
         properties.put(RokuBindingConstants.REFRESH_INTERVAL, "30");
         String label = "Roku Device";
-        if (state.getUserDeviceName() != null && !state.getUserDeviceName().equals("")) {
+        if (state.getUserDeviceName() != null && !"".equals(state.getUserDeviceName())) {
             label = state.getUserDeviceName();
         }
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
@@ -77,7 +77,7 @@ public class RokuDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (details == null) {
             return null;
         }
-        if (!details.getManufacturerDetails().getManufacturer().equals("Roku")) {
+        if (!"Roku".equals(details.getManufacturerDetails().getManufacturer())) {
             return null;
         }
         return new ThingUID(THING_TYPE_ROKU, details.getSerialNumber());

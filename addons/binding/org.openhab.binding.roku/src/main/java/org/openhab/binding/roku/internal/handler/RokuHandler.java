@@ -13,7 +13,7 @@ import static org.openhab.binding.roku.RokuBindingConstants.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,7 +47,7 @@ public class RokuHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String ipAddress = (String) this.getConfig().get(IP_ADDRESS);
         Number port = (Number) this.getConfig().get(PORT);
-        if (command.toFullString().equals("REFRESH")) {
+        if ("REFRESH".equals(command.toFullString())) {
             updateData();
         } else {
             RokuCommands rokuDevice = new RokuCommands(ipAddress, port);
@@ -94,7 +94,7 @@ public class RokuHandler extends BaseThingHandler {
          * Future Functionality
          * updateState(CHANNEL_APPBROWSER, state.getApplicationMenu());
          */
-        if (!state.getPowerMode().equals("PowerOn")) {
+        if (!"PowerOn".equals(state.getPowerMode())) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
@@ -110,12 +110,12 @@ public class RokuHandler extends BaseThingHandler {
         properties.put(PROPERTY_MODEL_NAME, state.getModelName());
         properties.put(Thing.PROPERTY_MODEL_ID, state.getModelNumber());
         properties.put(PROPERTY_MODEL_REGION, state.getModelRegion());
-        if (state.getNetworkType().equals("ethernet")) {
+        if ("ethernet".equals(state.getNetworkType())) {
             properties.put(PROPERTY_MAC, state.getEthernetMac());
         } else {
             properties.put(PROPERTY_MAC, state.getWifiMac());
         }
-        if (state.getUserDeviceName() != null && !state.getUserDeviceName().equals("")) {
+        if (StringUtils.isNotEmpty(state.getUserDeviceName())) {
             properties.put(PROPERTY_USER_DEVICE_NAME, state.getUserDeviceName());
         }
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, state.getSoftwareVersion());
