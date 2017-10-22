@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,16 +130,15 @@ public class LxServer {
      * Stop server thread, close communication with Miniserver.
      */
     public void stop() {
-        Thread thread = monitorThread;
-        if (thread != null) {
+        if (monitorThread != null) {
             logger.debug("[{}] Server stop", debugId);
-            synchronized (thread) {
+            synchronized (monitorThread) {
                 LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
                 try {
                     queue.put(event);
-                    thread.notify();
+                    monitorThread.notify();
                 } catch (InterruptedException e) {
-                    thread.interrupt();
+                    monitorThread.interrupt();
                 }
             }
         } else {
@@ -342,13 +340,12 @@ public class LxServer {
 
             // initial delay to initiate connection
             int waitTime = firstConDelay * 1000;
-            Thread thread = Thread.currentThread();
 
             while (running) {
                 // wait until next connect attempt, this time depends on what happened before
                 synchronized (monitorThread) {
                     try {
-                        thread.wait(waitTime);
+                        monitorThread.wait(waitTime);
                     } catch (InterruptedException e) {
                         logger.debug("[{}] Server thread sleep interrupted, terminating", debugId);
                         running = false;
@@ -482,35 +479,29 @@ public class LxServer {
         if (config.rooms != null) {
             logger.trace("[{}] creating rooms", debugId);
             for (LxJsonApp3.LxJsonRoom room : config.rooms.values()) {
-                String uuid = room.uuid;
-                String name = room.name;
-                if (uuid != null && name != null) {
-                    addOrUpdateRoom(new LxUuid(uuid), name);
+                if (room.uuid != null && room.name != null) {
+                    addOrUpdateRoom(new LxUuid(room.uuid), room.name);
                 } else {
-                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", uuid, name);
+                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", room.uuid,
+                            room.name);
                 }
             }
         }
         if (config.cats != null) {
             logger.trace("[{}] creating categories", debugId);
             for (LxJsonApp3.LxJsonCat cat : config.cats.values()) {
-                String uuid = cat.uuid;
-                String name = cat.name;
-                String type = cat.type;
-                if (uuid != null && name != null && type != null) {
-                    addOrUpdateCategory(new LxUuid(uuid), name, type);
+                if (cat.uuid != null && cat.name != null && cat.type != null) {
+                    addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type);
                 } else {
-                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}", uuid,
-                            name, type);
+                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}",
+                            cat.uuid, cat.name, cat.type);
                 }
             }
         }
         if (config.controls != null) {
             logger.trace("[{}] creating controls", debugId);
-            @Nullable
-            Map<String, LxJsonControl> jsonControls = config.controls;
-            if (jsonControls != null) {
-                for (LxJsonApp3.LxJsonControl ctrl : jsonControls.values()) {
+            if (config.controls != null) {
+                for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
                     // create a new control or update existing one
                     try {
                         addOrUpdateControl(ctrl);
@@ -538,11 +529,9 @@ public class LxServer {
      */
 
     private <T> void removeUnusedFromMap(Map<LxUuid, T> map) {
-        Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
+        for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
             Map.Entry<LxUuid, T> entry = it.next();
-            LxUuid key = entry.getKey();
-            if (!key.getUpdate()) {
+            if (!entry.getKey().getUpdate()) {
                 uuids.remove(entry.getKey());
                 it.remove();
                 T value = entry.getValue();
@@ -679,19 +668,16 @@ public class LxServer {
      */
     private void addOrUpdateControl(LxJsonApp3.LxJsonControl json) {
         LxCategory category = null;
-        String jsonCat = json.cat;
-        if (jsonCat != null) {
-            category = findCategory(new LxUuid(jsonCat));
+        if (json.cat != null) {
+            category = findCategory(new LxUuid(json.cat));
         }
         LxContainer room = null;
-        String jsonRoom = json.room;
-        if (jsonRoom != null) {
-            room = findRoom(new LxUuid(jsonRoom));
+        if (json.room != null) {
+            room = findRoom(new LxUuid(json.room));
         }
 
-        String jsonUuid = json.uuidAction;
-        if (jsonUuid != null) {
-            LxUuid id = new LxUuid(jsonUuid);
+        if (json.uuidAction != null) {
+            LxUuid id = new LxUuid(json.uuidAction);
             LxControl control = findControl(id);
             if (control != null) {
                 control.update(json, room, category);

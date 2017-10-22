@@ -139,13 +139,11 @@ public abstract class LxControl {
      * Call when control is no more needed - unlink it from containers
      */
     public void dispose() {
-        LxContainer localRoom = room;
-        if (localRoom != null) {
-            localRoom.removeControl(this);
+        if (room != null) {
+            room.removeControl(this);
         }
-        LxCategory localCat = category;
-        if (localCat != null) {
-            localCat.removeControl(this);
+        if (category != null) {
+            category.removeControl(this);
         }
         for (LxControl control : subControls.values()) {
             control.dispose();

@@ -338,9 +338,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     @Override
     public void dispose() {
         logger.debug("Disposing of server");
-        LxServer srv = server;
-        if (srv != null) {
-            srv.stop();
+        if (server != null) {
+            server.stop();
             server = null;
         }
     }

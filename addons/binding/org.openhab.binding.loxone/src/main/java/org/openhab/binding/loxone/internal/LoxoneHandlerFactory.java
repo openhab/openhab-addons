@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.internal;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,8 +22,6 @@ import org.openhab.binding.loxone.LoxoneBindingConstants;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.Sets;
-
 /**
  * Factory responsible for creating Loxone things (Miniservers) and their handlers ({@link LoxoneMiniserverHandler}
  *
@@ -32,9 +31,8 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
-    @SuppressWarnings("null")
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(LoxoneBindingConstants.THING_TYPE_MINISERVER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

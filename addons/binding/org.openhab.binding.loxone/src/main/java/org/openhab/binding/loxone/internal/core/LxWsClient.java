@@ -260,17 +260,16 @@ class LxWsClient {
 
         synchronized (state) {
             socket = new LxWebSocket();
-            WebSocketClient client = new WebSocketClient();
-            wsClient = client;
+            wsClient = new WebSocketClient();
 
             try {
-                client.start();
+                wsClient.start();
 
                 URI target = new URI("ws://" + host.getHostAddress() + ":" + port + SOCKET_URL);
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setSubProtocols("remotecontrol");
 
-                client.connect(socket, target, request);
+                wsClient.connect(socket, target, request);
                 setClientState(ClientState.CONNECTING);
                 startResponseTimeout();
 
@@ -295,11 +294,10 @@ class LxWsClient {
     private void disconnect(String reason) {
         logger.trace("[{}] disconnect() websocket : {}", debugId, reason);
         synchronized (this) {
-            WebSocketClient client = wsClient;
-            if (client != null) {
+            if (wsClient != null) {
                 try {
                     close(reason);
-                    client.stop();
+                    wsClient.stop();
                     wsClient = null;
                 } catch (Exception e) {
                     logger.debug("[{}] Failed to stop websocket client, message = {}", debugId, e.getMessage());
@@ -329,9 +327,8 @@ class LxWsClient {
         logger.trace("[{}] close() websocket", debugId);
         synchronized (state) {
             stopResponseTimeout();
-            LxWebSocket sock = socket;
-            if (sock != null) {
-                Session session = sock.session;
+            if (socket != null) {
+                Session session = socket.session;
                 if (session != null) {
                     if (state != ClientState.IDLE) {
                         logger.debug("[{}] Closing websocket session, reason : {}", debugId, reason);
@@ -411,9 +408,8 @@ class LxWsClient {
     void sendAction(LxUuid id, String operation) throws IOException {
         String command = CMD_ACTION + id.getOriginalString() + "/" + operation;
         logger.debug("[{}] Sending command {}", debugId, command);
-        LxWebSocket sock = socket;
-        if (sock != null) {
-            sock.sendString(command);
+        if (socket != null) {
+            socket.sendString(command);
         }
     }
 
@@ -457,9 +453,8 @@ class LxWsClient {
     private void stopResponseTimeout() {
         logger.trace("[{}] stopping response timeout in state {}", debugId, state);
         synchronized (state) {
-            ScheduledFuture<?> thread = timeout;
-            if (thread != null) {
-                thread.cancel(true);
+            if (timeout != null) {
+                timeout.cancel(true);
                 timeout = null;
             }
         }
@@ -586,7 +581,6 @@ class LxWsClient {
                     return;
                 }
 
-                LxWsBinaryHeader header = this.header;
                 try {
                     // websocket will receive header and data in turns as two separate binary messages
                     if (header == null) {
@@ -635,8 +629,6 @@ class LxWsClient {
                     }
                 } catch (IndexOutOfBoundsException e) {
                     logger.debug("[{}] malformed binary message received, discarded", debugId);
-                } finally {
-                    this.header = header;
                 }
             }
         }
@@ -663,14 +655,13 @@ class LxWsClient {
                                 @SuppressWarnings("null")
                                 LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
                                 LxJsonSubResponse subResp = resp.subResponse;
-                                if (subResp != null) {
-                                    String value = subResp.value;
+                                if (subResp != null && subResp.code != null) {
                                     if (subResp.code == 420) {
                                         notifyAndClose(LxOfflineReason.AUTHENTICATION_TIMEOUT,
                                                 "Timeout on authentication procedure, response : " + subResp.value);
-                                    } else if (subResp.control != null && subResp.control.equals(CMD_GET_KEY)
-                                            && subResp.code == 200 && value != null) {
-                                        String credentials = hashCredentials(value);
+                                    } else if (CMD_GET_KEY.equals(subResp.control) && subResp.code == 200
+                                            && subResp.value != null) {
+                                        String credentials = hashCredentials(subResp.value);
                                         if (credentials != null) {
                                             sendString(CMD_AUTHENTICATE + credentials);
                                             setClientState(ClientState.AUTHENTICATING);
@@ -691,7 +682,7 @@ class LxWsClient {
                                 LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
 
                                 LxJsonSubResponse subResp = resp.subResponse;
-                                if (subResp != null) {
+                                if (subResp != null && subResp.code != null) {
                                     int code = subResp.code;
                                     if (code == 401) {
                                         notifyAndClose(LxOfflineReason.UNAUTHORIZED,
@@ -743,9 +734,8 @@ class LxWsClient {
          */
         private void stopKeepAlive() {
             logger.trace("[{}] stopping keepalives in state {}", debugId, state);
-            ScheduledFuture<?> thread = keepAlive;
-            if (thread != null) {
-                thread.cancel(true);
+            if (keepAlive != null) {
+                keepAlive.cancel(true);
                 keepAlive = null;
             }
         }
@@ -760,7 +750,6 @@ class LxWsClient {
          */
         private void sendString(String string) throws IOException {
             synchronized (state) {
-                Session session = this.session;
                 if (session != null && state != ClientState.IDLE && state != ClientState.CONNECTING
                         && state != ClientState.CLOSING) {
                     logger.debug("[{}] sending command: {}", debugId, string);

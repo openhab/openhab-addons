@@ -64,16 +64,13 @@ public class LxControlRadio extends LxControl {
     LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
             @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
-        if (json.details.outputs != null) {
+        if (json.details != null && json.details.outputs != null) {
             outputs = new TreeMap<>(json.details.outputs);
         } else {
             outputs = new TreeMap<>();
         }
-        if (json.details != null) {
-            String allOff = json.details.allOff;
-            if (allOff != null) {
-                outputs.put("0", allOff);
-            }
+        if (json.details != null && json.details.allOff != null) {
+            outputs.put("0", json.details.allOff);
         }
     }
 
