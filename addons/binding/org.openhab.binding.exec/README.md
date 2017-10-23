@@ -116,7 +116,7 @@ sitemap SysTemp label="System Temperature RPI"
 }
 ```
 
-Now we need a ***Rule** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
+Now we need a **Rule** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
 ```
 sudo nano /etc/openhab2/rules/SysTemp.rules
 ```
