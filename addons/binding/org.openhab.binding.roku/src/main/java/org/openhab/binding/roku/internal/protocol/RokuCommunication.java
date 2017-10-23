@@ -78,6 +78,16 @@ public class RokuCommunication {
      * }
      */
 
+    private String getRokuStateFieldForXmlName(String name) {
+        String[] parts = name.split("-");
+        StringBuilder sb = new StringBuilder(name.length() - parts.length + 1);
+        sb.append(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            sb.append(parts[i].substring(0, 1).toUpperCase()).append(parts[i].substring(1));
+        }
+        return sb.toString();
+    }
+
     public void updateState(RokuState state) throws IOException {
         Document doc = getRequest(ROKU_DEVICE_INFO);
         if (doc == null) {
@@ -90,18 +100,19 @@ public class RokuCommunication {
         NodeList nList = doc.getElementsByTagName("device-info");
         for (int i = 0; i < nList.getLength(); i++) {
             Node nNode = nList.item(i);
-            logger.debug("Current Element: " + nNode.getNodeName());
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 for (int ii = 0; ii < methodStringArray.length; ii++) {
+                    String fieldName = getRokuStateFieldForXmlName(methodStringArray[ii]);
                     Element eElement = (Element) nNode;
                     Class<RokuState> aClass = RokuState.class;
                     Field field = null;
+
                     try {
-                        field = aClass.getField(methodStringArray[ii].replace("-", "_"));
+                        field = aClass.getField(fieldName);
                         field.set(state, getTagName(methodStringArray[ii], eElement));
                     } catch (NoSuchFieldException | SecurityException | IllegalArgumentException
                             | IllegalAccessException e) {
-                        logger.error("Method not found {}", methodStringArray[ii].replace("-", "_"));
+                        logger.debug("Could not set field '{}': {}", fieldName, e.getMessage());
                     }
                 }
             }
@@ -118,19 +129,19 @@ public class RokuCommunication {
             Element eElement = (Element) nNode;
             logger.debug("Current Element: " + nNode.getNodeName());
             try {
-                state.active_app = getTagName("screensaver", eElement);
+                state.activeApp = getTagName("screensaver", eElement);
                 String app_value = getSubTagName("screensaver", eElement);
                 try {
-                    state.active_app_img = HttpUtil
+                    state.activeAppImg = HttpUtil
                             .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
                 } catch (Exception e) {
                     logger.debug("Failed to get channel artwork for: {}", e);
                 }
             } catch (NullPointerException e) {
-                state.active_app = getTagName("app", eElement);
+                state.activeApp = getTagName("app", eElement);
                 String app_value = getSubTagName("app", eElement);
                 try {
-                    state.active_app_img = HttpUtil
+                    state.activeAppImg = HttpUtil
                             .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
                 } catch (Exception e1) {
                     logger.debug("Failed to get channel artwork for: {}", e1);

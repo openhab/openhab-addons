@@ -23,23 +23,23 @@ import org.openhab.binding.roku.internal.protocol.RokuCommunication;
  */
 public class RokuState {
     public StringType udn;
-    public StringType serial_number;
-    public StringType device_id;
-    public StringType vendor_name;
-    public StringType model_name;
-    public StringType model_number;
-    public StringType model_region;
-    public StringType wifi_mac;
-    public StringType ethernet_mac;
-    public StringType network_type;
-    public StringType user_device_name;
-    public StringType software_version;
-    public StringType software_build;
-    public StringType power_mode;
-    public StringType headphones_connected;
-    public StringType active_app;
-    public StringType application_menu;
-    public RawType active_app_img;
+    public StringType serialNumber;
+    public StringType deviceId;
+    public StringType vendorName;
+    public StringType modelName;
+    public StringType modelNumber;
+    public StringType modelRegion;
+    public StringType wifiMac;
+    public StringType ethernetMac;
+    public StringType networkType;
+    public StringType userDeviceName;
+    public StringType softwareVersion;
+    public StringType softwareBuild;
+    public StringType powerMode;
+    public StringType headphonesConnected;
+    public StringType activeApp;
+    public StringType applicationMenu;
+    public RawType activeAppImg;
     private final RokuCommunication communication;
 
     public RokuState(RokuCommunication communication) {
@@ -51,11 +51,11 @@ public class RokuState {
     }
 
     public StringType getApplicationMenu() {
-        return application_menu;
+        return applicationMenu;
     }
 
     public RawType getActiveImage() {
-        return active_app_img;
+        return activeAppImg;
     }
 
     public String getUdn() {
@@ -63,58 +63,58 @@ public class RokuState {
     }
 
     public String getSerialNumber() {
-        return serial_number.toFullString();
+        return serialNumber.toFullString();
     }
 
     public String getDeviceId() {
-        return device_id.toFullString();
+        return deviceId.toFullString();
     }
 
     public String getVendorName() {
-        return vendor_name.toFullString();
+        return vendorName.toFullString();
     }
 
     public String getModelName() {
-        return model_name.toFullString();
+        return modelName.toFullString();
     }
 
     public String getModelNumber() {
-        return model_number.toFullString();
+        return modelNumber.toFullString();
     }
 
     public String getModelRegion() {
-        return model_region.toFullString();
+        return modelRegion.toFullString();
     }
 
     public String getWifiMac() {
-        return wifi_mac.toFullString();
+        return wifiMac.toFullString();
     }
 
     public String getEthernetMac() {
-        return ethernet_mac.toFullString();
+        return ethernetMac.toFullString();
     }
 
     public String getNetworkType() {
-        return network_type.toFullString();
+        return networkType.toFullString();
     }
 
     public String getUserDeviceName() {
-        return user_device_name.toFullString();
+        return userDeviceName.toFullString();
     }
 
     public String getSoftwareVersion() {
-        return software_version + " build " + software_build;
+        return softwareVersion + " build " + softwareBuild;
     }
 
     public String getPowerMode() {
-        return power_mode.toFullString();
+        return powerMode.toFullString();
     }
 
     public String getHeadphonesConnected() {
-        return headphones_connected.toFullString();
+        return headphonesConnected.toFullString();
     }
 
     public StringType getActive() {
-        return active_app;
+        return activeApp;
     }
 }
