@@ -26,4 +26,5 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.roku,
  org.openhab.binding.roku.internal.handler
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.smarthome.ui
+Require-Bundle: org.eclipse.smarthome.ui,
+ org.eclipse.smarthome.io.net
