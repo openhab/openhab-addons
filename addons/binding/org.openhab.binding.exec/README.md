@@ -139,7 +139,7 @@ end
 The logging massages can be viewed in the Karaf console have a closer look [here](http://docs.openhab.org/administration/console.html) for more information.
 
 If you like to chart the values follow the [Tutorial](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182)
-link and it htis wokrs go ahead to the more advanced [InfluxDB+Grafana](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
+link and it works go ahead to the more advanced [InfluxDB+Grafana](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761) Tutorial.
 
 ## Sources
 [OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
