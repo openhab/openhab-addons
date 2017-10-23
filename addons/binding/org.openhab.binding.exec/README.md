@@ -10,7 +10,7 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 The binding does not require any specific configuration.
 
-Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root.
+Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Have a closer look at the example for how to test if the command you want to execute can run as user you like.
 
 ## Thing Configuration
 
@@ -38,14 +38,14 @@ The following parameters are automatically added:
 All Things support the following channels:
 
 | Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|----------------- |------------- |
+|-----------------|------------------------|--------------|
 | input | String       | Input parameter to provide to the command |
 | output | String       | Output of the last execution of the command |
 | exit | Number       | The exit value of the last execution of the command |
 | run | Switch       | Send ON to execute the command and the current state tells whether it is running or not |
 | lastexecution | DateTime       | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format |
 
-## Full Example
+## Short Example
 
 **demo.things**
 
@@ -62,3 +62,82 @@ Switch APCRunning { channel="exec:command:apc:run"}
 Number APCExitValue {channel="exec:command:apc:exit"}
 DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 ```
+
+## Full Example
+
+Following a example of how to read out the temperature of the RPI with all files needed to set up and debug or log the executed command.
+The folder structure is for an installation with apt-get, for a different installation setup look [here](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
+
+First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. Both work. If you get an error or an massages whihc indicates the command does not execute properly as openhab user then try to google the needed permissions and set them for the user openhab. More details [here](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) and [here](https://community.openhab.org/t/openhab-sudo-exec-binding/34988).
+
+```
+cat /sys/class/thermal/thermal_zone0/temp
+48312
+sudo -u openhab cat /sys/class/thermal/thermal_zone0/temp
+47774
+```
+
+As the command got xecuted as openhab user we can proceed to set up out OpenHAB.
+
+First we need a Thing file which configure the command line call to execute. 
+```
+sudo nano /etc/openhab2/things/exec.things
+```
+```
+Thing exec:command:cpuTemp [
+        command="cat /sys/class/thermal/thermal_zone0/temp",
+        interval=10,
+        autorun=false]
+```
+
+Then we need a Items file to get the data which we get back from the execution stored.
+
+```
+sudo nano /etc/openhab2/items/SysTemp.items
+```
+```
+Number System_Temperature_CPU "Temperature CPU [%.1f °C]"
+
+// Output of command line execution 
+String cpuTemp_out { channel="exec:command:cpuTemp:output" }
+```
+
+Then we need a sitemap file to configure the site which will be displayed. **It has to have the same name as the sitempa inside the file.**
+```
+sudo nano /etc/openhab2/sitemaps/SysTemp.sitemap
+```
+```
+// Name of file and name of sitemap has to be the same
+sitemap SysTemp label="System Temperature RPI"
+{
+        Frame {
+            Text item=System_Temperature_CPU
+        }
+}
+```
+
+Now we need a rule file which executes the transformation of the returned string to a number and also log the execution.
+```
+sudo nano /etc/openhab2/rules/SysTemp.rules
+```
+```
+rule "System CPU Temperature"
+  when
+     Item cpuTemp_out received update
+  then
+     
+      logInfo("CPU Temp", cpuTemp_out.state.toString.trim )
+
+      System_Temperature_CPU.postUpdate( 
+            (Integer::parseInt(cpuTemp_out.state.toString) as Number ) 
+            /1000 
+      )
+end
+
+```
+
+
+The logging massages can be viewed in the Karaf console have a closer look [here](http://docs.openhab.org/administration/console.html) for more information.
+
+
+
