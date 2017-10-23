@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -27,6 +28,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link RokuCommunication} class is what communicates directly with a Roku device (sending commands to it,
@@ -78,60 +80,64 @@ public class RokuCommunication {
 
     public void updateState(RokuState state) throws IOException {
         Document doc = getRequest(ROKU_DEVICE_INFO);
+        if (doc == null) {
+            return;
+        }
         String[] methodStringArray = { "udn", "serial-number", "device-id", "vendor-name", "model-name", "model-number",
                 "model-region", "wifi-mac", "ethernet-mac", "network-type", "user-device-name", "software-version",
                 "software-build", "power-mode", "headphones-connected" };
         doc.getDocumentElement().normalize();
-        if (doc != null) {
-            NodeList nList = doc.getElementsByTagName("device-info");
-            for (int i = 0; i < nList.getLength(); i++) {
-                Node nNode = nList.item(i);
-                logger.debug("Current Element: " + nNode.getNodeName());
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    for (int ii = 0; ii < methodStringArray.length; ii++) {
-                        Element eElement = (Element) nNode;
-                        Class<RokuState> aClass = RokuState.class;
-                        Field field = null;
-                        try {
-                            field = aClass.getField(methodStringArray[ii].replace("-", "_"));
-                            field.set(state, getTagName(methodStringArray[ii], eElement));
-                        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException
-                                | IllegalAccessException e) {
-                            logger.error("Method not found {}", methodStringArray[ii].replace("-", "_"));
-                        }
+        NodeList nList = doc.getElementsByTagName("device-info");
+        for (int i = 0; i < nList.getLength(); i++) {
+            Node nNode = nList.item(i);
+            logger.debug("Current Element: " + nNode.getNodeName());
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                for (int ii = 0; ii < methodStringArray.length; ii++) {
+                    Element eElement = (Element) nNode;
+                    Class<RokuState> aClass = RokuState.class;
+                    Field field = null;
+                    try {
+                        field = aClass.getField(methodStringArray[ii].replace("-", "_"));
+                        field.set(state, getTagName(methodStringArray[ii], eElement));
+                    } catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+                            | IllegalAccessException e) {
+                        logger.error("Method not found {}", methodStringArray[ii].replace("-", "_"));
                     }
                 }
             }
         }
+
         doc = getRequest(ROKU_ACTIVE_APP);
+        if (doc == null) {
+            return;
+        }
         doc.getDocumentElement().normalize();
-        if (doc != null) {
-            NodeList nList = doc.getElementsByTagName("active-app");
-            for (int i = 0; i < nList.getLength(); i++) {
-                Node nNode = nList.item(i);
-                Element eElement = (Element) nNode;
-                logger.debug("Current Element: " + nNode.getNodeName());
+        nList = doc.getElementsByTagName("active-app");
+        for (int i = 0; i < nList.getLength(); i++) {
+            Node nNode = nList.item(i);
+            Element eElement = (Element) nNode;
+            logger.debug("Current Element: " + nNode.getNodeName());
+            try {
+                state.active_app = getTagName("screensaver", eElement);
+                String app_value = getSubTagName("screensaver", eElement);
                 try {
-                    state.active_app = getTagName("screensaver", eElement);
-                    String app_value = getSubTagName("screensaver", eElement);
-                    try {
-                        state.active_app_img = HttpUtil
-                                .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
-                    } catch (Exception e) {
-                        logger.debug("Failed to get channel artwork for: {}", e);
-                    }
-                } catch (NullPointerException e) {
-                    state.active_app = getTagName("app", eElement);
-                    String app_value = getSubTagName("app", eElement);
-                    try {
-                        state.active_app_img = HttpUtil
-                                .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
-                    } catch (Exception e1) {
-                        logger.debug("Failed to get channel artwork for: {}", e1);
-                    }
+                    state.active_app_img = HttpUtil
+                            .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
+                } catch (Exception e) {
+                    logger.debug("Failed to get channel artwork for: {}", e);
+                }
+            } catch (NullPointerException e) {
+                state.active_app = getTagName("app", eElement);
+                String app_value = getSubTagName("app", eElement);
+                try {
+                    state.active_app_img = HttpUtil
+                            .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
+                } catch (Exception e1) {
+                    logger.debug("Failed to get channel artwork for: {}", e1);
                 }
             }
         }
+
         /**
          * Future Functionality
          * doc = getRequest(ROKU_QUERY_APPS);
@@ -155,15 +161,20 @@ public class RokuCommunication {
 
     private Document getRequest(String context) throws IOException {
         String response = HttpUtil.executeUrl("GET", "http://" + host + ":" + port + context, 5000);
+        if (response == null) {
+            logger.debug("Roku at {}:{} failed to respond", host, port);
+        }
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(response)));
             if (doc.getFirstChild().hasChildNodes() == false) {
-                throw new IOException("Could not handle response");
+                logger.debug("Invalid response returned from {}:{}:\n{}", host, port, response);
+                return null;
             }
             return doc;
-        } catch (Exception e) {
-            throw new IOException("Could not handle response", e);
+        } catch (ParserConfigurationException | SAXException e) {
+            logger.debug("Unable to parse response from {}:{}:\n{}", host, port, response);
+            return null;
         }
     }
 }
