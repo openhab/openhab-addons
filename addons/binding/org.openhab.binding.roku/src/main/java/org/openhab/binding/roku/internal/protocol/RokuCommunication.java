@@ -10,22 +10,15 @@ package org.openhab.binding.roku.internal.protocol;
 
 import static org.openhab.binding.roku.RokuBindingConstants.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.io.IOUtils;
-import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.roku.internal.RokuState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +115,8 @@ public class RokuCommunication {
                     state.active_app = getTagName("screensaver", eElement);
                     String app_value = getSubTagName("screensaver", eElement);
                     try {
-                        state.active_app_img = new RawType(getData("/query/icon/" + app_value));
+                        state.active_app_img = HttpUtil
+                                .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
                     } catch (Exception e) {
                         logger.debug("Failed to get channel artwork for: {}", e);
                     }
@@ -130,7 +124,8 @@ public class RokuCommunication {
                     state.active_app = getTagName("app", eElement);
                     String app_value = getSubTagName("app", eElement);
                     try {
-                        state.active_app_img = new RawType(getData("/query/icon/" + app_value));
+                        state.active_app_img = HttpUtil
+                                .downloadImage("http://" + host + ":" + port + "/query/icon/" + app_value);
                     } catch (Exception e1) {
                         logger.debug("Failed to get channel artwork for: {}", e1);
                     }
@@ -159,8 +154,7 @@ public class RokuCommunication {
     }
 
     private Document getRequest(String context) throws IOException {
-        String response = processRequest(context);
-        logger.debug("HTTP Response: {}", response);
+        String response = HttpUtil.executeUrl("GET", "http://" + host + ":" + port + context, 5000);
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(response)));
@@ -171,39 +165,5 @@ public class RokuCommunication {
         } catch (Exception e) {
             throw new IOException("Could not handle response", e);
         }
-    }
-
-    private String processRequest(String context) throws IOException {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL("http://" + host + ":" + port + context);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            String line;
-            StringBuffer response = new StringBuffer();
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            rd.close();
-            return response.toString();
-        } catch (Exception e) {
-            throw new IOException("Could not handle http get", e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    public byte[] getData(String context) throws Exception {
-        URL url = new URL("http://" + host + ":" + port + context);
-        URLConnection connection = url.openConnection();
-        return IOUtils.toByteArray(connection.getInputStream());
     }
 }
