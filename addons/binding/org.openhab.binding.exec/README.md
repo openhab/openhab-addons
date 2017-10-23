@@ -143,4 +143,5 @@ link and it htis wokrs go ahead to the more advanced [InfluxDB+Grafana](https://
 
 ## Sources
 [OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
-[OpenHAB Community Thread] (https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
+
+[OpenHAB Community Thread](https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
