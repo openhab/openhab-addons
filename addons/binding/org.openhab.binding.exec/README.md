@@ -65,10 +65,10 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following a example of how to read out the temperature of the RPI with all files needed to set up and debug or log the executed command.
+Following is a example shown how to read out the temperature of the RPI with all files needed to set up and debug or log the executed command.
 The folder structure is for an installation with apt-get, for a different installation setup look [here](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
 
-First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. Both work. If you get an error or an massages whihc indicates the command does not execute properly as openhab user then try to google the needed permissions and set them for the user openhab. More details [here](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) and [here](https://community.openhab.org/t/openhab-sudo-exec-binding/34988).
+First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. If you get an error or an massages which indicates the command does not execute properly as user openhab then try to google the needed permissions and set them for the user openhab. More details [here](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) and [here](https://community.openhab.org/t/openhab-sudo-exec-binding/34988).
 
 ```
 cat /sys/class/thermal/thermal_zone0/temp
@@ -77,9 +77,9 @@ sudo -u openhab cat /sys/class/thermal/thermal_zone0/temp
 47774
 ```
 
-As the command got xecuted as openhab user we can proceed to set up out OpenHAB.
+As the command got executed as user openhab we can proceed to set up our OpenHAB.
 
-First we need a Thing file which configure the command line call to execute. 
+First we need a **Thing** file which configures the command line call to execute.  
 ```
 sudo nano /etc/openhab2/things/exec.things
 ```
@@ -90,7 +90,7 @@ Thing exec:command:cpuTemp [
         autorun=false]
 ```
 
-Then we need a Items file to get the data which we get back from the execution stored.
+Then we need an **Items** file to store hte string we get back from the execution and to stored the transformed and divided temperature as number.
 
 ```
 sudo nano /etc/openhab2/items/SysTemp.items
@@ -102,7 +102,7 @@ Number System_Temperature_CPU "Temperature CPU [%.1f °C]"
 String cpuTemp_out { channel="exec:command:cpuTemp:output" }
 ```
 
-Then we need a sitemap file to configure the site which will be displayed. **It has to have the same name as the sitempa inside the file.**
+Then we need a **Sitemap** file to configure the site which will be displayed. **It has to have the same name as the sitemap inside the file.**
 ```
 sudo nano /etc/openhab2/sitemaps/SysTemp.sitemap
 ```
@@ -116,7 +116,7 @@ sitemap SysTemp label="System Temperature RPI"
 }
 ```
 
-Now we need a rule file which executes the transformation of the returned string to a number and also log the execution.
+Now we need a ***Rule** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
 ```
 sudo nano /etc/openhab2/rules/SysTemp.rules
 ```
@@ -125,19 +125,22 @@ rule "System CPU Temperature"
   when
      Item cpuTemp_out received update
   then
-     
-      logInfo("CPU Temp", cpuTemp_out.state.toString.trim )
-
+  
       System_Temperature_CPU.postUpdate( 
             (Integer::parseInt(cpuTemp_out.state.toString) as Number ) 
             /1000 
       )
+      
+      logInfo("CPU Temp", cpuTemp_out.state.toString.trim )
 end
 
 ```
 
-
 The logging massages can be viewed in the Karaf console have a closer look [here](http://docs.openhab.org/administration/console.html) for more information.
 
+If you like to chart the values follow the [Tutorial](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182)
+link and it htis wokrs go ahead to the more advanced [InfluxDB+Grafana](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
 
-
+## Sources
+[OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
+[OpenHAB Community Thread](https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
