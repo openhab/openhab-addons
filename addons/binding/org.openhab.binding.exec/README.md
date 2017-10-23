@@ -37,13 +37,13 @@ The following parameters are automatically added:
 
 All Things support the following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|
-| input | String       | Input parameter to provide to the command |
-| output | String       | Output of the last execution of the command |
-| exit | Number       | The exit value of the last execution of the command |
-| run | Switch       | Send ON to execute the command and the current state tells whether it is running or not |
-| lastexecution | DateTime       | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format |
+| Channel Type ID | Item Type | Description                                                                             |
+|-----------------|-----------|-----------------------------------------------------------------------------------------|
+| input           | String    | Input parameter to provide to the command                                               |
+| output          | String    | Output of the last execution of the command                                             |
+| exit            | Number    | The exit value of the last execution of the command                                     |
+| run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
+| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
 ## Short Example
 
@@ -65,10 +65,10 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is a example shown how to read out the temperature of the RPI with all files needed to set up and debug or log the executed command.
-The folder structure is for an installation with apt-get, for a different installation setup look [here](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
+Following is a example shown how to read out the temperature of the RPI with all files needed to set up and debug or log the executet command.
+The folder structure is for an installation with apt-get, for a different installation setup look [in the manual](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
 
-First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. If you get an error or an massages which indicates the command does not execute properly as user openhab then try to google the needed permissions and set them for the user openhab. More details [here](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) and [here](https://community.openhab.org/t/openhab-sudo-exec-binding/34988).
+First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. If the execution as openhab displays the same as the execution with your user, then everything is fine. If you get an error or a massage indicating the command does not execute properly you have to search for the needed permission and set it for the user openhab. More details can be found in community threads. [Following thread](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) explains all elements of this setup in detail and maybe you need to get openhab [execute commands with sudo.](https://community.openhab.org/t/openhab-sudo-exec-binding/34988). But mostly you don't.
 
 ```
 cat /sys/class/thermal/thermal_zone0/temp
@@ -77,9 +77,9 @@ sudo -u openhab cat /sys/class/thermal/thermal_zone0/temp
 47774
 ```
 
-As the command got executed as user openhab we can proceed to set up our OpenHAB.
+As the command got executed as user openhab we can proceed to set up our openHAB.
 
-First we need a **Thing** file which configures the command line call to execute.  
+First we need a **Things** file which configures the command line call to execute.  
 ```
 sudo nano /etc/openhab2/things/exec.things
 ```
@@ -90,7 +90,7 @@ Thing exec:command:cpuTemp [
         autorun=false]
 ```
 
-Then we need an **Items** file to store hte string we get back from the execution and to stored the transformed and divided temperature as number.
+Then we need an **Items** file to store the string we get back from the execution and to store the transformed and divided temperature as number.
 
 ```
 sudo nano /etc/openhab2/items/SysTemp.items
@@ -116,7 +116,7 @@ sitemap SysTemp label="System Temperature RPI"
 }
 ```
 
-Now we need a **Rule** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
+Now we need a **Rules** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
 ```
 sudo nano /etc/openhab2/rules/SysTemp.rules
 ```
@@ -136,10 +136,9 @@ end
 
 ```
 
-The logging massages can be viewed in the Karaf console have a closer look [here](http://docs.openhab.org/administration/console.html) for more information.
+The logging massages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information.
 
-If you like to chart the values follow the [Tutorial](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182)
-link and it works go ahead to the more advanced [InfluxDB+Grafana](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761) Tutorial.
+This shows a basic setup, if you are new to openHAB and you try to find out how things work, you probably want to chart this value, so have a look in the [forum](https://community.openhab.org/) and search for [charts and persistence Tutorial](https://community.openhab.org/search?q=charts%20and%20persistence%20Tutorial).
 
 ## Sources
 [OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
