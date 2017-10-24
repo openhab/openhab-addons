@@ -25,7 +25,6 @@
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
-    <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
@@ -94,5 +93,6 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+    <module>org.openhab.binding.wso2iots</module>
   </modules>
 </project>
