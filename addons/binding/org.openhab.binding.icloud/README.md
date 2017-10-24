@@ -83,7 +83,7 @@ The following channels are available (if supported by the device):
 | FindMyPhone      | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
 | Location         | Location | Location of the device.                                                  |
 | LocationAccuracy | Number   | Accuracy of the last position report.                                    |
-| DistanceFromHome | Number   | Device distance from home in meters.                                     |
+| DistanceFromHome | Number   | Device distance from the location set in openHAB regional settings.                                     |
 | LastUpdate       | DateTime | Timestamp of the last location update.                                   |
 | AddressStreet    | String   | Street                                                                   |
 | AddressCity      | String   | City                                                                     |
