@@ -40,13 +40,13 @@ The following parameters are automatically added:
 
 All Things support the following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|
-| input | String       | Input parameter to provide to the command |
-| output | String       | Output of the last execution of the command |
-| exit | Number       | The exit value of the last execution of the command |
-| run | Switch       | Send ON to execute the command and the current state tells whether it is running or not |
-| lastexecution | DateTime       | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format |
+| Channel Type ID | Item Type | Description                                                                             |
+|-----------------|-----------|-----------------------------------------------------------------------------------------|
+| input           | String    | Input parameter to provide to the command                                               |
+| output          | String    | Output of the last execution of the command                                             |
+| exit            | Number    | The exit value of the last execution of the command                                     |
+| run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
+| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
 ## Short Example
 
@@ -68,13 +68,12 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is a example shown how to read out the temperature of the RPI with all files needed to set up and debug or log the executed command.
-The folder structure is for an installation with apt-get, for a different installation setup look [here](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
+Following is a example which shows how to read out the temperature of the single-board computer `Raspberry Pi` with all files needed to set up and debug or log the executed command.
+The folder structure is dependent or your installation setup look in the user manual or search for them in your drive.
 
-First we need to check if the user openhab is able to execute the command we want to execute.
-The first command is executet as the user we are logged in the second as user openhab.
-If you get an error or an massages which indicates the command does not execute properly as user openhab then try to google the needed permissions and set them for the user openhab.
-More details [here](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) and [here](https://community.openhab.org/t/openhab-sudo-exec-binding/34988).
+First we need to check if the user `openhab` is able to execute the command we want to execute.
+The first command is executet as the user we are logged in the second as user `openhab`.
+If you get an error or an massages which indicates the command does not execute properly as user openhab then try to search for the needed permissions and set them for the user openhab.
 
 ```shell
 cat /sys/class/thermal/thermal_zone0/temp
@@ -84,14 +83,9 @@ sudo -u openhab cat /sys/class/thermal/thermal_zone0/temp
 47774
 ```
 
-As the command got executed as user `openhab` we can proceed to set up our OpenHAB.
+As the command got executed as user `openhab` we can proceed to set up our openHAB.
 
-First we need a **Thing** file which configures the command line call to execute.
-
-```shell
-sudo nano /etc/openhab2/things/exec.things
-```
-
+First we need to create or modify a **.things** file which configures the command line call to execute.
 ```java
 Thing exec:command:cpuTemp [
         command="cat /sys/class/thermal/thermal_zone0/temp",
@@ -99,12 +93,7 @@ Thing exec:command:cpuTemp [
         autorun=false]
 ```
 
-Then we need an **Items** file to store hte string we get back from the execution and to stored the transformed and divided temperature as number.
-
-```shell
-sudo nano /etc/openhab2/items/SysTemp.items
-```
-
+Then we need an **.items** file, containing two items, one to store the string we get back from the execution and one to stored the transformed and divided temperature as a number.
 ```java
 Number System_Temperature_CPU "Temperature CPU [%.1f °C]"
 
@@ -112,12 +101,8 @@ Number System_Temperature_CPU "Temperature CPU [%.1f °C]"
 String cpuTemp_out { channel="exec:command:cpuTemp:output" }
 ```
 
-Then we need a **Sitemap** file to configure the site which will be displayed.
+Then we need a **.sitemap** file to configure the site which will be displayed.
 **It has to have the same name as the sitemap inside the file.**
-
-```shell
-sudo nano /etc/openhab2/sitemaps/SysTemp.sitemap
-```
 
 ```java
 // Name of file and name of sitemap has to be the same
@@ -129,11 +114,7 @@ sitemap SysTemp label="System Temperature RPI"
 }
 ```
 
-Now we need a **Rule** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
-
-```shell
-sudo nano /etc/openhab2/rules/SysTemp.rules
-```
+Now we need a **.rules** file which is triggered when the returned string of our execution changes and then transforms the string to a number, divide it and also to log the output of the execution.
 
 ```java
 rule "System CPU Temperature"
@@ -149,11 +130,7 @@ rule "System CPU Temperature"
       logInfo("CPU Temp", cpuTemp_out.state.toString.trim )
 end
 ```
-
-The logging massages can be viewed in the Karaf console have a closer look [here](http://docs.openhab.org/administration/console.html) for more information.
-
-If you like to chart the values follow the [Tutorial](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182)
-link and it works go ahead to the more advanced [InfluxDB+Grafana](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761) Tutorial.
+To view the logged massages please have a look how to access the logs in the user manual.
 
 ## Sources
 
