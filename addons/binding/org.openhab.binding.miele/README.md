@@ -16,6 +16,7 @@ Oven
 Microwave/Oven combination
 Tumbledryer
 Washingmachine
+Coffeemaker
 
 ## Discovery
 
@@ -42,6 +43,7 @@ Thing hob hob [uid="00124b000424bed7#2"]
 Thing dishwasher dishwasher [uid="001d63fffe020683#210"]
 Thing tumbledryer dryer [uid="001d63fffe0200ba#210"]
 Thing washingmachine washingmachine [uid="001d63fffe020505#210"]
+Thing coffeesystem coffeesystem [uid="001d63fffe020505#190"]
 }
 ```
 
