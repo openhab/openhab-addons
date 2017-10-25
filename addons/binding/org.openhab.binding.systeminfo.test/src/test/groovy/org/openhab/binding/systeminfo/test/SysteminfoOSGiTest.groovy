@@ -11,6 +11,7 @@ package org.openhab.binding.systeminfo.test
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 import static org.junit.matchers.JUnitMatchers.*
+import static org.mockito.Mockito.*
 
 import org.eclipse.smarthome.config.core.Configuration
 import org.eclipse.smarthome.config.discovery.DiscoveryResult
@@ -21,6 +22,8 @@ import org.eclipse.smarthome.core.items.GenericItem
 import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.library.items.NumberItem
 import org.eclipse.smarthome.core.library.items.StringItem
+import org.eclipse.smarthome.core.library.types.DecimalType
+import org.eclipse.smarthome.core.library.types.StringType
 import org.eclipse.smarthome.core.thing.Channel
 import org.eclipse.smarthome.core.thing.ChannelUID
 import org.eclipse.smarthome.core.thing.ManagedThingProvider
@@ -47,16 +50,17 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
-import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
-import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory
+import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface
 /**
  * OSGi tests for the {@link SysteminfoHandler}
  *
  * @author Svilen Valkanov
- *
+ * @author Lyubomir Papazov - Created a mock systeminfo object. This way, access to the user's OS will not be required,
+ *         but mock data will be used instead, avoiding potential errors from the OS queries.
  */
 
 class SysteminfoOSGiTest extends OSGiTest{
@@ -66,13 +70,16 @@ class SysteminfoOSGiTest extends OSGiTest{
     def DEFAULT_CHANNEL_PID = -1
     def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
     def DEFAULT_THING_INITIALIZE_MAX_TIME = 10000
+    def DEFAULT_DEVICE_INDEX = 0
 
     Thing systemInfoThing
     GenericItem testItem
 
+    SysteminfoInterface mockedSystemInfo;
     ManagedThingProvider managedThingProvider;
     ThingRegistry thingRegistry;
     ItemRegistry itemRegistry;
+    SysteminfoHandlerFactory systeminfoHandlerFactory;
 
     /**
      * Refresh time in seconds for tasks with priority High.
@@ -86,8 +93,25 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Before
     public void setUp ()  {
+
         VolatileStorageService volatileStorageService = new VolatileStorageService()
         registerService(volatileStorageService)
+
+        //Preparing the mock with OS properties, that are used in the initialize method of SysteminfoHandler
+        mockedSystemInfo = mock(SysteminfoInterface.class)
+        when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(new DecimalType(2));
+        when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(new DecimalType(2));
+        when(mockedSystemInfo.getOsFamily()).thenReturn(new StringType("Mock OS"));
+        when(mockedSystemInfo.getOsManufacturer()).thenReturn(new StringType("Mock OS Manufacturer"));
+        when(mockedSystemInfo.getOsVersion()).thenReturn(new StringType("Mock Os Version"));
+
+        systeminfoHandlerFactory = getService(ThingHandlerFactory, SysteminfoHandlerFactory)
+        SysteminfoInterface oshiSystemInfo = getService(SysteminfoInterface.class)
+
+        //Unbind oshiSystemInfo service and bind the mock service to make the systeminfobinding tests independent of the external OSHI library
+        systeminfoHandlerFactory.unbindSystemInfo(oshiSystemInfo)
+        systeminfoHandlerFactory.bindSystemInfo(mockedSystemInfo)
+
         managedThingProvider = getService(ThingProvider, ManagedThingProvider)
         assertThat managedThingProvider, is(notNullValue())
 
@@ -162,7 +186,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         intializeItem(channelUID,DEFAULT_TEST_ITEM_NAME,acceptedItemType)
     }
 
-    private void assertItemState(String acceptedItemType,String itemName, String priority) {
+    private void assertItemState(String acceptedItemType,String itemName,String priority,State expectedState) {
         waitForAssert({
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
@@ -186,12 +210,12 @@ class SysteminfoOSGiTest extends OSGiTest{
 
         waitForAssert({
             State itemState = item.getState()
-            assertThat itemState, not (equalTo(UnDefType.NULL))
+            assertThat itemState, is(equalTo(expectedState))
         },waitTime)
 
     }
 
-    private void intializeItem (ChannelUID channelUID,String itemName, String acceptedItemType) {
+    private void intializeItem (ChannelUID channelUID,String itemName,String acceptedItemType) {
         if(acceptedItemType.equals("Number")) {
             testItem = new NumberItem(itemName)
         } else if(acceptedItemType.equals("String")){
@@ -230,16 +254,32 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
+    public void 'assert thing status is uninitialized when there is no systeminfo service provided' () {
+        //Unbind the mock service to verify the systeminfo thing will not be initialized when no systeminfo service is provided
+        systeminfoHandlerFactory.unbindSystemInfo(mockedSystemInfo)
+
+        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingUID thingUID = new ThingUID(thingTypeUID,DEFAULT_TEST_THING_NAME);
+
+        systemInfoThing = ThingBuilder.create(thingTypeUID,thingUID).build();
+        managedThingProvider.add(systemInfoThing)
+
+        waitForAssert({
+            assertThat "The thing status is uninitialized when systeminfo service is missing", systemInfoThing.getStatus(),
+                    equalTo(ThingStatus.UNINITIALIZED)
+        }, 2000, 50)
+    }
+
+    @Test
     public void 'assert medium priority channel is updated' () {
         String channnelID = DEFAULT_TEST_CHANNEL_ID;
         String acceptedItemType = "Number";
         String priority = "Medium"
 
         initializeThingWithChannelAndPriority(channnelID, acceptedItemType,priority)
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,priority);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,priority,UnDefType.UNDEF);
     }
 
-    @Category(PlatformDependentTestsInterface.class)
     @Test
     public void 'assert state of second device is updated' () {
         //This test assumes that at least 2 network interfaces are present on the test platform
@@ -248,7 +288,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,UnDefType.UNDEF);
     }
 
     @Test
@@ -256,8 +296,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuLoadValue = new DecimalType(10.5)
+        when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuLoadValue);
     }
 
     @Test
@@ -265,8 +308,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_1
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuLoad1Value = new DecimalType(1.1)
+        when(mockedSystemInfo.getCpuLoad1()).thenReturn(mockedCpuLoad1Value);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuLoad1Value);
     }
 
     @Test
@@ -274,8 +320,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_5
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuLoad5Value = new DecimalType(5.5)
+        when(mockedSystemInfo.getCpuLoad5()).thenReturn(mockedCpuLoad5Value);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuLoad5Value);
     }
 
     @Test
@@ -283,8 +332,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_15;
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuLoad15Value = new DecimalType(15.15)
+        when(mockedSystemInfo.getCpuLoad15()).thenReturn(mockedCpuLoad15Value);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuLoad15Value);
     }
 
     @Test
@@ -292,8 +344,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_THREADS;
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuThreadsValue = new DecimalType(16)
+        when(mockedSystemInfo.getCpuThreads()).thenReturn(mockedCpuThreadsValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuThreadsValue);
     }
 
     @Test
@@ -301,8 +356,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_UPTIME;
         String acceptedItemType = "Number";
 
+        DecimalType mockedCpuUptimeValue = new DecimalType(100)
+        when(mockedSystemInfo.getCpuUptime()).thenReturn(mockedCpuUptimeValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuUptimeValue);
     }
 
     @Test
@@ -310,8 +368,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_DESCRIPTION;
         String acceptedItemType = "String";
 
+        StringType mockedCpuDescriptionValue = new StringType("Mocked Cpu Descr")
+        when(mockedSystemInfo.getCpuDescription()).thenReturn(mockedCpuDescriptionValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuDescriptionValue);
     }
 
     @Test
@@ -319,8 +380,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_NAME;
         String acceptedItemType = "String";
 
+        StringType mockedCpuNameValue = new StringType("Mocked Cpu Name")
+        when(mockedSystemInfo.getCpuName()).thenReturn(mockedCpuNameValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedCpuNameValue);
     }
 
     @Test
@@ -328,8 +392,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_AVAILABLE
         String acceptedItemType = "Number";
 
+        DecimalType mockedMemoryAvailableValue = new DecimalType(1000)
+        when(mockedSystemInfo.getMemoryAvailable()).thenReturn(mockedMemoryAvailableValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedMemoryAvailableValue);
     }
 
     @Test
@@ -337,8 +404,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_USED
         String acceptedItemType = "Number";
 
+        DecimalType mockedMemoryUsedValue = new DecimalType(24)
+        when(mockedSystemInfo.getMemoryUsed()).thenReturn(mockedMemoryUsedValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedMemoryUsedValue);
     }
 
     @Test
@@ -346,8 +416,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_TOTAL
         String acceptedItemType = "Number";
 
+        DecimalType mockedMemoryTotalValue = new DecimalType(1024)
+        when(mockedSystemInfo.getMemoryTotal()).thenReturn(mockedMemoryTotalValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedMemoryTotalValue);
     }
 
     @Test
@@ -355,148 +428,179 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
+        DecimalType mockedMemoryAvailablePercentValue = new DecimalType(97)
+        when(mockedSystemInfo.getMemoryAvailablePercent()).thenReturn(mockedMemoryAvailablePercentValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedMemoryAvailablePercentValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE
         String acceptedItemType = "Number";
 
+        DecimalType mockedSwapAvailableValue = new DecimalType(482)
+        when(mockedSystemInfo.getSwapAvailable()).thenReturn(mockedSwapAvailableValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSwapAvailableValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_USED
         String acceptedItemType = "Number";
 
+        DecimalType mockedSwapUsedValue = new DecimalType(30)
+        when(mockedSystemInfo.getSwapUsed()).thenReturn(mockedSwapUsedValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSwapUsedValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_TOTAL
         String acceptedItemType = "Number";
 
+        DecimalType mockedSwapTotalValue = new DecimalType(512)
+        when(mockedSystemInfo.getSwapTotal()).thenReturn(mockedSwapTotalValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSwapTotalValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
+        DecimalType mockedSwapAvailablePercentValue = new DecimalType(94)
+        when(mockedSystemInfo.getSwapAvailablePercent()).thenReturn(mockedSwapAvailablePercentValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSwapAvailablePercentValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_NAME
         String acceptedItemType = "String";
 
+        StringType mockedStorageName = new StringType("Mocked Storage Name")
+        when(mockedSystemInfo.getStorageName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageName);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageName);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#type is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE
         String acceptedItemType = "String";
 
+        StringType mockedStorageType = new StringType("Mocked Storage Type")
+        when(mockedSystemInfo.getStorageType(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageType);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageType);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#description is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_DESCRIPTION
         String acceptedItemType = "String";
 
+        StringType mockedStorageDescription = new StringType("Mocked Storage Desscription")
+        when(mockedSystemInfo.getStorageDescription(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageDescription);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageDescription);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE
         String acceptedItemType = "Number";
 
+        DecimalType mockedStorageAvailableValue = new DecimalType(2000)
+        when(mockedSystemInfo.getStorageAvailable(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageAvailableValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageAvailableValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED
         String acceptedItemType = "Number";
 
+        DecimalType mockedStorageUsedValue = new DecimalType(500)
+        when(mockedSystemInfo.getStorageUsed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageUsedValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageUsedValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TOTAL
         String acceptedItemType = "Number";
 
+        DecimalType mockedStorageTotalValue = new DecimalType(2500)
+        when(mockedSystemInfo.getStorageTotal(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageTotalValue);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageTotalValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
+        DecimalType mockedStorageAvailablePercent = new DecimalType(20)
+        when(mockedSystemInfo.getStorageAvailablePercent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageAvailablePercent);
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedStorageAvailablePercent);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#name is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_NAME;
         String acceptedItemType = "String";
 
+        StringType mockedDriveNameValue = new StringType("Mocked Drive Name")
+        when(mockedSystemInfo.getDriveName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveNameValue);
+
         initializeThingWithChannel(channelID,acceptedItemType)
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedDriveNameValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#model is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL;
         String acceptedItemType = "String";
 
+        StringType mockedDriveModelValue = new StringType("Mocked Drive Model")
+        when(mockedSystemInfo.getDriveModel(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveModelValue);
+
         initializeThingWithChannel(channelID,acceptedItemType)
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedDriveModelValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#serial is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL;
         String acceptedItemType = "String";
 
+        StringType mockedDriveSerialNumber = new StringType("Mocked Drive Serial Number")
+        when(mockedSystemInfo.getDriveSerialNumber(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveSerialNumber)
+
         initializeThingWithChannel(channelID,acceptedItemType)
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedDriveSerialNumber);
     }
 
     @Ignore
@@ -506,8 +610,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_CPU_TEMPERATURE
         String acceptedItemType = "Number";
 
+        DecimalType mockedSensorsCpuTemperatureValue = new DecimalType(60)
+        when(mockedSystemInfo.getSensorsCpuTemperature()).thenReturn(mockedSensorsCpuTemperatureValue)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSensorsCpuTemperatureValue);
     }
 
     @Test
@@ -515,143 +622,167 @@ class SysteminfoOSGiTest extends OSGiTest{
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENOSRS_CPU_VOLTAGE
         String acceptedItemType = "Number";
 
+        DecimalType mockedSensorsCpuVoltageValue = new DecimalType(1000)
+        when(mockedSystemInfo.getSensorsCpuVoltage()).thenReturn(mockedSensorsCpuVoltageValue)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSensorsCpuVoltageValue);
     }
 
-    //Jenskins's machine has no CPU Fan
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel sensors#fanSpeed is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_FAN_SPEED
         String acceptedItemType = "Number";
 
+        DecimalType mockedSensorsCpuFanSpeedValue = new DecimalType(180)
+        when(mockedSystemInfo.getSensorsFanSpeed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedSensorsCpuFanSpeedValue)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedSensorsCpuFanSpeedValue);
     }
 
-    //Jenskins's machine has no battery
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_NAME
         String acceptedItemType = "String";
 
+        StringType mockedBatteryName = new StringType("Mocked Battery Name")
+        when(mockedSystemInfo.getBatteryName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryName)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedBatteryName);
     }
 
-    //Jenskins's machine has no battery
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#remainingCapacity is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY
         String acceptedItemType = "Number";
 
+        DecimalType mockedBatteryRemainingCapacity = new DecimalType(200)
+        when(mockedSystemInfo.getBatteryRemainingCapacity(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryRemainingCapacity)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedBatteryRemainingCapacity);
     }
 
-    //Jenskins's machine has no battery
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#remainingTime is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME
         String acceptedItemType = "Number";
 
+        DecimalType mockedBatteryRemainingTime = new DecimalType(3600)
+        when(mockedSystemInfo.getBatteryRemainingTime(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryRemainingTime)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedBatteryRemainingTime);
     }
 
-    //Jenskins's machine has no display
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel display#information is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION
         String acceptedItemType = "String";
 
+        StringType mockedDisplayInfo = new StringType("Mocked Display Information")
+        when(mockedSystemInfo.getDisplayInformation(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDisplayInfo)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedDisplayInfo);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel network#ip is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_IP
         String acceptedItemType = "String";
 
+        StringType mockedNetworkIp = new StringType("192.168.1.0")
+        when(mockedSystemInfo.getNetworkIp(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkIp)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkIp);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'asssert channel network#mac is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_MAC
         String acceptedItemType = "String";
 
+        StringType mockedNetworkMacValue = new StringType("AB-10-11-12-13-14")
+        when(mockedSystemInfo.getNetworkMac(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkMacValue)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkMacValue);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'asssert channel network#dataSent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_SENT
         String acceptedItemType = "Number";
 
+        DecimalType mockedNetworkDataSent = new DecimalType(1000)
+        when(mockedSystemInfo.getNetworkDataSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataSent)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkDataSent);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'asssert channel network#dataReceived is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED
         String acceptedItemType = "Number";
 
+        DecimalType mockedNetworkDataReceiveed = new DecimalType(800)
+        when(mockedSystemInfo.getNetworkDataReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataReceiveed)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkDataReceiveed);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'asssert channel network#packetsSent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_SENT
         String acceptedItemType = "Number";
 
+        DecimalType mockedNetworkPacketsSent = new DecimalType(50)
+        when(mockedSystemInfo.getNetworkPacketsSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsSent)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkPacketsSent);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'asssert channel network#packetsReceived is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_RECEIVED
         String acceptedItemType = "Number";
 
+        DecimalType mockedNetworkPacketsReceived = new DecimalType(48)
+        when(mockedSystemInfo.getNetworkPacketsReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsReceived)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkPacketsReceived);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel network#networkName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_NAME
         String acceptedItemType = "String";
 
+        StringType mockedNetworkName = new StringType("MockN-AQ34")
+        when(mockedSystemInfo.getNetworkName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkName)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkName);
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel network#networkDisplayName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_ADAPTER_NAME
         String acceptedItemType = "String";
 
+        StringType mockedNetworkAdapterName = new StringType("Mocked Network Adapter Name")
+        when(mockedSystemInfo.getNetworkDisplayName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkAdapterName)
+
         initializeThingWithChannel(channnelID,acceptedItemType);
-        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedNetworkAdapterName);
     }
 
     class SysteminfoDiscoveryServiceMock extends SysteminfoDiscoveryService {
@@ -738,7 +869,6 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel process#threads is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_THREADS
@@ -746,11 +876,13 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
+        DecimalType mockedProcessThreadsCount = new DecimalType(4)
+        when(mockedSystemInfo.getProcessThreads(pid)).thenReturn(mockedProcessThreadsCount)
+
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedProcessThreadsCount)
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel process#path is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_PATH
@@ -758,11 +890,13 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
+        StringType mockedProcessPath = new StringType("C:\\Users\\MockedUser\\Procces")
+        when(mockedSystemInfo.getProcessPath(pid)).thenReturn(mockedProcessPath)
+
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedProcessPath)
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel process#name is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_NAME
@@ -770,11 +904,13 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
+        StringType mockedProcessName = new StringType("MockedProcess.exe")
+        when(mockedSystemInfo.getProcessName(pid)).thenReturn(mockedProcessName)
+
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedProcessName)
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel process#memory is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_MEMORY
@@ -782,11 +918,13 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
+        DecimalType mockedProcessMemory = new DecimalType(450)
+        when(mockedSystemInfo.getProcessMemoryUsage(pid)).thenReturn(mockedProcessMemory)
+
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedProcessMemory)
     }
 
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel process#load is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
@@ -794,8 +932,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
+        DecimalType mockedProcessLoad = new DecimalType(3)
+        when(mockedSystemInfo.getProcessCpuUsage(pid)).thenReturn(mockedProcessLoad)
+
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY,mockedProcessLoad)
     }
 
     @Test
@@ -833,7 +974,6 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @After
     public void tearDown () {
-
         if(systemInfoThing != null){
             // Remove the systeminfo thing. The handler will be also disposed automatically
             Thing removedThing = thingRegistry.forceRemove(systemInfoThing.getUID())
