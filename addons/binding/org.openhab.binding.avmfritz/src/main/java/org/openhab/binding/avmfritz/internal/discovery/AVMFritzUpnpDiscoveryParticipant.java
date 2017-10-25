@@ -60,9 +60,9 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
             logger.debug("discovered: {} at {}", device.getDisplayString(),
                     device.getIdentity().getDescriptorURL().getHost());
             Map<String, Object> properties = new HashMap<>();
-            properties.put(IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
+            properties.put(CONFIG_IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(IP_ADDRESS)
+                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(CONFIG_IP_ADDRESS)
                     .withTTL(Math.max(MIN_MAX_AGE_SECS, device.getIdentity().getMaxAgeSeconds())).build();
             return result;
         }

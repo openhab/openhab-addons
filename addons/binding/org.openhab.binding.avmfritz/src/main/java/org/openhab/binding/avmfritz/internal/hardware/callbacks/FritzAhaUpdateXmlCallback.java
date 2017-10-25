@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
-import java.io.StringReader;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.avmfritz.handler.IFritzHandler;
@@ -56,19 +51,14 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
         super.execute(status, response);
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
-            try {
-                final Unmarshaller jaxbUnmarshaller = JAXBtUtils.JAXBCONTEXT.createUnmarshaller();
-                final DevicelistModel model = (DevicelistModel) jaxbUnmarshaller.unmarshal(new StringReader(response));
-                if (model != null) {
-                    for (final DeviceModel device : model.getDevicelist()) {
-                        handler.addDeviceList(device);
-                    }
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
-                } else {
-                    logger.warn("no model in response");
+            DevicelistModel model = JAXBtUtils.buildResult(response);
+            if (model != null) {
+                for (final DeviceModel device : model.getDevicelist()) {
+                    handler.addDeviceList(device);
                 }
-            } catch (JAXBException e) {
-                logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
+            } else {
+                logger.warn("no model in response");
             }
         } else {
             logger.info("request is invalid: {}", status);

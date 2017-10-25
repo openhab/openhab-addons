@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.avmfritz.internal.util;
 
+import java.io.StringReader;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.slf4j.Logger;
@@ -27,11 +30,25 @@ public class JAXBtUtils {
 
     public static final JAXBContext JAXBCONTEXT = initJAXBContext();
 
+    public static Unmarshaller JAXBUnmarshaller;
+
     private static JAXBContext initJAXBContext() {
         try {
             return JAXBContext.newInstance(DevicelistModel.class);
         } catch (JAXBException e) {
-            logger.error("Exception creating JAXBContext: {}", e.getMessage(), e);
+            logger.error("Exception creating JAXBContext: {}", e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    public static DevicelistModel buildResult(final String xml) {
+        try {
+            if (JAXBUnmarshaller == null) {
+                JAXBUnmarshaller = JAXBtUtils.JAXBCONTEXT.createUnmarshaller();
+            }
+            return (DevicelistModel) JAXBUnmarshaller.unmarshal(new StringReader(xml));
+        } catch (JAXBException e) {
+            logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             return null;
         }
     }
