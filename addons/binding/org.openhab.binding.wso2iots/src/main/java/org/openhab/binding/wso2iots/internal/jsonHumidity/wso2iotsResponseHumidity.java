@@ -13,7 +13,7 @@ package org.openhab.binding.wso2iots.internal.jsonHumidity;
  * The {@link wso2iotsResponseHumidity} class returns the humidity value
  * from json wso2iotsresponse string
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 
 public class wso2iotsResponseHumidity {

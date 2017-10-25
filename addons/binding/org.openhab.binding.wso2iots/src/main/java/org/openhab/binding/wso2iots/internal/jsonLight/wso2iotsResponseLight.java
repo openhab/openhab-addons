@@ -13,7 +13,7 @@ package org.openhab.binding.wso2iots.internal.jsonLight;
  * The {@link wso2iotsResponseLight} class returns light value
  * from json wso2iotsresponse string
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 
 public class wso2iotsResponseLight {

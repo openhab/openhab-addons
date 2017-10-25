@@ -11,7 +11,7 @@ package org.openhab.binding.wso2iots.internal;
 
 /**
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 
 public class wso2iotsConfiguration {

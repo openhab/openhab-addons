@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-//import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,11 +22,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-//import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-//import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-//import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -50,16 +46,18 @@ import com.google.gson.Gson;
 
 /**
  * The {@link wso2iotsHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to the channels.
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
-// @NonNullByDefault
+
 public class wso2iotsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(wso2iotsHandler.class);
 
     private static final int DEFAULT_REFRESH_PERIOD = 60;
+    
+    private static final int PERIOD = 200;
 
     private ScheduledFuture<?> refreshJob;
 
@@ -78,32 +76,9 @@ public class wso2iotsHandler extends BaseThingHandler {
         gson = new Gson();
     }
 
-    /*
-     * @Override
-     * public void handleCommand(ChannelUID channelUID, Command command) {
-     * if (channelUID.getId().equals(CHANNEL_1)) {
-     * // TODO: handle command
-     *
-     * // Note: if communication with thing fails for some reason,
-     * // indicate that by setting the status with detail information
-     * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-     * // "Could not control device at IP address x.x.x.x");
-     * }
-     * }
-     */
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        // updateStatus(ThingStatus.ONLINE);
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
-
+        
         logger.debug("Initializing wso2iots handler.");
 
         wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
@@ -128,7 +103,7 @@ public class wso2iotsHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.OFFLINE);
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
@@ -161,7 +136,7 @@ public class wso2iotsHandler extends BaseThingHandler {
                 updateChannel(channelUID.getId(), iotsResponseHumidity);
             }
         } else {
-            logger.debug("The Building Monitor binding is read-only and can not handle command {}", command);
+            logger.debug("Can not handle command {}", command);
         }
     }
 
@@ -186,9 +161,6 @@ public class wso2iotsHandler extends BaseThingHandler {
                         updateChannel(wso2iotsBindingConstants.MOTION, iotsResponseMotion);
                         updateChannel(wso2iotsBindingConstants.HUMIDITY, iotsResponseHumidity);
 
-                        // for (Channel channel : getThing().getChannels()) {
-                        // updateChannel(channel.getUID().getId(), iotsResponse);
-                        // }
                     } catch (Exception e) {
                         logger.error("Exception occurred during execution: {}", e.getMessage(), e);
                     }
@@ -208,16 +180,6 @@ public class wso2iotsHandler extends BaseThingHandler {
      */
     private void updateChannel(String channelId, BigDecimal iotsResponse) {
         if (isLinked(channelId)) {
-            /*
-             * Object value;
-             * try {
-             * value = getValue(channelId, iotsResponse);
-             * } catch (Exception e) {
-             * logger.debug("Station doesn't provide {} measurement", channelId.toUpperCase());
-             * return;
-             * }
-             */
-
             State state = null;
             if (iotsResponse == null) {
                 state = UnDefType.UNDEF;
@@ -241,40 +203,31 @@ public class wso2iotsHandler extends BaseThingHandler {
     private BigDecimal updateBuildingMonitorData(String sensorType) throws Exception {
 
         BigDecimal iotsResponse = null;
-        boolean resultok = false;
         String errormsg = null;
         String response1 = null;
         wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
         String Access_Token = config.apikey;
         String id = config.deviceId;
-        // String Access_Token = "bfe52f8a-5f34-382b-802c-93e52468564f";
-        // String id = "2940205";
         long time = System.currentTimeMillis() / 1000;
-        String fromTime = String.valueOf(time - 200);
+        String fromTime = String.valueOf(time - PERIOD);
         String toTime = String.valueOf(time);
 
         String url = "https://localhost:8243/senseme/device/1.0.0/stats/";
         url = url + id + "?from=" + fromTime + "&to=" + toTime + "&sensorType=" + sensorType;
 
         URL obj;
-        // if(Boolean.parseBoolean(System.getProperty(""))) {
-        obj = this.validateCertificate(url);
-
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        // optional default is GET
-        con.setRequestMethod("GET");
-
-        // add request header
-        con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Authorization", "Bearer " + Access_Token);
-
+        
         try {
+        
+            obj = this.validateCertificate(url);
+
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Accept", "application/json");
+            con.setRequestProperty("Authorization", "Bearer " + Access_Token);
 
             int responseCode = con.getResponseCode();
-
-            // logger.debug("\nSending 'GET' request to URL : " + url);
-            // logger.debug("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -285,16 +238,11 @@ public class wso2iotsHandler extends BaseThingHandler {
             }
             in.close();
 
-            // print result
-            // System.out.println(response.toString());
-
             response1 = response.toString();
 
             if (response1.equals("[]")) {
-                resultok = false;
                 errormsg = "empty response from wso2 iots";
                 logger.warn(errormsg);
-                // return null;
 
             } else {
                 String segment = response1.substring(response1.lastIndexOf("{"), response1.lastIndexOf("}"));
@@ -331,17 +279,14 @@ public class wso2iotsHandler extends BaseThingHandler {
 
                     iotsResponse = result.getvalues().getData();
                 }
-                resultok = true;
-                // return iotsResponse;
+                
             }
         } catch (Exception e) {
             errormsg = e.getMessage();
-            logger.warn(errormsg);
-            resultok = false;
-            // return null;
+            logger.warn(errormsg);  
         }
 
-        if (resultok == true) {
+        if (errormsg == null) {
             updateStatus(ThingStatus.ONLINE);
             return iotsResponse;
         } else {
@@ -377,7 +322,7 @@ public class wso2iotsHandler extends BaseThingHandler {
         } catch (Exception e) {
         }
 
-        // Now you can access an https URL without having the certificate in the truststore
+        // Now can access an https URL without having the certificate in the truststore
         try {
             url = new URL(url2);
         } catch (MalformedURLException e) {

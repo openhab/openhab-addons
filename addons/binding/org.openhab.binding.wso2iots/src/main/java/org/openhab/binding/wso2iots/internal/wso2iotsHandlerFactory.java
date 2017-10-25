@@ -27,9 +27,9 @@ import org.osgi.service.component.annotations.Component;
  * The {@link wso2iotsHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.wso2iots")
+@Component(service = ThingHandlerFactory.class, immediate = true)
 @NonNullByDefault
 public class wso2iotsHandlerFactory extends BaseThingHandlerFactory {
 

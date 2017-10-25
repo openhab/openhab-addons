@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="wso2iots"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="buildingMonitor">
-		<label>Building Monitor Data</label>
+		<label>Building Monitor</label>
 		<description>Provides temperature, motion, humidity, light level collected from building monitoring devices</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="humidity" typeId="humidity"/>
-			<channel id="motion" typeId="motion"/>
-			<channel id="light" typeId="light"/>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="motion" typeId="motion" />
+			<channel id="light" typeId="light" />
 		</channels>
 
-        <!-- meta data -->
+		<!-- meta data -->
 		<properties>
-             <property name="buildingId">buildingId</property>
-             <property name="floorId">floorId</property>
-        </properties>
-        
+			<property name="buildingId">buildingId</property>
+			<property name="floorId">floorId</property>
+		</properties>
+
 		<config-description>
-		    <parameter name="deviceId" type="text" required="true">
-                <label>Device ID</label>
-                <description>ID of the building monitor device</description>
-            </parameter>
-            
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>ID of the building monitor device</description>
+			</parameter>
+
 			<parameter name="apikey" type="text" required="true">
 				<context>password</context>
 				<label>API Key</label>
 				<description>Data-platform token to access the IOT server</description>
 			</parameter>
-			
+
 			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
@@ -43,39 +42,37 @@
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	
-	<channel-type id="temperature" advanced="true">
+	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature (°C)</label>
 		<description>Temperature in Celsius degrees</description>
-		<category>Temperature (°C)</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
 	</channel-type>
 
-	<channel-type id="motion" advanced="true">
+	<channel-type id="motion">
 		<item-type>Number</item-type>
-		<label>motion</label>
-		<description></description>
-		<category>motion</category>
-		<state readOnly="true" pattern="%.1f "></state>
+		<label>Motion</label>
+		<description>Motion in the range 0-1</description>
+		<category>Motion</category>
+		<state readOnly="true" pattern="%.1f " />
 	</channel-type>
 
-	<channel-type id="humidity" advanced="true">
+	<channel-type id="humidity">
 		<item-type>Number</item-type>
-		<label>Humidity level</label>
-		<description></description>
-		<category>Humidity level</category>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %%">
-		</state>
+		<label>Humidity</label>
+		<description>Humidity as a percentage</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %%" />
+
 	</channel-type>
 
-	<channel-type id="light" advanced="true">
+	<channel-type id="light">
 		<item-type>Number</item-type>
-		<label>light</label>
-		<description></description>
-		<category>light</category>
-		<state readOnly="true" pattern="%.1f "></state>
+		<label>Light</label>
+		<description>Light level in a range of 0-1024</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.1f " />
 	</channel-type>
 
 </thing:thing-descriptions>

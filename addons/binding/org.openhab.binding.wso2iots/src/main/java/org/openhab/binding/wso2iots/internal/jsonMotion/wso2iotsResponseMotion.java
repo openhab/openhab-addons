@@ -13,7 +13,7 @@ package org.openhab.binding.wso2iots.internal.jsonMotion;
  * The {@link wso2iotsResponseMotion} class returns the motion value
  * from json wso2iotsresponse string
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 
 public class wso2iotsResponseMotion {

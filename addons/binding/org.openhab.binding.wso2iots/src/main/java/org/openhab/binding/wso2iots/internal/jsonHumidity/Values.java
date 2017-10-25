@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * The {@link Values} class returns the humidity value
  * from json wso2iotsresponse string
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 
 public class Values {

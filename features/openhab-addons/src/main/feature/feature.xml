@@ -391,6 +391,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.windcentrale/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-wso2iots" description="WSO2 IoT Server Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.wso2iots/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-yamahareceiver" description="Yamaha Receiver Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>

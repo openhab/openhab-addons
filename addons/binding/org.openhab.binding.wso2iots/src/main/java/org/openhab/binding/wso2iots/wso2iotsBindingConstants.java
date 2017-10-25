@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableSet;
  * The {@link wso2iotsBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author wso2_Ramesha - Initial contribution
+ * @author Ramesha Karunasena - Initial contribution
  */
 // @NonNullByDefault
 public class wso2iotsBindingConstants {
