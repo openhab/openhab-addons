@@ -152,7 +152,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s",
                                 WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
-                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
+                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, null,
+                                channelDefinitions);
                         channelTypeProvider.addChannelGroupType(groupType);
                         groupTypes.add(groupType);
                     }
