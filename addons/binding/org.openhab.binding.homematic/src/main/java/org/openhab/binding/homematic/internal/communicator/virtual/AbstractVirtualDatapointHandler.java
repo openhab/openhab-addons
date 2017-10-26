@@ -67,8 +67,8 @@ public abstract class AbstractVirtualDatapointHandler implements VirtualDatapoin
      * Adds a new datapoint to the channel.
      */
     protected HmDatapoint addDatapoint(HmChannel channel, HmDatapoint dp) {
-        logger.trace("Adding virtual datapoint '{}' to device '{}' ({})", dp.getName(),
-                channel.getDevice().getAddress(), channel.getDevice().getType());
+        logger.trace("Adding virtual datapoint '{}' to device '{}' ({}) and channel {}", dp.getName(),
+                channel.getDevice().getAddress(), channel.getDevice().getType(), channel.getNumber());
         dp.setVirtual(true);
         dp.setReadable(true);
         channel.addDatapoint(dp);

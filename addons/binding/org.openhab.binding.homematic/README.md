@@ -345,6 +345,22 @@ then
 end
 ```
 
+#### PRESS
+
+A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.  
+Available values: SHORT, LONG, LONG_RELEASE
+
+Example: to capture a key press on the 19 button remote control in a rule 
+
+```
+rule "example trigger rule"
+when
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#PRESS' triggered SHORT 
+then
+    ...
+end
+```
+
 ### Troubleshooting
 
 **SHORT & LONG_PRESS events of push buttons do not occur on the event bus**  
