@@ -128,15 +128,18 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public Address getAddress(PointType location) {
-        Address address = new Address();
+        Address address = null;
+        String json = null;
 
         try {
-            String json = new AddressLookup().getAddressJSON(location);
+            json = new AddressLookup().getAddressJSON(location);
             if (json != null && !json.equals("")) {
                 AddressLookupParser parser = new AddressLookupParser(json);
                 address = parser.getAddress();
             }
         } catch (Exception e) {
+            logger.debug("getAddress failed:");
+            logger.debug(json);
             logException(e);
         }
 
@@ -218,7 +221,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     private void logException(Exception exception) {
-        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace());
+        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
     }
 
 }
