@@ -420,16 +420,15 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             addChannel(channels, "Switch", roSwitchTypeId, id, label, "Digital virtual state", tags);
         } else if (control instanceof LxControlInfoOnlyAnalog) {
             if (addChannel(channels, "Number", roAnalogTypeId, id, label, "Analog virtual state", tags)) {
-                addStateDescription(id, ((LxControlInfoOnlyAnalog) control).getFormatString(), true, null, 0);
+                setStateDescription(id, ((LxControlInfoOnlyAnalog) control).getFormatString(), true, null, 0);
             }
         } else if (control instanceof LxControlLightController) {
             if (addChannel(channels, "Number", lightCtrlTypeId, id, label, "Light controller", tags)) {
-                addStateDescription(id, null, false, ((LxControlLightController) control).getSceneNames(),
-                        (LxControlLightController.NUM_OF_SCENES - 1));
+                setLightControllerStateDescription(id, (LxControlLightController) control);
             }
         } else if (control instanceof LxControlRadio) {
             if (addChannel(channels, "Number", radioButtonTypeId, id, label, "Radio button", tags)) {
-                addStateDescription(id, null, false, ((LxControlRadio) control).getOutputs(),
+                setStateDescription(id, null, false, ((LxControlRadio) control).getOutputs(),
                         LxControlRadio.MAX_RADIO_OUTPUTS);
             }
         } else if (control instanceof LxControlTextState) {
@@ -509,7 +508,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateState(channelId, new DecimalType(value));
             }
             if (controller.sceneNamesUpdated()) {
-                createChannelsForControl(control);
+                setLightControllerStateDescription(channelId, controller);
             }
         } else if (control instanceof LxControlRadio) {
             LxControlRadio radio = (LxControlRadio) control;
@@ -527,8 +526,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     /**
-     * Adds a new {@link StateDescription} for a channel that has multiple options to select from or a custom format
-     * string.
+     * Sets a new {@link StateDescription} for a channel that has multiple options to select from or a custom format
+     * string. A previous description, if existed, will be replaced.
      *
      * @param channelUID
      *            channel UID
@@ -538,11 +537,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      *            true if this control does not accept commands
      * @param options
      *            collection of options, where key is option ID (number in reality) and value is option name
-     * @param lastOption
+     * @param maximum
      *            maximum value an option ID can have
      */
-    private void addStateDescription(ChannelUID channelUID, String format, boolean readOnly,
-            Map<String, String> options, int lastOption) {
+    private void setStateDescription(ChannelUID channelUID, String format, boolean readOnly,
+            Map<String, String> options, int maximum) {
         if (channelUID != null) {
             List<StateOption> optionsList = null;
             if (options != null) {
@@ -551,9 +550,24 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                     optionsList.add(new StateOption(entry.getKey(), entry.getValue()));
                 }
             }
-            dynamicStateDescriptionProvider.addDescription(channelUID, new StateDescription(BigDecimal.ZERO,
-                    new BigDecimal(lastOption), BigDecimal.ONE, format, readOnly, optionsList));
+            dynamicStateDescriptionProvider.setDescription(channelUID, new StateDescription(BigDecimal.ZERO,
+                    new BigDecimal(maximum), BigDecimal.ONE, format, readOnly, optionsList));
         }
+    }
+
+    /**
+     * Sets a state description for light controller channel.
+     * This method is used when a channel has received a state update with light controller's scene names and when a
+     * light controller channel is created. A previous description, if existed, will be replaced.
+     *
+     * @param channelUID
+     *            light controller's channel UID
+     * @param control
+     *            light controller's object
+     */
+    private void setLightControllerStateDescription(ChannelUID channelUID, LxControlLightController control) {
+        setStateDescription(channelUID, null, false, control.getSceneNames(),
+                (LxControlLightController.NUM_OF_SCENES - 1));
     }
 
     /**

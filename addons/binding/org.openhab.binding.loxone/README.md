@@ -135,7 +135,6 @@ Timeout values control various parts of Websocket connection management. They ca
 ## Limitations
 
   * As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
-  * Lighting controllers and radio buttons do not have automatically populated scene and button selection labels to the channel options. If these names are important, user has to define them manually in the sitemap, as in the  example provided at the end of this instruction.
 
 ## Automatic Configuration Example
 

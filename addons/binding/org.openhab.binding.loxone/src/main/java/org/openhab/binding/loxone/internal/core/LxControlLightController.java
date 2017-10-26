@@ -112,6 +112,10 @@ public class LxControlLightController extends LxControl implements LxControlStat
             this.movementScene = json.details.movementScene;
         }
 
+        for (LxControl control : subControls.values()) {
+            control.uuid.setUpdate(false);
+        }
+
         if (json.subControls != null) {
             for (LxJsonControl subControl : json.subControls.values()) {
                 // recursively create a subcontrol as a new control

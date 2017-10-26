@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.loxone.internal;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,23 +33,21 @@ import org.slf4j.LoggerFactory;
         LoxoneDynamicStateDescriptionProvider.class }, immediate = true)
 public class LoxoneDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
-    private Map<ChannelUID, StateDescription> descriptions = new HashMap<>();
+    private Map<ChannelUID, StateDescription> descriptions = new ConcurrentHashMap<>();
     private Logger logger = LoggerFactory.getLogger(LoxoneDynamicStateDescriptionProvider.class);
 
     /**
-     * Add a state description for a channel. This description will be used when preparing the channel state by
-     * the framework for presentation.
+     * Set a state description for a channel. This description will be used when preparing the channel state by
+     * the framework for presentation. A previous description, if existed, will be replaced.
      *
      * @param channelUID
      *            channel UID
      * @param description
      *            state description for the channel
      */
-    public void addDescription(ChannelUID channelUID, StateDescription description) {
+    public void setDescription(ChannelUID channelUID, StateDescription description) {
         logger.debug("Adding state description for channel {}", channelUID);
-        synchronized (descriptions) {
-            descriptions.put(channelUID, description);
-        }
+        descriptions.put(channelUID, description);
     }
 
     /**
@@ -57,20 +55,16 @@ public class LoxoneDynamicStateDescriptionProvider implements DynamicStateDescri
      */
     public void removeAllDescriptions() {
         logger.debug("Removing all state descriptions");
-        synchronized (descriptions) {
-            descriptions.clear();
-        }
+        descriptions.clear();
     }
 
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        synchronized (descriptions) {
-            StateDescription description = descriptions.get(channel.getUID());
-            if (description != null) {
-                logger.debug("Providing state description for channel {}", channel.getUID());
-            }
-            return description;
+        StateDescription description = descriptions.get(channel.getUID());
+        if (description != null) {
+            logger.debug("Providing state description for channel {}", channel.getUID());
         }
+        return description;
     }
 }
