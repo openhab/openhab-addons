@@ -83,7 +83,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
         executionJob = scheduler.scheduleWithFixedDelay(() -> {
             updateSynopChannels();
-        }, 1, configuration.refreshInterval, TimeUnit.MINUTES);
+        }, 0, configuration.refreshInterval, TimeUnit.MINUTES);
         updateStatus(ThingStatus.ONLINE);
 
     }
@@ -135,7 +135,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             case OCTA:
                 return new DecimalType(Math.max(0, synop.getOcta()));
             case ATTENUATION_FACTOR:
-                double kc = Math.max(0, synop.getOcta()) / OCTA_MAX;
+                double kc = Math.max(0, Math.min(synop.getOcta(), OCTA_MAX)) / OCTA_MAX;
                 kc = Math.pow(kc, KASTEN_POWER);
                 kc = 1 - 0.75 * kc;
                 return new DecimalType(kc);
