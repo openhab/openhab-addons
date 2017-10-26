@@ -46,15 +46,12 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
 
     private static final Pattern AVISUAL_NAME_PATTERN = Pattern.compile("^AVISUAL-([^/]+)$");
 
-    private final Runnable scannerRunnable;
-
     private ScheduledFuture<?> backgroundDiscoveryFuture;
 
     private DiscoveryServiceCallback discoveryServiceCallback;
 
     public AirVisualNodeDiscoveryService() {
         super(Collections.singleton(AirVisualNodeBindingConstants.THING_TYPE_AVNODE), 600, true);
-        scannerRunnable = createScannerRunnable();
     }
 
     @Override
@@ -65,14 +62,13 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
     @Override
     protected void startScan() {
         logger.debug("Starting scan");
-        scheduler.execute(scannerRunnable);
+        scheduler.execute(this::scan);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting background discovery");
-        cancelBackgroundDiscoveryFuture();
-        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(scannerRunnable, 0, 300, TimeUnit.SECONDS);
+        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, 300, TimeUnit.SECONDS);
     }
 
     @Override
@@ -89,62 +85,60 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
-    private Runnable createScannerRunnable() {
-        return () -> {
-            // Get all workgroup members
-            SmbFile[] workgroupMembers;
+    private void scan() {
+        // Get all workgroup members
+        SmbFile[] workgroupMembers;
+        try {
+            String workgroupUrl = "smb://" + AVISUAL_WORKGROUP_NAME +"/";
+            workgroupMembers = new SmbFile(workgroupUrl).listFiles();
+        } catch (Exception e) {
+            // Can't get workgroup member list
+            return;
+        }
+
+        // Check found workgroup members for the Node devices
+        for (SmbFile s: workgroupMembers) {
+            String serverName = s.getServer();
+
+            // Check workgroup member for the Node device name match
+            Matcher m = AVISUAL_NAME_PATTERN.matcher(serverName);
+            if (!m.find()) {
+                // Workgroup member server name doesn't match the Node device name pattern
+                continue;
+            }
+
+            // Extract the Node serial number from device name
+            String nodeSerialNumber = m.group(1);
+
+            // The Node Thing UID is serial number converted to lower case
+            ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
+                    nodeSerialNumber.toLowerCase());
+
+            if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null ||
+                    discoveryServiceCallback.getExistingThing(thingUID) != null) {
+                // The Node with this Thing UID is already discovered or configured as a Thing, skip it
+                continue;
+            }
+
             try {
-                String workgroupUrl = "smb://" + AVISUAL_WORKGROUP_NAME +"/";
-                workgroupMembers = new SmbFile(workgroupUrl).listFiles();
-            } catch (Exception e) {
-                // Can't get workgroup member list
-                return;
-            }
-
-            // Check found workgroup members for the Node devices
-            for (SmbFile s: workgroupMembers) {
-                String serverName = s.getServer();
-
-                // Check workgroup member for the Node device name match
-                Matcher m = AVISUAL_NAME_PATTERN.matcher(serverName);
-                if (!m.find()) {
-                    // Workgroup member server name doesn't match the Node device name pattern
+                // Get the Node address by name
+                NbtAddress nodeNbtAddress = NbtAddress.getByName(serverName);
+                if (nodeNbtAddress == null) {
+                    // The Node address not found by some reason, skip it
                     continue;
                 }
 
-                // Extract the Node serial number from device name
-                String nodeSerialNumber = m.group(1);
-
-                // The Node Thing UID is serial number converted to lower case
-                ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
-                        nodeSerialNumber.toLowerCase());
-
-                if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null ||
-                        discoveryServiceCallback.getExistingThing(thingUID) != null) {
-                    // The Node with this Thing UID is already discovered or configured as a Thing, skip it
-                    continue;
-                }
-
-                try {
-                    // Get the Node address by name
-                    NbtAddress nodeNbtAddress = NbtAddress.getByName(serverName);
-                    if (nodeNbtAddress == null) {
-                        // The Node address not found by some reason, skip it
-                        continue;
-                    }
-
-                    // Create discovery result
-                    String nodeAddress = nodeNbtAddress.getInetAddress().getHostAddress();
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
-                            .withLabel("AirVisual Node (" + nodeSerialNumber + ")")
-                            .build();
-                    thingDiscovered(result);
-                } catch (UnknownHostException e) {
-                    // The Node address resolving failed by some reason, nothing to do there
-                }
+                // Create discovery result
+                String nodeAddress = nodeNbtAddress.getInetAddress().getHostAddress();
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
+                        .withLabel("AirVisual Node (" + nodeSerialNumber + ")")
+                        .build();
+                thingDiscovered(result);
+            } catch (UnknownHostException e) {
+                logger.debug("The Node address resolving failed ", e);
             }
-        };
+        }
     }
 
 }

@@ -89,6 +89,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         if (config.address == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node address must be set");
+            return;
         }
         this.nodeAddress = config.address;
 
@@ -96,6 +97,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         if (config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node password must be set");
+            return;
         }
         this.nodePassword = config.password;
 
@@ -136,17 +138,11 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     }
 
     private synchronized void schedulePoll() {
-        stopPoll();
         logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                poll();
-            }
-        }, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
-    void poll() {
+    private void poll() {
         try {
             logger.debug("Polling for state");
             pollNode();
@@ -155,7 +151,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
             logger.debug("Could not connect to Node", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error("Unexpected error connecting to Node", e);
+            logger.debug("Unexpected error connecting to Node", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -176,7 +172,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         String url = "smb://" + nodeAddress +"/" + nodeShareName + "/" + NODE_JSON_FILE;
         NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, nodeUsername, nodePassword);
         try (SmbFileInputStream in = new SmbFileInputStream(new SmbFile(url, auth))) {
-            return IOUtils.toString(new SmbFileInputStream(new SmbFile(url, auth)), StandardCharsets.UTF_8.name());
+            return IOUtils.toString(in, StandardCharsets.UTF_8.name());
         }
     }
 

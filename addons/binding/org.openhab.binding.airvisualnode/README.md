@@ -1,6 +1,6 @@
 # AirVisual Node Binding
 
-This is an openHAB binding for the [AirVisual Node Air Quality Monitor](https://airvisual.com/node).
+This is an openHAB binding for the [AirVisual Node Air Quality Monitor](https://airvisual.com/node) (also known as IQAir AirVisual Pro).
 
 ## Supported Things
 
@@ -38,13 +38,13 @@ The binding support the following channels:
 
 | Channel ID                   | Item Type | Description                 |
 |------------------------------|-----------|-----------------------------|
-| measurements#co2_ppm         | Number    | CO₂ level, ppm               |
+| measurements#co2_ppm         | Number    | CO2 level, ppm              |
 | measurements#humidity        | Number    | Humidity, %                 |
 | measurements#aqi_cn          | Number    | Air Quality Index (Chinese) |
 | measurements#aqi_us          | Number    | Air Quality Index (US)      |
 | measurements#pm_25           | Number    | PM2.5 level, μg/m³          |
-| measurements#temp_celsius    | Number    | Temperature, ℃                       |
-| measurements#temp_fahrenheit | Number    | Temperature, ℉                        |
+| measurements#temp_celsius    | Number    | Temperature, Celsius        |
+| measurements#temp_fahrenheit | Number    | Temperature, Fahrenheit     |
 
 The Node updates measurements data every 5 minutes in active mode and every 15 minutes in power saving mode (screen off).
 
@@ -58,6 +58,15 @@ The Node updates measurements data every 5 minutes in active mode and every 15 m
 | status#timestamp             | DateTime  | Timestamp                   |
 
 ## Example
+
+### Thing
+
+The preferred way to add AirVisual Node to the openHAB installation is autodiscovery,
+but the AirVisual Node also can be configured using `.things` file:
+
+```
+airvisualnode:avnode:1a2b3c4 [ address="192.168.1.32", username="airvisual", password="12345", share="airvisual", refresh=60 ]
+```
 
 ### Items
 

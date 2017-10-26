@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="airvisualnode"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="avnode">
 		<label>AirVisual Node</label>
@@ -11,8 +11,8 @@
 		<!-- Channel groups -->
 
 		<channel-groups>
-			<channel-group id="measurements" typeId="Measurements"/>
-			<channel-group id="status" typeId="Status"/>
+			<channel-group id="measurements" typeId="Measurements" />
+			<channel-group id="status" typeId="Status" />
 		</channel-groups>
 
 		<!-- Configuration parameters -->
@@ -36,19 +36,19 @@
 				<description>Node network password</description>
 			</parameter>
 			<!-- Advanced parameters -->
-            <parameter name="share" type="text">
-                <label>Share Name</label>
-                <description>Node network share name</description>
-                <default>airvisual</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="refresh" type="integer" min="30" unit="s">
-                <label>Refresh Interval</label>
-                <description>Node data fetches interval (in seconds)</description>
-                <default>60</default>
-                <unitLabel>s</unitLabel>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="share" type="text">
+				<label>Share Name</label>
+				<description>Node network share name</description>
+				<default>airvisual</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Node data fetches interval (in seconds)</description>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -83,7 +83,7 @@
 		<item-type>Number</item-type>
 		<label>CO₂ Level</label>
 		<description>CO&#8322; level, ppm</description>
-		<state readOnly="true" pattern="%d ppm"/>
+		<state readOnly="true" pattern="%d ppm" />
 	</channel-type>
 
 	<channel-type id="Humidity">
