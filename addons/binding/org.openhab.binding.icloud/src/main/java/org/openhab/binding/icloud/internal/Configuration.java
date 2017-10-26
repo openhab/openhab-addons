@@ -17,4 +17,5 @@ public class Configuration {
     public String AppleId;
     public String Password;
     public Integer RefreshTimeInMinutes;
+    public String GoogleAPIKey;
 }

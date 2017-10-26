@@ -132,7 +132,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         String json = null;
 
         try {
-            json = new AddressLookup().getAddressJSON(location);
+            json = new AddressLookup(config.GoogleAPIKey).getAddressJSON(location);
             if (json != null && !json.equals("")) {
                 AddressLookupParser parser = new AddressLookupParser(json);
                 address = parser.getAddress();

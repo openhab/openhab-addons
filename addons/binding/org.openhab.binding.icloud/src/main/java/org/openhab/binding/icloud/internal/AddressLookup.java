@@ -25,9 +25,15 @@ import org.eclipse.smarthome.core.library.types.PointType;
 public class AddressLookup {
     final String baseURL = "https://maps.googleapis.com/maps/api/geocode/json";
 
+    private String key;
+
+    public AddressLookup(String googleAPIKey) {
+        key = googleAPIKey;
+    }
+
     public String getAddressJSON(PointType location) throws Exception {
         String json = null;
-        URL requestURL = new URL(baseURL + "?latlng=" + location.toString());
+        URL requestURL = new URL(baseURL + "?latlng=" + location.toString() + "&key=" + key);
 
         HttpsURLConnection connection;
         connection = (HttpsURLConnection) requestURL.openConnection();

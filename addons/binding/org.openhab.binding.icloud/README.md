@@ -50,15 +50,14 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ### iCloud Binding Thing
 
-<!-- http://www.tablesgenerator.com/markdown_tables -->
+| Parameter            | Description                                         |           |
+|----------------------|-----------------------------------------------------|-----------|
+| AppleId              |                                                     | mandatory |
+| Password             |                                                     | mandatory |
+| RefreshTimeInMinutes |                                                     | mandatory |
+| GoogleAPIKey         | Google API key to be used for address lookup calls. | optional  |
 
-| Parameter            | Description |
-|----------------------|-------------|
-| AppleId              |             |
-| Password             |             |
-| RefreshTimeInMinutes |             |
-
-All parameters are mandatory.
+Without a "GoogleAPIKey" the number of daily request are limited and the bindings address lookup functionality will stop working. It is recommended to provide this value.
 
 ## Channels
 
@@ -73,8 +72,6 @@ All parameters are mandatory.
 ### Device
 
 The following channels are available (if supported by the device):
-
-<!-- http://www.tablesgenerator.com/markdown_tables -->
 
 | Channel ID       | Type     | Description                                                              |
 |------------------|----------|--------------------------------------------------------------------------|
