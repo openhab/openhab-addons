@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipse.smarthome.binding.loxone.discovery.miniserver">
-   <implementation class="org.openhab.binding.loxone.discovery.LoxoneMiniserverDiscoveryParticipant"/>
+   <implementation class="org.openhab.binding.loxone.internal.discovery.LoxoneMiniserverDiscoveryParticipant"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
    </service>
