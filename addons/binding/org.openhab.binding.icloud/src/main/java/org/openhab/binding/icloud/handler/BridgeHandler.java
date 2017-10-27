@@ -139,7 +139,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             logger.debug("getAddress failed:");
-            logger.debug(json);
+            logger.debug("{}", json);
             logException(e);
         }
 
