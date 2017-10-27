@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlInfoOnlyDigital extends LxControl {
     /**
      * A name by which Miniserver refers to digital virtual state controls
@@ -29,8 +32,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
      */
     private static final String STATE_ACTIVE = "active";
 
-    private String textOn;
-    private String textOff;
+    private @Nullable String textOn;
+    private @Nullable String textOff;
 
     /**
      * Create InfoOnlyDigital control object.
@@ -46,8 +49,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * @param category
      *            category to which control belongs
      */
-    LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
+    LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
         if (json.details != null && json.details.text != null) {
             textOn = json.details.text.on;
@@ -73,16 +76,13 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * @return
      *         string for on/off value of the state or null if current value is not available
      */
-    public String getFormattedValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                if (value == 0) {
-                    return textOff;
-                } else if (value == 1) {
-                    return textOn;
-                }
+    public @Nullable String getFormattedValue() {
+        Double value = getStateValue(STATE_ACTIVE);
+        if (value != null) {
+            if (value == 0) {
+                return textOff;
+            } else if (value == 1) {
+                return textOn;
             }
         }
         return null;
@@ -94,11 +94,7 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * @return
      *         1 for ON, 0 for OFF and -1 if current value is not available
      */
-    public Double getValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+    public @Nullable Double getValue() {
+        return getStateValue(STATE_ACTIVE);
     }
 }

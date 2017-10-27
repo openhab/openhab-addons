@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is an interface to listen to control's state changes
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 interface LxControlStateListener {
     /**
      * This method will be called by registered listener, when control's state is changed

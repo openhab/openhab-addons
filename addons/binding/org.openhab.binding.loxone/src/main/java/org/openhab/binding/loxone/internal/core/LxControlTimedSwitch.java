@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -24,6 +26,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Stephan Brunner
  *
  */
+@NonNullByDefault
 public class LxControlTimedSwitch extends LxControl {
 
     /**
@@ -68,7 +71,8 @@ public class LxControlTimedSwitch extends LxControl {
      * @param category
      *            category to which switch belongs
      */
-    LxControlTimedSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlTimedSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
     }
 
@@ -126,18 +130,17 @@ public class LxControlTimedSwitch extends LxControl {
      * @return
      *         0 - switch off, 1 - switch on
      */
-    public Double getState() {
-
+    public @Nullable Double getState() {
         /**
          * 0 = the output is turned off
          * -1 = the output is permanently on
          * otherwise it will count down from deactivationDelayTotal
          **/
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null && state.getValue() != null) {
-            if (state.getValue() == -1 || state.getValue() > 0) { // mapping
+        Double value = getStateValue(STATE_DEACTIVATION_DELAY);
+        if (value != null) {
+            if (value == -1 || value > 0) { // mapping
                 return 1d;
-            } else if (state.getValue() == 0) {
+            } else if (value == 0) {
                 return 0d;
             }
         }
@@ -145,15 +148,12 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
+     * For a switch that is on, returns time in seconds remaining until switch goes off.
      *
      * @return deactivation delay in seconds
      *         Loxone also returns floating point values for the delay e.g. 9.99 seconds
      */
-    public Double getDeactivationDelay() {
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+    public @Nullable Double getDeactivationDelay() {
+        return getStateValue(STATE_DEACTIVATION_DELAY);
     }
 }

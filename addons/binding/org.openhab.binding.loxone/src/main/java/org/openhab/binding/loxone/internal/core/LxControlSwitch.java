@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -24,6 +26,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlSwitch extends LxControl {
 
     /**
@@ -59,7 +62,8 @@ public class LxControlSwitch extends LxControl {
      * @param category
      *            category to which switch belongs
      */
-    LxControlSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
     }
 
@@ -105,11 +109,7 @@ public class LxControlSwitch extends LxControl {
      * @return
      *         0 - switch off, 1 - switch on
      */
-    public Double getState() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+    public @Nullable Double getState() {
+        return getStateValue(STATE_ACTIVE);
     }
 }

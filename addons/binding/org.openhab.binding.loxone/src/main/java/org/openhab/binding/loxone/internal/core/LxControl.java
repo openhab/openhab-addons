@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +31,17 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul
  *
  */
+@NonNullByDefault
 public abstract class LxControl {
-    private String name;
-    private String typeName;
-    private LxContainer room;
-    private LxCategory category;
+    private String name = "unknown";
+    private String typeName = "unknown";
+    private @Nullable LxContainer room;
+    private @Nullable LxCategory category;
     private Map<String, LxControlState> states = new HashMap<>();
 
     LxUuid uuid;
     LxWsClient socketClient;
+    @SuppressWarnings("null")
     Logger logger = LoggerFactory.getLogger(LxControl.class);
     Map<LxUuid, LxControl> subControls = new HashMap<>();
 
@@ -55,7 +59,8 @@ public abstract class LxControl {
      * @param category
      *            Category that this control belongs to
      */
-    LxControl(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControl(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         logger.trace("Creating new LxControl: {}", json.type);
         socketClient = client;
         this.uuid = uuid;
@@ -83,9 +88,41 @@ public abstract class LxControl {
      * @return
      *         state object
      */
-    public LxControlState getState(String name) {
+    public @Nullable LxControlState getState(String name) {
         if (states.containsKey(name)) {
             return states.get(name);
+        }
+        return null;
+    }
+
+    /**
+     * Gets value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's value
+     */
+    public @Nullable Double getStateValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getValue();
+        }
+        return null;
+    }
+
+    /**
+     * Gets text value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's textvalue
+     */
+    public @Nullable String getStateTextValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getTextValue();
         }
         return null;
     }
@@ -139,7 +176,7 @@ public abstract class LxControl {
      * @return
      *         Control's room or null if no room
      */
-    public LxContainer getRoom() {
+    public @Nullable LxContainer getRoom() {
         return room;
     }
 
@@ -149,7 +186,7 @@ public abstract class LxControl {
      * @return
      *         Control's category or null if no category
      */
-    public LxCategory getCategory() {
+    public @Nullable LxCategory getCategory() {
         return category;
     }
 
@@ -162,7 +199,7 @@ public abstract class LxControl {
      *         true if UUID of two objects are equal
      */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
         if (this == object) {
             return true;
         }
@@ -194,11 +231,13 @@ public abstract class LxControl {
      * @param category
      *            New category that this control belongs to
      */
-    void update(LxJsonControl json, LxContainer room, LxCategory category) {
-
+    void update(LxJsonControl json, @Nullable LxContainer room, @Nullable LxCategory category) {
         logger.trace("Updating LxControl: {}", json.type);
 
-        this.name = json.name;
+        String jsonName = json.name;
+        if (jsonName != null) {
+            this.name = jsonName;
+        }
         this.room = room;
         this.category = category;
         uuid.setUpdate(true);
@@ -211,10 +250,10 @@ public abstract class LxControl {
 
         // retrieve all states from the configuration
         if (json.states != null) {
-
             logger.trace("Reading states for LxControl: {}", json.type);
 
             for (Map.Entry<String, JsonElement> jsonState : json.states.entrySet()) {
+                @SuppressWarnings("null")
                 JsonElement element = jsonState.getValue();
                 if (element instanceof JsonArray) {
                     // temperature state of intelligent home controller object is the only
@@ -226,16 +265,15 @@ public abstract class LxControl {
                 if (value != null) {
                     LxUuid id = new LxUuid(value);
                     String name = jsonState.getKey().toLowerCase();
-                    LxControlState state = states.get(name);
-                    if (state == null) {
-                        logger.trace("New state for LxControl {}: {}", json.type, name);
-                        state = new LxControlState(id, name, this);
-                    } else {
+                    if (states.containsKey(name)) {
                         logger.trace("Existing state for LxControl {}: {}", json.type, name);
+                        LxControlState state = states.get(name);
                         state.getUuid().setUpdate(true);
-                        state.setName(name);
+                    } else {
+                        logger.trace("New state for LxControl {}: {}", json.type, name);
+                        LxControlState state = new LxControlState(id, name, this);
+                        states.put(name, state);
                     }
-                    states.put(name, state);
                 }
             }
         }
@@ -257,10 +295,9 @@ public abstract class LxControl {
      * @return
      *         created control object or null if error
      */
-    static LxControl createControl(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-
-        if (json == null || json.type == null || json.name == null) {
+    static @Nullable LxControl createControl(LxWsClient client, LxUuid uuid, LxJsonControl json,
+            @Nullable LxContainer room, @Nullable LxCategory category) {
+        if (json.type == null || json.name == null) {
             return null;
         }
         LxControl ctrl = null;
@@ -268,33 +305,23 @@ public abstract class LxControl {
 
         if (LxControlSwitch.accepts(type)) {
             ctrl = new LxControlSwitch(client, uuid, json, room, category);
-
         } else if (LxControlPushbutton.accepts(type)) {
             ctrl = new LxControlPushbutton(client, uuid, json, room, category);
-
         } else if (LxControlTimedSwitch.accepts(type)) {
             ctrl = new LxControlTimedSwitch(client, uuid, json, room, category);
-
         } else if (LxControlDimmer.accepts(type)) {
             ctrl = new LxControlDimmer(client, uuid, json, room, category);
-
         } else if (LxControlJalousie.accepts(type)) {
             ctrl = new LxControlJalousie(client, uuid, json, room, category);
-
         } else if (LxControlTextState.accepts(type)) {
             ctrl = new LxControlTextState(client, uuid, json, room, category);
-
         } else if (json.details != null) {
-
             if (LxControlInfoOnlyDigital.accepts(type) && json.details.text != null) {
                 ctrl = new LxControlInfoOnlyDigital(client, uuid, json, room, category);
-
             } else if (LxControlInfoOnlyAnalog.accepts(type)) {
                 ctrl = new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
-
             } else if (LxControlLightController.accepts(type)) {
                 ctrl = new LxControlLightController(client, uuid, json, room, category);
-
             } else if (LxControlRadio.accepts(type)) {
                 ctrl = new LxControlRadio(client, uuid, json, room, category);
             }

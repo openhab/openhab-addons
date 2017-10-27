@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -18,6 +20,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlTextState extends LxControl {
 
     /**
@@ -44,7 +47,8 @@ public class LxControlTextState extends LxControl {
      * @param category
      *            category to which controller belongs
      */
-    LxControlTextState(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlTextState(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
     }
 
@@ -66,11 +70,7 @@ public class LxControlTextState extends LxControl {
      * @return
      *         string with current value
      */
-    public String getText() {
-        LxControlState textState = getState(STATE_TEXT_AND_ICON);
-        if (textState != null) {
-            return textState.getTextValue();
-        }
-        return null;
+    public @Nullable String getText() {
+        return getStateTextValue(STATE_TEXT_AND_ICON);
     }
 }

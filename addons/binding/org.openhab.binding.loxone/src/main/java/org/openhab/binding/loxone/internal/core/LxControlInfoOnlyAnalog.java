@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlInfoOnlyAnalog extends LxControl {
 
     /**
@@ -35,7 +38,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     @SuppressWarnings("unused")
     private static final String STATE_ERROR = "error";
 
-    private String format;
+    private String format = "%.1f";
 
     /**
      * Create InfoOnlyAnalog control object.
@@ -51,12 +54,14 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      * @param category
      *            category to which control belongs
      */
-    LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
-        if (json.details != null && json.details.format != null) {
-            format = json.details.format;
-        } else {
-            format = "%.1f";
+        if (json.details != null) {
+            String format = json.details.format;
+            if (format != null) {
+                this.format = format;
+            }
         }
     }
 
@@ -78,13 +83,10 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      * @return
      *         string for the value of the state or null if current value is not compatible with this control
      */
-    public String getFormattedValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return String.format(format, value);
-            }
+    public @Nullable String getFormattedValue() {
+        Double value = getStateValue(STATE_VALUE);
+        if (value != null) {
+            return String.format(format, value);
         }
         return null;
     }
@@ -105,11 +107,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      * @return
      *         value of the state or null if current value is not compatible with this control
      */
-    public Double getValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+    public @Nullable Double getValue() {
+        return getStateValue(STATE_VALUE);
     }
 }

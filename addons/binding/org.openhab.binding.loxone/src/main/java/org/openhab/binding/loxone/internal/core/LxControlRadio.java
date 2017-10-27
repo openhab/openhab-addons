@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -21,6 +23,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlRadio extends LxControl {
 
     /**
@@ -58,15 +61,19 @@ public class LxControlRadio extends LxControl {
      * @param category
      *            category to which control belongs
      */
-    LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
-        if (json.details.outputs != null) {
+        if (json.details != null && json.details.outputs != null) {
             outputs = new TreeMap<>(json.details.outputs);
         } else {
             outputs = new TreeMap<>();
         }
-        if (json.details != null && json.details.allOff != null) {
-            outputs.put("0", json.details.allOff);
+        if (json.details != null) {
+            String allOff = json.details.allOff;
+            if (allOff != null) {
+                outputs.put("0", allOff);
+            }
         }
     }
 
@@ -106,13 +113,10 @@ public class LxControlRadio extends LxControl {
      * @return
      *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or null if error occured
      */
-    public Integer getActiveOutput() {
-        LxControlState state = getState(STATE_ACTIVE_OUTPUT);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return value.intValue();
-            }
+    public @Nullable Integer getActiveOutput() {
+        Double value = getStateValue(STATE_ACTIVE_OUTPUT);
+        if (value != null) {
+            return value.intValue();
         }
         return null;
     }

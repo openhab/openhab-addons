@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.loxone.discovery;
+package org.openhab.binding.loxone.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +22,7 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.loxone.LoxoneBindingConstants;
 import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - Initial contribution
  *
  */
+@Component(immediate = true)
 public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverDiscoveryParticipant.class);

@@ -25,6 +25,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
@@ -52,6 +54,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxWsClient {
     private final InetAddress host;
     private final int port;
@@ -63,13 +66,15 @@ class LxWsClient {
     private int maxBinMsgSize = 3 * 1024; // 3 MB
     private int maxTextMsgSize = 512; // 512 KB
 
-    private ScheduledFuture<?> timeout;
-    private LxWebSocket socket;
-    private WebSocketClient wsClient;
+    private @Nullable ScheduledFuture<?> timeout;
+    private @Nullable LxWebSocket socket;
+    private @Nullable WebSocketClient wsClient;
     private BlockingQueue<LxServerEvent> queue;
     private ClientState state = ClientState.IDLE;
+    @SuppressWarnings("null")
     private Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
+    @SuppressWarnings("null")
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(LxWsClient.class.getName());
 
@@ -270,7 +275,6 @@ class LxWsClient {
 
                 logger.debug("[{}] Connecting to server : {} ", debugId, target);
                 return true;
-
             } catch (Exception e) {
                 setClientState(ClientState.IDLE);
                 close("Connection to websocket failed : " + e.getMessage());
@@ -324,12 +328,13 @@ class LxWsClient {
         synchronized (state) {
             stopResponseTimeout();
             if (socket != null) {
-                if (socket.session != null) {
+                Session session = socket.session;
+                if (session != null) {
                     if (state != ClientState.IDLE) {
                         logger.debug("[{}] Closing websocket session, reason : {}", debugId, reason);
                         setClientState(ClientState.CLOSING);
                     }
-                    socket.session.close(StatusCode.NORMAL, reason);
+                    session.close(StatusCode.NORMAL, reason);
                 } else {
                     logger.debug("[{}] Closing websocket, but no session, reason : {}", debugId, reason);
                     setClientState(ClientState.IDLE);
@@ -403,7 +408,9 @@ class LxWsClient {
     void sendAction(LxUuid id, String operation) throws IOException {
         String command = CMD_ACTION + id.getOriginalString() + "/" + operation;
         logger.debug("[{}] Sending command {}", debugId, command);
-        socket.sendString(command);
+        if (socket != null) {
+            socket.sendString(command);
+        }
     }
 
     /**
@@ -463,7 +470,7 @@ class LxWsClient {
      * @param object
      *            additional data for the event (text message for OFFLINE event, data for state changes)
      */
-    private void notifyMaster(EventType event, LxOfflineReason reason, Object object) {
+    private void notifyMaster(EventType event, @Nullable LxOfflineReason reason, @Nullable Object object) {
         if (reason == null) {
             reason = LxOfflineReason.NONE;
         }
@@ -483,10 +490,11 @@ class LxWsClient {
      */
     @WebSocket
     public class LxWebSocket {
+        @Nullable
         Session session;
         Gson gson = new Gson();
-        private ScheduledFuture<?> keepAlive;
-        private LxWsBinaryHeader header;
+        private @Nullable ScheduledFuture<?> keepAlive;
+        private @Nullable LxWsBinaryHeader header;
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
@@ -564,7 +572,6 @@ class LxWsClient {
 
         @OnWebSocketMessage
         public void onBinaryMessage(byte data[], int offset, int length) {
-
             if (logger.isTraceEnabled()) {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);
@@ -637,7 +644,6 @@ class LxWsClient {
             }
             synchronized (state) {
                 try {
-                    LxJsonResponse resp;
                     switch (state) {
                         case IDLE:
                         case CONNECTING:
@@ -645,16 +651,18 @@ class LxWsClient {
                             break;
                         case CONNECTED:
                             // expecting a key to hash credentials
-                            resp = gson.fromJson(msg, LxJsonResponse.class);
-                            if (resp != null) {
+                            try {
+                                @SuppressWarnings("null")
+                                LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
                                 LxJsonSubResponse subResp = resp.subResponse;
-                                if (subResp != null) {
+                                if (subResp != null && subResp.code != null) {
+                                    String value = subResp.value;
                                     if (subResp.code == 420) {
                                         notifyAndClose(LxOfflineReason.AUTHENTICATION_TIMEOUT,
                                                 "Timeout on authentication procedure, response : " + subResp.value);
-                                    } else if (subResp.control != null && subResp.control.equals(CMD_GET_KEY)
-                                            && subResp.code == 200) {
-                                        String credentials = hashCredentials(subResp.value);
+                                    } else if (CMD_GET_KEY.equals(subResp.control) && subResp.code == 200
+                                            && value != null) {
+                                        String credentials = hashCredentials(value);
                                         if (credentials != null) {
                                             sendString(CMD_AUTHENTICATE + credentials);
                                             setClientState(ClientState.AUTHENTICATING);
@@ -665,13 +673,17 @@ class LxWsClient {
                                         }
                                     }
                                 }
+                            } catch (JsonSyntaxException e) {
+                                logger.debug("Received malformed JSON response: ", e.getMessage());
                             }
                             break;
                         case AUTHENTICATING:
-                            resp = gson.fromJson(msg, LxJsonResponse.class);
-                            if (resp != null) {
+                            try {
+                                @SuppressWarnings("null")
+                                LxJsonResponse resp = gson.fromJson(msg, LxJsonResponse.class);
+
                                 LxJsonSubResponse subResp = resp.subResponse;
-                                if (subResp != null) {
+                                if (subResp != null && subResp.code != null) {
                                     int code = subResp.code;
                                     if (code == 401) {
                                         notifyAndClose(LxOfflineReason.UNAUTHORIZED,
@@ -686,20 +698,24 @@ class LxWsClient {
                                         startResponseTimeout();
                                     }
                                 }
+                            } catch (JsonSyntaxException e) {
+                                logger.debug("Received malformed JSON response: ", e.getMessage());
                             }
+
                             break;
                         case UPDATING_CONFIGURATION:
-                            LxJsonApp3 config = gson.fromJson(msg, LxJsonApp3.class);
-                            if (config != null) {
+                            try {
+                                @SuppressWarnings("null")
+                                LxJsonApp3 config = gson.fromJson(msg, LxJsonApp3.class);
                                 logger.debug("[{}] Received configuration from server", debugId);
                                 notifyMaster(EventType.RECEIVED_CONFIG, null, config);
                                 sendString(CMD_ENABLE_UPDATES);
                                 setClientState(ClientState.RUNNING);
                                 startResponseTimeout();
                                 notifyMaster(EventType.SERVER_ONLINE, null, null);
-                            } else {
+                            } catch (JsonSyntaxException e) {
                                 notifyAndClose(LxOfflineReason.INTERNAL_ERROR,
-                                        "Error processing received configuration");
+                                        "Error processing received configuration: " + e.getMessage());
                             }
                             break;
                         case RUNNING:
@@ -753,10 +769,7 @@ class LxWsClient {
          * @return
          *         hashed credentials to send to the Miniserver for authentication
          */
-        private String hashCredentials(String hashKeyHex) {
-            if (user == null || password == null || hashKeyHex == null) {
-                return null;
-            }
+        private @Nullable String hashCredentials(String hashKeyHex) {
             try {
                 byte[] hashKeyBytes = Hex.decodeHex(hashKeyHex.toCharArray());
                 SecretKeySpec signKey = new SecretKeySpec(hashKeyBytes, "HmacSHA1");

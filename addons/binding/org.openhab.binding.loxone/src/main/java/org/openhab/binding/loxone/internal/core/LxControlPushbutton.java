@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -20,6 +22,7 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxControlPushbutton extends LxControlSwitch {
     /**
      * A name by which Miniserver refers to pushbutton controls
@@ -44,7 +47,8 @@ public class LxControlPushbutton extends LxControlSwitch {
      * @param category
      *            category to which switch belongs
      */
-    LxControlPushbutton(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+    LxControlPushbutton(LxWsClient client, LxUuid uuid, LxJsonControl json, @Nullable LxContainer room,
+            @Nullable LxCategory category) {
         super(client, uuid, json, room, category);
     }
 

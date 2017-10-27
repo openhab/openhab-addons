@@ -20,6 +20,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 public class LxServer {
 
     // Configuration
@@ -80,9 +83,10 @@ public class LxServer {
     // Services
     private boolean running = true;
     private LxWsClient socketClient;
-    private Thread monitorThread;
+    private @Nullable Thread monitorThread;
     private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
 
+    @SuppressWarnings("null")
     private Logger logger = LoggerFactory.getLogger(LxServer.class);
 
     private int debugId;
@@ -129,15 +133,11 @@ public class LxServer {
         if (monitorThread != null) {
             logger.debug("[{}] Server stop", debugId);
             synchronized (monitorThread) {
-                if (queue != null) {
-                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
-                    try {
-                        queue.put(event);
-                        monitorThread.notify();
-                    } catch (InterruptedException e) {
-                        monitorThread.interrupt();
-                    }
-                } else {
+                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
+                try {
+                    queue.put(event);
+                    monitorThread.notify();
+                } catch (InterruptedException e) {
                     monitorThread.interrupt();
                 }
             }
@@ -173,7 +173,6 @@ public class LxServer {
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int connectTimeout,
             int userErrorDelay, int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
-
         logger.debug("[{}] Server update configuration", debugId);
 
         if (firstConDelay >= 0 && this.firstConDelay != firstConDelay) {
@@ -192,9 +191,7 @@ public class LxServer {
             logger.debug("[{}] Changing comErrorDelay to {}", debugId, comErrorDelay);
             this.comErrorDelay = comErrorDelay;
         }
-        if (socketClient != null) {
-            socketClient.update(keepAlivePeriod, connectTimeout, maxBinMsgSize, maxTextMsgSize);
-        }
+        socketClient.update(keepAlivePeriod, connectTimeout, maxBinMsgSize, maxTextMsgSize);
     }
 
     /**
@@ -244,14 +241,8 @@ public class LxServer {
      * @return
      *         Found control or null if not found
      */
-    public LxControl findControl(LxUuid id) {
-        if (controls == null || id == null) {
-            return null;
-        }
-        if (controls.containsKey(id)) {
-            return controls.get(id);
-        }
-        return null;
+    public @Nullable LxControl findControl(LxUuid id) {
+        return controls.get(id);
     }
 
     /**
@@ -262,7 +253,7 @@ public class LxServer {
      * @return
      *         Found control or null if not found
      */
-    public LxControl findControl(String name) {
+    public @Nullable LxControl findControl(String name) {
         for (LxControl l : controls.values()) {
             if (l.getName().equals(name)) {
                 return l;
@@ -391,20 +382,17 @@ public class LxServer {
                                 break;
                             case STATE_UPDATE:
                                 LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
-                                LxControlState state = findState(update.getUuid());
-                                if (state != null) {
-                                    state.setValue(update.getValue(), update.getText());
-                                    LxControl control = state.getControl();
-                                    if (control != null) {
+                                if (update != null) {
+                                    LxControlState state = findState(update.getUuid());
+                                    if (state != null) {
+                                        state.setValue(update.getValue(), update.getText());
+                                        LxControl control = state.getControl();
                                         logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
                                                 update.getUuid(), control.getName(), state.getName(), update.getValue(),
                                                 update.getText());
                                         for (LxServerListener listener : listeners) {
                                             listener.onControlStateUpdate(control);
                                         }
-                                    } else {
-                                        logger.debug("[{}] State update {} ({}) of unknown control", debugId,
-                                                update.getUuid(), state.getName());
                                     }
                                 }
                                 break;
@@ -457,7 +445,6 @@ public class LxServer {
             logger.debug("[{}] Thread ending", debugId);
             socketClient.disconnect();
             monitorThread = null;
-            queue = null;
         }
     }
 
@@ -492,23 +479,39 @@ public class LxServer {
         if (config.rooms != null) {
             logger.trace("[{}] creating rooms", debugId);
             for (LxJsonApp3.LxJsonRoom room : config.rooms.values()) {
-                addOrUpdateRoom(new LxUuid(room.uuid), room.name);
+                String name = room.name;
+                String uuid = room.uuid;
+                if (uuid != null && name != null) {
+                    addOrUpdateRoom(new LxUuid(uuid), name);
+                } else {
+                    logger.debug("Room in JSON config - at least one of the parameters is null: {}, {}", uuid, name);
+                }
             }
         }
         if (config.cats != null) {
             logger.trace("[{}] creating categories", debugId);
             for (LxJsonApp3.LxJsonCat cat : config.cats.values()) {
-                addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type);
+                String uuid = cat.uuid;
+                String name = cat.name;
+                String type = cat.type;
+                if (uuid != null && name != null && type != null) {
+                    addOrUpdateCategory(new LxUuid(uuid), name, type);
+                } else {
+                    logger.debug("Category in JSON config - at least one of the parameters is null: {}, {}, {}", uuid,
+                            name, type);
+                }
             }
         }
         if (config.controls != null) {
             logger.trace("[{}] creating controls", debugId);
-            for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
-                // create a new control or update existing one
-                try {
-                    addOrUpdateControl(ctrl);
-                } catch (Exception e) {
-                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
+            if (config.controls != null) {
+                for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
+                    // create a new control or update existing one
+                    try {
+                        addOrUpdateControl(ctrl);
+                    } catch (Exception e) {
+                        logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
+                    }
                 }
             }
         }
@@ -535,8 +538,9 @@ public class LxServer {
             if (!entry.getKey().getUpdate()) {
                 uuids.remove(entry.getKey());
                 it.remove();
-                if (entry.getValue() instanceof LxControl) {
-                    ((LxControl) entry.getValue()).dispose();
+                T value = entry.getValue();
+                if (value instanceof LxControl) {
+                    ((LxControl) value).dispose();
                 }
             }
         }
@@ -550,10 +554,7 @@ public class LxServer {
      * @return
      *         found UUID object or null if not found
      */
-    private LxUuid findUuid(LxUuid id) {
-        if (uuids == null || id == null) {
-            return null;
-        }
+    private @Nullable LxUuid findUuid(LxUuid id) {
         for (LxUuid i : uuids) {
             if (id.equals(i)) {
                 return i;
@@ -588,14 +589,8 @@ public class LxServer {
      * @return
      *         found room on null if not found
      */
-    private LxContainer findRoom(LxUuid id) {
-        if (rooms == null || id == null) {
-            return null;
-        }
-        if (rooms.containsKey(id)) {
-            return rooms.get(id);
-        }
-        return null;
+    private @Nullable LxContainer findRoom(LxUuid id) {
+        return rooms.get(id);
     }
 
     /**
@@ -609,9 +604,6 @@ public class LxServer {
      *         room object (either newly created or already existing) or null if wrong parameters
      */
     private LxContainer addOrUpdateRoom(LxUuid id, String name) {
-        if (rooms == null) {
-            return null;
-        }
         LxContainer r = findRoom(id);
         if (r != null) {
             r.setName(name);
@@ -631,14 +623,8 @@ public class LxServer {
      * @return
      *         state object
      */
-    private LxControlState findState(LxUuid id) {
-        if (states == null || id == null) {
-            return null;
-        }
-        if (states.containsKey(id)) {
-            return states.get(id);
-        }
-        return null;
+    private @Nullable LxControlState findState(LxUuid id) {
+        return states.get(id);
     }
 
     /**
@@ -649,14 +635,8 @@ public class LxServer {
      * @return
      *         category object found or null if not found
      */
-    private LxCategory findCategory(LxUuid id) {
-        if (categories == null || id == null) {
-            return null;
-        }
-        if (categories.containsKey(id)) {
-            return categories.get(id);
-        }
-        return null;
+    private @Nullable LxCategory findCategory(LxUuid id) {
+        return categories.get(id);
     }
 
     /**
@@ -672,9 +652,6 @@ public class LxServer {
      *         newly added category or already existing and updated, null if wrong parameters/configuration
      */
     private LxCategory addOrUpdateCategory(LxUuid id, String name, String type) {
-        if (categories == null) {
-            return null;
-        }
         LxCategory c = findCategory(id);
         if (c != null) {
             c.setName(name);
@@ -694,31 +671,30 @@ public class LxServer {
      *            JSON original object of this control to get extra parameters
      */
     private void addOrUpdateControl(LxJsonApp3.LxJsonControl json) {
-        if (json == null || json.uuidAction == null || json.name == null || json.type == null) {
-            return;
+        LxCategory category = null;
+        String jsonCat = json.cat;
+        if (jsonCat != null) {
+            category = findCategory(new LxUuid(jsonCat));
+        }
+        LxContainer room = null;
+        String jsonRoom = json.room;
+        if (jsonRoom != null) {
+            room = findRoom(new LxUuid(jsonRoom));
         }
 
-        LxUuid categoryId = null;
-        if (json.cat != null) {
-            categoryId = new LxUuid(json.cat);
-        }
-        LxUuid roomId = null;
-        if (json.room != null) {
-            roomId = new LxUuid(json.room);
-        }
-        LxContainer room = findRoom(roomId);
-        LxCategory category = findCategory(categoryId);
-
-        LxUuid id = new LxUuid(json.uuidAction);
-        LxControl control = findControl(id);
-        if (control != null) {
-            control.update(json, room, category);
-        } else {
-            id = addUuid(id);
-            control = LxControl.createControl(socketClient, id, json, room, category);
-        }
-        if (control != null) {
-            updateControls(control);
+        String uuid = json.uuidAction;
+        if (uuid != null) {
+            LxUuid id = new LxUuid(uuid);
+            LxControl control = findControl(id);
+            if (control != null) {
+                control.update(json, room, category);
+            } else {
+                id = addUuid(id);
+                control = LxControl.createControl(socketClient, id, json, room, category);
+            }
+            if (control != null) {
+                updateControls(control);
+            }
         }
     }
 
@@ -748,7 +724,7 @@ public class LxServer {
      * @return
      *         string guaranteed to be not null
      */
-    private String buildName(String name) {
+    private String buildName(@Nullable String name) {
         if (name == null) {
             return "";
         }

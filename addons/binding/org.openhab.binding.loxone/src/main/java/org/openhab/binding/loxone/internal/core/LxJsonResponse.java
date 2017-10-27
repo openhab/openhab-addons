@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,15 +22,20 @@ import com.google.gson.annotations.SerializedName;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxJsonResponse {
 
     class LxJsonSubResponse {
+        @Nullable
         String control;
+        @Nullable
         String value;
         @SerializedName("Code")
-        int code;
+        @Nullable
+        Integer code;
     }
 
     @SerializedName("LL")
+    @Nullable
     LxJsonSubResponse subResponse;
 }

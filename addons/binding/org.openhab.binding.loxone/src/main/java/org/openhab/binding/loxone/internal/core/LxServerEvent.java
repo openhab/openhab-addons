@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
 /**
@@ -17,6 +19,7 @@ import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
  * @author Pawel Pieczul - initial contribution
  *
  */
+@NonNullByDefault
 class LxServerEvent {
     /**
      * Type of {@link LxServerEvent} event
@@ -54,9 +57,9 @@ class LxServerEvent {
 
     private EventType event;
     private LxOfflineReason reason;
-    private Object object;
+    private @Nullable Object object;
 
-    LxServerEvent(EventType event, LxOfflineReason reason, Object object) {
+    LxServerEvent(EventType event, LxOfflineReason reason, @Nullable Object object) {
         this.event = event;
         this.reason = reason;
         this.object = object;
@@ -88,6 +91,7 @@ class LxServerEvent {
      * @return
      *         object associated with event
      */
+    @Nullable
     Object getObject() {
         return object;
     }
