@@ -138,9 +138,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 address = parser.getAddress();
             }
         } catch (Exception e) {
-            logger.debug("getAddress failed:");
-            logger.debug("{}", json);
-            logException(e);
+            logger.debug("getAddress failed: {}", json, e);
         }
 
         return address;
