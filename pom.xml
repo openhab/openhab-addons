@@ -50,6 +50,26 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
 
     <packaging>pom</packaging>
+	
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openhab.tools</groupId>
+                    <artifactId>static-code-analysis</artifactId>
+                    <configuration>
+                        <checkstyleProperties>${basedirRoot}/tools/checkstyle.properties</checkstyleProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
     <properties>
         <ohc.version>2.3.0-SNAPSHOT</ohc.version>
