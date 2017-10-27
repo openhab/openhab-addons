@@ -53,11 +53,11 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
         @Override
 
         public State getState(String s, DeviceMetaData dmd) {
-            if (s.equals("true")) {
+            if ("true".equals(s)) {
                 return getState("OPEN");
             }
 
-            if (s.equals("false")) {
+            if ("false".equals(s)) {
                 return getState("CLOSED");
             }
 
