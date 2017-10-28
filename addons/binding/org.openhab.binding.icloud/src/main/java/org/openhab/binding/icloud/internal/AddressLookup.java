@@ -33,8 +33,11 @@ public class AddressLookup {
 
     public String getAddressJSON(PointType location) throws Exception {
         String json = null;
-        URL requestURL = new URL(baseURL + "?latlng=" + location.toString() + "&key=" + key);
-
+        String url = baseURL + "?latlng=" + location.toString();
+        if (key != null) {
+            url = url + "&key=" + key;
+        }
+        URL requestURL = new URL(url);
         HttpsURLConnection connection;
         connection = (HttpsURLConnection) requestURL.openConnection();
         connection.setRequestMethod("GET");
