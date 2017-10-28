@@ -14,8 +14,8 @@ package org.openhab.binding.icloud.internal;
  *
  */
 public class Configuration {
-    public String AppleId;
-    public String Password;
-    public Integer RefreshTimeInMinutes;
-    public String GoogleAPIKey;
+    public String appleId;
+    public String password;
+    public Integer refreshTimeInMinutes;
+    public String googleAPIKey;
 }

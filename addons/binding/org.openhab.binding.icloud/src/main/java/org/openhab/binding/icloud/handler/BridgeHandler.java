@@ -132,7 +132,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         String json = null;
 
         try {
-            json = new AddressLookup(config.GoogleAPIKey).getAddressJSON(location);
+            json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
             if (json != null && !json.equals("")) {
                 AddressLookupParser parser = new AddressLookupParser(json);
                 address = parser.getAddress();
@@ -160,7 +160,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
-        }, 0, config.RefreshTimeInMinutes, TimeUnit.MINUTES);
+        }, 0, config.refreshTimeInMinutes, TimeUnit.MINUTES);
         logger.debug("iCloud bridge handler started.");
     }
 
@@ -169,7 +169,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             try {
                 logger.debug("iCloud bridge refreshing data ...");
 
-                connection = new Connection(config.AppleId, config.Password);
+                connection = new Connection(config.appleId, config.password);
 
                 String json = connection.requestDeviceStatusJSON();
                 if (json != null && !json.equals("")) {

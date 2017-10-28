@@ -13,22 +13,22 @@
 		</channels>
 
 		<config-description>
-			<parameter name="AppleId" type="text" required="true">
+			<parameter name="appleId" type="text" required="true">
 				<context>email</context>
 				<label>Apple Id</label>
 				<description>Apple Id (eMail) to access iCloud information.</description>
 			</parameter>
-			<parameter name="Password" type="text" required="true">
+			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
 				<description>Apple iCloud password for the given Id.</description>
 			</parameter>
-			<parameter name="RefreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
+			<parameter name="refreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
 				<label>Refresh</label>
 				<description>Refresh time in minutes.</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="GoogleAPIKey" type="text">
+			<parameter name="googleAPIKey" type="text">
 			    <context>password</context>
 			    <label>Google API Key</label>
 			    <description>Google API key to be used for address lookup calls (to translate coordinates into a human readable string). Without a key the number of daily request are limited and the bindings address lookup functionality will stop working.</description>

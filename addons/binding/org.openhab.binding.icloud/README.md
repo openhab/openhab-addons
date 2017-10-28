@@ -52,10 +52,10 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 | Parameter            | Description                                         |           |
 |----------------------|-----------------------------------------------------|-----------|
-| AppleId              |                                                     | mandatory |
-| Password             |                                                     | mandatory |
-| RefreshTimeInMinutes |                                                     | mandatory |
-| GoogleAPIKey         | Google API key to be used for address lookup calls. | optional  |
+| appleId              |                                                     | mandatory |
+| password             |                                                     | mandatory |
+| refreshTimeInMinutes |                                                     | mandatory |
+| googleAPIKey         | Google API key to be used for address lookup calls. | optional  |
 
 Without a "GoogleAPIKey" the number of daily request are limited and the bindings address lookup functionality will stop working. It is recommended to provide this value.
 
