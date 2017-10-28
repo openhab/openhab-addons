@@ -70,10 +70,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
-        if (channelId.equals(FORCEDREFRESH)) {
+        if (channelId.equals(REFRESH)) {
             if (command == OnOffType.ON) {
                 refreshData();
-                updateState(FORCEDREFRESH, OnOffType.OFF);
+                updateState(REFRESH, OnOffType.OFF);
             }
         }
     }

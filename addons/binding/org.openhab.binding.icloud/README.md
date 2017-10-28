@@ -67,7 +67,7 @@ Without a "GoogleAPIKey" the number of daily request are limited and the binding
 |------------------|----------|--------------------------------------------------------------------------|
 | NumberOfDevices  | Number   | Number of registered devices with this iCloud account.                   |
 | Owner            | String   | Registered owner of this iCloud account.                                 |
-| ForcedRefresh    | Switch   | Update all devices registered with this bridge immediately.              |
+| Refresh          | Switch   | Update all devices registered with this account immediately.             |
 
 ### Device
 
