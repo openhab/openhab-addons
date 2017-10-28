@@ -43,11 +43,13 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
                 String deviceOwnerName = content.get(i).getName();
 
                 String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
+                String deviceId = content.get(i).getId();
 
                 logger.debug("iCloud device discovery for [{}]", content.get(i).getDeviceDisplayName());
-                ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, Integer.toString(i));
+                ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID,
+                        Integer.toHexString(deviceId.hashCode()));
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingLabel)
-                        .build();
+                        .withProperty(IDPROPERTY, deviceId).build();
 
                 thingDiscovered(result);
             }

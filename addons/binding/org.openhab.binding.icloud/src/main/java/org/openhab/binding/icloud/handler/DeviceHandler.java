@@ -40,22 +40,17 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
-    private int index;
     private String deviceId;
     private BridgeHandler bridge;
     private LocationProvider locationProvider;
 
     public DeviceHandler(@NonNull Thing thing, LocationProvider locationProvider) {
         super(thing);
-
-        String uid = thing.getUID().toString();
-        index = Integer.parseInt(uid.substring(uid.lastIndexOf(":") + 1));
-
         this.locationProvider = locationProvider;
     }
 
     public void update(ArrayList<Content> content) {
-        Content deviceData = getMyContent(content);
+        Content deviceData = getDeviceData(content);
         if (deviceData != null) {
             deviceId = deviceData.getId();
             updateStatus(ThingStatus.ONLINE);
@@ -103,27 +98,27 @@ public class DeviceHandler extends BaseThingHandler {
         DecimalType latitude = new DecimalType(deviceData.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceData.getLocation().getLongitude());
         DecimalType accuracy = new DecimalType(deviceData.getLocation().getHorizontalAccuracy());
-    
+
         if (deviceData.getLocation().getTimeStamp() > 0) {
             Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
             SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
             String lastUpdate = javaDateFormat.format(javaDate);
-    
+
             updateState(LOCATIONLASTUPDATE, new DateTimeType(lastUpdate));
         }
-    
+
         PointType location = new PointType(latitude, longitude);
-    
+
         updateState(LOCATION, location);
         updateState(LOCATIONACCURACY, accuracy);
-    
+
         updateAddressStates(location);
-    
+
         if (locationProvider != null) {
             PointType homeLocation = locationProvider.getLocation();
             if (homeLocation != null) {
                 DecimalType distanceFromHome = homeLocation.distanceFrom(location);
-    
+
                 updateState(DISTANCEFROMHOME, distanceFromHome);
             }
         }
@@ -173,8 +168,16 @@ public class DeviceHandler extends BaseThingHandler {
         }
     }
 
-    private Content getMyContent(ArrayList<Content> content) {
-        return content.get(index);
+    private Content getDeviceData(ArrayList<Content> content) {
+        String deviceId = thing.getProperties().get(IDPROPERTY);
+
+        for (int i = 0; i < content.size(); i++) {
+            if (content.get(i).getId().compareToIgnoreCase(deviceId) == 0) {
+                return content.get(i);
+            }
+        }
+
+        return null;
     }
 
     private void logException(Exception exception) {

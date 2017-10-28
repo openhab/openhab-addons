@@ -52,4 +52,7 @@ public class BindingConstants {
     public static final String ADDRESSCOUNTRY = "addressCountry";
     public static final String FORMATTEDADDRESS = "formattedAddress";
     public static final String DEVICENAME = "deviceName";
+
+    // Properties
+    public static final String IDPROPERTY = "id";
 }
