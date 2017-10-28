@@ -7,9 +7,9 @@
 		<description>Provides various information for iCloud devices registered with this account.</description>
 
 		<channels>
-			<channel id="Owner" typeId="Owner" />
-			<channel id="NumberOfDevices" typeId="NumberOfDevices" />
-			<channel id="Refresh" typeId="Refresh" />
+			<channel id="owner" typeId="Owner" />
+			<channel id="numberOfDevices" typeId="NumberOfDevices" />
+			<channel id="refresh" typeId="Refresh" />
 		</channels>
 
 		<config-description>
@@ -44,17 +44,17 @@
 		<label>iCloud Device</label>
 
 		<channels>
-			<channel typeId="BatteryStatus" id="BatteryStatus" />
-			<channel typeId="BatteryLevel" id="BatteryLevel" />
-			<channel typeId="FindMyPhone" id="FindMyPhone" />
-			<channel typeId="Location" id="Location" />
-			<channel typeId="LocationAccuracy" id="LocationAccuracy" />
-			<channel typeId="DistanceFromHome" id="DistanceFromHome" />
-			<channel typeId="LocationLastUpdate" id="LocationLastUpdate" />
-			<channel typeId="AddressStreet" id="AddressStreet" />
-			<channel typeId="AddressCity" id="AddressCity" />
-			<channel typeId="AddressCountry" id="AddressCountry" />
-			<channel typeId="FormattedAddress" id="FormattedAddress" />
+			<channel typeId="batteryStatus" id="batteryStatus" />
+			<channel typeId="batteryLevel" id="batteryLevel" />
+			<channel typeId="findMyPhone" id="findMyPhone" />
+			<channel typeId="Location" id="location" />
+			<channel typeId="LocationAccuracy" id="locationAccuracy" />
+			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
+			<channel typeId="DistanceFromHome" id="aistanceFromHome" />
+			<channel typeId="AddressStreet" id="addressStreet" />
+			<channel typeId="AddressCity" id="addressCity" />
+			<channel typeId="AddressCountry" id="addressCountry" />
+			<channel typeId="FormattedAddress" id="formattedAddress" />
 		</channels>
 
 	</thing-type>

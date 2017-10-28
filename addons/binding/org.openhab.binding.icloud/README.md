@@ -65,9 +65,9 @@ Without a "GoogleAPIKey" the number of daily request are limited and the binding
 
 | Channel ID       | Type     | Description                                                              |
 |------------------|----------|--------------------------------------------------------------------------|
-| NumberOfDevices  | Number   | Number of registered devices with this iCloud account.                   |
-| Owner            | String   | Registered owner of this iCloud account.                                 |
-| Refresh          | Switch   | Update all devices registered with this account immediately.             |
+| numberOfDevices  | Number   | Number of registered devices with this iCloud account.                   |
+| owner            | String   | Registered owner of this iCloud account.                                 |
+| refresh          | Switch   | Update all devices registered with this account immediately.             |
 
 ### Device
 
@@ -75,17 +75,17 @@ The following channels are available (if supported by the device):
 
 | Channel ID         | Type     | Description                                                              |
 |--------------------|----------|--------------------------------------------------------------------------|
-| BatteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                      |
-| BatteryLevel       | Number   | Battery charge in %                                                      |
-| FindMyPhone        | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
-| Location           | Location | Location of the device.                                                  |
-| LocationAccuracy   | Number   | Accuracy of the last position report.                                    |
-| LocationLastUpdate | DateTime | Timestamp of the last location update.                                   |
-| DistanceFromHome   | Number   | Device distance from the location set in openHAB regional settings.      |
-| AddressStreet      | String   | Street                                                                   |
-| AddressCity        | String   | City                                                                     |
-| AddressCountry     | String   | Country                                                                  |
-| FormattedAddress   | String   | Formatted address string                                                 |
+| batteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                      |
+| batteryLevel       | Number   | Battery charge in %                                                      |
+| findMyPhone        | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
+| location           | Location | Location of the device.                                                  |
+| locationAccuracy   | Number   | Accuracy of the last position report.                                    |
+| locationLastUpdate | DateTime | Timestamp of the last location update.                                   |
+| distanceFromHome   | Number   | Device distance from the location set in openHAB regional settings.      |
+| addressStreet      | String   | Street                                                                   |
+| addressCity        | String   | City                                                                     |
+| addressCountry     | String   | Country                                                                  |
+| formattedAddress   | String   | Formatted address string                                                 |
 
 ## Full Example
 

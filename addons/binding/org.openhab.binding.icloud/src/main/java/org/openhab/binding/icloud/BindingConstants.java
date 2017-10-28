@@ -35,20 +35,20 @@ public class BindingConstants {
             THING_TYPE_ICLOUDDEVICE);
 
     // List of all Channel IDs
-    public static final String NUMBEROFDEVICES = "NumberOfDevices";
-    public static final String OWNER = "Owner";
-    public static final String REFRESH = "Refresh";
+    public static final String NUMBEROFDEVICES = "numberOfDevices";
+    public static final String OWNER = "owner";
+    public static final String REFRESH = "refresh";
 
-    public static final String BATTERYSTATUS = "BatteryStatus";
-    public static final String BATTERYLEVEL = "BatteryLevel";
-    public static final String FINDMYPHONE = "FindMyPhone";
-    public static final String LOCATION = "Location";
-    public static final String LOCATIONACCURACY = "LocationAccuracy";
-    public static final String DISTANCEFROMHOME = "DistanceFromHome";
-    public static final String LOCATIONLASTUPDATE = "LocationLastUpdate";
-    public static final String ADDRESSSTREET = "AddressStreet";
-    public static final String ADDRESSCITY = "AddressCity";
-    public static final String ADDRESSCOUNTRY = "AddressCountry";
-    public static final String FORMATTEDADDRESS = "FormattedAddress";
+    public static final String BATTERYSTATUS = "batteryStatus";
+    public static final String BATTERYLEVEL = "batteryLevel";
+    public static final String FINDMYPHONE = "findMyPhone";
+    public static final String LOCATION = "location";
+    public static final String LOCATIONACCURACY = "locationAccuracy";
+    public static final String LOCATIONLASTUPDATE = "locationLastUpdate";
+    public static final String DISTANCEFROMHOME = "distanceFromHome";
+    public static final String ADDRESSSTREET = "addressStreet";
+    public static final String ADDRESSCITY = "addressCity";
+    public static final String ADDRESSCOUNTRY = "addressCountry";
+    public static final String FORMATTEDADDRESS = "formattedAddress";
 
 }
