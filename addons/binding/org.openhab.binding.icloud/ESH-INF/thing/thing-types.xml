@@ -10,6 +10,7 @@
 			<channel id="owner" typeId="Owner" />
 			<channel id="numberOfDevices" typeId="NumberOfDevices" />
 			<channel id="refresh" typeId="Refresh" />
+			<channel id="enableAddressLookup" typeId="EnableAddressLookup" />
 		</channels>
 
 		<config-description>
@@ -44,9 +45,9 @@
 		<label>iCloud Device</label>
 
 		<channels>
-			<channel typeId="batteryStatus" id="batteryStatus" />
-			<channel typeId="batteryLevel" id="batteryLevel" />
-			<channel typeId="findMyPhone" id="findMyPhone" />
+			<channel typeId="BatteryStatus" id="batteryStatus" />
+			<channel typeId="BatteryLevel" id="batteryLevel" />
+			<channel typeId="FindMyPhone" id="findMyPhone" />
 			<channel typeId="Location" id="location" />
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
 			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
@@ -55,6 +56,7 @@
 			<channel typeId="AddressCity" id="addressCity" />
 			<channel typeId="AddressCountry" id="addressCountry" />
 			<channel typeId="FormattedAddress" id="formattedAddress" />
+			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
 
 	</thing-type>
@@ -73,6 +75,12 @@
 		<item-type>Switch</item-type>
 		<label>Refresh</label>
 		<description>Update all devices registered with this account immediately.</description>
+	</channel-type>
+	<channel-type id="EnableAddressLookup">
+	    <item-type>Switch</item-type>
+	    <label>Enable address lookup</label>
+	    <description>Enable address lookup. The coordinates are send to google to lookup a
+	    human readable address.</description>
 	</channel-type>
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
@@ -120,6 +128,10 @@
 	<channel-type id="FormattedAddress">
 		<item-type>String</item-type>
 		<label>Formatted address</label>
+	</channel-type>
+	<channel-type id="DeviceName">
+	    <item-type>String</item-type>
+	    <label>Device name</label>
 	</channel-type>
 </thing:thing-descriptions>
  

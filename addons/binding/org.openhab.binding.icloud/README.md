@@ -63,11 +63,12 @@ Without a "GoogleAPIKey" the number of daily request are limited and the binding
 
 ### Account
 
-| Channel ID       | Type     | Description                                                              |
-|------------------|----------|--------------------------------------------------------------------------|
-| numberOfDevices  | Number   | Number of registered devices with this iCloud account.                   |
-| owner            | String   | Registered owner of this iCloud account.                                 |
-| refresh          | Switch   | Update all devices registered with this account immediately.             |
+| Channel ID          | Type   | Description                                                                         |
+|---------------------|--------|-------------------------------------------------------------------------------------|
+| numberOfDevices     | Number | Number of registered devices with this iCloud account.                              |
+| owner               | String | Registered owner of this iCloud account.                                            |
+| refresh             | Switch | Update all devices registered with this account immediately.                        |
+| enableAddressLookup | Switch | If set to ON the coordinates are send to google to lookup a human readable address. |
 
 ### Device
 
@@ -86,6 +87,7 @@ The following channels are available (if supported by the device):
 | addressCity        | String   | City                                                                     |
 | addressCountry     | String   | Country                                                                  |
 | formattedAddress   | String   | Formatted address string                                                 |
+| deviceName         | String   | Device name                                                              |
 
 ## Full Example
 

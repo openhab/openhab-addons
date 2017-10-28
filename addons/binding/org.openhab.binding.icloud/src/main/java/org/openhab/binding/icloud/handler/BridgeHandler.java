@@ -54,6 +54,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private Connection connection;
     private Configuration config;
+    private boolean enableAddressLookup = false;
     ServiceRegistration<?> service;
     DeviceDiscovery discoveryService;
 
@@ -70,11 +71,14 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
-        if (channelId.equals(REFRESH)) {
-            if (command == OnOffType.ON) {
+        switch (channelId) {
+            case REFRESH:
+                refreshDeviceData(command);
+                break;
+            case ENABLEADDRESSLOOKUP:
+                enableAddressLookup = command == OnOffType.ON;
                 refreshData();
-                updateState(REFRESH, OnOffType.OFF);
-            }
+                break;
         }
     }
 
@@ -132,10 +136,12 @@ public class BridgeHandler extends BaseBridgeHandler {
         String json = null;
 
         try {
-            json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
-            if (json != null && !json.equals("")) {
-                AddressLookupParser parser = new AddressLookupParser(json);
-                address = parser.getAddress();
+            if (enableAddressLookup) {
+                json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
+                if (json != null && !json.equals("")) {
+                    AddressLookupParser parser = new AddressLookupParser(json);
+                    address = parser.getAddress();
+                }
             }
         } catch (Exception e) {
             logger.debug("getAddress failed: {}", json, e);
@@ -162,6 +168,13 @@ public class BridgeHandler extends BaseBridgeHandler {
             refreshData();
         }, 0, config.refreshTimeInMinutes, TimeUnit.MINUTES);
         logger.debug("iCloud bridge handler started.");
+    }
+
+    private void refreshDeviceData(Command command) {
+        if (command == OnOffType.ON) {
+            refreshData();
+            updateState(REFRESH, OnOffType.OFF);
+        }
     }
 
     private void refreshData() {

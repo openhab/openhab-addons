@@ -68,40 +68,68 @@ public class DeviceHandler extends BaseThingHandler {
             }
 
             if (deviceData.getLocation() != null) {
-                DecimalType latitude = new DecimalType(deviceData.getLocation().getLatitude());
-                DecimalType longitude = new DecimalType(deviceData.getLocation().getLongitude());
-                DecimalType accuracy = new DecimalType(deviceData.getLocation().getHorizontalAccuracy());
-
-                if (deviceData.getLocation().getTimeStamp() > 0) {
-                    Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
-                    SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-                    String lastUpdate = javaDateFormat.format(javaDate);
-
-                    updateState(LOCATIONLASTUPDATE, new DateTimeType(lastUpdate));
-                }
-
-                PointType location = new PointType(latitude, longitude);
-
-                updateState(LOCATION, location);
-                updateState(LOCATIONACCURACY, accuracy);
-
-                setAddressStates(location);
-
-                if (locationProvider != null) {
-                    PointType homeLocation = locationProvider.getLocation();
-                    if (homeLocation != null) {
-                        DecimalType distanceFromHome = homeLocation.distanceFrom(location);
-
-                        updateState(DISTANCEFROMHOME, distanceFromHome);
-                    }
-                }
+                updateLocationRelatedStates(deviceData);
             }
+            updateState(DEVICENAME, new StringType(deviceData.getName()));
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
-    private void setAddressStates(PointType location) {
+    @Override
+    public void initialize() {
+        logger.debug("Initializing iCloud device handler.");
+        initializeThing((getBridge() == null) ? null : getBridge().getStatus());
+    }
+
+    @Override
+    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getId();
+        if (channelId.equals(FINDMYPHONE)) {
+            if (command == OnOffType.ON) {
+                bridge.pingPhone(deviceId);
+                updateState(FINDMYPHONE, OnOffType.OFF);
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        bridge.unregisterDevice(this);
+        super.dispose();
+    }
+
+    private void updateLocationRelatedStates(Content deviceData) {
+        DecimalType latitude = new DecimalType(deviceData.getLocation().getLatitude());
+        DecimalType longitude = new DecimalType(deviceData.getLocation().getLongitude());
+        DecimalType accuracy = new DecimalType(deviceData.getLocation().getHorizontalAccuracy());
+    
+        if (deviceData.getLocation().getTimeStamp() > 0) {
+            Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
+            SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+            String lastUpdate = javaDateFormat.format(javaDate);
+    
+            updateState(LOCATIONLASTUPDATE, new DateTimeType(lastUpdate));
+        }
+    
+        PointType location = new PointType(latitude, longitude);
+    
+        updateState(LOCATION, location);
+        updateState(LOCATIONACCURACY, accuracy);
+    
+        updateAddressStates(location);
+    
+        if (locationProvider != null) {
+            PointType homeLocation = locationProvider.getLocation();
+            if (homeLocation != null) {
+                DecimalType distanceFromHome = homeLocation.distanceFrom(location);
+    
+                updateState(DISTANCEFROMHOME, distanceFromHome);
+            }
+        }
+    }
+
+    private void updateAddressStates(PointType location) {
 
         State streetState = UnDefType.UNDEF;
         State cityState = UnDefType.UNDEF;
@@ -126,29 +154,6 @@ public class DeviceHandler extends BaseThingHandler {
         updateState(ADDRESSCITY, cityState);
         updateState(ADDRESSCOUNTRY, countryState);
         updateState(FORMATTEDADDRESS, formattedAddressState);
-    }
-
-    @Override
-    public void initialize() {
-        logger.debug("Initializing iCloud device handler.");
-        initializeThing((getBridge() == null) ? null : getBridge().getStatus());
-    }
-
-    @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
-        String channelId = channelUID.getId();
-        if (channelId.equals(FINDMYPHONE)) {
-            if (command == OnOffType.ON) {
-                bridge.pingPhone(deviceId);
-                updateState(FINDMYPHONE, OnOffType.OFF);
-            }
-        }
-    }
-
-    @Override
-    public void dispose() {
-        bridge.unregisterDevice(this);
-        super.dispose();
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
