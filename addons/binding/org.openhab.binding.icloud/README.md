@@ -14,13 +14,13 @@ The binding uses Google's "[Geocode API](https://developers.google.com/maps/docu
     - [Discovery](#discovery)
     - [Binding Configuration](#binding-configuration)
     - [Thing Configuration](#thing-configuration)
-        - [iCloud Binding Thing](#icloud-binding-thing)
+        - [iCloud Account Thing](#icloud-account-thing)
     - [Channels](#channels)
-        - [Bridge](#bridge)
+        - [Account](#account)
         - [Device](#device)
     - [Full Example](#full-example)
-        - [iCloud.things:](#icloudthings)
-        - [icloud.items:](#iclouditems)
+        - [icloud.things](#icloudthings)
+        - [icloud.items](#iclouditems)
 - [Configuration with Paper UI](#configuration-with-paper-ui)
 
 <!-- /TOC -->
@@ -107,20 +107,20 @@ The refresh time is optional and has a default of 5. The "label" @ "location" pa
 ```php
 Group iCloud_Group (Whg)
 String iCloud_Account1_Owner "iCloud Account Owner [%s]" (iCloud_Group) {channel="icloud:bridge:account1:Owner"}
-Number iCloud_Account1_NumberOfDevices "iCloud Account NumberOfDevices [%d]" (iCloud_Group) {channel="icloud:bridge:account1:NumberOfDevices"}
-Switch iCloud_Account1_ForceRefresh "iCloud Account Force Refresh" (iCloud_Group) {channel="icloud:bridge:account1:ForcedRefresh"}
+Number iCloud_Account1_NumberOfDevices "iCloud Account NumberOfDevices [%d]" (iCloud_Group) {channel="icloud:bridge:account1:numberOfDevices"}
+Switch iCloud_Account1_ForceRefresh "iCloud Account Force Refresh" (iCloud_Group) {channel="icloud:bridge:account1:refresh"}
 
-String iPhone_BatteryStatus "Battery Status [%s]" <battery> (iCloud_Group)  {channel="icloud:device:account1:0:BatteryStatus"}
-Number iPhone_BatteryLevel "Battery Level [%.0f]" <battery> (iCloud_Group) {channel="icloud:device:account1:0:BatteryLevel"}
-Switch iPhone_FindMyPhone "Find iPhone [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:FindMyPhone"}
-Location iPhone_Location "Coordinates" <suitcase> (iCloud_Group)  {channel="icloud:device:account1:0:Location"}
-Number iPhone_LocationAccuracy "Coordinates Accuracy [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:LocationAccuracy"}
-Number iPhone_DistanceFromHome "Distance from home [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:DistanceFromHome"}
-DateTime iPhone_LastLocationUpdate "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:LastUpdate"}
-String iPhone_Street "Street [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:AddressStreet"}
-String iPhone_City "City [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:AddressCity"}
-String iPhone_Country "Country [%s]" <suitcase> (iCloud_Group)   {channel="icloud:device:account1:0:AddressCountry"}
-String iPhone_FormattedAddress "Address [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:FormattedAddress"}
+String iPhone_BatteryStatus "Battery Status [%s]" <battery> (iCloud_Group)  {channel="icloud:device:account1:0:batteryStatus"}
+Number iPhone_BatteryLevel "Battery Level [%.0f]" <battery> (iCloud_Group) {channel="icloud:device:account1:0:batteryLevel"}
+Switch iPhone_FindMyPhone "Find iPhone [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:findMyPhone"}
+Location iPhone_Location "Coordinates" <suitcase> (iCloud_Group)  {channel="icloud:device:account1:0:location"}
+Number iPhone_LocationAccuracy "Coordinates Accuracy [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:locationAccuracy"}
+Number iPhone_DistanceFromHome "Distance from home [%.0f]" <suitcase> (iCloud_Group){channel="icloud:device:account1:0:distanceFromHome"}
+DateTime iPhone_LastLocationUpdate "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:locationLastUpdate"}
+String iPhone_Street "Street [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:addressStreet"}
+String iPhone_City "City [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:addressCity"}
+String iPhone_Country "Country [%s]" <suitcase> (iCloud_Group)   {channel="icloud:device:account1:0:addressCountry"}
+String iPhone_FormattedAddress "Address [%s]" <suitcase> (iCloud_Group) {channel="icloud:device:account1:0:formattedAddress"}
 ```
 
 # Configuration with Paper UI 
