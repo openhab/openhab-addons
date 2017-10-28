@@ -99,18 +99,11 @@ public class DeviceHandler extends BaseThingHandler {
         DecimalType longitude = new DecimalType(deviceData.getLocation().getLongitude());
         DecimalType accuracy = new DecimalType(deviceData.getLocation().getHorizontalAccuracy());
 
-        if (deviceData.getLocation().getTimeStamp() > 0) {
-            Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
-            SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-            String lastUpdate = javaDateFormat.format(javaDate);
-
-            updateState(LOCATIONLASTUPDATE, new DateTimeType(lastUpdate));
-        }
-
         PointType location = new PointType(latitude, longitude);
 
         updateState(LOCATION, location);
         updateState(LOCATIONACCURACY, accuracy);
+        updateState(LOCATIONLASTUPDATE, getLastLocationUpdateDateTimeState(deviceData));
 
         updateAddressStates(location);
 
@@ -178,6 +171,22 @@ public class DeviceHandler extends BaseThingHandler {
         }
 
         return null;
+    }
+
+    private State getLastLocationUpdateDateTimeState(Content deviceData) {
+        State dateTime = UnDefType.UNDEF;
+        try {
+            if (deviceData.getLocation().getTimeStamp() > 0) {
+                Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
+                SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+                String lastUpdate = javaDateFormat.format(javaDate);
+
+                dateTime = new DateTimeType(lastUpdate);
+            }
+        } catch (Exception e) {
+            logException(e);
+        }
+        return dateTime;
     }
 
     private void logException(Exception exception) {
