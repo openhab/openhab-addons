@@ -48,7 +48,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-### iCloud Binding Thing
+### iCloud Account Thing
 
 | Parameter            | Description                                         |           |
 |----------------------|-----------------------------------------------------|-----------|
