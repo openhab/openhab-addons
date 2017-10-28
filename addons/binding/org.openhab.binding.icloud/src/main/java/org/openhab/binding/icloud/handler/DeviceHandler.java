@@ -173,7 +173,7 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void logException(Exception exception) {
-        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace());
+        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
     }
 
 }
