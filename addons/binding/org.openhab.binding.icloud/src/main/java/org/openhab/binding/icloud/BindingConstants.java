@@ -24,7 +24,7 @@ public class BindingConstants {
 
     private static final String BINDING_ID = "icloud";
 
-    private static final String BRIDGE_ID = "bridge";
+    private static final String BRIDGE_ID = "account";
     private static final String DEVICE_ID = "device";
 
     // List of all Thing Type UIDs

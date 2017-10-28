@@ -61,7 +61,7 @@ Without a "GoogleAPIKey" the number of daily request are limited and the binding
 
 ## Channels
 
-### Bridge
+### Account
 
 | Channel ID       | Type     | Description                                                              |
 |------------------|----------|--------------------------------------------------------------------------|
@@ -89,10 +89,10 @@ The following channels are available (if supported by the device):
 
 ## Full Example
 
-### iCloud.things:
+### iCloud.things
 
 ```php
-Bridge icloud:bridge:account1 [AppleId="abc@xyz.tld", Password="secure", RefreshTimeInMinutes=10]
+Bridge icloud:account:account1 [AppleId="abc@xyz.tld", Password="secure", RefreshTimeInMinutes=10]
 {
     Thing device 0 "My iPhone 7" @ "World"
     Thing device 1 "My iWatch 2" @ "World"
@@ -100,7 +100,7 @@ Bridge icloud:bridge:account1 [AppleId="abc@xyz.tld", Password="secure", Refresh
 ```
 The refresh time is optional and has a default of 5. The "label" @ "location" part is optional (as always).
 
-### icloud.items:
+### icloud.items
 
 ```php
 Group iCloud_Group (Whg)
