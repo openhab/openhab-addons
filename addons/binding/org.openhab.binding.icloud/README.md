@@ -92,7 +92,7 @@ The following channels are available (if supported by the device):
 ### iCloud.things
 
 ```php
-Bridge icloud:account:account1 [AppleId="abc@xyz.tld", Password="secure", RefreshTimeInMinutes=10]
+Bridge icloud:account:account1 [appleId="abc@xyz.tld", password="secure", refreshTimeInMinutes=10]
 {
     Thing device 0 "My iPhone 7" @ "World"
     Thing device 1 "My iWatch 2" @ "World"
