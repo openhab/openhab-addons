@@ -77,7 +77,7 @@ public class DeviceHandler extends BaseThingHandler {
                     SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
                     String lastUpdate = javaDateFormat.format(javaDate);
 
-                    updateState(LASTUPDATE, new DateTimeType(lastUpdate));
+                    updateState(LOCATIONLASTUPDATE, new DateTimeType(lastUpdate));
                 }
 
                 PointType location = new PointType(latitude, longitude);

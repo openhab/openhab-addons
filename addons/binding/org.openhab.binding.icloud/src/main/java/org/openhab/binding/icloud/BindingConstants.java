@@ -45,7 +45,7 @@ public class BindingConstants {
     public static final String LOCATION = "Location";
     public static final String LOCATIONACCURACY = "LocationAccuracy";
     public static final String DISTANCEFROMHOME = "DistanceFromHome";
-    public static final String LASTUPDATE = "LastUpdate";
+    public static final String LOCATIONLASTUPDATE = "LocationLastUpdate";
     public static final String ADDRESSSTREET = "AddressStreet";
     public static final String ADDRESSCITY = "AddressCity";
     public static final String ADDRESSCOUNTRY = "AddressCountry";

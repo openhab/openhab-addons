@@ -73,23 +73,23 @@ Without a "GoogleAPIKey" the number of daily request are limited and the binding
 
 The following channels are available (if supported by the device):
 
-| Channel ID       | Type     | Description                                                              |
-|------------------|----------|--------------------------------------------------------------------------|
-| BatteryStatus    | String   | Current battery status (Charging, Charged, Unknown)                      |
-| BatteryLevel     | Number   | Battery charge in %                                                      |
-| FindMyPhone      | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
-| Location         | Location | Location of the device.                                                  |
-| LocationAccuracy | Number   | Accuracy of the last position report.                                    |
-| DistanceFromHome | Number   | Device distance from the location set in openHAB regional settings.                                     |
-| LastUpdate       | DateTime | Timestamp of the last location update.                                   |
-| AddressStreet    | String   | Street                                                                   |
-| AddressCity      | String   | City                                                                     |
-| AddressCountry   | String   | Country                                                                  |
-| FormattedAddress | String   | Formatted address string                                                 |
+| Channel ID         | Type     | Description                                                              |
+|--------------------|----------|--------------------------------------------------------------------------|
+| BatteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                      |
+| BatteryLevel       | Number   | Battery charge in %                                                      |
+| FindMyPhone        | Switch   | Triggers the "Find my phone" functionality of the device (if available). |
+| Location           | Location | Location of the device.                                                  |
+| LocationAccuracy   | Number   | Accuracy of the last position report.                                    |
+| LocationLastUpdate | DateTime | Timestamp of the last location update.                                   |
+| DistanceFromHome   | Number   | Device distance from the location set in openHAB regional settings.      |
+| AddressStreet      | String   | Street                                                                   |
+| AddressCity        | String   | City                                                                     |
+| AddressCountry     | String   | Country                                                                  |
+| FormattedAddress   | String   | Formatted address string                                                 |
 
 ## Full Example
 
-### iCloud.things
+### icloud.things
 
 ```php
 Bridge icloud:account:account1 [appleId="abc@xyz.tld", password="secure", refreshTimeInMinutes=10]

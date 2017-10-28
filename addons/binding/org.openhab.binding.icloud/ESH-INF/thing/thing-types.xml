@@ -50,7 +50,7 @@
 			<channel typeId="Location" id="Location" />
 			<channel typeId="LocationAccuracy" id="LocationAccuracy" />
 			<channel typeId="DistanceFromHome" id="DistanceFromHome" />
-			<channel typeId="LastUpdate" id="LastUpdate" />
+			<channel typeId="LocationLastUpdate" id="LocationLastUpdate" />
 			<channel typeId="AddressStreet" id="AddressStreet" />
 			<channel typeId="AddressCity" id="AddressCity" />
 			<channel typeId="AddressCountry" id="AddressCountry" />
@@ -101,7 +101,7 @@
 		<label>Distance from home</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
-	<channel-type id="LastUpdate">
+	<channel-type id="LocationLastUpdate">
 		<item-type>DateTime</item-type>
 		<label>Last location update</label>
 	</channel-type>
