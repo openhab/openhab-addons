@@ -51,8 +51,6 @@ public class LaMetricTimeBindingConstants {
 
     public static final String CHANNEL_APP_ACTIVATE = "activate";
     public static final String CHANNEL_APP_SET_ALARM = "setAlarm";
-    public static final String CHANNEL_APP_SNOOZE = "snooze";
-    public static final String CHANNEL_APP_SNOOZE_10 = "snooze10";
     public static final String CHANNEL_APP_STOP_ALARM = "stopAlarm";
     public static final String CHANNEL_APP_CONFIGURE = "configure";
     public static final String CHANNEL_APP_PAUSE = "pause";

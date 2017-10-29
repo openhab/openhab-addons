@@ -105,8 +105,6 @@ All channels have no defined state. They exist as one-way communication to the d
 |------------|-----------|------------------------------------------------------------------------------------------------------------|
 | activate   | Switch    | Activate the defined instance                                                                              |
 | setAlarm   | String    | Set a JSON string that represents the parameters to set an alarm (enabled, time, wakeOnRadio)              |
-| snooze     | String    | Set a JSON string that represents the parameters to snooze an alarm (amount, unit) (currently not working) |
-| snooze10   | Switch    | Snooze the alarm for 10 minutes (currently not working)                                                    |
 | stopAlarm  | Switch    | Stop the alarm (currently not working)                                                                     |
 
 ### Countdown App
@@ -296,8 +294,6 @@ Switch NotifyTheRoofIsOnFire    "The Roof Is On Fire!"
 
 Switch ClockActivate            "Activate Clock"           { channel="lametrictime:clockApp:demo:clock:activate" }
 String ClockSetAlarm                                       { channel="lametrictime:clockApp:demo:clock:setAlarm" }
-String ClockSnooze                                         { channel="lametrictime:clockApp:demo:clock:snooze" }
-Switch ClockSnooze10            "Snooze 10 Min"            { channel="lametrictime:clockApp:demo:clock:snooze10" }
 Switch ClockStopAlarm           "Stop Alarm"               { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
 Switch SetAlarmIn1Min           "Set Alarm in 1 min"
 
@@ -358,7 +354,6 @@ Sample sitemap configuration:
             Frame label="Clock" {
                 Switch item=ClockActivate
                 Switch item=SetAlarmIn1Min
-                Switch item=ClockSnooze10
                 Switch item=ClockStopAlarm            
             }
             Frame label="Countdown" {

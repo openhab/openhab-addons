@@ -10,15 +10,12 @@ package org.openhab.binding.lametrictime.handler;
 
 import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
 
-import java.time.temporal.ChronoUnit;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lametrictime.handler.model.ParamsSetAlarm;
-import org.openhab.binding.lametrictime.handler.model.ParamsSnooze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.common.impl.GsonGenerator;
@@ -52,18 +49,6 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
                             CoreApps.clock().setAlarm(params.enabled, params.time, params.wakeWithRadio));
                     break;
                 }
-                case CHANNEL_APP_SNOOZE: {
-                    ParamsSnooze params = gson.fromJson(command.toString(), ParamsSnooze.class);
-                    if (params.unit == null) {
-                        logger.error("Missing unit for snooze command");
-                        break;
-                    }
-                    getDevice().doAction(getWidget(), CoreApps.clock().snooze(params.amount, params.unit));
-                    break;
-                }
-                case CHANNEL_APP_SNOOZE_10:
-                    getDevice().doAction(getWidget(), CoreApps.clock().snooze(10, ChronoUnit.MINUTES));
-                    break;
                 case CHANNEL_APP_STOP_ALARM:
                     getDevice().doAction(getWidget(), CoreApps.clock().stopAlarm());
                     break;

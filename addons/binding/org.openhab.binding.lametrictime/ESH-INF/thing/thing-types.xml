@@ -41,14 +41,6 @@
                 <label>Set Alarm</label>
                 <description>Set the alarm</description>
             </channel>
-            <channel id="snooze" typeId="parameterActionType">
-                <label>Snooze</label>
-                <description>Snooze the alarm</description>
-            </channel>
-            <channel id="snooze10" typeId="triggerActionType">
-                <label>Snooze 10 Minutes</label>
-                <description>Snooze the alarm for 10 minutes</description>
-            </channel>
             <channel id="stopAlarm" typeId="triggerActionType">
                 <label>Stop Alarm</label>
                 <description>Stop the alarm</description>
