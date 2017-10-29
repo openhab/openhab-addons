@@ -39,20 +39,20 @@ public class BleboxHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(BleboxBindingConstants.DIMMERBOX_THING_TYPE)) {
-            return new DimmerHandler(thing);
-        } else if (thingTypeUID.equals(BleboxBindingConstants.SWITCHBOX_THING_TYPE)) {
-            return new SwitchBoxHandler(thing);
-        } else if (thingTypeUID.equals(BleboxBindingConstants.SWITCHBOXD_THING_TYPE)) {
-            return new SwitchBoxDHandler(thing);
-        } else if (thingTypeUID.equals(BleboxBindingConstants.WLIGHTBOX_THING_TYPE)) {
-            return new LightBoxHandler(thing);
-        } else if (thingTypeUID.equals(BleboxBindingConstants.WLIGHTBOXS_THING_TYPE)) {
-            return new LightBoxSHandler(thing);
-        } else if (thingTypeUID.equals(BleboxBindingConstants.GATEBOX_THING_TYPE)) {
-            return new GateBoxHandler(thing);
+        switch (thingTypeUID.getId()) {
+            case BleboxBindingConstants.DIMMERBOX:
+                return new DimmerHandler(thing);
+            case BleboxBindingConstants.SWITCHBOX:
+                return new SwitchBoxHandler(thing);
+            case BleboxBindingConstants.SWITCHBOXD:
+                return new SwitchBoxDHandler(thing);
+            case BleboxBindingConstants.WLIGHTBOX:
+                return new LightBoxHandler(thing);
+            case BleboxBindingConstants.WLIGHTBOXS:
+                return new LightBoxSHandler(thing);
+            case BleboxBindingConstants.GATEBOX:
+                return new GateBoxHandler(thing);
         }
-
         return null;
     }
 }
