@@ -102,7 +102,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      */
     public LoxoneMiniserverHandler(Thing thing, LoxoneDynamicStateDescriptionProvider provider) {
         super(thing);
-        dynamicStateDescriptionProvider = provider;
+        if (provider != null) {
+            dynamicStateDescriptionProvider = provider;
+        } else {
+            logger.warn("Dynamic state description provider is null");
+        }
     }
 
     @Override
