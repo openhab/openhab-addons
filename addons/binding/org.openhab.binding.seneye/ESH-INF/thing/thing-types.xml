@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="seneye"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="seneye-thing">
+        <label>Seneye Monitor</label>
+        <description>Seneye Monitor Thing</description>
+
+        <channels>
+            <channel id="channeltemperature" typeId="seneye-temperature-channel"/>
+            <channel id="channelph" typeId="seneye-ph-channel"/>
+            <channel id="channelnh3" typeId="seneye-nh3-channel"/>
+            <channel id="channelnh4" typeId="seneye-nh4-channel"/>
+            <channel id="channelO2" typeId="seneye-O2-channel"/>
+            <channel id="channellux" typeId="seneye-lux-channel"/>
+            <channel id="channelpar" typeId="seneye-par-channel"/>
+            <channel id="channelkelvin" typeId="seneye-Kelvin-channel"/>
+            <channel id="channellastreading" typeId="seneye-lastreading-channel"/>
+            <channel id="channelslideexpires" typeId="seneye-slideexpires-channel"/>
+        </channels>
+        <config-description>
+            <parameter name="aquariumname" type="text" required="true">
+                <label>Aquarium Name</label>
+                <description>The name of your aquarium</description>
+                <advanced>false</advanced>
+                <required>true</required>
+            </parameter>
+
+            <parameter name="username" type="text" required="true">
+                <label>Username</label>
+                <description>The username of My Seneye</description>
+                <advanced>false</advanced>
+                <required>true</required>
+            </parameter>
+
+            <parameter name="password" type="text" required="true">
+                <label>Password</label>
+                <description>The password of My Seneye</description>
+                <context>password</context>
+                <advanced>false</advanced>
+                <required>true</required>
+            </parameter>
+            
+            <parameter name="polltime" type="integer" required="true" min="1" max="1440">
+                <label>Polling time</label>
+                <description>How often (in minutes) does the seneye needs to be checked ?</description>
+                <default>5</default>
+                <advanced>false</advanced>
+                <required>true</required>
+            </parameter>
+
+        </config-description>        
+    </thing-type>
+
+    <!-- Channels -->
+    <channel-type id="seneye-temperature-channel">
+        <item-type>String</item-type>
+        <label>Seneye Temperature Channel</label>
+        <description>The water temperature</description>
+    </channel-type>
+    <channel-type id="seneye-ph-channel">
+        <item-type>String</item-type>
+        <label>Seneye PH Channel</label>
+        <description>The PH Level</description>
+    </channel-type>
+    <channel-type id="seneye-nh3-channel">
+        <item-type>String</item-type>
+        <label>Seneye NH3 Channel</label>
+        <description>The NH3 Level</description>
+    </channel-type>    
+    <channel-type id="seneye-nh4-channel">
+        <item-type>String</item-type>
+        <label>Seneye NH4 Channel</label>
+        <description>The NH4 Level</description>
+    </channel-type>
+    <channel-type id="seneye-O2-channel">
+        <item-type>String</item-type>
+        <label>Seneye O2 Channel</label>
+        <description>The O2 Level</description>
+    </channel-type>
+    <channel-type id="seneye-lux-channel">
+        <item-type>String</item-type>
+        <label>Seneye LUX Channel</label>
+        <description>The LUX Light Level</description>
+    </channel-type>
+    <channel-type id="seneye-par-channel">
+        <item-type>String</item-type>
+        <label>Seneye PAR Channel</label>
+        <description>The PAR Light Level</description>
+    </channel-type>        
+    <channel-type id="seneye-Kelvin-channel">
+        <item-type>String</item-type>
+        <label>Seneye kelvin Channel</label>
+        <description>The Kelvin Light Level</description>
+    </channel-type>        
+    <channel-type id="seneye-lastreading-channel">
+        <item-type>DateTime</item-type>
+        <label>Seneye last reading Channel</label>
+        <description>The last time your seneye is checked</description>
+    </channel-type> 
+    <channel-type id="seneye-slideexpires-channel">
+        <item-type>DateTime</item-type>
+        <label>Seneye slide expiration Channel</label>
+        <description>The time your slide expires</description>
+    </channel-type>     
+</thing:thing-descriptions>
