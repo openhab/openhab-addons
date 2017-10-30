@@ -7,16 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.wso2iots.internal.jsonTemp;
+package org.openhab.binding.wso2iots.internal.jsonResponse;
 
 /**
- * The {@link wso2iotsResponseTemp} class returns the temperature value
+ * The {@link wso2iotsResponse} class returns the humidity value
  * from json wso2iotsresponse string
  *
  * @author Ramesha Karunasena - Initial contribution
  */
 
-public class wso2iotsResponseTemp {
+public class wso2iotsResponse {
 
     private Values values;
 

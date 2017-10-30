@@ -59,7 +59,6 @@ Number	wso2_Temperature	"Temperature" <temperature> (Wso2iots) {channel="wso2iot
 Number	wso2_Humidity		"Humidity" <humidity> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:humidity"}
 Number	wso2_Light		"Light" <light> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:light"}
 Number	wso2_Motion		"Motion" <motion> (Wso2iots) {channel="wso2iots:buildingMonitor:<thingId>:motion"}
-
 ```
 
 wso2iots.sitemap:
@@ -73,5 +72,4 @@ sitemap wso2iots label="Building Monitor Application"{
 		Text item=wso2_Light label="Light [%.1f ]" icon="light"
 	}
 }
-
 ```

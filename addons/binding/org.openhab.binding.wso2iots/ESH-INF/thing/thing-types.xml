@@ -44,7 +44,7 @@
 
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
-		<label>Temperature (°C)</label>
+		<label>Temperature</label>
 		<description>Temperature in Celsius degrees</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f °C" />

@@ -35,10 +35,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wso2iots.wso2iotsBindingConstants;
 import org.openhab.binding.wso2iots.internal.wso2iotsConfiguration;
-import org.openhab.binding.wso2iots.internal.jsonHumidity.wso2iotsResponseHumidity;
-import org.openhab.binding.wso2iots.internal.jsonLight.wso2iotsResponseLight;
-import org.openhab.binding.wso2iots.internal.jsonMotion.wso2iotsResponseMotion;
-import org.openhab.binding.wso2iots.internal.jsonTemp.wso2iotsResponseTemp;
+import org.openhab.binding.wso2iots.internal.jsonResponse.wso2iotsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +53,8 @@ public class wso2iotsHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(wso2iotsHandler.class);
 
     private static final int DEFAULT_REFRESH_PERIOD = 60;
-    
-    private static final int PERIOD = 200;
+
+    private static final int API_RESPONSE_INTERVAL = 200;
 
     private ScheduledFuture<?> refreshJob;
 
@@ -78,7 +75,7 @@ public class wso2iotsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        
+
         logger.debug("Initializing wso2iots handler.");
 
         wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
@@ -104,7 +101,7 @@ public class wso2iotsHandler extends BaseThingHandler {
 
         if (validConfig) {
             updateStatus(ThingStatus.OFFLINE);
-            startAutomaticRefresh();
+            startAutomaticRefresh(config);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -123,18 +120,21 @@ public class wso2iotsHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(wso2iotsBindingConstants.TEMPERATURE)) {
-                updateChannel(channelUID.getId(), iotsResponseTemp);
+            switch (channelUID.getId()) {
+                case wso2iotsBindingConstants.TEMPERATURE:
+                    updateChannel(channelUID.getId(), iotsResponseTemp);
+                    break;
+                case wso2iotsBindingConstants.LIGHT:
+                    updateChannel(channelUID.getId(), iotsResponseLight);
+                    break;
+                case wso2iotsBindingConstants.MOTION:
+                    updateChannel(channelUID.getId(), iotsResponseMotion);
+                    break;
+                case wso2iotsBindingConstants.HUMIDITY:
+                    updateChannel(channelUID.getId(), iotsResponseHumidity);
+                    break;
             }
-            if (channelUID.getId().equals(wso2iotsBindingConstants.LIGHT)) {
-                updateChannel(channelUID.getId(), iotsResponseLight);
-            }
-            if (channelUID.getId().equals(wso2iotsBindingConstants.MOTION)) {
-                updateChannel(channelUID.getId(), iotsResponseMotion);
-            }
-            if (channelUID.getId().equals(wso2iotsBindingConstants.HUMIDITY)) {
-                updateChannel(channelUID.getId(), iotsResponseHumidity);
-            }
+
         } else {
             logger.debug("Can not handle command {}", command);
         }
@@ -143,7 +143,7 @@ public class wso2iotsHandler extends BaseThingHandler {
     /**
      * Start the job refreshing the building monitor data
      */
-    private void startAutomaticRefresh() {
+    private void startAutomaticRefresh(wso2iotsConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = new Runnable() {
                 @Override
@@ -167,7 +167,6 @@ public class wso2iotsHandler extends BaseThingHandler {
                 }
             };
 
-            wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
         }
@@ -209,89 +208,87 @@ public class wso2iotsHandler extends BaseThingHandler {
         String Access_Token = config.apikey;
         String id = config.deviceId;
         long time = System.currentTimeMillis() / 1000;
-        String fromTime = String.valueOf(time - PERIOD);
+        String fromTime = String.valueOf(time - API_RESPONSE_INTERVAL);
         String toTime = String.valueOf(time);
 
         String url = "https://localhost:8243/senseme/device/1.0.0/stats/";
         url = url + id + "?from=" + fromTime + "&to=" + toTime + "&sensorType=" + sensorType;
 
         URL obj;
-        
-        try {
-        
-            obj = this.validateCertificate(url);
+
+        obj = this.validateCertificate(url);
+
+        if (obj == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Certificate validation failed");
+            return null;
+        } else {
 
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
             con.setRequestMethod("GET");
             con.setRequestProperty("Accept", "application/json");
             con.setRequestProperty("Authorization", "Bearer " + Access_Token);
+            try {
 
-            int responseCode = con.getResponseCode();
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
+                response1 = response.toString();
 
-            response1 = response.toString();
+                if (response1.equals("[]")) {
+                    errormsg = "empty response from wso2 iots";
+                    logger.warn(errormsg);
 
-            if (response1.equals("[]")) {
-                errormsg = "empty response from wso2 iots";
+                } else {
+                    String segment = response1.substring(response1.lastIndexOf("{"), response1.lastIndexOf("}"));
+                    segment = "{\"values\":" + segment + "}";
+
+                    logger.debug(response1);
+                    logger.debug(segment);
+                    // Map the JSON response to an object
+
+                    wso2iotsResponse result = gson.fromJson(segment, wso2iotsResponse.class);
+
+                    if (sensorType == wso2iotsBindingConstants.TEMPERATURE) {
+
+                        iotsResponse = result.getvalues().getTemperature();
+                    }
+
+                    else if (sensorType == wso2iotsBindingConstants.HUMIDITY) {
+
+                        iotsResponse = result.getvalues().getHumidity();
+                    }
+
+                    else if (sensorType == wso2iotsBindingConstants.LIGHT) {
+
+                        iotsResponse = result.getvalues().getLight();
+                    }
+
+                    else if (sensorType == wso2iotsBindingConstants.MOTION) {
+
+                        iotsResponse = result.getvalues().getMotion();
+                    }
+
+                }
+            } catch (Exception e) {
+                errormsg = e.getMessage();
                 logger.warn(errormsg);
-
-            } else {
-                String segment = response1.substring(response1.lastIndexOf("{"), response1.lastIndexOf("}"));
-                segment = "{\"values\":" + segment + "}";
-
-                logger.debug(response1);
-                logger.debug(segment);
-                // Map the JSON response to an object
-
-                if (sensorType == wso2iotsBindingConstants.TEMPERATURE) {
-
-                    wso2iotsResponseTemp result = gson.fromJson(segment, wso2iotsResponseTemp.class);
-
-                    iotsResponse = result.getvalues().getData();
-                }
-
-                else if (sensorType == wso2iotsBindingConstants.HUMIDITY) {
-
-                    wso2iotsResponseHumidity result = gson.fromJson(segment, wso2iotsResponseHumidity.class);
-
-                    iotsResponse = result.getvalues().getData();
-                }
-
-                else if (sensorType == wso2iotsBindingConstants.LIGHT) {
-
-                    wso2iotsResponseLight result = gson.fromJson(segment, wso2iotsResponseLight.class);
-
-                    iotsResponse = result.getvalues().getData();
-                }
-
-                else if (sensorType == wso2iotsBindingConstants.MOTION) {
-
-                    wso2iotsResponseMotion result = gson.fromJson(segment, wso2iotsResponseMotion.class);
-
-                    iotsResponse = result.getvalues().getData();
-                }
-                
             }
-        } catch (Exception e) {
-            errormsg = e.getMessage();
-            logger.warn(errormsg);  
-        }
 
-        if (errormsg == null) {
-            updateStatus(ThingStatus.ONLINE);
-            return iotsResponse;
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errormsg);
-            return null;
+            if (errormsg == null) {
+                updateStatus(ThingStatus.ONLINE);
+                return iotsResponse;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errormsg);
+                return null;
+            }
         }
     }
 

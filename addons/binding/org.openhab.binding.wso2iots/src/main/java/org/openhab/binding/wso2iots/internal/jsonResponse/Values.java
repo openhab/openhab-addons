@@ -7,12 +7,12 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.wso2iots.internal.jsonTemp;
+package org.openhab.binding.wso2iots.internal.jsonResponse;
 
 import java.math.BigDecimal;
 
 /**
- * The {@link Values} class returns the temperature value
+ * The {@link Values} class returns the humidity value
  * from json wso2iotsresponse string
  *
  * @author Ramesha Karunasena - Initial contribution
@@ -20,10 +20,25 @@ import java.math.BigDecimal;
 
 public class Values {
 
+    private BigDecimal humidity;
     private BigDecimal temperature;
+    private BigDecimal motion;
+    private BigDecimal light;
 
-    public BigDecimal getData() {
+    public BigDecimal getHumidity() {
+        return humidity;
+    }
+
+    public BigDecimal getTemperature() {
         return temperature;
+    }
+
+    public BigDecimal getMotion() {
+        return motion;
+    }
+
+    public BigDecimal getLight() {
+        return light;
     }
 
 }
