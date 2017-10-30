@@ -52,8 +52,6 @@ public class wso2iotsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(wso2iotsHandler.class);
 
-    private static final int DEFAULT_REFRESH_PERIOD = 60;
-
     private static final int API_RESPONSE_INTERVAL = 200;
 
     private ScheduledFuture<?> refreshJob;
@@ -92,6 +90,10 @@ public class wso2iotsHandler extends BaseThingHandler {
         }
         if (StringUtils.trimToNull(config.deviceId) == null) {
             errorMsg = "Parameter 'deviceId' is mandatory and must be configured";
+            validConfig = false;
+        }
+        if (config.refresh == null) {
+            errorMsg = "Parameter 'refresh' must be configured";
             validConfig = false;
         }
         if (config.refresh != null && config.refresh < 2) {
@@ -167,7 +169,7 @@ public class wso2iotsHandler extends BaseThingHandler {
                 }
             };
 
-            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
+            int delay = config.refresh.intValue();
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
         }
     }
