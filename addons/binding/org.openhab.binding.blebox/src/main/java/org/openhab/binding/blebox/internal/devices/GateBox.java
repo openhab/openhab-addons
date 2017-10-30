@@ -61,7 +61,7 @@ public class GateBox extends BaseDevice {
         try {
             response = getJson(STATE_URL, StateResponse.class, null);
         } catch (Exception e) {
-            logger.error("getStatus(): Error: {}", e);
+            logger.warn("getStatus(): Error: {}", e);
         }
 
         return response;
@@ -71,7 +71,7 @@ public class GateBox extends BaseDevice {
         try {
             getJson(SET_URL, StateResponse.class, "gate");
         } catch (Exception e) {
-            logger.error("setPosition(): Error: {}", e);
+            logger.warn("setPosition(): Error: {}", e);
         }
     }
 

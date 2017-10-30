@@ -72,7 +72,7 @@ public class BleboxDiscovery extends AbstractDiscoveryService {
                 logger.trace("addDevice(): '{}' was added to Smarthome inbox.", result.getThingUID());
             }
         } catch (Exception e) {
-            logger.error("addDevice(): Error: {}", e);
+            logger.warn("addDevice(): Error: {}", e);
         }
     }
 }

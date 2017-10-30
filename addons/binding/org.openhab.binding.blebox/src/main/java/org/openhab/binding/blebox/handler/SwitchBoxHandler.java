@@ -8,17 +8,12 @@
  */
 package org.openhab.binding.blebox.handler;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blebox.BleboxBindingConstants;
-import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
 import org.openhab.binding.blebox.internal.devices.SwitchBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,29 +24,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public class SwitchBoxHandler extends BaseThingHandler {
+public class SwitchBoxHandler extends BaseHandler {
     private Logger logger = LoggerFactory.getLogger(SwitchBoxHandler.class);
     private SwitchBox switchBox;
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (switchBox != null) {
-                OnOffType switchState = switchBox.getSwitchState(0);
-
-                if (switchState != null) {
-                    updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchState);
-
-                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            }
-        }
-    };
-    private ScheduledFuture<?> pollingJob;
 
     public SwitchBoxHandler(Thing thing) {
         super(thing);
@@ -67,20 +42,24 @@ public class SwitchBoxHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
-
-        switchBox = new SwitchBox(config.ip);
-        updateStatus(ThingStatus.ONLINE);
-
-        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
-                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
-
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
+    void initializeDevice(String ipAddress) {
+        switchBox = new SwitchBox(ipAddress);
     }
 
     @Override
-    public void dispose() {
-        pollingJob.cancel(true);
+    void updateDeviceStatus() {
+        if (switchBox != null) {
+            OnOffType switchState = switchBox.getSwitchState(0);
+
+            if (switchState != null) {
+                updateState(BleboxBindingConstants.CHANNEL_SWITCH0, switchState);
+
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        }
     }
 }

@@ -70,7 +70,7 @@ public class Dimmer extends BaseDevice {
         try {
             postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
         } catch (Exception e) {
-            logger.error("setBrightness(): Error: {}", e);
+            logger.warn("setBrightness(): Error: {}", e);
         }
     }
 
@@ -90,7 +90,7 @@ public class Dimmer extends BaseDevice {
                 return new PercentType(Math.round(percent * 100));
             }
         } catch (Exception e) {
-            logger.error("getBrightness(): Error: {}", e);
+            logger.warn("getBrightness(): Error: {}", e);
         }
         return null;
     }

@@ -64,7 +64,7 @@ public class LightBoxS extends BaseDevice {
         try {
             response = getJson(STATE_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
         } catch (Exception e) {
-            logger.error("getStatus(): Error: {}", e);
+            logger.warn("getStatus(): Error: {}", e);
         }
         return response;
     }
@@ -75,7 +75,7 @@ public class LightBoxS extends BaseDevice {
         try {
             postJson(request, SET_URL, StateResponse.class, StateResponse.ROOT_ELEMENT);
         } catch (Exception e) {
-            logger.error("setWhiteBrightness(): Error: {}", e);
+            logger.warn("setWhiteBrightness(): Error: {}", e);
         }
         LastKnownBrigthness = p;
     }

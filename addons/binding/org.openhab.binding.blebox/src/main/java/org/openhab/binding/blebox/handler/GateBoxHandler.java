@@ -8,18 +8,13 @@
  */
 package org.openhab.binding.blebox.handler;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blebox.BleboxBindingConstants;
-import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
 import org.openhab.binding.blebox.internal.devices.GateBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,30 +25,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public class GateBoxHandler extends BaseThingHandler {
+public class GateBoxHandler extends BaseHandler {
 
     private Logger logger = LoggerFactory.getLogger(GateBoxHandler.class);
     private GateBox gateBox;
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (gateBox != null) {
-                GateBox.StateResponse state = gateBox.getStatus();
-
-                if (state != null) {
-                    updateState(BleboxBindingConstants.CHANNEL_POSITION, state.getPosition());
-
-                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            }
-        }
-    };
-    private ScheduledFuture<?> pollingJob;
 
     public GateBoxHandler(Thing thing) {
         super(thing);
@@ -79,20 +54,24 @@ public class GateBoxHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
-
-        gateBox = new GateBox(config.ip);
-        updateStatus(ThingStatus.ONLINE);
-
-        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
-                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
-
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
+    void initializeDevice(String ipAddress) {
+        gateBox = new GateBox(ipAddress);
     }
 
     @Override
-    public void dispose() {
-        pollingJob.cancel(true);
+    void updateDeviceStatus() {
+        if (gateBox != null) {
+            GateBox.StateResponse state = gateBox.getStatus();
+
+            if (state != null) {
+                updateState(BleboxBindingConstants.CHANNEL_POSITION, state.getPosition());
+
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        }
     }
 }

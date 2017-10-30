@@ -31,7 +31,7 @@ public class SwitchBoxD extends SwitchBox {
         try {
             getJson(url, StateResponse.class, RESPONSE_ROOT);
         } catch (Exception e) {
-            logger.error("setSwitchState(): Error: {}", e);
+            logger.warn("setSwitchState(): Error: {}", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class SwitchBoxD extends SwitchBox {
         try {
             response = getJsonArray(STATE_URL, Relay[].class, RESPONSE_ROOT);
         } catch (Exception e) {
-            logger.error("getSwitchesState(): Error: {}", e);
+            logger.warn("getSwitchesState(): Error: {}", e);
         }
 
         OnOffType[] result = new OnOffType[2];

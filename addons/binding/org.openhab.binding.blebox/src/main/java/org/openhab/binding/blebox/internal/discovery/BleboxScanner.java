@@ -79,10 +79,10 @@ public class BleboxScanner {
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
         } catch (IllegalArgumentException e) {
-            logger.error("discoverDevices(): Illegal Argument Exception - {}", e.toString());
+            logger.warn("discoverDevices(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("discoverDevices(): Error - Unable to get Subnet Information! {}", e.toString());
+            logger.warn("discoverDevices(): Error - Unable to get Subnet Information! {}", e.toString());
             return;
         }
 

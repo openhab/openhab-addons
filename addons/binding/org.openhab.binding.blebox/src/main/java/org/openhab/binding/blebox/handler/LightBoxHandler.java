@@ -8,19 +8,14 @@
  */
 package org.openhab.binding.blebox.handler;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blebox.BleboxBindingConstants;
-import org.openhab.binding.blebox.internal.BleboxDeviceConfiguration;
 import org.openhab.binding.blebox.internal.devices.LightBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,30 +26,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szymon Tokarski - Initial contribution
  */
-public class LightBoxHandler extends BaseThingHandler {
+public class LightBoxHandler extends BaseHandler {
     private Logger logger = LoggerFactory.getLogger(LightBoxHandler.class);
     private LightBox lightBox;
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (lightBox != null) {
-                LightBox.StateResponse state = lightBox.getStatus();
-
-                if (state != null) {
-                    updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
-                    updateState(BleboxBindingConstants.CHANNEL_COLOR, state.getColor());
-
-                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            }
-        }
-    };
-    private ScheduledFuture<?> pollingJob;
 
     public LightBoxHandler(Thing thing) {
         super(thing);
@@ -92,20 +66,25 @@ public class LightBoxHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        BleboxDeviceConfiguration config = getConfigAs(BleboxDeviceConfiguration.class);
-
-        lightBox = new LightBox(config.ip);
-        updateStatus(ThingStatus.ONLINE);
-
-        int pollingInterval = (config.pollingInterval != null) ? config.pollingInterval.intValue()
-                : BleboxDeviceConfiguration.DEFAULT_POLL_INTERVAL;
-
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollingInterval, TimeUnit.SECONDS);
+    void initializeDevice(String ipAddress) {
+        lightBox = new LightBox(ipAddress);
     }
 
     @Override
-    public void dispose() {
-        pollingJob.cancel(true);
+    void updateDeviceStatus() {
+        if (lightBox != null) {
+            LightBox.StateResponse state = lightBox.getStatus();
+
+            if (state != null) {
+                updateState(BleboxBindingConstants.CHANNEL_BRIGHTNESS, state.getWhiteBrightness());
+                updateState(BleboxBindingConstants.CHANNEL_COLOR, state.getColor());
+
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        }
     }
 }

@@ -58,7 +58,7 @@ public class SwitchBox extends BaseDevice {
         try {
             getJson(url, StateResponse.class, null);
         } catch (Exception e) {
-            logger.error("setSwitchState(): Error: {}", e);
+            logger.warn("setSwitchState(): Error: {}", e);
         }
     }
 
@@ -68,7 +68,7 @@ public class SwitchBox extends BaseDevice {
         try {
             response = getJsonArray(STATE_URL, Relay[].class, null);
         } catch (Exception e) {
-            logger.error("getSwitchState(): Error: {}", e);
+            logger.warn("getSwitchState(): Error: {}", e);
         }
 
         if (response != null && response.length > switchIndex) {

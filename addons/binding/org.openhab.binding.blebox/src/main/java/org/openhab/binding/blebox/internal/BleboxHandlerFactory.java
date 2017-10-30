@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.blebox.BleboxBindingConstants;
 import org.openhab.binding.blebox.handler.DimmerHandler;
 import org.openhab.binding.blebox.handler.GateBoxHandler;
@@ -21,6 +22,7 @@ import org.openhab.binding.blebox.handler.LightBoxHandler;
 import org.openhab.binding.blebox.handler.LightBoxSHandler;
 import org.openhab.binding.blebox.handler.SwitchBoxDHandler;
 import org.openhab.binding.blebox.handler.SwitchBoxHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link BleboxHandlerFactory} is responsible for creating things and thing
@@ -28,6 +30,7 @@ import org.openhab.binding.blebox.handler.SwitchBoxHandler;
  *
  * @author Szymon Tokarski - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true)
 public class BleboxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
