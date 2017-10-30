@@ -8,6 +8,8 @@ To use the binding, first the user has to locally setup the [WSO2 IoTS](https://
 
 After enrolling the device agent, an access token has to be obtained from [WSO2 API store](https://localhost:9443/api-store/).
 
+Further details on how to configure this binding can be found [here](https://medium.com/@ramesha.karu/integrating-openhab2-with-wso2-iot-server-5fda14fd382e).
+
 ## Supported Things
 
 There is exactly one supported thing type, which represents one device agent. It has the `buildingMonitor` id. You can add multiple Things, e.g. Devices enrolled in different floors and different buildings.
