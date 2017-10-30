@@ -45,7 +45,7 @@ The following table lists the configuration parameters:
 | refreshTimeInMinutes |                                                     | optional, 5 minutes default |
 | googleAPIKey         | Google API key to be used for address lookup calls. | optional                    |
 
-Without a "GoogleAPIKey" the number of daily request are limited and the bindings address lookup functionality will stop working.
+Without a "GoogleAPIKey" the number of daily request are limited (see also [API useage limits](https://developers.google.com/maps/documentation/geocoding/usage-limitsv)) and the bindings address lookup functionality will stop working.
 It is recommended to provide this value.
 
 A device is identified by a hash value calculated from the device id provided by apple.
