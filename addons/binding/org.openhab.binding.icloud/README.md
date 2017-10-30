@@ -5,7 +5,7 @@ An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
 
-The binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates
+The binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
 
 ## Supported Things
 
