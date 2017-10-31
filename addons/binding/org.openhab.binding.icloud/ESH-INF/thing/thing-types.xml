@@ -51,7 +51,7 @@
 			<channel typeId="Location" id="location" />
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
 			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
-			<channel typeId="DistanceFromHome" id="aistanceFromHome" />
+			<channel typeId="DistanceFromHome" id="distanceFromHome" />
 			<channel typeId="AddressStreet" id="addressStreet" />
 			<channel typeId="AddressCity" id="addressCity" />
 			<channel typeId="AddressCountry" id="addressCountry" />
