@@ -50,7 +50,9 @@ public interface LxServerListener {
      *
      * @param control
      *            control object, which state changed
+     * @param stateName
+     *            name of the state that was updated
      */
-    void onControlStateUpdate(LxControl control);
+    void onControlStateUpdate(LxControl control, String stateName);
 
 }

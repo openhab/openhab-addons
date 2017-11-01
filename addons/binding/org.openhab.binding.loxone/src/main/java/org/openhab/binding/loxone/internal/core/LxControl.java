@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,8 +32,25 @@ import com.google.gson.JsonElement;
  *
  */
 public abstract class LxControl {
+
+    // Register child control classes
+    static {
+        controls = new HashMap<>();
+        addType(LxControlDimmer.class);
+        addType(LxControlInfoOnlyAnalog.class);
+        addType(LxControlInfoOnlyDigital.class);
+        addType(LxControlJalousie.class);
+        addType(LxControlLightController.class);
+        addType(LxControlLightControllerV2.class);
+        addType(LxControlPushbutton.class);
+        addType(LxControlRadio.class);
+        addType(LxControlSwitch.class);
+        addType(LxControlTextState.class);
+        addType(LxControlTimedSwitch.class);
+    }
+
+    private static Map<String, Class<?>> controls;
     private String name;
-    private String typeName;
     private LxContainer room;
     private LxCategory category;
     private Map<String, LxControlState> states = new HashMap<>();
@@ -59,35 +78,59 @@ public abstract class LxControl {
         logger.trace("Creating new LxControl: {}", json.type);
         socketClient = client;
         this.uuid = uuid;
-        if (json.type != null) {
-            this.typeName = json.type.toLowerCase();
-        }
         update(json, room, category);
     }
 
     /**
-     * Obtain control's type name (e.g. switch, rollershutter) by which Miniserver recognizes it
-     *
-     * @return
-     *         name of the control type
-     */
-    public String getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * Gets state object of given name, if exists
+     * Gets value of a state object of given name, if exists
      *
      * @param name
      *            name of state object
      * @return
-     *         state object
+     *         state object's value
      */
-    public LxControlState getState(String name) {
-        if (states.containsKey(name)) {
-            return states.get(name);
+    Double getStateValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getValue();
         }
         return null;
+    }
+
+    /**
+     * Gets text value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's text value
+     */
+    String getStateTextValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getTextValue();
+        }
+        return null;
+    }
+
+    /**
+     * Adds a listener for a particular state, if the state exists for the control.
+     *
+     * @param stateName
+     *            name of the state to add listener for
+     * @param listener
+     *            listener to listen for state changes
+     * @return
+     *         state that listener was added to or null if no such state
+     */
+    public LxControlState addStateListener(String stateName, LxControlStateListener listener) {
+        LxControlState state = getState(stateName);
+        if (state != null) {
+            state.addListener(listener);
+        } else {
+            logger.debug("Attempt to add listener for not existing state {}", stateName);
+        }
+        return state;
     }
 
     public Map<LxUuid, LxControl> getSubControls() {
@@ -260,32 +303,44 @@ public abstract class LxControl {
         if (json == null || json.type == null || json.name == null) {
             return null;
         }
-        LxControl ctrl = null;
         String type = json.type.toLowerCase();
-
-        if (LxControlSwitch.accepts(type)) {
-            ctrl = new LxControlSwitch(client, uuid, json, room, category);
-        } else if (LxControlPushbutton.accepts(type)) {
-            ctrl = new LxControlPushbutton(client, uuid, json, room, category);
-        } else if (LxControlTimedSwitch.accepts(type)) {
-            ctrl = new LxControlTimedSwitch(client, uuid, json, room, category);
-        } else if (LxControlDimmer.accepts(type)) {
-            ctrl = new LxControlDimmer(client, uuid, json, room, category);
-        } else if (LxControlJalousie.accepts(type)) {
-            ctrl = new LxControlJalousie(client, uuid, json, room, category);
-        } else if (LxControlTextState.accepts(type)) {
-            ctrl = new LxControlTextState(client, uuid, json, room, category);
-        } else if (json.details != null) {
-            if (LxControlInfoOnlyDigital.accepts(type) && json.details.text != null) {
-                ctrl = new LxControlInfoOnlyDigital(client, uuid, json, room, category);
-            } else if (LxControlInfoOnlyAnalog.accepts(type)) {
-                ctrl = new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
-            } else if (LxControlLightController.accepts(type)) {
-                ctrl = new LxControlLightController(client, uuid, json, room, category);
-            } else if (LxControlRadio.accepts(type)) {
-                ctrl = new LxControlRadio(client, uuid, json, room, category);
+        Class<?> c = controls.get(type);
+        if (c != null) {
+            try {
+                Constructor<?> constructor = c.getDeclaredConstructor(LxWsClient.class, LxUuid.class,
+                        LxJsonControl.class, LxContainer.class, LxCategory.class);
+                Object control = constructor.newInstance(client, uuid, json, room, category);
+                if (control instanceof LxControl) {
+                    return (LxControl) control;
+                }
+                getLogger().debug("Unexpected object constructed: {}", control.getClass().getSimpleName());
+            } catch (NoSuchMethodException | SecurityException | InvocationTargetException | IllegalAccessException
+                    | InstantiationException | IllegalArgumentException e) {
+                getLogger().debug("Failed to construct control object {}: {}", c.getSimpleName(), e.getMessage());
             }
+        } else {
+            getLogger().debug("No registered control class for {}, uuid = {}", type, json.uuidAction);
         }
-        return ctrl;
+        return null;
+    }
+
+    private LxControlState getState(String name) {
+        if (states.containsKey(name)) {
+            return states.get(name);
+        }
+        return null;
+    }
+
+    private static void addType(Class<?> c) {
+        try {
+            String name = (String) c.getDeclaredField("TYPE_NAME").get(null);
+            controls.put(name, c);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            getLogger().debug("Error registering control class {}: {}", c.getSimpleName(), e.getMessage());
+        }
+    }
+
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(LxControl.class);
     }
 }
