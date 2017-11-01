@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal;
+package org.openhab.binding.meterreader.internal;
 
-import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
-import org.openhab.binding.smlreader.internal.iec62056.Iec62056_21MeterReader;
-import org.openhab.binding.smlreader.internal.sml.SmlMeterReader;
+import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
+import org.openhab.binding.meterreader.internal.iec62056.Iec62056_21MeterReader;
+import org.openhab.binding.meterreader.internal.sml.SmlMeterReader;
 
 /**
  * Factory to get the correct device reader for a specific {@link ProtocolMode}

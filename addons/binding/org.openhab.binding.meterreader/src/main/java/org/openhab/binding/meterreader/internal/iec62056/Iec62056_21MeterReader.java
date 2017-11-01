@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal.iec62056;
+package org.openhab.binding.meterreader.internal.iec62056;
 
 import java.util.Arrays;
 
-import org.openhab.binding.smlreader.connectors.IMeterReaderConnector;
-import org.openhab.binding.smlreader.internal.MeterDevice;
-import org.openhab.binding.smlreader.internal.MeterValue;
-import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
+import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
+import org.openhab.binding.meterreader.internal.MeterDevice;
+import org.openhab.binding.meterreader.internal.MeterValue;
+import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.openmuc.j62056.DataMessage;
 import org.openmuc.j62056.DataSet;
 import org.openmuc.jsml.EObis;

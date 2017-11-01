@@ -6,16 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal.sml;
+package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.openhab.binding.smlreader.MeterReaderBindingConstants;
-import org.openhab.binding.smlreader.connectors.IMeterReaderConnector;
-import org.openhab.binding.smlreader.internal.MeterDevice;
-import org.openhab.binding.smlreader.internal.MeterValue;
-import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
+import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
+import org.openhab.binding.meterreader.internal.MeterDevice;
+import org.openhab.binding.meterreader.internal.MeterValue;
+import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.openmuc.jsml.structures.EMessageBody;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.structures.SmlList;

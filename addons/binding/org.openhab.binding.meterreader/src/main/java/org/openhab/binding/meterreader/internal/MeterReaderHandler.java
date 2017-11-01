@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal;
+package org.openhab.binding.meterreader.internal;
 
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
@@ -34,9 +34,9 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.smlreader.MeterReaderBindingConstants;
-import org.openhab.binding.smlreader.internal.helper.Baudrate;
-import org.openhab.binding.smlreader.internal.sml.SmlReaderConfiguration;
+import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.internal.helper.Baudrate;
+import org.openhab.binding.meterreader.internal.sml.SmlReaderConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

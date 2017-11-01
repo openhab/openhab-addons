@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal.sml;
+package org.openhab.binding.meterreader.internal.sml;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,9 +18,9 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 import org.apache.commons.codec.binary.Hex;
-import org.openhab.binding.smlreader.connectors.ConnectorBase;
-import org.openhab.binding.smlreader.internal.helper.Baudrate;
-import org.openhab.binding.smlreader.internal.helper.SerialParameter;
+import org.openhab.binding.meterreader.connectors.ConnectorBase;
+import org.openhab.binding.meterreader.internal.helper.Baudrate;
+import org.openhab.binding.meterreader.internal.helper.SerialParameter;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.structures.SmlMessage;
 import org.openmuc.jsml.transport.MessageExtractor;

@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal.sml;
+package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.Arrays;
 
-import org.openhab.binding.smlreader.internal.MeterValue;
+import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openmuc.jsml.EObis;
 import org.openmuc.jsml.EUnit;
 import org.openmuc.jsml.structures.ASNObject;

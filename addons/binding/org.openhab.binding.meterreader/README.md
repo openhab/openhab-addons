@@ -85,7 +85,7 @@ Number HouseActualUsage     "Current usage [%.2f W]"                    { channe
 
 ## Known limitations/issues
 
-- MeterReaderBinding has not been well tested for meters that are working in PULL mode.
+- MeterReaderBinding has not been well tested for meters that are working in PULL mode and never been tested in D mode
 - Octet encoding for OBIS Codes
  
     - '129-129:199.130.5'

@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal;
+package org.openhab.binding.meterreader.internal;
 
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.openhab.binding.smlreader.connectors.IMeterReaderConnector;
-import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
+import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
+import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

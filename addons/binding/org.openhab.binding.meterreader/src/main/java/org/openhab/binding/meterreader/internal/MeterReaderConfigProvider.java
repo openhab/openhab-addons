@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal.sml;
+package org.openhab.binding.meterreader.internal;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,9 +16,9 @@ import java.util.Locale;
 
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
-import org.openhab.binding.smlreader.MeterReaderBindingConstants;
-import org.openhab.binding.smlreader.internal.helper.Baudrate;
-import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
+import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.internal.helper.Baudrate;
+import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 
 import gnu.io.NRSerialPort;
 
@@ -27,7 +27,7 @@ import gnu.io.NRSerialPort;
  * @author MatthiasS
  *
  */
-public class SmlReaderConfigProvider implements ConfigOptionProvider {
+public class MeterReaderConfigProvider implements ConfigOptionProvider {
 
     @Override
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {

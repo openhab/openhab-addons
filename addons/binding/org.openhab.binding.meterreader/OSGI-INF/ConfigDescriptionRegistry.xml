@@ -7,7 +7,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.binding.smlreader.ConfigDescription">
-   <implementation class="org.openhab.binding.smlreader.internal.SmlReaderConfigProvider"/>
+   <implementation class="org.openhab.binding.meterreader.internal.MeterReaderConfigProvider"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.core.ConfigOptionProvider"/>
    </service>

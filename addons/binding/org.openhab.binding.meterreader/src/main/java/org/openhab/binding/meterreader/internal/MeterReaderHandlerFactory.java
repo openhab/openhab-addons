@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal;
+package org.openhab.binding.meterreader.internal;
 
-import static org.openhab.binding.smlreader.MeterReaderBindingConstants.THING_TYPE_SMLREADER;
+import static org.openhab.binding.meterreader.MeterReaderBindingConstants.THING_TYPE_SMLREADER;
 
 import java.util.Collections;
 import java.util.Set;

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SmlReader Binding
+Bundle-Name: MeterReader Binding
 Bundle-SymbolicName: org.openhab.binding.meterreader;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
@@ -23,12 +23,12 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.smlreader,
+ org.openhab.binding.meterreader,
  org.osgi.service.component;version="1.2.2",
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: gnu.io.factory;x-internal:=true,
  gnu.io.rfc2217;x-internal:=true,
- org.openhab.binding.smlreader,
- org.openhab.binding.smlreader.connectors
+ org.openhab.binding.meterreader,
+ org.openhab.binding.meterreader.connectors
 Bundle-ActivationPolicy: lazy

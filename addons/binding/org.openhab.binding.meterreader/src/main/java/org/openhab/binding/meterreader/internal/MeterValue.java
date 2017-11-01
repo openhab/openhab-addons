@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.internal;
+package org.openhab.binding.meterreader.internal;
 
 /**
  * Represents one value of the meter device.
