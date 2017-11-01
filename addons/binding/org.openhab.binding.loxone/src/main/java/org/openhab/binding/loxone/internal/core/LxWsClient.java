@@ -270,7 +270,6 @@ class LxWsClient {
 
                 logger.debug("[{}] Connecting to server : {} ", debugId, target);
                 return true;
-
             } catch (Exception e) {
                 setClientState(ClientState.IDLE);
                 close("Connection to websocket failed : " + e.getMessage());
@@ -564,7 +563,6 @@ class LxWsClient {
 
         @OnWebSocketMessage
         public void onBinaryMessage(byte data[], int offset, int length) {
-
             if (logger.isTraceEnabled()) {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);

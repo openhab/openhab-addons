@@ -127,7 +127,6 @@ public class LxControlTimedSwitch extends LxControl {
      *         0 - switch off, 1 - switch on
      */
     public Double getState() {
-
         /**
          * 0 = the output is turned off
          * -1 = the output is permanently on
@@ -145,6 +144,7 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
+     * Get the time remaining to the switch off, in seconds
      *
      * @return deactivation delay in seconds
      *         Loxone also returns floating point values for the delay e.g. 9.99 seconds
