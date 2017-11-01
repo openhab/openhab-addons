@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.supla.handler;
 
+import java.util.concurrent.ScheduledFuture;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -49,7 +50,7 @@ public class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private final ApplicationContext.Builder applicationContextBuilder;
     private SuplaCloudConfiguration configuration;
     private ApplicationContext applicationContext;
-    private ScheduledExecutorService scheduledPool;
+    private ScheduledFuture<?> scheduledFuture;
 
     public SuplaCloudBridgeHandler(Bridge bridge, ApplicationContext.Builder applicationContextBuilder) {
         super(bridge);
@@ -114,20 +115,18 @@ public class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
         this.applicationContext = applicationContext;
 
-        scheduledPool = ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME);
-        scheduledPool.scheduleAtFixedRate(new RefreshThread(),
-                REFRESH_THREAD_DELAY_IN_SECONDS, configuration.refreshInterval, SECONDS);
+        final ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME);
+        this.scheduledFuture = scheduledPool.scheduleAtFixedRate(new RefreshThread(), REFRESH_THREAD_DELAY_IN_SECONDS,
+                configuration.refreshInterval, SECONDS);
         updateStatus(ONLINE);
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        if (scheduledPool != null) {
-            if (!scheduledPool.isShutdown()) {
-                scheduledPool.shutdownNow();
-            }
-            scheduledPool = null;
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+            scheduledFuture = null;
         }
     }
 
