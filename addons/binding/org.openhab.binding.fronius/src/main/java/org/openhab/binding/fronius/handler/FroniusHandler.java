@@ -59,6 +59,8 @@ public class FroniusHandler extends BaseThingHandler {
 
     private InverterRealtimeResponse inverterRealtimeResponse;
     private PowerFlowRealtimeResponse powerFlowResponse;
+    private boolean connectionFailed = false;
+    private boolean connectionFailedPowerFlow = false;
 
     private Gson gson;
 
@@ -273,13 +275,17 @@ public class FroniusHandler extends BaseThingHandler {
             if (!resultOk) {
                 logger.error("Error in fronius response: {}", errorMsg);
             }
-
+            connectionFailedPowerFlow = false;
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
             logger.error("Error running fronius request: {}", errorMsg);
         } catch (IOException | IllegalStateException e) {
-            errorMsg = e.getMessage();
-            logger.error("Error running fronius request: {}", errorMsg);
+            if (!connectionFailedPowerFlow) {
+                logger.error("Error running fronius request: {}", e.getMessage());
+                connectionFailedPowerFlow = true;
+            } else {
+                logger.debug("Error running fronius request: {}", e.getMessage());
+            }
         }
 
         return resultOk ? result : null;
@@ -319,18 +325,23 @@ public class FroniusHandler extends BaseThingHandler {
             if (!resultOk) {
                 logger.error("Error in fronius response: {}", errorMsg);
             }
+            connectionFailed = false;
 
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.error("Error running fronius request: {}", errorMsg);
+            logger.error("Error running fronius request: {}", e.getMessage());
         } catch (IOException | IllegalStateException e) {
-            errorMsg = e.getMessage();
-            logger.error("Error running fronius request: {}", errorMsg);
+            errorMsg = "Connection failed";
+            if (!connectionFailed) {
+                logger.error("Error running fronius request: {}", e.getMessage());
+                connectionFailed = true;
+            } else {
+                logger.debug("Error running fronius request: {}", e.getMessage());
+            }
         }
 
         // Update the thing status
         if (resultOk) {
-            // String attributions = result.getBody()().getAttributions();
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
