@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -549,10 +550,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         if (channelUID != null) {
             List<StateOption> optionsList = null;
             if (options != null) {
-                optionsList = new ArrayList<StateOption>();
-                for (Map.Entry<String, String> entry : options.entrySet()) {
-                    optionsList.add(new StateOption(entry.getKey(), entry.getValue()));
-                }
+                optionsList = options.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
+                        .collect(Collectors.toList());
             }
             dynamicStateDescriptionProvider.setDescription(channelUID, new StateDescription(BigDecimal.ZERO,
                     new BigDecimal(maximum), BigDecimal.ONE, format, readOnly, optionsList));
