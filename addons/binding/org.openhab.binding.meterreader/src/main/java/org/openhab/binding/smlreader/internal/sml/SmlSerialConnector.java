@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smlreader.connectors;
+package org.openhab.binding.smlreader.internal.sml;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 
 import org.apache.commons.codec.binary.Hex;
+import org.openhab.binding.smlreader.connectors.ConnectorBase;
 import org.openhab.binding.smlreader.internal.helper.Baudrate;
 import org.openhab.binding.smlreader.internal.helper.SerialParameter;
 import org.openmuc.jsml.structures.SmlFile;
@@ -36,7 +37,7 @@ import gnu.io.factory.DefaultSerialPortFactory;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
-public final class SerialConnector extends ConnectorBase {
+public final class SmlSerialConnector extends ConnectorBase {
     SerialPort serialPort;
     InputStream inputStream;
     DataInputStream is;
@@ -53,7 +54,7 @@ public final class SerialConnector extends ConnectorBase {
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      */
-    public SerialConnector(String portName) {
+    public SmlSerialConnector(String portName) {
         super();
         this.portName = portName;
     }
@@ -64,7 +65,7 @@ public final class SerialConnector extends ConnectorBase {
      * @param portName the port where the device is connected as defined in openHAB configuration.
      * @param baudrate
      */
-    public SerialConnector(String portName, int baudrate, int baudrateChangeDelay) {
+    public SmlSerialConnector(String portName, int baudrate, int baudrateChangeDelay) {
         super();
         this.portName = portName;
         this.baudrate = baudrate;
@@ -191,7 +192,7 @@ public final class SerialConnector extends ConnectorBase {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SerialConnector other = (SerialConnector) obj;
+        SmlSerialConnector other = (SmlSerialConnector) obj;
         if (portName == null) {
             if (other.portName != null) {
                 return false;

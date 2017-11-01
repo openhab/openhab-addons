@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
-abstract class ConnectorBase implements IMeterReaderConnector<SmlFile> {
+public abstract class ConnectorBase implements IMeterReaderConnector<SmlFile> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -29,7 +29,7 @@ abstract class ConnectorBase implements IMeterReaderConnector<SmlFile> {
      *
      * This constructor has to be called from derived classes!
      */
-    ConnectorBase() {
+    protected ConnectorBase() {
     }
 
     /**

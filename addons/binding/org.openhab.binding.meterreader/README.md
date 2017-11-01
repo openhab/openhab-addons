@@ -25,11 +25,15 @@ No binding configuration required.
 
 The MeterReader thing requires the serial port where the meter device is connected and optionally an refresh intervall.
 
-| Parameter | Name | Description | Required |
-|-----------|------|-------------|----------|
-| `port` | The serial port to connect to| URL to use for playing notification sounds, e.g. `/dev/ttyUSB0` | yes |
-| `refresh` | The refresh interval in seconds | Defines at which interval the values of the meter device shall be read | no |
+| Parameter | Name | Description | Required | Default |
+|-----------|------|-------------|----------|---------|
+| `port` | The serial port to connect to| URL to use for playing notification sounds, e.g. `/dev/ttyUSB0` | yes | |
+| `refresh` | The refresh interval in seconds | Defines at which interval the values of the meter device shall be read | no | 20 |
+| `mode` | The protocol mode to use | Can be 'SML' (PUSH mode), 'ABC' (PULL)or D (PUSH) | no | SML |
+| `baudrateChangeDelay` | Delay of baudrate change in ms | USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate (only relevant for 'C' mode) | no | 0 |
+| `baudrate` | (initial) Baudrate | The baudrate of the serial port. If set to 'auto', it will be negotiated with the meter. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML. | no | AUTO |
 
+The default is 300 baud for modes A, B, and C and 2400 baud for mode D
 
 ## Channels
 
@@ -37,13 +41,14 @@ All available OBIS codes which are read out from the device will be created as c
 At every read out the channels will be synched with the OBIS codes from the device.
 
 Following conversion from OBIS codes to channel ID is done:
-`.` is replaced by `-` and `:` is replaced by `#`.
+`.` is replaced by `-` and `:` or `*` is replaced by `#`.
 
 e.g.
 
 | OBIS code   | Channel ID |
 |-------------|------------|
 |`1-0:1.8.1` | `1-0#1-8-1` |
+|`1.8.0*00` | `1-8-0#00` |
 
 
 ### Channel config

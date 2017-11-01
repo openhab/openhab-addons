@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 
 import org.openhab.binding.smlreader.MeterReaderBindingConstants;
 import org.openhab.binding.smlreader.connectors.IMeterReaderConnector;
-import org.openhab.binding.smlreader.connectors.SerialConnector;
 import org.openhab.binding.smlreader.internal.MeterDevice;
 import org.openhab.binding.smlreader.internal.MeterValue;
 import org.openhab.binding.smlreader.internal.helper.ProtocolMode;
@@ -190,7 +189,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
     @Override
     protected IMeterReaderConnector<SmlFile> createConnector(String serialPort, int baudrate, int baudrateChangeDelay,
             ProtocolMode protocolMode) {
-        return new SerialConnector(serialPort, baudrate, baudrateChangeDelay);
+        return new SmlSerialConnector(serialPort, baudrate, baudrateChangeDelay);
     }
 
 }

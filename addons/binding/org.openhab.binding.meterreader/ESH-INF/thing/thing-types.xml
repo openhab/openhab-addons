@@ -32,7 +32,7 @@
             <parameter name="baudrate" type="text">
                 <label>Baudrate</label>
                 <default>AUTO</default>
-                <description>The baudrate of the serial port. If set to 'auto', it will be negotiated with the meter.</description>
+                <description>The baudrate of the serial port. If set to 'AUTO', it is dependent on the selected mode. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML.</description>
                 <required>true</required>
                 <limitToOptions>false</limitToOptions>
             </parameter>
