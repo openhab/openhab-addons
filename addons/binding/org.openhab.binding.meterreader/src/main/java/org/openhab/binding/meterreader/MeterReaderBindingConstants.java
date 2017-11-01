@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class MeterReaderBindingConstants {
 
-    public static final String BINDING_ID = "smlreader";
+    public static final String BINDING_ID = "meterreader";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SMLREADER = new ThingTypeUID(BINDING_ID, "meter");
