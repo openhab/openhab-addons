@@ -8,32 +8,8 @@
  */
 package org.openhab.binding.loxone.handler;
 
-import static org.openhab.binding.loxone.LoxoneBindingConstants.*;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
@@ -41,24 +17,17 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.loxone.config.LoxoneMiniserverConfig;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxControl;
-import org.openhab.binding.loxone.internal.core.LxControlDimmer;
-import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyAnalog;
-import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyDigital;
-import org.openhab.binding.loxone.internal.core.LxControlJalousie;
-import org.openhab.binding.loxone.internal.core.LxControlLightController;
-import org.openhab.binding.loxone.internal.core.LxControlPushbutton;
-import org.openhab.binding.loxone.internal.core.LxControlRadio;
-import org.openhab.binding.loxone.internal.core.LxControlSwitch;
-import org.openhab.binding.loxone.internal.core.LxControlTextState;
-import org.openhab.binding.loxone.internal.core.LxControlTimedSwitch;
-import org.openhab.binding.loxone.internal.core.LxOfflineReason;
-import org.openhab.binding.loxone.internal.core.LxServer;
-import org.openhab.binding.loxone.internal.core.LxServerListener;
+import org.openhab.binding.loxone.internal.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.channels.Channels;
+import java.util.*;
+
+import static org.openhab.binding.loxone.LoxoneBindingConstants.*;
 
 /**
  * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
@@ -182,6 +151,26 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
             if (control instanceof LxControlLightController) {
                 LxControlLightController controller = (LxControlLightController) control;
+                if (command instanceof OnOffType) {
+                    if ((OnOffType) command == OnOffType.ON) {
+                        controller.allOn();
+                    } else {
+                        controller.allOff();
+                    }
+                } else if (command instanceof UpDownType) {
+                    if ((UpDownType) command == UpDownType.UP) {
+                        controller.nextScene();
+                    } else {
+                        controller.previousScene();
+                    }
+                } else if (command instanceof DecimalType) {
+                    controller.setScene(((DecimalType) command).intValue());
+                }
+                return;
+            }
+
+            if (control instanceof LxControlLightControllerV2) {
+                LxControlLightControllerV2 controller = (LxControlLightControllerV2) control;
                 if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
                         controller.allOn();
@@ -414,6 +403,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             addChannel(channels, "Number", roAnalogTypeId, id, label, "Analog virtual state", tags);
         } else if (control instanceof LxControlLightController) {
             addChannel(channels, "Number", lightCtrlTypeId, id, label, "Light controller", tags);
+        } else if (control instanceof LxControlLightControllerV2) {
+            addChannel(channels, "Number", lightCtrlTypeId, id, label, "Light controller v2", tags);
         } else if (control instanceof LxControlRadio) {
             addChannel(channels, "Number", radioButtonTypeId, id, label, "Radio button", tags);
         } else if (control instanceof LxControlTextState) {
@@ -490,6 +481,15 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             LxControlLightController controller = (LxControlLightController) control;
             Integer value = controller.getCurrentScene();
             if (value != null && value >= 0 && value < LxControlLightController.NUM_OF_SCENES) {
+                updateState(channelId, new DecimalType(value));
+            }
+            if (controller.sceneNamesUpdated()) {
+                createChannelsForControl(control);
+            }
+        } else if (control instanceof LxControlLightControllerV2) {
+            LxControlLightControllerV2 controller = (LxControlLightControllerV2) control;
+            Integer value = controller.getCurrentScene();
+            if (value != null && value >= 0 && value < LxControlLightControllerV2.NUM_OF_SCENES) {
                 updateState(channelId, new DecimalType(value));
             }
             if (controller.sceneNamesUpdated()) {

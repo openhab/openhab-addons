@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A control of Loxone Miniserver.
@@ -294,7 +293,8 @@ public abstract class LxControl {
 
             } else if (LxControlLightController.accepts(type)) {
                 ctrl = new LxControlLightController(client, uuid, json, room, category);
-
+            } else if (LxControlLightControllerV2.accepts(type)) {
+                ctrl = new LxControlLightControllerV2(client, uuid, json, room, category);
             } else if (LxControlRadio.accepts(type)) {
                 ctrl = new LxControlRadio(client, uuid, json, room, category);
             }
