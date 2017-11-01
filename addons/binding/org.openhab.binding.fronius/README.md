@@ -45,7 +45,31 @@ The thing has a few configuration parameters:
 
 ## Full Example
 
+demo.things:
 
+```
+Thing fronius:powerinverter:mydevice [ ip="192.168.66.148",refresh=120,deviceId=1 ]
+```
+
+demo.items:
+
+```
+Number AC_Powery { channel="fronius:powerinverter:mydevice:inverterdatachannelpac" }
+Number Day_Energy { channel="fronius:powerinverter:mydevice:inverterdatachanneldayenergy" }
+Number Total_Energy { channel="fronius:powerinverter:mydevice:inverterdatachanneltotal" }
+Number Year_Energy { channel="fronius:powerinverter:mydevice:inverterdatachannelyear" }
+Number FAC { channel="fronius:powerinverter:mydevice:inverterdatachannelfac" }
+Number IAC { channel="fronius:powerinverter:mydevice:inverterdatachanneliac" }
+Number IDC { channel="fronius:powerinverter:mydevice:inverterdatachannelidc" }
+Number UAC { channel="fronius:powerinverter:mydevice:inverterdatachanneluac" }
+Number UDC { channel="fronius:powerinverter:mydevice:inverterdatachanneludc" }
+Number Grid_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpgrid" }
+Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
+Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
+Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
+Number Battery_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpakku" }
+
+```
 
 ## Any custom content here!
 
