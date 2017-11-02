@@ -87,6 +87,7 @@ public class HomematicConstants {
     public static final String VIRTUAL_DATAPOINT_NAME_RSSI = "RSSI";
     public static final String VIRTUAL_DATAPOINT_NAME_STATE_CONTACT = "STATE_CONTACT";
     public static final String VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH = "SIGNAL_STRENGTH";
+    public static final String VIRTUAL_DATAPOINT_NAME_PRESS = "PRESS";
 
     public static final String RPC_METHODNAME_EVENT = "event";
     public static final String RPC_METHODNAME_LIST_DEVICES = "listDevices";

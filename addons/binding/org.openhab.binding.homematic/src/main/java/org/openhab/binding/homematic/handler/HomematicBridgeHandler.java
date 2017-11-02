@@ -149,7 +149,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (discoveryServiceRegistration != null && bundleContext != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
-            service.deactivate();
+            if (service != null) {
+                service.deactivate();
+            }
 
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
