@@ -8,27 +8,31 @@
  */
 package org.openhab.binding.systeminfo.internal;
 
-import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.*;
+import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 
 /**
- * The {@link SysteminfoHandlerFactory} is responsible for creating things and thing 
+ * The {@link SysteminfoHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Svilen Valkanov - Initial contribution
+ * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
  */
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
-    
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
-    
+
+    private SysteminfoInterface systeminfo;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -40,10 +44,17 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_COMPUTER)) {
-            return new SysteminfoHandler(thing);
+            return new SysteminfoHandler(thing, systeminfo);
         }
 
         return null;
     }
-}
 
+    public void bindSystemInfo(SysteminfoInterface systeminfo) {
+        this.systeminfo = systeminfo;
+    }
+
+    public void unbindSystemInfo(SysteminfoInterface systeminfo) {
+        this.systeminfo = null;
+    }
+}
