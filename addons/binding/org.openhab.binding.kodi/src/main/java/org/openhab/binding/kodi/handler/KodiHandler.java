@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -229,11 +230,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         int httpPort = config.getHttpPort();
         String httpUser = config.getHttpUser();
         String httpPassword = config.getHttpPassword();
-        if (httpUser == null || httpUser.isEmpty() || httpPassword == null || httpPassword.isEmpty()) {
-            return new URI(String.format("http://%s:%d/image/", host, httpPort));
-        } else {
-            return new URI(String.format("http://%s:%s@%s:%d/image/", httpUser, httpPassword, host, httpPort));
-        }
+        String userInfo = (StringUtils.isEmpty(httpUser) || StringUtils.isEmpty(httpPassword)) ? null
+                : String.format("%s:%s", httpUser, httpPassword);
+        return new URI("http", userInfo, host, httpPort, "/image/", null, null);
     }
 
     public void playURI(Command command) {
@@ -286,7 +285,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     if (KodiState.Play.equals(connection.getState())) {
                         connection.updatePlayerStatus();
                     }
-                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10000), TimeUnit.MILLISECONDS);
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);

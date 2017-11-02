@@ -162,13 +162,13 @@
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-	<channel-type id="thumbnail" advanced="true">
+	<channel-type id="thumbnail">
 		<item-type>Image</item-type>
 		<label>Thumbnail</label>
 		<description>The current thumbnail</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="fanart" advanced="true">
+	<channel-type id="fanart">
 		<item-type>Image</item-type>
 		<label>Fanart</label>
 		<description>The current fanart</description>

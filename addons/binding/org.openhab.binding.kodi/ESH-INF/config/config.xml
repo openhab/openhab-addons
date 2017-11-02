@@ -39,11 +39,10 @@
 			<description>Password to access the HTTP service.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" required="false" min="1000" max="60000" unit="ms"
-			groupName="connection">
+		<parameter name="refreshInterval" type="integer" required="false" min="1" max="60" unit="s" groupName="connection">
 			<label>Refresh Interval</label>
-			<description>The refresh interval to poll Kodi API (in ms).</description>
-			<default>10000</default>
+			<description>The refresh interval to poll Kodi API (in s).</description>
+			<default>10</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

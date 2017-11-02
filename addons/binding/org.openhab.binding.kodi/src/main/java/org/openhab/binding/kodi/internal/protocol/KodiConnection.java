@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
@@ -41,7 +42,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
-    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(15 * 60 * 1000); // 15min
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
 
     private URI wsUri;
     private URI imageUri;
@@ -70,7 +72,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         this.imageUri = imageUri;
         try {
             close();
-            wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
+            wsUri = new URI("ws", null, hostName, port, "/jsonrpc", null, null);
             socket = new KodiClientSocket(this, wsUri, scheduler);
             checkConnection();
         } catch (URISyntaxException e) {
@@ -273,14 +275,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     channel = item.get("channel").getAsString();
                 }
 
-                String thumbnailUrl = "";
+                RawType thumbnail = null;
                 if (item.has("thumbnail")) {
-                    thumbnailUrl = convertToImageUrl(item.get("thumbnail"));
+                    thumbnail = downloadImage(convertToImageUrl(item.get("thumbnail")));
                 }
 
-                String fanartUrl = "";
+                RawType fanart = null;
                 if (item.has("fanart")) {
-                    fanartUrl = convertToImageUrl(item.get("fanart"));
+                    fanart = downloadImage(convertToImageUrl(item.get("fanart")));
                 }
 
                 try {
@@ -290,8 +292,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     listener.updateArtist(artist);
                     listener.updateMediaType(mediaType);
                     listener.updatePVRChannel(channel);
-                    listener.updateThumbnail(downloadImage(thumbnailUrl));
-                    listener.updateFanart(downloadImage(fanartUrl));
+                    listener.updateThumbnail(thumbnail);
+                    listener.updateFanart(fanart);
                 } catch (Exception e) {
                     logger.error("Event listener invoking error", e);
                 }
@@ -338,17 +340,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 String encodedURL = URLEncoder.encode(StringUtils.stripEnd(text, "/"), "UTF-8");
                 return imageUri.resolve(encodedURL).toString();
             } catch (UnsupportedEncodingException e) {
-                return text;
+                logger.debug("exception during encoding {}", text, e);
+                return null;
             }
         }
-        return text;
+        return null;
     }
 
     private RawType downloadImage(String url) {
-        if (url != null && !url.isEmpty()) {
+        if (StringUtils.isNotEmpty(url)) {
             if (!IMAGE_CACHE.containsKey(url)) {
                 IMAGE_CACHE.put(url, () -> {
-                    logger.debug("Try to download the content of URL {}", url);
+                    logger.debug("Trying to download the content of URL {}", url);
                     return HttpUtil.downloadImage(url);
                 });
             }
