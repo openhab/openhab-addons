@@ -113,7 +113,7 @@ public class RFXComHumidityMessage extends RFXComBatteryDeviceMessage<RFXComHumi
         data[5] = (byte) (sensorId & 0x00FF);
         data[6] = humidity;
         data[7] = humidityStatus.toByte();
-        data[8] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));// Janne
+        data[8] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
 
         return data;
     }

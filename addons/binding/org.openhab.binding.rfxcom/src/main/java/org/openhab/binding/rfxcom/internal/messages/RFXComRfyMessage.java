@@ -73,8 +73,6 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
         }
     }
 
-    private boolean sunDetector;
-
     public SubType subType;
     public int unitId;
     public byte unitCode;
