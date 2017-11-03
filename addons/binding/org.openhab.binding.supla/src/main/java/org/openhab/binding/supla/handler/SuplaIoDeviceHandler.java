@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,7 +50,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 /**
  * This is handler for all Supla devices.
- * <p>
+ *
  * Channels are created at runtime after connecting to Supla Cloud
  *
  * @author Martin Grześlowski - initial contributor
