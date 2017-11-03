@@ -147,17 +147,17 @@ Things support the following channels:
 
 ## Full Example
 
-demo.Things:
+demo.things:
 
 ```xtend
-network:pingdevice:devicename [ hostname="192.168.0.42" ]
+Thing network:device:devicename [ hostname="192.168.0.42" ]
 ```
 
 demo.items:
 
 ```xtend
-Switch MyDevice { channel="network:pingdevice:devicename:online" }
-Number MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
+Switch MyDevice { channel="network:device:devicename:online" }
+Number MyDeviceResponseTime { channel="network:device:devicename:latency" }
 ```
 
 demo.sitemap:
