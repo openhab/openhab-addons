@@ -24,7 +24,7 @@ public class SmappeeBindingConstants {
     public static final String BINDING_ID = "smappee";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SMAPPEE = new ThingTypeUID(BINDING_ID, "smappee-thing");
+    public final static ThingTypeUID THING_TYPE_SMAPPEE = new ThingTypeUID(BINDING_ID, "smappee");
 
     // List of all Channel ids
     public final static String CHANNEL_CONSUMPTION = "channelconsumption";
