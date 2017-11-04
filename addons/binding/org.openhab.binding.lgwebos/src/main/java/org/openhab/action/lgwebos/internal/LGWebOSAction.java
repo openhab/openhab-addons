@@ -13,9 +13,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -38,13 +39,11 @@ import com.connectsdk.service.capability.ToastControl;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
-import com.google.common.collect.Iterables;
 
 /**
  * This class provides a rules action to start applications and send toast messages.
  *
- * @author Sebastian Prehn
- * @since 2.1.0
+ * @author Sebastian Prehn - initial contribution
  */
 @Component(service = ActionService.class, immediate = true)
 public class LGWebOSAction implements ActionService {
@@ -74,28 +73,27 @@ public class LGWebOSAction implements ActionService {
     }
 
     @ActionDoc(text = "sends a toast message to a web os device with openhab icon")
-    public static void showToast(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "text") final String text) throws IOException {
+    public static void showToast(@ParamDoc(name = "deviceId") String deviceId, @ParamDoc(name = "text") String text)
+            throws IOException {
         showToast(deviceId, LGWebOSAction.class.getResource("/openhab-logo-square.png").toString(), text);
     }
 
     @ActionDoc(text = "sends a toast message to a web os device with custom icon")
-    public static void showToast(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "icon") final String icon, @ParamDoc(name = "text") final String text) throws IOException {
+    public static void showToast(@ParamDoc(name = "deviceId") String deviceId, @ParamDoc(name = "icon") String icon,
+            @ParamDoc(name = "text") String text) throws IOException {
         ToastControl control = getControl(ToastControl.class, deviceId);
         if (control != null) {
             BufferedImage bi = ImageIO.read(new URL(icon));
             try (ByteArrayOutputStream os = new ByteArrayOutputStream();
                     OutputStream b64 = Base64.getEncoder().wrap(os);) {
                 ImageIO.write(bi, "png", b64);
-                control.showToast(text, os.toString("UTF-8"), "png", responseListenerObject);
+                control.showToast(text, os.toString(StandardCharsets.UTF_8.name()), "png", responseListenerObject);
             }
         }
     }
 
     @ActionDoc(text = "opens the given URL in the TV's browser app")
-    public static void launchBrowser(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "url") final String url) {
+    public static void launchBrowser(@ParamDoc(name = "deviceId") String deviceId, @ParamDoc(name = "url") String url) {
         Launcher control = getControl(Launcher.class, deviceId);
         if (control != null) {
             control.launchBrowser(url, responseListenerLaunchSession);
@@ -104,7 +102,7 @@ public class LGWebOSAction implements ActionService {
 
     @ActionDoc(text = "opens the application with given appId")
     public static void launchApplication(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "appId") final String appId) {
+            @ParamDoc(name = "appId") String appId) {
         Launcher control = getControl(Launcher.class, deviceId);
         if (control != null) {
             control.launchApp(appId, responseListenerLaunchSession);
@@ -113,7 +111,7 @@ public class LGWebOSAction implements ActionService {
 
     @ActionDoc(text = "opens the application with given appId and passes additional parameters")
     public static void launchApplicationWithParam(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "appId") final String appId, Object param) {
+            @ParamDoc(name = "appId") String appId, Object param) {
         Launcher control = getControl(Launcher.class, deviceId);
         if (control != null) {
             control.getAppList(new Launcher.AppListListener() {
@@ -124,10 +122,10 @@ public class LGWebOSAction implements ActionService {
 
                 @Override
                 public void onSuccess(List<AppInfo> appInfos) {
-                    try {
-                        AppInfo appInfo = Iterables.find(appInfos, a -> a.getId().equals(appId));
-                        control.launchAppWithInfo(appInfo, param, responseListenerLaunchSession);
-                    } catch (NoSuchElementException ex) {
+                    Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
+                    if (appInfo.isPresent()) {
+                        control.launchAppWithInfo(appInfo.get(), param, responseListenerLaunchSession);
+                    } else {
                         LOGGER.warn("TV does not support any app with id: {}.", appId);
                     }
                 }
@@ -136,8 +134,7 @@ public class LGWebOSAction implements ActionService {
     }
 
     @ActionDoc(text = "sends a text input to a web os device")
-    public static void sendText(@ParamDoc(name = "deviceId") String deviceId,
-            @ParamDoc(name = "text") final String text) {
+    public static void sendText(@ParamDoc(name = "deviceId") String deviceId, @ParamDoc(name = "text") String text) {
         TextInputControl control = getControl(TextInputControl.class, deviceId);
         if (control != null) {
             control.sendText(text);
@@ -161,12 +158,12 @@ public class LGWebOSAction implements ActionService {
     }
 
     private static <C extends CapabilityMethods> @Nullable C getControl(Class<C> clazz, String deviceId) {
-        final ConnectableDevice d = discovery.getDiscoveryManager().getCompatibleDevices().get(deviceId);
-        if (d == null) {
+        final ConnectableDevice device = discovery.getDiscoveryManager().getCompatibleDevices().get(deviceId);
+        if (device == null) {
             LOGGER.warn("No device found with id: {}", deviceId);
             return null;
         }
-        C control = d.getCapability(clazz);
+        C control = device.getCapability(clazz);
         if (control == null) {
             LOGGER.warn("Device {} does not have the ability: {}", deviceId, clazz.getName());
             return null;

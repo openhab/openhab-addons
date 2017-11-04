@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
@@ -23,38 +25,34 @@ import com.connectsdk.service.command.ServiceSubscription;
 /**
  * Handles TV Control Mute Command.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
-    private Logger logger = LoggerFactory.getLogger(VolumeControlMute.class);
+    private final Logger logger = LoggerFactory.getLogger(VolumeControlMute.class);
 
-    private VolumeControl getControl(final ConnectableDevice device) {
+    private VolumeControl getControl(ConnectableDevice device) {
         return device.getCapability(VolumeControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(VolumeControl.Mute_Set)) {
-            OnOffType onOffType;
-            if (command instanceof OnOffType) {
-                onOffType = (OnOffType) command;
-            } else {
-                logger.warn("only accept OnOffType");
-                return;
+        if (OnOffType.ON == command || OnOffType.OFF == command) {
+            if (device.hasCapabilities(VolumeControl.Mute_Set)) {
+                getControl(device).setMute(OnOffType.ON == command, createDefaultResponseListener());
             }
-            getControl(d).setMute(OnOffType.ON == onOffType, createDefaultResponseListener());
+        } else {
+            logger.warn("only accept OnOffType");
         }
     }
 
     @Override
-    protected ServiceSubscription<MuteListener> getSubscription(final ConnectableDevice device, final String channelId,
-            final LGWebOSHandler handler) {
+    protected Optional<ServiceSubscription<MuteListener>> getSubscription(ConnectableDevice device, String channelId,
+            LGWebOSHandler handler) {
         if (device.hasCapability(VolumeControl.Mute_Subscribe)) {
-            return getControl(device).subscribeMute(new MuteListener() {
+            return Optional.of(getControl(device).subscribeMute(new MuteListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -65,7 +63,7 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
                 public void onSuccess(Boolean value) {
                     handler.postUpdate(channelId, value ? OnOffType.ON : OnOffType.OFF);
                 }
-            });
+            }));
         } else {
             return null;
         }

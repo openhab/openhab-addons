@@ -9,7 +9,7 @@
 package org.openhab.binding.lgwebos.internal;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -23,30 +23,28 @@ import com.connectsdk.service.capability.TVControl;
 import com.connectsdk.service.capability.TVControl.ChannelListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
-import com.google.common.collect.Iterables;
 
 /**
  * Handles TV Control Channel Command.
  * Allows to set a channel to an absolute channel number.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
-    private Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
+    private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
 
-    private TVControl getControl(final ConnectableDevice device) {
+    private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
+        if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
             final String value = command.toString();
-            final TVControl control = getControl(d);
+            final TVControl control = getControl(device);
             control.getChannelList(new TVControl.ChannelListListener() {
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -60,10 +58,11 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
                             logger.debug("Channel {} - {}", c.getNumber(), c.getName());
                         }
                     }
-                    try {
-                        ChannelInfo channelInfo = Iterables.find(channels, c -> c.getNumber().equals(value));
-                        control.setChannel(channelInfo, createDefaultResponseListener());
-                    } catch (NoSuchElementException ex) {
+                    Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
+                            .findFirst();
+                    if (channelInfo.isPresent()) {
+                        control.setChannel(channelInfo.get(), createDefaultResponseListener());
+                    } else {
                         logger.warn("TV does not have a channel: {}.", value);
                     }
                 }
@@ -72,10 +71,10 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
     }
 
     @Override
-    protected ServiceSubscription<ChannelListener> getSubscription(final ConnectableDevice device,
-            final String channelId, final LGWebOSHandler handler) {
+    protected Optional<ServiceSubscription<ChannelListener>> getSubscription(ConnectableDevice device, String channelId,
+            LGWebOSHandler handler) {
         if (device.hasCapability(TVControl.Channel_Subscribe)) {
-            return getControl(device).subscribeCurrentChannel(new ChannelListener() {
+            return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -86,7 +85,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
                 public void onSuccess(ChannelInfo channelInfo) {
                     handler.postUpdate(channelId, new StringType(channelInfo.getNumber()));
                 }
-            });
+            }));
         } else {
             return null;
         }

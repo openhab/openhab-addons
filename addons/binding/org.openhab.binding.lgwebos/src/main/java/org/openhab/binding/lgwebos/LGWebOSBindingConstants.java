@@ -8,26 +8,24 @@
  */
 package org.openhab.binding.lgwebos;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * This class defines common constants, which are used across the whole binding.
  *
- * @author Sebastian Prehn - Initial contribution
+ * @author Sebastian Prehn - initial contribution
  */
 public class LGWebOSBindingConstants {
 
     public static final @NonNull String BINDING_ID = "lgwebos";
 
-    // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WEBOSTV = new ThingTypeUID(BINDING_ID, "WebOSTV");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WEBOSTV);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEBOSTV);
 
     // List of all Channel ids. Values have to match ids in thing-types.xml
     public static final String CHANNEL_VOLUME = "volume";

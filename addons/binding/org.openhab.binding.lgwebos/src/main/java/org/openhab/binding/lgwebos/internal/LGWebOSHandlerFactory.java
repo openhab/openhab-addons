@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link LGWebOSHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Sebastian Prehn - Initial contribution
+ * @author Sebastian Prehn - initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {

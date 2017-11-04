@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
@@ -27,30 +28,30 @@ import com.connectsdk.service.capability.ToastControl;
 /**
  * Handles Toast Control Command. This allows to send messages to the TV screen.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class ToastControlToast extends BaseChannelHandler<Void> {
-    private Logger logger = LoggerFactory.getLogger(ToastControlToast.class);
+    private final Logger logger = LoggerFactory.getLogger(ToastControlToast.class);
 
-    private ToastControl getControl(final ConnectableDevice device) {
+    private ToastControl getControl(ConnectableDevice device) {
         return device.getCapability(ToastControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(ToastControl.Show_Toast)) {
+        if (device.hasCapabilities(ToastControl.Show_Toast)) {
             final String value = command.toString();
-            final ToastControl control = getControl(d);
+            final ToastControl control = getControl(device);
             try {
                 BufferedImage bi = ImageIO.read(getClass().getResource("/openhab-logo-square.png"));
                 try (ByteArrayOutputStream os = new ByteArrayOutputStream();
                         OutputStream b64 = Base64.getEncoder().wrap(os);) {
                     ImageIO.write(bi, "png", b64);
-                    control.showToast(value, os.toString("UTF-8"), "png", createDefaultResponseListener());
+                    control.showToast(value, os.toString(StandardCharsets.UTF_8.name()), "png",
+                            createDefaultResponseListener());
                 }
             } catch (IOException ex) {
                 logger.warn("Failed to load toast icon: {}", ex.getMessage());

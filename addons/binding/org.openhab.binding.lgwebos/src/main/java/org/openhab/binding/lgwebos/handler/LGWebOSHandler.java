@@ -10,6 +10,8 @@ package org.openhab.binding.lgwebos.handler;
 
 import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,32 +45,37 @@ import com.connectsdk.discovery.DiscoveryManagerListener;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * The {@link LGWebOSHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Sebastian Prehn - Initial contribution
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class LGWebOSHandler extends BaseThingHandler implements ConnectableDeviceListener, DiscoveryManagerListener {
 
-    private Logger logger = LoggerFactory.getLogger(LGWebOSHandler.class);
-    private DiscoveryManager discoveryManager;
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSHandler.class);
+    private final DiscoveryManager discoveryManager;
 
     // ChannelID to CommandHandler Map
-    private final Map<String, ChannelHandler> channelHandlers = ImmutableMap.<String, ChannelHandler> builder()
-            .put(CHANNEL_VOLUME, new VolumeControlVolume()).put(CHANNEL_POWER, new PowerControlPower())
-            .put(CHANNEL_MUTE, new VolumeControlMute()).put(CHANNEL_CHANNEL, new TVControlChannel())
-            .put(CHANNEL_CHANNEL_UP, new TVControlUp()).put(CHANNEL_CHANNEL_DOWN, new TVControlDown())
-            .put(CHANNEL_CHANNEL_NAME, new TVControlChannelName()).put(CHANNEL_APP_LAUNCHER, new LauncherApplication())
-            .put(CHANNEL_MEDIA_STOP, new MediaControlStop()).put(CHANNEL_TOAST, new ToastControlToast())
-            .put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer()).build();
+    private final Map<String, ChannelHandler> channelHandlers;
 
     public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
         super(thing);
         this.discoveryManager = discoveryManager;
+        Map<String, ChannelHandler> handlers = new HashMap<>();
+        handlers.put(CHANNEL_VOLUME, new VolumeControlVolume());
+        handlers.put(CHANNEL_POWER, new PowerControlPower());
+        handlers.put(CHANNEL_MUTE, new VolumeControlMute());
+        handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
+        handlers.put(CHANNEL_CHANNEL_UP, new TVControlUp());
+        handlers.put(CHANNEL_CHANNEL_DOWN, new TVControlDown());
+        handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
+        handlers.put(CHANNEL_APP_LAUNCHER, new LauncherApplication());
+        handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
+        handlers.put(CHANNEL_TOAST, new ToastControlToast());
+        handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
+        channelHandlers = Collections.unmodifiableMap(handlers);
     }
 
     @Override
@@ -106,7 +113,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
             if (device.isConnected()) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
             } else {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connecting ...");
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting ...");
                 device.connect(); // on success onDeviceReady will be called,
                                   // if pairing is required onPairingRequired,
                                   // otherwise onConnectionFailed
@@ -156,7 +163,8 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     @Override
     public void onConnectionFailed(ConnectableDevice device, ServiceCommandError error) {
         logger.debug("Connection failed: {} - error: {}", device, error.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "Connection Failed: " + error.getMessage());
     }
 
     // callback methods for commandHandlers

@@ -17,22 +17,21 @@ import com.connectsdk.service.capability.MediaControl;
 /**
  * Handles Media Control Command Stop.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class MediaControlStop extends BaseChannelHandler<Void> {
 
-    private MediaControl getControl(final ConnectableDevice device) {
+    private MediaControl getControl(ConnectableDevice device) {
         return device.getCapability(MediaControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(MediaControl.Stop)) {
-            getControl(d).stop(createDefaultResponseListener());
+        if (device.hasCapabilities(MediaControl.Stop)) {
+            getControl(device).stop(createDefaultResponseListener());
         }
     }
 }

@@ -17,22 +17,21 @@ import com.connectsdk.service.capability.TVControl;
 /**
  * Handles TV Control Channel Down Command.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class TVControlDown extends BaseChannelHandler<Void> {
 
-    private TVControl getControl(final ConnectableDevice device) {
+    private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(TVControl.Channel_Down)) {
-            getControl(d).channelDown(createDefaultResponseListener());
+        if (device.hasCapabilities(TVControl.Channel_Down)) {
+            getControl(device).channelDown(createDefaultResponseListener());
         }
     }
 }

@@ -9,7 +9,7 @@
 package org.openhab.binding.lgwebos.internal;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -23,13 +23,11 @@ import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.connectsdk.service.sessions.LaunchSession;
-import com.google.common.collect.Iterables;
 
 /**
  * Provides ability to launch an application on the TV.
  *
- * @author Sebastian Prehn
- * @since 2.1.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoListener> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
@@ -39,13 +37,13 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(Launcher.Application_List, Launcher.Application)) {
+        if (device.hasCapabilities(Launcher.Application_List, Launcher.Application)) {
             final String value = command.toString();
-            final Launcher control = getControl(d);
+            final Launcher control = getControl(device);
             control.getAppList(new Launcher.AppListListener() {
 
                 @Override
@@ -60,11 +58,11 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
                             logger.debug("AppInfo {} - {}", a.getId(), a.getName());
                         }
                     }
-                    try {
-                        AppInfo appInfo = Iterables.find(appInfos, a -> a.getId().equals(value));
-                        control.launchApp(appInfo.getId(),
+                    Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(value)).findFirst();
+                    if (appInfo.isPresent()) {
+                        control.launchApp(appInfo.get().getId(),
                                 LauncherApplication.this.<LaunchSession> createDefaultResponseListener());
-                    } catch (NoSuchElementException ex) {
+                    } else {
                         logger.warn("TV does not support any app with id: {}.", value);
                     }
                 }
@@ -73,10 +71,10 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    protected ServiceSubscription<Launcher.AppInfoListener> getSubscription(ConnectableDevice device,
-            final String channelId, final LGWebOSHandler handler) {
+    protected Optional<ServiceSubscription<Launcher.AppInfoListener>> getSubscription(ConnectableDevice device,
+            String channelId, LGWebOSHandler handler) {
         if (device.hasCapability(Launcher.RunningApp_Subscribe)) {
-            return getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
+            return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -87,7 +85,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
                 public void onSuccess(AppInfo appInfo) {
                     handler.postUpdate(channelId, new StringType(appInfo.getId()));
                 }
-            });
+            }));
         } else {
             return null;
         }

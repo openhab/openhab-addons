@@ -21,6 +21,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -47,16 +49,16 @@ import com.connectsdk.service.command.ServiceCommandError;
 @Component(service = { DiscoveryService.class,
         LGWebOSDiscovery.class }, immediate = true, configurationPid = "binding.lgwebos")
 public class LGWebOSDiscovery extends AbstractDiscoveryService implements DiscoveryManagerListener, Context {
-    private static final int DISCOVERY_TIMEOUT = 5; // in seconds
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
 
-    private Logger logger = LoggerFactory.getLogger(LGWebOSDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSDiscovery.class);
 
     private DiscoveryManager discoveryManager;
 
     private InetAddress localInetAddresses;
 
     public LGWebOSDiscovery() {
-        super(LGWebOSBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT, true);
+        super(LGWebOSBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
         DiscoveryManager.init(this);
     }
 
@@ -85,8 +87,8 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     protected void startScan() {
         // no adhoc scanning. Discovery Service runs in background, but re-discover all known devices incase they were
         // deleted from the inbox.
-        for (ConnectableDevice d : discoveryManager.getCompatibleDevices().values()) {
-            thingDiscovered(createDiscoveryResult(d));
+        for (ConnectableDevice device : discoveryManager.getCompatibleDevices().values()) {
+            thingDiscovered(createDiscoveryResult(device));
         }
     }
 
@@ -141,12 +143,9 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
         return this.discoveryManager;
     }
 
-    // Context for connect sdk
-    private final String DATA_DIR = new File("etc" + File.separator + "connect_sdk").getAbsolutePath();
-
     @Override
     public String getDataDir() {
-        return DATA_DIR;
+        return ConfigConstants.getUserDataFolder() + File.separator + "lgwebos";
     }
 
     @Override
@@ -175,7 +174,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
      */
     private InetAddress findLocalInetAddresses(String localIP) {
         // evaluate optional localIP parameter, can be configured through config admin (lgwebos.cfg)
-        if (localIP != null && !localIP.trim().isEmpty()) {
+        if (StringUtils.isNotBlank(localIP)) {
             try {
                 logger.debug("localIP parameter explicitly set to: {}", localIP);
                 return InetAddress.getByName(localIP.trim());
@@ -196,7 +195,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
         }
 
         // try to find the single non-loop back interface available
-        final List<InetAddress> interfaces = new ArrayList<InetAddress>();
+        final List<InetAddress> interfaces = new ArrayList<>();
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             while (networkInterfaces.hasMoreElements()) {

@@ -16,8 +16,7 @@ import com.connectsdk.device.ConnectableDevice;
 /**
  * Channel Handler mediates between connect sdk device state changes and openhab channel events.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public interface ChannelHandler {
 
@@ -60,7 +59,7 @@ public interface ChannelHandler {
      * @param channelId must not be <code>null</code>
      * @param handler must not be <code>null</code>
      */
-    void onDeviceRemoved(final ConnectableDevice device, final String channelId, final LGWebOSHandler handler);
+    void onDeviceRemoved(ConnectableDevice device, String channelId, LGWebOSHandler handler);
 
     /**
      * Callback method whenever a device is discovered and ready to operate.
@@ -69,6 +68,6 @@ public interface ChannelHandler {
      * @param channelId must not be <code>null</code>
      * @param handler must not be <code>null</code>
      */
-    void onDeviceReady(final ConnectableDevice device, final String channelId, final LGWebOSHandler handler);
+    void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler);
 
 }

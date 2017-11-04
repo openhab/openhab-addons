@@ -11,18 +11,18 @@ LG webOS based smart TVs are supported.
 
 #### TV Settings
 
-The TV must be connected to the same network as OpenHAB with a permanent IP address. If the IP changes the binding will discover it as a different device. 
+The TV must be connected to the same network as openHAB with a permanent IP address. If the IP changes the binding will discover it as a different device. 
 Under network settings allow "LG CONNECT APPS" to connect.
 
-Note: Under general settings allow mobile applications to turn on the TV, if this option is available. In combination with the wake on LAN binding this will allow you to start the TV via OpenHAB.
+Note: Under general settings allow mobile applications to turn on the TV, if this option is available. In combination with the wake on LAN binding this will allow you to start the TV via openHAB.
 
 ## Binding Configuration
 
-The binding has only one configuration parameter, which is only required if the binding cannot automatically detect OpenHAB's local IP address: 
+The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
 
-| Name | Description |
-| --- | --- |
-| LocalIP |  This is the local IP of your OpenHAB host on the network. (Optional) |
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
 
 The binding will attempt to auto detect your IP, if LocalIP is not set. This works when your hostname resolves to this IP and not to the loopback interface or, if the system has exactly one non-loopback network interface. Otherwise this has to be explicitly set. If you are unable to discover devices please check the log file for error messages.e.g.: 
 
@@ -40,20 +40,19 @@ WebOS TV has no configuration parameters. Please note that at least one channel 
 
 ## Channels
 
-| Channel Type ID | Item Type    | Description  | Read/Write |
-| --------------- | ------------ | ------------ | ---------- |
-| power | Switch | Current power setting. TV can only be powered off, not on.  | RW |
-| mute | Switch | Current mute setting.  |  RW |
-| volume | Dimmer | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. |  RW |
-| channel | String | Current channel | RW | 
-| channelUp | Switch | One channel up |  W |
-| channelDown | Switch | One channel down  |  W |
-| channelName | String | Current channel name |  R |
-| toast | String | Displays a short message on the TV screen. See also rules section. |  W |
-| mediaPlayer | Player | Media control player |  W |
-| mediaStop | Switch | Media control stop  |  W |
-| appLauncher | String | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel. |  RW |
-
+| Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
+|-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
+| mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
+| volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
+| channel         | String    | Current channel                                                                                                                                                                                                         | RW         |
+| channelUp       | Switch    | One channel up                                                                                                                                                                                                          | W          |
+| channelDown     | Switch    | One channel down                                                                                                                                                                                                        | W          |
+| channelName     | String    | Current channel name                                                                                                                                                                                                    | R          |
+| toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
+| mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
+| mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
+| appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
 
 ## Actions
 
@@ -63,9 +62,10 @@ WebOS TV has no configuration parameters. Please note that at least one channel 
 showToast(String ip, String text)
 ```
 
-Sends a toast message to a webOS device using OpenHAB's logo as an icon.
+Sends a toast message to a webOS device using openHAB's logo as an icon.
 The first parameter is the IP address of your TV. 
 The second parameter is the message you want to display.
+
 ### Show Toast with Custom Icon
 
 ```
@@ -74,7 +74,7 @@ showToast(String ip, String icon, String text)
 
 Sends a toast message to a webOS device with custom icon. 
 The first parameter is the IP address of your TV. 
-The second parameter for the icon has to be provided as a URL. To use openhab's icon set you could send this URL for example: http://localhost:8080/icon/energy?state=UNDEF&format=png
+The second parameter for the icon has to be provided as a URL. To use openHAB's icon set you could send this URL for example: http://localhost:8080/icon/energy?state=UNDEF&format=png
 The third parameter is the message you want to display.
 
 ### Launch a URL

@@ -17,22 +17,21 @@ import com.connectsdk.service.capability.TVControl;
 /**
  * Handles TV Control Channel Up Command. Relative increase channel.
  *
- * @author Sebastian Prehn
- * @since 1.8.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class TVControlUp extends BaseChannelHandler<Void> {
 
-    private TVControl getControl(final ConnectableDevice device) {
+    private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (d.hasCapabilities(TVControl.Channel_Up)) {
-            getControl(d).channelUp(createDefaultResponseListener());
+        if (device.hasCapabilities(TVControl.Channel_Up)) {
+            getControl(device).channelUp(createDefaultResponseListener());
         }
     }
 }

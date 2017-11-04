@@ -25,47 +25,51 @@ import com.connectsdk.service.capability.PlaylistControl;
  * Handles commands of a Player Item.
  *
  *
- * @author Sebastian Prehn
- * @since 2.2.0
+ * @author Sebastian Prehn - initial contribution
  */
 public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener> {
-    private Logger logger = LoggerFactory.getLogger(MediaControlPlayer.class);
+    private final Logger logger = LoggerFactory.getLogger(MediaControlPlayer.class);
 
-    private MediaControl getMediaControl(final ConnectableDevice device) {
+    private MediaControl getMediaControl(ConnectableDevice device) {
         return device.getCapability(MediaControl.class);
     }
 
-    private PlaylistControl getPlayListControl(final ConnectableDevice device) {
+    private PlaylistControl getPlayListControl(ConnectableDevice device) {
         return device.getCapability(PlaylistControl.class);
     }
 
     @Override
-    public void onReceiveCommand(final ConnectableDevice d, String channelId, LGWebOSHandler handler, Command command) {
-        if (d == null) {
+    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+        if (device == null) {
             return;
         }
-        if (command instanceof NextPreviousType) {
-            if (NextPreviousType.NEXT == command && d.hasCapabilities(PlaylistControl.Next)) {
-                getPlayListControl(d).next(createDefaultResponseListener());
-            } else if (NextPreviousType.PREVIOUS == command && d.hasCapabilities(PlaylistControl.Previous)) {
-                getPlayListControl(d).previous(createDefaultResponseListener());
+        if (NextPreviousType.NEXT == command) {
+            if (device.hasCapabilities(PlaylistControl.Next)) {
+                getPlayListControl(device).next(createDefaultResponseListener());
             }
-        } else if (command instanceof PlayPauseType) {
-            if (PlayPauseType.PLAY == command && d.hasCapabilities(MediaControl.Play)) {
-                getMediaControl(d).play(createDefaultResponseListener());
-            } else if (PlayPauseType.PAUSE == command && d.hasCapabilities(MediaControl.Pause)) {
-                getMediaControl(d).pause(createDefaultResponseListener());
+        } else if (NextPreviousType.PREVIOUS == command) {
+            if (device.hasCapabilities(PlaylistControl.Previous)) {
+                getPlayListControl(device).previous(createDefaultResponseListener());
             }
-        } else if (command instanceof RewindFastforwardType) {
-            if (RewindFastforwardType.FASTFORWARD == command && d.hasCapabilities(MediaControl.FastForward)) {
-                getMediaControl(d).fastForward(createDefaultResponseListener());
-            } else if (RewindFastforwardType.REWIND == command && d.hasCapabilities(MediaControl.Rewind)) {
-                getMediaControl(d).rewind(createDefaultResponseListener());
+        } else if (PlayPauseType.PLAY == command) {
+            if (device.hasCapabilities(MediaControl.Play)) {
+                getMediaControl(device).play(createDefaultResponseListener());
+            }
+        } else if (PlayPauseType.PAUSE == command) {
+            if (device.hasCapabilities(MediaControl.Pause)) {
+                getMediaControl(device).pause(createDefaultResponseListener());
+            }
+        } else if (RewindFastforwardType.FASTFORWARD == command) {
+            if (device.hasCapabilities(MediaControl.FastForward)) {
+                getMediaControl(device).fastForward(createDefaultResponseListener());
+            }
+        } else if (RewindFastforwardType.REWIND == command) {
+            if (device.hasCapabilities(MediaControl.Rewind)) {
+                getMediaControl(device).rewind(createDefaultResponseListener());
             }
         } else {
             logger.warn("Only accept NextPreviousType, PlayPauseType, RewindFastforwardType. Type was {}.",
                     command.getClass());
         }
     }
-
 }
