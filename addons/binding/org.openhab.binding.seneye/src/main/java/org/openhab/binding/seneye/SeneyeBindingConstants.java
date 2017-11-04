@@ -24,7 +24,7 @@ public class SeneyeBindingConstants {
     public static final String BINDING_ID = "seneye";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SENEYE = new ThingTypeUID(BINDING_ID, "seneye-thing");
+    public final static ThingTypeUID THING_TYPE_SENEYE = new ThingTypeUID(BINDING_ID, "seneye");
 
     // List of all Channel ids
     public final static String CHANNEL_TEMPERATURE = "channeltemperature";
