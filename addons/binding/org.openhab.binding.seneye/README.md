@@ -30,7 +30,7 @@ Polling time : How often (in minutes) does the seneye needs to be checked ?
 
 ### Configuration with config files
 
-A manual setup through a `things/seneye.things` file could look like this:
+A manual configuration through a `things/seneye.things` file could look like this:
 
 ```
 Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquariumname="MyAquarium", username="user@mail.com", password="xxx", polltime=5]
@@ -38,7 +38,7 @@ Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquariumname="MyAquarium"
 
 ## Channels
 
-All devices support some of the following channels:
+The following channels are supported :
 
  Channel Type ID         | Item Type    | Description  
 -------------------------|--------------|--------------
@@ -53,3 +53,14 @@ All devices support some of the following channels:
  lastreading             | DateTime     | The moment when the last readings are received from the monitor 
  slideexpires            | DateTime     | The moment when the current slide will expire 
 
+## Item configuration
+
+### Configuration with config files
+
+A manual configuration through a `demo.items` file could look like this:
+
+```
+String mySeneye_Temperature  "Temp [%s] C"        { channel="seneye:seneye:mySeneye:temperature" }
+String mySeneye_PH           "PH [%s]"            { channel="seneye:seneye:mySeneye:ph" }
+String mySeneye_NH3          "NH3 [%s]"           { channel="seneye:seneye:mySeneye:nh3" }
+```
