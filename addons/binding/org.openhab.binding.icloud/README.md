@@ -66,20 +66,21 @@ If a device is removed from the account the respective openHAB thing will go OFF
 
 The following channels are available (if supported by the device):
 
-| Channel ID         | Type     | Description                                                                                                                                 |
-|--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| batteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                                                                                         |
-| batteryLevel       | Number   | Battery charge in %                                                                                                                         |
-| findMyPhone        | Switch   | Triggers the ["Find my phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
-| location           | Location | Location of the device.                                                                                                                     |
-| locationAccuracy   | Number   | Accuracy of the last position report.                                                                                                       |
-| locationLastUpdate | DateTime | Timestamp of the last location update.                                                                                                      |
-| distanceFromHome   | Number   | Device distance from the location set in openHAB regional settings.                                                                         |
-| addressStreet      | String   | Street                                                                                                                                      |
-| addressCity        | String   | City                                                                                                                                        |
-| addressCountry     | String   | Country                                                                                                                                     |
-| formattedAddress   | String   | Formatted address string                                                                                                                    |
-| deviceName         | String   | The device name assigned to the device through device settings.                                                                             |
+| Channel ID                   | Type     | Description                                                                                                                                 |
+|------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| batteryStatus                | String   | Current battery status (Charging, Charged, Unknown)                                                                                         |
+| batteryLevel                 | Number   | Battery charge in %                                                                                                                         |
+| findMyPhone                  | Switch   | Triggers the ["Find my phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
+| location                     | Location | Location of the device.                                                                                                                     |
+| locationAccuracy             | Number   | Accuracy of the last position report.                                                                                                       |
+| locationLastUpdate           | DateTime | Timestamp of the last location update.                                                                                                      |
+| distanceFromHome             | Number   | Device distance from the location set in openHAB regional settings.                                                                         |
+| addressStreet<sup>*</sup>    | String   | Street component of the address.                                                                                                            |
+| addressCity<sup>*</sup>      | String   | City component of the address.                                                                                                              |
+| addressCountry<sup>*</sup>   | String   | Country component of the addess.                                                                                                            |
+| formattedAddress<sup>*</sup> | String   | Formatted human readable address string.                                                                                                    |
+| deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
+<sup>*</sup> Address lookup needs to be enabled on the device account bridge thing for this channels to be populated..
 
 ## Full Example
 
