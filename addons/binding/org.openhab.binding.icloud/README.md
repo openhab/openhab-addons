@@ -34,7 +34,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The binding provides two thing types.
 
-### iCloud Account Thing
+### iCloud Account (Bridge) Thing
 
 The following table lists the configuration parameters:
 
