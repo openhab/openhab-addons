@@ -98,7 +98,6 @@ Please don't forget to open the required ports in your firewall setup.
 
 Because we use external tools for some of the presence detection mechanism or need elevated permissions for others, your OpenHAB installation needs to be altered.
 
-### Arping 
 ### Arping
 
 For arp pings to work, you need a separate tool, called "arping".
@@ -148,7 +147,7 @@ Things support the following channels:
 
 ## Full Example
 
-demo.Things:
+demo.things:
 
 ```xtend
 Thing network:pingdevice:devicename [ hostname="192.168.0.42" ]
