@@ -10,6 +10,7 @@ package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.Arrays;
 
+import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openmuc.jsml.EObis;
 import org.openmuc.jsml.EUnit;
@@ -40,13 +41,15 @@ public final class SmlValueExtractor {
 
     /**
      * Constructor
+     *
+     * @param obis
      */
     public SmlValueExtractor(SmlListEntry listEntry) {
         smlListEntry = listEntry;
     }
 
     public MeterValue getSmlValue() {
-        return new MeterValue(getObisName(), getValue(), getUnitName());
+        return new MeterValue(getObisCode(), getValue(), getUnitName());
     }
 
     /**
@@ -164,4 +167,29 @@ public final class SmlValueExtractor {
         return Double.toString(scaledValue);
     }
 
+    /**
+     * Byte to Integer conversion.
+     *
+     * @param byte to convert to Integer.
+     */
+    private static int byteToInt(byte b) {
+        return Integer.parseInt(String.format("%02x", b), 16);
+    }
+
+    /**
+     * Converts hex encoded OBIS to formatted string.
+     *
+     * @return the hex encoded OBIS code as readable string.
+     */
+    protected static String getObisAsString(byte[] octetBytes) {
+
+        String formattedObis = String.format(MeterReaderBindingConstants.OBIS_FORMAT, byteToInt(octetBytes[0]),
+                byteToInt(octetBytes[1]), byteToInt(octetBytes[2]), byteToInt(octetBytes[3]), byteToInt(octetBytes[4]));
+
+        return formattedObis;
+    }
+
+    public String getObisCode() {
+        return getObisAsString(smlListEntry.getObjName().getValue());
+    }
 }

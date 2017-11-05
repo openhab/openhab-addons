@@ -37,7 +37,7 @@ import gnu.io.factory.DefaultSerialPortFactory;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
-public final class SmlSerialConnector extends ConnectorBase {
+public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     SerialPort serialPort;
     InputStream inputStream;
     DataInputStream is;
@@ -115,7 +115,7 @@ public final class SmlSerialConnector extends ConnectorBase {
      * @{inheritDoc}
      */
     @Override
-    protected void openConnection() throws IOException {
+    public void openConnection() throws IOException {
         DefaultSerialPortFactory serialPortFactory = new DefaultSerialPortFactory();
         try {
             serialPort = serialPortFactory.createSerialPort(portName);
@@ -149,7 +149,7 @@ public final class SmlSerialConnector extends ConnectorBase {
      * @{inheritDoc}
      */
     @Override
-    protected void closeConnection() {
+    public void closeConnection() {
         try {
             if (is != null) {
                 is.close();

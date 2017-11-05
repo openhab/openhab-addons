@@ -12,9 +12,8 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -51,7 +50,7 @@ public class MeterReaderHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 30;
     private Logger logger = LoggerFactory.getLogger(MeterReaderHandler.class);
     private MeterDevice<?> smlDevice;
-    private ScheduledFuture<?> refreshJob;
+    private Cancelable valueReader;
 
     public MeterReaderHandler(Thing thing) {
         super(thing);
@@ -79,14 +78,14 @@ public class MeterReaderHandler extends BaseThingHandler {
                         : Baudrate.fromString(config.baudrate).getBaudrate();
                 byte[] pullSequence = config.initMessage == null ? null
                         : Hex.decodeHex(StringUtils.deleteWhitespace(config.initMessage).toCharArray());
-                this.smlDevice = MeterDeviceFactory.getDevice(config.mode, this.thing.getUID().getAsString(), config.port,
-                        pullSequence, baudrate, config.baudrateChangeDelay);
+                this.smlDevice = MeterDeviceFactory.getDevice(config.mode, this.thing.getUID().getAsString(),
+                        config.port, pullSequence, baudrate, config.baudrateChangeDelay);
             } catch (DecoderException e) {
                 logger.error("Failed to decode init message", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Parameter 'initMessage' can not be decoded: " + e.getLocalizedMessage());
             }
-            startAutomaticRefresh();
+            updateOBISValue();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -95,30 +94,12 @@ public class MeterReaderHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (this.refreshJob != null) {
-            this.refreshJob.cancel(true);
-        }
+        cancelRead();
     }
 
-    /**
-     * Start the job refreshing the SML data
-     */
-    private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        updateOBISValue();
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
-                    }
-                }
-            };
-
-            SmlReaderConfiguration config = getConfigAs(SmlReaderConfiguration.class);
-            int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
+    private void cancelRead() {
+        if (this.valueReader != null) {
+            this.valueReader.cancel();
         }
     }
 
@@ -137,56 +118,73 @@ public class MeterReaderHandler extends BaseThingHandler {
      */
     private void updateOBISValue() {
         try {
-            this.smlDevice.readValues();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            Map<String, Channel> channelMap = new HashMap<>();
-            for (Channel channel : this.thing.getChannels()) {
-                channelMap.put(channel.getUID().getId(), channel);
-            }
+            cancelRead();
 
-            ThingBuilder thingBuilder = editThing();
-            Map<String, Channel> channelsToAdd = new HashMap<>(channelMap);
-            boolean channelsChanged = false;
-            for (String obis : this.smlDevice.getObisCodes()) {
+            this.smlDevice.addValueChangeListener(new MeterValueListener() {
+                @Override
+                public void valueChanged(MeterValue value) {
+                    ThingBuilder thingBuilder = editThing();
 
-                String obisChannelString = obis.replaceAll("\\.", "-").replaceAll(":|\\*", "#");
-                Channel channel = channelMap.remove(obisChannelString);
-                OBISTypeValue obisType = getObisType(obis, channel);
-                if (channel == null) {
-                    logger.debug("Adding channel: {} with item type: {}", obisChannelString, obisType.itemType);
-                    // channel has not been created yet
-                    ChannelBuilder channelBuilder = ChannelBuilder
-                            .create(new ChannelUID(this.thing.getUID(), obisChannelString), obisType.itemType)
-                            .withType(obisType.channelType);
+                    String obis = value.getObisCode();
 
-                    Configuration configuration = new Configuration();
-                    configuration.put(MeterReaderBindingConstants.CONFIGURATION_CONVERSION, 1);
-                    channelBuilder.withConfiguration(configuration);
-                    String obisName = obisType.obisValue.getObisName();
-                    channelBuilder.withLabel(obis + " (" + obisName + ")");
-                    Map<String, String> channelProps = new HashMap<>();
-                    channelProps.put(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
-                    channelBuilder.withProperties(channelProps);
-                    channelBuilder.withDescription(MessageFormat.format("Value for OBIS code: {0} ({1}) with Unit: {2}",
-                            obis, obisName, obisType.obisValue.getUnit()));
-                    channel = channelBuilder.build();
-                    channelsToAdd.put(obisChannelString, channel);
-                    channelsChanged = true;
+                    String obisChannelString = getObisChannelId(obis);
+                    Channel channel = thing.getChannel(obisChannelString);
+                    OBISTypeValue obisType = getObisType(obis, channel);
+                    if (channel == null) {
+                        logger.debug("Adding channel: {} with item type: {}", obisChannelString, obisType.itemType);
+                        // channel has not been created yet
+                        ChannelBuilder channelBuilder = ChannelBuilder
+                                .create(new ChannelUID(thing.getUID(), obisChannelString), obisType.itemType)
+                                .withType(obisType.channelType);
+
+                        Configuration configuration = new Configuration();
+                        configuration.put(MeterReaderBindingConstants.CONFIGURATION_CONVERSION, 1);
+                        channelBuilder.withConfiguration(configuration);
+                        channelBuilder.withLabel(obis);
+                        Map<String, String> channelProps = new HashMap<>();
+                        channelProps.put(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
+                        channelBuilder.withProperties(channelProps);
+                        channelBuilder.withDescription(MessageFormat.format("Value for OBIS code: {0} with Unit: {1}",
+                                obis, obisType.obisValue.getUnit()));
+                        channel = channelBuilder.build();
+                        ChannelUID channelId = channel.getUID();
+
+                        // add all valid channels to the thing builder
+                        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
+                        if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
+                            channels.add(channel);
+                            thingBuilder.withChannels(channels);
+                            updateThing(thingBuilder.build());
+                        }
+
+                    }
+                    updateState(channel.getUID(), obisType.type);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 }
-                updateState(channel.getUID(), obisType.type);
-            }
 
-            // channels that are not available are removed
-            for (Map.Entry<String, Channel> entry : channelMap.entrySet()) {
-                logger.debug("Removing channel: {}", entry.getKey());
-                channelsToAdd.remove(entry.getKey());
-                channelsChanged = true;
-            }
-            // add all valid channels to the thing builder
-            thingBuilder.withChannels(new ArrayList<>(channelsToAdd.values()));
-            if (channelsChanged) {
-                updateThing(thingBuilder.build());
-            }
+                @Override
+                public void valueRemoved(MeterValue value) {
+
+                    // channels that are not available are removed
+                    String obisChannelId = getObisChannelId(value.getObisCode());
+                    logger.debug("Removing channel: {}", obisChannelId);
+                    ThingBuilder thingBuilder = editThing();
+                    thingBuilder.withoutChannel(new ChannelUID(thing.getUID(), obisChannelId));
+                    updateThing(thingBuilder.build());
+
+                }
+
+                @Override
+                public void errorOccoured(Exception e) {
+                    MeterValueListener.super.errorOccoured(e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                }
+            });
+
+            SmlReaderConfiguration config = getConfigAs(SmlReaderConfiguration.class);
+            int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
+
+            valueReader = this.smlDevice.readValues(this.scheduler, delay);
 
         } catch (Exception e) {
             // Update the thing status
@@ -244,6 +242,10 @@ public class MeterReaderHandler extends BaseThingHandler {
             }
         }
         return null;
+    }
+
+    protected String getObisChannelId(String obis) {
+        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "#");
     }
 
     class OBISTypeValue {

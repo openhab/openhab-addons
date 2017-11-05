@@ -36,15 +36,6 @@ public class MeterValue {
     }
 
     /**
-     * Gets a human readable name of the OBIS code.
-     *
-     * @return
-     */
-    public String getObisName() {
-        return obis;
-    }
-
-    /**
      * Gets the value
      *
      * @return the value as String if available - otherwise null.
@@ -102,6 +93,10 @@ public class MeterValue {
     @Override
     public String toString() {
         return "MeterValue [obis=" + obis + ", value=" + value + ", unit=" + unit + "]";
+    }
+
+    public String getObisCode() {
+        return this.obis;
     }
 
 }

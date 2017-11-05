@@ -8,8 +8,16 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
@@ -27,21 +35,22 @@ public abstract class MeterDevice<T> {
     /**
      * Controls wether the device info is logged to the OSGi console.
      */
-    protected boolean printMeterInfo;
+    private boolean printMeterInfo;
     /**
      * Map of all values captured from the device during the read request.
      */
-    protected HashMap<String, MeterValue> valueCache;
-    protected byte[] initMessage;
+    private Map<String, MeterValue> valueCache;
+    private byte[] initMessage;
     /**
      * The id of the SML device from openHAB configuration.
      */
-    String deviceId;
+    private String deviceId;
 
     /**
      * Used to establish the device connection
      */
     IMeterReaderConnector<T> connector;
+    private List<MeterValueListener> valueChangeListeners;
     private final static Logger logger = LoggerFactory.getLogger(MeterDevice.class);
 
     public MeterDevice(String deviceId, String serialPort, byte[] initMessage, int baudrate, int baudrateChangeDelay,
@@ -49,6 +58,8 @@ public abstract class MeterDevice<T> {
         super();
         this.deviceId = deviceId;
         this.valueCache = new HashMap<String, MeterValue>();
+        this.valueChangeListeners = new ArrayList<>();
+        this.printMeterInfo = true;
         this.connector = createConnector(serialPort, baudrate, baudrateChangeDelay, protocolMode);
     }
 
@@ -94,31 +105,56 @@ public abstract class MeterDevice<T> {
     }
 
     public Collection<String> getObisCodes() {
-        return this.valueCache.keySet();
+        return new ArrayList<>(this.valueCache.keySet());
     }
 
     /**
      * Read values from this device an store them locally against their OBIS code.
      *
+     * @return
+     *
      * @throws Exception
      */
-    protected void readValues() throws Exception {
-        T smlFile = null;
-
+    protected Cancelable readValues(ScheduledExecutorService executorService, long period) throws Exception {
         if (connector == null) {
-            logger.error("{}: connector is not instantiated", this.toString());
-            return;
+            throw new IllegalArgumentException("{}: connector is not instantiated: " + this.toString());
         }
 
         try {
-            smlFile = connector.getMeterValues(initMessage);
-            clearValueCache();
+            connector.addValueChangeListener((value) -> {
+                Map<String, MeterValue> obisCodes = new HashMap<>(valueCache);
+                clearValueCache();
+                populateValueCache(value);
+                printInfo();
+                Collection<String> newObisCodes = getObisCodes();
+                // notify every removed obis code.
+                obisCodes.values().stream().filter((val) -> !newObisCodes.contains(val.getObisCode()))
+                        .forEach((val) -> notifyValuesRemoved(val));
+            });
+
+            ScheduledFuture<?> future = executorService.scheduleWithFixedDelay(() -> {
+                try {
+                    connector.getMeterValues(initMessage);
+                } catch (IOException e) {
+                    notifyReadingError(e);
+                }
+
+            }, 0, period, TimeUnit.SECONDS);
+
+            return new Cancelable() {
+
+                @Override
+                public void cancel() {
+                    future.cancel(true);
+                    connector.closeConnection();
+                }
+            };
+
         } catch (Exception ex) {
             logger.error("{}: Error during receive values from device: {}", this.toString(), ex.getMessage());
             throw ex;
         }
 
-        populateValueCache(smlFile);
     }
 
     /**
@@ -134,10 +170,65 @@ public abstract class MeterDevice<T> {
 
     protected void addObisCache(String obisCode, MeterValue value) {
         this.valueCache.put(obisCode, value);
+        this.valueChangeListeners.forEach((listener) -> listener.valueChanged(value));
     }
 
     @Override
     public String toString() {
         return this.getDeviceId();
     }
+
+    public void addValueChangeListener(MeterValueListener valueChangeListener) {
+        this.valueChangeListeners.add(valueChangeListener);
+    }
+
+    public void removeValueChangeListener(MeterValueListener valueChangeListener) {
+        this.valueChangeListeners.remove(valueChangeListener);
+    }
+
+    private void notifyValuesRemoved(MeterValue value) {
+        this.valueChangeListeners.forEach((listener) -> listener.valueRemoved(value));
+    }
+
+    private void notifyReadingError(Exception e) {
+        this.valueChangeListeners.forEach((listener) -> listener.errorOccoured(e));
+    }
+
+    /**
+     * Logs the object information with all given SML values to OSGi console.
+     *
+     * It's only called once - except the config was updated.
+     */
+    private void printInfo() {
+        if (this.getPrintMeterInfo()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(this.toString());
+            stringBuilder.append(System.lineSeparator());
+
+            for (Entry<String, MeterValue> entry : valueCache.entrySet()) {
+                stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
+                stringBuilder.append(System.lineSeparator());
+            }
+
+            logger.info("", stringBuilder);
+            setPrintMeterInfo(false);
+        }
+    }
+
+    /**
+     * Gets if the object information has to be logged to OSGi console.
+     *
+     * @return true if the object information should be logged, otherwise false.
+     */
+    private Boolean getPrintMeterInfo() {
+        return this.printMeterInfo;
+    }
+
+    /**
+     * Sets if the object information has to be logged to OSGi console.
+     */
+    private void setPrintMeterInfo(Boolean printMeterInfo) {
+        this.printMeterInfo = printMeterInfo;
+    }
+
 }

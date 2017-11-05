@@ -10,7 +10,7 @@ package org.openhab.binding.meterreader.internal.iec62056;
 
 import java.io.IOException;
 
-import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
+import org.openhab.binding.meterreader.connectors.ConnectorBase;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.openmuc.j62056.DataMessage;
@@ -25,13 +25,14 @@ import org.slf4j.LoggerFactory;
  * @author MatthiasS
  *
  */
-public class Iec62056_21SerialConnector implements IMeterReaderConnector<DataMessage> {
+public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
     private final static Logger logger = LoggerFactory.getLogger(Iec62056_21SerialConnector.class);
     private String portName;
     private int baudrate;
     private int baudrateChangeDelay;
     private ProtocolMode protocolMode;
+    private Iec21Port iec21Port;
 
     public Iec62056_21SerialConnector(String portName, int baudrate, int baudrateChangeDelay,
             ProtocolMode protocolMode) {
@@ -42,14 +43,7 @@ public class Iec62056_21SerialConnector implements IMeterReaderConnector<DataMes
     }
 
     @Override
-    public DataMessage getMeterValues(byte[] initMessage) throws IOException {
-        Builder iec21Builder = new Iec21Port.Builder(portName);
-        if (Baudrate.fromBaudrate(this.baudrate) != Baudrate.AUTO) {
-            iec21Builder.setInitialBaudrate(this.baudrate);
-        }
-        iec21Builder.setBaudRateChangeDelay(baudrateChangeDelay);
-        iec21Builder.enableVerboseMode(true);
-        Iec21Port iec21Port = iec21Builder.buildAndOpen();
+    public DataMessage getMeterValuesInternal(byte[] initMessage) throws IOException {
 
         try {
             switch (protocolMode) {
@@ -58,39 +52,26 @@ public class Iec62056_21SerialConnector implements IMeterReaderConnector<DataMes
                     logger.info("Datamessage read: {}", dataMessage);
                     return dataMessage;
                 case D:
-                    final DataMessage[] message = new DataMessage[1];
-                    final Exception[] exception = new Exception[1];
-                    Object mutex = new Object();
                     iec21Port.listen(new ModeDListener() {
 
                         @Override
                         public void newDataMessage(DataMessage dataMessage) {
-                            synchronized (mutex) {
-                                message[0] = dataMessage;
-                                mutex.notifyAll();
-                            }
-                            iec21Port.close();
+                            notifyListeners(dataMessage);
                         }
 
                         @Override
                         public void exceptionWhileListening(Exception e) {
-                            exception[0] = e;
+                            logger.error("Exception while listening for mode D data message", e);
                         }
                     });
-                    synchronized (mutex) {
+                    synchronized (this) {
                         try {
-                            mutex.wait(10000);
+                            this.wait();
                         } catch (InterruptedException e1) {
-                            logger.warn("Interruped while waiting for data package", e1);
-                        }
-                        if (message[0] != null) {
-                            return message[0];
-                        }
-                        if (exception[0] != null) {
-                            throw new IOException(exception[0]);
+                            // don't care
                         }
                     }
-                    throw new IOException("No data message received!");
+                    return null;
                 case SML:
                     throw new IOException("SML mode not supported");
                 default:
@@ -100,6 +81,22 @@ public class Iec62056_21SerialConnector implements IMeterReaderConnector<DataMes
         } finally {
             iec21Port.close();
         }
+    }
+
+    @Override
+    public void openConnection() throws IOException {
+        Builder iec21Builder = new Iec21Port.Builder(portName);
+        if (Baudrate.fromBaudrate(this.baudrate) != Baudrate.AUTO) {
+            iec21Builder.setInitialBaudrate(this.baudrate);
+        }
+        iec21Builder.setBaudRateChangeDelay(baudrateChangeDelay);
+        iec21Builder.enableVerboseMode(true);
+        iec21Port = iec21Builder.buildAndOpen();
+    }
+
+    @Override
+    public void closeConnection() {
+        iec21Port.close();
     }
 
 }

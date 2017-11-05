@@ -9,9 +9,7 @@
 package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.List;
-import java.util.Map.Entry;
 
-import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
@@ -64,68 +62,8 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
     private SmlMeterReader(String deviceId, String serialPort, byte[] initMessage, int baudrate,
             int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay, protocolMode);
-        this.printMeterInfo = true;
 
-        this.initMessage = initMessage;
         logger.debug("Created SmlDevice instance {} with serial connector on port {}", deviceId, serialPort);
-    }
-
-    /**
-     * Logs the object information with all given SML values to OSGi console.
-     *
-     * It's only called once - except the config was updated.
-     */
-    private void printInfo() {
-        if (this.getPrintMeterInfo()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(this.toString());
-            stringBuilder.append(System.lineSeparator());
-
-            for (Entry<String, MeterValue> entry : valueCache.entrySet()) {
-                stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
-                stringBuilder.append(System.lineSeparator());
-            }
-
-            logger.info("", stringBuilder);
-            setPrintMeterInfo(false);
-        }
-    }
-
-    /**
-     * Gets if the object information has to be logged to OSGi console.
-     *
-     * @return true if the object information should be logged, otherwise false.
-     */
-    private Boolean getPrintMeterInfo() {
-        return this.printMeterInfo;
-    }
-
-    /**
-     * Sets if the object information has to be logged to OSGi console.
-     */
-    private void setPrintMeterInfo(Boolean printMeterInfo) {
-        this.printMeterInfo = printMeterInfo;
-    }
-
-    /**
-     * Converts hex encoded OBIS to formatted string.
-     *
-     * @return the hex encoded OBIS code as readable string.
-     */
-    private String getObisAsString(byte[] octetBytes) {
-        String formattedObis = String.format(MeterReaderBindingConstants.OBIS_FORMAT, byteToInt(octetBytes[0]),
-                byteToInt(octetBytes[1]), byteToInt(octetBytes[2]), byteToInt(octetBytes[3]), byteToInt(octetBytes[4]));
-
-        return formattedObis;
-    }
-
-    /**
-     * Byte to Integer conversion.
-     *
-     * @param byte to convert to Integer.
-     */
-    private int byteToInt(byte b) {
-        return Integer.parseInt(String.format("%02x", b), 16);
     }
 
     /**
@@ -164,19 +102,18 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                     SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
 
                     for (SmlListEntry entry : smlListEntries) {
-                        String obis = getObisAsString(entry.getObjName().getValue());
+                        SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
+                        String obis = valueExtractor.getObisCode();
 
-                        MeterValue smlValue = valueCache.get(obis);
+                        MeterValue smlValue = getSmlValue(obis);
 
                         if (smlValue == null) {
-                            smlValue = new SmlValueExtractor(entry).getSmlValue();
+                            smlValue = valueExtractor.getSmlValue();
                         }
 
-                        valueCache.put(obis, smlValue);
+                        addObisCache(obis, smlValue);
                     }
                 }
-
-                printInfo();
 
             } else {
                 logger.warn("{}: no valid SML messages list retrieved.", this.toString());

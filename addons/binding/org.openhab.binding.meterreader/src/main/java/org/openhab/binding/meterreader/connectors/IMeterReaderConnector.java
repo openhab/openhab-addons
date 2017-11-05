@@ -9,6 +9,7 @@
 package org.openhab.binding.meterreader.connectors;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Specifies the generic method to retrieve SML values from a device
@@ -27,4 +28,24 @@ public interface IMeterReaderConnector<T> {
      * @throws IOException
      */
     T getMeterValues(byte[] initMessage) throws IOException;
+
+    void addValueChangeListener(Consumer<T> changeListener);
+
+    void removeValueChangeListener(Consumer<T> changeListener);
+
+    /**
+     * Open connection.
+     *
+     * @throws IOException
+     *
+     */
+    void openConnection() throws IOException;
+
+    /**
+     * Close connection.
+     *
+     * @throws ConnectorException
+     *
+     */
+    void closeConnection();
 }

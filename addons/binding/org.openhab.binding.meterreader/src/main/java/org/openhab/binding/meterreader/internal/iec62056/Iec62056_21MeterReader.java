@@ -8,20 +8,16 @@
  */
 package org.openhab.binding.meterreader.internal.iec62056;
 
-import java.util.Arrays;
-
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.openmuc.j62056.DataMessage;
 import org.openmuc.j62056.DataSet;
-import org.openmuc.jsml.EObis;
-import org.openmuc.jsml.structures.OctetString;
 
 /**
  * Reads meter values from an IEC 62056-21 compatible device with mode A,B,C or D.
- * 
+ *
  * @author MatthiasS
  *
  */
@@ -44,11 +40,7 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {
 
-                EObis obisEnum = Arrays.asList(EObis.values()).stream()
-                        .filter((a) -> a.obisCode().equals(new OctetString(address))).findAny()
-                        .orElseGet(() -> EObis.UNKNOWN);
-
-                addObisCache(address, new MeterValue(obisEnum.name(), dataSet.getValue(), dataSet.getUnit()));
+                addObisCache(address, new MeterValue(address, dataSet.getValue(), dataSet.getUnit()));
             }
         }
     }

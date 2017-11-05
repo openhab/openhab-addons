@@ -35,6 +35,8 @@ public class MeterReaderBindingConstants {
 
     public static final String CHANNEL_PROPERTY_OBIS = "obis";
 
+    public static final String OBIS_PATTERN = "((?<A>[0-9])-(?<B>[0-9]{1,2}):)?(?<C>[0-9]{1,2}).(?<D>[0-9]{1,2}).(?<E>[0-9])(\\*(?<F>[0-9][0-9]{1,2}))?";
+
     /** Obis format */
     public static final String OBIS_FORMAT = "%d-%d:%d.%d.%d";
 
