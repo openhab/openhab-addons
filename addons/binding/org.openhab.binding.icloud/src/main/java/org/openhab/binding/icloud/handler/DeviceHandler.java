@@ -175,17 +175,15 @@ public class DeviceHandler extends BaseThingHandler {
 
     private State getLastLocationUpdateDateTimeState(Content deviceData) {
         State dateTime = UnDefType.UNDEF;
-        try {
-            if (deviceData.getLocation().getTimeStamp() > 0) {
-                Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
-                SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-                String lastUpdate = javaDateFormat.format(javaDate);
 
-                dateTime = new DateTimeType(lastUpdate);
-            }
-        } catch (Exception e) {
-            logException(e);
+        if (deviceData.getLocation().getTimeStamp() > 0) {
+            Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
+            SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+            String lastUpdate = javaDateFormat.format(javaDate);
+
+            dateTime = new DateTimeType(lastUpdate);
         }
+
         return dateTime;
     }
 
