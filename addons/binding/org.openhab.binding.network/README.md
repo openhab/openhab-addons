@@ -21,13 +21,13 @@ allowSystemPings=false
 ## Supported Things
 
 - **pingdevice:** Detects device presence by using icmp pings, arp pings and dhcp packet sniffing.
-- **servicedevice:** Detects device presence by scanning for a specific open tcp port. 
+- **servicedevice:** Detects device presence by scanning for a specific open tcp port.
 
 ## Discovery
 
 Auto discovery can be used to scan the local network for **pingdevice** things by sending a ping to every IP on the network. Some network tools will identify this as a network intruder alarm, therefore automatic background discovery is disabled and a manual scan needs to be issued.
 
-Please note: things discovered by the network binding will be provided with a time to live (TTL) and will automatically disappear from the Inbox after 10 minutes. 
+Please note: things discovered by the network binding will be provided with a time to live (TTL) and will automatically disappear from the Inbox after 10 minutes.
 
 ## Thing Configuration
 
@@ -64,7 +64,7 @@ Because mobile devices put themselves in a deep sleep mode after some inactivity
 
 ### iPhones, iPads
 
-Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353). Therefore first a Bonjour message is send, before the ARP presence detection is performed. The binding automatically figures out if the target device is an iOS device. You can check if the binding has correctly recognised your device by having a look at the *uses_ios_wakeup* property of your thing. An almost immediate presence detection for phones and tables, if they (re)join the home Wifi network, is to use DHCP listen. 
+Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353). Therefore first a Bonjour message is send, before the ARP presence detection is performed. The binding automatically figures out if the target device is an iOS device. You can check if the binding has correctly recognised your device by having a look at the *uses_ios_wakeup* property of your thing. An almost immediate presence detection for phones and tables, if they (re)join the home Wifi network, is to use DHCP listen.
 
 ### Use open TCP ports
 
@@ -89,7 +89,7 @@ Nmap done: 1 IP address (1 host up) scanned in 106.17 seconds
 
 In this example, there are four suitable ports to use.
 The port 554 (Windows network file sharing service) is open on most Windows PCs and Windows compatible Linux systems.
-Port 1025 (MS RPC) is open on XBox systems. Port 548 (Apple Filing Protocol (AFP)) is open on Mac OS X systems. 
+Port 1025 (MS RPC) is open on XBox systems. Port 548 (Apple Filing Protocol (AFP)) is open on Mac OS X systems.
 
 Please don't forget to open the required ports in your firewall setup.
 
@@ -98,7 +98,7 @@ Please don't forget to open the required ports in your firewall setup.
 
 Because we use external tools for some of the presence detection mechanism or need elevated permissions for others, your OpenHAB installation needs to be altered.
 
-### Arping 
+### Arping
 
 For arp pings to work, you need a separate tool, called "arping".
 On Linux there exists three different tools:
@@ -147,10 +147,10 @@ Things support the following channels:
 
 ## Full Example
 
-demo.Things:
+demo.things:
 
 ```xtend
-network:pingdevice:devicename [ hostname="192.168.0.42" ]
+Thing network:pingdevice:devicename [ hostname="192.168.0.42" ]
 ```
 
 demo.items:
