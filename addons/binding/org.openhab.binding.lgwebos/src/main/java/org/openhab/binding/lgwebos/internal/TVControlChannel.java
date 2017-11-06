@@ -11,7 +11,8 @@ package org.openhab.binding.lgwebos.internal;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
@@ -42,7 +43,16 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
         if (device == null) {
             return;
         }
-        if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
+
+        if (IncreaseDecreaseType.INCREASE == command) {
+            if (device.hasCapabilities(TVControl.Channel_Up)) {
+                getControl(device).channelUp(createDefaultResponseListener());
+            }
+        } else if (IncreaseDecreaseType.DECREASE == command) {
+            if (device.hasCapabilities(TVControl.Channel_Down)) {
+                getControl(device).channelDown(createDefaultResponseListener());
+            }
+        } else if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
             final String value = command.toString();
             final TVControl control = getControl(device);
             control.getChannelList(new TVControl.ChannelListListener() {
@@ -54,9 +64,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
                 @Override
                 public void onSuccess(List<ChannelInfo> channels) {
                     if (logger.isDebugEnabled()) {
-                        for (ChannelInfo c : channels) {
-                            logger.debug("Channel {} - {}", c.getNumber(), c.getName());
-                        }
+                        channels.forEach(c -> logger.debug("Channel {} - {}", c.getNumber(), c.getName()));
                     }
                     Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
                             .findFirst();
@@ -83,7 +91,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
 
                 @Override
                 public void onSuccess(ChannelInfo channelInfo) {
-                    handler.postUpdate(channelId, new StringType(channelInfo.getNumber()));
+                    handler.postUpdate(channelId, new DecimalType(channelInfo.getNumber()));
                 }
             }));
         } else {

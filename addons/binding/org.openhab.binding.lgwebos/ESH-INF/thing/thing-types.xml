@@ -8,65 +8,46 @@
 		<description>WebOS based smart TV</description>
 
 		<channels>
-			<channel id="power" typeId="commandType">
-				<label>Power</label>
-				<description>Via this binding TV can only be powered off, not on.</description>
-			</channel>
-			<channel id="mute" typeId="commandType">
-				<label>Mute</label>
-				<description>Current Mute Setting</description>
-			</channel>
-			<channel id="volume" typeId="volumeChannelType" />
-			<channel id="channel" typeId="stringType">
-				<label>Channel Number</label>
-				<description>Current Channel Setting</description>
-			</channel>
-			<channel id="channelUp" typeId="commandType">
-				<label>Channel Up</label>
-				<description>One Channel Up</description>
-			</channel>
-			<channel id="channelDown" typeId="commandType">
-				<label>Channel Down</label>
-				<description>One Channel Down</description>
-			</channel>
+			<channel id="power" typeId="powerType" />
+			<channel id="mute" typeId="muteType" />
+			<channel id="volume" typeId="volumeType" />
+			<channel id="channel" typeId="channelType" />
 			<channel id="channelName" typeId="channelNameChannelType" />
-			<channel id="toast" typeId="stringType">
-				<label>Toast</label>
-				<description>Send a message onto the TV screen.</description>
-			</channel>
+			<channel id="toast" typeId="toastType" />
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
-			<channel id="mediaStop" typeId="commandType">
-				<label>Stop</label>
-				<description>Stop Playback</description>
-			</channel>
-			<channel id="appLauncher" typeId="stringType">
-				<label>Application</label>
-				<description>Start application and monitor running applications.</description>
-			</channel>
+			<channel id="mediaStop" typeId="mediaStopType" />
+			<channel id="appLauncher" typeId="appLauncherChannelType" />
+
 		</channels>
 
-		<!-- property as IP must not be changed -->
+		<!-- <config-description> <parameter name="ip" type="text" required="true"> <label>IP</label> <description>IP address of 
+			the WebOS TV.</description> <context>network-address</context> </parameter> </config-description> -->
 		<properties>
-			<property name="IP" />
+			<property name="ip" />
 		</properties>
 	</thing-type>
 
-	<!-- Channel Types -->
-	<channel-type id="commandType">
+	<channel-type id="powerType">
 		<item-type>Switch</item-type>
-		<label>Command</label>
-		<description>Used to send ON commands to trigger an action. Or send ON and OFF commands to toggle state. Similar to buttons on a remote control.</description>
+		<label>Power</label>
+		<description>Via this binding TV can only be powered off, not on.</description>
 	</channel-type>
-	<channel-type id="stringType">
-		<item-type>String</item-type>
-		<label>String</label>
-		<description>Used to read and write string values.</description>
+	<channel-type id="muteType">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Current Mute Setting</description>
 	</channel-type>
-	<channel-type id="volumeChannelType">
+	<channel-type id="volumeType">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Current Volume Setting</description>
 		<state min="0" max="100" step="1"></state>
+	</channel-type>
+	<channel-type id="channelType">
+		<item-type>Number</item-type>
+		<label>Channel</label>
+		<description>Current Channel</description>
+		<state min="1" step="1"></state>
 	</channel-type>
 	<channel-type id="channelNameChannelType">
 		<item-type>String</item-type>
@@ -74,10 +55,25 @@
 		<description>Current Channel Name</description>
 		<state readOnly="true" />
 	</channel-type>
+	<channel-type id="toastType">
+		<item-type>String</item-type>
+		<label>Toast</label>
+		<description>Send a message onto the TV screen.</description>
+	</channel-type>
 	<channel-type id="mediaPlayerType">
 		<item-type>Player</item-type>
 		<label>Media Control</label>
 		<description>Control media (e.g. audio or video) playback</description>
+	</channel-type>
+	<channel-type id="mediaStopType">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop Playback</description>
+	</channel-type>
+	<channel-type id="appLauncherChannelType">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Start application and monitor running applications.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

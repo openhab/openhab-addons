@@ -45,9 +45,7 @@ WebOS TV has no configuration parameters. Please note that at least one channel 
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | String    | Current channel                                                                                                                                                                                                         | RW         |
-| channelUp       | Switch    | One channel up                                                                                                                                                                                                          | W          |
-| channelDown     | Switch    | One channel down                                                                                                                                                                                                        | W          |
+| channel         | Number    | Current channel number. Supports increase and decrease commands as well for relative channel up and down.                                                                                                               | RW         |
 | channelName     | String    | Current channel name                                                                                                                                                                                                    | R          |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
@@ -123,9 +121,8 @@ Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwe
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:192_168_2_119:mute"}
 Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:192_168_2_119:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown" 
-Number LG_TV0_ChannelNo "Channel #"          { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
-Switch LG_TV0_ChannelDown "Channel -"        { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelDown"  }
-Switch LG_TV0_ChannelUp "Channel +"          { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:channelUp"  }
+Number LG_TV0_ChannelNo "Channel [%d]"       { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
+Number LG_TV0_ChannelDummy "ChannelUpDown" 
 String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:192_168_2_119:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:192_168_2_119:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:mediaStop" }
@@ -147,6 +144,7 @@ sitemap demo label="Main Menu"
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_ChannelNo
+        Switch item=LG_TV0_ChannelDummy icon="television" label="Kanal" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDown
         Switch item=LG_TV0_ChannelUp
@@ -189,6 +187,16 @@ then
     switch receivedCommand{
         case 0: LG_TV0_Volume.sendCommand(DECREASE)
         case 1: LG_TV0_Volume.sendCommand(INCREASE)
+    }
+end
+
+// for relative channel changes
+rule "ChannelUpDown"
+when Item LG_TV0_ChannelDummy received command
+then
+    switch receivedCommand{
+        case 0: LG_TV0_ChannelNo.sendCommand(DECREASE)
+        case 1: LG_TV0_ChannelNo.sendCommand(INCREASE)
     }
 end
 ```

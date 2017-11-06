@@ -30,8 +30,6 @@ import org.openhab.binding.lgwebos.internal.MediaControlStop;
 import org.openhab.binding.lgwebos.internal.PowerControlPower;
 import org.openhab.binding.lgwebos.internal.TVControlChannel;
 import org.openhab.binding.lgwebos.internal.TVControlChannelName;
-import org.openhab.binding.lgwebos.internal.TVControlDown;
-import org.openhab.binding.lgwebos.internal.TVControlUp;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
@@ -68,8 +66,6 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         handlers.put(CHANNEL_POWER, new PowerControlPower());
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
-        handlers.put(CHANNEL_CHANNEL_UP, new TVControlUp());
-        handlers.put(CHANNEL_CHANNEL_DOWN, new TVControlDown());
         handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
         handlers.put(CHANNEL_APP_LAUNCHER, new LauncherApplication());
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
