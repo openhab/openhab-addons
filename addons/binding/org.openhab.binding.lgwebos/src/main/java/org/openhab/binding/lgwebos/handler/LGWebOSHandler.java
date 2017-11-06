@@ -87,13 +87,13 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         ConnectableDevice device = getDevice();
         if (device == null) {
             logger.debug("Device {} not found - most likely is is currently offline. Details: Channel {}, Command {}.",
-                    getThing().getProperties().get(PROPERTY_IP_ADDRESS), channelUID.getId(), command);
+                    getIpAddress(), channelUID.getId(), command);
         }
         handler.onReceiveCommand(device, channelUID.getId(), this, command);
     }
 
     private ConnectableDevice getDevice() {
-        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        String ip = getIpAddress();
         return discoveryManager.getCompatibleDevices().get(ip);
     }
 
@@ -213,7 +213,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     // just to make sure, this device is registered, if it was powered off during initialization
     @Override
     public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        String ip = getIpAddress();
         if (device.getIpAddress().equals(ip)) {
             device.addListener(this);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device Ready");
@@ -223,10 +223,14 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
-        String ip = getThing().getProperties().get(PROPERTY_IP_ADDRESS);
+        String ip = getIpAddress();
         if (device.getIpAddress().equals(ip)) {
             device.addListener(this);
         }
+    }
+
+    private String getIpAddress() {
+        return getThing().getUID().getId().replace("_", ".");
     }
 
     @Override

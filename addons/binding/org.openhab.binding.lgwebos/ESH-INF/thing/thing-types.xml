@@ -19,12 +19,6 @@
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
 
 		</channels>
-
-		<!-- <config-description> <parameter name="ip" type="text" required="true"> <label>IP</label> <description>IP address of 
-			the WebOS TV.</description> <context>network-address</context> </parameter> </config-description> -->
-		<properties>
-			<property name="ip" />
-		</properties>
 	</thing-type>
 
 	<channel-type id="powerType">

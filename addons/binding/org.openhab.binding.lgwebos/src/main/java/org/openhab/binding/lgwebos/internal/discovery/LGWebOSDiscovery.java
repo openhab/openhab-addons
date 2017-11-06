@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal.discovery;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.THING_TYPE_WEBOSTV;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -130,8 +130,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     // Helpers for DiscoveryManagerListener Impl
     private DiscoveryResult createDiscoveryResult(ConnectableDevice device) {
         ThingUID thingUID = createThingUID(device);
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                .withProperty(PROPERTY_IP_ADDRESS, device.getIpAddress()).withLabel(device.getFriendlyName()).build();
+        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName()).build();
         return result;
     }
 
