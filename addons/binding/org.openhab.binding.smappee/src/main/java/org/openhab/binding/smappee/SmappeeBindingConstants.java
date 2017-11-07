@@ -37,6 +37,7 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_USERNAME = "username";
     public final static String PARAMETER_PASSWORD = "password";
     public final static String PARAMETER_SERVICE_LOCATION_NAME = "servicelocationname";
+    public final static String PARAMETER_POLLTIME = "polltime";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMAPPEE);
 }

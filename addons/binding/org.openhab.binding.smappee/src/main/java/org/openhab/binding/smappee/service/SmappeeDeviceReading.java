@@ -19,28 +19,28 @@ public class SmappeeDeviceReading {
     public int serviceLocationId;
     public SmappeeDeviceReadingConsumption[] consumptions;
 
-    public double GetLatestConsumption() {
+    public double getLatestConsumption() {
         if (consumptions.length == 0) {
             return 0;
         }
-        return GetLatestReading().consumption;
+        return getLatestReading().consumption;
     }
 
-    public double GetLatestSolar() {
+    public double getLatestSolar() {
         if (consumptions.length == 0) {
             return 0;
         }
-        return GetLatestReading().solar;
+        return getLatestReading().solar;
     }
 
-    public double GetLatestAlwaysOn() {
+    public double getLatestAlwaysOn() {
         if (consumptions.length == 0) {
             return 0;
         }
-        return GetLatestReading().alwaysOn;
+        return getLatestReading().alwaysOn;
     }
 
-    private SmappeeDeviceReadingConsumption GetLatestReading() {
+    private SmappeeDeviceReadingConsumption getLatestReading() {
         if (consumptions.length == 0) {
             return null;
         }

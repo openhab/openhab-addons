@@ -62,9 +62,9 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
 
     @Override
     public void newState(SmappeeDeviceReading readings) {
-        updateState(CHANNEL_CONSUMPTION, new DecimalType(readings.GetLatestConsumption()));
-        updateState(CHANNEL_SOLAR, new DecimalType(readings.GetLatestSolar()));
-        updateState(CHANNEL_ALWAYSON, new DecimalType(readings.GetLatestAlwaysOn()));
+        updateState(CHANNEL_CONSUMPTION, new DecimalType(readings.getLatestConsumption()));
+        updateState(CHANNEL_SOLAR, new DecimalType(readings.getLatestSolar()));
+        updateState(CHANNEL_ALWAYSON, new DecimalType(readings.getLatestAlwaysOn()));
     }
 
     @Override
@@ -81,6 +81,7 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
         String param_username = String.valueOf(conf.get(PARAMETER_USERNAME));
         String param_password = String.valueOf(conf.get(PARAMETER_PASSWORD));
         String param_serviceLocationName = String.valueOf(conf.get(PARAMETER_SERVICE_LOCATION_NAME));
+        String param_polltime = String.valueOf(conf.get(PARAMETER_POLLTIME));
 
         if (param_client_id.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -107,10 +108,17 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
                     "Check configuration, Service location name must be provided");
             return;
         }
+        if (param_polltime.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Check configuration, polling time must be provided");
+            return;
+        }
+
+        int polltime = Integer.parseInt(param_polltime) * 60000;
 
         logger.debug("Initialize Network handler.");
         smappeeService = new SmappeeService(param_client_id, param_client_secret, param_username, param_password,
-                param_serviceLocationName);
+                param_serviceLocationName, polltime);
 
         super.initialize();
 

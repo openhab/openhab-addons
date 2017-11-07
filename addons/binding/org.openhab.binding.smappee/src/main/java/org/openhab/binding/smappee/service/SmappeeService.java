@@ -59,7 +59,7 @@ public class SmappeeService {
     private String refreshToken;
 
     public SmappeeService(String client_id, String client_secret, String username, String password,
-            String serviceLocationName) {
+            String serviceLocationName, long refreshInterval) {
         this.serviceLocationName = serviceLocationName;
         this.client_id = client_id;
         this.client_secret = client_secret;
@@ -67,7 +67,7 @@ public class SmappeeService {
         this.password = password;
 
         this.retry = 1;
-        this.refreshInterval = 120000;
+        this.refreshInterval = refreshInterval;
 
         this.gson = new Gson();
 
