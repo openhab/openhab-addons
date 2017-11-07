@@ -34,13 +34,14 @@ Client Secret : The Smappee Api Oauth client secret (obtain by mail from smappee
 Username : The username of your Smappee
 Password : The password of your Smappee
 Service location name : The name of your Smappee installation
+Polling time : How often (in minutes) does the seneye needs to be checked ?
 
 ### Configuration with config files
 
 A manual setup through a `things/smappee.things` file could look like this:
 
 ```
-Thing smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", servicelocationname="xxx"]
+Thing smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", servicelocationname="xxx", polltime=5]
 ```
 
 ## Channels
