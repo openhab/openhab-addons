@@ -4,6 +4,7 @@ import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ConsoleProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
@@ -38,6 +39,9 @@ public class ObjectPropertyRequests<T extends ObjectProperties> {
 
     public final static ObjectPropertyRequests<AudioZoneProperties> AUDIO_ZONE = new ObjectPropertyRequests<>(
             Message.OBJ_TYPE_AUDIO_ZONE, AudioZoneProperties.class);
+
+    public static final ObjectPropertyRequests<AuxSensorProperties> AUX_SENSORS = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_AUX_SENSOR, AuxSensorProperties.class);
 
     private final int propertyRequest;
     private final Class<T> responseType;

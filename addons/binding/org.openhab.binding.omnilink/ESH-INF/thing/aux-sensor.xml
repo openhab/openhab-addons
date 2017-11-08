@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="aux_sensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Auxiliary Sensor</label>
+        <description>Temperature, Humidity or other sensor </description>
+        <channels>
+            <channel id="temperature" typeId="sensor_temperature" />
+            <channel id="humidity" typeId="sensor_humidity" />
+            <channel id="low_setpoint" typeId="sensor_low_setpoint" />
+            <channel id="high_setpoint" typeId="sensor_high_setpoint" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Sensor Number</label>
+                <description>Sensor Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <!-- Thermostat Channels -->
+
+    <channel-type id="sensor_temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current Temperature of a Sensor</description>
+        <category>Temperature</category>
+        <state pattern="%d°" readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensor_hight_setpoint">
+        <item-type>Number</item-type>
+        <label>High Set Point</label>
+        <description>High Set Point for a Sensor</description>
+        <category>Temperature</category>
+        <state pattern="%d°" />
+    </channel-type>
+
+    <channel-type id="sensor_low_setpoint">
+        <item-type>Number</item-type>
+        <label>Low Set Point</label>
+        <description>Low Set Point for a Sensor</description>
+        <category>Temperature</category>
+        <state pattern="%d°" />
+    </channel-type>
+    
+    <channel-type id="sensor_humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Relative Humidity</description>
+        <category>Temperature</category>
+        <state pattern="%d%%" readOnly="true" />
+    </channel-type>
+   
+</thing:thing-descriptions>
