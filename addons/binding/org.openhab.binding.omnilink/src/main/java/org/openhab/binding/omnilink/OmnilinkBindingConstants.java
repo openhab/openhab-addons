@@ -73,7 +73,6 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_BUTTON_PRESS = "press";
 
     // thermostats
-
     public final static String CHANNEL_THERMO_FREEZE_ALARM = "freeze_alarm";
     public final static String CHANNEL_THERMO_COMM_FAILURE = "comm_failure";
     public final static String CHANNEL_THERMO_STATUS = "status";
@@ -87,6 +86,12 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_THERMO_HOLD_MODE = "hold_mode";
     public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
     public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
+
+    // aux sensors
+    public final static String CHANNEL_AUX_TEMP = "temperature";
+    public final static String CHANNEL_AUX_HUMIDITY = "humidity";
+    public final static String CHANNEL_AUX_LOW_SETPOINT = "low_setpoint";
+    public final static String CHANNEL_AUX_HIGH_SETPOINT = "high_setpoint";
 
     // consoles
     public final static String CHANNEL_CONSOLE_BEEP = "beep";
@@ -129,6 +134,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public final static ThingTypeUID THING_TYPE_AUDIO_ZONE = new ThingTypeUID(BINDING_ID, "audio_zone");
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
+    public static final ThingTypeUID THING_TYPE_AUX_STATUS = new ThingTypeUID(BINDING_ID, "aux_sensor");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 

@@ -28,7 +28,7 @@ public abstract class AbstractOmnilinkHandler<T extends Status> extends BaseThin
         super(thing);
     }
 
-    private volatile Optional<T> status;
+    private volatile Optional<T> status = Optional.empty();
 
     public OmnilinkBridgeHandler getOmnilinkBridgeHander() {
         return (OmnilinkBridgeHandler) getBridge().getHandler();

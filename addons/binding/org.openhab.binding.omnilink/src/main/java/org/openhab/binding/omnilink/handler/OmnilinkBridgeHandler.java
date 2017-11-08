@@ -42,6 +42,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.AuxSensorStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
@@ -281,6 +282,12 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         status.getNumber());
                 theThing.map(Thing::getHandler)
                         .ifPresent(theHandler -> ((AudioZoneHandler) theHandler).updateChannels(audioZoneStatus));
+            } else if (status instanceof AuxSensorStatus) {
+                AuxSensorStatus auxSensorStatus = (AuxSensorStatus) status;
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUX_STATUS,
+                        status.getNumber());
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((AuxiliarySensorHandler) theHandler).updateChannels(auxSensorStatus));
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
