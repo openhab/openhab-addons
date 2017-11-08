@@ -22,7 +22,6 @@ import org.openhab.binding.nibeuplink.handler.F750Handler;
 import org.openhab.binding.nibeuplink.handler.VVM310Handler;
 import org.openhab.binding.nibeuplink.handler.VVM320Handler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link NibeUplinkHandlerFactory} is responsible for creating things and thing
@@ -31,7 +30,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Alexander Friese - initial contribution
  *
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL, name = "binding.nibeuplink")
+@Component(service = ThingHandlerFactory.class, immediate = true)
 public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
@@ -44,53 +43,53 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_VVM320)) {
-            return new VVM320Handler(thing, ChannelSet.All);
+            return new VVM320Handler(thing, ChannelSet.ALL);
         } else if (thingTypeUID.equals(THING_TYPE_VVM320_SENSORS)) {
-            return new VVM320Handler(thing, ChannelSet.Sensors);
+            return new VVM320Handler(thing, ChannelSet.SENSORS);
         } else if (thingTypeUID.equals(THING_TYPE_VVM320_SETTINGS)) {
-            return new VVM320Handler(thing, ChannelSet.Settings);
+            return new VVM320Handler(thing, ChannelSet.SETTINGS);
         } else if (thingTypeUID.equals(THING_TYPE_VVM320_SPECIAL)) {
-            return new VVM320Handler(thing, ChannelSet.Special);
+            return new VVM320Handler(thing, ChannelSet.SPECIAL);
         }
 
         if (thingTypeUID.equals(THING_TYPE_VVM310)) {
-            return new VVM310Handler(thing, ChannelSet.All);
+            return new VVM310Handler(thing, ChannelSet.ALL);
         } else if (thingTypeUID.equals(THING_TYPE_VVM310_SENSORS)) {
-            return new VVM310Handler(thing, ChannelSet.Sensors);
+            return new VVM310Handler(thing, ChannelSet.SENSORS);
         } else if (thingTypeUID.equals(THING_TYPE_VVM310_SETTINGS)) {
-            return new VVM310Handler(thing, ChannelSet.Settings);
+            return new VVM310Handler(thing, ChannelSet.SETTINGS);
         } else if (thingTypeUID.equals(THING_TYPE_VVM310_SPECIAL)) {
-            return new VVM310Handler(thing, ChannelSet.Special);
+            return new VVM310Handler(thing, ChannelSet.SPECIAL);
         }
 
         if (thingTypeUID.equals(THING_TYPE_F750)) {
-            return new F750Handler(thing, ChannelSet.All);
+            return new F750Handler(thing, ChannelSet.ALL);
         } else if (thingTypeUID.equals(THING_TYPE_F750_SENSORS)) {
-            return new F750Handler(thing, ChannelSet.Sensors);
+            return new F750Handler(thing, ChannelSet.SENSORS);
         } else if (thingTypeUID.equals(THING_TYPE_F750_SETTINGS)) {
-            return new F750Handler(thing, ChannelSet.Settings);
+            return new F750Handler(thing, ChannelSet.SETTINGS);
         } else if (thingTypeUID.equals(THING_TYPE_F750_SPECIAL)) {
-            return new F750Handler(thing, ChannelSet.Special);
+            return new F750Handler(thing, ChannelSet.SPECIAL);
         }
 
         if (thingTypeUID.equals(THING_TYPE_F1145)) {
-            return new F1145Handler(thing, ChannelSet.All);
+            return new F1145Handler(thing, ChannelSet.ALL);
         } else if (thingTypeUID.equals(THING_TYPE_F1145_SENSORS)) {
-            return new F1145Handler(thing, ChannelSet.Sensors);
+            return new F1145Handler(thing, ChannelSet.SENSORS);
         } else if (thingTypeUID.equals(THING_TYPE_F1145_SETTINGS)) {
-            return new F1145Handler(thing, ChannelSet.Settings);
+            return new F1145Handler(thing, ChannelSet.SETTINGS);
         } else if (thingTypeUID.equals(THING_TYPE_F1145_SPECIAL)) {
-            return new F1145Handler(thing, ChannelSet.Special);
+            return new F1145Handler(thing, ChannelSet.SPECIAL);
         }
 
         if (thingTypeUID.equals(THING_TYPE_F1155)) {
-            return new F1155Handler(thing, ChannelSet.All);
+            return new F1155Handler(thing, ChannelSet.ALL);
         } else if (thingTypeUID.equals(THING_TYPE_F1155_SENSORS)) {
-            return new F1155Handler(thing, ChannelSet.Sensors);
+            return new F1155Handler(thing, ChannelSet.SENSORS);
         } else if (thingTypeUID.equals(THING_TYPE_F1155_SETTINGS)) {
-            return new F1155Handler(thing, ChannelSet.Settings);
+            return new F1155Handler(thing, ChannelSet.SETTINGS);
         } else if (thingTypeUID.equals(THING_TYPE_F1155_SPECIAL)) {
-            return new F1155Handler(thing, ChannelSet.Special);
+            return new F1155Handler(thing, ChannelSet.SPECIAL);
         }
 
         return null;

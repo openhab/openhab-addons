@@ -98,11 +98,11 @@ public class UplinkWebInterface {
 
                 @Override
                 public void update(CommunicationStatus status) {
-                    if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
+                    if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
                         setAuthenticated(false);
-                    } else if (!status.getHttpCode().equals(Code.OK)) {
+                    } else if (!Code.OK.equals(status.getHttpCode())) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 status.getMessage());
                         setAuthenticated(false);
@@ -131,14 +131,14 @@ public class UplinkWebInterface {
 
                 @Override
                 public void update(CommunicationStatus status) {
-                    if (status.getHttpCode().equals(Code.FOUND)) {
+                    if (Code.FOUND.equals(status.getHttpCode())) {
                         uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
                         setAuthenticated(true);
-                    } else if (status.getHttpCode().equals(Code.OK)) {
+                    } else if (Code.OK.equals(status.getHttpCode())) {
                         uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "invalid username or password");
                         setAuthenticated(false);
-                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
+                    } else if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
                         uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
                         setAuthenticated(false);

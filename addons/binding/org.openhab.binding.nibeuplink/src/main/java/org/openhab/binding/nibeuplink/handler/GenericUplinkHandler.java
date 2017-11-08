@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
@@ -99,12 +98,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         this.houseKeepingInterval = config.getHouseKeepingInterval();
         this.webInterface = new UplinkWebInterface(config, this);
 
-        if (config.getPassword() != null) {
-            this.startPolling();
-        } else {
-            thing.setStatusInfo(
-                    new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set"));
-        }
+        this.startPolling();
     }
 
     /**
@@ -119,12 +113,8 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         }
         if (deadChannelHouseKeeping == null || deadChannelHouseKeeping.isCancelled()) {
             logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
-            deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    deadChannels.clear();
-                }
-            }, 1, houseKeepingInterval, TimeUnit.SECONDS);
+            deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(deadChannels::clear, 1, houseKeepingInterval,
+                    TimeUnit.SECONDS);
         } else {
             logger.debug("deadChannelHouseKeeping already active");
         }

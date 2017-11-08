@@ -15,10 +15,10 @@ package org.openhab.binding.nibeuplink.internal.model;
  *
  */
 public enum ChannelGroup {
-    Sensor,
-    Setting,
-    General,
-    Compressor,
-    Hotwater,
-    Airsupply;
+    SENSOR,
+    SETTING,
+    GENERAL,
+    COMPRESSOR,
+    HOTWATER,
+    AIRSUPPLY;
 }

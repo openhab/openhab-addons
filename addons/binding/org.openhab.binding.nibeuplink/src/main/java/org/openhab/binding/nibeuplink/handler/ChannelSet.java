@@ -17,8 +17,8 @@ package org.openhab.binding.nibeuplink.handler;
  *
  */
 public enum ChannelSet {
-    Sensors,
-    Settings,
-    All,
-    Special
+    SENSORS,
+    SETTINGS,
+    ALL,
+    SPECIAL
 }

@@ -15,6 +15,6 @@ package org.openhab.binding.nibeuplink.internal.model;
  *
  */
 public enum ChannelType {
-    Sensor,
-    Setting;
+    SENSOR,
+    SETTING;
 }

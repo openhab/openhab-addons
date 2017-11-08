@@ -34,7 +34,7 @@ public class F1155Handler extends GenericUplinkHandler {
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        if (!channelSet.equals(ChannelSet.Special)) {
+        if (!channelSet.equals(ChannelSet.SPECIAL)) {
             return F1155Channels.fromId(id);
         } else {
             return null;
@@ -45,23 +45,23 @@ public class F1155Handler extends GenericUplinkHandler {
     public List<Channel> getChannels() {
         List<Channel> list = new ArrayList<>(F1155Channels.values().length);
 
-        if (!channelSet.equals(ChannelSet.Special)) {
+        if (!channelSet.equals(ChannelSet.SPECIAL)) {
             for (F1155Channels channel : F1155Channels.values()) {
 
-                if (channel.getChannelType().equals(ChannelType.Sensor)) {
+                if (channel.getChannelType().equals(ChannelType.SENSOR)) {
                     switch (channelSet) {
-                        case All:
-                        case Sensors:
+                        case ALL:
+                        case SENSORS:
                             list.add(channel);
                         default:
                             break;
                     }
                 }
 
-                else if (channel.getChannelType().equals(ChannelType.Setting)) {
+                else if (channel.getChannelType().equals(ChannelType.SETTING)) {
                     switch (channelSet) {
-                        case All:
-                        case Settings:
+                        case ALL:
+                        case SETTINGS:
                             list.add(channel);
                         default:
                             break;

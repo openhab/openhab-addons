@@ -42,10 +42,10 @@
 		<description>data retrieved from Nibe Uplink web interface</description>
 
 		<channel-groups>
-            <channel-group typeId="vvm320-general" id="general" />
-            <channel-group typeId="vvm320-hotwater" id="hotwater" />
-            <channel-group typeId="vvm320-compressor" id="compressor" />
-            <channel-group typeId="vvm320-airsupply" id="airsupply" />
+			<channel-group typeId="vvm320-general" id="general" />
+			<channel-group typeId="vvm320-hotwater" id="hotwater" />
+			<channel-group typeId="vvm320-compressor" id="compressor" />
+			<channel-group typeId="vvm320-airsupply" id="airsupply" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />

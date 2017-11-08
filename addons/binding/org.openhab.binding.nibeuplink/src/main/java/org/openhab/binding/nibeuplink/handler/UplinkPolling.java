@@ -52,7 +52,7 @@ public class UplinkPolling implements Runnable {
             try {
                 handler.getWebInterface().executeCommand(command);
             } catch (Exception e) {
-                logger.error("Caught Error: {}", e.getMessage());
+                logger.warn("Caught Exception: {}", e.getMessage());
             }
 
         }
