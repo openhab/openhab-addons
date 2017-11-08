@@ -42,7 +42,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
     /**
-     * Refresh interval which is used to poll values from the NibeUplink web interface (optional, defaults to 60 s)
+     * Refresh interval which is used to poll values from the Solaredge web interface (optional, defaults to 60 s)
      */
     private int refreshInterval;
 
@@ -79,7 +79,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         Thing thing = this.getThing();
         SolarEdgeConfiguration config = getConfiguration();
 
-        logger.debug("Discovered NibeUplink initialized: {}", config);
+        logger.debug("Discovered Solaredge initialized: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
         this.webInterface = new WebInterface(config, this);

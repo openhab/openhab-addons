@@ -127,7 +127,7 @@ public class WebInterface {
     }
 
     /**
-     * authenticates with the Nibe Uplink WEB interface
+     * authenticates with the Solaredge WEB interface
      *
      * @throws UnsupportedEncodingException
      */

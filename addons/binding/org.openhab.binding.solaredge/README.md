@@ -16,11 +16,11 @@ Auto-Discovery is not supported, as access requires authentication.
 The syntax for a inverter thing is:
 
 ```
-solaredge:web:<NAME>
+solaredge:generic:<NAME>
 ```
 
 - **solaredge** the binding id, fixed
-- **web** fixed value
+- **generic** fixed value
 - **name** the name of the inverter (choose any name)
 
 There are a few settings this thing:
@@ -35,27 +35,27 @@ password used to authenticate on SolarEdge
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
 
 - **pollingInterval**  
-interval (seconds) in which values are retrieved from NibeUplink. Setting less than 10 seconds is not recommended. (default = 60). 
+interval (seconds) in which values are retrieved from Solaredge. Setting less than 10 seconds is not recommended. (default = 60). 
 
 ### Examples
 
 - minimum configuration
 
 ```
-solaredge:web:se2200 [ username="...", password="...", solarId="..."]
+solaredge:generic:se2200 [ username="...", password="...", solarId="..."]
 ```
 
 - with pollingInterval
 
 ```
-solaredge:web:se2200[ username="...", password="...", solarId="...", pollingInterval=... ]
+solaredge:generic:se2200[ username="...", password="...", solarId="...", pollingInterval=... ]
 ```
 
 - multiple inverters
 
 ```
-solaredge:web:home1 [ username="...", password="...", solarId="..."]
-solaredge:web:home2  [ username="...", password="...", solarId="..."]
+solaredge:generic:home1 [ username="...", password="...", solarId="..."]
+solaredge:generic:home2  [ username="...", password="...", solarId="..."]
 ```
 
 ## Channels
@@ -89,12 +89,12 @@ Available channels depend on the specific heatpump model. Following models/chann
 ### Thing
 
 ```
-solaredge:web:se2200     [ username="solar@edge.de", password="secret", nibeId="4711", pollingInterval=30 ]
+solaredge:generic:se2200     [ username="solar@edge.de", password="secret", solarId="4711", pollingInterval=30 ]
 ```
 
 ### Items
 
 ```
-Number      SE2200_Live_Production   "PV Produktion [%.2f KW]"                {channel="solaredge:web:se2200:live#production"}
-Number      SE2200_Live_Level        "Batterieladung [%d %%]"                 {channel="solaredge:web:se2200:live#battery_level"}
+Number      SE2200_Live_Production   "PV Produktion [%.2f KW]"                {channel="solaredge:generic:se2200:live#production"}
+Number      SE2200_Live_Level        "Batterieladung [%d %%]"                 {channel="solaredge:generic:se2200:live#battery_level"}
 ```
