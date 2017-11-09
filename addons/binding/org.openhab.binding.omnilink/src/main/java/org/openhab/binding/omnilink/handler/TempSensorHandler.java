@@ -22,11 +22,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AuxSensorStatus;
  * @author Craig Hamilton
  *
  */
-public class AuxiliarySensorHandler extends AbstractOmnilinkHandler<AuxSensorStatus> implements ThingHandler {
+public class TempSensorHandler extends AbstractOmnilinkHandler<AuxSensorStatus> implements ThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(AuxiliarySensorHandler.class);
+    private Logger logger = LoggerFactory.getLogger(TempSensorHandler.class);
 
-    public AuxiliarySensorHandler(Thing thing) {
+    public TempSensorHandler(Thing thing) {
         super(thing);
     }
 
@@ -42,13 +42,6 @@ public class AuxiliarySensorHandler extends AbstractOmnilinkHandler<AuxSensorSta
                 new DecimalType(temperatureFormat.omniToFormat(status.getCoolSetpoint())));
         updateState(OmnilinkBindingConstants.CHANNEL_AUX_HIGH_SETPOINT,
                 new DecimalType(temperatureFormat.omniToFormat(status.getHeatSetpoint())));
-        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HEAT_SETPOINT,
-                new DecimalType(temperatureFormat.omniToFormat(status.getHeatSetpoint())));
-
-        // Humidity is reported in the Omni temperature format where Fahrenheit temperatures 0-100 correspond to 0-100%
-        // relative humidity
-        updateState(OmnilinkBindingConstants.CHANNEL_AUX_HUMIDITY,
-                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getTemp())));
     }
 
     @Override

@@ -284,10 +284,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         .ifPresent(theHandler -> ((AudioZoneHandler) theHandler).updateChannels(audioZoneStatus));
             } else if (status instanceof AuxSensorStatus) {
                 AuxSensorStatus auxSensorStatus = (AuxSensorStatus) status;
-                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_AUX_STATUS,
+                // Aux Sensors can be either temp or humidity, need to check both.
+                Optional<Thing> tempThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_TEMP_SENSOR,
                         status.getNumber());
-                theThing.map(Thing::getHandler)
-                        .ifPresent(theHandler -> ((AuxiliarySensorHandler) theHandler).updateChannels(auxSensorStatus));
+
+                if (tempThing.isPresent()) {
+                    tempThing.map(Thing::getHandler)
+                            .ifPresent(theHandler -> ((TempSensorHandler) theHandler).updateChannels(auxSensorStatus));
+                } else {
+                    Optional<Thing> humidityThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_HUMIDITY_SENSOR,
+                            status.getNumber());
+                    humidityThing.map(Thing::getHandler).ifPresent(
+                            theHandler -> ((HumiditySensorHandler) theHandler).updateChannels(auxSensorStatus));
+
+                }
+
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
