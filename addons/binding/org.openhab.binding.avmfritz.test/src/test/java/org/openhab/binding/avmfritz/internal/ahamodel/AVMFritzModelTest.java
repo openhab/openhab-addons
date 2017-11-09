@@ -35,27 +35,58 @@ public class AVMFritzModelTest {
                 + "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
                 + "<device identifier=\"08761 0000435\" id=\"18\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
                 + "<device identifier=\"5C:49:79:F0:A3:84\" id=\"19\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter></device>"
+                + "<device identifier=\"08761 0954669\" id=\"20\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>"
                 + "</devicelist>";
 
         DevicelistModel devices = JAXBtUtils.buildResult(xml);
         assertNotNull(devices);
-        assertEquals(devices.getDevicelist().size(), 3);
+        assertEquals(devices.getDevicelist().size(), 4);
         assertEquals(devices.getXmlApiVersion(), "1");
 
-        DeviceModel device = devices.getDevicelist().stream().filter(it -> "FRITZ!DECT 200".equals(it.getProductName()))
-                .findFirst().orElse(null);
-        assertNotNull(device);
-        validateDECT200Model(device);
+        DeviceModel device1 = devices.getDevicelist().stream()
+                .filter(it -> "FRITZ!DECT Repeater 100".equals(it.getProductName())).findFirst().orElse(null);
+        assertNotNull(device1);
+        validateDECTRepeater100Model(device1);
 
-        device = devices.getDevicelist().stream().filter(it -> "Comet DECT".equals(it.getProductName())).findFirst()
-                .orElse(null);
-        assertNotNull(device);
-        validateCometDECTModel(device);
+        DeviceModel device2 = devices.getDevicelist().stream()
+                .filter(it -> "FRITZ!DECT 200".equals(it.getProductName())).findFirst().orElse(null);
+        assertNotNull(device2);
+        validateDECT200Model(device2);
 
-        device = devices.getDevicelist().stream().filter(it -> "FRITZ!Powerline 546E".equals(it.getProductName()))
+        DeviceModel device3 = devices.getDevicelist().stream().filter(it -> "Comet DECT".equals(it.getProductName()))
                 .findFirst().orElse(null);
-        assertNotNull(device);
-        validatePowerline546EModel(device);
+        assertNotNull(device3);
+        validateCometDECTModel(device3);
+
+        DeviceModel device4 = devices.getDevicelist().stream()
+                .filter(it -> "FRITZ!Powerline 546E".equals(it.getProductName())).findFirst().orElse(null);
+        assertNotNull(device4);
+        validatePowerline546EModel(device4);
+    }
+
+    private void validateDECTRepeater100Model(DeviceModel device) {
+        assertEquals(device.getProductName(), "FRITZ!DECT Repeater 100");
+        assertEquals(device.getIdentifier(), "087610954669");
+        assertEquals(device.getDeviceId(), "20");
+        assertEquals(device.getFirmwareVersion(), "03.86");
+        assertEquals(device.getManufacturer(), "AVM");
+
+        assertEquals(device.getPresent(), 1);
+        assertEquals(device.getName(), "FRITZ!DECT Repeater 100 #5");
+
+        assertTrue(device.isDectRepeater());
+        assertFalse(device.isSwitchableOutlet());
+        assertTrue(device.isTempSensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isHeatingThermostat());
+
+        assertNull(device.getSwitch());
+        assertNotNull(device.getTemperature());
+        assertNull(device.getPowermeter());
+        assertNull(device.getHkr());
+
+        assertEquals(device.getTemperature().getCelsius(), new BigDecimal("23.0"));
+        assertEquals(device.getTemperature().getOffset(), new BigDecimal("0.0"));
     }
 
     private void validateDECT200Model(DeviceModel device) {
