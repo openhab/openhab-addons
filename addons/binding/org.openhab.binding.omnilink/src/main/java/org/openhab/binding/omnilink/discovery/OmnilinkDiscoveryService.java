@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -44,6 +45,13 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private boolean isLumina = false;
     private List<AreaProperties> areas;
 
+    private final static Set<Integer> TEMP_SENSOR_TYPES = ImmutableSet.of(
+            AuxSensorProperties.SENSOR_TYPE_EXTENDED_RANGE_OUTDOOR_TEMPERATURE,
+            AuxSensorProperties.SENSOR_TYPE_EXTENDED_RANGE_TEMPERATURE,
+            AuxSensorProperties.SENSOR_TYPE_EXTENDED_RANGE_TEMPERATURE_ALARM,
+            AuxSensorProperties.SENSOR_TYPE_OUTDOOR_TEMPERATURE, AuxSensorProperties.SENSOR_TYPE_TEMPERATURE,
+            AuxSensorProperties.SENSOR_TYPE_TEMPERATURE_ALARM);
+
     /**
      * Creates an OmnilinkDiscoveryService.
      */
@@ -65,7 +73,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             discoverButtons();
             discoverThermostats();
             discoverAudioZones();
-            discoverAuxSensors();
+            discoverTempSensors();
+            discoverHumiditySensors();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
         }
@@ -131,7 +140,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void discoverAuxSensors()
+    private void discoverTempSensors()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
         ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
@@ -139,16 +148,46 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
         for (AuxSensorProperties objectProperties : objectPropertyRequest) {
 
-            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AUX_STATUS,
-                    Integer.toString(objectProperties.getNumber()));
+            if (TEMP_SENSOR_TYPES.contains(objectProperties.getSensorType())) {
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
-            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_TEMP_SENSOR,
+                        Integer.toString(objectProperties.getNumber()));
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName()).build();
-            thingDiscovered(discoveryResult);
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                        .build();
+                thingDiscovered(discoveryResult);
+            }
+        }
+
+    }
+
+    private void discoverHumiditySensors()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, ObjectPropertyRequests.AUX_SENSORS).selectNamed().build();
+
+        for (AuxSensorProperties objectProperties : objectPropertyRequest) {
+
+            if (objectProperties.getSensorType() == AuxSensorProperties.SENSOR_TYPE_HUMIDITY) {
+
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_HUMIDITY_SENSOR,
+                        Integer.toString(objectProperties.getNumber()));
+
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                        .build();
+                thingDiscovered(discoveryResult);
+            }
         }
     }
 

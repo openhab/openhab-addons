@@ -87,7 +87,7 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
     public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
 
-    // aux sensors
+    // temp / humidity sensors
     public final static String CHANNEL_AUX_TEMP = "temperature";
     public final static String CHANNEL_AUX_HUMIDITY = "humidity";
     public final static String CHANNEL_AUX_LOW_SETPOINT = "low_setpoint";
@@ -134,7 +134,8 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public final static ThingTypeUID THING_TYPE_AUDIO_ZONE = new ThingTypeUID(BINDING_ID, "audio_zone");
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
-    public static final ThingTypeUID THING_TYPE_AUX_STATUS = new ThingTypeUID(BINDING_ID, "aux_sensor");
+    public static final ThingTypeUID THING_TYPE_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "temp_sensor");
+    public static final ThingTypeUID THING_TYPE_HUMIDITY_SENSOR = new ThingTypeUID(BINDING_ID, "humidity_sensor");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 

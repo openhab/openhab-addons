@@ -8,6 +8,7 @@ import com.digitaldan.jomnilinkII.MessageUtils;
  *
  */
 public enum TemperatureFormat {
+    // Don't convert zero - it appears that is what omni returns when there is no value.
     CELSIUS(2) {
         @Override
         int omniToFormat(int omniNumber) {
