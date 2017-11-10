@@ -148,6 +148,8 @@
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.2.3</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.2.3</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ipp/${project.version}</bundle>
     </feature>
 
