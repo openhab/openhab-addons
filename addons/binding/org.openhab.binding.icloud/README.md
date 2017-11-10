@@ -75,12 +75,12 @@ The following channels are available (if supported by the device):
 | locationAccuracy             | Number   | Accuracy of the last position report.                                                                                                       |
 | locationLastUpdate           | DateTime | Timestamp of the last location update.                                                                                                      |
 | distanceFromHome             | Number   | Device distance from the location set in openHAB regional settings.                                                                         |
-| addressStreet<sup>*</sup>    | String   | Street component of the address.                                                                                                            |
-| addressCity<sup>*</sup>      | String   | City component of the address.                                                                                                              |
-| addressCountry<sup>*</sup>   | String   | Country component of the addess.                                                                                                            |
-| formattedAddress<sup>*</sup> | String   | Formatted human readable address string.                                                                                                    |
+| addressStreet<sup>i</sup>    | String   | Street component of the address.                                                                                                            |
+| addressCity<sup>i</sup>      | String   | City component of the address.                                                                                                              |
+| addressCountry<sup>i</sup>   | String   | Country component of the addess.                                                                                                            |
+| formattedAddress<sup>i</sup> | String   | Formatted human readable address string.                                                                                                    |
 | deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
-<sup>*</sup> Address lookup needs to be enabled on the device account bridge thing for this channels to be populated..
+<sup>i</sup> Address lookup needs to be enabled on the device account bridge thing for this channels to be populated..
 
 ## Full Example
 
