@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.toberemoved.cache;
+package org.openhab.binding.network.internal.toberemoved.cache;
 
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheAsync;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 
 /**
  * Helper class to make the package private cacheUpdater field available for tests.

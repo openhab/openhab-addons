@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheAsync;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.toberemoved.cache;
+package org.openhab.binding.network.internal.toberemoved.cache;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheAsync.ExpiringCacheUpdate;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync.ExpiringCacheUpdate;
 
 /**
  * Tests cases for {@see ExpiringAsyncCache}
