@@ -17,7 +17,6 @@ import java.math.BigDecimal;
  *
  * @author Ramesha Karunasena - Initial contribution
  */
-
 public class Values {
 
     private BigDecimal humidity;

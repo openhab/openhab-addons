@@ -5,6 +5,10 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="buildingMonitor">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="wso2iotsBridge" />
+        </supported-bridge-type-refs>
+        
 		<label>Building Monitor</label>
 		<description>Provides temperature, motion, humidity, light level collected from building monitoring devices</description>
 
@@ -33,10 +37,10 @@
 				<description>Data-platform token to access the IOT server</description>
 			</parameter>
 
-			<parameter name="refresh" type="integer" min="1" required="false">
+			<parameter name="refresh" type="integer" min="2" required="true">
 				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>60</default>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>2</default>
 			</parameter>
 		</config-description>
 
