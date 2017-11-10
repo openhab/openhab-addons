@@ -28,11 +28,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheHelper;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheAsync;
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheHelper;
 
 /**
  * Tests cases for {@see PresenceDetectionValue}
