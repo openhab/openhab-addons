@@ -7,21 +7,18 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.wso2iots.internal.jsonResponse;
+package org.openhab.binding.wso2iots.internal.config;
 
 /**
- * The {@link wso2iotsResponse} class returns the humidity value
- * from json wso2iotsresponse string
  *
  * @author Ramesha Karunasena - Initial contribution
  */
+public class BuildingMonitorConfiguration {
 
-public class wso2iotsResponse {
+    public String deviceId;
 
-    private Values values;
+    public String apikey;
 
-    public Values getvalues() {
-        return values;
-    }
+    public Integer refresh;
 
 }

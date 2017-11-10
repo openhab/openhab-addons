@@ -8,33 +8,37 @@
  */
 package org.openhab.binding.wso2iots.internal;
 
-import static org.openhab.binding.wso2iots.wso2iotsBindingConstants.THING_TYPE_BUILDINGMONITOR;
+import static org.openhab.binding.wso2iots.Wso2iotsBindingConstants.*;
 
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.wso2iots.handler.wso2iotsHandler;
+import org.openhab.binding.wso2iots.handler.BridgeHandler;
+import org.openhab.binding.wso2iots.handler.BuildingMonitorHandler;
 import org.osgi.service.component.annotations.Component;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
- * The {@link wso2iotsHandlerFactory} is responsible for creating things and thing
+ * The {@link Wso2iotsHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Ramesha Karunasena - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true)
 @NonNullByDefault
-public class wso2iotsHandlerFactory extends BaseThingHandlerFactory {
+public class Wso2iotsHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_BUILDINGMONITOR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BRIDGE,
+            THING_TYPE_BUILDINGMONITOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,8 +49,11 @@ public class wso2iotsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_BUILDINGMONITOR)) {
-            return new wso2iotsHandler(thing);
+        if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
+            BridgeHandler bridge = new BridgeHandler((Bridge) thing);
+            return bridge;
+        } else if (thingTypeUID.equals(THING_TYPE_BUILDINGMONITOR)) {
+            return new BuildingMonitorHandler(thing);
         }
 
         return null;

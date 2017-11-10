@@ -24,33 +24,35 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.wso2iots.wso2iotsBindingConstants;
-import org.openhab.binding.wso2iots.internal.wso2iotsConfiguration;
-import org.openhab.binding.wso2iots.internal.jsonResponse.wso2iotsResponse;
+import org.openhab.binding.wso2iots.Wso2iotsBindingConstants;
+import org.openhab.binding.wso2iots.internal.config.BridgeConfiguration;
+import org.openhab.binding.wso2iots.internal.config.BuildingMonitorConfiguration;
+import org.openhab.binding.wso2iots.internal.jsonResponse.Wso2iotsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 /**
- * The {@link wso2iotsHandler} is responsible for handling commands, which are
+ * The {@link BuildingMonitorHandler} is responsible for handling commands, which are
  * sent to the channels.
  *
  * @author Ramesha Karunasena - Initial contribution
  */
+public class BuildingMonitorHandler extends BaseThingHandler {
 
-public class wso2iotsHandler extends BaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(wso2iotsHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BuildingMonitorHandler.class);
 
     private static final int API_RESPONSE_INTERVAL = 200;
 
@@ -66,7 +68,9 @@ public class wso2iotsHandler extends BaseThingHandler {
 
     private final Gson gson;
 
-    public wso2iotsHandler(Thing thing) {
+    protected BridgeHandler bridgeHandler;
+
+    public BuildingMonitorHandler(Thing thing) {
         super(thing);
         gson = new Gson();
     }
@@ -74,9 +78,9 @@ public class wso2iotsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
 
-        logger.debug("Initializing wso2iots handler.");
+        logger.debug("Initializing thing handler.");
 
-        wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
+        BuildingMonitorConfiguration config = getConfigAs(BuildingMonitorConfiguration.class);
         logger.debug("config apikey = (omitted from logging)");
         logger.debug("config deviceId = {}", config.deviceId);
         logger.debug("config refresh = {}", config.refresh);
@@ -95,17 +99,39 @@ public class wso2iotsHandler extends BaseThingHandler {
         if (config.refresh == null) {
             errorMsg = "Parameter 'refresh' must be configured";
             validConfig = false;
-        }
-        if (config.refresh != null && config.refresh < 2) {
+        } else if (config.refresh < 2) {
             errorMsg = "Parameter 'refresh' must be at least 2 minutes";
             validConfig = false;
         }
+        bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Bridge handler not found or not ONLINE.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
 
-        if (validConfig) {
-            updateStatus(ThingStatus.OFFLINE);
-            startAutomaticRefresh(config);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            BridgeConfiguration configBridge = bridgeHandler.getBridgeConfiguration();
+            if (validConfig) {
+                updateStatus(ThingStatus.OFFLINE);
+                startAutomaticRefresh(config, configBridge);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            }
+        }
+    }
+
+    protected synchronized BridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+
+        if (bridge == null) {
+            logger.debug("unable to get bridge");
+            return null;
+        }
+        ThingHandler handler = bridge.getHandler();
+        if (handler instanceof BridgeHandler) {
+            return (BridgeHandler) handler;
+        } else {
+            logger.debug("unable to get bridge handler");
+            return null;
         }
     }
 
@@ -121,52 +147,68 @@ public class wso2iotsHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case wso2iotsBindingConstants.TEMPERATURE:
-                    updateChannel(channelUID.getId(), iotsResponseTemp);
-                    break;
-                case wso2iotsBindingConstants.LIGHT:
-                    updateChannel(channelUID.getId(), iotsResponseLight);
-                    break;
-                case wso2iotsBindingConstants.MOTION:
-                    updateChannel(channelUID.getId(), iotsResponseMotion);
-                    break;
-                case wso2iotsBindingConstants.HUMIDITY:
-                    updateChannel(channelUID.getId(), iotsResponseHumidity);
-                    break;
-            }
+        bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Bridge handler not found or not ONLINE.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
 
         } else {
-            logger.debug("Can not handle command {}", command);
+            if (command instanceof RefreshType) {
+                switch (channelUID.getId()) {
+                    case Wso2iotsBindingConstants.TEMPERATURE:
+                        updateChannel(channelUID.getId(), iotsResponseTemp);
+                        break;
+                    case Wso2iotsBindingConstants.LIGHT:
+                        updateChannel(channelUID.getId(), iotsResponseLight);
+                        break;
+                    case Wso2iotsBindingConstants.MOTION:
+                        updateChannel(channelUID.getId(), iotsResponseMotion);
+                        break;
+                    case Wso2iotsBindingConstants.HUMIDITY:
+                        updateChannel(channelUID.getId(), iotsResponseHumidity);
+                        break;
+                }
+
+            } else {
+                logger.debug("Can not handle command {}", command);
+            }
         }
     }
 
     /**
      * Start the job refreshing the building monitor data
      */
-    private void startAutomaticRefresh(wso2iotsConfiguration config) {
+    private void startAutomaticRefresh(BuildingMonitorConfiguration config, BridgeConfiguration configBridge) {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
+            Runnable runnable = () -> {
+                bridgeHandler = getBridgeHandler();
+                if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    logger.debug("Bridge handler not found or not ONLINE.");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+
+                } else {
                     try {
                         // Request new data
-                        iotsResponseTemp = updateBuildingMonitorData(wso2iotsBindingConstants.TEMPERATURE);
-                        iotsResponseLight = updateBuildingMonitorData(wso2iotsBindingConstants.LIGHT);
-                        iotsResponseMotion = updateBuildingMonitorData(wso2iotsBindingConstants.MOTION);
-                        iotsResponseHumidity = updateBuildingMonitorData(wso2iotsBindingConstants.HUMIDITY);
+                        iotsResponseTemp = updateBuildingMonitorData(Wso2iotsBindingConstants.TEMPERATURE, config,
+                                configBridge);
+                        iotsResponseLight = updateBuildingMonitorData(Wso2iotsBindingConstants.LIGHT, config,
+                                configBridge);
+                        iotsResponseMotion = updateBuildingMonitorData(Wso2iotsBindingConstants.MOTION, config,
+                                configBridge);
+                        iotsResponseHumidity = updateBuildingMonitorData(Wso2iotsBindingConstants.HUMIDITY, config,
+                                configBridge);
 
                         // Update all channels from the updated data
-                        updateChannel(wso2iotsBindingConstants.TEMPERATURE, iotsResponseTemp);
-                        updateChannel(wso2iotsBindingConstants.LIGHT, iotsResponseLight);
-                        updateChannel(wso2iotsBindingConstants.MOTION, iotsResponseMotion);
-                        updateChannel(wso2iotsBindingConstants.HUMIDITY, iotsResponseHumidity);
+                        updateChannel(Wso2iotsBindingConstants.TEMPERATURE, iotsResponseTemp);
+                        updateChannel(Wso2iotsBindingConstants.LIGHT, iotsResponseLight);
+                        updateChannel(Wso2iotsBindingConstants.MOTION, iotsResponseMotion);
+                        updateChannel(Wso2iotsBindingConstants.HUMIDITY, iotsResponseHumidity);
 
                     } catch (Exception e) {
                         logger.error("Exception occurred during execution: {}", e.getMessage(), e);
                     }
                 }
+
             };
 
             int delay = config.refresh.intValue();
@@ -182,16 +224,12 @@ public class wso2iotsHandler extends BaseThingHandler {
     private void updateChannel(String channelId, BigDecimal iotsResponse) {
         if (isLinked(channelId)) {
             State state = null;
-            if (iotsResponse == null) {
-                state = UnDefType.UNDEF;
-            } else if (iotsResponse instanceof BigDecimal) {
+            if (iotsResponse instanceof BigDecimal) {
                 state = new DecimalType(iotsResponse);
-
             } else {
-                logger.warn("Update channel {}: Unsupported value type {}", channelId,
-                        iotsResponse.getClass().getSimpleName());
+                state = UnDefType.UNDEF;
             }
-            logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
+            logger.debug("Update channel {} with state {} ({})", channelId, state.toString(),
                     (iotsResponse == null) ? "null" : iotsResponse.getClass().getSimpleName());
 
             // Update the channel
@@ -201,19 +239,21 @@ public class wso2iotsHandler extends BaseThingHandler {
         }
     }
 
-    private BigDecimal updateBuildingMonitorData(String sensorType) throws Exception {
+    private BigDecimal updateBuildingMonitorData(String sensorType, BuildingMonitorConfiguration config,
+            BridgeConfiguration configBridge) throws Exception {
 
         BigDecimal iotsResponse = null;
         String errormsg = null;
         String response1 = null;
-        wso2iotsConfiguration config = getConfigAs(wso2iotsConfiguration.class);
+        String hostname = configBridge.getHostname();
+        String port = configBridge.getPort().toString();
         String Access_Token = config.apikey;
         String id = config.deviceId;
         long time = System.currentTimeMillis() / 1000;
         String fromTime = String.valueOf(time - API_RESPONSE_INTERVAL);
         String toTime = String.valueOf(time);
 
-        String url = "https://localhost:8243/senseme/device/1.0.0/stats/";
+        String url = "https://" + hostname + ":" + port + "/senseme/device/1.0.0/stats/";
         url = url + id + "?from=" + fromTime + "&to=" + toTime + "&sensorType=" + sensorType;
 
         URL obj;
@@ -231,16 +271,14 @@ public class wso2iotsHandler extends BaseThingHandler {
             con.setRequestMethod("GET");
             con.setRequestProperty("Accept", "application/json");
             con.setRequestProperty("Authorization", "Bearer " + Access_Token);
-            try {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String inputLine;
                 StringBuffer response = new StringBuffer();
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
-                in.close();
 
                 response1 = response.toString();
 
@@ -256,24 +294,24 @@ public class wso2iotsHandler extends BaseThingHandler {
                     logger.debug(segment);
                     // Map the JSON response to an object
 
-                    wso2iotsResponse result = gson.fromJson(segment, wso2iotsResponse.class);
+                    Wso2iotsResponse result = gson.fromJson(segment, Wso2iotsResponse.class);
 
-                    if (sensorType == wso2iotsBindingConstants.TEMPERATURE) {
+                    if (sensorType == Wso2iotsBindingConstants.TEMPERATURE) {
 
                         iotsResponse = result.getvalues().getTemperature();
                     }
 
-                    else if (sensorType == wso2iotsBindingConstants.HUMIDITY) {
+                    else if (sensorType == Wso2iotsBindingConstants.HUMIDITY) {
 
                         iotsResponse = result.getvalues().getHumidity();
                     }
 
-                    else if (sensorType == wso2iotsBindingConstants.LIGHT) {
+                    else if (sensorType == Wso2iotsBindingConstants.LIGHT) {
 
                         iotsResponse = result.getvalues().getLight();
                     }
 
-                    else if (sensorType == wso2iotsBindingConstants.MOTION) {
+                    else if (sensorType == Wso2iotsBindingConstants.MOTION) {
 
                         iotsResponse = result.getvalues().getMotion();
                     }

@@ -7,19 +7,26 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.wso2iots.internal;
+package org.openhab.binding.wso2iots.internal.config;
 
 /**
  *
  * @author Ramesha Karunasena - Initial contribution
  */
+public class BridgeConfiguration {
 
-public class wso2iotsConfiguration {
+    public String hostname;
 
-    public String deviceId;
-
-    public String apikey;
+    public Integer port;
 
     public Integer refresh;
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
 
 }

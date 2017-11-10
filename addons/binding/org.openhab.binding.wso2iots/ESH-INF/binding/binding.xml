@@ -4,8 +4,8 @@
 				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>wso2iots Binding</name>
-	<description>This is the binding for wso2iots.</description>
+	<name>WSO2 IoT Server Binding</name>
+	<description>This is the binding to connect with WSO2 IoT Server</description>
 	<author>Ramesha Karunasena</author>
 
 </binding:binding>

@@ -15,17 +15,17 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * The {@link wso2iotsBindingConstants} class defines common constants, which are
+ * The {@link Wso2iotsBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Ramesha Karunasena - Initial contribution
  */
-// @NonNullByDefault
-public class wso2iotsBindingConstants {
+public class Wso2iotsBindingConstants {
 
     public static final String BINDING_ID = "wso2iots";
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "wso2iotsBridge");
     public static final ThingTypeUID THING_TYPE_BUILDINGMONITOR = new ThingTypeUID(BINDING_ID, "buildingMonitor");
 
     // List of all Channel ids
