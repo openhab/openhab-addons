@@ -340,9 +340,11 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             addInt(map.size());
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 String key = (String) entry.getKey();
-                addInt(key.length());
-                addString(key);
-                addList(Collections.singleton(entry.getValue()));
+                if (key != null) {
+                    addInt(key.length());
+                    addString(key);
+                    addList(Collections.singleton(entry.getValue()));
+                }
             }
         }
     }

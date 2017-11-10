@@ -40,7 +40,7 @@ public class UidUtils {
         if (!device.isGatewayExtras() && device.getGatewayId().equals(HmGatewayInfo.ID_HOMEGEAR)) {
             return new ThingTypeUID(BINDING_ID, String.format("HG-%s", device.getType()));
         } else {
-            return new ThingTypeUID(BINDING_ID, String.format(device.getType()));
+            return new ThingTypeUID(BINDING_ID, device.getType());
         }
     }
 

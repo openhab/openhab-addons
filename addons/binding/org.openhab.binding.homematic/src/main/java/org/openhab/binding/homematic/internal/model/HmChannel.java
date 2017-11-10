@@ -142,6 +142,18 @@ public class HmChannel {
         return datapoints.get(dpInfo) != null;
     }
 
+    /**
+     * Returns true, if the channel has at least one PRESS_ datapoint.
+     */
+    public boolean hasPressDatapoint() {
+        for (HmDatapoint dp : datapoints.values()) {
+            if (dp.isPressDatapoint()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("number", number).append("type", type)

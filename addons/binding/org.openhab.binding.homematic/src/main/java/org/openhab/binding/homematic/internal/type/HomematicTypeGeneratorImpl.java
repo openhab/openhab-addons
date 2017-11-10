@@ -37,10 +37,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeBuilder;
+import org.eclipse.smarthome.core.types.EventDescription;
+import org.eclipse.smarthome.core.types.EventOption;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -152,7 +155,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s",
                                 WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
-                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
+                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, null,
+                                channelDefinitions);
                         channelTypeProvider.addChannelGroupType(groupType);
                         groupTypes.add(groupType);
                     }
@@ -240,12 +244,15 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             String label = MetadataUtils.getLabel(dp);
             String description = MetadataUtils.getDatapointDescription(dp);
 
-            List<StateOption> options = MetadataUtils.generateOptions(dp, new OptionsBuilder<StateOption>() {
-                @Override
-                public StateOption createOption(String value, String description) {
-                    return new StateOption(value, description);
-                }
-            });
+            List<StateOption> options = null;
+            if (dp.isEnumType()) {
+                options = MetadataUtils.generateOptions(dp, new OptionsBuilder<StateOption>() {
+                    @Override
+                    public StateOption createOption(String value, String description) {
+                        return new StateOption(value, description);
+                    }
+                });
+            }
 
             StateDescription state = null;
             if (dp.isNumberType()) {
@@ -263,8 +270,22 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         options);
             }
 
-            channelType = new ChannelType(channelTypeUID, !MetadataUtils.isStandard(dp), itemType, label, description,
-                    category, null, state, configDescriptionUriChannel);
+            ChannelKind channelKind = ChannelKind.STATE;
+            EventDescription eventDescription = null;
+            if (dp.isTrigger()) {
+                itemType = null;
+                channelKind = ChannelKind.TRIGGER;
+                eventDescription = new EventDescription(
+                        MetadataUtils.generateOptions(dp, new OptionsBuilder<EventOption>() {
+                            @Override
+                            public EventOption createOption(String value, String description) {
+                                return new EventOption(value, description);
+                            }
+                        }));
+
+            }
+            channelType = new ChannelType(channelTypeUID, !MetadataUtils.isStandard(dp), itemType, channelKind, label,
+                    description, category, null, state, eventDescription, configDescriptionUriChannel);
 
         }
         return channelType;

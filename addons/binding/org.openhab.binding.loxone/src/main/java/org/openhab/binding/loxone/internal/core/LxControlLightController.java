@@ -85,12 +85,8 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
-
         super(client, uuid, json, room, category);
 
-        if (json.details != null) {
-            this.movementScene = json.details.movementScene;
-        }
         // sub-controls of this control have been created when update() method was called by super class constructor
         LxControlState sceneListState = getState(STATE_SCENE_LIST);
         if (sceneListState != null) {
@@ -110,8 +106,15 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     @Override
     void update(LxJsonControl json, LxContainer room, LxCategory category) {
-
         super.update(json, room, category);
+
+        if (json.details != null) {
+            this.movementScene = json.details.movementScene;
+        }
+
+        for (LxControl control : subControls.values()) {
+            control.uuid.setUpdate(false);
+        }
 
         if (json.subControls != null) {
             for (LxJsonControl subControl : json.subControls.values()) {

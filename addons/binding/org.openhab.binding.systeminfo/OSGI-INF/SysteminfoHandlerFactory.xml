@@ -16,5 +16,6 @@
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
+   <reference bind="bindSystemInfo" cardinality="1..1" interface="org.openhab.binding.systeminfo.internal.model.SysteminfoInterface" name="SysteminfoInterface" policy="static" unbind="unbindSystemInfo"/>
 
 </scr:component>

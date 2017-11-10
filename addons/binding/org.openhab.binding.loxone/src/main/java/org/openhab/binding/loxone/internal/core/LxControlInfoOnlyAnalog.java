@@ -53,6 +53,21 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      */
     LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    /**
+     * Update Miniserver's control in runtime.
+     *
+     * @param json
+     *            JSON describing the control as received from the Miniserver
+     * @param room
+     *            New room that this control belongs to
+     * @param category
+     *            New category that this control belongs to
+     */
+    @Override
+    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+        super.update(json, room, category);
         if (json.details != null && json.details.format != null) {
             format = json.details.format;
         } else {

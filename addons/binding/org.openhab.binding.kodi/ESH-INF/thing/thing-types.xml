@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="kodi"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions bindingId="kodi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Kodi Thing Type -->
@@ -26,31 +26,15 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="mediatype" typeId="mediatype" />
+			<channel id="thumbnail" typeId="thumbnail" />
+			<channel id="fanart" typeId="fanart" />
 		</channels>
 
 		<properties>
 			<property name="version">unknown</property>
 		</properties>
 
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<label>Network Address</label>
-				<description>The IP or host name of the Kodi</description>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
-				<label>Web socket service port</label>
-				<description>Port for the web socket service</description>
-				<default>9090</default>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false"
-				unit="s">
-				<label>Refresh Interval</label>
-				<description>The refresh interval to poll Kodi API (in ms).</description>
-				<default>10</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:kodi:kodi" />
 	</thing-type>
 
 	<!-- Kodi Commands -->
@@ -177,5 +161,17 @@
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="thumbnail">
+		<item-type>Image</item-type>
+		<label>Thumbnail</label>
+		<description>The current thumbnail</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fanart">
+		<item-type>Image</item-type>
+		<label>Fanart</label>
+		<description>The current fanart</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

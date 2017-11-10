@@ -80,6 +80,14 @@ public class LxControlDimmer extends LxControl {
         }
     }
 
+    /**
+     * Sets the current position of the dimmer
+     *
+     * @param position
+     *            position to move to (0-100, 0 - full off, 100 - full on)
+     * @throws IOException
+     *             error communicating with the Miniserver
+     */
     public void setPosition(Double position) throws IOException {
         Double loxonePosition = mapOHToLoxone(position);
         if (loxonePosition != null) {
@@ -87,10 +95,22 @@ public class LxControlDimmer extends LxControl {
         }
     }
 
+    /**
+     * Sets the dimmer to on
+     *
+     * @throws IOException
+     *             error communicating with the Miniserver
+     */
     public void on() throws IOException {
         socketClient.sendAction(uuid, CMD_ON);
     }
 
+    /**
+     * Sets the dimmer to off
+     *
+     * @throws IOException
+     *             error communicating with the Miniserver
+     */
     public void off() throws IOException {
         socketClient.sendAction(uuid, CMD_OFF);
     }
