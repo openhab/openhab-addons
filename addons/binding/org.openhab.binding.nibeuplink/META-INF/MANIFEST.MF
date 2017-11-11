@@ -5,11 +5,10 @@ Bundle-SymbolicName: org.openhab.binding.nibeuplink;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/jackson-annotations-2.9.2.jar,
- lib/jackson-core-2.9.2.jar,
- lib/jackson-databind-2.9.2.jar
+Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
+ com.google.gson,
+ com.google.gson.annotations,
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,

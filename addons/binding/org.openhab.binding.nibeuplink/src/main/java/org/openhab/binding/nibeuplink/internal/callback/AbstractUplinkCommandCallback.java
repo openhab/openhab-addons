@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nibeuplink.internal.callback;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -31,7 +30,7 @@ import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 /**
  * base class for all commands. common logic should be implemented here
@@ -147,18 +146,12 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
      * @return
      */
     protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
-        ObjectMapper mapper = new ObjectMapper();
-        // not supported in v2.4.x
-        // mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        Gson gson = new Gson();
 
         @Nullable
         T obj = null;
-        try {
-            logger.debug("JSON String: {}", jsonInString);
-            obj = mapper.readValue(jsonInString, clazz);
-        } catch (IOException e) {
-            logger.error("Caught IOException: {}", e.getMessage());
-        }
+        logger.debug("JSON String: {}", jsonInString);
+        obj = gson.fromJson(jsonInString, clazz);
         return obj;
     }
 

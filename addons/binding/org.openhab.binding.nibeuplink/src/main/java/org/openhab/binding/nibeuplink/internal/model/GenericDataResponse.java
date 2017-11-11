@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * data class to map the json status response
@@ -24,21 +24,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GenericDataResponse implements DataResponse {
 
     public static class Value {
-        @JsonProperty("VariableId")
+        @SerializedName("VariableId")
         private String variableId;
-        @JsonProperty("CurrentValue")
+        @SerializedName("CurrentValue")
         private String currentValue;
     }
 
-    @JsonProperty("IsOffline")
+    @SerializedName("IsOffline")
     private String isOffline;
-    @JsonProperty("OnlineImage")
+    @SerializedName("OnlineImage")
     private String onlineImage;
-    @JsonProperty("Date")
+    @SerializedName("Date")
     private String date;
-    @JsonProperty("FuzzyDate")
+    @SerializedName("FuzzyDate")
     private String fuzzyDate;
-    @JsonProperty("Values")
+    @SerializedName("Values")
     private List<Value> values = new ArrayList<>();
 
     public String getValue(VVM320Channels key) {
