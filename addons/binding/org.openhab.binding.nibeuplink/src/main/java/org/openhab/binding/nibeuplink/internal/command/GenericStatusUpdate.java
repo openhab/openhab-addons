@@ -10,7 +10,7 @@ package org.openhab.binding.nibeuplink.internal.command;
 
 import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
@@ -58,7 +58,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         FormContentProvider cp = new FormContentProvider(fields);
 
         requestToPrepare.header(HttpHeader.ACCEPT, "application/json");
-        requestToPrepare.header(HttpHeader.ACCEPT_ENCODING, "UTF-8");
+        requestToPrepare.header(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
         requestToPrepare.content(cp);
         requestToPrepare.followRedirects(false);
         requestToPrepare.method(HttpMethod.POST);
@@ -75,18 +75,20 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
     public void onComplete(Result result) {
         logger.debug("onComplete()");
 
-        if (!getCommunicationStatus().getHttpCode().equals(HttpStatus.OK_200) && retries++ < MAX_RETRIES) {
+        if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
             if (getListener() != null) {
                 getListener().update(getCommunicationStatus());
             }
             handler.getWebInterface().executeCommand(this);
-        }
 
-        String json = getContentAsString(Charset.forName("UTF-8"));
-        if (json != null) {
-            GenericDataResponse jsonObject = convertJson(json, GenericDataResponse.class);
-            if (jsonObject != null) {
-                handler.updateChannelStatus(jsonObject.getValues());
+        } else {
+
+            String json = getContentAsString(StandardCharsets.UTF_8);
+            if (json != null) {
+                GenericDataResponse jsonObject = convertJson(json, GenericDataResponse.class);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(jsonObject.getValues());
+                }
             }
         }
     }

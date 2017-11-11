@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
@@ -163,12 +164,14 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                         } catch (NumberFormatException ex) {
                             logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
                                     value);
+                            updateState(channel.getFQName(), UnDefType.UNDEF);
                         }
                     } else {
                         updateState(channel.getFQName(), new StringType(value));
                     }
                 } else {
                     logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+                    updateState(channel.getFQName(), UnDefType.UNDEF);
                     deadChannels.add(channel);
                 }
             } else {
