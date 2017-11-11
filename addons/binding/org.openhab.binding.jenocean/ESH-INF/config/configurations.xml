@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:jenocean:RockerSwitch">
+        <parameter name="enoceanAddress" type="text" required="true" >
+            <required>true</required>
+            <default></default>
+            <label>EnOcean address</label>
+            <description>The unique EnOcean address of your device. Usually printed on the packaging.</description>
+        </parameter>
+    </config-description>
+  
+    <config-description uri="binding:jenocean:bindingUsbPort">
+        <parameter name="serialPort" type="text" required="true" >
+            <required>true</required>
+            <default></default>
+            <label>Serial Port Address</label>
+            <description>The address at which the serial port is located. (e.g. /dev/ttyUSB0 under Linux.)</description>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>
