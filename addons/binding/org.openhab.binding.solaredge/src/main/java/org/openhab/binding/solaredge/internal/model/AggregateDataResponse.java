@@ -29,13 +29,13 @@ public class AggregateDataResponse implements DataResponse {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Value {
-        public String value;
+        public Double value;
         public String unit;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ValueAndPercent extends Value {
-        public String percentage;
+        public Double percentage;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,10 +50,6 @@ public class AggregateDataResponse implements DataResponse {
     }
 
     private UtilizationMeasures utilizationMeasures;
-
-    // TODO: use units!
-    // utilizationMeasures":{
-    // "production":{"value":867.0,"unit":"Wh"},"consumption":{"value":8.856,"unit":"KWh"},"selfConsumptionForProduction":{"value":861.0,"percentage":0.9930796,"unit":"Wh"},"selfConsumptionForConsumption":{"value":0.861,"percentage":0.097222224,"unit":"KWh"},"batterySelfConsumption":{"value":0.001,"percentage":0.0011614403,"unit":"KWh"},"import":{"value":7.995,"percentage":0.9027778,"unit":"KWh"},"export":{"value":6.0,"percentage":0.0069204154,"unit":"Wh"}},
 
     @Override
     public Map<String, String> getValues() {
@@ -76,27 +72,17 @@ public class AggregateDataResponse implements DataResponse {
 
     private String getValueAsKWh(Value value) {
         if (value.unit != null && value.unit.equals(UNIT_WH)) {
-            try {
-                Double val = Double.valueOf(value.value);
-                val = val / 1000;
-                return val.toString();
-            } catch (NumberFormatException ex) {
-                return "0";
-            }
+            Double convertedValue = value.value / 1000;
+            return convertedValue.toString();
         } else {
-            return value.value;
+            return value.value.toString();
         }
     }
 
     private String getValueAsPercent(ValueAndPercent value) {
         if (value.percentage != null) {
-            try {
-                Double val = Double.valueOf(value.percentage);
-                val = val * 100;
-                return val.toString();
-            } catch (NumberFormatException ex) {
-                return "0";
-            }
+            Double convertedValue = value.percentage * 100;
+            return convertedValue.toString();
         }
         return null;
     }

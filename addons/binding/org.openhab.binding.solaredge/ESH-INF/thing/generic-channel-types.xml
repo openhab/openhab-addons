@@ -96,20 +96,20 @@
 		<state pattern="%.1f KWh" readOnly="true">
 		</state>
 	</channel-type>
-    <channel-type id="aggregate-type-selfConsumptionForConsumption">
-        <item-type>Number</item-type>
-        <label>Self Consumption</label>
-        <description>Aggregate Self Consumption</description>
-        <state pattern="%.1f KWh" readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="aggregate-type-selfConsumptionCoverage">
-        <item-type>Number</item-type>
-        <label>Self Consumption Coverage</label>
-        <description>Self Consumption Coverage</description>
-        <state pattern="%.0f %%" readOnly="true">
-        </state>
-    </channel-type>
+	<channel-type id="aggregate-type-selfConsumptionForConsumption">
+		<item-type>Number</item-type>
+		<label>Self Consumption</label>
+		<description>Aggregate Self Consumption</description>
+		<state pattern="%.1f KWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-selfConsumptionCoverage">
+		<item-type>Number</item-type>
+		<label>Self Consumption Coverage</label>
+		<description>Self Consumption Coverage</description>
+		<state pattern="%.0f %%" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="aggregate-type-batterySelfConsumption">
 		<item-type>Number</item-type>
 		<label>Battery Self Consumption</label>

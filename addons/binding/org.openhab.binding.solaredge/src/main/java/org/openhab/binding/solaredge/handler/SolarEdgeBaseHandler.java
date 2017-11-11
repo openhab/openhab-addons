@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
@@ -36,8 +37,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler {
-
-    private final String NO_VALUE = "--";
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
@@ -134,19 +133,21 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
             if (channel != null) {
                 String value = values.get(key);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
-                if (value != null && !value.equals(NO_VALUE)) {
+                if (value != null) {
                     if (channel.getJavaType().equals(Double.class)) {
                         try {
                             updateState(channel.getFQName(), convertToDecimal(value));
                         } catch (NumberFormatException ex) {
                             logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
                                     value);
+                            updateState(channel.getFQName(), UnDefType.UNDEF);
                         }
                     } else {
                         updateState(channel.getFQName(), new StringType(value));
                     }
                 } else {
                     logger.debug("Value is null or not provided by solaredge (channel: {})", channel.getFQName());
+                    updateState(channel.getFQName(), UnDefType.UNDEF);
                 }
             } else {
                 logger.debug("Could not identify channel: {} for model {}", key,

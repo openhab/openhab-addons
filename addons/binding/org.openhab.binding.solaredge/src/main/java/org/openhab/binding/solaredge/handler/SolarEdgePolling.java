@@ -34,8 +34,7 @@ public class SolarEdgePolling implements Runnable {
     /**
      * Constructor.
      *
-     * @param handler
-     * @param config
+     * @param handler handler which handles results of polling
      */
     public SolarEdgePolling(SolarEdgeHandler handler) {
         this.handler = handler;

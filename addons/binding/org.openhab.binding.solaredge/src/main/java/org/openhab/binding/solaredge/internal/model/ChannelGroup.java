@@ -15,6 +15,6 @@ package org.openhab.binding.solaredge.internal.model;
  *
  */
 public enum ChannelGroup {
-    Live,
-    Aggregate;
+    LIVE,
+    AGGREGATE;
 }

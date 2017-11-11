@@ -130,7 +130,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     }
 
     /**
-     * returns Http Status Code
+     * @return returns Http Status Code
      */
     public CommunicationStatus getCommunicationStatus() {
         if (communicationStatus.getHttpCode() == null) {
@@ -142,9 +142,9 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * converts the json response into an object structure
      *
-     * @param jsonInString
-     * @param clazz
-     * @return
+     * @param jsonInString json string to convert
+     * @param clazz class to map to
+     * @return mapped object
      */
     protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
         ObjectMapper mapper = new ObjectMapper();
@@ -165,14 +165,15 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * concrete implementation has to prepare the requests with additional parameters, etc
      *
-     * @return
+     * @param requestToPrepare the request to prepare
+     * @return prepared Request object
      */
     protected abstract Request prepareRequest(Request requestToPrepare);
 
     /**
      * concrete implementation has to provide the URL
      *
-     * @return
+     * @return Url
      */
     protected abstract String getURL();
 

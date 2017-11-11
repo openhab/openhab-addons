@@ -16,20 +16,20 @@ package org.openhab.binding.solaredge.internal.model;
  */
 public enum LiveDataChannels implements Channel {
 
-    PRODUCTION("production", "production", ChannelType.Live, ChannelGroup.Live, Double.class),
-    PV_STATUS("pv_status", "PV status", ChannelType.Live, ChannelGroup.Live, String.class),
+    PRODUCTION("production", "production", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    PV_STATUS("pv_status", "PV status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
 
-    CONSUMPTION("consumption", "consumption", ChannelType.Live, ChannelGroup.Live, Double.class),
-    LOAD_STATUS("load_status", "load status", ChannelType.Live, ChannelGroup.Live, String.class),
+    CONSUMPTION("consumption", "consumption", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    LOAD_STATUS("load_status", "load status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
 
-    BATTERY_CHARGE("battery_charge", "battery charge rate", ChannelType.Live, ChannelGroup.Live, Double.class),
-    BATTERY_LEVEL("battery_level", "battery level", ChannelType.Live, ChannelGroup.Live, Double.class),
-    BATTERY_STATUS("battery_status", "battery status", ChannelType.Live, ChannelGroup.Live, String.class),
-    BATTERY_CRITICAL("battery_critical", "battery critical", ChannelType.Live, ChannelGroup.Live, String.class),
+    BATTERY_CHARGE("battery_charge", "battery charge rate", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    BATTERY_LEVEL("battery_level", "battery level", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    BATTERY_STATUS("battery_status", "battery status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
+    BATTERY_CRITICAL("battery_critical", "battery critical", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
 
-    IMPORT("import", "import", ChannelType.Live, ChannelGroup.Live, Double.class),
-    EXPORT("export", "export", ChannelType.Live, ChannelGroup.Live, Double.class),
-    GRID_STATUS("grid_status", "grid status", ChannelType.Live, ChannelGroup.Live, String.class),
+    IMPORT("import", "import", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    EXPORT("export", "export", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    GRID_STATUS("grid_status", "grid status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
 
     /* END */
     ;

@@ -16,22 +16,22 @@ package org.openhab.binding.solaredge.internal.model;
  */
 public enum AggregateDataChannels implements Channel {
 
-    PRODUCTION("production", "production", ChannelType.Aggregate, ChannelGroup.Aggregate, Double.class),
+    PRODUCTION("production", "production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
 
-    CONSUMPTION("consumption", "consumption", ChannelType.Aggregate, ChannelGroup.Aggregate, Double.class),
+    CONSUMPTION("consumption", "consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
 
-    SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "self consumption", ChannelType.Aggregate,
-            ChannelGroup.Aggregate, Double.class),
+    SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE, Double.class),
 
-    SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "self consumption coverage", ChannelType.Aggregate,
-            ChannelGroup.Aggregate, Double.class),
+    SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "self consumption coverage", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE, Double.class),
 
-    BATTERYSELFCONSUMPTION("batterySelfConsumption", "battery self consumption", ChannelType.Aggregate,
-            ChannelGroup.Aggregate, Double.class),
+    BATTERYSELFCONSUMPTION("batterySelfConsumption", "battery self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE, Double.class),
 
-    IMPORT("import", "import", ChannelType.Aggregate, ChannelGroup.Aggregate, Double.class),
+    IMPORT("import", "import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
 
-    EXPORT("export", "export", ChannelType.Aggregate, ChannelGroup.Aggregate, Double.class),
+    EXPORT("export", "export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
 
     /* END */
     ;
