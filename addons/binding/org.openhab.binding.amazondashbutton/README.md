@@ -11,7 +11,7 @@ This might not be in line with your privacy preferences but can be prevented.
 Please refer to the ["Preventing Communication with Amazon Servers"](#no-phonehome) section for details.
 
 **Response Time:**
-Please be aware, that due to the operation method of this binding, the response time for a button press can be rather high (up to two seconds). You might want to keep that in mind during product selection or task assignment. 
+Please be aware, that due to the operation method of this binding, the response time for a button press can be rather high (up to five seconds). You might want to keep that in mind during product selection or task assignment. 
 
 ## Prerequisites
 
