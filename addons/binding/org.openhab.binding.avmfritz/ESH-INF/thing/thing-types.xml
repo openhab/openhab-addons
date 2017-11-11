@@ -191,7 +191,7 @@
 		<description>FRITZ!DECT Repeater 100 DECT repeater.</description>
 
 		<channels>
-			<channel typeId="temperature" id="temperature"></channel>
+			<channel typeId="temperature" id="temperature" />
 		</channels>
 
 		<representation-property>ain</representation-property>
