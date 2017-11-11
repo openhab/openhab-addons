@@ -11,8 +11,7 @@ package org.openhab.binding.solaredge.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * this class is used to map the aggregate data json response
@@ -21,30 +20,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AggregateDataResponse implements DataResponse {
 
     private static final String UNIT_WH = "Wh";
     private static final String UNIT_KWH = "KWh";
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Value {
         public Double value;
         public String unit;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ValueAndPercent extends Value {
         public Double percentage;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class UtilizationMeasures {
         public Value production;
         public Value consumption;
         public ValueAndPercent selfConsumptionForConsumption;
         public ValueAndPercent batterySelfConsumption;
-        @JsonProperty("import")
+        @SerializedName("import")
         public ValueAndPercent imported;
         public ValueAndPercent export;
     }

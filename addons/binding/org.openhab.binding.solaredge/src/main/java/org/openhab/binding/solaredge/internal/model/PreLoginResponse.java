@@ -10,15 +10,12 @@ package org.openhab.binding.solaredge.internal.model;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
  * this class is used to map the login response
  *
  * @author Alexander Friese - initial contribution
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreLoginResponse implements DataResponse {
     private String isLicensed;
     private String success;

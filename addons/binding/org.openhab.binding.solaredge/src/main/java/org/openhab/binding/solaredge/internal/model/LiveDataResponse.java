@@ -15,8 +15,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * this class is used to map the live data json response
@@ -24,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Alexander Friese - initial contribution
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class LiveDataResponse implements DataResponse {
     private static final String GRID = "GRID";
     private static final String LOAD = "LOAD";
@@ -37,7 +35,6 @@ public class LiveDataResponse implements DataResponse {
      */
     private static final Logger logger = LoggerFactory.getLogger(LiveDataResponse.class);
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Value {
         public String status;
         public String currentPower;
@@ -55,18 +52,17 @@ public class LiveDataResponse implements DataResponse {
         public String to;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SiteCurrentPowerFlow {
-        @JsonProperty(GRID)
+        @SerializedName(GRID)
         public Value grid;
 
-        @JsonProperty(LOAD)
+        @SerializedName(LOAD)
         public Value load;
 
-        @JsonProperty(PV)
+        @SerializedName(PV)
         public Value pv;
 
-        @JsonProperty(STORAGE)
+        @SerializedName(STORAGE)
         public BatteryValue storage;
 
         public List<Connection> connections;
