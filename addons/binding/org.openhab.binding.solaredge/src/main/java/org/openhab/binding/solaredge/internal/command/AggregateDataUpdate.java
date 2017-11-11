@@ -21,7 +21,7 @@ import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponse;
 
 /**
- * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
+ * command that retrieves status values for aggregate data channels
  *
  * @author Alexander Friese - initial contribution
  *

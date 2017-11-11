@@ -76,9 +76,8 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @param config
      */
     public AbstractCommandCallback(SolarEdgeConfiguration config, StatusUpdateListener listener) {
-        this.communicationStatus = new CommunicationStatus();
+        this(config);
         this.listener = listener;
-        this.config = config;
     }
 
     /**

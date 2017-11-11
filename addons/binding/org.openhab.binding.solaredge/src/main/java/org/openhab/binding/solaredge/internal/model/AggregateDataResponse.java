@@ -50,17 +50,37 @@ public class AggregateDataResponse implements DataResponse {
     public Map<String, String> getValues() {
         Map<String, String> valueMap = new HashMap<>();
 
-        valueMap.put(AggregateDataChannels.PRODUCTION.getFQName(), getValueAsKWh(utilizationMeasures.production));
-        valueMap.put(AggregateDataChannels.CONSUMPTION.getFQName(), getValueAsKWh(utilizationMeasures.consumption));
-        valueMap.put(AggregateDataChannels.SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                getValueAsKWh(utilizationMeasures.selfConsumptionForConsumption));
-        valueMap.put(AggregateDataChannels.SELFCONSUMPTIONCOVERAGE.getFQName(),
-                getValueAsPercent(utilizationMeasures.selfConsumptionForConsumption));
+        if (utilizationMeasures != null) {
+            if (utilizationMeasures.production != null) {
+                valueMap.put(AggregateDataChannels.PRODUCTION.getFQName(),
+                        getValueAsKWh(utilizationMeasures.production));
+            }
 
-        valueMap.put(AggregateDataChannels.BATTERYSELFCONSUMPTION.getFQName(),
-                getValueAsKWh(utilizationMeasures.batterySelfConsumption));
-        valueMap.put(AggregateDataChannels.IMPORT.getFQName(), getValueAsKWh(utilizationMeasures.imported));
-        valueMap.put(AggregateDataChannels.EXPORT.getFQName(), getValueAsKWh(utilizationMeasures.export));
+            if (utilizationMeasures.consumption != null) {
+                valueMap.put(AggregateDataChannels.CONSUMPTION.getFQName(),
+                        getValueAsKWh(utilizationMeasures.consumption));
+            }
+
+            if (utilizationMeasures.selfConsumptionForConsumption != null) {
+                valueMap.put(AggregateDataChannels.SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
+                        getValueAsKWh(utilizationMeasures.selfConsumptionForConsumption));
+                valueMap.put(AggregateDataChannels.SELFCONSUMPTIONCOVERAGE.getFQName(),
+                        getValueAsPercent(utilizationMeasures.selfConsumptionForConsumption));
+            }
+
+            if (utilizationMeasures.batterySelfConsumption != null) {
+                valueMap.put(AggregateDataChannels.BATTERYSELFCONSUMPTION.getFQName(),
+                        getValueAsKWh(utilizationMeasures.batterySelfConsumption));
+            }
+
+            if (utilizationMeasures.imported != null) {
+                valueMap.put(AggregateDataChannels.IMPORT.getFQName(), getValueAsKWh(utilizationMeasures.imported));
+            }
+
+            if (utilizationMeasures.export != null) {
+                valueMap.put(AggregateDataChannels.EXPORT.getFQName(), getValueAsKWh(utilizationMeasures.export));
+            }
+        }
 
         return valueMap;
     }

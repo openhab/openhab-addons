@@ -75,37 +75,50 @@ public class LiveDataResponse implements DataResponse {
     public Map<String, String> getValues() {
         Map<String, String> valueMap = new HashMap<>();
 
-        valueMap.put(LiveDataChannels.PRODUCTION.getFQName(), siteCurrentPowerFlow.pv.currentPower);
-        valueMap.put(LiveDataChannels.CONSUMPTION.getFQName(), siteCurrentPowerFlow.load.currentPower);
+        if (siteCurrentPowerFlow != null) {
 
-        valueMap.put(LiveDataChannels.PV_STATUS.getFQName(), siteCurrentPowerFlow.pv.status);
-        valueMap.put(LiveDataChannels.BATTERY_STATUS.getFQName(), siteCurrentPowerFlow.storage.status);
-        valueMap.put(LiveDataChannels.BATTERY_CRITICAL.getFQName(), siteCurrentPowerFlow.storage.critical);
-        valueMap.put(LiveDataChannels.BATTERY_LEVEL.getFQName(), siteCurrentPowerFlow.storage.chargeLevel);
-        valueMap.put(LiveDataChannels.LOAD_STATUS.getFQName(), siteCurrentPowerFlow.load.status);
-        valueMap.put(LiveDataChannels.GRID_STATUS.getFQName(), siteCurrentPowerFlow.grid.status);
-
-        // init fields with zero
-        valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
-        valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
-        valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), ZERO_POWER);
-
-        // determine power flow from connection list
-        for (Connection con : siteCurrentPowerFlow.connections) {
-            if (con.from.equalsIgnoreCase(GRID)) {
-                valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
-            } else if (con.to.equalsIgnoreCase(GRID)) {
-                valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
-
+            if (siteCurrentPowerFlow.pv != null) {
+                valueMap.put(LiveDataChannels.PRODUCTION.getFQName(), siteCurrentPowerFlow.pv.currentPower);
+                valueMap.put(LiveDataChannels.PV_STATUS.getFQName(), siteCurrentPowerFlow.pv.status);
             }
-            if (con.from.equalsIgnoreCase(STORAGE)) {
-                valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
-                        "-" + siteCurrentPowerFlow.storage.currentPower);
-            } else if (con.to.equalsIgnoreCase(STORAGE)) {
-                valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), siteCurrentPowerFlow.storage.currentPower);
+
+            if (siteCurrentPowerFlow.load != null) {
+                valueMap.put(LiveDataChannels.CONSUMPTION.getFQName(), siteCurrentPowerFlow.load.currentPower);
+                valueMap.put(LiveDataChannels.LOAD_STATUS.getFQName(), siteCurrentPowerFlow.load.status);
+            }
+
+            if (siteCurrentPowerFlow.storage != null) {
+                valueMap.put(LiveDataChannels.BATTERY_STATUS.getFQName(), siteCurrentPowerFlow.storage.status);
+                valueMap.put(LiveDataChannels.BATTERY_CRITICAL.getFQName(), siteCurrentPowerFlow.storage.critical);
+                valueMap.put(LiveDataChannels.BATTERY_LEVEL.getFQName(), siteCurrentPowerFlow.storage.chargeLevel);
+            }
+
+            if (siteCurrentPowerFlow.grid != null) {
+                valueMap.put(LiveDataChannels.GRID_STATUS.getFQName(), siteCurrentPowerFlow.grid.status);
+            }
+
+            // init fields with zero
+            valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
+            valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
+            valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), ZERO_POWER);
+
+            // determine power flow from connection list
+            for (Connection con : siteCurrentPowerFlow.connections) {
+                if (con.from.equalsIgnoreCase(GRID)) {
+                    valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+                } else if (con.to.equalsIgnoreCase(GRID)) {
+                    valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+
+                }
+                if (con.from.equalsIgnoreCase(STORAGE)) {
+                    valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
+                            "-" + siteCurrentPowerFlow.storage.currentPower);
+                } else if (con.to.equalsIgnoreCase(STORAGE)) {
+                    valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
+                            siteCurrentPowerFlow.storage.currentPower);
+                }
             }
         }
-
         return valueMap;
     }
 
