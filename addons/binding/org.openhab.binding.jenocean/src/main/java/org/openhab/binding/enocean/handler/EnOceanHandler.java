@@ -35,6 +35,7 @@ import it.polito.elite.enocean.enj.eep.eep26.attributes.EEP26RockerSwitch2Rocker
 @NonNullByDefault
 public class EnOceanHandler extends BaseThingHandler implements EEPAttributeChangeListener {
 
+    @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(EnOceanHandler.class);
 
     private boolean wasUpPressedA = false;
@@ -48,28 +49,11 @@ public class EnOceanHandler extends BaseThingHandler implements EEPAttributeChan
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_A_ON_OFF)) {
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
         updateStatus(ThingStatus.ONLINE);
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     /*

@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -34,12 +35,15 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jan Kemmler - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ProfileFactory.class)
 public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, ProfileTypeProvider {
 
+    @SuppressWarnings("null")
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Stream
             .of(EnOceanProfiles.ROCKER_TO_ON_OFF, EnOceanProfiles.ROCKER_TO_DIMMER).collect(Collectors.toSet());
 
+    @SuppressWarnings("null")
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Stream
             .of(EnOceanProfiles.ROCKER_TO_ON_OFF_TYPE, EnOceanProfiles.ROCKER_TO_DIMMER_TYPE)
             .collect(Collectors.toSet());
@@ -71,26 +75,6 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
         return SUPPORTED_PROFILE_TYPES;
     }
-
-    /*
-     * @Override
-     * public @NonNull Collection<@NonNull ProfileTypeUID> getApplicableProfileTypeUIDs(@NonNull ItemChannelLink link,
-     *
-     * @NonNull Item item, @NonNull Channel channel) {
-     * switch (channel.getKind()) {
-     * case STATE:
-     * return Collections.emptyList();
-     * case TRIGGER:
-     * if (EnOceanBindingConstants.THING_TYPE_ROCKER_SWITCH.equals(channel.getChannelTypeUID())) {
-     * return Collections.singletonList(RockerChannelToOnOffProfile.UID);
-     * }
-     * break;
-     * default:
-     * throw new NotImplementedException();
-     * }
-     * return Collections.emptyList();
-     * }
-     */
 
     @Override
     public @Nullable ProfileTypeUID getSuggestedProfileTypeUID(@NonNull Channel channel, @Nullable String itemType) {

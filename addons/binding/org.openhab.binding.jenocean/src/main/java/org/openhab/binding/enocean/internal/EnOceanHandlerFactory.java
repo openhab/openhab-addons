@@ -13,6 +13,7 @@ import static org.openhab.binding.enocean.EnOceanBindingConstants.THING_TYPE_ROC
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -38,18 +39,28 @@ import it.polito.elite.enocean.enj.model.EnOceanDevice;
  *
  * @author Jan Kemmler - Initial contribution
  */
+
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.enocean")
-// @NonNullByDefault
 public class EnOceanHandlerFactory extends BaseThingHandlerFactory implements EnJDeviceListener {
 
+    @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(EnOceanHandler.class);
 
+    @SuppressWarnings("null")
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ROCKER_SWITCH);
     @Nullable
     private EnJLink linkLayer = null;
     @Nullable
     private EnJConnection connection;
 
+    /**
+     * Initializes the {@link EnOceanHandlerFactory}. This function tries to establish a connection to the serial
+     * EnOCean device.
+     *
+     * @param componentContext
+     *            component context (must not be null)
+     */
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
@@ -68,7 +79,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory implements En
                 }
             }
         } catch (Exception e) {
-            this.logger.debug("The given port does not exist or no device is plugged in {}", e);
+            this.logger.debug("The given port does not exist or no device is plugged in. {}", e);
         }
     }
 

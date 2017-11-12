@@ -11,6 +11,7 @@ package org.openhab.binding.enocean.profiles;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfileType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  *
  * @author Jan Kemmler - Initial contribution
  */
+@NonNullByDefault
 public interface EnOceanProfiles {
 
     ProfileTypeUID ROCKER_TO_ON_OFF = new ProfileTypeUID("enocean", "rocker-to-ONOFF");
@@ -33,11 +35,13 @@ public interface EnOceanProfiles {
         }
 
         @Override
+        @SuppressWarnings("null")
         public Collection<String> getSupportedItemTypes() {
             return Collections.singleton("Switch");
         }
 
         @Override
+        @SuppressWarnings("null")
         public Collection<ChannelTypeUID> getSupportedChannelTypeUIDs() {
             return Collections.singleton(new ChannelTypeUID("enocean", "rocker_channel"));
         }
@@ -55,11 +59,13 @@ public interface EnOceanProfiles {
         }
 
         @Override
+        @SuppressWarnings("null")
         public Collection<String> getSupportedItemTypes() {
             return Collections.singleton("Dimmer");
         }
 
         @Override
+        @SuppressWarnings("null")
         public Collection<ChannelTypeUID> getSupportedChannelTypeUIDs() {
             return Collections.singleton(new ChannelTypeUID("enocean", "rocker_channel"));
         }

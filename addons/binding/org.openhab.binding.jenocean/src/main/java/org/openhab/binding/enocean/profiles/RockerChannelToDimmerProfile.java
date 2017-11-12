@@ -12,6 +12,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -20,19 +22,28 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.enocean.handler.EnOceanHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RockerChannelToDimmerProfile} transforms rocker switch channel events into dimmer commands.
  *
  * @author Jan Kemmler - Initial contribution
  */
+@NonNullByDefault
 public class RockerChannelToDimmerProfile implements TriggerProfile {
+
+    @SuppressWarnings("null")
+    private final Logger logger = LoggerFactory.getLogger(EnOceanHandler.class);
 
     private final ProfileCallback callback;
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ProfilePool");
+    private final ScheduledExecutorService scheduler;
 
+    @Nullable
     private ScheduledFuture<?> dimmFuture;
+    @Nullable
     private ScheduledFuture<?> timeoutFuture;
 
     private long pressedTime = 0;
@@ -52,8 +63,16 @@ public class RockerChannelToDimmerProfile implements TriggerProfile {
         }
     };
 
+    @SuppressWarnings("null")
     RockerChannelToDimmerProfile(ProfileCallback callback) {
         this.callback = callback;
+
+        try {
+            this.scheduler = ThreadPoolManager.getScheduledPool("ProfilePool");
+        } catch (Exception e) {
+            this.logger.warn("Unable to create rocker channel to dimmer profile. {}", e);
+            throw e;
+        }
     }
 
     @Override
@@ -98,7 +117,9 @@ public class RockerChannelToDimmerProfile implements TriggerProfile {
         timeoutFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                dimmFuture.cancel(false);
+                if (null != dimmFuture) {
+                    dimmFuture.cancel(false);
+                }
             }
         }, 10000, TimeUnit.MILLISECONDS);
         pressedTime = System.currentTimeMillis();
