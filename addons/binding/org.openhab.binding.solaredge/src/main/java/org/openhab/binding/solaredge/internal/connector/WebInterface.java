@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.TOKEN_COOKIE_NAME;
+import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.CookieStore;
@@ -21,7 +21,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
-import org.openhab.binding.solaredge.internal.command.PostLogin;
+import org.openhab.binding.solaredge.internal.command.PostLoginGetClientCookie;
+import org.openhab.binding.solaredge.internal.command.PostLoginGetSpringSecurityToken;
 import org.openhab.binding.solaredge.internal.command.PreLogin;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.slf4j.Logger;
@@ -136,7 +137,7 @@ public class WebInterface {
 
         if (preCheck()) {
 
-            StatusUpdateListener postStatusUpdater = new StatusUpdateListener() {
+            StatusUpdateListener clientCookieListener = new StatusUpdateListener() {
 
                 @Override
                 public void update(CommunicationStatus status) {
@@ -158,6 +159,28 @@ public class WebInterface {
 
             };
 
+            StatusUpdateListener springSecurityTokenListener = new StatusUpdateListener() {
+
+                @Override
+                public void update(CommunicationStatus status) {
+
+                    if (status.getHttpCode().equals(Code.OK)) {
+                        // perform second part of login process if first part is successful
+                        new PostLoginGetClientCookie(handler, clientCookieListener).performAction(asyncclient);
+                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
+                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                status.getMessage());
+                        setAuthenticated(false);
+                    } else {
+                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                status.getMessage());
+                        setAuthenticated(false);
+                    }
+
+                }
+
+            };
+
             StatusUpdateListener preStatusUpdater = new StatusUpdateListener() {
 
                 @Override
@@ -165,7 +188,8 @@ public class WebInterface {
 
                     if (status.getHttpCode().equals(Code.OK)) {
                         // perform second part of login process if first part is successful
-                        new PostLogin(handler, postStatusUpdater).performAction(asyncclient);
+                        new PostLoginGetSpringSecurityToken(handler, springSecurityTokenListener)
+                                .performAction(asyncclient);
                     } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
@@ -213,15 +237,25 @@ public class WebInterface {
     private synchronized boolean isAuthenticated() {
         if (authenticated && !cookieOK) {
             boolean foundSecurityToken = false;
+            boolean foundClientCookie = false;
             for (HttpCookie cookie : getCookieStore().getCookies()) {
                 if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
                     logger.debug("{}: {}", TOKEN_COOKIE_NAME, cookie.getValue());
                     foundSecurityToken = true;
                 }
+                if (cookie.getName().equals(CLIENT_COOKIE_NAME)) {
+                    logger.debug("{}: {}", CLIENT_COOKIE_NAME, cookie.getValue());
+                    foundClientCookie = true;
+                }
             }
 
             if (!foundSecurityToken) {
                 String message = "Session-Cookie not found: " + TOKEN_COOKIE_NAME;
+                logger.warn(message);
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                setAuthenticated(false);
+            } else if (!foundClientCookie) {
+                String message = "Client-Cookie not found: " + CLIENT_COOKIE_NAME;
                 logger.warn(message);
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 setAuthenticated(false);

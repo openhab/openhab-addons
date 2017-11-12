@@ -22,6 +22,8 @@ public class SolarEdgeConfiguration {
     private String password;
     private String solarId;
 
+    private boolean legacyMode = false;
+
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer pollingInterval = 60;
@@ -74,11 +76,20 @@ public class SolarEdgeConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
+    public final boolean isLegacyMode() {
+        return legacyMode;
+    }
+
+    public final void setLegacyMode(boolean legacyMode) {
+        this.legacyMode = legacyMode;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
-                .append("solarId", getSolarId()).append("pollingInterval", getPollingInterval())
-                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
+                .append("solarId", getSolarId()).append("legacyMode", isLegacyMode())
+                .append("pollingInterval", getPollingInterval()).append("asyncTimeout", getAsyncTimeout())
+                .append("syncTimeout", getSyncTimeout()).toString();
     }
 
 }

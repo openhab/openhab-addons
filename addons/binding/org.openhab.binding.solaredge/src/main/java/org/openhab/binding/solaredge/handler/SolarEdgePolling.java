@@ -9,6 +9,7 @@
 package org.openhab.binding.solaredge.handler;
 
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdate;
+import org.openhab.binding.solaredge.internal.command.LegacyLiveDataUpdate;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdate;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.slf4j.Logger;
@@ -48,8 +49,14 @@ public class SolarEdgePolling implements Runnable {
         if (handler.getWebInterface() != null) {
             logger.debug("polling SolarEdge {}", handler.getConfiguration());
 
-            SolarEdgeCommand ldu = new LiveDataUpdate(handler);
+            SolarEdgeCommand ldu;
+            if (handler.getConfiguration().isLegacyMode()) {
+                ldu = new LegacyLiveDataUpdate(handler);
+            } else {
+                ldu = new LiveDataUpdate(handler);
+            }
             SolarEdgeCommand adu = new AggregateDataUpdate(handler);
+
             try {
                 handler.getWebInterface().executeCommand(ldu);
                 handler.getWebInterface().executeCommand(adu);

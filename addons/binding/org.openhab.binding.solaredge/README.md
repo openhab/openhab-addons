@@ -34,7 +34,10 @@ password used to authenticate on SolarEdge
 - **solarId** (required)  
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
 
-- **pollingInterval**  
+- **legacyMode** (optional)  
+can be set to true for old setups that do not contain a smart meter. In that case live data cannot be retrieved. With legacy mode at least the current production can be retrieved for those setups. (default = false)
+
+- **pollingInterval** (optional)  
 interval (seconds) in which values are retrieved from Solaredge. Setting less than 10 seconds is not recommended. (default = 60). 
 
 ### Examples
@@ -89,7 +92,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 ### Thing
 
 ```
-solaredge:generic:se2200     [ username="solar@edge.de", password="secret", solarId="4711", pollingInterval=30 ]
+solaredge:generic:se2200     [ username="solar@edge.de", password="secret", solarId="4711", legacyMode=true, pollingInterval=30 ]
 ```
 
 ### Items

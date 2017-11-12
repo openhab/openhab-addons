@@ -25,10 +25,15 @@
             <label>Password</label>
             <description>The password to login</description>
         </parameter>
-		<parameter name="solarId" type="text" required="true" groupName="general">
-			<label>Solar ID</label>
-			<description>The ID to identify the solarplant at SolarEdge.</description>
-		</parameter>
+        <parameter name="solarId" type="text" required="true" groupName="general">
+            <label>Solar ID</label>
+            <description>The ID to identify the solarplant at SolarEdge.</description>
+        </parameter>
+        <parameter name="legacyMode" type="boolean" required="false" groupName="general">
+            <label>Legacy Mode</label>
+            <description>Should only be activated for old installations where live data could otherwise not retrieved.</description>
+            <default>false</default>
+        </parameter>
 		<parameter name="pollingInterval" type="integer" required="false" min="10" max="3600" unit="s" groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval in which data is polled from SolarEdge (in seconds).</description>
