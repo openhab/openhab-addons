@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.profiles;
+package org.openhab.binding.enocean.profiles;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,15 +16,15 @@ import org.eclipse.smarthome.core.thing.profiles.TriggerProfileType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link JEnOceanProfiles} hold the profiles types and profile type UIDs of all JEnOcean profiles.
+ * The {@link EnOceanProfiles} hold the profiles types and profile type UIDs of all EnOcean profiles.
  *
  * @author Jan Kemmler - Initial contribution
  */
-public interface JEnOceanProfiles {
+public interface EnOceanProfiles {
 
-    ProfileTypeUID ROCKER_TO_ON_OFF = new ProfileTypeUID("jenocean", "rocker-to-ONOFF");
+    ProfileTypeUID ROCKER_TO_ON_OFF = new ProfileTypeUID("enocean", "rocker-to-ONOFF");
 
-    ProfileTypeUID ROCKER_TO_DIMMER = new ProfileTypeUID("jenocean", "rocker-to-dimmer");
+    ProfileTypeUID ROCKER_TO_DIMMER = new ProfileTypeUID("enocean", "rocker-to-dimmer");
 
     public static final TriggerProfileType ROCKER_TO_ON_OFF_TYPE = new TriggerProfileType() {
         @Override
@@ -39,7 +39,7 @@ public interface JEnOceanProfiles {
 
         @Override
         public Collection<ChannelTypeUID> getSupportedChannelTypeUIDs() {
-            return Collections.singleton(new ChannelTypeUID("jenocean", "rocker_channel"));
+            return Collections.singleton(new ChannelTypeUID("enocean", "rocker_channel"));
         }
 
         @Override
@@ -61,7 +61,7 @@ public interface JEnOceanProfiles {
 
         @Override
         public Collection<ChannelTypeUID> getSupportedChannelTypeUIDs() {
-            return Collections.singleton(new ChannelTypeUID("jenocean", "rocker_channel"));
+            return Collections.singleton(new ChannelTypeUID("enocean", "rocker_channel"));
         }
 
         @Override

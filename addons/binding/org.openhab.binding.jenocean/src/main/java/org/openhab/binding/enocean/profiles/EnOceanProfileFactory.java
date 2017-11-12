@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.profiles;
+package org.openhab.binding.enocean.profiles;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -30,27 +30,27 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link JEnOceanProfileFactory} is responsible for creating profiles.
+ * The {@link EnOceanProfileFactory} is responsible for creating profiles.
  *
  * @author Jan Kemmler - Initial contribution
  */
 @Component(service = ProfileFactory.class)
-public class JEnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, ProfileTypeProvider {
+public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, ProfileTypeProvider {
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Stream
-            .of(JEnOceanProfiles.ROCKER_TO_ON_OFF, JEnOceanProfiles.ROCKER_TO_DIMMER).collect(Collectors.toSet());
+            .of(EnOceanProfiles.ROCKER_TO_ON_OFF, EnOceanProfiles.ROCKER_TO_DIMMER).collect(Collectors.toSet());
 
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Stream
-            .of(JEnOceanProfiles.ROCKER_TO_ON_OFF_TYPE, JEnOceanProfiles.ROCKER_TO_DIMMER_TYPE)
+            .of(EnOceanProfiles.ROCKER_TO_ON_OFF_TYPE, EnOceanProfiles.ROCKER_TO_DIMMER_TYPE)
             .collect(Collectors.toSet());
 
     @Override
     @Nullable
     public Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback, Configuration configuration) {
-        if (JEnOceanProfiles.ROCKER_TO_ON_OFF.equals(profileTypeUID)) {
+        if (EnOceanProfiles.ROCKER_TO_ON_OFF.equals(profileTypeUID)) {
             return new RockerChannelToOnOffProfile(callback);
         }
-        if (JEnOceanProfiles.ROCKER_TO_DIMMER.equals(profileTypeUID)) {
+        if (EnOceanProfiles.ROCKER_TO_DIMMER.equals(profileTypeUID)) {
             return new RockerChannelToDimmerProfile(callback);
         } else {
             return null;
@@ -81,7 +81,7 @@ public class JEnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, P
      * case STATE:
      * return Collections.emptyList();
      * case TRIGGER:
-     * if (JEnOceanBindingConstants.THING_TYPE_ROCKER_SWITCH.equals(channel.getChannelTypeUID())) {
+     * if (EnOceanBindingConstants.THING_TYPE_ROCKER_SWITCH.equals(channel.getChannelTypeUID())) {
      * return Collections.singletonList(RockerChannelToOnOffProfile.UID);
      * }
      * break;
@@ -98,11 +98,11 @@ public class JEnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, P
             case STATE:
                 return null;
             case TRIGGER:
-                if (new ChannelTypeUID("jenocean", "rocker_channel").equals(channel.getChannelTypeUID())) {
+                if (new ChannelTypeUID("enocean", "rocker_channel").equals(channel.getChannelTypeUID())) {
                     if ("Switch".equalsIgnoreCase(itemType)) {
-                        return JEnOceanProfiles.ROCKER_TO_ON_OFF;
+                        return EnOceanProfiles.ROCKER_TO_ON_OFF;
                     } else if ("Dimmer".equalsIgnoreCase(itemType)) {
-                        return JEnOceanProfiles.ROCKER_TO_DIMMER;
+                        return EnOceanProfiles.ROCKER_TO_DIMMER;
                     }
                 }
                 break;

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:jenocean:RockerSwitch">
+    <config-description uri="thing-type:enocean:RockerSwitch">
         <parameter name="enoceanAddress" type="text" required="true" >
             <required>true</required>
             <default></default>
@@ -14,7 +14,7 @@
         </parameter>
     </config-description>
   
-    <config-description uri="binding:jenocean:bindingUsbPort">
+    <config-description uri="binding:enocean:bindingUsbPort">
         <parameter name="serialPort" type="text" required="true" >
             <required>true</required>
             <default></default>

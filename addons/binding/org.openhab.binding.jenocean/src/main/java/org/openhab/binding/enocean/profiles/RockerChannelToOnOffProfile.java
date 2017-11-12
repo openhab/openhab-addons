@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.profiles;
+package org.openhab.binding.enocean.profiles;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
@@ -29,7 +29,7 @@ public class RockerChannelToOnOffProfile implements TriggerProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return JEnOceanProfiles.ROCKER_TO_ON_OFF;
+        return EnOceanProfiles.ROCKER_TO_ON_OFF;
     }
 
     /**

@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: ., lib/enocean.library-0.9.0.jar
 Bundle-ManifestVersion: 2
-Bundle-Name: JEnOcean Binding
+Bundle-Name: EnOcean Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-SymbolicName: org.openhab.binding.jenocean;singleton:=true
+Bundle-SymbolicName: org.openhab.binding.enocean;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Export-Package: 
- org.openhab.binding.jenocean,
- org.openhab.binding.jenocean.handler,
- org.openhab.binding.jenocean.profiles
+ org.openhab.binding.enocean,
+ org.openhab.binding.enocean.handler,
+ org.openhab.binding.enocean.profiles
 Import-Package: 
  gnu.io,
  org.apache.commons.lang,
@@ -29,9 +29,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.profiles,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.jenocean,
- org.openhab.binding.jenocean.handler,
- org.openhab.binding.jenocean.profiles,
+ org.openhab.binding.enocean,
+ org.openhab.binding.enocean.handler,
+ org.openhab.binding.enocean.profiles,
  org.osgi.service.component;version="1.3.0",
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.internal;
+package org.openhab.binding.enocean.internal;
 
-import static org.openhab.binding.jenocean.JEnOceanBindingConstants.THING_TYPE_ROCKER_SWITCH;
+import static org.openhab.binding.enocean.EnOceanBindingConstants.THING_TYPE_ROCKER_SWITCH;
 
 import java.util.Collections;
 import java.util.Set;
@@ -19,9 +19,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.jenocean.handler.JEnOceanHandler;
+import org.openhab.binding.enocean.handler.EnOceanHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.polito.elite.enocean.enj.communication.EnJConnection;
 import it.polito.elite.enocean.enj.communication.EnJDeviceListener;
@@ -31,14 +33,16 @@ import it.polito.elite.enocean.enj.link.EnJLink;
 import it.polito.elite.enocean.enj.model.EnOceanDevice;
 
 /**
- * The {@link JEnOceanHandlerFactory} is responsible for creating things and thing
+ * The {@link EnOceanHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Jan Kemmler - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.jenocean")
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.enocean")
 // @NonNullByDefault
-public class JEnOceanHandlerFactory extends BaseThingHandlerFactory implements EnJDeviceListener {
+public class EnOceanHandlerFactory extends BaseThingHandlerFactory implements EnJDeviceListener {
+
+    private final Logger logger = LoggerFactory.getLogger(EnOceanHandler.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ROCKER_SWITCH);
     @Nullable
@@ -64,7 +68,7 @@ public class JEnOceanHandlerFactory extends BaseThingHandlerFactory implements E
                 }
             }
         } catch (Exception e) {
-            System.err.println("The given port does not exist or no device is plugged in" + e);
+            this.logger.debug("The given port does not exist or no device is plugged in {}", e);
         }
     }
 
@@ -81,7 +85,7 @@ public class JEnOceanHandlerFactory extends BaseThingHandlerFactory implements E
         if (thingTypeUID.equals(THING_TYPE_ROCKER_SWITCH)) {
             if (null != connection) {
                 String enoceanAddress = (String) thing.getConfiguration().get("enoceanAddress");
-                JEnOceanHandler handler = new JEnOceanHandler(thing);
+                EnOceanHandler handler = new EnOceanHandler(thing);
 
                 connection.addNewDevice(enoceanAddress, "F6-02-02");
                 EnOceanDevice device = connection

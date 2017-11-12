@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.handler;
+package org.openhab.binding.enocean.handler;
 
-import static org.openhab.binding.jenocean.JEnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,22 +27,22 @@ import it.polito.elite.enocean.enj.eep.eep26.attributes.EEP26RockerSwitch2Rocker
 import it.polito.elite.enocean.enj.eep.eep26.attributes.EEP26RockerSwitch2RockerButtonCount;
 
 /**
- * The {@link JEnOceanHandler} is responsible for handling commands, which are
+ * The {@link EnOceanHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Jan Kemmler - Initial contribution
  */
 @NonNullByDefault
-public class JEnOceanHandler extends BaseThingHandler implements EEPAttributeChangeListener {
+public class EnOceanHandler extends BaseThingHandler implements EEPAttributeChangeListener {
 
-    private final Logger logger = LoggerFactory.getLogger(JEnOceanHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EnOceanHandler.class);
 
     private boolean wasUpPressedA = false;
     private boolean wasDownPressedA = false;
     private boolean wasUpPressedB = false;
     private boolean wasDownPressedB = false;
 
-    public JEnOceanHandler(Thing thing) {
+    public EnOceanHandler(Thing thing) {
         super(thing);
     }
 

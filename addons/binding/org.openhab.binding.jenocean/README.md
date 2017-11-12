@@ -1,4 +1,4 @@
-# JEnOcean Binding
+# EnOcean Binding
 
 This binding enables support for receiving messages from EnOcean rocker switches.
 
@@ -27,7 +27,7 @@ secret=EclipseSmartHome
 
 _Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
 
-Config file: jenocean.cfg
+Config file: enocean.cfg
 Only parameter:
 serialPort
 Enter the port of the USB300 here. Like this for example:
@@ -35,7 +35,7 @@ serialPort=/dev/ttyUSB0
 
 The binding can also be configured via the PaperUI:
 
-Go to "Configuration" -> Bindings -> click pen symbol next to "JEnOcean Binding" -> enter serial port address -> click "save"
+Go to "Configuration" -> Bindings -> click pen symbol next to "EnOcean Binding" -> enter serial port address -> click "save"
 
 ## Thing Configuration
 
@@ -45,7 +45,7 @@ A rocker switch needs to be manually added through the PaperUI or via a thing fi
 
 ### Via PaperUI
 
-Go to "Inbox" -> press green + -> select JEnOcean Binding -> Select Rocker Switch -> enter EnOcean address of device -> confirm with green checkmark.
+Go to "Inbox" -> press green + -> select EnOcean Binding -> Select Rocker Switch -> enter EnOcean address of device -> confirm with green checkmark.
 
 The RockerSwitch Thing requires the configuration of its unique EnOcean address.
 The parameter is "enoceanAddress".
@@ -76,7 +76,7 @@ Example:
 ```
 rule "example EnOcean trigger rule"
 when
-    Channel 'jenocean:RockerSwitch:8b644edd:channel_a_rocker' triggered UP_PRESSED 
+    Channel 'enocean:RockerSwitch:8b644edd:channel_a_rocker' triggered UP_PRESSED 
 then
     sendCommand(MY_OTHER_ITEM, ON)
 end

@@ -6,21 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean;
+package org.openhab.binding.enocean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link JEnOceanBindingConstants} class defines common constants, which are
+ * The {@link EnOceanBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Jan Kemmler - Initial contribution
  */
 @NonNullByDefault
-public class JEnOceanBindingConstants {
+public class EnOceanBindingConstants {
 
-    private static final String BINDING_ID = "jenocean";
+    private static final String BINDING_ID = "enocean";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROCKER_SWITCH = new ThingTypeUID(BINDING_ID, "RockerSwitch");

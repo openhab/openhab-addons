@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jenocean.profiles;
+package org.openhab.binding.enocean.profiles;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -58,7 +58,7 @@ public class RockerChannelToDimmerProfile implements TriggerProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return JEnOceanProfiles.ROCKER_TO_DIMMER;
+        return EnOceanProfiles.ROCKER_TO_DIMMER;
     }
 
     /**
