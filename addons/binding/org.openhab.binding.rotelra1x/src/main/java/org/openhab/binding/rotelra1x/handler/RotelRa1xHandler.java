@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -49,13 +51,14 @@ public class RotelRa1xHandler extends BaseThingHandler {
     private static final long ERROR_RETRY_DELAY_MS = 60000;
     private int maximumVolume;
     private RXTXPort serialPort;
+    private ScheduledExecutorService inputLoopLocalExecutor;
 
     private boolean exit;
     private volatile boolean power;
 
     private final Logger logger = LoggerFactory.getLogger(RotelRa1xHandler.class);
 
-    public RotelRa1xHandler(Thing thing) {
+    public RotelRa1xHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -65,7 +68,8 @@ public class RotelRa1xHandler extends BaseThingHandler {
         exit = false;
         try {
             connect();
-            Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            inputLoopLocalExecutor = Executors.newSingleThreadScheduledExecutor();
+            inputLoopLocalExecutor.schedule(() -> {
                 inputLoop();
             }, 4, TimeUnit.SECONDS);
         } catch (IOException e) {
@@ -153,6 +157,10 @@ public class RotelRa1xHandler extends BaseThingHandler {
         } else {
             volume = Integer.parseInt(volumeString, 10);
         }
+        if (maximumVolume <= 0.0) {
+            logger.warn("Invalid non-positive maximum-volume value {}.", maximumVolume);
+            return new PercentType(BigDecimal.valueOf(0.0));
+        }
         double volumePct = volume * 100.0 / maximumVolume;
         return new PercentType(BigDecimal.valueOf(Math.round(volumePct)));
     }
@@ -194,60 +202,71 @@ public class RotelRa1xHandler extends BaseThingHandler {
                     connect();
                 }
                 String command = readCommand();
-                if ("volume".equals(command)) {
-                    PercentType vol = readVolume();
-                    updateState(CHANNEL_VOLUME, vol);
-                } else if ("mute".equals(command)) {
-                    String muteState = readUntil('!');
-                    updateState(CHANNEL_MUTE, "on".equals(muteState) ? OnOffType.ON : OnOffType.OFF);
-                } else if ("power_off".equals(command)) {
-                    power = false;
-                    updateState(CHANNEL_MUTE, OnOffType.OFF);
-                    updateState(CHANNEL_POWER, OnOffType.OFF);
-                } else if ("power_on".equals(command)) {
-                    power = true;
-                    updateState(CHANNEL_POWER, OnOffType.ON);
-                    powerOnRefresh();
-                } else if ("power".equals(command)) {
-                    String state = readUntil('!');
-                    if ("on".equals(state)) {
+                switch (command) {
+                    case "volume":
+                        PercentType vol = readVolume();
+                        updateState(CHANNEL_VOLUME, vol);
+                        break;
+                    case "mute":
+                        String muteState = readUntil('!');
+                        updateState(CHANNEL_MUTE, "on".equals(muteState) ? OnOffType.ON : OnOffType.OFF);
+                        break;
+                    case "power_off":
+                        power = false;
+                        updateState(CHANNEL_MUTE, OnOffType.OFF);
+                        updateState(CHANNEL_POWER, OnOffType.OFF);
+                        break;
+                    case "power_on":
                         power = true;
                         updateState(CHANNEL_POWER, OnOffType.ON);
                         powerOnRefresh();
-                    } else if ("standby".equals(state)) {
-                        updateState(CHANNEL_MUTE, OnOffType.OFF);
-                        updateState(CHANNEL_POWER, OnOffType.OFF);
-                        power = false;
-                    }
-                } else if ("dimmer".equals(command)) {
-                    updateState(CHANNEL_BRIGHTNESS, readDimmer());
-                } else if ("freq".equals(command)) {
-                    updateState(CHANNEL_FREQUENCY, readFrequency());
-                } else if ("source".equals(command)) {
-                    updateState(CHANNEL_SOURCE, new StringType(readUntil('!')));
-                } else if ("display".equals(command)) {
-                    String stringLength = readUntil(',');
-                    int length = Integer.parseInt(stringLength);
-                    byte[] data = new byte[length];
-                    int off = 0;
-                    while (off != length) {
-                        int r = serialPort.getInputStream().read(data, off, length - off);
-                        if (r == -1) {
-                            throw new IOException("Connection closed while reading display content");
-                        } else {
-                            off += r;
+                        break;
+                    case "power":
+                        String state = readUntil('!');
+                        if ("on".equals(state)) {
+                            power = true;
+                            updateState(CHANNEL_POWER, OnOffType.ON);
+                            powerOnRefresh();
+                        } else if ("standby".equals(state)) {
+                            updateState(CHANNEL_MUTE, OnOffType.OFF);
+                            updateState(CHANNEL_POWER, OnOffType.OFF);
+                            power = false;
                         }
-                    }
-                    // We don't do anything with display content, could add a channel if this is useful
-                } else {
-                    readUntil('!'); // discard
+                        break;
+                    case "dimmer":
+                        updateState(CHANNEL_BRIGHTNESS, readDimmer());
+                        break;
+                    case "freq":
+                        updateState(CHANNEL_FREQUENCY, readFrequency());
+                        break;
+                    case "source":
+                        updateState(CHANNEL_SOURCE, new StringType(readUntil('!')));
+                        break;
+                    case "display":
+                        String stringLength = readUntil(',');
+                        int length = Integer.parseInt(stringLength);
+                        byte[] data = new byte[length];
+                        int off = 0;
+                        while (off != length) {
+                            int r = serialPort.getInputStream().read(data, off, length - off);
+                            if (r == -1) {
+                                throw new IOException("Connection closed while reading display content");
+                            } else {
+                                off += r;
+                            }
+                        }
+                        // We don't do anything with display content, could add a channel if this is useful
+                        break;
+                    default:
+                        readUntil('!'); // discard
+                        break;
                 }
-
             } catch (IOException e) {
                 if (serialPort != null) {
                     logger.debug("Input error while receiving data from amplifier, waiting...", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     disconnect();
+
                     try {
                         Thread.sleep(ERROR_RETRY_DELAY_MS);
                     } catch (InterruptedException e1) {
@@ -261,11 +280,10 @@ public class RotelRa1xHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "Unknown error while processing input: " + e.getMessage());
                     disconnect();
-                    try {
-                        Thread.sleep(ERROR_RETRY_DELAY_MS);
-                    } catch (InterruptedException e1) {
-                        return;
-                    }
+                    inputLoopLocalExecutor.schedule(() -> {
+                        inputLoop();
+                    }, ERROR_RETRY_DELAY_MS, TimeUnit.MILLISECONDS);
+                    return;
                 }
             } catch (ConfigurationError e) {
                 logger.warn("Unexpected error", e);
@@ -274,6 +292,7 @@ public class RotelRa1xHandler extends BaseThingHandler {
                 return;
             }
         }
+
     }
 
     private void send(String text) throws IOException, ConfigurationError {
@@ -291,30 +310,22 @@ public class RotelRa1xHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (CHANNEL_POWER.equals(channelUID.getId())) {
-                if (command == OnOffType.ON) {
-                    sendForce("power_on!");
-                } else if (command == OnOffType.OFF) {
-                    sendForce("power_off!");
-                } else if (command instanceof RefreshType) {
-                    sendForce("get_current_power!");
-                }
-            } else if (CHANNEL_MUTE.equals(channelUID.getId())) {
-                if (command == OnOffType.ON) {
-                    send("mute_on!");
-                } else {
-                    send("mute_off!");
-                }
-            } else if (CHANNEL_VOLUME.equals(channelUID.getId())) {
-                handleVolume(command);
-            } else if (CHANNEL_BRIGHTNESS.equals(channelUID.getId())) {
-                handleBrightness(command);
-            } else if (CHANNEL_SOURCE.equals(channelUID.getId())) {
-                if (command instanceof StringType) {
-                    send(command.toString() + "!");
-                } else {
-                    send("get_current_source!");
-                }
+            switch (channelUID.getId()) {
+                case CHANNEL_POWER:
+                    handlePower(command);
+                    break;
+                case CHANNEL_MUTE:
+                    handleMute(command);
+                    break;
+                case CHANNEL_VOLUME:
+                    handleVolume(command);
+                    break;
+                case CHANNEL_BRIGHTNESS:
+                    handleBrightness(command);
+                    break;
+                case CHANNEL_SOURCE:
+                    handleSource(command);
+                    break;
             }
         } catch (IOException e) {
             logger.debug("An I/O error occurred while processing the command {}.", command, e);
@@ -324,6 +335,24 @@ public class RotelRa1xHandler extends BaseThingHandler {
             logger.debug("There is an error in the configuration of the thing.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             disconnect();
+        }
+    }
+
+    private void handlePower(Command command) throws IOException, ConfigurationError {
+        if (command == OnOffType.ON) {
+            sendForce("power_on!");
+        } else if (command == OnOffType.OFF) {
+            sendForce("power_off!");
+        } else if (command instanceof RefreshType) {
+            sendForce("get_current_power!");
+        }
+    }
+
+    private void handleMute(Command command) throws IOException, ConfigurationError {
+        if (command == OnOffType.ON) {
+            send("mute_on!");
+        } else {
+            send("mute_off!");
         }
     }
 
@@ -344,7 +373,16 @@ public class RotelRa1xHandler extends BaseThingHandler {
         // Invert the scale so 100% is brightest
         if (command instanceof PercentType) {
             double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
-            send("dimmer_" + Integer.toString((int) value) + "!");
+            send("dimmer_" + ((int) value) + "!");
         }
     }
+
+    private void handleSource(Command command) throws IOException, ConfigurationError {
+        if (command instanceof StringType) {
+            send(command.toString() + "!");
+        } else {
+            send("get_current_source!");
+        }
+    }
+
 }
