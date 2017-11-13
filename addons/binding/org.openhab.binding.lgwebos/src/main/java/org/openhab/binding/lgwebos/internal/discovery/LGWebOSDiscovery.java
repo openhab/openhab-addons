@@ -130,12 +130,11 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     // Helpers for DiscoveryManagerListener Impl
     private DiscoveryResult createDiscoveryResult(ConnectableDevice device) {
         ThingUID thingUID = createThingUID(device);
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName()).build();
-        return result;
+        return DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName()).build();
     }
 
     private ThingUID createThingUID(ConnectableDevice device) {
-        return new ThingUID(THING_TYPE_WEBOSTV, device.getIpAddress().replace('.', '_'));
+        return new ThingUID(THING_TYPE_WEBOSTV, device.getId());
     }
 
     public DiscoveryManager getDiscoveryManager() {

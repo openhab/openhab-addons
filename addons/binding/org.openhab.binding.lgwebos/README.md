@@ -61,7 +61,7 @@ showToast(String ip, String text)
 ```
 
 Sends a toast message to a webOS device using openHAB's logo as an icon.
-The first parameter is the IP address of your TV. 
+The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
 The second parameter is the message you want to display.
 
 ### Show Toast with Custom Icon
@@ -71,7 +71,7 @@ showToast(String ip, String icon, String text)
 ```
 
 Sends a toast message to a webOS device with custom icon. 
-The first parameter is the IP address of your TV. 
+The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
 The second parameter for the icon has to be provided as a URL. To use openHAB's icon set you could send this URL for example: http://localhost:8080/icon/energy?state=UNDEF&format=png
 The third parameter is the message you want to display.
 
@@ -83,7 +83,7 @@ launchBrowser(String ip, String url)
 
 Opens the given URL in the TV's browser app.
 
-The first parameter is the IP address of your TV. 
+The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:".e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
 The second parameter is the URL you want to open.
 
 ### Launch an Application
@@ -94,7 +94,7 @@ launchApplication(String deviceId, String appId)
 
 Opens the application with given appId. To find out what appId constant matches which app, bind the appLauncher channel to a String item and turn the TV to the desired application.
 
-The first parameter is the IP address of your TV. 
+The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
 The second parameter is the application id that you want to open.
 
 ### Launch an Application with Parameter
@@ -105,7 +105,7 @@ launchApplicationWithParam(String deviceId, String appId, Object param)
 
 Opens the application with given appId. To find out what appId constant matches which app, bind the appLauncher channel to a String item and turn the TV to the desired application.
 
-The first parameter is the IP address of your TV. 
+The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813. 
 The second parameter is the application id that you want to open.
 The third parameter is an application specific value that will be passed on to the application.
 

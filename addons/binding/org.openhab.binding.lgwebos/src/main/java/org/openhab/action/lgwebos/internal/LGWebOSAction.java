@@ -158,12 +158,13 @@ public class LGWebOSAction implements ActionService {
     }
 
     private static <C extends CapabilityMethods> @Nullable C getControl(Class<C> clazz, String deviceId) {
-        final ConnectableDevice device = discovery.getDiscoveryManager().getCompatibleDevices().get(deviceId);
-        if (device == null) {
+        final Optional<ConnectableDevice> connectableDevice = discovery.getDiscoveryManager().getCompatibleDevices()
+                .values().stream().filter(device -> deviceId.equals(device.getId())).findFirst();
+        if (!connectableDevice.isPresent()) {
             LOGGER.warn("No device found with id: {}", deviceId);
             return null;
         }
-        C control = device.getCapability(clazz);
+        C control = connectableDevice.get().getCapability(clazz);
         if (control == null) {
             LOGGER.warn("Device {} does not have the ability: {}", deviceId, clazz.getName());
             return null;
