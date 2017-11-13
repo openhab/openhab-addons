@@ -32,25 +32,27 @@ import com.google.gson.Gson;
 /**
  * The {@link SamppeeService} handles the connection to the Smappee API
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
 
 public class SmappeeService {
 
-    private static Logger logger = LoggerFactory.getLogger(SmappeeService.class);
+    private final Logger logger = LoggerFactory.getLogger(SmappeeService.class);
 
-    private long refreshInterval;
+    ScheduledFuture<?> scheduledJob;
+
+    private long pollTime;
     private int retry;
 
-    private String client_id;
-    private String client_secret;
+    private String clientId;
+    private String clientSecret;
     private String username;
     private String password;
     private String serviceLocationName;
 
     private String serviceLocationId;
 
-    private boolean isInitialized;
+    private boolean initialized;
 
     private final Gson gson;
 
@@ -58,49 +60,39 @@ public class SmappeeService {
     private DateTime accessTokenValidity;
     private String refreshToken;
 
-    public SmappeeService(String client_id, String client_secret, String username, String password,
-            String serviceLocationName, long refreshInterval) {
+    public SmappeeService(String clientId, String clientSecret, String username, String password,
+            String serviceLocationName, long pollTime) {
         this.serviceLocationName = serviceLocationName;
-        this.client_id = client_id;
-        this.client_secret = client_secret;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         this.username = username;
         this.password = password;
 
         this.retry = 1;
-        this.refreshInterval = refreshInterval;
+        this.pollTime = pollTime;
 
         this.gson = new Gson();
 
-        this.isInitialized = false;
+        this.initialized = false;
     }
 
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
             final ReadingsUpdate readingsUpdate) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    SmappeeDeviceReading readings = getDeviceReadings();
-                    if (readings.consumptions.length > 0) {
-                        readingsUpdate.newState(readings);
-                    }
-                } catch (InvalidConfigurationException e) {
-                    readingsUpdate.invalidConfig();
-                }
+        Runnable runnable = () -> {
+            SmappeeDeviceReading readings = getDeviceReadings();
+            if (readings.consumptions.length > 0) {
+                readingsUpdate.newState(readings);
             }
         };
 
-        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, this.refreshInterval,
-                TimeUnit.MILLISECONDS);
+        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, this.pollTime, TimeUnit.MILLISECONDS);
     }
-
-    ScheduledFuture<?> scheduledJob;
 
     public void stopAutomaticRefresh() {
         scheduledJob.cancel(true);
     }
 
-    public SmappeeDeviceReading getDeviceReadings() throws InvalidConfigurationException {
+    public SmappeeDeviceReading getDeviceReadings() {
         int currentTry = 0;
         do {
             try {
@@ -110,6 +102,7 @@ public class SmappeeService {
                 String nowUtcMillis = String.valueOf(nowUtc.getMillis());
                 String nowUtcMinus20MinMillis = String.valueOf(nowUtcMinus20Min.getMillis());
 
+                // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123/consumption?aggregation=1&from=1388534400000&to=1391212800000
 
                 String responseReadings = GetData("/dev/v1/servicelocation/" + this.serviceLocationId
@@ -124,12 +117,12 @@ public class SmappeeService {
                     consumption.solar = consumption.solar * 12;
                 }
 
-                logger.debug("smappee'{}' read", new Object[] { this.serviceLocationId });
+                logger.debug("smappee'{}' read", this.serviceLocationId);
 
                 return readings;
 
             } catch (Exception se) {
-                logger.debug("failed to read smappee '{}'", new Object[] { se.getMessage() });
+                logger.error("failed to read smappee '{}'", se.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -155,7 +148,7 @@ public class SmappeeService {
         for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
             if (smappeeServiceLocation.name.equals(this.serviceLocationName)) {
                 this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
-                isInitialized = true;
+                initialized = true;
 
                 return true;
 
@@ -165,7 +158,7 @@ public class SmappeeService {
     }
 
     public boolean isInitialized() {
-        return isInitialized;
+        return initialized;
     }
 
     private String GetData(String request) {
@@ -181,27 +174,26 @@ public class SmappeeService {
 
         String accessTokenToInclude = GetAccessToken();
         if (accessTokenToInclude.isEmpty()) {
-            logger.error("Could not get access token");
+            logger.warn("Could not get access token");
             return "";
         }
 
         getMethod.addRequestHeader("Authorization", "Bearer " + accessTokenToInclude); // add the authorization header
-                                                                                       // to
-        // the request
+                                                                                       // to the request
 
         try {
             int statusCode = getClient.executeMethod(getMethod);
             if (statusCode != HttpStatus.SC_OK) {
-                logger.error("Method failed: {}", getMethod.getStatusLine());
+                logger.warn("Get readings method failed: {}", getMethod.getStatusLine());
                 return "";
             }
 
             return IOUtils.toString(getMethod.getResponseBodyAsStream());
         } catch (HttpException e) {
-            logger.error("Fatal protocol violation: {}", e.toString());
+            logger.warn("Fatal protocol violation: {}", e.toString());
             return "";
         } catch (IOException e) {
-            logger.error("Fatal transport error: {}", e.toString());
+            logger.warn("Fatal transport error: {}", e.toString());
             return "";
         } finally {
             getMethod.releaseConnection();
@@ -223,13 +215,13 @@ public class SmappeeService {
 
             postMethod.addParameter("grant_type", "refresh_token");
             postMethod.addParameter("refresh_token", refreshToken);
-            postMethod.addParameter("client_id", client_id);
-            postMethod.addParameter("client_secret", client_secret);
+            postMethod.addParameter("client_id", clientId);
+            postMethod.addParameter("client_secret", clientSecret);
 
             try {
                 int statusCode = postClient.executeMethod(postMethod);
                 if (statusCode != HttpStatus.SC_OK) {
-                    logger.error("Method failed: {}", postMethod.getStatusLine());
+                    logger.warn("Get Access Token failed: {}", postMethod.getStatusLine());
                     return "";
                 }
 
@@ -244,10 +236,13 @@ public class SmappeeService {
                 return accessToken;
 
             } catch (HttpException e) {
-                logger.error("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
+                logger.warn("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
                 return "";
             } catch (IOException e) {
-                logger.error("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+                logger.warn("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+                return "";
+            } catch (Exception e) {
+                logger.error("Failed to parse access token (from refreshtoken request) : {}", e.toString());
                 return "";
             } finally {
                 postMethod.releaseConnection();
@@ -260,15 +255,15 @@ public class SmappeeService {
         postMethod.addRequestHeader("Accept", "application/json");
 
         postMethod.addParameter("grant_type", "password");
-        postMethod.addParameter("client_id", client_id);
-        postMethod.addParameter("client_secret", client_secret);
+        postMethod.addParameter("client_id", clientId);
+        postMethod.addParameter("client_secret", clientSecret);
         postMethod.addParameter("username", username);
         postMethod.addParameter("password", password);
 
         try {
             int statusCode = postClient.executeMethod(postMethod);
             if (statusCode != HttpStatus.SC_OK) {
-                logger.error("Method failed: {}", postMethod.getStatusLine());
+                logger.warn("Get token method failed: {}", postMethod.getStatusLine());
                 return "";
             }
 
@@ -282,10 +277,13 @@ public class SmappeeService {
             return accessToken;
 
         } catch (HttpException e) {
-            logger.error("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
+            logger.warn("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
             return "";
         } catch (IOException e) {
-            logger.error("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+            logger.warn("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+            return "";
+        } catch (Exception e) {
+            logger.error("Failed to parse access token : {}", e.toString());
             return "";
         } finally {
             postMethod.releaseConnection();

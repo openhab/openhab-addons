@@ -18,7 +18,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.smappee.handler.SmappeeHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link SmappeeHandlerFactory} is responsible for creating things and thing
@@ -26,6 +29,8 @@ import org.openhab.binding.smappee.handler.SmappeeHandler;
  *
  * @author Niko Tanghe - Initial contribution
  */
+
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smappee", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SmappeeHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMAPPEE);

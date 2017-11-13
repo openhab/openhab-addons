@@ -19,21 +19,18 @@
                 <label>Client Id</label>
                 <description>The Smappee Api Oauth client id (obtain by mail from smappee support)</description>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
 
             <parameter name="client_secret" type="text" required="true">
                 <label>Client Secret</label>
                 <description>The Smappee Api Oauth client secret (obtain by mail from smappee support)</description>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
 
             <parameter name="username" type="text" required="true">
                 <label>Username</label>
                 <description>The username of your Smappee</description>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
 
             <parameter name="password" type="text" required="true">
@@ -41,14 +38,12 @@
                 <description>The password of your Smappee</description>
                 <context>password</context>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
             
             <parameter name="servicelocationname" type="text" required="true">
                 <label>Service location name</label>
                 <description>The name of your Smappee installation</description>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
             
             <parameter name="polltime" type="integer" required="true" min="1" max="1440">
@@ -56,7 +51,6 @@
                 <description>How often (in minutes) does the smappee needs to be checked ?</description>
                 <default>5</default>
                 <advanced>false</advanced>
-                <required>true</required>
             </parameter>
             
         </config-description>        

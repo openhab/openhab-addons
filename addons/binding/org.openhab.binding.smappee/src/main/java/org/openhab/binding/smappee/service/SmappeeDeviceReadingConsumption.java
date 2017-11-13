@@ -15,7 +15,7 @@ import org.joda.time.DateTimeZone;
 /**
  * The result of a smappee reading, the energy consumption
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
 
 public class SmappeeDeviceReadingConsumption {

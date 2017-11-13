@@ -9,23 +9,23 @@
 
 package org.openhab.binding.smappee.service;
 
-//{
-//    "appName": "MyFirstApp",
-//    "serviceLocations": [
-//      {
-//        "serviceLocationId": 12345,
-//        "name": "Home"
-//      }
-//    ]
-//  }
-
 /**
  * Where is the Smappee located ?
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
-
 public class SmappeeServiceLocation {
     public int serviceLocationId;
     public String name;
 }
+
+// Example JSON received from the Smappee API :
+// {
+// "appName": "MyFirstApp",
+// "serviceLocations": [
+// {
+// "serviceLocationId": 12345,
+// "name": "Home"
+// }
+// ]
+// }

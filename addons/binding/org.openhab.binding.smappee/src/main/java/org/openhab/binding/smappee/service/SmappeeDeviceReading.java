@@ -12,7 +12,7 @@ package org.openhab.binding.smappee.service;
 /**
  * The result of a smappee reading
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
 
 public class SmappeeDeviceReading {
@@ -41,10 +41,6 @@ public class SmappeeDeviceReading {
     }
 
     private SmappeeDeviceReadingConsumption getLatestReading() {
-        if (consumptions.length == 0) {
-            return null;
-        }
-
         SmappeeDeviceReadingConsumption latestReading = consumptions[0];
 
         for (SmappeeDeviceReadingConsumption reading : consumptions) {
