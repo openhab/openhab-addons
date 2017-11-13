@@ -103,7 +103,7 @@ public class HeatingModel {
         } else if (TEMP_FRITZ_MAX.compareTo(tsoll) == 0) {
             return MODE_BOOST;
         } else {
-            return MODE_UNKNOWN;
+            return MODE_ON;
         }
     }
 
