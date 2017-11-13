@@ -65,7 +65,7 @@ abstract class LxControlAbstractController extends LxControl {
                 if (subControls.containsKey(uuid)) {
                     subControls.get(uuid).update(subControl, room, category);
                 } else {
-                    LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
+                    LxControl control = LxControlFactory.createControl(socketClient, uuid, subControl, room, category);
                     if (control != null) {
                         subControls.put(control.uuid, control);
                     }

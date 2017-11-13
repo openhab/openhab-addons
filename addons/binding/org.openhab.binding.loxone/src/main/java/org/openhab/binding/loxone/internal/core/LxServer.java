@@ -685,7 +685,7 @@ public class LxServer {
         if (control != null) {
             control.update(json, room, category);
         } else {
-            control = LxControl.createControl(socketClient, id, json, room, category);
+            control = LxControlFactory.createControl(socketClient, id, json, room, category);
         }
         if (control != null) {
             updateControls(control);

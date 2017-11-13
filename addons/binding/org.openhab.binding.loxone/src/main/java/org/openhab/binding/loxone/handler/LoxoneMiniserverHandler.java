@@ -459,17 +459,15 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      */
     private boolean addChannel(List<Channel> channels, String itemType, ChannelTypeUID typeId, ChannelUID channelId,
             String channelLabel, String channelDescription, Set<String> tags) {
-        if (channelId != null && itemType != null && typeId != null && channelDescription != null) {
+        if (channels != null && channelId != null && itemType != null && typeId != null && channelDescription != null) {
             ChannelBuilder builder = ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
                     .withDescription(channelDescription + " : " + channelLabel);
             if (tags != null) {
                 builder = builder.withDefaultTags(tags);
             }
             Channel newChannel = builder.build();
-            if (channels != null) {
-                channels.add(newChannel);
-                return true;
-            }
+            channels.add(newChannel);
+            return true;
         }
         return false;
     }
@@ -513,7 +511,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         }
 
         Set<String> tags = new HashSet<>();
-        addAlexaTags(tags, control);
+        addChannelTags(tags, control);
 
         // LxControlSwitch covers LxControlPushbutton, LxControlMood and LxControlTimedSwitch as child classes
         if (control instanceof LxControlSwitch) {
@@ -563,14 +561,14 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     /**
-     * Add tags that allow items to be managed by Amazon Alexa openHAB skill
+     * Add tags that can be used by homekit transport and Alexa openHAB skill
      *
      * @param tags
      *            collection to add tags to
      * @param control
      *            control object for which the tags are to be identified
      */
-    private void addAlexaTags(Set<String> tags, LxControl control) {
+    private void addChannelTags(Set<String> tags, LxControl control) {
         if (control instanceof LxControlSwitch) {
             // All switches that belong to the lights category can be turned on or off by voice
             LxCategory category = control.getCategory();
