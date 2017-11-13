@@ -10,13 +10,23 @@
 package org.openhab.binding.smappee.service;
 
 /**
- * Interface for readings updates
+ * Interface for readings updates, what should be implemented to be a smappee handler.
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
-
 public interface ReadingsUpdate {
-    public void newState(SmappeeDeviceReading devicereadings);
 
-    public void invalidConfig();
+    /**
+     * log a new smappee device reading.
+     *
+     * @param devicereadings the devicereadings to set as a new state.
+     */
+    void newState(SmappeeDeviceReading devicereadings);
+
+    /**
+     * signals some invalid config.
+     *
+     * @param reason the reason why the config is invalid.
+     */
+    // public void invalidConfig(String reason);
 }

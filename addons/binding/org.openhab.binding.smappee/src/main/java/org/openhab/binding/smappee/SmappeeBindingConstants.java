@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.smappee;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -39,5 +36,4 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_SERVICE_LOCATION_NAME = "servicelocationname";
     public final static String PARAMETER_POLLTIME = "polltime";
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMAPPEE);
 }

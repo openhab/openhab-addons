@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.smappee.service.InvalidConfigurationException;
 import org.openhab.binding.smappee.service.ReadingsUpdate;
 import org.openhab.binding.smappee.service.SmappeeDeviceReading;
 import org.openhab.binding.smappee.service.SmappeeService;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
 
-    private Logger logger = LoggerFactory.getLogger(SmappeeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmappeeHandler.class);
     private SmappeeService smappeeService;
 
     public SmappeeHandler(Thing thing) {
@@ -44,17 +43,13 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (smappeeService == null || smappeeService.isInitialized() == false) {
+        if (smappeeService == null || !smappeeService.isInitialized()) {
             return;
         }
 
         if (command instanceof RefreshType) {
-            try {
-                SmappeeDeviceReading readings = smappeeService.getDeviceReadings();
-                newState(readings);
-            } catch (InvalidConfigurationException invalidConfigurationException) {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            SmappeeDeviceReading readings = smappeeService.getDeviceReadings();
+            newState(readings);
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
         }
@@ -68,57 +63,52 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
     }
 
     @Override
-    public void invalidConfig() {
-        updateStatus(ThingStatus.OFFLINE);
-    }
-
-    @Override
     public void initialize() {
         Configuration conf = this.getConfig();
 
-        String param_client_id = String.valueOf(conf.get(PARAMETER_CLIENT_ID));
-        String param_client_secret = String.valueOf(conf.get(PARAMETER_CLIENT_SECRET));
-        String param_username = String.valueOf(conf.get(PARAMETER_USERNAME));
-        String param_password = String.valueOf(conf.get(PARAMETER_PASSWORD));
-        String param_serviceLocationName = String.valueOf(conf.get(PARAMETER_SERVICE_LOCATION_NAME));
-        String param_polltime = String.valueOf(conf.get(PARAMETER_POLLTIME));
+        String clientId = String.valueOf(conf.get(PARAMETER_CLIENT_ID));
+        String clientSecret = String.valueOf(conf.get(PARAMETER_CLIENT_SECRET));
+        String username = String.valueOf(conf.get(PARAMETER_USERNAME));
+        String password = String.valueOf(conf.get(PARAMETER_PASSWORD));
+        String serviceLocationName = String.valueOf(conf.get(PARAMETER_SERVICE_LOCATION_NAME));
+        String pollTime = String.valueOf(conf.get(PARAMETER_POLLTIME));
 
-        if (param_client_id.isEmpty()) {
+        if (clientId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client Id must be provided");
             return;
         }
-        if (param_client_secret.isEmpty()) {
+        if (clientSecret.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client secret must be provided");
             return;
         }
-        if (param_username.isEmpty()) {
+        if (username.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Username must be provided");
             return;
         }
-        if (param_password.isEmpty()) {
+        if (password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Password must be provided");
             return;
         }
-        if (param_serviceLocationName.isEmpty()) {
+        if (serviceLocationName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Service location name must be provided");
             return;
         }
-        if (param_polltime.isEmpty()) {
+        if (pollTime.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, polling time must be provided");
             return;
         }
 
-        int polltime = Integer.parseInt(param_polltime) * 60000;
+        int pollTimeMSec = Integer.parseInt(pollTime) * 60000;
 
         logger.debug("Initialize Network handler.");
-        smappeeService = new SmappeeService(param_client_id, param_client_secret, param_username, param_password,
-                param_serviceLocationName, polltime);
+        smappeeService = new SmappeeService(clientId, clientSecret, username, password, serviceLocationName,
+                pollTimeMSec);
 
         super.initialize();
 

@@ -12,10 +12,8 @@ package org.openhab.binding.smappee.service;
 /**
  * Interface for readings updates
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
-
-// {"access_token":"92dXXX49-0645-39ae-b7be-fXXXX65397ed","refresh_token":"8bXXXX54-4a8e-362d-a59a-d7bXXXXX4fd0","expires_in":86400}
 public class SmappeeAccessTokenResponse {
     public String access_token;
 
@@ -23,3 +21,6 @@ public class SmappeeAccessTokenResponse {
 
     public String refresh_token;
 }
+
+// example JSON of a token received from the smappee API :
+// {"access_token":"92dXXX49-0645-39ae-b7be-fXXXX65397ed","refresh_token":"8bXXXX54-4a8e-362d-a59a-d7bXXXXX4fd0","expires_in":86400}
