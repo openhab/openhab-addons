@@ -212,7 +212,10 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
         ThingUID thingUID = new ThingUID(THING_TYPE_STICK, macAddress.toString());
-        if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
+        if (discoveryServiceCallback == null) {
+            logger.debug("Assuming Stick ({}) has not yet been discovered (callback null)", macAddress);
+            return false;
+        } else if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
             logger.debug("Stick ({}) has existing discovery result: {}", macAddress, thingUID);
             return true;
         } else if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
