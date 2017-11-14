@@ -11,24 +11,10 @@ LG webOS based smart TVs are supported.
 
 #### TV Settings
 
-The TV must be connected to the same network as openHAB with a permanent IP address. If the IP changes the binding will discover it as a different device. 
+The TV must be connected to the same network as openHAB. 
 Under network settings allow "LG CONNECT APPS" to connect.
 
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available. In combination with the wake on LAN binding this will allow you to start the TV via openHAB.
-
-## Binding Configuration
-
-The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
-
-| Name    | Description                                                          |
-|---------|----------------------------------------------------------------------|
-| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
-
-The binding will attempt to auto detect your IP, if LocalIP is not set. This works when your hostname resolves to this IP and not to the loopback interface or, if the system has exactly one non-loopback network interface. Otherwise this has to be explicitly set. If you are unable to discover devices please check the log file for error messages.e.g.: 
-
-```
-Autodetection of local IP (via getNetworkInterfaces) failed, as multiple interfaces where detected.
-```
 
 ## Discovery
 
@@ -51,64 +37,6 @@ WebOS TV has no configuration parameters. Please note that at least one channel 
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
-
-## Actions
-
-### Show Toast
-
-```
-showToast(String ip, String text)
-```
-
-Sends a toast message to a webOS device using openHAB's logo as an icon.
-The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
-The second parameter is the message you want to display.
-
-### Show Toast with Custom Icon
-
-```
-showToast(String ip, String icon, String text)
-```
-
-Sends a toast message to a webOS device with custom icon. 
-The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
-The second parameter for the icon has to be provided as a URL. To use openHAB's icon set you could send this URL for example: http://localhost:8080/icon/energy?state=UNDEF&format=png
-The third parameter is the message you want to display.
-
-### Launch a URL
-
-```
-launchBrowser(String ip, String url)
-```
-
-Opens the given URL in the TV's browser app.
-
-The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:".e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
-The second parameter is the URL you want to open.
-
-### Launch an Application
-
-```
-launchApplication(String deviceId, String appId)
-```
-
-Opens the application with given appId. To find out what appId constant matches which app, bind the appLauncher channel to a String item and turn the TV to the desired application.
-
-The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813.
-The second parameter is the application id that you want to open.
-
-### Launch an Application with Parameter
-
-```
-launchApplicationWithParam(String deviceId, String appId, Object param)
-```
-
-Opens the application with given appId. To find out what appId constant matches which app, bind the appLauncher channel to a String item and turn the TV to the desired application.
-
-The first parameter is the ID of your TV as shown in the discovery results after "lgwebos:WebOSTV:", .e.g.: ac285b58-2e32-4063-b14c-ab5f46ca1813. 
-The second parameter is the application id that you want to open.
-The third parameter is an application specific value that will be passed on to the application.
-
 
 ## Full Example
 
