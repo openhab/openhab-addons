@@ -153,24 +153,28 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command {} for channel {}", channelUID.getIdWithoutGroup(), command);
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("Handle command {} for channel {}", channelId, command);
         FritzahaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             return;
         }
         String ain = getThing().getConfiguration().get(THING_AIN).toString();
-        switch (channelUID.getIdWithoutGroup()) {
+        switch (channelId) {
+            case CHANNEL_MODE:
+            case CHANNEL_LOCKED:
+            case CHANNEL_DEVICE_LOCKED:
             case CHANNEL_TEMP:
             case CHANNEL_ENERGY:
             case CHANNEL_POWER:
+            case CHANNEL_ACTUALTEMP:
             case CHANNEL_ECOTEMP:
             case CHANNEL_COMFORTTEMP:
-            case CHANNEL_MODE:
-            case CHANNEL_LOCKED:
-            case CHANNEL_ACTUALTEMP:
             case CHANNEL_NEXTCHANGE:
             case CHANNEL_NEXTTEMP:
             case CHANNEL_BATTERY:
+                logger.debug("Channel {} is a read-only channel and cannot handle command '{}'.", channelId, command);
+                logger.warn("Received unknown command {} for channel {}", command, CHANNEL_SWITCH);
                 break;
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
@@ -239,7 +243,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 }
                 break;
             default:
-                logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+                logger.debug("Received unknown channel {}", channelId);
                 break;
         }
     }
