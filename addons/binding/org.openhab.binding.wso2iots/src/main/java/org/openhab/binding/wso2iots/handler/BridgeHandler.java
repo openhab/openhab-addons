@@ -9,7 +9,18 @@
 
 package org.openhab.binding.wso2iots.handler;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -64,7 +75,8 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         if (validConfig) {
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.OFFLINE);
+            startAutomaticRefresh(config);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -85,11 +97,123 @@ public class BridgeHandler extends BaseBridgeHandler {
         // No channels - nothing to do
     }
 
+    /**
+     * Start the job refreshing the handler
+     */
+    private void startAutomaticRefresh(BridgeConfiguration config) {
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            Runnable runnable = () -> {
+                try {
+
+                    checkConnection();
+
+                } catch (Exception e) {
+                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                }
+            };
+
+            int delay = config.refresh.intValue();
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
+        }
+    }
+
     protected BridgeConfiguration getBridgeConfiguration() {
 
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         return config;
 
+    }
+
+    private void checkConnection() throws Exception {
+
+        String errormsg = null;
+        String response1 = null;
+        BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
+        String hostname = config.hostname;
+
+        String url = "http://" + hostname + ":9763/services/Version.VersionHttpEndpoint";
+
+        URL obj;
+
+        obj = this.validateCertificate(url);
+
+        if (obj == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Certificate validation failed");
+
+        } else {
+
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            con.setRequestMethod("GET");
+            try {
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                response1 = response.toString();
+                logger.debug(response1);
+
+                if (response1.equals("[]")) {
+                    errormsg = "empty response from wso2 iots";
+                    logger.warn(errormsg);
+                }
+            } catch (Exception e) {
+                errormsg = e.getMessage();
+                logger.warn(errormsg);
+            }
+
+            if (errormsg == null) {
+                updateStatus(ThingStatus.ONLINE);
+
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errormsg);
+
+            }
+        }
+    }
+
+    private URL validateCertificate(String url2) {
+
+        URL url = null;
+
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        } };
+
+        // Install the all-trusting trust manager
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+        }
+
+        // Now can access an https URL without having the certificate in the truststore
+        try {
+            url = new URL(url2);
+        } catch (MalformedURLException e) {
+            logger.warn("Constructed url is not valid: {}", e.getMessage());
+        }
+
+        return url;
     }
 
 }
