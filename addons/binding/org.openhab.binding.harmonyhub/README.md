@@ -59,7 +59,7 @@ Hubs can report and change the current activity:
 items:
 
 ```
-String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:activity" }
+String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:currentActivity" }
 ```
 
 Devices can send button presses

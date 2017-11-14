@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.toberemoved.cache;
+package org.openhab.binding.network.internal.toberemoved.cache;
 
 import java.util.LinkedList;
 import java.util.List;
