@@ -10,7 +10,9 @@ package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -125,12 +127,15 @@ public class LegacyLiveDataUpdate extends AbstractCommandCallback implements Sol
      * @return converted value
      */
     private String getValueAsKW(String value, String unit) {
+        Double convertedValue = Double.valueOf(value);
+
         if (unit != null && unit.equals(UNIT_W)) {
-            Double convertedValue = Double.valueOf(value) / 1000;
-            return convertedValue.toString();
-        } else {
-            return value;
+            convertedValue = convertedValue / 1000;
         }
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(convertedValue);
     }
 
 }

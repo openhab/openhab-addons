@@ -26,7 +26,8 @@ public class SolarEdgeConfiguration {
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
-    private Integer pollingInterval = 60;
+    private Integer liveDataPollingInterval;
+    private Integer aggregateDataPollingInterval;
 
     public final String getUsername() {
         return username;
@@ -68,14 +69,6 @@ public class SolarEdgeConfiguration {
         this.syncTimeout = syncTimeout;
     }
 
-    public final Integer getPollingInterval() {
-        return pollingInterval;
-    }
-
-    public final void setPollingInterval(Integer pollingInterval) {
-        this.pollingInterval = pollingInterval;
-    }
-
     public final boolean isLegacyMode() {
         return legacyMode;
     }
@@ -84,12 +77,29 @@ public class SolarEdgeConfiguration {
         this.legacyMode = legacyMode;
     }
 
+    public final Integer getLiveDataPollingInterval() {
+        return liveDataPollingInterval;
+    }
+
+    public final void setLiveDataPollingInterval(Integer liveDataPollingInterval) {
+        this.liveDataPollingInterval = liveDataPollingInterval;
+    }
+
+    public final Integer getAggregateDataPollingInterval() {
+        return aggregateDataPollingInterval;
+    }
+
+    public final void setAggregateDataPollingInterval(Integer aggregateDataPollingInterval) {
+        this.aggregateDataPollingInterval = aggregateDataPollingInterval;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
                 .append("solarId", getSolarId()).append("legacyMode", isLegacyMode())
-                .append("pollingInterval", getPollingInterval()).append("asyncTimeout", getAsyncTimeout())
-                .append("syncTimeout", getSyncTimeout()).toString();
+                .append("live data pollingInterval", getLiveDataPollingInterval())
+                .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
+                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }
 
 }

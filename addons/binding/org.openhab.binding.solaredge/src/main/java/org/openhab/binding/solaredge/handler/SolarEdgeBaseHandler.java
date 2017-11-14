@@ -41,28 +41,34 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
     /**
-     * Refresh interval which is used to poll values from the Solaredge web interface (optional, defaults to 60 s)
-     */
-    private int refreshInterval;
-
-    /**
-     * Interface object for querying the FRITZ!Box web interface
+     * Interface object for querying the Solaredge web interface
      */
     private WebInterface webInterface;
 
     /**
-     * Job which will do the FRITZ!Box polling
+     * Job which will do the Solaredge polling
      */
-    private final SolarEdgePolling pollingRunnable;
+    private final SolarEdgeLiveDataPolling liveDataPollingRunnable;
+
+    /**
+     * Job which will do the Solaredge polling
+     */
+    private final SolarEdgeAggregateDataPolling aggregateDataPollingRunnable;
 
     /**
      * Schedule for polling
      */
-    private ScheduledFuture<?> pollingJob;
+    private ScheduledFuture<?> liveDataPollingJob;
+
+    /**
+     * Schedule for polling
+     */
+    private ScheduledFuture<?> aggregateDataPollingJob;
 
     public SolarEdgeBaseHandler(@NonNull Thing thing) {
         super(thing);
-        this.pollingRunnable = new SolarEdgePolling(this);
+        this.liveDataPollingRunnable = new SolarEdgeLiveDataPolling(this);
+        this.aggregateDataPollingRunnable = new SolarEdgeAggregateDataPolling(this);
     }
 
     @Override
@@ -80,7 +86,6 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
         logger.debug("Discovered Solaredge initialized: {}", config);
 
-        this.refreshInterval = config.getPollingInterval();
         this.webInterface = new WebInterface(config, this);
 
         if (config.getPassword() != null && config.getUsername() != null) {
@@ -95,11 +100,21 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * Start the polling.
      */
     private synchronized void startPolling() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+        if (liveDataPollingJob == null || liveDataPollingJob.isCancelled()) {
+            logger.debug("start live data polling job at intervall {}",
+                    getConfiguration().getLiveDataPollingInterval());
+            liveDataPollingJob = scheduler.scheduleWithFixedDelay(liveDataPollingRunnable, 1,
+                    getConfiguration().getLiveDataPollingInterval(), TimeUnit.SECONDS);
         } else {
-            logger.debug("pollingJob already active");
+            logger.debug("live data pollingJob already active");
+        }
+        if (aggregateDataPollingJob == null || aggregateDataPollingJob.isCancelled()) {
+            logger.debug("start aggregate data polling job at intervall {}",
+                    getConfiguration().getAggregateDataPollingInterval());
+            liveDataPollingJob = scheduler.scheduleWithFixedDelay(aggregateDataPollingRunnable, 1,
+                    getConfiguration().getAggregateDataPollingInterval(), TimeUnit.SECONDS);
+        } else {
+            logger.debug("aggregate data pollingJob already active");
         }
     }
 
@@ -109,10 +124,15 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            logger.debug("stop polling job");
-            pollingJob.cancel(true);
-            pollingJob = null;
+        if (liveDataPollingJob != null && !liveDataPollingJob.isCancelled()) {
+            logger.debug("stop live data polling job");
+            liveDataPollingJob.cancel(true);
+            liveDataPollingJob = null;
+        }
+        if (aggregateDataPollingJob != null && !aggregateDataPollingJob.isCancelled()) {
+            logger.debug("stop aggregate data polling job");
+            aggregateDataPollingJob.cancel(true);
+            aggregateDataPollingJob = null;
         }
     }
 

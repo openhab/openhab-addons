@@ -34,11 +34,16 @@
             <description>Should only be activated for old installations where live data could otherwise not retrieved.</description>
             <default>false</default>
         </parameter>
-		<parameter name="pollingInterval" type="integer" required="false" min="10" max="3600" unit="s" groupName="connection">
-			<label>Polling Interval</label>
-			<description>Interval in which data is polled from SolarEdge (in seconds).</description>
-			<default>30</default>
-		</parameter>
+        <parameter name="liveDataPollingInterval" type="integer" required="false" min="10" max="3600" unit="s" groupName="connection">
+            <label>Polling Interval</label>
+            <description>Interval in which live data is polled from SolarEdge (in seconds).</description>
+            <default>30</default>
+        </parameter>
+        <parameter name="aggregateDataPollingInterval" type="integer" required="false" min="60" max="10800" unit="s" groupName="connection">
+            <label>Polling Interval</label>
+            <description>Interval in which aggregate data is polled from SolarEdge (in seconds).</description>
+            <default>300</default>
+        </parameter>
 	</config-description>
 
 </config-description:config-descriptions>

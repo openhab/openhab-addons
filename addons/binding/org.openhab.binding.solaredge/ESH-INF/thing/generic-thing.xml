@@ -10,7 +10,10 @@
 
         <channel-groups>
             <channel-group typeId="genericweb-live" id="live" />
-            <channel-group typeId="genericweb-aggregate" id="aggregate" />
+            <channel-group typeId="genericweb-aggregate-day" id="aggregate_day" />
+            <channel-group typeId="genericweb-aggregate-week" id="aggregate_week" />
+            <channel-group typeId="genericweb-aggregate-month" id="aggregate_month" />
+            <channel-group typeId="genericweb-aggregate-year" id="aggregate_year" />
         </channel-groups>
 
         <config-description-ref uri="thing-type:solaredge:web" />

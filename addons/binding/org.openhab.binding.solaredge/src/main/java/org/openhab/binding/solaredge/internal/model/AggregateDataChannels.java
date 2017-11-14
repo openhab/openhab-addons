@@ -16,22 +16,85 @@ package org.openhab.binding.solaredge.internal.model;
  */
 public enum AggregateDataChannels implements Channel {
 
-    PRODUCTION("production", "production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
+    /* DAY VALUES */
 
-    CONSUMPTION("consumption", "consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
+    DAY_PRODUCTION("production", "day production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_DAY, Double.class),
 
-    SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "self consumption", ChannelType.AGGREGATE,
-            ChannelGroup.AGGREGATE, Double.class),
+    DAY_CONSUMPTION("consumption", "day consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_DAY, Double.class),
 
-    SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "self consumption coverage", ChannelType.AGGREGATE,
-            ChannelGroup.AGGREGATE, Double.class),
+    DAY_SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "day self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_DAY, Double.class),
 
-    BATTERYSELFCONSUMPTION("batterySelfConsumption", "battery self consumption", ChannelType.AGGREGATE,
-            ChannelGroup.AGGREGATE, Double.class),
+    DAY_SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "day self consumption coverage", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_DAY, Double.class),
 
-    IMPORT("import", "import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
+    DAY_BATTERYSELFCONSUMPTION("batterySelfConsumption", "day battery self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_DAY, Double.class),
 
-    EXPORT("export", "export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE, Double.class),
+    DAY_IMPORT("import", "day import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_DAY, Double.class),
+
+    DAY_EXPORT("export", "day export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_DAY, Double.class),
+
+    /* WEEK VALUES */
+
+    WEEK_PRODUCTION("production", "week production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    WEEK_CONSUMPTION("consumption", "week consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_WEEK,
+            Double.class),
+
+    WEEK_SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "week self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    WEEK_SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "week self consumption coverage", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    WEEK_BATTERYSELFCONSUMPTION("batterySelfConsumption", "week battery self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    WEEK_IMPORT("import", "week import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    WEEK_EXPORT("export", "week export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_WEEK, Double.class),
+
+    /* MONTH VALUES */
+
+    MONTH_PRODUCTION("production", "month production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_MONTH,
+            Double.class),
+
+    MONTH_CONSUMPTION("consumption", "month consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_MONTH,
+            Double.class),
+
+    MONTH_SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "month self consumption",
+            ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_MONTH, Double.class),
+
+    MONTH_SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "month self consumption coverage", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_MONTH, Double.class),
+
+    MONTH_BATTERYSELFCONSUMPTION("batterySelfConsumption", "month battery self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_MONTH, Double.class),
+
+    MONTH_IMPORT("import", "month import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_MONTH, Double.class),
+
+    MONTH_EXPORT("export", "month export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_MONTH, Double.class),
+
+    /* YEAR VALUES */
+
+    YEAR_PRODUCTION("production", "year production", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_YEAR, Double.class),
+
+    YEAR_CONSUMPTION("consumption", "year consumption", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_YEAR,
+            Double.class),
+
+    YEAR_SELFCONSUMPTIONFORCONSUMPTION("selfConsumptionForConsumption", "year self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_YEAR, Double.class),
+
+    YEAR_SELFCONSUMPTIONCOVERAGE("selfConsumptionCoverage", "year self consumption coverage", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_YEAR, Double.class),
+
+    YEAR_BATTERYSELFCONSUMPTION("batterySelfConsumption", "year battery self consumption", ChannelType.AGGREGATE,
+            ChannelGroup.AGGREGATE_YEAR, Double.class),
+
+    YEAR_IMPORT("import", "year import", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_YEAR, Double.class),
+
+    YEAR_EXPORT("export", "year export", ChannelType.AGGREGATE, ChannelGroup.AGGREGATE_YEAR, Double.class),
 
     /* END */
     ;

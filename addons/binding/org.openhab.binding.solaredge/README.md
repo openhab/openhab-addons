@@ -37,8 +37,11 @@ Id of your inverter at SolarEdge (can be found in the URL after successful login
 - **legacyMode** (optional)  
 can be set to true for old setups that do not contain a smart meter. In that case live data cannot be retrieved. With legacy mode at least the current production can be retrieved for those setups. (default = false)
 
-- **pollingInterval** (optional)  
-interval (seconds) in which values are retrieved from Solaredge. Setting less than 10 seconds is not recommended. (default = 60). 
+- **liveDataPollingInterval** (optional)  
+interval (seconds) in which live data values are retrieved from Solaredge. Setting less than 10 seconds is not recommended. (default = 30). 
+
+- **"aggregateDataPollingInterval"** (optional)  
+interval (seconds) in which aggregate data values are retrieved from Solaredge. Setting less than 60 seconds is not recommended. (default = 300). 
 
 ### Examples
 
@@ -51,7 +54,7 @@ solaredge:generic:se2200 [ username="...", password="...", solarId="..."]
 - with pollingInterval
 
 ```
-solaredge:generic:se2200[ username="...", password="...", solarId="...", pollingInterval=... ]
+solaredge:generic:se2200[ username="...", password="...", solarId="...", liveDataPollingInterval=..., aggregateDataPollingInterval=... ]
 ```
 
 - multiple inverters
@@ -65,26 +68,47 @@ solaredge:generic:home2  [ username="...", password="...", solarId="..."]
 
 Available channels depend on the specific heatpump model. Following models/channels are currently available
 
-| Channel Type ID                          | Item Type    | Description                                |
-|------------------------------------------|--------------|--------------------------------------------|
-| live#production                          | Number       | Current PV production                      |
-| live#pv_status                           | String       | Current PV status                          |
-| live#consumption                         | Number       | Current power consumption                  |
-| live#load_status                         | String       | Current load status                        |
-| live#battery_charge                      | Number       | Current charge flow                        |
-| live#battery_level                       | Number       | Current charge level                       |
-| live#battery_status                      | String       | Current battery status                     |
-| live#battery_critical                    | String       | true or false                              |
-| live#import                              | Number       | Current import from grid                   |
-| live#export                              | Number       | Current export to grid                     |
-| live#grid_status                         | String       | Current grid status                        |
-| aggregate#production                     | Number       | Aggregate PV production                    |
-| aggregate#consumption                    | Number       | Aggregate power consumption                |
-| aggregate#selfConsumptionForConsumption  | Number       | Aggregate self consumption (incl battery)  |
-| aggregate#selfConsumptionCoverage        | Number       | Coverage of consumption by self production |
-| aggregate#batterySelfConsumption         | Number       | Aggregate self consumption from battery    |
-| aggregate#import                         | Number       | Aggregate import from grid                 |
-| aggregate#export                         | Number       | Aggregate export to grid                   |
+| Channel Type ID                               | Item Type    | Description                                      | Remark                                 |
+|-----------------------------------------------|--------------|--------------------------------------------------|----------------------------------------|
+| live#production                               | Number       | Current PV production                            | general available                      |
+| live#pv_status                                | String       | Current PV status                                | not available in legacy mode           |
+| live#consumption                              | Number       | Current power consumption                        | not available in legacy mode           |
+| live#load_status                              | String       | Current load status                              | not available in legacy mode           |
+| live#battery_charge                           | Number       | Current charge flow                              | requires battery                       |
+| live#battery_level                            | Number       | Current charge level                             | requires battery                       |
+| live#battery_status                           | String       | Current battery status                           | requires battery                       |
+| live#battery_critical                         | String       | true or false                                    | requires battery                       |
+| live#import                                   | Number       | Current import from grid                         | not available in legacy mode           |
+| live#export                                   | Number       | Current export to grid                           | not available in legacy mode           |
+| live#grid_status                              | String       | Current grid status                              | not available in legacy mode           |
+| aggregate_day#production                      | Number       | Day Aggregate PV production                      | general available                      |
+| aggregate_day#consumption                     | Number       | Day Aggregate power consumption                  | requires a smart meter attached        |
+| aggregate_day#selfConsumptionForConsumption   | Number       | Day Aggregate self consumption (incl battery)    | requires a smart meter attached        |
+| aggregate_day#selfConsumptionCoverage         | Number       | Day Coverage of consumption by self production   | requires a smart meter attached        |
+| aggregate_day#batterySelfConsumption          | Number       | Day Aggregate self consumption from battery      | requires battery                       |
+| aggregate_day#import                          | Number       | Day Aggregate import from grid                   | requires a smart meter attached        |
+| aggregate_day#export                          | Number       | Day Aggregate export to grid                     | requires a smart meter attached        |
+| aggregate_week#production                     | Number       | Week Aggregate PV production                     | general available                      |
+| aggregate_week#consumption                    | Number       | Week Aggregate power consumption                 | requires a smart meter attached        |
+| aggregate_week#selfConsumptionForConsumption  | Number       | Week Aggregate self consumption (incl battery)   | requires a smart meter attached        |
+| aggregate_week#selfConsumptionCoverage        | Number       | Week Coverage of consumption by self production  | requires a smart meter attached        |
+| aggregate_week#batterySelfConsumption         | Number       | Week Aggregate self consumption from battery     | requires battery                       |
+| aggregate_week#import                         | Number       | Week Aggregate import from grid                  | requires a smart meter attached        |
+| aggregate_week#export                         | Number       | Week Aggregate export to grid                    | requires a smart meter attached        |
+| aggregate_month#production                    | Number       | Month Aggregate PV production                    | general available                      |
+| aggregate_month#consumption                   | Number       | Month Aggregate power consumption                | requires a smart meter attached        |
+| aggregate_month#selfConsumptionForConsumption | Number       | Month Aggregate self consumption (incl battery)  | requires a smart meter attached        |
+| aggregate_month#selfConsumptionCoverage       | Number       | Month Coverage of consumption by self production | requires a smart meter attached        |
+| aggregate_month#batterySelfConsumption        | Number       | Month Aggregate self consumption from battery    | requires battery                       |
+| aggregate_month#import                        | Number       | Month Aggregate import from grid                 | requires a smart meter attached        |
+| aggregate_month#export                        | Number       | Month Aggregate export to grid                   | requires a smart meter attached        |
+| aggregate_year#production                     | Number       | Year Aggregate PV production                     | general available                      |
+| aggregate_year#consumption                    | Number       | Year Aggregate power consumption                 | requires a smart meter attached        |
+| aggregate_year#selfConsumptionForConsumption  | Number       | Year Aggregate self consumption (incl battery)   | requires a smart meter attached        |
+| aggregate_year#selfConsumptionCoverage        | Number       | Year Coverage of consumption by self production  | requires a smart meter attached        |
+| aggregate_year#batterySelfConsumption         | Number       | Year Aggregate self consumption from battery     | requires battery                       |
+| aggregate_year#import                         | Number       | Year Aggregate import from grid                  | requires a smart meter attached        |
+| aggregate_year#export                         | Number       | Year Aggregate export to grid                    | requires a smart meter attached        |
 
 
 ## Full Example
@@ -92,7 +116,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 ### Thing
 
 ```
-solaredge:generic:se2200     [ username="solar@edge.de", password="secret", solarId="4711", legacyMode=true, pollingInterval=30 ]
+solaredge:generic:se2200     [ username="solar@edge.de", password="secret", solarId="4711", legacyMode=true, liveDataPollingInterval=15 ]
 ```
 
 ### Items

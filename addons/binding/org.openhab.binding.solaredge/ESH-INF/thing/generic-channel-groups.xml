@@ -21,9 +21,51 @@
         </channels>
     </channel-group-type>
 
-    <channel-group-type id="genericweb-aggregate">
-        <label>Aggregate data</label>
-        <description>Aggregate data (by day/month/year)</description>
+    <channel-group-type id="genericweb-aggregate-day">
+        <label>Aggregate day data</label>
+        <description>Aggregate data (by day)</description>
+        <channels>
+            <channel id="production" typeId="aggregate-type-production" />
+            <channel id="consumption" typeId="aggregate-type-consumption" />
+            <channel id="selfConsumptionForConsumption" typeId="aggregate-type-selfConsumptionForConsumption" />
+            <channel id="selfConsumptionCoverage" typeId="aggregate-type-selfConsumptionCoverage" />
+            <channel id="batterySelfConsumption" typeId="aggregate-type-batterySelfConsumption" />
+            <channel id="import" typeId="aggregate-type-import" />
+            <channel id="export" typeId="aggregate-type-export" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="genericweb-aggregate-week">
+        <label>Aggregate week data</label>
+        <description>Aggregate data (by week)</description>
+        <channels>
+            <channel id="production" typeId="aggregate-type-production" />
+            <channel id="consumption" typeId="aggregate-type-consumption" />
+            <channel id="selfConsumptionForConsumption" typeId="aggregate-type-selfConsumptionForConsumption" />
+            <channel id="selfConsumptionCoverage" typeId="aggregate-type-selfConsumptionCoverage" />
+            <channel id="batterySelfConsumption" typeId="aggregate-type-batterySelfConsumption" />
+            <channel id="import" typeId="aggregate-type-import" />
+            <channel id="export" typeId="aggregate-type-export" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="genericweb-aggregate-month">
+        <label>Aggregate month data</label>
+        <description>Aggregate data (by month)</description>
+        <channels>
+            <channel id="production" typeId="aggregate-type-production" />
+            <channel id="consumption" typeId="aggregate-type-consumption" />
+            <channel id="selfConsumptionForConsumption" typeId="aggregate-type-selfConsumptionForConsumption" />
+            <channel id="selfConsumptionCoverage" typeId="aggregate-type-selfConsumptionCoverage" />
+            <channel id="batterySelfConsumption" typeId="aggregate-type-batterySelfConsumption" />
+            <channel id="import" typeId="aggregate-type-import" />
+            <channel id="export" typeId="aggregate-type-export" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="genericweb-aggregate-year">
+        <label>Aggregate year data</label>
+        <description>Aggregate data (by year)</description>
         <channels>
             <channel id="production" typeId="aggregate-type-production" />
             <channel id="consumption" typeId="aggregate-type-consumption" />

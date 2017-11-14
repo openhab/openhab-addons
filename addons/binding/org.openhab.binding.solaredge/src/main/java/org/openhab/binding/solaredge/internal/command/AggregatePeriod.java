@@ -6,18 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.solaredge.internal.model;
+package org.openhab.binding.solaredge.internal.command;
 
 /**
- * Live = current values, Aggregate = aggregated data by day/month/year
+ * defines the level of data aggregation
  *
  * @author Alexander Friese - initial contribution
  *
  */
-public enum ChannelGroup {
-    LIVE,
-    AGGREGATE_DAY,
-    AGGREGATE_WEEK,
-    AGGREGATE_MONTH,
-    AGGREGATE_YEAR;
+public enum AggregatePeriod {
+    DAY,
+    WEEK,
+    MONTH,
+    YEAR;
 }
