@@ -106,8 +106,10 @@ public abstract class LightifyBaseMessage {
         INCORRECT_PARAMETERS(0x01),
         WRONG_TYPE(0x15),           // Group address but not a GROUPCAST packet type
                                     // or GROUPCAST packet type for a UNICAST only command
-        RESET_REQUIRED(0x16),       // ??? Needs reboot to clear?
-        UNKNOWN_COMMAND(0xFF);      // ??? followed by 0x16 in response to everything?
+        RESYNC_REQUIRED(0x16),      // Next command MUST be a LIST_PAIRED_DEVICES. This appears to be a form
+                                    // of resync procedure and 0x16 will repeat until a LIST_PAIRED_DEVICES
+                                    // is sent.
+        UNKNOWN_COMMAND(0xFF);      // ??? followed by RESYNC_REQUIRED in response to everything?
 
         private final int statusCode;
 

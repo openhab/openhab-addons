@@ -100,7 +100,9 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     private Socket socket;
     private InputStream in;
     private OutputStream out;
+    private LightifyListPairedDevicesMessage initialPoll;
 
+    private boolean havePoll = false;
     private long nextPoll;
     private long pollInterval;
 
@@ -189,12 +191,14 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
             logger.debug("Connected");
 
             resendCount = 0;
-            seqNo = 0;
 
-            transmitQueueSender(new LightifyGatewayFirmwareMessage());
-
-            // Hold off until we get the response confirming we're talking to the right thing.
-            out = null;
+            // First message MUST be a LIST_PAIRED_DEVICES. Sometimes we just get 0x16 status responses
+            // to everything we send until a LIST_PAIRED_DEVICES. It isn't clear what 0x16 means or
+            // why a LIST_PAIRED_DEVICES clears the condition. Currently this has only been observed
+            // at the start of a connection.
+            initialPoll = new LightifyListPairedDevicesMessage();
+            transmitMessage(initialPoll);
+            havePoll = true;
 
             return true;
         }
@@ -216,8 +220,6 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
 
     @Override
     public void run() {
-        boolean havePoll = false;
-
         nextPoll = System.nanoTime();
         pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
 
@@ -245,7 +247,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                 // First byte times out so we can check for interrupt
                 socket.setSoTimeout(PRE_MESSAGE_TIMEOUT);
 
-                if (out != null && !havePoll && System.nanoTime() - nextPoll >= 0) {
+                if (!havePoll && System.nanoTime() - nextPoll >= 0) {
                     havePoll = true;
                     bridgeHandler.getDiscoveryService().startScan(null);
                 }
@@ -253,6 +255,12 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                 try {
                     read = in.read();
                 } catch (SocketTimeoutException ste) {
+                    // If we were waiting for a response to an initial poll things are bad.
+                    // Maybe this isn't a Lightify gateway? (Which can happen if we reuse
+                    // the last known address rather than waiting for mDNS)
+                    if (initialPoll != null) {
+                        disconnect();
+                    }
                     continue;
                 }
 
@@ -281,93 +289,104 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
 
                             // Process message
                             try {
-                                // If we aren't fully up yet then whatever we see is the response to
-                                // our (unqueued) firmware probe and serves to confirm we are talking
-                                // to a Lightify gateway and can go fully active.
-                                if (out == null) {
-                                    reconnectAttempts = 1;
-                                    out = socket.getOutputStream();
+                                LightifyMessage request = (initialPoll != null ? initialPoll : transmitQueue.peek());
 
-                                    // Make sure the transmit queue is started. If the queue is empty
-                                    // the poll below will start it but if we took a connection drop
-                                    // while trying to send a request the queue will NOT be empty and
-                                    // the poll will NOT trigger a send. Normally with sockets the
-                                    // only time you detect a connection drop is when you try and
-                                    // send something...
-                                    transmitQueue.send();
+                                if (request == null) {
+                                    logger.debug("No request but RX: {}", DatatypeConverter.printHexBinary(messageBuffer.array()));
+                                } else
 
-                                    (new LightifyGatewayFirmwareMessage()).handleResponse(bridgeHandler, messageBuffer);
+                                // N.B. The only messages the gateway currently sends are responses
+                                // to our requests. However since the protocol is undocumented we
+                                // cannot assume that will not change.
+                                if (LightifyMessage.getSeqNo(messageBuffer) != request.getSeqNo()) {
+                                    logger.warn("Sequence number mismatch. Please report this! Got: {} for: {}", DatatypeConverter.printHexBinary(messageBuffer.array()), request);
 
-                                    bridgeHandler.setStatusOnline();
+                                    // The best we can do is to disconnect and start over.
+                                    disconnect();
+                                    continue;
+                                } else if (request.handleResponse(bridgeHandler, messageBuffer)) {
+                                    if (request instanceof LightifyListPairedDevicesMessage) {
+                                        LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
 
-                                    // We _always_ poll on start up.
-                                    havePoll = true;
-                                    bridgeHandler.getDiscoveryService().startScan(null);
-                                } else {
-                                    LightifyMessage request = transmitQueue.peek();
+                                        havePoll = false;
+                                        bridgeHandler.getDiscoveryService().scanComplete();
 
-                                    // N.B. The only messages the gateway currently sends are responses
-                                    // to our requests. However since the protocol is undocumented we
-                                    // cannot assume that will not change.
-                                    if (LightifyMessage.getSeqNo(messageBuffer) != request.getSeqNo()) {
-                                        logger.warn("Sequence number mismatch. Please report this! Got: ", DatatypeConverter.printHexBinary(messageBuffer.array()));
-
-                                        // The best we can do is to disconnect and start over.
-                                        disconnect();
-                                        continue;
-                                    } else if (request.handleResponse(bridgeHandler, messageBuffer)) {
-                                        if (request instanceof LightifyListPairedDevicesMessage) {
-                                            LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
-
-                                            havePoll = false;
-                                            bridgeHandler.getDiscoveryService().scanComplete();
-
-                                            if (pollResponse.hasChanges()) {
-                                                // If there are changes happening that we didn't initiate we
-                                                // poll quickly to track what is happening.
-                                                pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
-                                            } else {
-                                                // If nothing unexpected is happening we grow the poll interval
-                                                // in order to reduce load.
-                                                long maxPollInterval = bridgeHandler.getConfiguration().maxPollIntervalNanos;
-                                                if (maxPollInterval - pollInterval > 0) {
-                                                    pollInterval *= 2;
-                                                    if (maxPollInterval - pollInterval < 0) {
-                                                        pollInterval = maxPollInterval;
-                                                    }
+                                        if (pollResponse.hasChanges()) {
+                                            // If there are changes happening that we didn't initiate we
+                                            // poll quickly to track what is happening.
+                                            pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
+                                        } else {
+                                            // If nothing unexpected is happening we grow the poll interval
+                                            // in order to reduce load.
+                                            long maxPollInterval = bridgeHandler.getConfiguration().maxPollIntervalNanos;
+                                            if (maxPollInterval - pollInterval > 0) {
+                                                pollInterval *= 2;
+                                                if (maxPollInterval - pollInterval < 0) {
+                                                    pollInterval = maxPollInterval;
                                                 }
                                             }
+                                        }
 
+                                        nextPoll = System.nanoTime() + pollInterval;
+                                    }
+
+                                    resendCount = 0;
+
+                                    if (initialPoll == null) {
+                                        transmitQueue.sendNext();
+                                    } else {
+                                        initialPoll = null;
+                                        reconnectAttempts = 1;
+
+                                        // Make sure the transmit queue is started. If the queue is empty
+                                        // it will be started when the next request is queued but if we
+                                        // took a connection drop while trying to send a request the queue
+                                        // will NOT be empty and sending will NOT be triggered.
+                                        transmitQueue.send();
+
+                                        // Log the gateway firmware at the earliest opportunity.
+                                        bridgeHandler.sendMessage(new LightifyGatewayFirmwareMessage());
+
+                                        bridgeHandler.setStatusOnline();
+                                    }
+                                } else if (initialPoll != null) {
+                                    disconnect();
+                                } else {
+                                    if (resendCount++ == MAXIMUM_RESENDS) {
+                                        if (request instanceof LightifyListPairedDevicesMessage) {
+                                            havePoll = false;
+                                            pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
                                             nextPoll = System.nanoTime() + pollInterval;
                                         }
 
                                         resendCount = 0;
                                         transmitQueue.sendNext();
                                     } else {
-                                        if (resendCount++ == MAXIMUM_RESENDS) {
-                                            if (request instanceof LightifyListPairedDevicesMessage) {
-                                                havePoll = false;
-                                                pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
-                                                nextPoll = System.nanoTime() + pollInterval;
-                                            }
-
-                                            resendCount = 0;
-                                            transmitQueue.sendNext();
-                                        } else {
-                                            transmitQueue.send();
-                                        }
+                                        transmitQueue.send();
                                     }
                                 }
                             } catch (LightifyException e) {
+                                logger.debug("RX: {}", DatatypeConverter.printHexBinary(messageBuffer.array()));
                                 logger.warn("Error", e);
-                                transmitQueue.sendNext();
+                                if (initialPoll == null) {
+                                    transmitQueue.sendNext();
+                                } else {
+                                    disconnect();
+                                }
                             }
+                        } else {
+                            logger.debug("Short message RX: wanted {} bytes, got {}: {}", messageLength, count, DatatypeConverter.printHexBinary(messageBuffer.array()));
                         }
                     }
-                } else if (read < 0) {
+                }
+
+                if (read < 0) {
                     logger.debug("EOF on socket");
                     disconnect();
                 }
+            } catch (SocketTimeoutException ste) {
+                logger.debug("Timeout reading socket", ste);
+                disconnect();
             } catch (IOException e) {
                 logger.debug("Error on socket", e);
                 disconnect();
@@ -383,40 +402,48 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
         transmitQueue.enqueue(message);
     }
 
-    public synchronized boolean transmitQueueSender(LightifyMessage message) {
-        if (out != null) {
-            try {
-                message.setSeqNo(seqNo++);
+    private boolean transmitMessage(LightifyMessage message) {
+        try {
+            message.setSeqNo(seqNo++);
 
-                ByteBuffer messageBuffer = message.encodeMessage();
+            ByteBuffer messageBuffer = message.encodeMessage();
 
-                if (message.isPoller()) {
-                    logger.trace("TX: {}", message);
-                } else {
-                    logger.debug("TX: {}", message);
-                }
-
-                logger.trace("TX: {}", DatatypeConverter.printHexBinary(messageBuffer.array()));
-
-                out.write(messageBuffer.array());
-                out.flush();
+            if (message.isPoller()) {
+                logger.trace("TX: {}", message);
+            } else {
+                logger.debug("TX: {}", message);
 
                 // While it is possible for a thread other than the connector thread to do a
                 // transmit this only happens when a message is added to an empty queue.
                 // And if the queue is empty then the connector thread cannot be processing
                 // a response and cannot be attempting to update either pollInterval or
                 // nextPoll at the same time as us. Therefore we do not need any synchronization.
+                // N.B. The synchronization on the method synchronizes with connect/disconnect
+                // but not the connector thread's actions.
                 pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
                 nextPoll = System.nanoTime() + pollInterval;
-
-            } catch (LightifyMessageTooLongException lmtle) {
-                logger.warn("Message too long", lmtle);
-                // Discard it and move on.
-                return false;
-
-            } catch (IOException ioe) {
-                disconnect();
             }
+
+            logger.trace("TX: {}", DatatypeConverter.printHexBinary(messageBuffer.array()));
+
+            out.write(messageBuffer.array());
+            out.flush();
+
+        } catch (LightifyMessageTooLongException lmtle) {
+            logger.warn("Message too long", lmtle);
+            // Discard it and move on.
+            return false;
+
+        } catch (IOException ioe) {
+            disconnect();
+        }
+
+        return true;
+    }
+
+    public synchronized boolean transmitQueueSender(LightifyMessage message) {
+        if (out != null && initialPoll == null) {
+            return transmitMessage(message);
         }
 
         return true;
