@@ -25,6 +25,8 @@ public class EnOceanBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROCKER_SWITCH = new ThingTypeUID(BINDING_ID, "RockerSwitch");
 
+    public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "usb300");
+
     // List of all Channel ids
     public static final String CHANNEL_A_ON_OFF = "channel_a_on_off";
     public static final String CHANNEL_B_ON_OFF = "channel_b_on_off";

@@ -18,11 +18,11 @@ import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.profiles.Profile;
 import org.eclipse.smarthome.core.thing.profiles.ProfileAdvisor;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
+import org.eclipse.smarthome.core.thing.profiles.ProfileContext;
 import org.eclipse.smarthome.core.thing.profiles.ProfileFactory;
 import org.eclipse.smarthome.core.thing.profiles.ProfileType;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeProvider;
@@ -50,12 +50,12 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
 
     @Override
     @Nullable
-    public Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback, Configuration configuration) {
+    public Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback, ProfileContext context) {
         if (EnOceanProfiles.ROCKER_TO_ON_OFF.equals(profileTypeUID)) {
             return new RockerChannelToOnOffProfile(callback);
         }
         if (EnOceanProfiles.ROCKER_TO_DIMMER.equals(profileTypeUID)) {
-            return new RockerChannelToDimmerProfile(callback);
+            return new RockerChannelToDimmerProfile(callback, context);
         } else {
             return null;
         }

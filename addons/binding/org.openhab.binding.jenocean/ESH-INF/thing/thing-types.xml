@@ -4,8 +4,18 @@
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<bridge-type id="usb300">
+		<label>EnOcean USB300</label>
+		<description>A USB serial device capable of communicating with EnOcean Devices.</description>
+
+		<config-description-ref uri="binding:enocean:bindingUsbPort"/>
+	</bridge-type>
+
 	<thing-type id="RockerSwitch">
+		<supported-bridge-type-refs>
+		    <bridge-type-ref id="usb300" />
+		</supported-bridge-type-refs>
+
 		<label>Rocker Switch</label>
 		<description>EnOcean wall rocker switch</description>
 

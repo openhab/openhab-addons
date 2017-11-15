@@ -7,6 +7,5 @@
 	<name>EnOcean Binding</name>
 	<description>This is a binding for EnOcean.</description>
 	<author>Jan Kemmler</author>
-	<config-description-ref uri="binding:enocean:bindingUsbPort"/>
 
 </binding:binding>
