@@ -89,7 +89,6 @@ public class RockerChannelToDimmerProfile implements TriggerProfile {
             buttonPressed(IncreaseDecreaseType.INCREASE);
         } else if (new String("UP_RELEASED").equals(event)) {
             buttonReleased(OnOffType.ON);
-            // scheduler.shutdownNow();
         } else if (new String("DOWN_PRESSED").equals(event)) {
             buttonPressed(IncreaseDecreaseType.DECREASE);
         } else if (new String("DOWN_RELEASED").equals(event)) {
