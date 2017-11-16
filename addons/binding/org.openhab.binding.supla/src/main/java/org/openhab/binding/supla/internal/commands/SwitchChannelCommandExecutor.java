@@ -65,6 +65,6 @@ class SwitchChannelCommandExecutor implements CommandExecutor {
     }
 
     private OnOffType getState(SuplaChannelStatus status) {
-        return status.isEnabled() ? ON : OFF;
+        return status.isOn() ? ON : OFF;
     }
 }

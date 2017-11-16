@@ -14,10 +14,12 @@ package org.openhab.binding.supla.internal.supla.entities;
 public final class SuplaChannelStatus {
     private final boolean connected;
     private final boolean enabled;
+    private final boolean on;
 
-    public SuplaChannelStatus(boolean connected, boolean enabled) {
+    public SuplaChannelStatus(boolean connected, boolean enabled, boolean on) {
         this.connected = connected;
         this.enabled = enabled;
+        this.on = on;
     }
 
     public boolean isConnected() {
@@ -28,11 +30,16 @@ public final class SuplaChannelStatus {
         return enabled;
     }
 
+    public boolean isOn() {
+        return on;
+    }
+
     @Override
     public String toString() {
         return "SuplaChannelStatus{" +
                 "connected=" + connected +
                 ", enabled=" + enabled +
+                ", on=" + on +
                 '}';
     }
 }
