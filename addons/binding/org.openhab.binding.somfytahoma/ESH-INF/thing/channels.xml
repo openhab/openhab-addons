@@ -7,48 +7,91 @@
 		<item-type>Dimmer</item-type>
 		<label>Somfy Device Position</label>
 		<description>Position of the device (only for IO devices)</description>
-		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="position_silent">
 		<item-type>Dimmer</item-type>
 		<label>Somfy Device Position - silent mode</label>
 		<description>Position of the device - silent and low speed mode (only for IO devices)</description>
-		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="control">
 		<item-type>Rollershutter</item-type>
 		<label>Somfy Device Control</label>
 		<description>Device control (UP, DOWN, MY/STOP)</description>
-		<state readOnly="false"></state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="orientation">
 		<item-type>Dimmer</item-type>
 		<label>Somfy Device Orientation</label>
 		<description>Orientation of the device slats</description>
-		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Somfy Switch</label>
 		<description>An ON/OFF switch (zwave/enocean/rts)</description>
-		<state readOnly="false"></state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Somfy Contact</label>
 		<description>A contact having OPEN/CLOSE state</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="luminance">
 		<item-type>Number</item-type>
 		<label>Somfy Light Sensor Luminance</label>
 		<description>A light sensor luminance in lux</description>
-		<state readOnly="true" pattern="%.1f lux"></state>
+		<state readOnly="true" pattern="%.1f lux"/>
+	</channel-type>
+
+	<channel-type id="alarm_command">
+		<item-type>String</item-type>
+		<label>Somfy Command</label>
+		<description>A channel used for sending commands to Somfy Alarm device</description>
+		<state>
+			<options>
+				<option value="on">ARM</option>
+				<option value="off">DISARM</option>
+				<option value="alarmPartial1">ARM_PARTIAL_1</option>
+				<option value="alarmPartial2">ARM_PARTIAL_2</option>
+			</options>
+		</state>
+
+	</channel-type>
+
+	<channel-type id="intrusion_control">
+		<item-type>String</item-type>
+		<label>Somfy Intrusion Control</label>
+		<description>A channel used for Alarm external intrusion controlling</description>
+		<state>
+			<options>
+				<option value="detected">DETECTED</option>
+				<option value="notdetected">NOT DETECTED</option>
+				<option value="pending">PENDING</option>
+				<option value="sos">SOS</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm_state">
+		<item-type>String</item-type>
+		<label>Somfy Alarm State</label>
+		<description>A state of the Somfy Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="intrusion_state">
+		<item-type>String</item-type>
+		<label>Somfy Alarm Intrusion State</label>
+		<description>An intrusion state of the Somfy Alarm</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -10,6 +10,7 @@ package org.openhab.binding.somfytahoma.handler;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
@@ -66,7 +67,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private SomfyTahomaItemDiscoveryService discoveryService = null;
 
-    public SomfyTahomaBridgeHandler(Bridge thing) {
+    public SomfyTahomaBridgeHandler(@NonNull Bridge thing) {
         super(thing);
     }
 
@@ -382,7 +383,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 return new DecimalType(valDec);
             case TYPE_STRING:
                 String value = state.getValue().toString().toLowerCase();
-                return parseStringState(value.toLowerCase());
+                String name = state.getName();
+                if (name.equals("internal:IntrusionDetectedState") || name.equals("internal:CurrentAlarmModeState") || name.equals("internal:TargetAlarmModeState")) {
+                    return new StringType(value);
+                } else
+                    return parseStringState(value);
             default:
                 return null;
         }
@@ -445,11 +450,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
             // update channel values
             for (Channel channel : thing.getChannels()) {
-                State channelState = getChannelState(handler, channel, states);
-                if (channelState != null) {
-                    updateState(channel.getUID(), channelState);
-                } else {
-                    logger.debug("Cannot find state for channel {}", channel.getUID());
+                if (handler.isChannelLinked(channel)) {
+                    State channelState = getChannelState(handler, channel, states);
+                    if (channelState != null) {
+                        updateState(channel.getUID(), channelState);
+                    } else {
+                        logger.debug("Cannot find state for channel {}", channel.getUID());
+                    }
                 }
             }
         }

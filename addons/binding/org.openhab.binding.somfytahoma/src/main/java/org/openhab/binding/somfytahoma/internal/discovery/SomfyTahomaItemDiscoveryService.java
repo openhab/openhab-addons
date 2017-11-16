@@ -67,7 +67,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_SMOKESENSOR,
                 THING_TYPE_CONTACTSENSOR,
                 THING_TYPE_OCCUPANCYSENSOR,
-                THING_TYPE_WINDOW
+                THING_TYPE_WINDOW,
+                THING_TYPE_ALARM
         ));
     }
 
@@ -132,6 +133,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_WINDOW);
                 break;
             case ALARM:
+                if(device.getDeviceURL().startsWith("internal:")) {
+                    deviceDiscovered(device, THING_TYPE_ALARM);
+                }
+                break;
             case POD:
             case PROTOCOLGATEWAY:
                 break;

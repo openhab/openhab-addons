@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -35,6 +36,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
         return (SomfyTahomaBridgeHandler) this.getBridge().getHandler();
     }
 
+    protected String getURL() {
+        return getThing().getConfiguration().get("url").toString();
+    }
+
     public void setAvailable() {
         if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.ONLINE);
@@ -45,5 +50,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
         if (!thing.getStatus().equals(ThingStatus.OFFLINE)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
+    }
+
+    public boolean isChannelLinked(Channel channel) {
+        return isLinked(channel.getUID().getId());
     }
 }

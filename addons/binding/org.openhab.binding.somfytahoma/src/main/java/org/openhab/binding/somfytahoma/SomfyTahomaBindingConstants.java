@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.somfytahoma;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -18,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class SomfyTahomaBindingConstants {
 
-    public static final String BINDING_ID = "somfytahoma";
+    public static final @NonNull String BINDING_ID = "somfytahoma";
 
     // Things
     // Bridge
@@ -75,6 +76,8 @@ public class SomfyTahomaBindingConstants {
     // Window
     public static final ThingTypeUID THING_TYPE_WINDOW = new ThingTypeUID(BINDING_ID, "window");
 
+    // Alarm
+    public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
 
     // List of all Channel ids
     // Gateway
@@ -101,6 +104,13 @@ public class SomfyTahomaBindingConstants {
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
+
+    // Alarm
+    public static final String ALARM_COMMAND = "alarm_command";
+    public static final String ALARM_STATE = "alarm_state";
+    public static final String TARGET_ALARM_STATE = "target_alarm_state";
+    public static final String INTRUSION_CONTROL = "intrusion_control";
+    public static final String INTRUSION_STATE = "intrusion_state";
 
     //Constants
     final public static String TAHOMA_URL = "https://www.tahomalink.com/enduser-mobile-web/externalAPI/json/";

@@ -52,7 +52,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_SMOKESENSOR,
             THING_TYPE_CONTACTSENSOR,
             THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_WINDOW
+            THING_TYPE_WINDOW,
+            THING_TYPE_ALARM
     ));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -118,6 +119,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_ALARM)) {
+            return new SomfyTahomaAlarmHandler(thing);
         }
         return null;
     }

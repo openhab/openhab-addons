@@ -46,7 +46,7 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String url = getThing().getConfiguration().get("url").toString();
+        String url = getURL();
 
         if (channelUID.getId().equals(SomfyTahomaBindingConstants.SWITCH) && command instanceof OnOffType) {
             //getBridgeHandler().sendCommand(url, "setOnOff", "[\"" + command.toString().toLowerCase() + "\"]");

@@ -38,7 +38,7 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
             return;
         }
 
-        String url = getThing().getConfiguration().get("url").toString();
+        String url = getURL();
         if (command.equals(RefreshType.REFRESH)) {
             //sometimes refresh is sent sooner than bridge initialized...
             if (getBridgeHandler() != null) {
