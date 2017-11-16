@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -83,11 +84,19 @@ public class FroniusHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Fronius handler.");
 
+        if (getBridge() == null) {
+            logger.error("Initializing Fronius device is only supported within a bridge");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+
+        final Configuration configuration = getBridge().getConfiguration();
         FroniusConfiguration config = getConfigAs(FroniusConfiguration.class);
+        config.gatewayIp = configuration.get("ipAddress").toString();
 
         boolean validConfig = true;
         String errorMsg = null;
-        if (StringUtils.trimToNull(config.ip) == null) {
+        if (StringUtils.trimToNull(config.gatewayIp) == null) {
             errorMsg = "Parameter 'Ip' is mandatory and must be configured";
             validConfig = false;
         }
@@ -239,8 +248,8 @@ public class FroniusHandler extends BaseThingHandler {
      *
      */
     private void updateData(FroniusConfiguration config) {
-        inverterRealtimeResponse = getRealtimeData(config.ip, config.deviceId);
-        powerFlowResponse = getPowerFlowRealtime(config.ip);
+        inverterRealtimeResponse = getRealtimeData(config.gatewayIp, config.deviceId);
+        powerFlowResponse = getPowerFlowRealtime(config.gatewayIp);
     }
 
     /**

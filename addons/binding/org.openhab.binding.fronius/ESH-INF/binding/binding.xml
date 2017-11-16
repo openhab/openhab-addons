@@ -5,7 +5,7 @@
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Fronius Binding</name>
-	<description>This is the binding for Fronius Symo.</description>
+	<description>Binding for Fronius Devices (power inverter).</description>
 	<author>Thomas Rokohl</author>
 
 </binding:binding>

@@ -5,8 +5,11 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="powerinverter">
-		<label>Fronius</label>
-		<description>Fronius Symo Binding</description>
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="gateway" />
+        </supported-bridge-type-refs>	
+		<label>Fronius Symo</label>
+		<description>Fronius Symo power inverter</description>
 
 		<channels>
 			<channel id="inverterdatachannelpac" typeId="pac" />
@@ -24,11 +27,6 @@
 		</channels>
 
 		<config-description>
-			<parameter name="ip" type="text" required="true">
-				<context>network-address</context>
-				<label>Ip</label>
-				<description>Ip</description>
-			</parameter>
 			<parameter name="deviceId" type="integer">
 				<label>DeviceId</label>
 				<description>Specific device identifier</description>

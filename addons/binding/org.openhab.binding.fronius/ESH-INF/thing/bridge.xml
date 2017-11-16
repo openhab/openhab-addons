@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fronius" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>Fronius Gateway</label>
+		<description>A gateway to connect Fronius devices</description>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true" groupName="network">
+				<context>network-address</context>
+				<label>Address IP</label>
+				<description>The IP address of the Fronius gateway</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
+        

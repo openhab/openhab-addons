@@ -22,6 +22,7 @@ public class FroniusBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "powerinverter");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "gateway");
 
     // List of all Channel ids
     public static final String InverterDataChannelDayEnergy = "inverterdatachanneldayenergy";

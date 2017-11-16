@@ -15,7 +15,7 @@ package org.openhab.binding.fronius;
  * @author Thomas Rokohl - Initial contribution
  */
 public class FroniusConfiguration {
-    public String ip;
+    public String gatewayIp;
     public Integer refresh;
     public Integer deviceId;
 
