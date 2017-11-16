@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -367,6 +368,18 @@ public class BuildingMonitorHandler extends BaseThingHandler {
         }
 
         return url;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
+                && ThingStatus.OFFLINE.equals(getThing().getStatusInfo().getStatus())
+                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+            this.initialize();
+        }
     }
 
 }
