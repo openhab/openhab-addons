@@ -124,3 +124,13 @@ First select iCloud Binding in "Paper UI > Configuration > Things" and provide y
 1.  Select the "iCloud Binding": ![Select binding](./doc/Config_1.png "Step 1")
 2.  Select the "iCloud Account: ![Select bridge](./doc/Config_2.png "Step 2") 
 3.  Configure your account and the desired refresh rate. ![Configure](./doc/Config_3.png "Step 3") 
+
+# Logging
+
+Use the following command in a console session to change the loglevel of the binding to DEBUG:
+
+```
+ log:set DEBUG org.openhab.binding.icloud
+```
+
+See also [OpenHAB documentation](http://docs.openhab.org/administration/logging.html) .
