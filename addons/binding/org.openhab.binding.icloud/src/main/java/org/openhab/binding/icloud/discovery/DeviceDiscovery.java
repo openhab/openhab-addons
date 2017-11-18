@@ -49,7 +49,7 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
                 ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID,
                         Integer.toHexString(deviceId.hashCode()));
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingLabel)
-                        .withProperty(IDPROPERTY, deviceId).build();
+                        .build();
 
                 thingDiscovered(result);
             }

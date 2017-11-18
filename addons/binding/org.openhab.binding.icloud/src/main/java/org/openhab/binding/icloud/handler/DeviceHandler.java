@@ -162,10 +162,13 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private Content getDeviceData(ArrayList<Content> content) {
-        String deviceId = thing.getProperties().get(IDPROPERTY);
+        String deviceId = thing.getUID().getAsString();
         try {
             for (int i = 0; i < content.size(); i++) {
-                if (content.get(i).getId().compareToIgnoreCase(deviceId) == 0) {
+                String currentId = thing.getBridgeUID() + ":" + Integer.toHexString(content.get(i).getId().hashCode());
+                currentId = currentId.replace(BRIDGE_ID, DEVICE_ID);
+
+                if (currentId.compareToIgnoreCase(deviceId) == 0) {
                     return content.get(i);
                 }
             }
