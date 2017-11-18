@@ -103,10 +103,10 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
                         }
                     } catch (IOException e) {
                         if (!connectionFailed) {
-                            logger.error(e.getMessage());
+                            logger.error("Connection Error: {}", e.getMessage());
                             connectionFailed = true;
                         } else {
-                            logger.debug(e.getMessage());
+                            logger.debug("Connection Error: {}", e.getMessage());
                         }
                         return;
                     }
