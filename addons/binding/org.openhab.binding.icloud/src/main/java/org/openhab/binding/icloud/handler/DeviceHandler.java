@@ -163,10 +163,13 @@ public class DeviceHandler extends BaseThingHandler {
 
     private Content getDeviceData(ArrayList<Content> content) {
         String deviceId = thing.getUID().getAsString();
+        logger.debug("Device: [{}]", deviceId);
         try {
             for (int i = 0; i < content.size(); i++) {
                 String currentId = thing.getBridgeUID() + ":" + Integer.toHexString(content.get(i).getId().hashCode());
                 currentId = currentId.replace(BRIDGE_ID, DEVICE_ID);
+
+                logger.debug("Current data element: [{}]", currentId);
 
                 if (currentId.compareToIgnoreCase(deviceId) == 0) {
                     return content.get(i);
@@ -174,9 +177,10 @@ public class DeviceHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            logger.error("Get content for thing with id {} failed", deviceId);
+            logger.error("Get content for thing with id [{}] failed", deviceId);
             logException(e);
         }
+        logger.debug("Unable to find device data.");
         return null;
     }
 
