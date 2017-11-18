@@ -163,13 +163,17 @@ public class DeviceHandler extends BaseThingHandler {
 
     private Content getDeviceData(ArrayList<Content> content) {
         String deviceId = thing.getProperties().get(IDPROPERTY);
-
-        for (int i = 0; i < content.size(); i++) {
-            if (content.get(i).getId().compareToIgnoreCase(deviceId) == 0) {
-                return content.get(i);
+        try {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).getId().compareToIgnoreCase(deviceId) == 0) {
+                    return content.get(i);
+                }
             }
-        }
 
+        } catch (Exception e) {
+            logger.error("Get content for thing with id {} failed", deviceId);
+            logException(e);
+        }
         return null;
     }
 
