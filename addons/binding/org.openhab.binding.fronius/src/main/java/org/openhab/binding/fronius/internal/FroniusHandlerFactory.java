@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.fronius.handler.FroniusBridgeHandler;
-import org.openhab.binding.fronius.handler.FroniusHandler;
+import org.openhab.binding.fronius.handler.FroniusSymoInverterHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 
@@ -47,7 +47,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
-            return new FroniusHandler(thing);
+            return new FroniusSymoInverterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new FroniusBridgeHandler((Bridge) thing);
         }

@@ -48,26 +48,29 @@ The thing has a few configuration parameters:
 demo.things:
 
 ```
-Thing fronius:powerinverter:mydevice [ ip="192.168.66.148",refresh=120,deviceId=1 ]
+
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148",refreshInterval=5] {
+    Thing powerinverter myinverter [ deviceId=1 ]
+}
 ```
 
 demo.items:
 
 ```
-Number AC_Powery { channel="fronius:powerinverter:mydevice:inverterdatachannelpac" }
-Number Day_Energy { channel="fronius:powerinverter:mydevice:inverterdatachanneldayenergy" }
-Number Total_Energy { channel="fronius:powerinverter:mydevice:inverterdatachanneltotal" }
-Number Year_Energy { channel="fronius:powerinverter:mydevice:inverterdatachannelyear" }
-Number FAC { channel="fronius:powerinverter:mydevice:inverterdatachannelfac" }
-Number IAC { channel="fronius:powerinverter:mydevice:inverterdatachanneliac" }
-Number IDC { channel="fronius:powerinverter:mydevice:inverterdatachannelidc" }
-Number UAC { channel="fronius:powerinverter:mydevice:inverterdatachanneluac" }
-Number UDC { channel="fronius:powerinverter:mydevice:inverterdatachanneludc" }
-Number Grid_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpgrid" }
-Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
-Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
-Number Load_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpload" }
-Number Battery_Power { channel="fronius:powerinverter:mydevice:powerflowchannelpakku" }
+Number AC_Powery { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelpac" }
+Number Day_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneldayenergy" }
+Number Total_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneltotal" }
+Number Year_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelyear" }
+Number FAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelfac" }
+Number IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneliac" }
+Number IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
+Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
+Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
+Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
+Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
+Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
+Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
+Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 
 ```
 

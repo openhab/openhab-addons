@@ -9,14 +9,12 @@
 package org.openhab.binding.fronius;
 
 /**
- * The {@link FroniusConfiguration} is the class used to match the
+ * The {@link FroniusBaseDeviceConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class FroniusConfiguration {
-    public String gatewayIp;
-    public Integer refresh;
+public class FroniusBaseDeviceConfiguration {
     public Integer deviceId;
 
 }

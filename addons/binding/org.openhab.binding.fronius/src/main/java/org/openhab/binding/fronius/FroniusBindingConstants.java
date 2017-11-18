@@ -22,7 +22,7 @@ public class FroniusBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "powerinverter");
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Channel ids
     public static final String InverterDataChannelDayEnergy = "inverterdatachanneldayenergy";
@@ -37,5 +37,9 @@ public class FroniusBindingConstants {
     public static final String PowerFlowpGrid = "powerflowchannelpgrid";
     public static final String PowerFlowpLoad = "powerflowchannelpload";
     public static final String PowerFlowpAkku = "powerflowchannelpakku";
+
+    // List of all Urls
+    public static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
+    public static final String POWERFLOW_REALTIME_DATA = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
 
 }

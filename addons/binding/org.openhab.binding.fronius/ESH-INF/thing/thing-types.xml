@@ -6,9 +6,9 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="powerinverter">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="gateway" />
+            <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>	
-		<label>Fronius Symo</label>
+		<label>Fronius Symo inverter</label>
 		<description>Fronius Symo power inverter</description>
 
 		<channels>
@@ -31,11 +31,6 @@
 				<label>DeviceId</label>
 				<description>Specific device identifier</description>
 				<default>1</default>
-			</parameter>
-			<parameter name="refresh" type="integer" min="2">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>10</default>
 			</parameter>
 		</config-description>
 	</thing-type>
