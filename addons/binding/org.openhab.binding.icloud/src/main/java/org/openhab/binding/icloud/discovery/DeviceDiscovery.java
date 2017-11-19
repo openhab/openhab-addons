@@ -39,19 +39,28 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
     public void discover(ArrayList<Content> content) {
         if (content != null) {
             for (int i = 0; i < content.toArray().length; i++) {
-                String deviceTypeName = content.get(i).getDeviceDisplayName();
-                String deviceOwnerName = content.get(i).getName();
+                try {
+                    logger.debug("Discovery for index [{}]", i);
 
-                String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
-                String deviceId = content.get(i).getId();
+                    String deviceTypeName = content.get(i).getDeviceDisplayName();
+                    String deviceOwnerName = content.get(i).getName();
 
-                logger.debug("iCloud device discovery for [{}]", content.get(i).getDeviceDisplayName());
-                ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID,
-                        Integer.toHexString(deviceId.hashCode()));
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingLabel)
-                        .build();
+                    String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
+                    String deviceId = content.get(i).getId();
+                    String deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
-                thingDiscovered(result);
+                    logger.debug("iCloud device discovery for [{}]", content.get(i).getDeviceDisplayName());
+
+                    ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
+                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                            .withLabel(thingLabel).build();
+
+                    logger.debug("Device id [{}] found.", deviceIdHash);
+
+                    thingDiscovered(result);
+                } catch (Exception exception) {
+                    logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
+                }
             }
         }
     }
