@@ -32,7 +32,7 @@ public class Connection {
     private final String iCloudAPIRequestDataCommand = "/initClient";
     private final String iCloudAPIPingDeviceCommand = "/playSound";
 
-    private final String dataRequest = "{\"clientContext\":{\"appName\":\"iCloud Find (Web)\",\"appVersion\":\"2.0\",\"timezone\":\"US/Eastern\",\"inactiveTime\":2255,\"apiVersion\":\"3.0\",\"webStats\":\"0:15\"}}\n";
+    private final String dataRequest = "{\"clientContext\":{\"appName\":\"iCloud Find (Web)\",\"fmly\": true,\"appVersion\":\"2.0\",\"timezone\":\"US/Eastern\",\"inactiveTime\":2255,\"apiVersion\":\"3.0\",\"webStats\":\"0:15\"}}\n";
 
     private final byte[] authorization;
     private URL iCloudDataRequestURL;
