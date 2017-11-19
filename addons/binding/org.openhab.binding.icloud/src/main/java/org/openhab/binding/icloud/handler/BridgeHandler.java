@@ -162,6 +162,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge starting handler ...");
         config = getConfigAs(Configuration.class);
 
+        // Enable google address lookup if an API key is configured
+        if (config.googleAPIKey != "") {
+            updateState(ENABLEADDRESSLOOKUP, OnOffType.ON);
+        }
+
         registerDeviceDiscoveryService();
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
