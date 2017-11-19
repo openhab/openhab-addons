@@ -54,8 +54,8 @@
 			<channel id="headingestimation" typeId="headingestimation" />
 			<channel id="estimatedrange" typeId="estimatedrange" />
 <!-- 			<channel id="european" typeId="european" />
-				<channel id="fan" typeId="fan" />
- 				<channel id="fastcharger" typeId="fastcharger" />
+--> 				<channel id="fan" typeId="fan" />
+<!--  				<channel id="fastcharger" typeId="fastcharger" />
 				<channel id="fastchargertype" typeId="fastchargertype" />
  -->			<channel id="flashlights" typeId="flashlights" />
 			<channel id="frontdefroster" typeId="frontdefroster" />
@@ -93,8 +93,8 @@
 			<channel id="remotestartenabled" typeId="remotestartenabled" />
 <!-- 			<channel id="rhd" typeId="rhd" />
 				<channel id="roof" typeId="roof" />
-				<channel id="reartrunk" typeId="reartrunk" />
-				<channel id="rearseatheaters" typeId="rearseatheaters" />
+ -->    			<channel id="reartrunk" typeId="reartrunk" />
+<!--				<channel id="rearseatheaters" typeId="rearseatheaters" />
  -->			<channel id="remotestart" typeId="remotestart" />
 			<channel id="remotestartsupported" typeId="remotestartsupported" />
 			<channel id="leftseatheater" typeId="leftseatheater" />	
