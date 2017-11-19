@@ -186,8 +186,10 @@ public class BridgeHandler extends BaseBridgeHandler {
                 logger.debug("iCloud bridge refreshing data ...");
 
                 connection = new Connection(config.appleId, config.password);
-
                 String json = connection.requestDeviceStatusJSON();
+
+                logger.trace("json: {}", json);
+
                 if (json != null && !json.equals("")) {
                     DeviceInformationParser parser = new DeviceInformationParser(json);
                     iCloudData = parser.data;
