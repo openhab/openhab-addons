@@ -13,6 +13,7 @@
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
+				<context>serial-port</context>
 				<description>Serial port that the Meteostick is plugged in to</description>
 			</parameter>
 			<parameter name="mode" type="integer" required="true">
