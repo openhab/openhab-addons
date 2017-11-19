@@ -54,7 +54,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private Connection connection;
     private Configuration config;
-    private boolean enableAddressLookup = false;
+    private boolean addressLookupIsEnabled = false;
     ServiceRegistration<?> service;
     DeviceDiscovery discoveryService;
 
@@ -74,10 +74,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         switch (channelId) {
             case REFRESH:
                 refreshDeviceData(command);
-                break;
-            case ENABLEADDRESSLOOKUP:
-                enableAddressLookup = command == OnOffType.ON;
-                refreshData();
                 break;
         }
     }
@@ -136,7 +132,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         String json = null;
 
         try {
-            if (enableAddressLookup) {
+            if (addressLookupIsEnabled) {
                 json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
                 if (json != null && !json.equals("")) {
                     AddressLookupParser parser = new AddressLookupParser(json);
@@ -164,7 +160,9 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         // Enable google address lookup if an API key is configured
         if (config.googleAPIKey != "") {
-            updateState(ENABLEADDRESSLOOKUP, OnOffType.ON);
+            addressLookupIsEnabled = true;
+        } else {
+            addressLookupIsEnabled = false;
         }
 
         registerDeviceDiscoveryService();

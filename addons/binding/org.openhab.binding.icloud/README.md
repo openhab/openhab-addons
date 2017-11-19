@@ -60,7 +60,6 @@ If a device is removed from the account the respective openHAB thing will go OFF
 | numberOfDevices     | Number | Number of registered devices with this iCloud account.                                                    |
 | owner               | String | Registered owner of this iCloud account.                                                                  |
 | refresh             | Switch | Update all devices registered with this account immediately.                                              |
-| enableAddressLookup | Switch | If set to ON the coordinates are send to google to lookup a human readable address. Default value is OFF if no google API key is set. If an API key is defined the switch will default to ON. |
 
 ### Device
 
@@ -80,7 +79,7 @@ The following channels are available (if supported by the device):
 | addressCountry<sup>i</sup>   | String   | Country component of the addess.                                                                                                            |
 | formattedAddress<sup>i</sup> | String   | Formatted human readable address string.                                                                                                    |
 | deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
-<sup>i</sup> Address lookup needs to be enabled on the device account bridge thing for this channels to be populated.
+<sup>i</sup> A google API key needs to be configured for this channels to be populated.
 
 ## Full Example
 

@@ -10,7 +10,6 @@
 			<channel id="owner" typeId="Owner" />
 			<channel id="numberOfDevices" typeId="NumberOfDevices" />
 			<channel id="refresh" typeId="Refresh" />
-			<channel id="enableAddressLookup" typeId="EnableAddressLookup" />
 		</channels>
 
 		<config-description>

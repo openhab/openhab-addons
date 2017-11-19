@@ -38,7 +38,6 @@ public class BindingConstants {
     public static final String NUMBEROFDEVICES = "numberOfDevices";
     public static final String OWNER = "owner";
     public static final String REFRESH = "refresh";
-    public static final String ENABLEADDRESSLOOKUP = "enableAddressLookup";
 
     public static final String BATTERYSTATUS = "batteryStatus";
     public static final String BATTERYLEVEL = "batteryLevel";
