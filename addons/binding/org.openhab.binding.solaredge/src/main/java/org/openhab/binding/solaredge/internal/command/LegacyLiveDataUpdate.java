@@ -34,7 +34,7 @@ import org.openhab.binding.solaredge.internal.model.LiveDataChannels;
  */
 public class LegacyLiveDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {
     private static final String NCG_NON_GREEDY_TEXT_OR_NUMBER = "(?:.+?)";
-    private static final String CG_CURRENT_POWER_AND_UNIT = "(?:\\{currentPower:\"([0-9]+)(.+)\"\\})";
+    private static final String CG_CURRENT_POWER_AND_UNIT = "(?:\\{currentPower:\"([0-9\\.]+)(.+)\"\\})";
     private static final String UNIT_W = "W";
 
     private final SolarEdgeHandler handler;
