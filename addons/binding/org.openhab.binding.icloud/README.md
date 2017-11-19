@@ -100,9 +100,9 @@ The "label" @ "location" part is optional (as always).
 
 ```php
 Group iCloud_Group (Whg)
-String iCloud_Account1_Owner "iCloud Account Owner [%s]" (iCloud_Group) {channel="icloud:bridge:account1:Owner"}
-Number iCloud_Account1_NumberOfDevices "iCloud Account NumberOfDevices [%d]" (iCloud_Group) {channel="icloud:bridge:account1:numberOfDevices"}
-Switch iCloud_Account1_ForceRefresh "iCloud Account Force Refresh" (iCloud_Group) {channel="icloud:bridge:account1:refresh"}
+String iCloud_Account1_Owner "iCloud Account Owner [%s]" (iCloud_Group) {channel="icloud:account:account1:Owner"}
+Number iCloud_Account1_NumberOfDevices "iCloud Account NumberOfDevices [%d]" (iCloud_Group) {channel="icloud:account:account1:numberOfDevices"}
+Switch iCloud_Account1_ForceRefresh "iCloud Account Force Refresh" (iCloud_Group) {channel="icloud:account:account1:refresh"}
 
 String iPhone_BatteryStatus "Battery Status [%s]" <battery> (iCloud_Group)  {channel="icloud:device:account1:47fc3d00:batteryStatus"}
 Number iPhone_BatteryLevel "Battery Level [%.0f]" <battery> (iCloud_Group) {channel="icloud:device:account1:47fc3d00:batteryLevel"}
