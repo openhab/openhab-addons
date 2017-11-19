@@ -54,6 +54,7 @@
         <config-description>
             <parameter name="portName" type="text" required="true">
                 <label>Port</label>
+                <context>serial-port</context>
                 <description>The serial port used to connect to the Rego controller.</description>
             </parameter>
             <parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
@@ -105,6 +106,7 @@
         <config-description>
             <parameter name="portName" type="text" required="true">
                 <label>Port</label>
+                <context>serial-port</context>
                 <description>The serial port used to connect to the Husdata interface.</description>
             </parameter>
         </config-description>        

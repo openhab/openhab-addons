@@ -12,8 +12,8 @@
         <config-description>
             <parameter name="serialPort" type="text" required="true" >
                 <label>Serial port</label>
-                <description>Serial port used to communicate with the CM11a
-                </description>
+                <context>serial-port</context>
+                <description>Serial port used to communicate with the CM11a</description>
             </parameter>
             <parameter name="refresh" type="integer" min="1">
                 <label>Refresh interval</label>
