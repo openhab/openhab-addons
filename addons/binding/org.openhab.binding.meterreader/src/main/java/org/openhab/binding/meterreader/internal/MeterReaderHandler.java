@@ -34,8 +34,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.MeterReaderConfiguration;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
-import org.openhab.binding.meterreader.internal.sml.SmlReaderConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class MeterReaderHandler extends BaseThingHandler {
         logger.debug("Initializing SmlReader handler.");
         super.initialize();
 
-        SmlReaderConfiguration config = getConfigAs(SmlReaderConfiguration.class);
+        MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
         logger.debug("config port = {}", config.port);
 
         boolean validConfig = true;
@@ -181,7 +181,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                 }
             });
 
-            SmlReaderConfiguration config = getConfigAs(SmlReaderConfiguration.class);
+            MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
             int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
 
             valueReader = this.smlDevice.readValues(this.scheduler, delay);

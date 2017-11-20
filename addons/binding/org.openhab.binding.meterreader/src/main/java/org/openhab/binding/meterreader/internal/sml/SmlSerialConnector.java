@@ -10,7 +10,6 @@ package org.openhab.binding.meterreader.internal.sml;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,8 +21,7 @@ import org.openhab.binding.meterreader.connectors.ConnectorBase;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.SerialParameter;
 import org.openmuc.jsml.structures.SmlFile;
-import org.openmuc.jsml.structures.SmlMessage;
-import org.openmuc.jsml.transport.MessageExtractor;
+import org.openmuc.jsml.transport.Transport;
 
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -78,9 +76,6 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      */
     @Override
     protected SmlFile getMeterValuesInternal(byte[] initMessage) throws IOException {
-        SmlFile smlFile = null;
-
-        MessageExtractor extractor;
 
         if (initMessage != null) {
             logger.debug("Writing init message: {}", Hex.encodeHexString(initMessage));
@@ -88,26 +83,12 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             os.flush();
         }
         try {
-            extractor = new MessageExtractor(is, 5000);
-            DataInputStream is = new DataInputStream(new ByteArrayInputStream(extractor.getSmlMessage()));
-
-            smlFile = new SmlFile();
-
-            while (is.available() > 0) {
-                SmlMessage message = new SmlMessage();
-
-                if (!message.decode(is)) {
-                    throw new IOException("Could not decode message");
-                } else {
-                    smlFile.add(message);
-                }
-            }
+            return new Transport().getSMLFile(is);
         } catch (IOException e) {
             logger.error("Error at SerialConnector.getMeterValuesInternal: {}", e.getMessage());
             throw e;
         }
 
-        return smlFile;
     }
 
     /**

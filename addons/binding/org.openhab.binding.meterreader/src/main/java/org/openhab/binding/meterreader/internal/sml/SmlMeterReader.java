@@ -91,7 +91,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                         continue;
                     }
 
-                    int tag = smlMessage.getMessageBody().getTag().getVal();
+                    int tag = smlMessage.getMessageBody().getTag().id();
 
                     if (tag != EMessageBody.GET_LIST_RESPONSE.id()) {
                         continue;

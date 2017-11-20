@@ -75,7 +75,7 @@ public final class SmlValueExtractor {
     public String getUnitName() {
         String unit = null;
         if (smlListEntry != null) {
-            EUnit smlUnit = EUnit.idToEnum(smlListEntry.getUnit().getVal());
+            EUnit smlUnit = EUnit.from(smlListEntry.getUnit().getVal());
             unit = smlUnit.name();
         }
 
@@ -147,8 +147,8 @@ public final class SmlValueExtractor {
 
             scaler = Integer.parseInt(String.format("%02x", scalerByte), 16);
 
-            if (scaler == 255) {
-                scaler = -1;
+            if (scaler > 127) {
+                scaler -= 256;
             }
         }
 

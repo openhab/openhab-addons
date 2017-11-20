@@ -6,15 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meterreader.internal.sml;
+package org.openhab.binding.meterreader;
 
 /**
- * The {@link SmlReaderConfiguration} is the class used to match the
+ * The {@link MeterReaderConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Matthias Steigenberger- Initial contribution
  */
-public class SmlReaderConfiguration {
+public class MeterReaderConfiguration {
 
     public String port;
 
