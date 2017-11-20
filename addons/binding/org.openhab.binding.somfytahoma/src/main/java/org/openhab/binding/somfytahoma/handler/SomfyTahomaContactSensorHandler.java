@@ -10,8 +10,6 @@ package org.openhab.binding.somfytahoma.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Hashtable;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.COMMAND_SET_CLOSURE;
 
 /**
  * The {@link SomfyTahomaContactSensorHandler} is responsible for handling commands,
