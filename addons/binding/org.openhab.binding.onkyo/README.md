@@ -54,13 +54,13 @@ The binding has the following configuration options, which can be set for "bindi
 ## Thing Configuration
 
 The Onkyo AVR thing requires the ip address and the port to access it on.
-In the code avr1 refers to the user defined unique id of your Onkyo device. A second device could be called avr2.
+In the code `avr-livingroom` refers to the user defined unique id of your Onkyo device. A second device could be called avr2.
 In the thing file, this looks e.g. like
 
 Model specific
 
 ```text
-onkyo:TX-NR818:avr1 [ipAddress="192.168.1.100", port=60128]
+onkyo:TX-NR818:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
 or
@@ -68,19 +68,19 @@ or
 Generic model
 
 ```text
-onkyo:onkyoAVR:avr1 [ipAddress="192.168.1.100", port=60128]
+onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
 Optionally you can specify the refresh interval by refreshInterval parameter.
 
 ```text
-onkyo:onkyoAVR:avr1 [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
+onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
 Maximum volume level can also be configured by volumeLimit parameter. This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
 ```text
-onkyo:onkyoAVR:avr1 [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
+onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
 ```
 
 Binding then automatically scale the volume level in both directions (100% = 50 = 100%).
@@ -159,39 +159,39 @@ Here after are the ID values of the input sources:
 demo.items
 
 ```java
-Switch avr1Z1_Power  "Power"       <switch>      { channel="onkyo:onkyoAVR:avr1:zone1#power" }
-Switch avr1Z1_Mute   "Mute"        <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone1#mute" }
-Number avr1Z1_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr1:zone1#input" }
-Dimmer avr1Z1_Volume "Volume [%d]" <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone1#volume" }
+Switch avrLrZ1_Power  "Power"       <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone1#power" }
+Switch avrLrZ1_Mute   "Mute"        <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#mute" }
+Number avrLrZ1_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone1#input" }
+Dimmer avrLrZ1_Volume "Volume [%d]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#volume" }
 
-Switch avr1Z2_Power  "Power [%s]"  <switch>      { channel="onkyo:onkyoAVR:avr1:zone2#power" }
-Switch avr1Z2_Mute   "Mute [%s]"                 { channel="onkyo:onkyoAVR:avr1:zone2#mute" }
-Number avr1Z2_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr1:zone2#input" }
-Dimmer avr1Z2_Volume "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone2#volume" }
+Switch avrLrZ2_Power  "Power [%s]"  <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone2#power" }
+Switch avrLrZ2_Mute   "Mute [%s]"                 { channel="onkyo:onkyoAVR:avr-livingroom:zone2#mute" }
+Number avrLrZ2_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone2#input" }
+Dimmer avrLrZ2_Volume "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone2#volume" }
 
-Player avr1Player_Control            "Control"                 <text>        { channel="onkyo:onkyoAVR:avr1:player#control" }
-String avr1Player_Title              "Title [%s]"              <text>        { channel="onkyo:onkyoAVR:avr1:player#title" }
-String avr1Player_Album              "Album [%s]"              <text>        { channel="onkyo:onkyoAVR:avr1:player#album" }
-String avr1Player_Artist             "Artist [%s]"             <parents_2_5> { channel="onkyo:onkyoAVR:avr1:player#artist" }
-String avr1Player_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { channel="onkyo:onkyoAVR:avr1:player#currentPlayingTime" }
-Number avr1Player_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr1:player#listenmode" }
-String avr1Player_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr1:player#playuri" }
-Image  avr1Player_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr1:player#albumArt" }
-String avr1Player_AlbumArtUrl        "AlbumArtUrl [%s]"        <text>        { channel="onkyo:onkyoAVR:avr1:player#albumArtUrl" }
+Player avrLrPlayer_Control            "Control"                 <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#control" }
+String avrLrPlayer_Title              "Title [%s]"              <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#title" }
+String avrLrPlayer_Album              "Album [%s]"              <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#album" }
+String avrLrPlayer_Artist             "Artist [%s]"             <parents_2_5> { channel="onkyo:onkyoAVR:avr-livingroom:player#artist" }
+String avrLrPlayer_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { channel="onkyo:onkyoAVR:avr-livingroom:player#currentPlayingTime" }
+Number avrLrPlayer_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#listenmode" }
+String avrLrPlayer_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#playuri" }
+Image  avrLrPlayer_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArt" }
+String avrLrPlayer_AlbumArtUrl        "AlbumArtUrl [%s]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArtUrl" }
 
-String avr1Net_Title     "Title [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#title" }
-String avr1Net_Control   "Control"        <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#control" }
-Number avr1Net_Selection "Selection [%d]" <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#selection" }
-String avr1Net_Item0     "Item0 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item0" }
-String avr1Net_Item1     "Item1 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item1" }
-String avr1Net_Item2     "Item2 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item2" }
-String avr1Net_Item3     "Item3 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item3" }
-String avr1Net_Item4     "Item4 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item4" }
-String avr1Net_Item5     "Item5 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item5" }
-String avr1Net_Item6     "Item6 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item6" }
-String avr1Net_Item7     "Item7 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item7" }
-String avr1Net_Item8     "Item8 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item8" }
-String avr1Net_Item9     "Item9 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item9" }
+String avrLrNet_Title     "Title [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#title" }
+String avrLrNet_Control   "Control"        <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#control" }
+Number avrLrNet_Selection "Selection [%d]" <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#selection" }
+String avrLrNet_Item0     "Item0 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item0" }
+String avrLrNet_Item1     "Item1 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item1" }
+String avrLrNet_Item2     "Item2 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item2" }
+String avrLrNet_Item3     "Item3 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item3" }
+String avrLrNet_Item4     "Item4 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item4" }
+String avrLrNet_Item5     "Item5 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item5" }
+String avrLrNet_Item6     "Item6 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item6" }
+String avrLrNet_Item7     "Item7 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item7" }
+String avrLrNet_Item8     "Item8 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item8" }
+String avrLrNet_Item9     "Item9 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item9" }
 ```
 
 ## Sitemap Configuration
@@ -202,46 +202,46 @@ demo.sitemap
 sitemap demo label="Onkyo AVR"
 {
     Frame label="Zone1" {
-        Switch    item=avr1Z1_Power
-        Switch    item=avr1Z1_Mute
-        Selection item=avr1Z1_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
-        Slider    item=avr1Z1_Volume
+        Switch    item=avrLrZ1_Power
+        Switch    item=avrLrZ1_Mute
+        Selection item=avrLrZ1_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
+        Slider    item=avrLrZ1_Volume
     }
 
     Frame label="Zone 2" {
-        Switch    item=avr1Z2_Power
-        Switch    item=avr1Z2_Mute
-        Selection item=avr1Z2_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
-        Slider    item=avr1Z2_Volume
+        Switch    item=avrLrZ2_Power
+        Switch    item=avrLrZ2_Mute
+        Selection item=avrLrZ2_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
+        Slider    item=avrLrZ2_Volume
     }
 
     Frame label="Player" {
-        Default   item=avr1Player_Control
-        Text      item=avr1Player_Title
-        Text      item=avr1Player_Album
-        Text      item=avr1Player_Artist
-        Text      item=avr1Player_CurrentPlayingTime
-        Selection item=avr1Player_Listenmode mappings=[0=Stereo, 1=Direct, 2=Surround, 15=Mono, 31="Whole House", 66="THX Cinema"]
+        Default   item=avrLrPlayer_Control
+        Text      item=avrLrPlayer_Title
+        Text      item=avrLrPlayer_Album
+        Text      item=avrLrPlayer_Artist
+        Text      item=avrLrPlayer_CurrentPlayingTime
+        Selection item=avrLrPlayer_Listenmode mappings=[0=Stereo, 1=Direct, 2=Surround, 15=Mono, 31="Whole House", 66="THX Cinema"]
     }
     Frame label="NetMenu" {
-        Text      item=avr1Net_Title
-        Selection item=avr1Net_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDow', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', Select5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
-        Selection item=avr1Net_Selection mappings=[ 0='Item0', 1='Item1', 2='Item2', 3='Item3', 4='Item4', 5='Item5', 6='Item6', 7='Item7', 8='Item8', 9='Item9' ]
-        Text      item=avr1Net_Item0
-        Text      item=avr1Net_Item1
-        Text      item=avr1Net_Item2
-        Text      item=avr1Net_Item3
-        Text      item=avr1Net_Item4
-        Text      item=avr1Net_Item5
-        Text      item=avr1Net_Item6
-        Text      item=avr1Net_Item7
-        Text      item=avr1Net_Item8
-        Text      item=avr1Net_Item9
+        Text      item=avrLrNet_Title
+        Selection item=avrLrNet_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDow', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', Select5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
+        Selection item=avrLrNet_Selection mappings=[ 0='Item0', 1='Item1', 2='Item2', 3='Item3', 4='Item4', 5='Item5', 6='Item6', 7='Item7', 8='Item8', 9='Item9' ]
+        Text      item=avrLrNet_Item0
+        Text      item=avrLrNet_Item1
+        Text      item=avrLrNet_Item2
+        Text      item=avrLrNet_Item3
+        Text      item=avrLrNet_Item4
+        Text      item=avrLrNet_Item5
+        Text      item=avrLrNet_Item6
+        Text      item=avrLrNet_Item7
+        Text      item=avrLrNet_Item8
+        Text      item=avrLrNet_Item9
     }
 }
 ```
 
 ## Audio Support
 
-- All supported Onkyo AVRs are registered as an audio sink in the framework.
-- Audio streams are sent to the `playuri` channel.
+All supported Onkyo AVRs are registered as an audio sink in the framework.
+Audio streams are sent to the `playuri` channel.
