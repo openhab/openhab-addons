@@ -8,8 +8,8 @@ This binding depends on RS232 communication.  It has only been tested using the 
 
 This binding currently supports the following thing types:
 
-| Thing        | Type ID | Description                                          |
-|--------------|---------|------------------------------------------------------|
+| Thing           | Type ID | Description                                          |
+|-----------------|---------|------------------------------------------------------|
 | ra-rs232        | Bridge  | RadioRA device that supports RS232 communication     |
 | ra-dimmer       | Thing   | Dimmer control                                       |
 | ra-switch       | Thing   | Switch control                                       |
@@ -33,10 +33,10 @@ This binding currently supports the following thing types:
 
 The following channels are supported:
 
-| Thing Type                     | Channel Type ID   | Item Type    | Description                                  |
-|--------------------------------|-------------------|--------------|--------------------------------------------- |
-| ra-dimmer                      | intensity         | Dimmer       | Increase/Decrease dimmer intensity           |
-| ra-switch/ra-phantomButton     | switchState       | Switch       | On/Off state of switch                       |
+| Thing Type                     | Channel ID   | Item Type    | Description                                  |
+|--------------------------------|--------------|--------------|--------------------------------------------- |
+| ra-dimmer                      | lightlevel   | Dimmer       | Increase/Decrease dimmer intensity           |
+| ra-switch/ra-phantomButton     | switchstatus | Switch       | On/Off state of switch                       |
 
 ## Example
 
@@ -53,9 +53,9 @@ Bridge lutronradiora:ra-rs232:chronos1 [portName="/dev/ttys002"] {
 
 lutronradiora.items
 ```
-Dimmer Dimmer_Kitchen "Kitchen Lights" { channel="lutronradiora:dimmer:chronos1:dimmer1:intensity" }
-Dimmer Dimmer_FamilyRoom "Family Room Lights" { channel="lutronradiora:dimmer:chronos1:dimmer2:intensity" }
-Switch Switch_Patio "Patio Light" { channel="lutronradiora:dimmer:chronos1:switch1:switchState" }
-Switch Switch_FrontDoor "Front Door Lights" { channel="lutronradiora:switch:chronos1:switch2:switchState" }
-Switch Phantom_Movie "Movie Scene" { channel="lutronradiora:phantomButton:chronos1:phantomButton1:switchState" }
+Dimmer Dimmer_Kitchen "Kitchen Lights" { channel="lutronradiora:dimmer:chronos1:dimmer1:lightlevel" }
+Dimmer Dimmer_FamilyRoom "Family Room Lights" { channel="lutronradiora:dimmer:chronos1:dimmer2:lightlevel" }
+Switch Switch_Patio "Patio Light" { channel="lutronradiora:dimmer:chronos1:switch1:switchstatus" }
+Switch Switch_FrontDoor "Front Door Lights" { channel="lutronradiora:switch:chronos1:switch2:switchstatus" }
+Switch Phantom_Movie "Movie Scene" { channel="lutronradiora:phantomButton:chronos1:phantomButton1:switchstatus" }
 ```

@@ -462,7 +462,7 @@
         <description>RadioRA Switch</description>
 
         <channels>
-            <channel id="switchStatus" typeId="switchState"/>
+            <channel id="switchstatus" typeId="switchState"/>
         </channels>
         
         <config-description>
@@ -481,7 +481,7 @@
         <description>RadioRA Phantom Button</description>
 
         <channels>
-            <channel id="switchStatus" typeId="switchState"/>
+            <channel id="switchstatus" typeId="switchState"/>
         </channels>
         
         <config-description>

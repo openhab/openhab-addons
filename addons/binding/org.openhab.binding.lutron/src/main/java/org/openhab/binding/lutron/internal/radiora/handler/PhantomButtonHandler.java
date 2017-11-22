@@ -55,7 +55,7 @@ public class PhantomButtonHandler extends LutronHandler {
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
 
-        if (feedback.getBitmap().charAt(config.getButtonNumber()) == '1') {
+        if (feedback.getZoneValue(config.getButtonNumber()) == '1') {
             updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
         } else {
             updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);

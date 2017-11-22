@@ -44,8 +44,12 @@ public class LEDMapFeedback extends RadioRAFeedback {
         return bitmap;
     }
 
-    public String getZoneValue(int zone) {
-        return String.valueOf(bitmap.charAt(zone + 1));
+    public char getZoneValue(int zone) {
+        if (zone > bitmap.length()) {
+            return '0';
+        }
+
+        return bitmap.charAt(zone - 1);
     }
 
 }
