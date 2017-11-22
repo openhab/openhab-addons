@@ -13,43 +13,34 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
-import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
-import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
-import org.eclipse.smarthome.core.library.types.NextPreviousType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.chromecast.ChromecastBindingConstants;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.chromecast.internal.ChromecastAudioSink;
+import org.openhab.binding.chromecast.internal.ChromecastCommander;
+import org.openhab.binding.chromecast.internal.ChromecastEventReceiver;
+import org.openhab.binding.chromecast.internal.ChromecastScheduler;
+import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.ChromeCast;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEventListener;
-import su.litvak.chromecast.api.v2.MediaStatus;
-import su.litvak.chromecast.api.v2.MediaStatus.IdleReason;
-import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
-import su.litvak.chromecast.api.v2.Status;
-import su.litvak.chromecast.api.v2.Volume;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.chromecast.ChromecastBindingConstants.HOST;
+import static org.openhab.binding.chromecast.ChromecastBindingConstants.PORT;
+import static org.openhab.binding.chromecast.ChromecastBindingConstants.REFRESH_RATE_SECONDS;
 
 /**
  * The {@link ChromecastHandler} is responsible for handling commands, which are
@@ -58,11 +49,9 @@ import java.util.concurrent.TimeUnit;
  * @author Markus Rathgeb - Original author
  * @author Kai Kreuzer - Initial contribution as openHAB add-on
  * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
- *
+ * @author Jason Holmes - Media Status. Refactor the monolith into separate classes.
  */
-public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpontaneousEventListener, AudioSink {
-
-    private static final String MEDIA_PLAYER = "CC1AD845";
+public class ChromecastHandler extends BaseThingHandler implements AudioSink {
     private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
     private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
@@ -74,20 +63,20 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final AudioHTTPServer audioHTTPServer;
+    private final String callbackUrl;
 
-    private AudioHTTPServer audioHTTPServer;
-    private ChromeCast chromecast;
-    private ScheduledFuture<?> futureConnect;
-    private PercentType volume;
-    private String callbackUrl;
-    private String appSessionId;
+    /**
+     * The actual implementation. A new one is created each time #initalize is called.
+     */
+    private Coordinator coordinator;
 
     /**
      * Constructor.
      *
-     * @param thing the thing the handler should be created for
+     * @param thing           the thing the coordinator should be created for
      * @param audioHTTPServer server for hosting audio streams
-     * @param callbackUrl url to be used to tell the Chromecast which host to call for audio urls
+     * @param callbackUrl     url to be used to tell the Chromecast which host to call for audio urls
      */
     public ChromecastHandler(final Thing thing, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(thing);
@@ -95,54 +84,9 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         this.callbackUrl = callbackUrl;
     }
 
-    private void createChromecast(final String address, final int port) {
-        try {
-            logger.debug("Connecting to Chromecast: {} {}", address, port);
-            chromecast = new ChromeCast(address, port);
-            chromecast.registerListener(this);
-        } catch (Exception e) {
-            logger.warn("An error occurred", e);
-        }
-    }
-
-    private void destroyChromecast() {
-        chromecast.unregisterListener(this);
-        try {
-            chromecast.disconnect();
-        } catch (final IOException ex) {
-            logger.debug("Disconnect failed: {}", ex.getMessage());
-        }
-        chromecast = null;
-    }
-
-    private void scheduleConnect(final boolean immediate) {
-        final long delay = immediate ? 0 : 10;
-        if (futureConnect != null) {
-            futureConnect.cancel(true);
-            futureConnect = null;
-        }
-        futureConnect = scheduler.schedule(() -> {
-            try {
-                chromecast.connect();
-                // assume device is online as we no longer get notified
-                updateStatus(ThingStatus.ONLINE);
-            } catch (final Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                scheduleConnect(false);
-            }
-        }, delay, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void dispose() {
-        if (chromecast != null) {
-            destroyChromecast();
-        }
-    }
-
     @Override
     public void initialize() {
-        final Object ipAddress = getConfig().get(ChromecastBindingConstants.HOST);
+        final Object ipAddress = getConfig().get(HOST);
         if (!(ipAddress instanceof String)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is invalid.");
@@ -156,291 +100,79 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
             return;
         }
 
-        final Object portnumber = getConfig().get(ChromecastBindingConstants.PORT);
-        logger.debug("Variable Type is {}", portnumber.getClass().getTypeName());
+        final Object portNumber = getConfig().get(PORT);
+        logger.debug("portNumber Type is {}", portNumber.getClass().getTypeName());
         final int port;
-        if (portnumber instanceof BigDecimal) {
-            port = ((BigDecimal) portnumber).intValue();
-        } else if (portnumber instanceof Integer) {
-            port = (Integer) portnumber;
+        if (portNumber instanceof BigDecimal) {
+            port = ((BigDecimal) portNumber).intValue();
+        } else if (portNumber instanceof Integer) {
+            port = (Integer) portNumber;
         } else {
             port = 8009;
         }
 
-        if (chromecast != null && (!chromecast.getAddress().equals(host) || (chromecast.getPort() != port))) {
-            destroyChromecast();
-        }
-        if (chromecast == null) {
-            createChromecast(host, port);
+        final Integer refreshRate;
+        final Object rawRefreshRate = getConfig().get(REFRESH_RATE_SECONDS);
+        if (rawRefreshRate instanceof BigDecimal) {
+            refreshRate = ((BigDecimal) rawRefreshRate).intValue();
+        } else if (rawRefreshRate instanceof Integer) {
+            refreshRate = (Integer) rawRefreshRate;
+        } else {
+            refreshRate = 10;
         }
 
-        scheduleConnect(true);
+        if (coordinator != null && (!coordinator.chromeCast.getAddress().equals(host) || (coordinator.chromeCast.getPort() != port))) {
+            coordinator.destroy();
+            coordinator = null;
+        }
+
+        if (coordinator == null) {
+            ChromeCast chromecast = new ChromeCast(host, port);
+            coordinator = new Coordinator(this, thing, chromecast, refreshRate, audioHTTPServer, callbackUrl);
+            coordinator.initialize();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (coordinator != null) {
+            coordinator.destroy();
+            coordinator = null;
+        }
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        if (chromecast == null) {
-            return;
-        }
-
-        if (command instanceof RefreshType) {
-            handleRefresh();
-            return;
-        }
-
-        switch (channelUID.getId()) {
-            case ChromecastBindingConstants.CHANNEL_CONTROL:
-                handleControl(command);
-                break;
-            case ChromecastBindingConstants.CHANNEL_VOLUME:
-                handleVolume(command);
-                break;
-            case ChromecastBindingConstants.CHANNEL_MUTE:
-                handleMute(command);
-                break;
-            case ChromecastBindingConstants.CHANNEL_PLAY_URI:
-                handlePlayUri(command);
-                break;
-            default:
-                logger.debug("Received command {} for unknown channel: {}", command, channelUID);
-                break;
+        if (coordinator != null) {
+            coordinator.commander.handleCommand(channelUID, command);
+        } else {
+            logger.info("Cannot handle command. No coordinator was initialized");
         }
     }
 
-    private void handleRefresh() {
-        Status status;
-        try {
-            status = chromecast.getStatus();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException ex) {
-            logger.debug("Failed to request status: {}", ex.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            return;
-        }
-
-        try {
-            if (status.getRunningApp() != null) {
-                chromecast.getMediaStatus();
-            }
-
-        } catch (IOException ex) {
-            logger.debug("Failed to request media status with a running app: {}", ex.getMessage());
-            // We were just able to request status, so let's not put the device OFFLINE.
-        }
+    @Override  // Just exposing this for ChromecastStatusUpdater.
+    public void updateState(String channelID, State state) {
+        super.updateState(channelID, state);
     }
 
-    private void handlePlayUri(Command command) {
-        if (command instanceof StringType) {
-            playMedia(null, command.toString(), null);
-        }
+    @Override // Just exposing this for ChromecastStatusUpdater.
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
-    private void handleControl(final Command command) {
-        try {
-            if (command instanceof NextPreviousType) {
-                // TODO handle command NextPreviousType
-                logger.info("{} command not yet implemented", command);
-                return;
-            }
-
-            Application app = chromecast.getRunningApp();
-            updateStatus(ThingStatus.ONLINE);
-            if (app == null) {
-                logger.debug("{} command ignored because media player app is not running", command);
-                return;
-            }
-
-            if (command instanceof PlayPauseType) {
-                MediaStatus mediaStatus = chromecast.getMediaStatus();
-                logger.debug("mediaStatus {}", mediaStatus);
-                if (mediaStatus == null || mediaStatus.playerState == PlayerState.IDLE) {
-                    logger.debug("{} command ignored because media is not loaded", command);
-                    return;
-                }
-
-                final PlayPauseType playPause = (PlayPauseType) command;
-                if (playPause == PlayPauseType.PLAY) {
-                    chromecast.play();
-                } else if (playPause == PlayPauseType.PAUSE
-                        && ((mediaStatus.supportedMediaCommands & 0x00000001) == 0x1)) {
-                    chromecast.pause();
-                } else {
-                    logger.info("{} command not supported by current media", command);
-                }
-            }
-        } catch (final Exception e) {
-            logger.debug("{} command failed: {}", command, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void handleVolume(final Command command) {
-        if (command instanceof PercentType) {
-            final PercentType num = (PercentType) command;
-            try {
-                chromecast.setVolumeByIncrement(num.floatValue() / 100);
-                updateStatus(ThingStatus.ONLINE);
-            } catch (final IOException ex) {
-                logger.debug("Set volume failed: {}", ex.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            }
-        }
-    }
-
-    private void handleMute(final Command command) {
-        if (command instanceof OnOffType) {
-            final boolean mute = command == OnOffType.ON;
-            try {
-                chromecast.setMuted(mute);
-                updateStatus(ThingStatus.ONLINE);
-            } catch (final IOException ex) {
-                logger.debug("Mute/unmute volume failed: {}", ex.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            }
-        }
-    }
-
-    private void scheduleStopApp() {
-        scheduler.schedule(() -> {
-            try {
-                Application app = chromecast.getRunningApp();
-                if (app.id.equals(MEDIA_PLAYER) && this.appSessionId != null
-                        && app.sessionId.equals(this.appSessionId)) {
-                    chromecast.stopApp();
-                    logger.debug("Media player app stopped");
-                }
-            } catch (final Exception e) {
-                logger.debug("Failed stopping media player app: {}", e.getMessage());
-            }
-        }, 0, TimeUnit.MILLISECONDS);
-    }
-
-    private void handleCcStatus(final Status status) {
-        logger.debug("STATUS {}", status);
-        if (status.applications == null) {
-            this.appSessionId = null;
-        }
-        handleCcVolume(status.volume);
-    }
-
-    private void handleCcMediaStatus(final MediaStatus mediaStatus) {
-        logger.debug("MEDIA_STATUS {}", mediaStatus);
-        switch (mediaStatus.playerState) {
-            case IDLE:
-                if (mediaStatus.playerState == PlayerState.IDLE && mediaStatus.idleReason != null
-                        && mediaStatus.idleReason != IdleReason.INTERRUPTED) {
-                    scheduleStopApp();
-                }
-            case PAUSED:
-                updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_CONTROL),
-                        PlayPauseType.PAUSE);
-                break;
-            case BUFFERING:
-            case PLAYING:
-                updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_CONTROL),
-                        PlayPauseType.PLAY);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void handleCcVolume(final Volume volume) {
-        PercentType value = new PercentType((int) (volume.level * 100));
-        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_VOLUME), value);
-        this.volume = value;
-        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_MUTE),
-                volume.muted ? OnOffType.ON : OnOffType.OFF);
-    }
-
-    @Override
-    public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
-        switch (event.getType()) {
-            case MEDIA_STATUS:
-                final MediaStatus mediaStatus = event.getData(MediaStatus.class);
-                handleCcMediaStatus(mediaStatus);
-                break;
-            case STATUS:
-                final Status status = event.getData(Status.class);
-                handleCcStatus(status);
-                break;
-            case UNKNOWN:
-                logger.debug("Received an 'UNKNOWN' event (class={})", event.getType().getDataClass());
-                break;
-            default:
-                logger.debug("Unhandled event type: {}", event.getData());
-                break;
-
-        }
+    @Override // Just exposing this for ChromecastStatusUpdater.
+    public boolean isLinked(String channelId) {
+        return super.isLinked(channelId);
     }
 
     @Override
     public String getId() {
-        return getThing().getUID().toString();
+        return thing.getUID().toString();
     }
 
     @Override
     public String getLabel(Locale locale) {
-        return getThing().getLabel();
-    }
-
-    @Override
-    public void process(AudioStream audioStream)
-            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
-        String url;
-        if (audioStream instanceof URLAudioStream) {
-            // it is an external URL, the speaker can access it itself and play it.
-            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-            url = urlAudioStream.getURL();
-        } else {
-            if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl;
-                if (audioStream instanceof FixedLengthAudioStream) {
-                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 10);
-                } else {
-                    relativeUrl = audioHTTPServer.serve(audioStream);
-                }
-                url = callbackUrl + relativeUrl;
-            } else {
-                logger.warn("We do not have any callback url, so Chromecast cannot play the audio stream!");
-                return;
-            }
-        }
-        String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
-                : "audio/wav";
-        playMedia("Notification", url, mimeType);
-    }
-
-    private void playMedia(String title, String url, String mimeType) {
-        try {
-            if (chromecast.isAppAvailable(MEDIA_PLAYER)) {
-                if (!chromecast.isAppRunning(MEDIA_PLAYER)) {
-                    final Application app = chromecast.launchApp(MEDIA_PLAYER);
-                    this.appSessionId = app.sessionId;
-                    logger.debug("Application launched: {}", app);
-                }
-                if (url != null) {
-                    /*
-                     * If the current track is paused, launching a new request results in nothing happening, therefore
-                     * resume current track
-                     */
-                    MediaStatus ms = chromecast.getMediaStatus();
-                    if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState && url.equals(ms.media.url)) {
-                        logger.debug("Current stream paused, resuming");
-                        chromecast.play();
-                    } else {
-                        chromecast.load(title, null, url, mimeType);
-                    }
-                }
-            } else {
-                logger.warn("Missing media player app - cannot process media.");
-            }
-            updateStatus(ThingStatus.ONLINE);
-        } catch (final IOException e) {
-            logger.debug("Failed playing media: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        return thing.getLabel();
     }
 
     @Override
@@ -448,19 +180,96 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         return SUPPORTED_FORMATS;
     }
 
-    @Override
-    public Set<Class<? extends AudioStream>> getSupportedStreams() {
+    @Override public Set<Class<? extends AudioStream>> getSupportedStreams() {
         return SUPPORTED_STREAMS;
     }
 
     @Override
-    public PercentType getVolume() throws IOException {
-        return volume;
+    public void process(AudioStream audioStream)
+        throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (coordinator != null) {
+            coordinator.audioSink.process(audioStream);
+        } else {
+            logger.info("Cannot process audioStream. No coordinator has been initialized.");
+        }
     }
 
     @Override
-    public void setVolume(PercentType volume) throws IOException {
-        handleVolume(volume);
+    public PercentType getVolume() throws IOException {
+        if (coordinator != null) {
+            return coordinator.statusUpdater.getVolume();
+        } else {
+            logger.info("Cannot get volume. No coordinator has been initialized.");
+            return PercentType.ZERO;
+        }
     }
 
+    @Override
+    public void setVolume(PercentType percentType) throws IOException {
+        if (coordinator != null) {
+            coordinator.commander.handleVolume(percentType);
+        } else {
+            logger.info("Cannot set volume. No coordinator has been initialized.");
+        }
+    }
+
+    private static class Coordinator {
+        private static final int CONNECT_DELAY = 10;
+        private final Logger logger = LoggerFactory.getLogger(Coordinator.class);
+
+        private final ChromeCast chromeCast;
+        private final ChromecastAudioSink audioSink;
+        private final ChromecastCommander commander;
+        private final ChromecastEventReceiver eventReceiver;
+        private final ChromecastStatusUpdater statusUpdater;
+        private final ChromecastScheduler scheduler;
+
+        private final Runnable connectRunnable = this::connect;
+        private final Runnable refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                commander.handleRefresh();
+            }
+        };
+
+        private Coordinator(ChromecastHandler handler, Thing thing, ChromeCast chromeCast, int refreshRate, AudioHTTPServer audioHttpServer, String callbackURL) {
+            this.chromeCast = chromeCast;
+
+            this.scheduler = new ChromecastScheduler(handler.scheduler, CONNECT_DELAY, connectRunnable, refreshRate, refreshRunnable);
+            this.statusUpdater = new ChromecastStatusUpdater(thing, handler);
+
+            this.commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);
+            this.eventReceiver = new ChromecastEventReceiver(scheduler, statusUpdater);
+            this.audioSink = new ChromecastAudioSink(commander, audioHttpServer, callbackURL);
+        }
+
+        void initialize() {
+            chromeCast.registerListener(eventReceiver);
+            chromeCast.registerConnectionListener(eventReceiver);
+
+            this.connect();
+        }
+
+        void destroy() {
+            chromeCast.unregisterConnectionListener(eventReceiver);
+            chromeCast.unregisterListener(eventReceiver);
+
+            try {
+                scheduler.destroy();
+                chromeCast.disconnect();
+            } catch (final IOException ex) {
+                logger.debug("Disconnect failed: {}", ex.getMessage());
+            }
+        }
+
+        private void connect() {
+            try {
+                chromeCast.connect();
+                statusUpdater.updateStatus(ThingStatus.ONLINE);
+            } catch (final Exception e) {
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                scheduler.scheduleConnect();
+            }
+        }
+    }
 }
