@@ -11,6 +11,12 @@ package org.openhab.binding.samsungtv.handler;
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.POWER;
 import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -35,32 +41,23 @@ import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.openhab.binding.samsungtv.internal.service.ServiceFactory;
-import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.binding.samsungtv.internal.service.api.EventListener;
+import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link SamsungTvHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Pauli Anttila - Initial contribution
- * @author Martin van Wingerden - Some changes for manually configured devices
+ * @author Martin van Wingerden - Some changes for non-UPnP configured devices
  */
 public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListener, RegistryListener, EventListener {
 
     private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
-    /**
-     * Global configuration for Samsung TV Thing
-     */
+    /* Global configuration for Samsung TV Thing */
     private SamsungTvConfiguration configuration;
 
     private UpnpIOService upnpIOService;
@@ -69,35 +66,19 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     private ThingUID upnpThingUID = null;
 
-    /**
-     * Samsung TV services
-     */
+    /* Samsung TV services */
     private final List<SamsungTvService> services = new CopyOnWriteArrayList<>();
-    ;
 
     private boolean powerState = false;
 
-    /**
-     * Polling job for searching UPnP devices on startup
-     */
+    /* Polling job for searching UPnP devices on startup */
     private ScheduledFuture<?> upnpPollingJob;
 
-    /*
-     * One Samsung TV contains several UPnP devices. Samsung TV is discovered by
-     * Media Renderer UPnP device. This polling job tries to find another UPnP
-     * devices related to same Samsung TV and create handler for those.
-     */
-    private Runnable scanUPnPDevicesRunnable = this::checkAndCreateServices;
-
-    /**
-     * Polling job for manual remote controller
-     */
-    private ScheduledFuture<?> manualRemoteControllerJob;
-
-    private Runnable checkManualRemoteControllers = this::checkCreateManualConnection;
+    /* Polling job for non-UPnP remote controller */
+    private ScheduledFuture<?> nonUpnpRemoteControllerJob;
 
     public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
-                            UpnpService upnpService) {
+            UpnpService upnpService) {
         super(thing);
 
         logger.debug("Create a Samsung TV Handler for thing '{}'", getThing().getUID());
@@ -171,8 +152,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             discoveryServiceRegistry.addDiscoveryListener(this);
         }
 
-        manualRemoteControllerJob = scheduler.scheduleWithFixedDelay(
-                checkManualRemoteControllers, 1, 1, TimeUnit.MINUTES);
+        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 1, 1,
+                TimeUnit.MINUTES);
     }
 
     @Override
@@ -188,9 +169,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             upnpPollingJob.cancel(true);
             upnpPollingJob = null;
         }
-        if (manualRemoteControllerJob != null && !manualRemoteControllerJob.isCancelled()) {
-            manualRemoteControllerJob.cancel(true);
-            manualRemoteControllerJob = null;
+        if (nonUpnpRemoteControllerJob != null && !nonUpnpRemoteControllerJob.isCancelled()) {
+            nonUpnpRemoteControllerJob.cancel(true);
+            nonUpnpRemoteControllerJob = null;
         }
 
         if (upnpService != null) {
@@ -212,7 +193,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
              */
             upnpThingUID = result.getThingUID();
             logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", this.getThing().getUID(), upnpThingUID);
-            upnpPollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0, TimeUnit.MILLISECONDS);
+            upnpPollingJob = scheduler.schedule(this::checkAndCreateServices, 0, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -228,7 +209,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                                                   Collection<ThingTypeUID> thingTypeUIDs) {
+            Collection<ThingTypeUID> thingTypeUIDs) {
         return null;
     }
 
@@ -285,8 +266,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public synchronized void valueReceived(String variable, State value) {
-        logger.debug("Received value '{}':'{}' for thing '{}'",
-                variable, value, this.getThing().getUID());
+        logger.debug("Received value '{}':'{}' for thing '{}'", variable, value, this.getThing().getUID());
 
         updateState(variable, value);
         updateState(POWER, OnOffType.ON);
@@ -300,6 +280,11 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         stopServices();
     }
 
+    /**
+     * One Samsung TV contains several UPnP devices. Samsung TV is discovered by
+     * Media Renderer UPnP device. This polling job tries to find another UPnP
+     * devices related to same Samsung TV and create handler for those.
+     */
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
 
@@ -323,12 +308,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
                 SamsungTvService existingService = findServiceInstance(type);
 
-                if (existingService == null || existingService.isManual()) {
+                if (existingService == null || !existingService.isUpnp()) {
                     SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
                             configuration.refreshInterval, configuration.hostName, configuration.port);
 
                     if (newService != null) {
-                        if (existingService != null){
+                        if (existingService != null) {
                             stopService(existingService);
                         }
 
@@ -361,8 +346,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     private void checkCreateManualConnection() {
         try {
             if (services.isEmpty()) {
-                RemoteControllerService service = RemoteControllerService
-                        .createManualService(configuration.hostName, configuration.port);
+                RemoteControllerService service = RemoteControllerService.createNonUpnpService(configuration.hostName,
+                        configuration.port);
 
                 if (service.checkConnection()) {
                     startService(service);

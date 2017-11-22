@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.samsungtv.internal.service;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.CHANNEL;
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.KEY_CODE;
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.MUTE;
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.POWER;
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.VOLUME;
+import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -23,15 +24,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.samsungtv.internal.protocol.KeyCode;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteController;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
-import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.binding.samsungtv.internal.service.api.EventListener;
+import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The {@link RemoteControllerService} is responsible for handling remote
@@ -46,33 +42,33 @@ public class RemoteControllerService implements SamsungTvService {
 
     static final String SERVICE_NAME = "RemoteControlReceiver";
 
-    private final List<String> supportedCommandsDiscovered = Arrays.asList(KEY_CODE, POWER, CHANNEL);
-    private final List<String> supportedCommandsManual = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL);
+    private final List<String> supportedCommandsUpnp = Arrays.asList(KEY_CODE, POWER, CHANNEL);
+    private final List<String> supportedCommandsNonUpnp = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL);
 
     private String host;
     private int port;
-    private boolean manual;
+    private boolean upnp;
 
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
-    private RemoteControllerService(String host, int port, boolean manual) {
+    private RemoteControllerService(String host, int port, boolean upnp) {
         logger.debug("Create a Samsung TV RemoteController service");
-        this.manual = manual;
+        this.upnp = upnp;
         this.host = host;
         this.port = port;
     }
 
-    static RemoteControllerService createDiscoveredService(String host, int port) {
-        return new RemoteControllerService(host, port, false);
+    static RemoteControllerService createUpnpService(String host, int port) {
+        return new RemoteControllerService(host, port, true);
     }
 
-    public static RemoteControllerService createManualService(String host, int port) {
-        return new RemoteControllerService(host, port, true);
+    public static RemoteControllerService createNonUpnpService(String host, int port) {
+        return new RemoteControllerService(host, port, false);
     }
 
     @Override
     public List<String> getSupportedChannelNames() {
-        return manual ? supportedCommandsManual : supportedCommandsDiscovered;
+        return upnp ? supportedCommandsUpnp : supportedCommandsNonUpnp;
     }
 
     @Override
@@ -99,8 +95,8 @@ public class RemoteControllerService implements SamsungTvService {
     }
 
     @Override
-    public boolean isManual() {
-        return manual;
+    public boolean isUpnp() {
+        return upnp;
     }
 
     @Override

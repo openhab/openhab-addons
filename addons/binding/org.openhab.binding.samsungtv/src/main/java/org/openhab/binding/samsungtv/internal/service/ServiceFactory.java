@@ -57,7 +57,7 @@ public class ServiceFactory {
                 service = new MediaRendererService(upnpIOService, udn, pollingInterval);
                 break;
             case RemoteControllerService.SERVICE_NAME:
-                service = RemoteControllerService.createDiscoveredService(host, port);
+                service = RemoteControllerService.createUpnpService(host, port);
                 break;
         }
 

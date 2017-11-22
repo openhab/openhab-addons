@@ -10,7 +10,6 @@ package org.openhab.binding.samsungtv.internal.service;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,8 +28,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.binding.samsungtv.internal.service.api.EventListener;
+import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -114,8 +113,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     @Override
-    public boolean isManual() {
-        return false;
+    public boolean isUpnp() {
+        return true;
     }
 
     private Runnable pollingRunnable = new Runnable() {

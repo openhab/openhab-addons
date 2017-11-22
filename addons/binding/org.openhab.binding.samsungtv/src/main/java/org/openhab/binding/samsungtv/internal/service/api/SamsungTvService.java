@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.samsungtv.internal.service.api;
 
-import org.eclipse.smarthome.core.types.Command;
-
 import java.util.List;
+
+import org.eclipse.smarthome.core.types.Command;
 
 /**
  * Interface for Samsung TV services.
@@ -69,9 +69,9 @@ public interface SamsungTvService {
     void clearCache();
 
     /**
-     * Is this a manual configured service
+     * Is this an UPnP configured service
      *
-     * @return whether this service was a manual override
+     * @return whether this service is an UPnP configured / discovered service
      */
-    boolean isManual();
+    boolean isUpnp();
 }
