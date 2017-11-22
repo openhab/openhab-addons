@@ -14,11 +14,13 @@ import java.util.Calendar;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -37,6 +39,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBaseThingHandler.class);
     private final String serviceDescription;
+    private FroniusBridgeHandler bridgeHandler;
 
     public FroniusBaseThingHandler(Thing thing) {
         super(thing);
@@ -50,13 +53,29 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        if (getBridge() == null) {
+        if (getFroniusBridgeHandler() == null) {
             logger.error("Initializing {} Service is only supported within a bridge", serviceDescription);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
         logger.debug("Initializing {} Service", serviceDescription);
-        ((FroniusBridgeHandler) getBridge().getHandler()).registerService(this);
+        getFroniusBridgeHandler().registerService(this);
+    }
+
+    private synchronized FroniusBridgeHandler getFroniusBridgeHandler() {
+        if (this.bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof FroniusBridgeHandler) {
+                this.bridgeHandler = (FroniusBridgeHandler) handler;
+            } else {
+                return null;
+            }
+        }
+        return this.bridgeHandler;
     }
 
     /**
