@@ -109,9 +109,9 @@ public class RotelRa1xHandler extends BaseThingHandler {
 
             // Don't need continuous updates of the display, we still get updates when
             // the volume, etc., changes
-            serialPort.getOutputStream().write("display_update_manual!".getBytes(StandardCharsets.US_ASCII));
+            send("display_update_manual!");
             updateStatus(ThingStatus.ONLINE);
-            serialPort.getOutputStream().write("get_current_power!".getBytes(StandardCharsets.US_ASCII));
+            send("get_current_power!");
             updateState(CHANNEL_MUTE, OnOffType.OFF);
             updateState(CHANNEL_BRIGHTNESS, new PercentType(100));
         }
@@ -187,9 +187,9 @@ public class RotelRa1xHandler extends BaseThingHandler {
     private void powerOnRefresh() {
         scheduler.submit(() -> {
             try {
-                send("get_volume!");
-                send("get_current_source!");
-            } catch (IOException | ConfigurationError e) {
+                sendIfPowerOn("get_volume!");
+                sendIfPowerOn("get_current_source!");
+            } catch (IOException e) {
                 logger.warn("Failed to request volume and source after powering on.", e);
             }
         });
@@ -295,15 +295,13 @@ public class RotelRa1xHandler extends BaseThingHandler {
 
     }
 
-    private void send(String text) throws IOException, ConfigurationError {
+    private void sendIfPowerOn(String text) throws IOException {
         if (power) {
-            connect();
-            serialPort.getOutputStream().write(text.getBytes(StandardCharsets.US_ASCII));
+            send(text);
         }
     }
 
-    private void sendForce(String text) throws IOException, ConfigurationError {
-        connect();
+    private void send(String text) throws IOException {
         serialPort.getOutputStream().write(text.getBytes(StandardCharsets.US_ASCII));
     }
 
@@ -331,57 +329,53 @@ public class RotelRa1xHandler extends BaseThingHandler {
             logger.debug("An I/O error occurred while processing the command {}.", command, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
-        } catch (ConfigurationError e) {
-            logger.debug("There is an error in the configuration of the thing.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            disconnect();
         }
     }
 
-    private void handlePower(Command command) throws IOException, ConfigurationError {
+    private void handlePower(Command command) throws IOException {
         if (command == OnOffType.ON) {
-            sendForce("power_on!");
+            send("power_on!");
         } else if (command == OnOffType.OFF) {
-            sendForce("power_off!");
+            send("power_off!");
         } else if (command instanceof RefreshType) {
-            sendForce("get_current_power!");
+            send("get_current_power!");
         }
     }
 
-    private void handleMute(Command command) throws IOException, ConfigurationError {
+    private void handleMute(Command command) throws IOException {
         if (command == OnOffType.ON) {
-            send("mute_on!");
+            sendIfPowerOn("mute_on!");
         } else {
-            send("mute_off!");
+            sendIfPowerOn("mute_off!");
         }
     }
 
-    private void handleVolume(Command command) throws IOException, ConfigurationError {
+    private void handleVolume(Command command) throws IOException {
         if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
-            send("volume_up!");
+            sendIfPowerOn("volume_up!");
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
-            send("volume_down!");
+            sendIfPowerOn("volume_down!");
         } else if (command instanceof DecimalType) {
             double value = Double.parseDouble(command.toString()) * maximumVolume / 100.0;
-            send("volume_" + Integer.toString((int) value) + "!");
+            sendIfPowerOn("volume_" + ((int) value) + "!");
         } else if (command instanceof RefreshType) {
-            send("get_current_volume!");
+            sendIfPowerOn("get_current_volume!");
         }
     }
 
-    private void handleBrightness(Command command) throws IOException, ConfigurationError {
+    private void handleBrightness(Command command) throws IOException {
         // Invert the scale so 100% is brightest
         if (command instanceof PercentType) {
             double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
-            send("dimmer_" + ((int) value) + "!");
+            sendIfPowerOn("dimmer_" + ((int) value) + "!");
         }
     }
 
-    private void handleSource(Command command) throws IOException, ConfigurationError {
+    private void handleSource(Command command) throws IOException {
         if (command instanceof StringType) {
-            send(command.toString() + "!");
+            sendIfPowerOn(command.toString() + "!");
         } else {
-            send("get_current_source!");
+            sendIfPowerOn("get_current_source!");
         }
     }
 
