@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.json;
 
 /**
  * The {@link AirQualityJsonResponse} is the Java class used to map the JSON

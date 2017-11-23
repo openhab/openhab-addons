@@ -34,7 +34,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.airquality.AirQualityBindingConstants;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
-import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse;
+import org.openhab.binding.airquality.json.AirQualityJsonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
