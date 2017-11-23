@@ -8,7 +8,8 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Export-Package: 
  org.openhab.binding.airquality,
- org.openhab.binding.airquality.handler
+ org.openhab.binding.airquality.handler,
+ org.openhab.binding.airquality.json
 Import-Package: 
  com.google.common.collect,
  com.google.gson,
