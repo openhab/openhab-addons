@@ -8,28 +8,21 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING2;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -37,9 +30,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComLighting2Message extends RFXComBaseMessage {
+public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighting2Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         AC(0),
         HOME_EASY_EU(1),
         ANSLUT(2),
@@ -51,22 +44,13 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OFF(0),
         ON(1),
         SET_LEVEL(2),
@@ -80,38 +64,21 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL,
-            RFXComValueSelector.CONTACT);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL);
 
     public SubType subType;
     public int sensorId;
     public byte unitCode;
     public Commands command;
     public byte dimmingLevel;
-    public byte signalLevel;
     public boolean group;
 
     public RFXComLighting2Message() {
-        packetType = PacketType.LIGHTING2;
+        super(PacketType.LIGHTING2);
     }
 
     public RFXComLighting2Message(byte[] data) throws RFXComException {
@@ -136,9 +103,9 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 24 | (data[5] & 0xFF) << 16 | (data[6] & 0xFF) << 8 | (data[7] & 0xFF);
-        command = Commands.fromByte(data[9]);
+        command = fromByte(Commands.class, data[9]);
 
         if ((command == Commands.GROUP_ON) || (command == Commands.GROUP_OFF)) {
             unitCode = 0;
@@ -204,92 +171,52 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
-        State state = UnDefType.UNDEF;
+        switch (channelId) {
+            case CHANNEL_DIMMING_LEVEL:
+                return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == DimmerItem.class
-                || valueSelector.getItemClass() == RollershutterItem.class) {
-
-            if (valueSelector == RFXComValueSelector.DIMMING_LEVEL) {
-                state = RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to DimmerItem/RollershutterItem");
-            }
-
-        } else if (valueSelector.getItemClass() == SwitchItem.class) {
-
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
+            case CHANNEL_COMMAND:
                 switch (command) {
                     case OFF:
                     case GROUP_OFF:
-                        state = OnOffType.OFF;
-                        break;
+                        return OnOffType.OFF;
 
                     case ON:
                     case GROUP_ON:
-                        state = OnOffType.ON;
-                        break;
+                        return OnOffType.ON;
 
                     case SET_GROUP_LEVEL:
                     case SET_LEVEL:
                     default:
-                        throw new RFXComException("Can't convert " + command + " to SwitchItem");
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
-            }
-
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-
+            case CHANNEL_CONTACT:
                 switch (command) {
                     case OFF:
                     case GROUP_OFF:
-                        state = OpenClosedType.CLOSED;
-                        break;
+                        return OpenClosedType.CLOSED;
 
                     case ON:
                     case GROUP_ON:
-                        state = OpenClosedType.OPEN;
-                        break;
+                        return OpenClosedType.OPEN;
 
                     case SET_GROUP_LEVEL:
                     case SET_LEVEL:
                     default:
-                        throw new RFXComException("Can't convert " + command + " to ContactItem");
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
-            }
-
-        } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            default:
+                return super.convertToState(channelId);
         }
-
-        return state;
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -311,26 +238,29 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
 
-        switch (valueSelector) {
-            case COMMAND:
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     if (group) {
                         command = (type == OnOffType.ON ? GROUP_ON : GROUP_OFF);
+
                     } else {
                         command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     }
+
                     dimmingLevel = 0;
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case DIMMING_LEVEL:
+            case CHANNEL_DIMMING_LEVEL:
                 if (type instanceof OnOffType) {
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     dimmingLevel = 0;
+
                 } else if (type instanceof PercentType) {
                     command = Commands.SET_LEVEL;
                     dimmingLevel = (byte) getDimLevelFromPercentType((PercentType) type);
@@ -338,47 +268,23 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
                     if (dimmingLevel == 0) {
                         command = Commands.OFF;
                     }
-
                 } else if (type instanceof IncreaseDecreaseType) {
                     command = Commands.SET_LEVEL;
                     // Evert: I do not know how to get previous object state...
                     dimmingLevel = 5;
 
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
-
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

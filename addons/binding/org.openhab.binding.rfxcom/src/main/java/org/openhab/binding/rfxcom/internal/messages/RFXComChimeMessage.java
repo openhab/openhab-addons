@@ -8,17 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_CHIME_SOUND;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -26,9 +23,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis
  */
-public class RFXComChimeMessage extends RFXComBaseMessage {
+public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         BYRONSX(0),
         BYRONMP001(1),
         SELECTPLUS(2),
@@ -41,34 +38,18 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.CHIME_SOUND);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections
-            .singletonList(RFXComValueSelector.CHIME_SOUND);
 
     public SubType subType;
     public int sensorId;
     public int chimeSound;
-    public byte signalLevel;
 
     public RFXComChimeMessage() {
-        packetType = PacketType.CHIME;
+        super(PacketType.CHIME);
     }
 
     public RFXComChimeMessage(byte[] data) throws RFXComException {
@@ -90,10 +71,9 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
 
         switch (subType) {
             case BYRONSX:
@@ -117,7 +97,7 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
         byte[] data = new byte[8];
 
         data[0] = 0x07;
-        data[1] = packetType.toByte();
+        data[1] = getPacketType().toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
 
@@ -148,38 +128,17 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
-        State state = UnDefType.UNDEF;
-
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.CHIME_SOUND) {
-
-                state = new DecimalType(chimeSound);
-
-            } else {
-
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-
-            }
-
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_CHIME_SOUND.equals(channelId)) {
+            return new DecimalType(chimeSound);
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            return super.convertToState(channelId);
         }
-
-        return state;
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -188,46 +147,20 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        switch (valueSelector) {
-            case CHIME_SOUND:
-                if (type instanceof DecimalType) {
-                    chimeSound = ((DecimalType) type).intValue();
-                } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
-                }
-                break;
-
-            default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
-        }
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        if (CHANNEL_CHIME_SOUND.equals(channelId)) {
+            if (type instanceof DecimalType) {
+                chimeSound = ((DecimalType) type).intValue();
+            } else {
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
             }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
+        } else {
+            throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

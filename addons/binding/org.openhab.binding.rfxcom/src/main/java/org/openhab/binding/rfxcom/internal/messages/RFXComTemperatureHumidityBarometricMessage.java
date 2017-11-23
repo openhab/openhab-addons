@@ -8,20 +8,15 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -31,9 +26,10 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Martin van Wingerden - ported to openHAB 2.0
  * @since 1.9.0
  */
-public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessage {
+public class RFXComTemperatureHumidityBarometricMessage
+        extends RFXComBatteryDeviceMessage<RFXComTemperatureHumidityBarometricMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         THB1(1), // BTHR918, BTHGN129
         THB2(2); // BTHR918N, BTHR968
 
@@ -43,22 +39,13 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum HumidityStatus {
+    public enum HumidityStatus implements ByteEnumWrapper {
         NORMAL(0),
         COMFORT(1),
         DRY(2),
@@ -70,22 +57,13 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
             this.humidityStatus = humidityStatus;
         }
 
+        @Override
         public byte toByte() {
             return (byte) humidityStatus;
         }
-
-        public static HumidityStatus fromByte(int input) throws RFXComUnsupportedValueException {
-            for (HumidityStatus status : HumidityStatus.values()) {
-                if (status.humidityStatus == input) {
-                    return status;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(HumidityStatus.class, input);
-        }
     }
 
-    public enum ForecastStatus {
+    public enum ForecastStatus implements ByteEnumWrapper {
         NO_INFO_AVAILABLE(0),
         SUNNY(1),
         PARTLY_CLOUDY(2),
@@ -98,25 +76,11 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
             this.forecastStatus = forecastStatus;
         }
 
+        @Override
         public byte toByte() {
             return (byte) forecastStatus;
         }
-
-        public static ForecastStatus fromByte(int input) throws RFXComUnsupportedValueException {
-            for (ForecastStatus status : ForecastStatus.values()) {
-                if (status.forecastStatus == input) {
-                    return status;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(ForecastStatus.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(SIGNAL_LEVEL,
-            BATTERY_LEVEL, TEMPERATURE, HUMIDITY, HUMIDITY_STATUS, PRESSURE, FORECAST);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
@@ -125,11 +89,9 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     public HumidityStatus humidityStatus;
     public double pressure;
     public ForecastStatus forecastStatus;
-    public byte signalLevel;
-    public byte batteryLevel;
 
     public RFXComTemperatureHumidityBarometricMessage() {
-        packetType = PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC;
+        super(PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC);
     }
 
     public RFXComTemperatureHumidityBarometricMessage(byte[] data) throws RFXComException {
@@ -154,10 +116,9 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         temperature = (short) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF)) * 0.1;
@@ -166,10 +127,10 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
         }
 
         humidity = data[8];
-        humidityStatus = HumidityStatus.fromByte(data[9]);
+        humidityStatus = fromByte(HumidityStatus.class, data[9]);
 
         pressure = (data[10] & 0xFF) << 8 | (data[11] & 0xFF);
-        forecastStatus = ForecastStatus.fromByte(data[12]);
+        forecastStatus = fromByte(ForecastStatus.class, data[12]);
 
         signalLevel = (byte) ((data[13] & 0xF0) >> 4);
         batteryLevel = (byte) (data[13] & 0x0F);
@@ -213,74 +174,45 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state;
-        if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-            } else if (valueSelector == BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-            } else if (valueSelector == TEMPERATURE) {
-                state = new DecimalType(temperature);
-            } else if (valueSelector == HUMIDITY) {
-                state = new DecimalType(humidity);
-            } else if (valueSelector == PRESSURE) {
-                state = new DecimalType(pressure);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        } else if (valueSelector.getItemClass() == StringItem.class) {
-            if (valueSelector == HUMIDITY_STATUS) {
-                state = new StringType(humidityStatus.toString());
-            } else if (valueSelector == FORECAST) {
-                state = new StringType(forecastStatus.toString());
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
-        } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-        }
-        return state;
-    }
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-    @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
+            case CHANNEL_HUMIDITY:
+                return new DecimalType(humidity);
 
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
+            case CHANNEL_PRESSURE:
+                return new DecimalType(pressure);
 
-        // try to find sub type by number
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
+            case CHANNEL_HUMIDITY_STATUS:
+                return new StringType(humidityStatus.toString());
+
+            case CHANNEL_FORECAST:
+                return new StringType(forecastStatus.toString());
+
+            default:
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
+    }
+
+    @Override
+    public void setSubType(SubType subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
+        throw new UnsupportedOperationException();
     }
 }

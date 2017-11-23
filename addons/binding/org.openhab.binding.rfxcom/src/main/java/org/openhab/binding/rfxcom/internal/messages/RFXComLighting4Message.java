@@ -8,24 +8,19 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration.*;
-
-import java.util.Arrays;
-import java.util.List;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +52,14 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila
  * @author Martin van Wingerden - Extended support for more complex PT2262 devices
  */
-public class RFXComLighting4Message extends RFXComBaseMessage {
-    // this loger is used from a static context, so is static as well
+public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighting4Message.SubType> {
+    // this logger is used from a static context, so is static as well
     private static final Logger LOGGER = LoggerFactory.getLogger(RFXComLighting4Message.class);
 
     private static final byte DEFAULT_OFF_COMMAND_ID = Commands.OFF_4.toByte();
     private static final byte DEFAULT_ON_COMMAND_ID = Commands.ON_1.toByte();
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         PT2262(0);
 
         private final int subType;
@@ -73,22 +68,13 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OFF_0(0, false),
         ON_1(1, true),
         OFF_2(2, false),
@@ -108,6 +94,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
             this.on = on;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
         }
@@ -130,12 +117,6 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(COMMAND, COMMAND_ID,
-            SIGNAL_LEVEL);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays.asList(COMMAND,
-            COMMAND_ID);
-
     private SubType subType;
     private int sensorId;
     private int pulse;
@@ -143,10 +124,9 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     private int commandId;
     private int offCommandId;
     private int onCommandId;
-    private byte signalLevel;
 
     public RFXComLighting4Message() {
-        packetType = PacketType.LIGHTING4;
+        super(PacketType.LIGHTING4);
     }
 
     public RFXComLighting4Message(byte[] data) throws RFXComException {
@@ -170,7 +150,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 12 | (data[5] & 0xFF) << 4 | (data[6] & 0xF0) >> 4;
 
         commandId = (data[6] & 0x0F);
@@ -214,36 +194,27 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 
-        if (valueSelector.getItemClass() == SwitchItem.class) {
-            if (valueSelector == COMMAND || valueSelector == MOTION) {
+        switch (channelId) {
+            case CHANNEL_COMMAND:
+            case CHANNEL_MOTION:
                 return command.isOn() ? OnOffType.ON : OnOffType.OFF;
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
-            }
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
-            }
-        } else if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == SIGNAL_LEVEL) {
-                return new DecimalType(signalLevel);
-            } else if (valueSelector == COMMAND_ID) {
-                return new DecimalType(commandId);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        }
 
-        throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            case CHANNEL_CONTACT:
+                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+
+            case CHANNEL_COMMAND_ID:
+                return new DecimalType(commandId);
+
+            default:
+                return super.convertToState(channelId);
+        }
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -252,52 +223,36 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        switch (valueSelector) {
-            case COMMAND:
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     command = Commands.fromByte(type == OnOffType.ON ? onCommandId : offCommandId);
                     commandId = command.toByte();
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
-            case COMMAND_ID:
+
+            case CHANNEL_COMMAND_ID:
                 if (type instanceof DecimalType) {
                     commandId = ((DecimalType) type).toBigDecimal().byteValue();
                     command = Commands.fromByte(commandId);
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to CommandId");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
+
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 
     @Override

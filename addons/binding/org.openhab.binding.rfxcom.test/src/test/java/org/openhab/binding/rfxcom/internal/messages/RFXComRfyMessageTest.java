@@ -14,11 +14,9 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Test;
-
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage;
-import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.SubType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.Commands;
+import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.SubType;
 
 /**
  * Test for RFXCom-binding

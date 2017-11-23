@@ -8,13 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.List;
-
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 
 /**
  * This interface defines interface which every message class should implement.
@@ -22,14 +19,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * @author Pauli Anttila - Initial contribution
  */
 public interface RFXComMessage {
-
-    /**
-     * Procedure for present class information in string format. Used for
-     * logging purposes.
-     *
-     */
-    @Override
-    String toString();
 
     /**
      * Procedure for encode raw data.
@@ -47,40 +36,10 @@ public interface RFXComMessage {
     byte[] decodeMessage() throws RFXComException;
 
     /**
-     * Procedure for converting RFXCOM value to openHAB state.
-     *
-     * @param valueSelector
-     *
-     * @return openHAB state.
-     */
-    State convertToState(RFXComValueSelector valueSelector) throws RFXComException;
-
-    /**
      * Procedure for converting openHAB state to RFXCOM object.
      *
      */
-    void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;
-
-    /**
-     * Procedure to get device id.
-     *
-     * @return device Id.
-     */
-    String getDeviceId() throws RFXComException;
-
-    /**
-     * Procedure for get supported value selector list for input values.
-     *
-     * @return List of supported value selectors.
-     */
-    List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException;
-
-    /**
-     * Procedure for get supported value selector list for output values.
-     *
-     * @return List of supported value selectors.
-     */
-    List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException;
+    void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException;
 
     /**
      * Procedure to pass configuration to a message
