@@ -175,7 +175,17 @@ public abstract class MeterDevice<T> {
 
     @Override
     public String toString() {
-        return this.getDeviceId();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Device: ");
+        stringBuilder.append(getDeviceId());
+        stringBuilder.append(System.lineSeparator());
+
+        for (Entry<String, MeterValue> entry : valueCache.entrySet()) {
+            stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
+            stringBuilder.append(System.lineSeparator());
+        }
+
+        return stringBuilder.toString();
     }
 
     public void addValueChangeListener(MeterValueListener valueChangeListener) {
@@ -199,18 +209,10 @@ public abstract class MeterDevice<T> {
      *
      * It's only called once - except the config was updated.
      */
-    private void printInfo() {
+    protected void printInfo() {
         if (this.getPrintMeterInfo()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(this.toString());
-            stringBuilder.append(System.lineSeparator());
 
-            for (Entry<String, MeterValue> entry : valueCache.entrySet()) {
-                stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
-                stringBuilder.append(System.lineSeparator());
-            }
-
-            logger.info("", stringBuilder);
+            logger.info("Read out following values: ", toString());
             setPrintMeterInfo(false);
         }
     }

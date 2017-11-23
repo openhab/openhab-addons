@@ -74,6 +74,10 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
     @Override
     protected void populateValueCache(SmlFile smlFile) {
         if (smlFile != null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Read out following SML file: {}", System.lineSeparator());
+                SmlFileDebugOutput.printFile(smlFile, (msg) -> logger.trace(msg));
+            }
             List<SmlMessage> smlMessages = smlFile.getMessages();
 
             if (smlMessages != null) {
@@ -129,4 +133,8 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
         return new SmlSerialConnector(serialPort, baudrate, baudrateChangeDelay);
     }
 
+    @Override
+    protected void printInfo() {
+        super.printInfo();
+    }
 }
