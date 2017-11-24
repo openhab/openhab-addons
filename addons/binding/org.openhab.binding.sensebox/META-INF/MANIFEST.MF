@@ -28,6 +28,5 @@ Import-Package:
  org.openhab.binding.sensebox,
  org.openhab.binding.sensebox.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

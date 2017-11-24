@@ -30,6 +30,5 @@ Import-Package:
  org.openhab.binding.onkyo.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
