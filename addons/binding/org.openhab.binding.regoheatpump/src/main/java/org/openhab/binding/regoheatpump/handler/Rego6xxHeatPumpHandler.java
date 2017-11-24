@@ -187,7 +187,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     private void readAndUpdateLastError(String channelIID, Function<ErrorLine, State> converter) {
         executeCommandAndUpdateState(channelIID, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, e -> {
-                    return e == null ? UnDefType.NULL : converter.apply(e);
+                    return e == null ? UnDefType.UNDEF : converter.apply(e);
                 });
     }
 

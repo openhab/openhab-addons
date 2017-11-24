@@ -448,13 +448,13 @@ public class AllPlayHandler extends BaseThingHandler
             PlaylistItem currentItem = items.iterator().next();
             updateCurrentItemState(currentItem);
         } else {
-            updateState(CURRENT_ARTIST, UnDefType.NULL);
-            updateState(CURRENT_ALBUM, UnDefType.NULL);
-            updateState(CURRENT_TITLE, UnDefType.NULL);
-            updateState(CURRENT_GENRE, UnDefType.NULL);
-            updateState(CURRENT_URL, UnDefType.NULL);
-            updateState(COVER_ART_URL, UnDefType.NULL);
-            updateState(COVER_ART, UnDefType.NULL);
+            updateState(CURRENT_ARTIST, UnDefType.UNDEF);
+            updateState(CURRENT_ALBUM, UnDefType.UNDEF);
+            updateState(CURRENT_TITLE, UnDefType.UNDEF);
+            updateState(CURRENT_GENRE, UnDefType.UNDEF);
+            updateState(CURRENT_URL, UnDefType.UNDEF);
+            updateState(COVER_ART_URL, UnDefType.UNDEF);
+            updateState(COVER_ART, UnDefType.UNDEF);
         }
     }
 
@@ -489,7 +489,7 @@ public class AllPlayHandler extends BaseThingHandler
             if (!coverArtUrl.isEmpty()) {
                 updateState(COVER_ART, new RawType(getRawDataFromUrl(coverArtUrl)));
             } else {
-                updateState(COVER_ART, UnDefType.NULL);
+                updateState(COVER_ART, UnDefType.UNDEF);
             }
         } catch (Exception e) {
             logger.warn("Error getting cover art", e);

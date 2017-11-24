@@ -108,7 +108,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
 
     protected State getAsDateTimeTypeOrNull(Date date) {
         if (date == null) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
@@ -120,7 +120,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
     }
 
     protected State getAsStringTypeOrNull(Object value) {
-        return value == null ? UnDefType.NULL : new StringType(value.toString());
+        return value == null ? UnDefType.UNDEF : new StringType(value.toString());
     }
 
     protected boolean isNotHandling(NestIdentifiable nestIdentifiable) {

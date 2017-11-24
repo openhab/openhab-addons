@@ -129,7 +129,7 @@ public class GardenaThingHandler extends BaseThingHandler {
 
         if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
                 || StringUtils.startsWith(value, "1970-01-01")) {
-            return UnDefType.NULL;
+            return UnDefType.UNDEF;
         }
 
         switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
@@ -145,7 +145,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                         case "excellent":
                             return new DecimalType(4);
                         default:
-                            return UnDefType.NULL;
+                            return UnDefType.UNDEF;
                     }
                 }
                 return new DecimalType(value);
@@ -157,7 +157,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                     return new DateTimeType(cal);
                 }
         }
-        return UnDefType.NULL;
+        return UnDefType.UNDEF;
     }
 
     /**
