@@ -10,7 +10,6 @@ package org.openhab.binding.fronius.internal;
 
 import static org.openhab.binding.fronius.FroniusBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -24,6 +23,8 @@ import org.openhab.binding.fronius.handler.FroniusSymoInverterHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
  * The {@link FroniusHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -33,16 +34,8 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.fronius", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        {
-            add(THING_TYPE_INVERTER);
-            add(THING_TYPE_BRIDGE);
-        }
-    };
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_INVERTER,
+            THING_TYPE_BRIDGE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
