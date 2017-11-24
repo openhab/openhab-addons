@@ -13,7 +13,6 @@ Export-Package:
  org.openhab.binding.sleepiq,
  org.openhab.binding.sleepiq.handler
 Import-Package: 
- com.google.common.base,
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
