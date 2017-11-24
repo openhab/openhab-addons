@@ -12,6 +12,7 @@ import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.POWER;
 import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -210,7 +211,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
             Collection<ThingTypeUID> thingTypeUIDs) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
