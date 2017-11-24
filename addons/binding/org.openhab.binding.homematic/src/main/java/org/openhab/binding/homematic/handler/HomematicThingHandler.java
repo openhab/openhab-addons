@@ -248,7 +248,11 @@ public class HomematicThingHandler extends BaseThingHandler {
 
             TypeConverter<?> converter = ConverterFactory.createConverter(channel.getAcceptedItemType());
             State state = converter.convertFromBinding(dp);
-            updateState(channel.getUID(), state);
+            if (state != null) {
+                updateState(channel.getUID(), state);
+            } else {
+                logger.debug("Failed to get converted state from datapoint '{}'", dp.getName());
+            }
         }
     }
 
