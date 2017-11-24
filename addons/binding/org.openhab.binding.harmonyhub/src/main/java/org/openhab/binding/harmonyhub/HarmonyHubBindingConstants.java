@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.harmonyhub;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
 public class HarmonyHubBindingConstants {
 
     public static final String BINDING_ID = "harmonyhub";

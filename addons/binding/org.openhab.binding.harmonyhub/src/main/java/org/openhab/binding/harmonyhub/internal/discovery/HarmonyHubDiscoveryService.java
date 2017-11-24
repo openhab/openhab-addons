@@ -31,10 +31,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
 import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +44,8 @@ import org.slf4j.LoggerFactory;
  * The {@link HarmonyHubDiscoveryService} class discovers Harmony hubs and adds the results to the inbox.
  *
  * @author Dan Cunningham - Initial contribution
- *
  */
+@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.harmonyhub")
 public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);
@@ -82,12 +84,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start Harmony Hub background discovery");
         if (discoveryFuture == null || discoveryFuture.isCancelled()) {
             logger.debug("Start Scan");
-            discoveryFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    startScan();
-                }
-            }, 0, REFRESH, TimeUnit.SECONDS);
+            discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH, TimeUnit.SECONDS);
         }
     }
 
@@ -115,19 +112,11 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
             server = new HarmonyServer(serverSocket);
             server.start();
 
-            broadcastFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    sendDiscoveryMessage(String.format(DISCOVERY_STRING, serverSocket.getLocalPort()));
-                }
+            broadcastFuture = scheduler.scheduleWithFixedDelay(() -> {
+                sendDiscoveryMessage(String.format(DISCOVERY_STRING, serverSocket.getLocalPort()));
             }, 0, 2, TimeUnit.SECONDS);
 
-            timeoutFuture = scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    stopDiscovery();
-                }
-            }, TIMEOUT, TimeUnit.SECONDS);
+            timeoutFuture = scheduler.schedule(this::stopDiscovery, TIMEOUT, TimeUnit.SECONDS);
 
             running = true;
         } catch (IOException e) {
