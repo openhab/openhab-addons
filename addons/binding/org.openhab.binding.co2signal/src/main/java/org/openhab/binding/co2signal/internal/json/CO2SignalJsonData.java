@@ -19,9 +19,6 @@ public class CO2SignalJsonData {
     private double carbonIntensity;
     private double fossilFuelPercentage;
 
-    public CO2SignalJsonData() {
-    }
-
     public double getCarbonIntensity() {
         return carbonIntensity;
     }

@@ -22,9 +22,6 @@ public class CO2SignalJsonResponse {
 
     private CO2SignalJsonData data;
 
-    public CO2SignalJsonResponse() {
-    }
-
     public String getStatus() {
         return status;
     }
