@@ -40,12 +40,12 @@ public interface LightifyMessage {
     String toString();
 
     /**
-     * Is this message used for periodic polling?
+     * Is this message consider background (for instance, periodic polling or effects updates)?
      * If so it will only be logged as trace rather than debug.
      *
-     * @return true if used for periodic polling.
+     * @return true if used basckground.
      */
-    public boolean isPoller();
+    public boolean isBackground();
 
     // ****************************************
     //      Request transmission section

@@ -68,4 +68,10 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect</label>
+		<description>Start a dynamic effect.</description>
+	</channel-type>
+
 </thing:thing-descriptions>

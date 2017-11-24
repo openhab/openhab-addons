@@ -60,7 +60,7 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
     }
 
     @Override
-    public boolean isPoller() {
+    public boolean isBackground() {
         return true;
     }
 

@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_COLOR;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_DIMMER;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_EFFECT;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_SWITCH;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_ABS_TEMPERATURE;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_TEMPERATURE;
@@ -67,6 +69,11 @@ import org.openhab.binding.osramlightify.internal.messages.LightifySetLuminanceM
 import org.openhab.binding.osramlightify.internal.messages.LightifySetSwitchMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetTemperatureMessage;
 
+import org.openhab.binding.osramlightify.internal.effects.LightifyEffect;
+import org.openhab.binding.osramlightify.internal.effects.LightifyEffectFactory;
+
+import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
+
 import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
 
 /**
@@ -84,6 +91,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     protected LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
     protected boolean stateValid = false;
+    private @Nullable LightifyEffect effect;
 
     private byte @Nullable [] firmwareVersionBytes;
 
@@ -120,6 +128,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        stopEffect();
         super.dispose();
     }
 
@@ -220,7 +229,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                 }
 
                 bridgeHandler.sendMessage(new LightifySetLuminanceMessage(this, lightifyDeviceState.getLuminance()));
-                bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, lightifyDeviceState.getPower(), lightifyDeviceState));
+                bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, lightifyDeviceState.getPower()));
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -229,14 +238,18 @@ public class LightifyDeviceHandler extends BaseThingHandler {
     }
 
     public void setStatus(ThingStatus status) {
-        updateStatus(status, ThingStatusDetail.NONE, null);
+        setStatus(status, ThingStatusDetail.NONE, null);
     }
 
     public void setStatus(ThingStatus status, ThingStatusDetail detail) {
-        updateStatus(status, detail, null);
+        setStatus(status, detail, null);
     }
 
-    public void setStatus(ThingStatus status, ThingStatusDetail detail, String info) {
+    public void setStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String info) {
+        if (status != ThingStatus.ONLINE) {
+            stopEffect();
+        }
+
         updateStatus(status, detail, info);
     }
 
@@ -312,30 +325,103 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                 command = new PercentType(value);
             }
 
-            if (command instanceof HSBType) {
-                HSBType hsb = (HSBType) command;
+            if (command instanceof StringType) {
+                String spec = command.toString();
 
-                logger.debug("{}: set HSB: {}", channelUID, hsb);
+                if (command.toString().isEmpty()) {
+                    stopEffect();
+                    bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, lightifyDeviceState.getPower()));
+                } else {
+                    int i = spec.indexOf(":");
 
-                PercentType luminance = hsb.getBrightness();
-                hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(100));
+                    if (i == 0) {
+                        // A leading colon means apply the following params to the existing effect.
+                        if (effect != null) {
+                            effect.parseParams(spec.substring(i + 1).trim());
+                        } else {
+                            logger.warn("Effect parameter update but no current effect");
+                        }
+                    } else {
+                        // It is either all name (no colon) or whatever is after the colon is a parameter list.
+                        if (i == -1) {
+                            i = spec.length();
+                        }
 
-                long transitionEndNanos = System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime));
+                        try {
+                            stopEffect();
 
-                bridgeHandler.sendMessage(
-                    new LightifySetLuminanceMessage(this, luminance)
-                        .setTransitionEndNanos(transitionEndNanos)
-                );
+                            logger.debug("create effect \"{}\"", spec.substring(0, i));
+                            effect = LightifyEffectFactory.create(bridgeHandler, this, spec.substring(0, i).trim());
 
-                bridgeHandler.sendMessage(
-                    new LightifySetColorMessage(this, hsb)
-                        .setTransitionEndNanos(transitionEndNanos)
-                );
+                            if (i < spec.length() - i) {
+                                effect.parseParams(spec.substring(i + 1).trim());
+                            }
 
-            } else if (command instanceof PercentType) {
-                if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
-                    // Everything else uses dimmers for white temperature so we have to too :-(
-                    DecimalType temperature = percentToTemperature((PercentType) command);
+                            effect.start();
+                        } catch (LightifyException e) {
+                            logger.error("{}", e.getMessage(), e);
+                        }
+                    }
+                }
+
+            } else {
+                stopEffect();
+
+                if (command instanceof HSBType) {
+                    HSBType hsb = (HSBType) command;
+
+                    PercentType luminance = hsb.getBrightness();
+                    long transitionEndNanos = System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime));
+
+                    if (lightifyDeviceState.getLuminance().intValue() != luminance.intValue()) {
+                        logger.debug("{}: set luminance: {}", channelUID, luminance);
+
+                        bridgeHandler.sendMessage(
+                            new LightifySetLuminanceMessage(this, luminance)
+                                .setTransitionEndNanos(transitionEndNanos)
+                        );
+                    }
+
+                    hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(100));
+
+                    logger.debug("{}: set HSB: {}", channelUID, hsb);
+
+                    bridgeHandler.sendMessage(
+                        new LightifySetColorMessage(this, hsb)
+                            .setTransitionEndNanos(transitionEndNanos)
+                    );
+
+                } else if (command instanceof PercentType) {
+                    if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
+                        // Everything else uses dimmers for white temperature so we have to too :-(
+                        DecimalType temperature = percentToTemperature((PercentType) command);
+
+                        logger.debug("{}: set temperature: {}", channelUID, temperature);
+
+                        bridgeHandler.sendMessage(
+                            new LightifySetTemperatureMessage(this, temperature)
+                                .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
+                        );
+
+                        // A command on the percent temperature channel generates a matching command
+                        // on the absolute temperature channel.
+                        postCommand(CHANNEL_ABS_TEMPERATURE, temperature);
+
+                    } else {
+                        // It can only be luminance. It doesn't matter whether it is on the color
+                        // or luminance channel. It's ALWAYS luminance.
+                        PercentType luminance = (PercentType) command;
+
+                        logger.debug("{}: set luminance: {}", channelUID, luminance);
+
+                        bridgeHandler.sendMessage(
+                            new LightifySetLuminanceMessage(this, luminance)
+                                .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
+                        );
+                    }
+
+                } else if (command instanceof DecimalType) {
+                    DecimalType temperature = (DecimalType) command;
 
                     logger.debug("{}: set temperature: {}", channelUID, temperature);
 
@@ -344,49 +430,43 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                             .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
                     );
 
-                    // A command on the percent temperature channel generates a matching command
-                    // on the absolute temperature channel.
-                    postCommand(CHANNEL_ABS_TEMPERATURE, temperature);
+                    // A command on the absolute temperature channel generates a matching command
+                    // on the percent temperature channel.
+                    postCommand(CHANNEL_TEMPERATURE, temperatureToPercent(temperature));
+
+                } else if (command instanceof OnOffType) {
+                    OnOffType onoff = (OnOffType) command;
+
+                    logger.debug("{}: set power: {}", channelUID, onoff);
+
+                    bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, onoff));
 
                 } else {
-                    // It can only be luminance. It doesn't matter whether it is on the color
-                    // or luminance channel. It's ALWAYS luminance.
-                    PercentType luminance = (PercentType) command;
-
-                    logger.debug("{}: set luminance: {}", channelUID, luminance);
-
-                    bridgeHandler.sendMessage(
-                        new LightifySetLuminanceMessage(this, luminance)
-                            .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
-                    );
+                    logger.error("Handling not implemented for: {}", command);
                 }
-
-            } else if (command instanceof DecimalType) {
-                DecimalType temperature = (DecimalType) command;
-
-                logger.debug("{}: set temperature: {}", channelUID, temperature);
-
-                bridgeHandler.sendMessage(
-                    new LightifySetTemperatureMessage(this, temperature)
-                        .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
-                );
-
-                // A command on the absolute temperature channel generates a matching command
-                // on the percent temperature channel.
-                postCommand(CHANNEL_TEMPERATURE, temperatureToPercent(temperature));
-
-            } else if (command instanceof OnOffType) {
-                OnOffType onoff = (OnOffType) command;
-
-                logger.debug("{}: set power: {}", channelUID, onoff);
-
-                bridgeHandler.sendMessage(new LightifySetSwitchMessage(this, onoff, lightifyDeviceState));
-
-            } else {
-                logger.error("Handling not implemented for: {}", command);
             }
         }
     }
+
+    public void stopEffect() {
+        if (effect != null) {
+            logger.debug("Stop effect");
+
+            effect.stop();
+            effect = null;
+
+            updateState(CHANNEL_EFFECT, new StringType(""));
+        }
+    }
+
+    public void setTemperature(LightifyBridgeHandler bridgeHandler, DecimalType temperature) {
+        logger.debug("{}: set: temperature {}", getThing().getUID(), temperature);
+
+        bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, temperature));
+        postCommand(CHANNEL_ABS_TEMPERATURE, temperature);
+        postCommand(CHANNEL_TEMPERATURE, temperatureToPercent(temperature));
+    }
+
 
     public void changedPower(OnOffType onOff) {
         logger.debug("{}: update: power {}", getThing().getUID(), onOff);

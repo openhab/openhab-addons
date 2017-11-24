@@ -70,6 +70,35 @@ Polling is necessary both to monitor the state of devices and to discover newly 
 
 The OSRAM Lightify gateway allows a transition time to be specified for every change. Transition times may be configured at the bridege or device level (with the device level transition time being preferred if set). This allows you to set hallway/stair lights to come on instantly while letting room lights fade in gently. A separate time may be configured for transitions to off so that you can have quick on and soft-off at the same time.
 
+### Effects
+
+The "presets" provided by the official Lightify app are implemented here as effects. You apply an effect to a thing (device or group) by writing a string to its "Effect" channel of the form:
+
+	<name>[: param[, param, ...]]
+
+i.e. the name of the effect optionally followed by a colon and a comma separated list of parameters.
+
+
+Effects come in two flavours, static and dynamic. The static effects change the actual state of the device in much the same way as applying a scene. That is, linked items will see updates. Dynamic effects change the device continuously but these changes are not reported by the device and no updates will be seen. Effects are cancelled when a new command (whether effect or ordinary change) is sent to the device. Thus when dynamic effects are in use the apparent state seen may be completely different to the state reported to openHAB. This is both normal and unavoidable. Dynamic white effects do not actually change the white temperature and the temperature will revert when the effect is cancelled. This is not the case for luminance or colour changes however - when the effect is cancelled these will be at whatever values the effect leaves them at. The exception to this is the "goodnight" effect which fades luminance to zero and thus turns the device off (although prior to firmware 01020510 the device did not actually turn off when an effect set a luminance of zero).
+
+Effect          | Type     | Mode   | Parameters
+----------------|----------|--------|--------------
+activate        | dynamic  | white  | speed=<0-255>
+active          | static   | white  |
+candy           | dynamic  | colour | speed=<0-255>
+chilldown       | dynamic  | white  | speed=<0-255>
+daylight        | dynamic  | white  | speed=<0-255>
+evening         | dynamic  | colour | speed=<0-255>
+fireplace       | dynamic+ | colour |
+goodnight       | dynamic  | white  | speed=<0-255>
+loop            | dynamic  | colour | speed=<0-255>
+ocean           | dynamic+ | colour |
+plant light     | static   | colour |
+polar           | dynamic  | colour | speed=<0-255>
+relax           | static   | white  |
+white and white | dynamic  | white  | speed=<0-255>
+
+The "dynamic+" effects are special in that they do not follow a fixed cycle of changes. The Lightify app generates a new variation each time the effect is applied. In our implementation we also regenerate and reapply the effect periodically (as long as it has not been cancelled) in order to avoid repetitive patterns.
 
 ### White Temperature Auto-ranging
 
@@ -103,7 +132,6 @@ When devices are powered off it takes 10 minutes for them to go offline in openH
 ### Pairing
 
 When pairing devices with a gateway using the Lightify app sometimes the app appears to have a name for the device but the gateway does not actually have it set and so the device shows up in the openHAB inbox with a generic name. This is not a problem with openHAB or the OSRAM Lightify binding. If this happens you can correct the gateway via the Lightify app by tapping on the device, tapping on the name at the top of the screen, then tapping done to write the name to the gateway. It does not appear to be necessary to change the name at all. OpenHAB will then update the inbox entry with the new name on the next poll (you may need to reload paperUI to see it though).
-
 
 ## Channels
 

@@ -18,10 +18,13 @@
 * Add a switch channel that indicates whether we are in white mode or colour mode.
 
 * Map on/off to soft on/off (i.e. brightness changes) if transition time is non-zero as normal on/off commands do not allow a transition time.
-  * For off, set device state power to off then do a luminance transition to 0. The state should ignore the luminance change.
-  * For on, do a luminance transition to whatever the state says the current luminance is.
-  * Current firmware allows the Lightify app to set the fade on/off times for switch commands.
-    * Should we have a means to set them via openHAB? We know the messages.
+  * If we power off by transitioning luminance to 0 then we lose the previous luminance and we do not know what to set to transition to power on.
+    * Can we save the luminance value? Are there any circumstances when the luminance can change behind our back rendering our saved value invalid?
+  * We can use the SET_FADE_TIME commands to set the transition times for on/off commands.
+    * When fading to off the power state becomes false at the start of the transition and luminance may be seen decreasing during the transition even though once the transition is complete luminance appears to be reset to the previous value.
+      * We should ignore the luminance value in a received device state if power is false.
+    * When fading to on the power state becomes true at the start of the transition and luminance may be seen initially as 1 before updating to the final value.
+      * This is mostly acceptable. For our transitions we could schedule a device poll after the transition is complete but there is nothing we can do for externally (Lightify app) initiated transitions.
 
 * Is it possible to have multiple outstanding requests if they are for different devices? If we have multiple connections?
 
@@ -90,7 +93,7 @@
 
 * Add a dummy "examples" effect that dumps out some examples into the lib directory (userdata/org.openhab.binding.osramlightify.effects/)
 
-* In effects: where a median exists make it default to the current device state. min and max should be defined by offsets from median. Offer commands received by the device to any current effect and allow it the option of consuming them or allowing itself to be stopped and the command applied to the device as normal. It then becomes, for instance, possible to control the brightness of, say,  a flame/fire effect using the normal brightness controls.
+* In effects: where a median exists make it default to the current device state. min and max should be defined by offsets from median. Offer commands received by the device to any current effect and allow it the option of consuming them or allowing it self to be stopped and the command applied to the device as normal. It then becomes, for instance, possible to control the brightness of, say,  a flame/fire effect using the normal brightness controls.
   * Does this mean a luminance change accepted by an effect is not applied to the device? Should it be? i.e. should we make a note to apply it when we stop the effect? What if we are stopping the effect because we have detected an external change?
 
 * Add a parameter to the flame effect to allow it to expire. If a maximum duration is set then once it is reached we do not allow any further flickers and stop the effect when the current hue/temperature/luminance has decayed back to median.
@@ -100,3 +103,5 @@
 * Add an option to turn group support off. If you are not using groups this will reduce polling overhead saving bandwidth and power.
 
 * Add pseudo-effects that set the fade on/off times.
+
+* If we stopEffect() because the thing is going offline we should only cancel the dynamic job, not attempt to send a message.

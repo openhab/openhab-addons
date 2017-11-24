@@ -84,7 +84,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
     }
 
     @Override
-    public boolean isPoller() {
+    public boolean isBackground() {
         return true;
     }
 

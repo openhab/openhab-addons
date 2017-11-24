@@ -16,6 +16,7 @@
 			<channel id="dimmer" typeId="dimmer" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="absTemperature" typeId="absTemperature" />
+			<channel id="effect" typeId="effect" />
 		</channels>
 
 		<properties>

@@ -13,6 +13,7 @@
 
 		<channels>
 			<channel id="dimmer" typeId="dimmer" />
+			<channel id="effect" typeId="effect" />
 		</channels>
 
 		<config-description>

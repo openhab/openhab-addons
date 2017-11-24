@@ -264,6 +264,16 @@ public final class LightifyDeviceState {
 
                 // Let the thing's channels know about the new state.
 
+                // Any change not including power off-to-on means any active effect on the device
+                // has stopped and we should do likewise. If the change was not commanded by
+                // openHAB this means that some external agency, e.g. the Lightify app, has
+                // changed the device.
+                // N.B. Seeing the change quickly is not guaranteed. Do not be surprised if an
+                // active effect runs on for several seconds before it is cancelled.
+                if (powerDelta != 1) {
+                    deviceHandler.stopEffect();
+                }
+
                 // FIXME: this is problematical. The ZLL spec says that an implementation (i.e. device)
                 // responds to a colour change command by setting the closest colour supported by the
                 // hardware. If there are multiple things linked to the same item they may not agree

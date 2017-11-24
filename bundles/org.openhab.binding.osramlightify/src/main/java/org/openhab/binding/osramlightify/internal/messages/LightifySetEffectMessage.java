@@ -16,45 +16,46 @@ import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
-
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 
-import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
-
 /**
- * Set a device on or off.
+ * Set an effect on a device.
  *
  * @author Mike Jagdis - Initial contribution
  */
 @NonNullByDefault
-public final class LightifySetSwitchMessage extends LightifyBaseMessage implements LightifyMessage {
+public final class LightifySetEffectMessage extends LightifyBaseMessage implements LightifyMessage {
 
-    private byte onoff;
-    private short unknown1;
-    private IEEEAddress deviceId = new IEEEAddress();
+    private String name;
+    private String params;
+    private byte[] data;
+    private boolean background = false;
 
-    public LightifySetSwitchMessage(LightifyDeviceHandler deviceHandler, OnOffType onoff) {
-        super(deviceHandler, Command.SET_SWITCH);
+    public LightifySetEffectMessage(LightifyDeviceHandler deviceHandler, String name, String params, boolean color, byte[] data) {
+        this(deviceHandler, name, params, color, data, false);
+    }
 
-        this.onoff = (byte) (onoff == OnOffType.ON ? 0x01 : 0x00);
+    public LightifySetEffectMessage(LightifyDeviceHandler deviceHandler, String name, String params, boolean color, byte[] data, boolean background) {
+        super(deviceHandler, (color ? Command.SET_EFFECT_COLOR : Command.SET_EFFECT_WHITE));
+
+        this.name = name;
+        this.params = params;
+        this.data = data;
+        this.background = background;
+    }
+
+    public boolean isBackground() {
+        return background;
     }
 
     @Override
     public String toString() {
-        String string = super.toString()
-            + ", On/Off = " + (onoff != 0 ? "ON" : "OFF");
-
-        if (!isResponse()) {
-            return string;
-        }
-
-        return string
-            + ", unknown1 = " + String.format("0x%02x", unknown1)
-            + ", deviceId = " + deviceId;
+        return super.toString()
+            + ", effect = " + name
+            + ": " + params;
     }
 
     // ****************************************
@@ -63,8 +64,8 @@ public final class LightifySetSwitchMessage extends LightifyBaseMessage implemen
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
-        return super.encodeMessage(1)
-            .put(onoff);
+        return super.encodeMessage(9 + 15 * 4)
+            .put(data);
     }
 
     // ****************************************
@@ -74,9 +75,6 @@ public final class LightifySetSwitchMessage extends LightifyBaseMessage implemen
     @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
         super.handleResponse(bridgeHandler, data);
-
-        unknown1 = data.getShort();
-        data.get(deviceId.array());
 
         return true;
     }

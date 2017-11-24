@@ -67,6 +67,11 @@ public abstract class LightifyBaseMessage {
         ACTIVATE_SCENE(0x52),
         GET_DEVICE_INFO(0x68),
         GET_GATEWAY_FIRMWARE_VERSION(0x6F),
+        SET_COLOR_CYCLE(0xD5), // Payload: [on=0x01|off=0x00][speed 5-64k secs, 2 bytes, low first]
+        SET_EFFECT_COLOR(0xD8), // Used for what the Lightify app refers to as "Presets"
+        SET_EFFECT_WHITE(0xD9), // Used for what the Lightify app refers to as "Presets"
+        SET_FADE_ON_TIME(0xDB), // Payload is 2 bytes representing time: tenths of a second, seconds. e.g. 05:00 is 0.5s
+        SET_FADE_OFF_TIME(0xDC), // Payload is 2 bytes representing time: tenths of a second, seconds. e.g. 05:00 is 0.5s
         GET_WIFI_VERSION(0xE3);
 
         private final byte command;
@@ -150,7 +155,7 @@ public abstract class LightifyBaseMessage {
             + (deviceAddress == null ? "" : ", Address = " + deviceAddress);
     }
 
-    public boolean isPoller() {
+    public boolean isBackground() {
         return false;
     }
 

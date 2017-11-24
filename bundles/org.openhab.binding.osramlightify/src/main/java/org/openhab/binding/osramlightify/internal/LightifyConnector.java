@@ -443,7 +443,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
 
             ByteBuffer messageBuffer = message.encodeMessage();
 
-            if (message.isPoller()) {
+            if (message.isBackground()) {
                 logger.trace("TX: {}", message);
             } else {
                 logger.debug("TX: {}", message);
