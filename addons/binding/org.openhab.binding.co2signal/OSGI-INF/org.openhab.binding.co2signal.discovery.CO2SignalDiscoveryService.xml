@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="discovery.co2signal" immediate="true" name="org.openhab.binding.co2signal.discovery.CO2SignalDiscoveryService">
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+   <reference bind="setLocationProvider" interface="org.eclipse.smarthome.core.i18n.LocationProvider" name="LocationProvider" unbind="unsetLocationProvider"/>
+   <implementation class="org.openhab.binding.co2signal.discovery.CO2SignalDiscoveryService"/>
+</scr:component>

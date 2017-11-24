@@ -22,6 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class CO2SignalBindingConstants {
 
+    public static final String LOCAL = "local";
+
     public static final String BINDING_ID = "co2signal";
 
     // List of all Thing Type UIDs
