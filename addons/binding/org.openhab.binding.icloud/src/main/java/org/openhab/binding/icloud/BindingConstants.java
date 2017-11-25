@@ -51,4 +51,8 @@ public class BindingConstants {
     public static final String ADDRESSCOUNTRY = "addressCountry";
     public static final String FORMATTEDADDRESS = "formattedAddress";
     public static final String DEVICENAME = "deviceName";
+
+    // Device properties
+    public static final String DEVICEIDHASHPROPERTY = "deviceIdHash";
+    public static final String DEVICEIDPROPERTY = "deviceId";
 }

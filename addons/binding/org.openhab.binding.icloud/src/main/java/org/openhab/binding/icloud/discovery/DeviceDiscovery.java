@@ -53,7 +53,7 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
 
                     ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                            .withLabel(thingLabel).build();
+                            .withProperty(DEVICEIDPROPERTY, deviceId).withLabel(thingLabel).build();
 
                     logger.debug("Device id [{}] found.", deviceIdHash);
 

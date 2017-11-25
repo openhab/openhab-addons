@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.Address;
+import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ import org.slf4j.LoggerFactory;
 public class DeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private String deviceId;
+    private String deviceIdHash;
+    private DeviceThingConfiguration configuration;
     private BridgeHandler bridge;
     private LocationProvider locationProvider;
 
@@ -145,7 +148,12 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
-        logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
+        logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
+
+        this.configuration = getConfigAs(DeviceThingConfiguration.class);
+
+        this.deviceId = configuration.deviceId;
+        this.deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
         bridge = (BridgeHandler) getBridge().getHandler();
 
@@ -162,15 +170,14 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private Content getDeviceData(ArrayList<Content> content) {
-        String deviceId = thing.getUID().getAsString();
-        logger.debug("Device: [{}]", deviceId);
+        logger.debug("Device: [{}]", deviceIdHash);
         try {
             for (int i = 0; i < content.size(); i++) {
-                String currentId = Integer.toHexString(content.get(i).getId().hashCode());
+                String currentIdHash = Integer.toHexString(content.get(i).getId().hashCode());
 
-                logger.debug("Current data element: [{}]", currentId);
+                logger.debug("Current data element: [{}]", currentIdHash);
 
-                if (deviceId.endsWith(currentId)) {
+                if (deviceIdHash.compareToIgnoreCase(currentIdHash) == 0) {
                     return content.get(i);
                 }
             }
