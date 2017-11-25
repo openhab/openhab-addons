@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal;
+package org.openhab.binding.icloud.internal.configuration;
 
 /**
  *
  * @author Patrik Gfeller
  *
  */
-public class Configuration {
+public class AccountThingConfiguration {
     public String appleId;
     public String password;
     public Integer refreshTimeInMinutes;

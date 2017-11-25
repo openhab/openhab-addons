@@ -36,9 +36,9 @@ import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.AddressLookup;
 import org.openhab.binding.icloud.internal.AddressLookupParser;
-import org.openhab.binding.icloud.internal.Configuration;
 import org.openhab.binding.icloud.internal.Connection;
 import org.openhab.binding.icloud.internal.DeviceInformationParser;
+import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.openhab.binding.icloud.internal.json.icloud.JSONRootObject;
 import org.osgi.framework.ServiceRegistration;
@@ -53,7 +53,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private Connection connection;
-    private Configuration config;
+    private AccountThingConfiguration config;
     private boolean addressLookupIsEnabled = false;
     ServiceRegistration<?> service;
     DeviceDiscovery discoveryService;
@@ -156,7 +156,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private void startHandler() {
         logger.debug("iCloud bridge starting handler ...");
-        config = getConfigAs(Configuration.class);
+        config = getConfigAs(AccountThingConfiguration.class);
 
         // Enable google address lookup if an API key is configured
         if (config.googleAPIKey != "") {
