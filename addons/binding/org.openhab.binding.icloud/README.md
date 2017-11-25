@@ -88,7 +88,7 @@ The following channels are available (if supported by the device):
 ```php
 Bridge icloud:account:myaccount [appleId="abc@xyz.tld", password="secure", refreshTimeInMinutes=5, googleAPIKey="abc123"]
 {
-    hing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV"]
+    Thing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV"]
 }
 ```
 
