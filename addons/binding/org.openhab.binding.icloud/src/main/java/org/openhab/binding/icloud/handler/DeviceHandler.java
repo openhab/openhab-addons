@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
 public class DeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private String deviceId;
-    private String deviceIdHash;
-    private DeviceThingConfiguration configuration;
     private BridgeHandler bridge;
     private LocationProvider locationProvider;
 
@@ -150,10 +148,8 @@ public class DeviceHandler extends BaseThingHandler {
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
-        this.configuration = getConfigAs(DeviceThingConfiguration.class);
-
+        DeviceThingConfiguration configuration = getConfigAs(DeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
-        this.deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
         bridge = (BridgeHandler) getBridge().getHandler();
 
@@ -170,14 +166,14 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private Content getDeviceData(ArrayList<Content> content) {
-        logger.debug("Device: [{}]", deviceIdHash);
+        logger.debug("Device: [{}]", deviceId);
         try {
             for (int i = 0; i < content.size(); i++) {
-                String currentIdHash = Integer.toHexString(content.get(i).getId().hashCode());
+                String currentId = content.get(i).getId();
 
-                logger.debug("Current data element: [{}]", currentIdHash);
+                logger.debug("Current data element: [{}]", currentId);
 
-                if (deviceIdHash.compareToIgnoreCase(currentIdHash) == 0) {
+                if (deviceId.compareToIgnoreCase(currentId) == 0) {
                     return content.get(i);
                 }
             }
