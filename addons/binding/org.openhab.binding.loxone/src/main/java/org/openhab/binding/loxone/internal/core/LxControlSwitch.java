@@ -63,6 +63,19 @@ public class LxControlSwitch extends LxControl {
         super(client, uuid, json, room, category);
     }
 
+    LxControlSwitch() {
+        super(TYPE_NAME);
+    }
+
+    LxControlSwitch(String typeName) {
+        super(typeName);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlSwitch(client, uuid, json, room, category);
+    }
+
     /**
      * Set switch to ON.
      * <p>

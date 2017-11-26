@@ -35,7 +35,7 @@ public class LxControlLightController extends LxControlAbstractController implem
     /**
      * A name by which Miniserver refers to light controller controls
      */
-    static final String TYPE_NAME = "lightcontroller";
+    private static final String TYPE_NAME = "lightcontroller";
 
     /**
      * Current active scene number (0-9)
@@ -85,6 +85,15 @@ public class LxControlLightController extends LxControlAbstractController implem
         super(client, uuid, json, room, category);
         // sub-controls of this control have been created when update() method was called by super class constructor
         addStateListener(STATE_SCENE_LIST, this);
+    }
+
+    LxControlLightController() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlLightController(client, uuid, json, room, category);
     }
 
     /**

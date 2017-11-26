@@ -40,6 +40,17 @@ abstract class LxControlAbstractController extends LxControl {
     }
 
     /**
+     * Create control object.
+     * Used by control object factory.
+     *
+     * @param typeName
+     *            name of the control type
+     */
+    LxControlAbstractController(String typeName) {
+        super(typeName);
+    }
+
+    /**
      * Update Miniserver's controller in runtime.
      *
      * @param json
@@ -72,7 +83,7 @@ abstract class LxControlAbstractController extends LxControl {
                 }
             }
         }
-        List<LxUuid> toRemove = new ArrayList<>(subControls.size());
+        List<LxUuid> toRemove = new ArrayList<>();
         for (LxControl control : subControls.values()) {
             if (!control.uuid.getUpdate()) {
                 toRemove.add(control.uuid);

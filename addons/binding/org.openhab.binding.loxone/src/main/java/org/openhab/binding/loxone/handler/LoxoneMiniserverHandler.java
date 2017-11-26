@@ -57,7 +57,7 @@ import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyDigital;
 import org.openhab.binding.loxone.internal.core.LxControlJalousie;
 import org.openhab.binding.loxone.internal.core.LxControlLightController;
 import org.openhab.binding.loxone.internal.core.LxControlLightControllerV2;
-import org.openhab.binding.loxone.internal.core.LxControlLightControllerV2.LxControlMood;
+import org.openhab.binding.loxone.internal.core.LxControlMood;
 import org.openhab.binding.loxone.internal.core.LxControlPushbutton;
 import org.openhab.binding.loxone.internal.core.LxControlRadio;
 import org.openhab.binding.loxone.internal.core.LxControlSwitch;
@@ -358,14 +358,14 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 List<ChannelUID> toRemove = new ArrayList<>();
                 controls.forEach((k, v) -> {
                     if (v instanceof LxControlMood
-                            && controller.getUuid().equals(((LxControlMood) v).getControllerUuid())) {
+                            && controller.getUuid().equals(((LxControlMood) v).getControllerUuid())
+                            && !newChannels.containsKey(k)) {
                         toRemove.add(k);
                     }
                 });
 
                 // remove the collected mood channels from the thing and controls
                 ThingBuilder builder = editThing();
-                logger.trace("Updating thing");
                 toRemove.forEach(k -> {
                     builder.withoutChannel(k);
                     controls.remove(k);
@@ -463,7 +463,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             ChannelBuilder builder = ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
                     .withDescription(channelDescription + " : " + channelLabel);
             if (tags != null) {
-                builder = builder.withDefaultTags(tags);
+                builder.withDefaultTags(tags);
             }
             Channel newChannel = builder.build();
             channels.add(newChannel);

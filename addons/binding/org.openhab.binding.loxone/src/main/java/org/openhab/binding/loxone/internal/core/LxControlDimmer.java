@@ -28,7 +28,7 @@ public class LxControlDimmer extends LxControl {
     /**
      * A name by which Miniserver refers to dimmer controls
      */
-    static final String TYPE_NAME = "dimmer";
+    private static final String TYPE_NAME = "dimmer";
 
     /**
      * States
@@ -62,6 +62,15 @@ public class LxControlDimmer extends LxControl {
      */
     LxControlDimmer(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlDimmer() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlDimmer(client, uuid, json, room, category);
     }
 
     /**

@@ -23,7 +23,7 @@ public class LxControlInfoOnlyDigital extends LxControl {
     /**
      * A name by which Miniserver refers to digital virtual state controls
      */
-    static final String TYPE_NAME = "infoonlydigital";
+    private static final String TYPE_NAME = "infoonlydigital";
     /**
      * InfoOnlyDigital has one state that can be on/off
      */
@@ -49,6 +49,15 @@ public class LxControlInfoOnlyDigital extends LxControl {
     LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    public LxControlInfoOnlyDigital() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlInfoOnlyDigital(client, uuid, json, room, category);
     }
 
     /**

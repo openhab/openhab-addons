@@ -31,6 +31,7 @@ import com.google.gson.JsonElement;
  */
 public abstract class LxControl {
     private String name;
+    private String typeName;
     private LxContainer room;
     private LxCategory category;
     private Map<String, LxControlState> states = new HashMap<>();
@@ -58,7 +59,50 @@ public abstract class LxControl {
         logger.trace("Creating new LxControl: {}", json.type);
         socketClient = client;
         this.uuid = uuid;
+        if (json.type != null) {
+            this.typeName = json.type.toLowerCase();
+        }
         update(json, room, category);
+    }
+
+    /**
+     * Create a Miniserver's control object.
+     * To be used by the control object factory.
+     *
+     * @param typeName
+     *            name of the control type
+     */
+    LxControl(String typeName) {
+        this.typeName = typeName;
+    }
+
+    /**
+     * Creates an instance of a particular control class.
+     *
+     * @param client
+     *            websocket client to facilitate communication with Miniserver
+     * @param uuid
+     *            UUID of this control
+     * @param json
+     *            JSON describing the control as received from the Miniserver
+     * @param room
+     *            Room that this control belongs to
+     * @param category
+     *            Category that this control belongs to
+     * @return
+     *         a newly created control object
+     */
+    abstract LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
+            LxCategory category);
+
+    /**
+     * Gets the name of the control type
+     *
+     * @return
+     *         control type name
+     */
+    String getTypeName() {
+        return typeName;
     }
 
     /**
@@ -263,9 +307,6 @@ public abstract class LxControl {
     }
 
     private LxControlState getState(String name) {
-        if (states.containsKey(name)) {
-            return states.get(name);
-        }
-        return null;
+        return states.get(name);
     }
 }

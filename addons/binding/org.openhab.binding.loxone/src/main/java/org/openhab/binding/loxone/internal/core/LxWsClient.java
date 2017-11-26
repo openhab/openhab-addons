@@ -63,7 +63,7 @@ class LxWsClient {
     private int maxBinMsgSize = 3 * 1024; // 3 MB
     private int maxTextMsgSize = 512; // 512 KB
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private ScheduledFuture<?> timeout;
     private LxWebSocket socket;
     private WebSocketClient wsClient;

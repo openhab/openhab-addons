@@ -23,7 +23,7 @@ public class LxControlTextState extends LxControl {
     /**
      * A name by which Miniserver refers to text state controls
      */
-    static final String TYPE_NAME = "textstate";
+    private static final String TYPE_NAME = "textstate";
 
     /**
      * A state which will receive an update of possible Text State values)
@@ -46,6 +46,15 @@ public class LxControlTextState extends LxControl {
      */
     LxControlTextState(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlTextState() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlTextState(client, uuid, json, room, category);
     }
 
     /**

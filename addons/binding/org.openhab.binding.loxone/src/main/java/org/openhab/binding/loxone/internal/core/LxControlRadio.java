@@ -31,7 +31,7 @@ public class LxControlRadio extends LxControl {
     /**
      * A name by which Miniserver refers to radio-button controls
      */
-    static final String TYPE_NAME = "radio";
+    private static final String TYPE_NAME = "radio";
 
     /**
      * Radio-button has one state that is a number representing current active output
@@ -60,6 +60,15 @@ public class LxControlRadio extends LxControl {
      */
     LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlRadio() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlRadio(client, uuid, json, room, category);
     }
 
     /**

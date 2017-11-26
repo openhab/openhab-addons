@@ -24,7 +24,7 @@ public class LxControlPushbutton extends LxControlSwitch {
     /**
      * A name by which Miniserver refers to pushbutton controls
      */
-    static final String TYPE_NAME = "pushbutton";
+    private static final String TYPE_NAME = "pushbutton";
     /**
      * Command string used to set control's state to ON and OFF (tap)
      */
@@ -46,6 +46,19 @@ public class LxControlPushbutton extends LxControlSwitch {
      */
     LxControlPushbutton(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlPushbutton() {
+        super(TYPE_NAME);
+    }
+
+    LxControlPushbutton(String typeName) {
+        super(typeName);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlPushbutton(client, uuid, json, room, category);
     }
 
     /**

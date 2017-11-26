@@ -39,120 +39,10 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 public class LxControlLightControllerV2 extends LxControlAbstractController implements LxControlStateListener {
-
-    /**
-     * This class represents a mood belonging to a {@link LxControlLightControllerV2} object.
-     * A mood is effectively a switch. When the switch is set to ON, mood is active and mixed into a set of active
-     * moods.
-     *
-     * @author Pawel Pieczul - initial contribution
-     *
-     */
-    public class LxControlMood extends LxControlSwitch {
-        Integer moodId;
-        Boolean isStatic;
-
-        /**
-         * Create a control representing a single mood of a light controller V2.
-         *
-         * @param client
-         *            communication client used to send commands to the Miniserver
-         * @param uuid
-         *            controller's UUID
-         * @param json
-         *            JSON describing the control as received from the Miniserver
-         * @param room
-         *            room to which mood belongs
-         * @param category
-         *            category to which mood belongs
-         * @param moodId
-         *            mood ID withing the controller (received from the Miniserver)
-         * @param isStatic
-         *            true if this mood is static and can't be deleted or modified in any way
-         */
-        LxControlMood(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category,
-                Integer moodId, Boolean isStatic) {
-            super(client, uuid, json, room, category);
-            this.moodId = moodId;
-            this.isStatic = isStatic;
-        }
-
-        /**
-         * Get an ID of this mood. ID indentifies the mood within a light controller.
-         * It is equal to the mood ID received from the Miniserver.
-         *
-         * @return
-         *         mood ID
-         */
-        public Integer getId() {
-            return moodId;
-        }
-
-        /**
-         * Returns if mood is statically-defined 'all off' mood.
-         * Setting 'all off' mood on the Miniserver switches all outputs off, but it can't be mixed with other moods.
-         * Attempt to mix it results in no change in the active moods list.
-         *
-         * @return
-         *         true if this is static all outputs off mood
-         */
-        public boolean isAllOffMood() {
-            // currently the API does not give a hint how to figure out the 'all off' mood
-            // empirically this is the only mood that is not editable by the user and has a static flag set on
-            // we will assume that the only static mood is 'all off' mood
-            return isStatic == null ? false : isStatic;
-        }
-
-        /**
-         * Get controller's UUID that the mood belongs to.
-         *
-         * @return UUID of the lighting controller
-         */
-        public LxUuid getControllerUuid() {
-            return LxControlLightControllerV2.this.getUuid();
-        }
-
-        /**
-         * Mix the mood into active moods.
-         *
-         * @throws IOException
-         *             when something went wrong with communication
-         */
-        @Override
-        public void on() throws IOException {
-            addMood(moodId);
-        }
-
-        /**
-         * Mix the mood out of active moods.
-         *
-         * @throws IOException
-         *             when something went wrong with communication
-         */
-        @Override
-        public void off() throws IOException {
-            removeMood(moodId);
-        }
-
-        /**
-         * Return whether the mood is active of not.
-         *
-         * @return
-         *         1 if mood is active and 0 otherwise
-         */
-        @Override
-        public Double getState() {
-            if (isMoodActive(moodId)) {
-                return 1.0;
-            }
-            return 0.0;
-        }
-    }
-
     /**
      * A name by which Miniserver refers to light controller v2 controls
      */
-    static final String TYPE_NAME = "lightcontrollerv2";
+    private static final String TYPE_NAME = "lightcontrollerv2";
 
     /**
      * State with list of active moods
@@ -209,10 +99,18 @@ public class LxControlLightControllerV2 extends LxControlAbstractController impl
     LxControlLightControllerV2(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
         super(client, uuid, json, room, category);
-
         // sub-controls of this control have been created when update() method was called by the super class constructor
         addStateListener(STATE_MOODS_LIST, this);
         addStateListener(STATE_ACTIVE_MOODS_LIST, this);
+    }
+
+    LxControlLightControllerV2() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlLightControllerV2(client, uuid, json, room, category);
     }
 
     /**
@@ -318,7 +216,7 @@ public class LxControlLightControllerV2 extends LxControlAbstractController impl
     }
 
     /**
-     * Get scene names from a new state value received from the Miniserver
+     * Get configured and active moods from a new state value received from the Miniserver
      *
      * @param state
      *            state update from the Miniserver
@@ -343,7 +241,7 @@ public class LxControlLightControllerV2 extends LxControlAbstractController impl
                         // mood-UUID = <controller-UUID>-M<mood-ID>
                         LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + mood.id);
                         LxControlMood control = new LxControlMood(socketClient, moodUuid, json, getRoom(),
-                                getCategory(), mood.id, mood.isStatic);
+                                getCategory(), mood.id, mood.isStatic, this);
                         moodList.put(moodUuid, control);
                         if (minMoodId == null || minMoodId > mood.id) {
                             minMoodId = mood.id;
@@ -386,7 +284,7 @@ public class LxControlLightControllerV2 extends LxControlAbstractController impl
      * @return
      *         true if mood is currently active
      */
-    private boolean isMoodActive(Integer moodId) {
+    boolean isMoodActive(Integer moodId) {
         return activeMoods.contains(moodId);
     }
 }

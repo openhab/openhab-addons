@@ -24,7 +24,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     /**
      * A name by which Miniserver refers to analog virtual state controls
      */
-    static final String TYPE_NAME = "infoonlyanalog";
+    private static final String TYPE_NAME = "infoonlyanalog";
     /**
      * InfoOnlyAnalog state with current value
      */
@@ -53,6 +53,15 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      */
     LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlInfoOnlyAnalog() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
     }
 
     /**

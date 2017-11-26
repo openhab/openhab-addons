@@ -8,14 +8,10 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A factory of controls of Loxone Miniserver.
@@ -27,20 +23,20 @@ import org.slf4j.LoggerFactory;
 class LxControlFactory {
     static {
         controls = new HashMap<>();
-        addType(LxControlDimmer.class);
-        addType(LxControlInfoOnlyAnalog.class);
-        addType(LxControlInfoOnlyDigital.class);
-        addType(LxControlJalousie.class);
-        addType(LxControlLightController.class);
-        addType(LxControlLightControllerV2.class);
-        addType(LxControlPushbutton.class);
-        addType(LxControlRadio.class);
-        addType(LxControlSwitch.class);
-        addType(LxControlTextState.class);
-        addType(LxControlTimedSwitch.class);
+        add(new LxControlDimmer());
+        add(new LxControlInfoOnlyAnalog());
+        add(new LxControlInfoOnlyDigital());
+        add(new LxControlJalousie());
+        add(new LxControlLightController());
+        add(new LxControlLightControllerV2());
+        add(new LxControlPushbutton());
+        add(new LxControlRadio());
+        add(new LxControlSwitch());
+        add(new LxControlTextState());
+        add(new LxControlTimedSwitch());
     }
 
-    private static Map<String, Class<?>> controls;
+    private static Map<String, LxControl> controls;
 
     /**
      * Create a {@link LxControl} object for a control received from the Miniserver
@@ -64,36 +60,14 @@ class LxControlFactory {
             return null;
         }
         String type = json.type.toLowerCase();
-        Class<?> c = controls.get(type);
-        if (c != null) {
-            try {
-                Constructor<?> constructor = c.getDeclaredConstructor(LxWsClient.class, LxUuid.class,
-                        LxJsonControl.class, LxContainer.class, LxCategory.class);
-                Object control = constructor.newInstance(client, uuid, json, room, category);
-                if (control instanceof LxControl) {
-                    return (LxControl) control;
-                }
-                getLogger().debug("Unexpected object constructed: {}", control.getClass().getSimpleName());
-            } catch (NoSuchMethodException | SecurityException | InvocationTargetException | IllegalAccessException
-                    | InstantiationException | IllegalArgumentException e) {
-                getLogger().debug("Failed to construct control object {}: {}", c.getSimpleName(), e.getMessage());
-            }
-        } else {
-            getLogger().debug("No registered control class for {}, uuid = {}", type, json.uuidAction);
+        LxControl control = controls.get(type);
+        if (control != null) {
+            return control.create(client, uuid, json, room, category);
         }
         return null;
     }
 
-    private static void addType(Class<?> c) {
-        try {
-            String name = (String) c.getDeclaredField("TYPE_NAME").get(null);
-            controls.put(name, c);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            getLogger().debug("Error registering control class {}: {}", c.getSimpleName(), e.getMessage());
-        }
-    }
-
-    private static Logger getLogger() {
-        return LoggerFactory.getLogger(LxControlFactory.class);
+    private static void add(LxControl control) {
+        controls.put(control.getTypeName(), control);
     }
 }

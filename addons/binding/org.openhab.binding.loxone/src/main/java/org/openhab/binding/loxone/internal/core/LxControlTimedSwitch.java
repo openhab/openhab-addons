@@ -27,7 +27,7 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
     /**
      * A name by which Miniserver refers to timed switch controls
      */
-    static final String TYPE_NAME = "timedswitch";
+    private static final String TYPE_NAME = "timedswitch";
 
     /**
      * deactivationDelay - countdown until the output is deactivated.
@@ -53,6 +53,15 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
      */
     LxControlTimedSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    LxControlTimedSwitch() {
+        super(TYPE_NAME);
+    }
+
+    @Override
+    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        return new LxControlTimedSwitch(client, uuid, json, room, category);
     }
 
     /**
