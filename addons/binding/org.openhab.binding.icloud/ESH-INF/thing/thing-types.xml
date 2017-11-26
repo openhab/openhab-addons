@@ -57,12 +57,15 @@
 			<channel typeId="FormattedAddress" id="formattedAddress" />
 			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
-
+        
+        <representation-property>deviceId</representation-property>
+        
         <config-description>
            <parameter name="deviceId" type="text" required="true">
                <label>Device id</label>
-           </parameter>
+           </parameter>   
         </config-description>
+        
 	</thing-type>
 
 	<channel-type id="NumberOfDevices">
