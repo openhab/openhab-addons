@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="heos"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Thing Type -->
+    <bridge-type id="bridge">
+        <label>HEOS Bridge</label>
+        <description>The HEOS System Bridge</description>    
+        
+         <channels>
+            <channel typeId="reboot"                id="Reboot"></channel>    
+            <channel typeId="dynamicGroupHandling"  id="DynamicGroupHandling"></channel>  
+            <channel typeId="buildGroup"            id="BuildGroup"></channel> 
+            <channel typeId="playlists"             id="Playlists"></channel>
+            <channel typeId="rawCommand"            id="RawCommand"></channel>
+            <channel typeId="play_URL"              id="PlayURL"></channel>
+             
+               
+        </channels>
+        
+          <properties>
+            <property name="vendor">Denon</property>            
+        </properties>
+        
+        <config-description>
+         <parameter name="name" type="text">
+               <label>Player Type</label>
+                <description>Player Type of the Bridge.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="ipAddress" type="text">
+                <context>network_address</context>
+                <label>Network Address</label>
+                <description>Network address of the HEOS bridge.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="userName" type="text">
+                <context>String</context>
+                <label>Username</label>
+                <description>Username to register to HEOS service.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="password" type="text">
+                <context>password</context>
+                <label>Password</label>
+                <description>Password to register at the HEOS Service</description>
+                <required>false</required>
+            </parameter>
+              <parameter name="heartBeat" type="text">
+                <context>String</context>
+                <label>Heart Beat</label>
+                <description>The time in seconds for the HEOS heart beat (default = 60s)</description>
+                <default>60</default>
+                <required>false</required>
+            </parameter>
+                          
+        </config-description>
+
+    </bridge-type>
+
+ 
+
+</thing:thing-descriptions>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="heos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+   <channel-type id="control">
+       <item-type>Player</item-type>
+       <label>Control</label>
+       <description>Heos Control</description>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>    
+    </channel-type>
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+     </channel-type>
+     <channel-type id="group">
+        <item-type>Switch</item-type>
+        <label>Connect</label>
+     </channel-type>
+     <channel-type id="ungroup">
+        <item-type>Switch</item-type>
+        <label>Group</label>
+     </channel-type>
+     <channel-type id="title">
+        <item-type>String </item-type>
+        <label>Song</label>
+     </channel-type>
+        <channel-type id="interpret">
+        <item-type>String</item-type>
+        <label>Artist</label>
+     </channel-type>
+      <channel-type id="album">
+        <item-type>String</item-type>
+        <label>Album</label>
+     </channel-type>
+      <channel-type id="image_url" advanced="true">
+        <item-type>String</item-type>
+        <label>Cover</label>
+     </channel-type>   
+      <channel-type id="player">
+        <item-type>Switch</item-type>
+        <label>Player</label>
+     </channel-type>
+       <channel-type id="buildGroup">
+        <item-type>Switch</item-type>
+        <label>Made Group</label>
+     </channel-type>
+      <channel-type id="dynamicGroupHandling">
+        <item-type>Switch</item-type>
+        <label>Keep Groups</label>
+     </channel-type>
+         <channel-type id="favorit">
+        <item-type>Switch</item-type>
+        <label>Favorites</label>
+     </channel-type>
+         <channel-type id="playlists" advanced="true">
+        <item-type>String</item-type>
+        <label>Playlists</label>
+     </channel-type>       
+         <channel-type id="reboot">
+        <item-type>Switch</item-type>
+        <label>Reboot</label>
+     </channel-type>       
+         <channel-type id="input" advanced="true">
+        <item-type>String</item-type>
+        <label>Input Source</label>
+     </channel-type>
+     <channel-type id="onlineStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Thing Status</label>
+     </channel-type>
+        <channel-type id="currentPosition" advanced="true">
+        <item-type>String</item-type>
+        <label>Current track position</label>
+     </channel-type>
+        <channel-type id="duration" advanced="true">
+        <item-type>String</item-type>
+        <label>Track duration</label>
+     </channel-type>
+        <channel-type id="rawCommand" advanced="true">
+        <item-type>String</item-type>
+        <label>Sending a HEOS command as specified within the HEOS CLI protocol</label>
+     </channel-type>
+       <channel-type id="type" advanced="true">
+        <item-type>String</item-type>
+        <label>The media currently played type (station, song, ...)</label>
+     </channel-type>
+       <channel-type id="station" advanced="true">
+        <item-type>String</item-type>
+        <label>The station name</label>
+     </channel-type>
+        <channel-type id="play_URL" advanced="true">
+        <item-type>String</item-type>
+        <label>Play a media file from URL</label>
+     </channel-type>
+     
+    
+    </thing:thing-descriptions>
