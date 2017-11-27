@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.samsungtv.discovery">
-   <implementation class="org.openhab.binding.samsungtv.discovery.SamsungTvDiscoveryParticipant"/>
+   <implementation class="org.openhab.binding.samsungtv.internal.discovery.SamsungTvDiscoveryParticipant"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
    </service>

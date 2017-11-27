@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MilightBridgeDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private ScheduledFuture<?> backgroundFuture;
-    private final InetAddress broadcast;
     private Logger logger = LoggerFactory.getLogger(MilightBridgeDiscovery.class);
     private MilightDiscover receiveThread;
 
@@ -61,8 +60,6 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
     public MilightBridgeDiscovery() throws IllegalArgumentException, UnknownHostException {
         super(MilightBindingConstants.BRIDGE_THING_TYPES_UIDS, 2, true);
-        byte[] addr = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
-        broadcast = InetAddress.getByAddress(addr);
         startDiscoveryService();
     }
 
@@ -74,7 +71,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
         startDiscoveryService();
 
-        backgroundFuture = scheduler.scheduleAtFixedRate(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -85,7 +82,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
             backgroundFuture = null;
         }
         if (receiveThread != null) {
-            receiveThread.dispose();
+            receiveThread.release();
         }
         receiveThread = null;
     }

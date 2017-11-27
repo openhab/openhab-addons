@@ -13,15 +13,19 @@
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
+				<context>serial-port</context>
 				<description>Serial port that the Meteostick is plugged in to</description>
 			</parameter>
 			<parameter name="mode" type="integer" required="true">
 				<label>Frequency Band</label>
-				<description>Specifies the frequency band Meteostick shall listen to</description>
+				<description>Specifies the frequency mode including device, region and frequency that Meteostick will use</description>
 				<options>
-					<option value="0">North America (915MHz)</option>
-					<option value="1">Europe (868MHz)</option>
-					<option value="2">Australia (915MHz)</option>
+					<option value="0">Davis - North America (915MHz)</option>
+					<option value="1">Davis - Europe (868MHz)</option>
+					<option value="2">Davis - Australia (915Mhz)</option>
+					<option value="3">Fine Offset - North America (915MHz)</option>
+					<option value="4">Fine Offset - Europe (868MHz)</option>
+					<option value="5">Davis - New Zealand (931.5Mhz)</option>
 				</options>
 				<default>1</default>
 			</parameter>

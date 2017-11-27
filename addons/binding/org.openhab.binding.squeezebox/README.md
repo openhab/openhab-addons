@@ -24,12 +24,21 @@ The binding requires no special configuration
 
 ## Thing Configuration
 
-The Squeeze Server bridge requires the ip address, web port, and cli port to access it on.
+The Squeeze Server bridge requires the ip address, web port, and cli port to access it on.  If Squeeze Server authentication is enabled, the userId and password also are required.
 Squeeze Players are identified by their MAC address.
 In the thing file, this looks e.g. like
 
 ```
 Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
+{
+    Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1" ]
+}
+```
+
+Or, if Squeeze Server authentication is enabled:
+
+```
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword" ]
 {
     Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1" ]
 }
@@ -113,6 +122,6 @@ end
 
 ### Known Issues
 
-- There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been reported on the squeezelite forum.
+- There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 - When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.

@@ -26,24 +26,15 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="mediatype" typeId="mediatype" />
+			<channel id="thumbnail" typeId="thumbnail" />
+			<channel id="fanart" typeId="fanart" />
 		</channels>
 
 		<properties>
 			<property name="version">unknown</property>
 		</properties>
 
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<label>Network Address</label>
-				<description>The IP or host name of the kodi</description>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
-				<label>Web socket service port</label>
-				<description>Port for the web socket service</description>
-				<default>9090</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:kodi:kodi" />
 	</thing-type>
 
 	<!-- Kodi Commands -->
@@ -56,13 +47,13 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
-		</state>
+		<state min="0" max="100" step="1" pattern="%d %%" />
 	</channel-type>
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind
+		</description>
 		<category>Player</category>
 	</channel-type>
 	<channel-type id="stop">
@@ -79,13 +70,13 @@
 		<item-type>String</item-type>
 		<label>Play PVR tv</label>
 		<description>Play the given PVR TV channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="pvr-open-radio" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR radio</label>
 		<description>Play the given PVR Radio channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="shownotification" advanced="true">
 		<item-type>String</item-type>
@@ -95,7 +86,8 @@
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a key</label>
-		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
+		<description>Sends a key stroke to the Kodi Player to navigate in the UI
+		</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>
@@ -115,12 +107,14 @@
 	<channel-type id="inputtext" advanced="true">
 		<item-type>String</item-type>
 		<label>Sends text as input</label>
-		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
+		<description>Sends a text to the Kodi Player to simulate keyboard text entry
+		</description>
 	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to kodi. This allows to shutdown/suspend/hibernate/reboot kodi</description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi
+		</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>
@@ -132,7 +126,7 @@
 	</channel-type>
 
 	<!-- Kodi variables -->
-	<channel-type id="pvr-channel">
+	<channel-type id="pvr-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>PVR channel title</label>
 		<description>Title of the current PVR channel</description>
@@ -167,5 +161,17 @@
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="thumbnail">
+		<item-type>Image</item-type>
+		<label>Thumbnail</label>
+		<description>The current thumbnail</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fanart">
+		<item-type>Image</item-type>
+		<label>Fanart</label>
+		<description>The current fanart</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

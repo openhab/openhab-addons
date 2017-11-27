@@ -101,6 +101,13 @@ public class HmGatewayInfo {
     }
 
     /**
+     * Return true, if the gateway is a CCU1.
+     */
+    public boolean isCCU1() {
+        return "CCU".equals(type);
+    }
+
+    /**
      * Returns true, if the gateway supports the CUxD interface.
      */
     public boolean isCuxdInterface() {
@@ -156,9 +163,6 @@ public class HmGatewayInfo {
         this.groupInterface = groupInterface;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)

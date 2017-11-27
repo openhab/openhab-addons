@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class MowerParkUntilNextTimerCommand extends Command {
     private static final String COMMAND = "park_until_next_timer";
 
-    /**
-     * {@inheritDoc}
-     */
     public MowerParkUntilNextTimerCommand() {
         super(COMMAND);
     }

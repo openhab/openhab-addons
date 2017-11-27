@@ -1,4 +1,4 @@
-# CometVisu Backend for openHAB2
+# CometVisu Backend for openHAB
 
 ## Introduction
 
@@ -11,16 +11,22 @@ This adds a backend for the web based visualization CometVisu (http://www.cometv
 
 ## Installation
 
-* Install the CometVisu addon (optionally you can also installe the CometVisu-PHP addon, but it is not required to run the CometVisu)
-* Download the CometVisu release (https://github.com/CometVisu/CometVisu/releases) and extract the "release" folder (the one which contains the index.html file) of the downloaded archive somewhere on your openHAB2 server (make sure that openHAB can access that folder). 
+* Install the CometVisu addon (optionally you can also install the CometVisu-PHP addon, but it is not required to run the CometVisu)
+* Enable the auto-download feature via configuration setting *OR*
+* Download the CometVisu release (https://github.com/CometVisu/CometVisu/releases) and extract the "release" folder (the one which contains the index.html file) of the downloaded archive somewhere on your openHAB server (make sure that openHAB can access that folder). 
 
-Note: You have to set the path to this folder in your config file (webFolder).
+Note: You have to set the path to this folder in your configuration (webFolder).
 
 ## Configuration
 
-### Server configuration
+### Server configuration via Paper UI
 
-You can customize some setting of the CometVisu backend in a configuration file named 'cometvisu.cfg' which has to be created in the 'conf/services/' folder of your openHAB2 instance, if it does not exist.
+You can customize some settings of the CometVisu backend in the services configuration section
+of the PaperUI. You can find the CometVisu configuration in the "ui" category.
+
+### Via Config file
+
+You can customize some settings of the CometVisu backend in a configuration file named 'cometvisu.cfg' which has to be created in the 'conf/services/' folder of your openHAB instance, if it does not exist.
 
 The following settings are available:
 
@@ -36,6 +42,16 @@ The alias where you can access the client e.g http://\<openhab-server\>:8080/\<w
 webAlias=/cometvisu
 ```
 
+Activate the automatic download if the CometVisu client.
+
+```
+autoDownload=true (default is false)
+```
+
+> Please note that, when you activate this feature, the latest release of the CometVisu client is downloaded
+> to your openHAb server. The CometVisu is licensed under the GNU General Public License v3.0.
+> If you do not agree with this behavior you must not activate this feature.
+
 Enable icon mapping from openHAB-items to CometVisu-items (Note this is only needed if you use the automatic sitemap->config generation feature)
 
 ```
@@ -49,6 +65,7 @@ icons.mapping>firstfloor=control_building_int_og
 cons.mapping>groundfloor=control_building_int_eg
 
 ```
+
 The list of icons in the CometVisu is available at:
 
 ```
@@ -90,14 +107,13 @@ You can use the editor to change and store this config. You can start with the d
 * Persistence support: Any persisted item can be used to create a chart
 * GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts
 can be shown in the visu
-* ...
 
 
 ## Examples
 
 ### Show how many lights are switched on 
 
-* Items: uses the demo.items provided by openHAB2
+* Items: uses the demo.items provided by openHAB
 * Config (please add the infoaction-plugin in pages->meta->plugins in your config in order to use this):
 
 ```

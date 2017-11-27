@@ -75,9 +75,8 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MeteoStick Bridge handler.");
-        super.initialize();
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         Configuration config = getThing().getConfiguration();
 
@@ -98,7 +97,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        offlineTimerJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 60, TimeUnit.SECONDS);
+        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override

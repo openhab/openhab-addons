@@ -10,17 +10,11 @@ package org.openhab.binding.sensebox.handler;
 
 import static org.openhab.binding.sensebox.SenseBoxBindingConstants.*;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -33,36 +27,36 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.sensebox.config.SenseBoxConfiguration;
-import org.openhab.binding.sensebox.internal.ExpiringCache;
-import org.openhab.binding.sensebox.model.SenseBoxData;
-import org.openhab.binding.sensebox.model.SenseBoxDescriptor;
-import org.openhab.binding.sensebox.model.SenseBoxLoc;
-import org.openhab.binding.sensebox.model.SenseBoxLocation;
-import org.openhab.binding.sensebox.model.SenseBoxSensor;
+import org.openhab.binding.sensebox.internal.SenseBoxAPIConnection;
+import org.openhab.binding.sensebox.internal.config.SenseBoxConfiguration;
+import org.openhab.binding.sensebox.internal.model.SenseBoxData;
+import org.openhab.binding.sensebox.internal.model.SenseBoxLocation;
+import org.openhab.binding.sensebox.internal.model.SenseBoxSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link SenseBoxHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Hakan Tandogan - Initial contribution
+ * @author Hakan Tandogan - Ignore incorrect data for brightness readings
+ * @author Hakan Tandogan - Changed use of caching utils to ESH ExpiringCacheMap
  */
 public class SenseBoxHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
 
     protected SenseBoxConfiguration thingConfiguration;
 
-    private Gson gson = new Gson();
-
     private SenseBoxData data = new SenseBoxData();
 
     ScheduledFuture<?> refreshJob;
 
-    private final int CACHE_EXPIRY = 10 * 1000; // 10s
+    private static final String CACHE_KEY_DATA = "DATA";
+
+    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<String, SenseBoxData>(CACHE_EXPIRY);
+
+    private final SenseBoxAPIConnection connection = new SenseBoxAPIConnection();
 
     public SenseBoxHandler(Thing thing) {
         super(thing);
@@ -74,13 +68,14 @@ public class SenseBoxHandler extends BaseThingHandler {
 
         thingConfiguration = getConfigAs(SenseBoxConfiguration.class);
 
+        String senseBoxId = thingConfiguration.getSenseBoxId();
         logger.debug("Thing Configuration {} initialized {}", getThing().getUID().toString(),
-                thingConfiguration.getSenseBoxId());
+                senseBoxId);
 
         String offlineReason = "";
         boolean validConfig = true;
 
-        if (StringUtils.trimToNull(thingConfiguration.getSenseBoxId()) == null) {
+        if (StringUtils.trimToNull(senseBoxId) == null) {
             offlineReason = "senseBox ID is mandatory and must be configured";
             validConfig = false;
         }
@@ -98,18 +93,21 @@ public class SenseBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, offlineReason);
         }
 
+        cache.put(CACHE_KEY_DATA, () -> {
+            return connection.reallyFetchDataFromServer(senseBoxId);
+        });
+
         logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                data = fetchData();
+            data = fetchData();
+            if (ThingStatus.ONLINE == data.getStatus()) {
                 publishDataForChannel(channelUID.getId());
                 updateStatus(ThingStatus.ONLINE);
-            } catch (IOException e) {
-                logger.debug("Exception occurred during fetching data: {}", e.getMessage());
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
@@ -131,8 +129,8 @@ public class SenseBoxHandler extends BaseThingHandler {
                 logger.debug("Refreshing data for box {}, scheduled after {} seconds...",
                         thingConfiguration.getSenseBoxId(), thingConfiguration.getRefreshInterval());
 
-                try {
-                    data = fetchData();
+                data = fetchData();
+                if (ThingStatus.ONLINE == data.getStatus()) {
 
                     publishProperties();
 
@@ -155,8 +153,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                     publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
 
                     updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    logger.debug("Exception occurred during fetching data: {}", e.getMessage());
+                } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
@@ -166,109 +163,8 @@ public class SenseBoxHandler extends BaseThingHandler {
                 TimeUnit.SECONDS);
     }
 
-    private SenseBoxData fetchData() throws IOException {
-        return CACHE.get(thingConfiguration.getSenseBoxId());
-    }
-
-    private final ExpiringCache<String, SenseBoxData> CACHE = new ExpiringCache<>(CACHE_EXPIRY,
-            new ExpiringCache.LoadAction<String, SenseBoxData>() {
-                @Override
-                public SenseBoxData load(String senseBoxId) throws IOException {
-                    return reallyFetchDataFromServer(senseBoxId);
-                }
-            });
-
-    private SenseBoxData reallyFetchDataFromServer(String senseBoxId) {
-        String query = SENSEMAP_API_URL_BASE + "/boxes/" + senseBoxId;
-
-        // the caching layer does not like null values
-        SenseBoxData result = new SenseBoxData();
-
-        try {
-            URL url = new URL(query);
-            URLConnection connection = url.openConnection();
-            try (InputStream inputStream = connection.getInputStream()) {
-                String body = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-
-                logger.trace("Fetched Data: {}", body);
-                SenseBoxData parsedData = gson.fromJson(body, SenseBoxData.class);
-
-                // Could perhaps be simplified via triply-nested arrays
-                // http://stackoverflow.com/questions/36946875/how-can-i-parse-geojson-with-gson
-                for (SenseBoxLoc loc : parsedData.getLocs()) {
-                    if (loc.getGeometry() != null) {
-                        List<Double> locationData = loc.getGeometry().getData();
-                        if (locationData != null) {
-                            SenseBoxLocation location = new SenseBoxLocation();
-
-                            if (locationData.size() > 0) {
-                                location.setLongitude(locationData.get(0));
-                            }
-
-                            if (locationData.size() > 1) {
-                                location.setLatitude(locationData.get(1));
-                            }
-
-                            if (locationData.size() > 2) {
-                                location.setHeight(locationData.get(2));
-                            }
-
-                            parsedData.setLocation(location);
-                        }
-                    }
-                }
-
-                for (SenseBoxSensor sensor : parsedData.getSensors()) {
-                    if ("VEML6070".equals(sensor.getSensorType())) {
-                        // "unit" is not nicely comparable, so use sensor type for now
-                        parsedData.setUvIntensity(sensor);
-                    } else if ("SDS 011".equals(sensor.getSensorType())) {
-                        // "unit" is not nicely comparable, neither is type, so use sensor title for now
-                        if ("PM2.5".equals(sensor.getTitle())) {
-                            parsedData.setParticulateMatter2dot5(sensor);
-                        } else if ("PM10".equals(sensor.getTitle())) {
-                            parsedData.setParticulateMatter10(sensor);
-                        } else {
-                            logger.debug("SDS 011 sensor title is {}", sensor.getTitle());
-                        }
-                    } else if ("lx".equals(sensor.getUnit())) {
-                        parsedData.setLuminance(sensor);
-                    } else if ("hPa".equals(sensor.getUnit())) {
-                        parsedData.setPressure(sensor);
-                    } else if ("%".equals(sensor.getUnit())) {
-                        parsedData.setHumidity(sensor);
-                    } else if ("°C".equals(sensor.getUnit())) {
-                        parsedData.setTemperature(sensor);
-                    } else {
-                        logger.debug("    Sensor: {}", sensor);
-                        logger.debug("    Sensor unit: {}", sensor.getUnit());
-                        logger.debug("    Sensor type: {}", sensor.getSensorType());
-                        logger.debug("    Sensor LM: {}", sensor.getLastMeasurement());
-                        if (sensor.getLastMeasurement() != null) {
-                            logger.debug("    Sensor LM value: {}", sensor.getLastMeasurement().getValue());
-                            logger.debug("    Sensor LM date: '{}'", sensor.getLastMeasurement().getCreatedAt());
-                        }
-                    }
-                }
-
-                SenseBoxDescriptor descriptor = new SenseBoxDescriptor();
-                descriptor.setApiUrl(query);
-                if (StringUtils.isNotEmpty(parsedData.getImage())) {
-                    descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + parsedData.getImage());
-                }
-                descriptor.setMapUrl(SENSEMAP_MAP_URL_BASE + "/explore/" + senseBoxId);
-                parsedData.setDescriptor(descriptor);
-
-                logger.trace("=================================");
-
-                result = parsedData;
-            }
-        } catch (IOException e) {
-            logger.debug("IO problems while fetching data: {} / {}", query, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
-
-        return result;
+    private SenseBoxData fetchData() {
+       return cache.get(CACHE_KEY_DATA);
     }
 
     private void publishProperties() {

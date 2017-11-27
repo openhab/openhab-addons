@@ -1,15 +1,19 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Onkyo Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.onkyo;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.base,
- com.google.common.collect,
+Bundle-Version: 2.2.0.qualifier
+Export-Package: 
+ org.openhab.binding.onkyo,
+ org.openhab.binding.onkyo.handler
+Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
@@ -22,12 +26,10 @@ Import-Package: com.google.common.base,
  org.eclipse.smarthome.io.transport.upnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
+ org.openhab.binding.onkyo,
+ org.openhab.binding.onkyo.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.slf4j,
- org.openhab.binding.onkyo,
- org.openhab.binding.onkyo.handler
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.onkyo,
- org.openhab.binding.onkyo.handler
-Bundle-ActivationPolicy: lazy

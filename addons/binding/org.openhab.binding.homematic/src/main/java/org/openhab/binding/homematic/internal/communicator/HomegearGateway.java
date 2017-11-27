@@ -23,45 +23,30 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  */
 public class HomegearGateway extends AbstractHomematicGateway {
 
-    protected HomegearGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
-        super(id, config, eventListener);
+    protected HomegearGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter) {
+        super(id, config, gatewayAdapter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadVariables(HmChannel channel) throws IOException {
         getRpcClient(getDefaultInterface()).getAllSystemVariables(channel);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadScripts(HmChannel channel) throws IOException {
         getRpcClient(getDefaultInterface()).getAllScripts(channel);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
         getRpcClient(getDefaultInterface()).setSystemVariable(dp, value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void executeScript(HmDatapoint dp) throws IOException {
         getRpcClient(getDefaultInterface()).executeScript(dp);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
         getRpcClient(getDefaultInterface()).loadDeviceNames(getDefaultInterface(), devices);

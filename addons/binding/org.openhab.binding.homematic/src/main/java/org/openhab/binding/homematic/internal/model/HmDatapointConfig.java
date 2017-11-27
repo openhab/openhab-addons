@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class HmDatapointConfig {
     private Double delay;
+    private Double receiveDelay;
 
     /**
      * Returns the delay in seconds for sending the datapoint.
@@ -34,11 +35,23 @@ public class HmDatapointConfig {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the delay in seconds for receiving a new datapoint event.
      */
+    public Double getReceiveDelay() {
+        return receiveDelay == null ? 0.0 : receiveDelay;
+    }
+
+    /**
+     * Sets the delay in seconds for receiving a datapoint event.
+     */
+    public void setReceiveDelay(Double receiveDelay) {
+        this.receiveDelay = receiveDelay;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("delay", delay).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("delay", delay)
+                .append("receiveDelay", receiveDelay).toString();
     }
 
 }

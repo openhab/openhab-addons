@@ -12,10 +12,10 @@ import java.util.Map;
 
 /**
  * Hue API data store object
- * 
+ *
  * @author Dan Cunningham
  *
  */
 public class HueDataStore {
-    public Map<String, HueDevice> lights;
+    public Map<Integer, HueDevice> lights;
 }

@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
+ * <li>Bit 4: Alarm-Sensor</li>
  * <li>Bit 6: Comet DECT, Heizkostenregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
@@ -27,13 +28,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * <li>Bit 10: AVM DECT Repeater</li>
  * </ol>
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  * 
  */
 @XmlRootElement(name = "device")
 public class DeviceModel {
+
+    public static final int ALARM_SENSOR_BIT = 16;
     public static final int HEATING_THERMOSTAT_BIT = 64;
     public static final int POWERMETER_BIT = 128;
     public static final int TEMPSENSOR_BIT = 256;
@@ -116,6 +119,10 @@ public class DeviceModel {
         this.ident = identifier;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
     public boolean isSwitchableOutlet() {
         return (bitmask & DeviceModel.SWITCH_BIT) > 0;
     }
@@ -140,6 +147,10 @@ public class DeviceModel {
         return firmwareVersion;
     }
 
+    public String getManufacturer() {
+        return deviceManufacturer;
+    }
+
     public String getProductName() {
         return productName;
     }
@@ -154,13 +165,12 @@ public class DeviceModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("ain", this.getIdentifier()).append("bitmask", this.bitmask)
-                .append("isDectRepeater", this.isDectRepeater()).append("isPowermeter", this.isPowermeter())
-                .append("isTempSensor", this.isTempSensor()).append("isSwitchableOutlet", this.isSwitchableOutlet())
-                .append("isHeatingThermostat", this.isHeatingThermostat()).append("id", this.deviceId)
-                .append("manufacturer", this.deviceManufacturer).append("productname", this.getProductName())
-                .append("fwversion", this.getFirmwareVersion()).append("present", this.present)
-                .append("name", this.name).append(this.getSwitch()).append(this.getPowermeter())
-                .append(this.getTemperature()).append(this.getHkr()).toString();
+        return new ToStringBuilder(this).append("ain", getIdentifier()).append("bitmask", bitmask)
+                .append("isDectRepeater", isDectRepeater()).append("isPowermeter", isPowermeter())
+                .append("isTempSensor", isTempSensor()).append("isSwitchableOutlet", isSwitchableOutlet())
+                .append("isHeatingThermostat", isHeatingThermostat()).append("id", getDeviceId())
+                .append("manufacturer", getManufacturer()).append("productname", getProductName())
+                .append("fwversion", getFirmwareVersion()).append("present", getPresent()).append("name", getName())
+                .append(getSwitch()).append(getPowermeter()).append(getTemperature()).append(getHkr()).toString();
     }
 }

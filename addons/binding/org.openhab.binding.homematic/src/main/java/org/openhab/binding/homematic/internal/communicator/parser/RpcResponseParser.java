@@ -28,9 +28,6 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
         this.request = request;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Object[] parse(Object[] message) throws IOException {

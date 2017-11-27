@@ -26,6 +26,10 @@
             <channel id="HeatIndex" typeId="heatIndex" />
             <channel id="Dewpoint" typeId="dewPoint" />
             <channel id="DewpointDepression" typeId="dewPointDepression" />
+            <channel id="MinTemp" typeId="minTemp" />
+            <channel id="MaxTemp" typeId="maxTemp" />            
+            <channel id="DateMinTemp" typeId="dateMinTemp" />
+            <channel id="DateMaxTemp" typeId="dateMaxTemp" />
             <!--  Common to all devices -->
             <channel id="LastStatusStore" typeId="lastStatusStore" />
             <channel id="WifiStatus" typeId="system.signal-strength" />
@@ -60,6 +64,10 @@
             <channel id="HeatIndex" typeId="heatIndex" />
             <channel id="Dewpoint" typeId="dewPoint" />
             <channel id="DewpointDepression" typeId="dewPointDepression" />
+            <channel id="MinTemp" typeId="minTemp" />
+            <channel id="MaxTemp" typeId="maxTemp" />            
+            <channel id="DateMinTemp" typeId="dateMinTemp" />
+            <channel id="DateMaxTemp" typeId="dateMaxTemp" />            
             <!--  Common to all modules -->
             <channel id="LastMessage" typeId="lastMessage" />
             <channel id="LowBattery" typeId="system.low-battery" />                    
@@ -147,18 +155,22 @@
         <description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
 
         <channels>
+            <channel id="Co2" typeId="co2"/>
             <channel id="Temperature" typeId="temperature" />
             <channel id="TempTrend" typeId="temperatureTrend" />
-            <channel id="TimeStamp" typeId="timeUtc" />          
+            <channel id="TimeStamp" typeId="timeUtc" />
             <channel id="Humidity" typeId="humidity" />
             <channel id="Humidex" typeId="humidex" />
             <channel id="HeatIndex" typeId="heatIndex" />
             <channel id="Dewpoint" typeId="dewPoint" />
             <channel id="DewpointDepression" typeId="dewPointDepression" />
-            <channel id="Co2" typeId="co2"/>
+            <channel id="MinTemp" typeId="minTemp" />
+            <channel id="MaxTemp" typeId="maxTemp" />
+            <channel id="DateMinTemp" typeId="dateMinTemp" />
+            <channel id="DateMaxTemp" typeId="dateMaxTemp" />
             <!--  Common to all modules -->
             <channel id="LastMessage" typeId="lastMessage" />
-            <channel id="LowBattery" typeId="system.low-battery" />                    
+            <channel id="LowBattery" typeId="system.low-battery" />
             <channel id="BatteryVP" typeId="system.battery-level" />
             <channel id="RfStatus" typeId="system.signal-strength" />
         </channels>

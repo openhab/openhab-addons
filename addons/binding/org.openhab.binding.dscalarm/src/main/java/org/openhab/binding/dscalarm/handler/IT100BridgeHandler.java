@@ -18,7 +18,7 @@ import java.util.TooManyListenersException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.dscalarm.config.IT100BridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,9 +92,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         super.dispose();
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void openConnection() {
 
@@ -137,9 +134,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void write(String writeString) {
         try {
@@ -155,9 +149,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public String read() {
         String message = "";
@@ -187,9 +178,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         return serialInput.readLine();
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void closeConnection() {
         logger.debug("closeConnection(): Closing Serial Connection!");

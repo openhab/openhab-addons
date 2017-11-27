@@ -8,6 +8,7 @@ This binding allows you to integrate, view, control and configure all Homematic 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
 * CCU 1+2 
 * [Homegear](https://www.homegear.eu)
+* [piVCCU](https://github.com/alexreinert/piVCCU)
 * [YAHM](https://github.com/leonsio/YAHM)
 * [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 * [OCCU](https://github.com/eq-3/occu)
@@ -73,10 +74,10 @@ Callback port of the XML-RPC openHAB server, default is 9125 and counts up for e
 - **binCallbackPort**  
 Callback port of the BIN-RPC openHAB server, default is 9126 and counts up for each additional bridge
 
-- **aliveInterval**  
+- **aliveInterval DEPRECATED, not necessary anymore**  
 The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
 
-- **reconnectInterval**  
+- **reconnectInterval DEPRECATED, not necessary anymore**  
 The interval in seconds to force a reconnect to the Homematic gateway, disables aliveInterval! (0 = disabled, default = disabled)  
 If you have no sensors which sends messages in regular intervals and/or you have low communication, the aliveInterval may restart the connection to the Homematic gateway to often. The reconnectInterval disables the aliveInterval and reconnects after a fixed period of time. 
 Think in hours when configuring (one hour = 3600)
@@ -143,19 +144,35 @@ Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 }
 ```
 
-The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type.
+The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type. This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
 ```
 
-This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
+As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
 ```
 
-As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
+All channels have two configs:
+* **delay**: delays transmission of a command **to** the Homematic gateway, duplicate commands are filtered out
+* **receiveDelay**: delays a received event **from** the Homematic gateway, duplicate events are filtered out (OH 2.2)
+
+The receiveDelay is handy for dimmers and rollershutters for example. If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached. If you set the ```receiveDelay``` to some seconds, these events are filtered out and only the last position is distributed to openHab. The disadvantage is of course, that all events for this channel are delayed. 
+
+```
+  Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
+      Channels:
+          Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
+              delay = 0,
+              receiveDelay = 4
+          ]
+  }
+```
+
+The Type is the device type, channel number and lowercase channel name separated with a underscore.
 
 ### Items
 
@@ -326,6 +343,22 @@ then
     sendCommand(Display_color_5, "BLUE")
 
     sendCommand(Display_submit, ON)
+end
+```
+
+#### PRESS
+
+A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.  
+Available values: SHORT, LONG, LONG_RELEASE
+
+Example: to capture a key press on the 19 button remote control in a rule 
+
+```
+rule "example trigger rule"
+when
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#PRESS' triggered SHORT 
+then
+    ...
 end
 ```
 

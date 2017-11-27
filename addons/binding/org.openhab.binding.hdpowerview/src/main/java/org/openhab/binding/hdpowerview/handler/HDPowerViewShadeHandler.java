@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         getBridgeHandler().pollNow();
     }
 

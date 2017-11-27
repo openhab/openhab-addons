@@ -20,11 +20,13 @@ The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported t
 
 
 Configuration of ipAvr/ipAvrUnsupported:
+
 * address: the hostname/ipAddress of the AVR on the local network. (mandatory)
 * tcpPort: the port number to use to connect to the AVR. (optional, default to 23)
 
 
 Configuration of serialAvr:
+
 * serialPort: the name of the serial port on your computer. (mandatory)
 
 Example:

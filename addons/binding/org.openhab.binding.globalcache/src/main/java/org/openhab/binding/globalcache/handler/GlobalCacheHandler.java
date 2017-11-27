@@ -33,10 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -79,24 +79,27 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     private LinkedBlockingQueue<RequestMessage> sendQueue = null;
 
+    private String ipv4Address;
+
     // IR transaction counter
     private AtomicInteger irCounter;
 
     // Character set to use for URL encoding & decoding
     private String CHARSET = "ISO-8859-1";
 
-    public GlobalCacheHandler(Thing gcDevice) {
+    public GlobalCacheHandler(@NonNull Thing gcDevice, String ipv4Address) {
         super(gcDevice);
         irCounter = new AtomicInteger(1);
         commandProcessor = new CommandProcessor();
         scheduledFuture = null;
+        this.ipv4Address = ipv4Address;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing thing {}", thingID());
         try {
-            ifAddress = InetAddress.getByName(NetUtil.getLocalIpv4HostAddress());
+            ifAddress = InetAddress.getByName(ipv4Address);
             logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
                     NetworkInterface.getByInetAddress(ifAddress).getName());
         } catch (SocketException e) {

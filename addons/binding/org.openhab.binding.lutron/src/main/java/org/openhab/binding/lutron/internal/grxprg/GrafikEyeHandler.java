@@ -304,7 +304,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
         setFade(_config.getFade());
 
         cancelPolling();
-        _polling = this.scheduler.scheduleAtFixedRate(new Runnable() {
+        _polling = this.scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 final ThingStatus status = getThing().getStatus();

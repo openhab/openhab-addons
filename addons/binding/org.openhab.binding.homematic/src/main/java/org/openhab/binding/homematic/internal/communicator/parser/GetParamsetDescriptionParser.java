@@ -15,6 +15,8 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses a parameter description message and extracts datapoint metadata.
@@ -22,6 +24,7 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void> {
+    private final Logger logger = LoggerFactory.getLogger(GetParamsetDescriptionParser.class);
     private HmParamsetType paramsetType;
     private HmChannel channel;
     private boolean isHmIpDevice;
@@ -32,12 +35,13 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
         this.isHmIpDevice = channel.getDevice().getHmInterface() == HmInterface.HMIP;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {
+        if (!(message[0] instanceof Map)) {
+            logger.debug("Unexpected datatype '{}',  ignoring message", message[0].getClass());
+            return null;
+        }
         Map<String, Map<String, Object>> dpNames = (Map<String, Map<String, Object>>) message[0];
 
         for (String datapointName : dpNames.keySet()) {

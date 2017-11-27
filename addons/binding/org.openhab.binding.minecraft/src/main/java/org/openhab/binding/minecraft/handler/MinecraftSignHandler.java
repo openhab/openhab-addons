@@ -19,10 +19,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.config.SignConfig;
-import org.openhab.binding.minecraft.message.OHMessage;
-import org.openhab.binding.minecraft.message.data.SignData;
-import org.openhab.binding.minecraft.message.data.commands.SignCommandData;
+import org.openhab.binding.minecraft.internal.config.SignConfig;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
+import org.openhab.binding.minecraft.internal.message.data.SignData;
+import org.openhab.binding.minecraft.internal.message.data.commands.SignCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

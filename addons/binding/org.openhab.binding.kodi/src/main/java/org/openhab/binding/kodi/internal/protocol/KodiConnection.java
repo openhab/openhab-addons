@@ -8,10 +8,17 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 import org.slf4j.Logger;
@@ -23,10 +30,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * KodiConnection provides an api for accessing a kodi device.
+ * KodiConnection provides an api for accessing a Kodi device.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  *
  */
 public class KodiConnection implements KodiClientSocketEventListener {
@@ -34,8 +42,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
 
     private URI wsUri;
+    private URI imageUri;
     private KodiClientSocket socket;
 
     private int volume = 0;
@@ -57,23 +68,28 @@ public class KodiConnection implements KodiClientSocketEventListener {
         listener.updateConnectionState(true);
     }
 
-    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
+    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler, URI imageUri) {
+        this.imageUri = imageUri;
         try {
-            wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
+            close();
+            wsUri = new URI("ws", null, hostName, port, "/jsonrpc", null, null);
             socket = new KodiClientSocket(this, wsUri, scheduler);
-            socket.open();
-        } catch (Throwable t) {
-            logger.error("exception during connect to {}", wsUri.toString(), t);
+            checkConnection();
+        } catch (URISyntaxException e) {
+            logger.error("exception during constructing URI host={}, port={}", hostName, port, e);
         }
     }
 
     private int getActivePlayer() {
         JsonElement response = socket.callMethod("Player.GetActivePlayers");
-        if (response != null) {
-            boolean playing = response.isJsonArray() && response.getAsJsonArray().size() > 0;
-            if (playing) {
-                JsonObject player0 = response.getAsJsonArray().get(0).getAsJsonObject();
-                return player0.get("playerid").getAsInt();
+
+        if (response instanceof JsonArray) {
+            JsonArray result = response.getAsJsonArray();
+            if (result.size() > 0) {
+                JsonObject player0 = result.get(0).getAsJsonObject();
+                if (player0.has("playerid")) {
+                    return player0.get("playerid").getAsInt();
+                }
             }
         }
         return -1;
@@ -81,6 +97,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized void playerPlayPause() {
         int activePlayer = getActivePlayer();
+
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
         socket.callMethod("Player.PlayPause", params);
@@ -88,6 +105,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized void playerStop() {
         int activePlayer = getActivePlayer();
+
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
         socket.callMethod("Player.Stop", params);
@@ -120,7 +138,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", "-1");
+        params.addProperty("speed", -2);
         socket.callMethod("Player.SetSpeed", params);
 
         updatePlayerStatus();
@@ -131,7 +149,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", "2");
+        params.addProperty("speed", 2);
         socket.callMethod("Player.SetSpeed", params);
 
         updatePlayerStatus();
@@ -176,8 +194,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
         params.add("properties", getJsonArray(properties));
         JsonElement response = socket.callMethod("Player.GetProperties", params);
 
-        JsonObject result = response.getAsJsonObject();
-        return result.get("speed").getAsInt();
+        if (response instanceof JsonObject) {
+            JsonObject result = response.getAsJsonObject();
+            if (result.has("speed")) {
+                return result.get("speed").getAsInt();
+            }
+        }
+        return 0;
     }
 
     public synchronized void updatePlayerStatus() {
@@ -201,27 +224,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private void updateFanartUrl(String imagePath) {
-        if (imagePath == null || imagePath.isEmpty()) {
-            return;
-        }
-
-        /*
-         * try {
-         *
-         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8");
-         * String decodedURL = URLDecoder.decode(imagePath, "UTF-8");
-         *
-         * JsonObject params = new JsonObject();
-         * params.addProperty("path", "");
-         * JsonElement response = socket.callMethod("Files.PrepareDownload", params);
-         *
-         * } catch (Exception e) {
-         * logger.error("updateFanartUrl error", e);
-         * }
-         */
-    }
-
     private void requestPlayerUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
                 "showtitle", "streamdetails", "channel", "channeltype" };
@@ -231,58 +233,71 @@ public class KodiConnection implements KodiClientSocketEventListener {
         params.add("properties", getJsonArray(properties));
         JsonElement response = socket.callMethod("Player.GetItem", params);
 
-        JsonObject item = ((JsonObject) response).get("item").getAsJsonObject();
+        if (response instanceof JsonObject) {
+            JsonObject result = response.getAsJsonObject();
+            if (result.has("item")) {
+                JsonObject item = result.get("item").getAsJsonObject();
 
-        String title = "";
-        if (item.has("title")) {
-            title = convertToText(item.get("title"));
-        }
+                String title = "";
+                if (item.has("title")) {
+                    title = convertToText(item.get("title"));
+                }
 
-        String showTitle = "";
-        if (item.has("showtitle")) {
-            showTitle = convertToText(item.get("showtitle"));
-        }
+                String showTitle = "";
+                if (item.has("showtitle")) {
+                    showTitle = convertToText(item.get("showtitle"));
+                }
 
-        String album = "";
-        if (item.has("album")) {
-            album = convertToText(item.get("album"));
-        }
+                String album = "";
+                if (item.has("album")) {
+                    album = convertToText(item.get("album"));
+                }
 
-        String mediaType = item.get("type").getAsString();
-        if ("channel".equals(mediaType) && item.has("channeltype")) {
-            String channelType = item.get("channeltype").getAsString();
-            if ("radio".equals(channelType)) {
-                mediaType = "radio";
+                String mediaType = item.get("type").getAsString();
+                if ("channel".equals(mediaType) && item.has("channeltype")) {
+                    String channelType = item.get("channeltype").getAsString();
+                    if ("radio".equals(channelType)) {
+                        mediaType = "radio";
+                    }
+                }
+
+                String artist = "";
+                if ("movie".equals(mediaType)) {
+                    artist = convertFromArray(item.get("director").getAsJsonArray());
+                } else {
+                    if (item.has("artist")) {
+                        artist = convertFromArray(item.get("artist").getAsJsonArray());
+                    }
+                }
+
+                String channel = "";
+                if (item.has("channel")) {
+                    channel = item.get("channel").getAsString();
+                }
+
+                RawType thumbnail = null;
+                if (item.has("thumbnail")) {
+                    thumbnail = downloadImage(convertToImageUrl(item.get("thumbnail")));
+                }
+
+                RawType fanart = null;
+                if (item.has("fanart")) {
+                    fanart = downloadImage(convertToImageUrl(item.get("fanart")));
+                }
+
+                try {
+                    listener.updateAlbum(album);
+                    listener.updateTitle(title);
+                    listener.updateShowTitle(showTitle);
+                    listener.updateArtist(artist);
+                    listener.updateMediaType(mediaType);
+                    listener.updatePVRChannel(channel);
+                    listener.updateThumbnail(thumbnail);
+                    listener.updateFanart(fanart);
+                } catch (Exception e) {
+                    logger.error("Event listener invoking error", e);
+                }
             }
-        }
-
-        String artist = "";
-        if ("movie".equals(mediaType)) {
-            artist = convertFromArray(item.get("director").getAsJsonArray());
-        } else {
-            if (item.has("artist")) {
-                artist = convertFromArray(item.get("artist").getAsJsonArray());
-            }
-        }
-
-        String channel = "";
-        if (item.has("channel")) {
-            channel = item.get("channel").getAsString();
-        }
-
-        try {
-            listener.updateAlbum(album);
-            listener.updateTitle(title);
-            listener.updateShowTitle(showTitle);
-            listener.updateArtist(artist);
-            listener.updateMediaType(mediaType);
-            listener.updatePVRChannel(channel);
-        } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
-        }
-
-        if (item.has("fanart")) {
-            updateFanartUrl(item.get("fanart").getAsString());
         }
     }
 
@@ -315,6 +330,42 @@ public class KodiConnection implements KodiClientSocketEventListener {
         // }
     }
 
+    private String convertToImageUrl(JsonElement element) {
+        String text = convertToText(element);
+        if (!text.isEmpty()) {
+            try {
+                // we have to strip ending "/" here because Kodi returns a not valid path and filename
+                // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+                // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+                String encodedURL = URLEncoder.encode(StringUtils.stripEnd(text, "/"), "UTF-8");
+                return imageUri.resolve(encodedURL).toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("exception during encoding {}", text, e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private RawType downloadImage(String url) {
+        if (StringUtils.isNotEmpty(url)) {
+            if (!IMAGE_CACHE.containsKey(url)) {
+                IMAGE_CACHE.put(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    return HttpUtil.downloadImage(url);
+                });
+            }
+            RawType image = IMAGE_CACHE.get(url);
+            if (image == null) {
+                logger.debug("Failed to download the content of URL {}", url);
+                return null;
+            } else {
+                return image;
+            }
+        }
+        return null;
+    }
+
     public KodiState getState() {
         return currentState;
     }
@@ -334,6 +385,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateArtist("");
                 listener.updateMediaType("");
                 listener.updatePVRChannel("");
+                listener.updateThumbnail(null);
+                listener.updateFanart(null);
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
@@ -457,7 +510,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
-        socket = null;
+        if (socket != null && socket.isConnected()) {
+            socket.close();
+        }
     }
 
     public synchronized void updateVolume() {
@@ -466,11 +521,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             JsonObject params = new JsonObject();
             params.add("properties", getJsonArray(props));
-
             JsonElement response = socket.callMethod("Application.GetProperties", params);
 
             if (response instanceof JsonObject) {
-                JsonObject result = (JsonObject) response;
+                JsonObject result = response.getAsJsonObject();
                 if (result.has("volume")) {
                     volume = result.get("volume").getAsInt();
                     listener.updateVolume(volume);
@@ -479,7 +533,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     boolean muted = result.get("muted").getAsBoolean();
                     listener.updateMuted(muted);
                 }
-
             }
         } else {
             listener.updateMuted(false);
@@ -501,14 +554,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
         params.addProperty("channeltype", channelType);
         JsonElement response = socket.callMethod("PVR.GetChannelGroups", params);
 
-        JsonArray channelGroups = null;
         if (response instanceof JsonObject) {
-            JsonObject result = (JsonObject) response;
+            JsonObject result = response.getAsJsonObject();
             if (result.has("channelgroups")) {
-                channelGroups = result.get("channelgroups").getAsJsonArray();
+                return result.get("channelgroups").getAsJsonArray();
             }
         }
-        return channelGroups;
+        return null;
     }
 
     public int getChannelGroupID(final String channelType, final String channelGroupName) {
@@ -530,14 +582,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
         params.addProperty("channelgroupid", channelGroupID);
         JsonElement response = socket.callMethod("PVR.GetChannels", params);
 
-        JsonArray channels = null;
         if (response instanceof JsonObject) {
-            JsonObject result = (JsonObject) response;
+            JsonObject result = response.getAsJsonObject();
             if (result.has("channels")) {
-                channels = result.get("channels").getAsJsonArray();
+                return result.get("channels").getAsJsonArray();
             }
         }
-        return channels;
+        return null;
     }
 
     public int getChannelID(final int channelGroupID, final String channelName) {
@@ -572,21 +623,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public boolean checkConnection() {
         if (!socket.isConnected()) {
-            logger.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
+            logger.debug("checkConnection: try to connect to Kodi {}", wsUri);
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Throwable t) {
-                logger.error("exception during connect to {}", wsUri.toString(), t);
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                }
+            } catch (Exception e) {
+                logger.error("exception during connect to {}", wsUri, e);
+                socket.close();
                 return false;
             }
         } else {
-            // Ping kodi with the get version command. This prevents the idle
-            // timeout on the websocket
+            // Ping Kodi with the get version command. This prevents the idle
+            // timeout on the websocket.
             return !getVersion().isEmpty();
         }
     }
@@ -601,10 +649,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             JsonObject params = new JsonObject();
             params.add("properties", getJsonArray(props));
-
             JsonElement response = socket.callMethod("Application.GetProperties", params);
+
             if (response instanceof JsonObject) {
-                JsonObject result = (JsonObject) response;
+                JsonObject result = response.getAsJsonObject();
                 if (result.has("version")) {
                     JsonObject version = result.get("version").getAsJsonObject();
                     int major = version.get("major").getAsInt();

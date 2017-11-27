@@ -29,9 +29,10 @@ Once you'll get needed informations from the Netatmo API, you'll be able to conf
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readThermostat=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false] {
     Thing NAMain    inside  [ equipmentId="aa:aa:aa:aa:aa:aa", [refreshInterval=60000] ]
     Thing NAModule1 outside  [ equipmentId="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NHC       homecoach  [ equipmentId="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
     Thing NAPlug    plugtherm  [ equipmentId="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
     Thing NATherm1  thermostat [ equipmentId="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     ...
@@ -92,6 +93,10 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 * Location
 * TimeStamp
 * LastStatusStore
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
  
 ### Weather Station Outdoor module
 
@@ -115,6 +120,10 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 * DewpointDepression
 * LastMessage
 * LowBattery
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
 
 ### Weather Station Additional Indoor module
 
@@ -126,9 +135,10 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 **Supported types for the additional indoor module:**
 
-* Co2
 * Temperature
+* TemperatureTrend
 * Humidity
+* Co2
 * RfStatus
 * BatteryVP
 * TimeStamp
@@ -138,6 +148,10 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 * DewpointDepression
 * LastMessage
 * LowBattery
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
 
 ### Rain
 
@@ -176,6 +190,34 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * RfStatus
 * BatteryVP
 
+### Healthy Home Coach Device
+
+Example item for the **Healthy Home Coach**:
+
+```
+String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:NHC:home:livingroom:HealthIndex" }
+```
+
+**Supported types for the healthy home coach device:**
+
+* HealthIndex
+* Temperature
+* TemperatureTrend
+* Humidity
+* Co2
+* Pressure
+* PressureTrend
+* AbsolutePressure
+* Noise
+* WifiStatus
+* Location
+* TimeStamp
+* LastStatusStore
+* MinTemp
+* MaxTemp
+* DateMinTemp
+* DateMaxTemp
+
 ### Thermostat Relay Device
 
 **Supported types for the thermostat relay device:**
@@ -183,6 +225,9 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * LastStatusStore
 * WifiStatus
 * Location
+* ConnectedBoiler
+* LastPlugSeen
+* LastBilan
 
 ### Thermostat Module
 
@@ -194,6 +239,122 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * BoilerOn
 * BoilerOff
 * TimeStamp
+
+# Configuration Examples
+
+## transform/netatmo_unit_en.map
+
+```
+0=Metric
+1=Imperial
+```
+
+## transform/netatmo_pressureunit.map
+
+```
+0=mbar
+1=inHg
+2=mmHg
+```
+
+## transform/netatmo_windunit.map
+
+```
+0=Km/h
+1=Miles/H
+2=m/s
+3=Beaufort
+4=Knot
+```
+
+## things/netatmo.things
+
+```
+// Bridge configuration:
+Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "me@example.com", password = "******", readStation=true, readThermostat=false] {
+    // Thing configuration:
+    Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ equipmentId="aa:aa:aa:aa:aa:aa" ]
+    Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ equipmentId="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
+}
+```
+
+## items/netatmo.items
+
+```
+# Indoor Module
+Number Netatmo_Indoor_Temperature         "Temperature [%.2f °C]"          <temperature>      { channel = "netatmo:NAMain:home:inside:Temperature" }
+Number Netatmo_Indoor_Humidity            "Humidity [%d %%]"               <humidity>         { channel = "netatmo:NAMain:home:inside:Humidity" }
+Number Netatmo_Indoor_Humidex             "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAMain:home:inside:Humidex" }
+Number Netatmo_Indoor_HeatIndex           "HeatIndex [%.1f °C]"            <temperature_hot>  { channel = "netatmo:NAMain:home:inside:HeatIndex" }
+Number Netatmo_Indoor_Dewpoint            "Dewpoint [%.1f °C]"             <temperature_cold> { channel = "netatmo:NAMain:home:inside:Dewpoint" }
+Number Netatmo_Indoor_DewpointDepression  "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAMain:home:inside:DewpointDepression" }
+Number Netatmo_Indoor_Co2                 "Co2 [%.0f ppm]"                 <carbondioxide>    { channel = "netatmo:NAMain:home:inside:Co2" }
+Number Netatmo_Indoor_Pressure            "Pressure [%.1f mbar]"           <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
+Number Netatmo_Indoor_AbsolutePressure    "AbsolutePressure [%.1f mbar]"   <pressure>         { channel = "netatmo:NAMain:home:inside:AbsolutePressure" }
+Number Netatmo_Indoor_Noise               "Noise [%.0f db]"                <soundvolume>      { channel = "netatmo:NAMain:home:inside:Noise" }
+Number Netatmo_Indoor_WifiStatus          "WifiStatus [%s]"                <signal>           { channel = "netatmo:NAMain:home:inside:WifiStatus" }
+DateTime Netatmo_Indoor_TimeStamp         "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAMain:home:inside:TimeStamp" }
+Location Netatmo_Indoor_Location          "Location"                       <movecontrol>      { channel = "netatmo:NAMain:home:inside:Location" }
+DateTime Netatmo_Indoor_LastStatusStore   "LastStatusStore [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <text>  { channel = "netatmo:NAMain:home:inside:LastStatusStore" }
+Number Netatmo_Indoor_Unit                "Unit [MAP(netatmo_unit_en.map):%s]"  <text>        { channel = "netatmo:NAMain:home:inside:Unit" }
+Number Netatmo_Indoor_WindUnit            "WindUnit [MAP(netatmo_windunit.map):%s]"  <text>   { channel = "netatmo:NAMain:home:inside:WindUnit" }
+Number Netatmo_Indoor_PressureUnit        "PressureUnit [MAP(netatmo_pressureunit.map):%s]"  <pressure>  { channel = "netatmo:NAMain:home:inside:PressureUnit" }
+
+# Outdoor Module
+Number Netatmo_Outdoor_Temperature        "Temperature [%.2f °C]"          <temperature>      { channel = "netatmo:NAModule1:home:outside:Temperature" }
+String Netatmo_Outdoor_TempTrend          "TempTrend [%s]"                 <line>             { channel = "netatmo:NAModule1:home:outside:TempTrend" }
+Number Netatmo_Outdoor_Humidity           "Humidity [%d %%]"               <humidity>         { channel = "netatmo:NAModule1:home:outside:Humidity" }
+Number Netatmo_Outdoor_Humidex            "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:Humidex" }
+Number Netatmo_Outdoor_HeatIndex          "HeatIndex [%.1f °C]"            <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:HeatIndex" }
+Number Netatmo_Outdoor_Dewpoint           "Dewpoint [%.1f °C]"             <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
+Number Netatmo_Outdoor_DewpointDepression "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAModule1:home:outside:DewpointDepression" }
+Number Netatmo_Outdoor_RfStatus           "RfStatus [%.0f / 5]"            <signal>           { channel = "netatmo:NAModule1:home:outside:RfStatus" }
+Switch Netatmo_Outdoor_LowBattery         "LowBattery [%s]"                <siren>            { channel = "netatmo:NAModule1:home:outside:LowBattery" }
+Number Netatmo_Outdoor_BatteryVP          "BatteryVP [%.0f %%]"            <battery>          { channel = "netatmo:NAModule1:home:outside:BatteryVP" }
+DateTime Netatmo_Outdoor_TimeStamp        "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAModule1:home:outside:TimeStamp" }
+DateTime Netatmo_Outdoor_LastMessage      "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <text>  { channel = "netatmo:NAModule1:home:outside:LastMessage" }
+```
+
+## sitemaps/netatmo.sitemap
+
+```
+sitemap netatmo label="Netatmo"
+{
+    Frame label="Indoor" {
+        Text    item=Netatmo_Indoor_Temperature
+        Text    item=Netatmo_Indoor_Humidity
+        Text    item=Netatmo_Indoor_Humidex  valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
+        Text    item=Netatmo_Indoor_HeatIndex
+        Text    item=Netatmo_Indoor_Dewpoint
+        Text    item=Netatmo_Indoor_DewpointDepression
+        Text    item=Netatmo_Indoor_Co2  valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text    item=Netatmo_Indoor_Pressure
+        Text    item=Netatmo_Indoor_AbsolutePressure
+        Text    item=Netatmo_Indoor_Noise
+        Text    item=Netatmo_Indoor_WifiStatus
+        Text    item=Netatmo_Indoor_TimeStamp
+        Text    item=Netatmo_Indoor_Location
+        Text    item=Netatmo_Indoor_LastStatusStore
+        Text    item=Netatmo_Indoor_Unit
+        Text    item=Netatmo_Indoor_WindUnit
+        Text    item=Netatmo_Indoor_PressureUnit
+    }
+    Frame label="Outdoor" {
+        Text    item=Netatmo_Outdoor_Temperature
+        Text    item=Netatmo_Outdoor_TempTrend
+        Text    item=Netatmo_Outdoor_Humidity
+        Text    item=Netatmo_Outdoor_Humidex
+        Text    item=Netatmo_Outdoor_HeatIndex
+        Text    item=Netatmo_Outdoor_Dewpoint
+        Text    item=Netatmo_Outdoor_DewpointDepression
+        Text    item=Netatmo_Outdoor_RfStatus
+        Text    item=Netatmo_Outdoor_LowBattery
+        Text    item=Netatmo_Outdoor_BatteryVP  valuecolor=[>60="green",>45="orange",>36="red",>0="maroon"]
+        Text    item=Netatmo_Outdoor_TimeStamp
+        Text    item=Netatmo_Outdoor_LastMessage
+    }
+}
+```
 
 # Common problems
 

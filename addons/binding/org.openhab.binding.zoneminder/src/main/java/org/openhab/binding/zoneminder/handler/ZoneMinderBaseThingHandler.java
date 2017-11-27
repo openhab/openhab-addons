@@ -101,7 +101,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
     @Override
     public void initialize() {
 
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         try {
 
         } catch (Exception ex) {

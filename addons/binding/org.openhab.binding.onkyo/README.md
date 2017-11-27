@@ -29,6 +29,7 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 * TX-NR656
 * TX-NR717
 * TX-NR727
+* TX-NR737
 * TX-NR747
 * TX-NR818
 * TX-NR828
@@ -59,7 +60,7 @@ In the thing file, this looks e.g. like
 Model specific
 
 ```
-onkyo:TX-NR818:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+onkyo:TX-NR818:myOnkyo [ipAddress="192.168.1.100", port=60128]
 ```
 
 or
@@ -67,19 +68,19 @@ or
 Generic model
 
 ```
-onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port=60128]
 ```
 
 Optionally you can specify the refresh interval by refreshInterval parameter.
 
 ```
-onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
 Maximum volume level can also be configured by volumeLimit parameter. This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
 ```
-onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", volumeLimit=50]
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
 ```
 
 Binding then automatically scale the volume level in both directions (100% = 50 = 100%).

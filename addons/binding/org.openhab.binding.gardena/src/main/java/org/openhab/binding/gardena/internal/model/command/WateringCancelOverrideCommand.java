@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class WateringCancelOverrideCommand extends Command {
     private static final String COMMAND = "cancel_override";
 
-    /**
-     * {@inheritDoc}
-     */
     public WateringCancelOverrideCommand() {
         super(COMMAND);
     }

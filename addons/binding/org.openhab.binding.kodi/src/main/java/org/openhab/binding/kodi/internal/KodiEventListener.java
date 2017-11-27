@@ -10,7 +10,7 @@ package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
 
-import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+import org.eclipse.smarthome.core.library.types.RawType;
 
 /**
  * Interface which has to be implemented by a class in order to get status
@@ -51,4 +51,8 @@ public interface KodiEventListener extends EventListener {
     void updateMediaType(String mediaType);
 
     void updatePVRChannel(final String channel);
+
+    void updateThumbnail(RawType thumbnail);
+
+    void updateFanart(RawType fanart);
 }

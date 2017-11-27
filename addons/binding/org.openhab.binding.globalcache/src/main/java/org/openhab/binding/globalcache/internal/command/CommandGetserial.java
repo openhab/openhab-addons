@@ -17,7 +17,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandGetserial} class implements the GlobalCache get_SERIAL command, which retrieves the serial
  * port parameters (baud, flow control, and parity) from the device.
  *

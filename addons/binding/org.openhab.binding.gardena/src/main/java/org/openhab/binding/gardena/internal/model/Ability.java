@@ -24,7 +24,7 @@ public class Ability {
     private String type;
     private transient Device device;
 
-    private List<Property> properties = new ArrayList<Property>();
+    private List<Property> properties = new ArrayList<>();
 
     /**
      * Returns the name of the ability.

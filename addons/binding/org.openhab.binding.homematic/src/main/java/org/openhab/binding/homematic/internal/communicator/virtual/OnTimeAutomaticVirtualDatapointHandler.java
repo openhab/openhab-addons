@@ -33,17 +33,11 @@ import org.slf4j.LoggerFactory;
 public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(OnTimeAutomaticVirtualDatapointHandler.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         for (HmChannel channel : device.getChannels()) {
@@ -62,9 +56,6 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
         boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null && value instanceof Number
@@ -75,9 +66,6 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
                 || getName().equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {

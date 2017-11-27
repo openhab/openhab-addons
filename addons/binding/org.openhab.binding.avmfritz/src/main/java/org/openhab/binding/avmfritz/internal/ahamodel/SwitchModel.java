@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
+import static org.openhab.binding.avmfritz.BindingConstants.*;
+
 import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,18 +20,22 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * See {@link DevicelistModel}.
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Added new channels `locked`, `mode` and `radiator_mode`
  *
  */
 @XmlRootElement(name = "switch")
-@XmlType(propOrder = { "state", "mode", "lock" })
+@XmlType(propOrder = { "state", "mode", "lock", "devicelock" })
 public class SwitchModel {
     public static final BigDecimal ON = BigDecimal.ONE;
     public static final BigDecimal OFF = BigDecimal.ZERO;
+    public static final String MODE_FRITZ_AUTO = "auto";
+    public static final String MODE_FRITZ_MANUAL = "manuell";
 
     private BigDecimal state;
     private String mode;
     private BigDecimal lock;
+    private BigDecimal devicelock;
 
     public BigDecimal getState() {
         return state;
@@ -40,7 +46,11 @@ public class SwitchModel {
     }
 
     public String getMode() {
-        return mode;
+        if (MODE_FRITZ_AUTO.equals(mode)) {
+            return MODE_AUTO;
+        } else {
+            return MODE_MANUAL;
+        }
     }
 
     public void setMode(String mode) {
@@ -55,9 +65,17 @@ public class SwitchModel {
         this.lock = lock;
     }
 
+    public BigDecimal getDevicelock() {
+        return devicelock;
+    }
+
+    public void setDevicelock(BigDecimal devicelock) {
+        this.devicelock = devicelock;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("state", this.getState()).append("mode", this.getMode())
-                .append("lock", this.getLock()).toString();
+        return new ToStringBuilder(this).append("state", getState()).append("mode", getMode()).append("lock", getLock())
+                .append("devicelock", getDevicelock()).toString();
     }
 }

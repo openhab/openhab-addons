@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class WateringManualOverrideCommand extends Command {
     private static final String COMMAND = "manual_override";
 
-    /**
-     * {@inheritDoc}
-     */
     public WateringManualOverrideCommand(String durationInMinutes) {
         super(COMMAND);
         parameters = new CommandParameters();

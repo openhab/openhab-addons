@@ -68,9 +68,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
@@ -81,11 +78,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         deviceOnlineWatchdog();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         if (refreshJob != null && !refreshJob.isCancelled()) {
@@ -125,7 +117,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             }
         };
 
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
     }
 
     private synchronized PulseaudioBridgeHandler getPulseaudioBridgeHandler() {
@@ -249,8 +241,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             updateState(PulseaudioBindingConstants.STATE_CHANNEL,
                     device.getState() != null ? new StringType(device.getState().toString()) : new StringType("-"));
             if (device instanceof SinkInput) {
-                updateState(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL, ((SinkInput) device).getSink() != null
-                        ? new StringType(((SinkInput) device).getSink().getPaName()) : new StringType("-"));
+                updateState(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL,
+                        ((SinkInput) device).getSink() != null
+                                ? new StringType(((SinkInput) device).getSink().getPaName())
+                                : new StringType("-"));
             }
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
                 updateState(PulseaudioBindingConstants.SLAVES_CHANNEL,

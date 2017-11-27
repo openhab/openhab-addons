@@ -9,11 +9,13 @@
 package org.openhab.binding.silvercrestwifisocket.internal.entities;
 
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketResponseType;
+import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
 
 /**
  * This POJO represents one Wifi Socket Response.
  *
  * @author Jaime Vaz - Initial contribution
+ * @author Christian Heimerl - for integration of EasyHome
  *
  */
 public class SilvercrestWifiSocketResponse {
@@ -21,6 +23,7 @@ public class SilvercrestWifiSocketResponse {
     private String macAddress;
     private String hostAddress;
     private SilvercrestWifiSocketResponseType type;
+    private SilvercrestWifiSocketVendor vendor;
 
     /**
      * Default constructor.
@@ -28,13 +31,15 @@ public class SilvercrestWifiSocketResponse {
      * @param macAddress the mac address
      * @param hostAddress the host address
      * @param type the {@link SilvercrestWifiSocketResponseType}
+     * @param vendor the vendor of the socket
      */
     public SilvercrestWifiSocketResponse(final String macAddress, final String hostAddress,
-            final SilvercrestWifiSocketResponseType type) {
+            final SilvercrestWifiSocketResponseType type, final SilvercrestWifiSocketVendor vendor) {
         super();
         this.macAddress = macAddress;
         this.hostAddress = hostAddress;
         this.type = type;
+        this.vendor = vendor;
     }
 
     /**
@@ -42,9 +47,11 @@ public class SilvercrestWifiSocketResponse {
      *
      * @param macAddress the mac address
      * @param type the {@link SilvercrestWifiSocketResponseType}
+     * @param vendor the vendor of the socket
      */
-    public SilvercrestWifiSocketResponse(final String macAddress, final SilvercrestWifiSocketResponseType type) {
-        this(macAddress, null, type);
+    public SilvercrestWifiSocketResponse(final String macAddress, final SilvercrestWifiSocketResponseType type,
+            final SilvercrestWifiSocketVendor vendor) {
+        this(macAddress, null, type, vendor);
     }
 
     public String getMacAddress() {
@@ -69,5 +76,13 @@ public class SilvercrestWifiSocketResponse {
 
     public void setHostAddress(final String hostAddress) {
         this.hostAddress = hostAddress;
+    }
+
+    public SilvercrestWifiSocketVendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(SilvercrestWifiSocketVendor vendor) {
+        this.vendor = vendor;
     }
 }

@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lutron.config.DimmerConfig;
+import org.openhab.binding.lutron.internal.config.DimmerConfig;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

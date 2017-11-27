@@ -28,9 +28,6 @@ public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> 
         this.config = config;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public List<HmRssiInfo> parse(Object[] result) throws IOException {
@@ -40,12 +37,14 @@ public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> 
 
             for (String sourceDevice : devices.keySet()) {
                 Map<String, Object[]> targetDevices = (Map<String, Object[]>) devices.get(sourceDevice);
-                for (String targetDevice : targetDevices.keySet()) {
-                    if (targetDevice.equals(config.getGatewayInfo().getAddress())) {
-                        Integer rssiDevice = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[0]);
-                        Integer rssiPeer = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[1]);
-                        HmRssiInfo rssiInfo = new HmRssiInfo(sourceDevice, rssiDevice, rssiPeer);
-                        rssiList.add(rssiInfo);
+                if (targetDevices != null) {
+                    for (String targetDevice : targetDevices.keySet()) {
+                        if (targetDevice.equals(config.getGatewayInfo().getAddress())) {
+                            Integer rssiDevice = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[0]);
+                            Integer rssiPeer = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[1]);
+                            HmRssiInfo rssiInfo = new HmRssiInfo(sourceDevice, rssiDevice, rssiPeer);
+                            rssiList.add(rssiInfo);
+                        }
                     }
                 }
             }

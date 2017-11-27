@@ -1,15 +1,18 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
-Bundle-Name: avmFritz Binding
+Bundle-Name: AVM FRITZ! Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.avmfritz;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.collect,
+Bundle-Version: 2.2.0.qualifier
+Export-Package: 
+ org.openhab.binding.avmfritz,
+ org.openhab.binding.avmfritz.handler
+Import-Package: 
  javax.xml.bind,
- org.apache.commons.lang,
  org.apache.commons.lang.builder,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
@@ -28,10 +31,9 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.avmfritz,
- org.openhab.binding.avmfritz.handler
+ org.openhab.binding.avmfritz.handler,
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.avmfritz,
- org.openhab.binding.avmfritz.handler

@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.vitotronic.handler;
 
-/**
- * The {@link VitotronicBridgeHandler} class handles the connection to the
- * optolink adapter.
- *
- * @author Stefan Andres - Initial contribution
- */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -44,6 +37,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * The {@link VitotronicBridgeHandler} class handles the connection to the
+ * optolink adapter.
+ *
+ * @author Stefan Andres - Initial contribution
+ */
 public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(VitotronicBridgeHandler.class);
@@ -175,7 +174,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void startAutomaticRefresh() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 

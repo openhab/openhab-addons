@@ -9,10 +9,10 @@
 package org.openhab.binding.onkyo;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link OnkyoBinding} class defines common constants, which are
@@ -38,6 +38,7 @@ public class OnkyoBindingConstants {
     public static final String ONKYO_TYPE_TXNR656 = "TX-NR656";
     public static final String ONKYO_TYPE_TXNR717 = "TX-NR717";
     public static final String ONKYO_TYPE_TXNR727 = "TX-NR727";
+    public static final String ONKYO_TYPE_TXNR737 = "TX-NR737";
     public static final String ONKYO_TYPE_TXNR747 = "TX-NR747";
     public static final String ONKYO_TYPE_TXNR757 = "TX-NR757";
     public static final String ONKYO_TYPE_TXNR818 = "TX-NR818";
@@ -45,10 +46,12 @@ public class OnkyoBindingConstants {
     public static final String ONKYO_TYPE_TXNR838 = "TX-NR838";
 
     // Extend this set with all successfully tested models
-    public static final Set<String> SUPPORTED_DEVICE_MODELS = ImmutableSet.of(ONKYO_TYPE_TXNR414, ONKYO_TYPE_TXNR509,
-            ONKYO_TYPE_TXNR515, ONKYO_TYPE_TXNR525, ONKYO_TYPE_TXNR535, ONKYO_TYPE_TXNR555, ONKYO_TYPE_TXNR616,
-            ONKYO_TYPE_TXNR626, ONKYO_TYPE_TXNR646, ONKYO_TYPE_TXNR656, ONKYO_TYPE_TXNR717, ONKYO_TYPE_TXNR727,
-            ONKYO_TYPE_TXNR747, ONKYO_TYPE_TXNR757, ONKYO_TYPE_TXNR818, ONKYO_TYPE_TXNR828, ONKYO_TYPE_TXNR838);
+    public static final Set<String> SUPPORTED_DEVICE_MODELS = Stream
+            .of(ONKYO_TYPE_TXNR414, ONKYO_TYPE_TXNR509, ONKYO_TYPE_TXNR515, ONKYO_TYPE_TXNR525, ONKYO_TYPE_TXNR535,
+                    ONKYO_TYPE_TXNR555, ONKYO_TYPE_TXNR616, ONKYO_TYPE_TXNR626, ONKYO_TYPE_TXNR646, ONKYO_TYPE_TXNR656,
+                    ONKYO_TYPE_TXNR717, ONKYO_TYPE_TXNR727, ONKYO_TYPE_TXNR737, ONKYO_TYPE_TXNR747, ONKYO_TYPE_TXNR757,
+                    ONKYO_TYPE_TXNR818, ONKYO_TYPE_TXNR828, ONKYO_TYPE_TXNR838)
+            .collect(Collectors.toSet());
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ONKYOAV = new ThingTypeUID(BINDING_ID, "onkyoAVR");
@@ -65,17 +68,19 @@ public class OnkyoBindingConstants {
     public static final ThingTypeUID THING_TYPE_TXNR656 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR656);
     public static final ThingTypeUID THING_TYPE_TXNR717 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR717);
     public static final ThingTypeUID THING_TYPE_TXNR727 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR727);
+    public static final ThingTypeUID THING_TYPE_TXNR737 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR737);
     public static final ThingTypeUID THING_TYPE_TXNR747 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR747);
     public static final ThingTypeUID THING_TYPE_TXNR757 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR757);
     public static final ThingTypeUID THING_TYPE_TXNR818 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR818);
     public static final ThingTypeUID THING_TYPE_TXNR828 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR828);
     public static final ThingTypeUID THING_TYPE_TXNR838 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR838);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ONKYOAV,
-            THING_TYPE_ONKYO_UNSUPPORTED, THING_TYPE_TXNR414, THING_TYPE_TXNR515, THING_TYPE_TXNR525,
-            THING_TYPE_TXNR535, THING_TYPE_TXNR555, THING_TYPE_TXNR616, THING_TYPE_TXNR626, THING_TYPE_TXNR646,
-            THING_TYPE_TXNR656, THING_TYPE_TXNR717, THING_TYPE_TXNR727, THING_TYPE_TXNR747, THING_TYPE_TXNR757,
-            THING_TYPE_TXNR818, THING_TYPE_TXNR828, THING_TYPE_TXNR838);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_ONKYOAV, THING_TYPE_ONKYO_UNSUPPORTED, THING_TYPE_TXNR414, THING_TYPE_TXNR515,
+                    THING_TYPE_TXNR525, THING_TYPE_TXNR535, THING_TYPE_TXNR555, THING_TYPE_TXNR616, THING_TYPE_TXNR626,
+                    THING_TYPE_TXNR646, THING_TYPE_TXNR656, THING_TYPE_TXNR717, THING_TYPE_TXNR727, THING_TYPE_TXNR737,
+                    THING_TYPE_TXNR747, THING_TYPE_TXNR757, THING_TYPE_TXNR818, THING_TYPE_TXNR828, THING_TYPE_TXNR838)
+            .collect(Collectors.toSet());
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";

@@ -22,18 +22,11 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_STATE_CONTACT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isApplicable(device)) {
@@ -48,17 +41,11 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
         return isApplicable(dp.getChannel().getDevice()) && DATAPOINT_NAME_STATE.equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         Object value = convertState(dp.getValue());
@@ -71,12 +58,12 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     }
 
     private Boolean convertState(Object value) {
-        if (value == null) {
+        if (!(value instanceof Integer)) {
             return null;
         }
-        if ("CLOSED".equals(value)) {
+        if ((int) value == 0) {
             return true;
-        } else if ("OPEN".equals(value)) {
+        } else if ((int) value == 1) {
             return false;
         } else {
             return null;

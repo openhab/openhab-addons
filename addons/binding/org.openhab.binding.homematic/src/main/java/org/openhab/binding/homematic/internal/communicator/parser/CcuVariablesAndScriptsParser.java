@@ -30,34 +30,41 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             for (TclScriptDataEntry entry : resultList.getEntries()) {
-                HmDatapoint dp = new HmDatapoint();
-                dp.setName(entry.name);
-                dp.setInfo(entry.name);
-                dp.setDescription(entry.description);
-                dp.setValue(convertToType(entry.value));
-                dp.setMinValue((Number) convertToType(entry.minValue));
-                dp.setMaxValue((Number) convertToType(entry.maxValue));
-                dp.setReadOnly(entry.readOnly);
-                dp.setUnit(entry.unit);
+                HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, entry.name);
+                if (dp != null) {
+                    dp.setValue(convertToType(entry.value));
+                } else {
+                    dp = new HmDatapoint();
+                    dp.setName(entry.name);
+                    dp.setInfo(entry.name);
+                    dp.setDescription(entry.description);
+                    dp.setType(HmValueType.parse(entry.valueType));
+                    dp.setValue(convertToType(entry.value));
+                    if (dp.isIntegerType()) {
+                        dp.setMinValue(toInteger(entry.minValue));
+                        dp.setMaxValue(toInteger(entry.maxValue));
+                    } else {
+                        dp.setMinValue(toDouble(entry.minValue));
+                        dp.setMaxValue(toDouble(entry.maxValue));
+                    }
+                    dp.setReadOnly(entry.readOnly);
+                    dp.setUnit(entry.unit);
 
-                String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(entry.options, ";");
-                dp.setOptions(result == null || result.length == 0 ? null : result);
+                    String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(entry.options, ";");
+                    dp.setOptions(result == null || result.length == 0 ? null : result);
 
-                if (dp.getOptions() != null) {
-                    dp.setMinValue(0);
-                    dp.setMaxValue(dp.getOptions().length - 1);
+                    if (dp.getOptions() != null) {
+                        dp.setMinValue(0);
+                        dp.setMaxValue(dp.getOptions().length - 1);
+                    }
+
+                    dp.setParamsetType(HmParamsetType.VALUES);
+                    channel.addDatapoint(dp);
                 }
-
-                dp.setType(HmValueType.parse(entry.valueType));
-                dp.setParamsetType(HmParamsetType.VALUES);
-                channel.addDatapoint(dp);
             }
         }
         return null;

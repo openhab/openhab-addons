@@ -8,12 +8,9 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
-import static org.openhab.binding.avmfritz.BindingConstants.*;
-
-import java.math.BigDecimal;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +24,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.handler.IFritzHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -39,11 +35,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles requests to a FRITZ!OS web interface for interfacing with
  * AVM home automation devices. It manages authentication and wraps commands.
- * 
+ *
  * @author Robert Bausdorf, Christian Brauers
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- * 
+ *
  */
 public class FritzahaWebInterface {
 
@@ -69,7 +65,7 @@ public class FritzahaWebInterface {
      */
     protected IFritzHandler fbHandler;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(FritzahaWebInterface.class);
     // Uses RegEx to handle bad FRITZ!Box XML
     /**
      * RegEx Pattern to grab the session ID from a login XML response
@@ -103,7 +99,7 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET", getURL("login_sid.lua", addSID("")),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -143,7 +139,7 @@ public class FritzahaWebInterface {
                                     ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -198,7 +194,7 @@ public class FritzahaWebInterface {
      * @return Response to the challenge
      */
     protected String createResponse(String challenge) {
-        String handshake = challenge.concat("-").concat(this.config.getPassword());
+        String handshake = challenge.concat("-").concat(config.getPassword());
         MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -247,14 +243,14 @@ public class FritzahaWebInterface {
      * @return URL
      */
     public String getURL(String path) {
-        return this.config.getProtocol() + "://" + this.config.getIpAddress()
-                + (this.config.getPort() != null ? ":" + this.config.getPort() : "") + "/" + path;
+        return config.getProtocol() + "://" + config.getIpAddress()
+                + (config.getPort() != null ? ":" + config.getPort() : "") + "/" + path;
     }
 
     /**
      * Constructs a URL from the stored information, a specified path and a
      * specified argument string
-     * 
+     *
      * @param path Path to include in URL
      * @param args String of arguments, in standard HTTP format
      *            (arg1=value1&arg2=value2&...)
@@ -284,7 +280,7 @@ public class FritzahaWebInterface {
             authenticate();
         }
         FritzahaContentExchange getExchange = new FritzahaContentExchange(callback);
-        asyncclient.newRequest(getURL(path, this.addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
+        asyncclient.newRequest(getURL(path, addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
                 .onResponseFailure(getExchange) // .onComplete(getExchange)
                 .send(getExchange);
         logger.debug("GETting URL {}", getURL(path, addSID(args)));
@@ -292,7 +288,7 @@ public class FritzahaWebInterface {
     }
 
     public FritzahaContentExchange asyncGet(FritzAhaCallback callback) {
-        return this.asyncGet(callback.getPath(), callback.getArgs(), callback);
+        return asyncGet(callback.getPath(), callback.getArgs(), callback);
     }
 
     /**
@@ -307,8 +303,8 @@ public class FritzahaWebInterface {
             authenticate();
         }
         FritzahaContentExchange postExchange = new FritzahaContentExchange(callback);
-        asyncclient.newRequest(getURL(path)).timeout(this.config.getAsyncTimeout(), TimeUnit.SECONDS)
-                .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
+        asyncclient.newRequest(getURL(path)).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS).method(HttpMethod.POST)
+                .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
                 .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
         return postExchange;
     }

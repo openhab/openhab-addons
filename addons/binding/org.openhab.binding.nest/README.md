@@ -1,0 +1,197 @@
+# Nest Binding
+
+The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest API](https://developers.nest.com/documentation/cloud/get-started) (REST). 
+
+Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information. The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
+
+## Supported Things
+
+The table below lists the Nest binding thing types:
+
+| Things                                  | Description                              | Thing Type     |
+| --------------------------------------- | ---------------------------------------- | -------------- |
+| Nest Account                            | An account for using the Nest REST API   | account        |
+| Nest Cam (Indoor, IQ, Outdoor), Dropcam | A Nest Cam registered with your account  | camera         |
+| Nest Protect                            | The smoke detector/Nest Protect for the account | smoke_detector |
+| Structure                               | The Nest structure defines the house the account has setup on Nest.	You will only have more than one structure if you have more than one house | structure      |
+| Nest Thermostat (E)                     | A Thermostat to control the various aspects of the house's HVAC system | thermostat     |
+
+## Authorization
+
+The Nest API uses OAuth for authorization. Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
+
+To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant). 
+
+While registering a new Product (on the Product Details page) make sure to:
+
+* Leave both "OAuth Redirect URI" fields empty to enable PIN-based authorization.
+* Grant all the permissions you intend to use. When in doubt, enable the permission because the binding needs to be reauthorized when permissions change at a later time.
+
+After creating the Product, your browser shows the Product Overview page. This page contains the **Product ID** and **Product Secret** authorization parameters that are used by the binding. Take note of both parameters or keep this page open in a browser tab. Now copy and paste the "Authorization URL" in a new browser tab. Accept the permissions and you will be presented the **Pincode** authorization parameter that is also used by the binding.
+
+You can return to the Product Overview page at a later time by opening the [Products](https://console.developers.nest.com/products) page and selecting your Product.
+
+## Discovery
+
+The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing. See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
+
+Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode. The configured Pincode is cleared because it can only be used once. The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
+
+You can reuse an Access Token for authorization but not the Pincode. A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
+
+## Channels
+
+### Account Channels
+
+The account Thing Type does not have any channels.
+
+### Camera Channels
+
+
+| Channel Type ID       | Item Type | Description                              | Read Write |
+| --------------------- | --------- | ---------------------------------------- | :--------: |
+| app_url               | String    | The app URL to see the camera            |     R      |
+| audio_input_enabled   | Switch    | If the audio input is currently enabled  |     R      |
+| public_share_enabled  | Switch    | If public sharing is currently enabled   |     R      |
+| public_share_url      | String    | The URL to see the public share of the camera |     R      |
+| snapshot_url          | String    | The URL to use for a snapshot of the video stream |     R      |
+| streaming             | Switch    | If the camera is currently streaming     |    R/W     |
+| video_history_enabled | Switch    | If the video history is currently enabled |     R      |
+| web_url               | String    | The web URL to see the camera            |     R      |
+
+### Smoke Detector Channels
+
+| Channel Type ID    | Item Type | Description                              | Read Write |
+| ------------------ | --------- | ---------------------------------------- | :--------: |
+| co_alarm_state     | String    | The carbon monoxide alarm state of the Nest Protect (OK, EMERGENCY, WARNING) |     R      |
+| low_battery        | Switch    | Reports whether the battery of the Nest protect is low (if it is battery powered) |     R      |
+| manual_test_active | Switch    | Manual test active at the moment         |     R      |
+| smoke_alarm_state  | String    | The smoke alarm state of the Nest Protect (OK, EMERGENCY, WARNING) |     R      |
+| ui_color_state     | String    | The current color of the ring on the smoke detector (GRAY, GREEN, YELLOW, RED) |     R      |
+
+### Structure Channels
+
+| Channel Type ID              | Item Type | Description                              | Read Write |
+| ---------------------------- | --------- | ---------------------------------------- | :--------: |
+| away                         | String    | Away state of the structure (HOME, AWAY, AUTO_AWAY) |    R/W     |
+| country_code                 | String    | Country code of the structure ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)) |     R      |
+| co_alarm_state               | String    | Carbon Monoxide alarm state (OK, EMERGENCY, WARNING) |     R      |
+| eta_begin                    | DateTime  | Estimated time of arrival at home, will setup the heat to turn on and be warm |     R      |
+| peak_period_end_time         | DateTime  | Peak period end for the Rush Hour Rewards program |     R      |
+| peak_period_start_time       | DateTime  | Peak period start for the Rush Hour Rewards program |     R      |
+| postal_code                  | String    | Postal code of the structure             |     R      |
+| rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not |     R      |
+| smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING) |     R      |
+| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones)) |     R      |
+
+### Thermostat Channels
+
+| Channel Type ID             | Item Type | Description                              | Read Write |
+| --------------------------- | --------- | ---------------------------------------- | :--------: |
+| can_cool                    | Switch    | If the thermostat can actually turn on cooling |     R      |
+| can_heat                    | Switch    | If the thermostat can actually turn on heating |     R      |
+| fan_timer_active            | Switch    | If the fan timer is engaged              |    R/W     |
+| fan_timer_duration          | Number    | Length of time (in minutes) that the fan is set to run (15, 30, 45, 60, 120, 240, 480, 960) |    R/W     |
+| has_fan                     | Switch    | If the thermostat can control the fan    |     R      |
+| has_leaf                    | Switch    | If the thermostat is currently in a leaf mode |     R      |
+| humidity                    | Number    | Indicates the current relative humidity  |     R      |
+| locked                      | Switch    | If the thermostat has the temperature locked to only be within a set range |    R     |
+| locked_max_set_point        | Number    | The locked range max set point in degrees Celsius |    R/W     |
+| locked_min_set_point        | Number    | The locked range min set point in degrees Celsius |    R/W     |
+| max_set_point               | Number    | The max set point in degrees Celsius     |    R/W     |
+| min_set_point               | Number    | The min set point in degrees Celsius     |    R/W     |
+| mode                        | String    | Current mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF) |    R/W     |
+| previous_mode               | String    | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF) |     R      |
+| temperature                 | Number    | Current temperature in degrees Celsius   |     R      |
+| time_to_target_mins         | Number    | Time left to the target temperature (mins) approximately |     R      |
+| set_point                   | Number    | The set point in degrees Celsius         |    R/W     |
+| sunlight_correction_active  | Switch    | If sunlight correction is active         |     R      |
+| sunlight_correction_enabled | Switch    | If sunlight correction is enabled        |     R      |
+| using_emergency_heat        | Switch    | If the system is currently using emergency heat |     R      |
+
+Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App. The Nest API applies the following rounding:
+
+* degrees Celsius to 0.5 degrees
+* degrees Fahrenheit to whole degrees
+* humidity to 5%
+
+## Full Example
+
+You can use the discovery functionality of the binding to obtain the deviceId and structureId values for defining Nest things in files.
+
+Another way to get the deviceId and structureId values is by querying the Nest API yourself. First [obtain an Access Token](https://developers.nest.com/documentation/cloud/sample-code-auth) (or use the Access Token obtained by the binding). Then use it with one of the [API Read Examples](https://developers.nest.com/documentation/cloud/how-to-read-data). 
+
+### demo.things:
+
+```
+Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589e0", productSecret="QITLR3iyUlWaj9dbvCxsCKp4f", accessToken="c.6rse1xtRk2UANErcY0XazaqPHgbvSSB6owOrbZrZ6IXrmqhsr9QTmcfaiLX1l0ULvlI5xLp01xmKeiojHqozLQbNM8yfITj1LSdK28zsUft1aKKH2mDlOeoqZKBdVIsxyZk4orH0AvKEZ5aY" ] {
+    camera         fish_cam           [ deviceId="qw0NNE8ruxA9AGJkTaFH3KeUiJaONWKiH9Gh3RwwhHClonIexTtufQ" ]
+    smoke_detector hallway_smoke      [ deviceId="Tzvibaa3lLKnHpvpi9OQeCI_z5rfkBAV" ]
+    structure      home               [ structureId="20wKjydArmMV3kOluTA7JRcZg8HKBzTR-G_2nRXuIN1Bd6laGLOJQw" ]
+    thermostat     living_thermostat  [ deviceId="ZqAKzSv6TO6PjBnOCXf9LSI_z5rfkBAV" ]
+}
+```
+
+### demo.items:
+
+
+```
+/* Camera */
+String Cam_App_URL               "App URL [%s]"          { channel="nest:camera:demo_account:fish_cam:app_url" }
+Switch Cam_Audio_Input_Enabled   "Audio Input Enabled"   { channel="nest:camera:demo_account:fish_cam:audio_input_enabled" }
+String Cam_Snapshot_URL          "Snapshot URL [%s]"     { channel="nest:camera:demo_account:fish_cam:snapshot_url" }
+Switch Cam_Streaming             "Streaming"             { channel="nest:camera:demo_account:fish_cam:streaming" }
+Switch Cam_Public_Share_Enabled  "Public Share Enabled"  { channel="nest:camera:demo_account:fish_cam:public_share_enabled" }
+String Cam_Public_Share_URL      "Public Share URL [%s]" { channel="nest:camera:demo_account:fish_cam:public_share_url" }
+Switch Cam_Video_History_Enabled "Video History Enabled" { channel="nest:camera:demo_account:fish_cam:video_history_enabled" }
+String Cam_Web_URL               "Web URL [%s]"          { channel="nest:camera:demo_account:fish_cam:web_url" }
+
+/* Smoke Detector */
+String Smoke_CO_Alarm    "CO Alarm [%s]"    { channel="nest:smoke_detector:demo_account:hallway_smoke:co_alarm_state" }
+Switch Smoke_Battery_Low "Battery Low"      { channel="nest:smoke_detector:demo_account:hallway_smoke:low_battery" }
+Switch Smoke_Manual_Test "Manual Test"      { channel="nest:smoke_detector:demo_account:hallway_smoke:manual_test_active" }
+String Smoke_Smoke_Alarm "Smoke Alarm [%s]" { channel="nest:smoke_detector:demo_account:hallway_smoke:smoke_alarm_state" }
+String Smoke_UI_Color    "UI Color [%s]"    { channel="nest:smoke_detector:demo_account:hallway_smoke:ui_color_state" }
+
+/* Thermostat */
+Switch Thermostat_Can_Cool     "Can Cool"                       { channel="nest:thermostat:demo_account:living_thermostat:can_cool" }
+Switch Thermostat_Can_Heat     "Can Heat"                       { channel="nest:thermostat:demo_account:living_thermostat:can_heat" }
+Switch Thermostat_Has_Fan      "Has Fan"                        { channel="nest:thermostat:demo_account:living_thermostat:has_fan" }
+Switch Thermostat_Has_Leaf     "Has Leaf"                       { channel="nest:thermostat:demo_account:living_thermostat:has_leaf" }
+Number Thermostat_Humidity     "Humidity [%.1f %%]"             { channel="nest:thermostat:demo_account:living_thermostat:humidity" }
+Switch Thermostat_Locked       "Locked"                         { channel="nest:thermostat:demo_account:living_thermostat:locked" }
+Number Thermostat_LMaxSP       "Locked Max Set Point [%.1f °C]" { channel="nest:thermostat:demo_account:living_thermostat:locked_max_set_point" }
+Number Thermostat_LMinSP       "Locked Min Set Point [%.1f °C]" { channel="nest:thermostat:demo_account:living_thermostat:locked_min_set_point" }
+Number Thermostat_Max_SP       "Max Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:max_set_point" }
+Number Thermostat_Min_SP       "Min Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
+String Thermostat_Mode         "Mode [%s]"                      { channel="nest:thermostat:demo_account:living_thermostat:mode" }
+String Thermostat_PreviousMode "Previous Mode [%s]"             { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
+Number Thermostat_Set_Point    "Set Point [%.1f °C]"            { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
+Switch Thermostat_SunlightCA   "Sunlight Correction Active"     { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
+Switch Thermostat_SunlightCE   "Sunlight Correction Enabled"    { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
+Number Thermostat_Temperature  "Temperature [%.1f °C]"          { channel="nest:thermostat:demo_account:living_thermostat:temperature" }
+Number Thermostat_TimeToTarget "Time To Target [%s]"            { channel="nest:thermostat:demo_account:living_thermostat:time_to_target_mins" }
+Switch Thermostat_UsingEmHeat  "Using Emergency Heat"           { channel="nest:thermostat:demo_account:living_thermostat:using_emergency_heat" }
+
+/* Structure */
+String   Home_Away "Away [%s]"                                                      { channel="nest:structure:demo_account:home:away" }
+String   Home_CC   "Country Code [%s]"                                              { channel="nest:structure:demo_account:home:country_code" }
+String   Home_COAS "CO Alarm State [%s]"                                            { channel="nest:structure:demo_account:home:co_alarm_state" }
+DateTime Home_ETA  "ETA [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"                      { channel="nest:structure:demo_account:home:eta_begin" }
+DateTime Home_PPET "Peak Period End Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"     { channel="nest:structure:demo_account:home:peak_period_end_time" }
+DateTime Home_PPST "Peak Period Start Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"   { channel="nest:structure:demo_account:home:peak_period_start_time" }
+String   Home_PC   "Postal Code [%s]"                                               { channel="nest:structure:demo_account:home:postal_code" }
+Switch   Home_RHR  "Rush Hour Rewards"                                              { channel="nest:structure:demo_account:home:rush_hour_rewards_enrollment" }
+String   Home_SAS  "Smoke Alarm State [%s]"                                         { channel="nest:structure:demo_account:home:smoke_alarm_state" }
+String   Home_TZ   "Time Zone [%s]"                                                 { channel="nest:structure:demo_account:home:time_zone" }
+```
+
+## Known Issues
+
+1. The binding uses Celsius as unit for all Themostat temperature channels.
+2. Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
+
+## Attribution
+
+This documentation contains parts written by John Cocula which were copied from the 1.0 Nest binding.
+

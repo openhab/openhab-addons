@@ -9,7 +9,7 @@
 package org.openhab.binding.coolmasternet.handler;
 
 import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
-import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
+import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +82,7 @@ public class HVACHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initialising CoolMasterNet HVAC handler...");
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         controller = (ControllerHandler) getBridge().getHandler();
     }
 

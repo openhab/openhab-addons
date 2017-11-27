@@ -38,13 +38,13 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.config.HDPowerViewHubConfiguration;
-import org.openhab.binding.hdpowerview.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +123,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        pollFuture = scheduler.scheduleAtFixedRate(pollingRunnable, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(pollingRunnable, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private synchronized void stopPoll() {

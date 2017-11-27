@@ -47,33 +47,21 @@ public class BinRpcNetworkService implements Runnable {
 
         this.rpcResponseHandler = new RpcResponseHandler<byte[]>(listener) {
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected byte[] getEmptyStringResult() {
                 return BIN_EMPTY_STRING;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected byte[] getEmptyEventListResult() {
                 return BIN_EMPTY_EVENT_LIST;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected byte[] getEmptyArrayResult() {
                 return BIN_EMPTY_ARRAY;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected RpcRequest<byte[]> createRpcRequest() {
                 return new BinRpcMessage(null, BinRpcMessage.TYPE.RESPONSE, config.getEncoding());

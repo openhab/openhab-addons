@@ -10,9 +10,9 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.ui.cometvisu.backend.LoginResource">
-   <implementation class="org.openhab.ui.cometvisu.backend.LoginResource"/>
+   <implementation class="org.openhab.ui.cometvisu.internal.backend.LoginResource"/>
    <service>
-      <provide interface="org.openhab.ui.cometvisu.backend.LoginResource"/>
+      <provide interface="org.openhab.ui.cometvisu.internal.backend.LoginResource"/>
       <provide interface="org.eclipse.smarthome.io.rest.RESTResource"/>
    </service>
 </scr:component>
