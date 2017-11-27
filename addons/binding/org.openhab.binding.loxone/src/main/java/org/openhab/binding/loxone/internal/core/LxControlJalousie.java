@@ -26,6 +26,19 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlJalousie extends LxControl implements LxControlStateListener {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlJalousie(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to jalousie controls
      */
@@ -115,15 +128,6 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
     LxControlJalousie(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
         addStateListener(STATE_POSITION, this);
-    }
-
-    LxControlJalousie() {
-        super(TYPE_NAME);
-    }
-
-    @Override
-    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        return new LxControlJalousie(client, uuid, json, room, category);
     }
 
     /**

@@ -26,6 +26,18 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlSwitch extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlSwitch(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to switch controls
      */
@@ -61,19 +73,6 @@ public class LxControlSwitch extends LxControl {
      */
     LxControlSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
-    }
-
-    LxControlSwitch() {
-        super(TYPE_NAME);
-    }
-
-    LxControlSwitch(String typeName) {
-        super(typeName);
-    }
-
-    @Override
-    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        return new LxControlSwitch(client, uuid, json, room, category);
     }
 
     /**

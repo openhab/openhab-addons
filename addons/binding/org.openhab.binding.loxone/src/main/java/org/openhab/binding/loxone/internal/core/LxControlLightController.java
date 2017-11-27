@@ -27,6 +27,19 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlLightController extends LxControlAbstractController implements LxControlStateListener {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlLightController(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * Number of scenes supported by the Miniserver. Indexing starts with 0 to NUM_OF_SCENES-1.
      */
@@ -85,15 +98,6 @@ public class LxControlLightController extends LxControlAbstractController implem
         super(client, uuid, json, room, category);
         // sub-controls of this control have been created when update() method was called by super class constructor
         addStateListener(STATE_SCENE_LIST, this);
-    }
-
-    LxControlLightController() {
-        super(TYPE_NAME);
-    }
-
-    @Override
-    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        return new LxControlLightController(client, uuid, json, room, category);
     }
 
     /**

@@ -40,17 +40,6 @@ abstract class LxControlAbstractController extends LxControl {
     }
 
     /**
-     * Create control object.
-     * Used by control object factory.
-     *
-     * @param typeName
-     *            name of the control type
-     */
-    LxControlAbstractController(String typeName) {
-        super(typeName);
-    }
-
-    /**
      * Update Miniserver's controller in runtime.
      *
      * @param json

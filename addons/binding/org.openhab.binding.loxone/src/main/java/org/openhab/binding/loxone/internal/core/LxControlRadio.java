@@ -23,6 +23,18 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlRadio extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlRadio(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * Number of outputs a radio controller may have
      */
@@ -60,15 +72,6 @@ public class LxControlRadio extends LxControl {
      */
     LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
-    }
-
-    LxControlRadio() {
-        super(TYPE_NAME);
-    }
-
-    @Override
-    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        return new LxControlRadio(client, uuid, json, room, category);
     }
 
     /**

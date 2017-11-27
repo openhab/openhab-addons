@@ -39,6 +39,19 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 public class LxControlLightControllerV2 extends LxControlAbstractController implements LxControlStateListener {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlLightControllerV2(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to light controller v2 controls
      */
@@ -102,15 +115,6 @@ public class LxControlLightControllerV2 extends LxControlAbstractController impl
         // sub-controls of this control have been created when update() method was called by the super class constructor
         addStateListener(STATE_MOODS_LIST, this);
         addStateListener(STATE_ACTIVE_MOODS_LIST, this);
-    }
-
-    LxControlLightControllerV2() {
-        super(TYPE_NAME);
-    }
-
-    @Override
-    LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        return new LxControlLightControllerV2(client, uuid, json, room, category);
     }
 
     /**
