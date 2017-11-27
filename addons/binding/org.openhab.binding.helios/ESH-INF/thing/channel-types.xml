@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Helios Channel Types -->
+
+    <channel-type id="keypressedstamp">
+        <item-type>DateTime</item-type>
+        <label>Time a key was pressed</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="keypressed">
+        <item-type>String</item-type>
+        <label>Key Pressed</label>
+        <description>Code of the key pressed</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="callstate">
+        <item-type>String</item-type>
+        <label>Call State</label>
+        <description>State of the currently made call</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="calldirection" advanced="true">
+        <item-type>String</item-type>
+        <label>Call Direction</label>
+        <description>Direction of the currently made call</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="callstatestamp">
+        <item-type>DateTime</item-type>
+        <label>Time the state of the call changed</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="card">
+        <item-type>String</item-type>
+        <label>Card ID</label>
+        <description>Detected card identification with a 24-64-bit number in the hexadecimal format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="cardvalid" advanced="true">
+        <item-type>String</item-type>
+        <label>Card Valid Flag</label>
+        <description>If the detected card is valid, the parameter value is true. If not, the parameter is set to false</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="cardstamp">
+        <item-type>DateTime</item-type>
+        <label>Time the card was detected</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="code">
+        <item-type>String</item-type>
+        <label>Code Entered</label>
+        <description>Numerical code entered, e.g. 1234.</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="codevalid" advanced="true">
+        <item-type>String</item-type>
+        <label>Code Valid Flag</label>
+        <description>If the entered code is valid, the parameter value is true. If not, the parameter is set to false</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="codestamp">
+        <item-type>DateTime</item-type>
+        <label>Time a code was entered</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="devicestate">
+        <item-type>String</item-type>
+        <label>Device State</label>
+        <description>State of the Helios device</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="devicestatestamp">
+        <item-type>DateTime</item-type>
+        <label>Time of state of the device</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+        <channel-type id="audiolooptest" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Audio Loop Test</label>
+        <description>Indicates the result of the audio loop test</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="audioloopteststamp">
+        <item-type>DateTime</item-type>
+        <label>Time the audio loop test</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="motion">
+        <item-type>Switch</item-type>
+        <label>Motion</label>
+        <description>Indicates the detection of motion</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="motionstamp">
+        <item-type>DateTime</item-type>
+        <label>Time when motion was detected</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="keyreleased">
+        <item-type>String</item-type>
+        <label>Key Released</label>
+        <description>Code of the key released</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="keyreleasedstamp">
+        <item-type>DateTime</item-type>
+        <label>Time a key was released</label>
+        <description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="switchenabler" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Switch Enabler</label>
+        <description>Activate or deactivate a switch in the Helios device</description>
+    </channel-type>
+    <channel-type id="trigger" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Switch Trigger</label>
+        <description>Trigger the state of a switch in the Helios device</description>
+    </channel-type>
+    <channel-type id="io" advanced="true">
+        <item-type>Switch</item-type>
+        <label>IO</label>
+        <description>Activate or deactivate the output of an I/O port of the Helios device</description>
+    </channel-type>
+
+</thing:thing-descriptions>
