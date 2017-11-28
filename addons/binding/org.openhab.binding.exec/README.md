@@ -10,11 +10,15 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 The binding does not require any specific configuration.
 
-Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Have a closer look at the example for how to test if the command you want to execute can run as user you like.
+Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux Os needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
+
+```
+sudo -u openhab <YOUR COMMAND>
+```
 
 ## Thing Configuration
 
-The `command` Thing requires the command to execute on the shell. Optionally one can specify:
+The ```command``` Thing requires the command to execute on the shell. Optionally one can specify:
 
 - a transformation to apply on the execution result, 
 - an interval, in seconds, the command will be repeatedly executed, 
@@ -45,7 +49,7 @@ All Things support the following channels:
 | run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
-## Short Example
+## Minimal Example
 
 **demo.things**
 
@@ -58,89 +62,77 @@ Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2
 
 ```
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"} 
-Switch APCRunning { channel="exec:command:apc:run"}
-Number APCExitValue {channel="exec:command:apc:exit"}
-DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
+String APCRunning { channel="exec:command:apc:run"}
+String APCExitValue {channel="exec:command:apc:exit"}
+String APCLastExecution {channel="exec:command:apc:lastexecution"}
 ```
 
 ## Full Example
+Following is an example how to set up an exec Thing, debug it with a rule and set the returned string to an Number Item. 
 
-Following is a example shown how to read out the temperature of the RPI with all files needed to set up and debug or log the executet command.
-The folder structure is for an installation with apt-get, for a different installation setup look [in the manual](http://docs.openhab.org/installation/linux.html#file-locations) or search for them in your drive.
-
-First we need to check if the user openhab is able to execute the command we want to execute. The first command is executet as the user we are logged in the second as user openhab. If the execution as openhab displays the same as the execution with your user, then everything is fine. If you get an error or a massage indicating the command does not execute properly you have to search for the needed permission and set it for the user openhab. More details can be found in community threads. [Following thread](https://community.openhab.org/t/2-openhab2-rpi-system-temperature-chart-with-persistence/35182) explains all elements of this setup in detail and maybe you need to get openhab [execute commands with sudo.](https://community.openhab.org/t/openhab-sudo-exec-binding/34988). But mostly you don't.
-
+**demo.things**
 ```
-cat /sys/class/thermal/thermal_zone0/temp
-48312
-sudo -u openhab cat /sys/class/thermal/thermal_zone0/temp
-47774
+Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s"         
+                                 interval=0,
+                                 autorun=true ]
 ```
 
-As the command got executed as user openhab we can proceed to set up our openHAB.
+**demo.items**
+```
+Switch YourTrigger
+Number YourNumber "Your Number [%.1f °C]"
 
-First we need a **Things** file which configures the command line call to execute.  
-```
-sudo nano /etc/openhab2/things/exec.things
-```
-```
-Thing exec:command:cpuTemp [
-        command="cat /sys/class/thermal/thermal_zone0/temp",
-        interval=10,
-        autorun=false]
-```
-
-Then we need an **Items** file to store the string we get back from the execution and to store the transformed and divided temperature as number.
-
-```
-sudo nano /etc/openhab2/items/SysTemp.items
-```
-```
-Number System_Temperature_CPU "Temperature CPU [%.1f °C]"
-
+// state of the execution, is runnung or finished
+Switch yourcommand { channel="exec:command:remote-send:run" }
+// Arguments to be placed for '%2$s' in command line
+String yourcommand_Args { channel="exec:command:remote-send:input"}
 // Output of command line execution 
-String cpuTemp_out { channel="exec:command:cpuTemp:output" }
+String yourcommand_out { channel="exec:command:yourcommand:output" }
 ```
 
-Then we need a **Sitemap** file to configure the site which will be displayed. **It has to have the same name as the sitemap inside the file.**
-```
-sudo nano /etc/openhab2/sitemaps/SysTemp.sitemap
-```
+**demo.sitemap**
 ```
 // Name of file and name of sitemap has to be the same
-sitemap SysTemp label="System Temperature RPI"
+sitemap your label="Your Value"
 {
         Frame {
-            Text item=System_Temperature_CPU
+            Switch item=YourTrigger
+            Text item=YourNumber
         }
 }
 ```
 
-Now we need a **Rules** file which is triggered when the returned string of our execution changes and then transforms string to a number, divide it and also log the output of the execution.
+**demo.rules**
 ```
-sudo nano /etc/openhab2/rules/SysTemp.rules
-```
-```
-rule "System CPU Temperature"
+rule "Your Execution"
   when
-     Item cpuTemp_out received update
+     Item YourTrigger received update
   then
-  
-      System_Temperature_CPU.postUpdate( 
-            (Integer::parseInt(cpuTemp_out.state.toString) as Number ) 
-            /1000 
-      )
+        if(YourTrigger == ON){
+                yourcommand_Args.sendCommand("Additional Arguments")
+        }else{
+                yourcommand_Args.sendCommand("Other Additional Arguments")
+        }
+
+      // wait for the command to complete
+      // State will be NULL if not used before or ON while command is executed
+      while(yourcommand.state != OFF){
+         Thread::sleep(500)
+      }
+      logInfo("Your command exec", "Resut:" + yourcommand_out.state )
       
-      logInfo("CPU Temp", cpuTemp_out.state.toString.trim )
+      // If the returned string is just a number it can be parsed
+      // If not a regex or another transformation can be used
+      YourNumber.postUpdate( 
+            (Integer::parseInt(yourcommand_out.state.toString) as Number ) 
+      ) 
 end
 
 ```
+The logging massages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information
 
-The logging massages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information.
-
-This shows a basic setup, if you are new to openHAB and you try to find out how things work, you probably want to chart this value, so have a look in the [forum](https://community.openhab.org/) and search for [charts and persistence Tutorial](https://community.openhab.org/search?q=charts%20and%20persistence%20Tutorial).
-
-## Sources
+## Source
 [OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
 
 [OpenHAB Community Thread](https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
+
