@@ -183,11 +183,15 @@ public class Thermostat extends BaseNestDevice {
         fanTimerDuration = duration;
     }
 
+    public Integer getTimeToTarget() {
+        return parseTimeToTarget(timeToTarget);
+    }
+
     /*
      * Turns the time to target string into a real value.
      */
-    public Integer getTimeToTarget() {
-        if (timeToTarget.startsWith("~")) {
+    static Integer parseTimeToTarget(String timeToTarget) {
+        if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<")) {
             timeToTarget = timeToTarget.substring(1);
         }
         return Integer.parseInt(timeToTarget);
