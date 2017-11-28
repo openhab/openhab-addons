@@ -25,11 +25,22 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlDimmer extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlDimmer(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to dimmer controls
      */
     private static final String TYPE_NAME = "dimmer";
-
     /**
      * States
      */
@@ -62,22 +73,6 @@ public class LxControlDimmer extends LxControl {
      */
     LxControlDimmer(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        if (type != null) {
-            return TYPE_NAME.equalsIgnoreCase(type);
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -122,27 +117,15 @@ public class LxControlDimmer extends LxControl {
      *         0 - full off, 100 - full on
      */
     public Double getPosition() {
-        LxControlState state = getState(STATE_POSITION);
-        if (state != null) {
-            return mapLoxoneToOH(state.getValue());
-        }
-        return null;
+        return mapLoxoneToOH(getStateValue(STATE_POSITION));
     }
 
     private Double getMax() {
-        LxControlState state = getState(STATE_MAX);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_MAX);
     }
 
     private Double getMin() {
-        LxControlState state = getState(STATE_MIN);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_MIN);
     }
 
     private Double mapLoxoneToOH(Double loxoneValue) {
