@@ -67,7 +67,7 @@ Future bridges may support more zones.
 For dual white bulbs these channels are supported:
 
     ledbrightness       Controls the brightness of your bulbs
-    colorTemperature    Changes from cold white to warm white and vice versa
+    ledtemperature      Changes from cold white to warm white and vice versa
     lednightmode        Dims your bulbs to a very low level to use them as a night light
     animation_mode_relative   Changes the animation mode. Use an IncreaseDecrease type of widget.
 
@@ -94,7 +94,7 @@ For rgbwLed/rgbwwLed bulbs these channels are supported:
     ledwhitemode        Disable all color (saturation is 0)
     ledbrightness       Controls the brightness of your bulbs
     ledsaturation       Controls the saturation of your bulbs (not for rgbwLed!)
-    colorTemperature    Changes from cold white to warm white and vice versa (not for rgbwLed!)
+    ledtemperature      Changes from cold white to warm white and vice versa (not for rgbwLed!)
     ledcolor            Changes the color and brightness of your rgb bulbs when bound to a colorpicker
                         or just the brightness if bound to a Dimmer or controls On/Off if bound to a switch.
     animation_mode      Changes the animation mode. Chose between animation mode 1 to 9.
@@ -115,7 +115,7 @@ Limitations:
 
 	Switch Light_Groundfloor    {channel="milight:whiteLed:ACCF23A6C0B4:0:ledbrightness"} # Switch for all white bulbs
 	Dimmer Light_LivingroomB    {channel="milight:whiteLed:ACCF23A6C0B4:1:ledbrightness"} # Dimmer changing brightness for bulb in zone 1
-	Dimmer Light_LivingroomC    {channel="milight:whiteLed:ACCF23A6C0B4:1:colorTemperature"} # Dimmer changing colorTemperature for bulb in zone 1 
+	Dimmer Light_LivingroomC    {channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperature"} # Dimmer changing colorTemperature for bulb in zone 1 
 	Dimmer RGBW_LivingroomB     {channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"} # Dimmer changing brightness for RGBW bulb in zone 2
 	Color Light_Party           {channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}# Colorpicker for rgb bulbs 
 
