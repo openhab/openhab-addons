@@ -192,9 +192,9 @@ public class Thermostat extends BaseNestDevice {
      */
     static Integer parseTimeToTarget(String timeToTarget) {
         if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<")) {
-            timeToTarget = timeToTarget.substring(1);
+            return Integer.valueOf(timeToTarget.substring(1));
         }
-        return Integer.parseInt(timeToTarget);
+        return Integer.valueOf(timeToTarget);
     }
 
     public String getWhereName() {
