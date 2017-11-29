@@ -26,6 +26,19 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlJalousie extends LxControl implements LxControlStateListener {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlJalousie(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to jalousie controls
      */
@@ -114,23 +127,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     LxControlJalousie(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
-
-        LxControlState positionState = getState(STATE_POSITION);
-        if (positionState != null) {
-            positionState.addListener(this);
-        }
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
+        addStateListener(STATE_POSITION, this);
     }
 
     /**
@@ -203,11 +200,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      *         a floating point number from range 0-fully closed to 1-fully open or null if position not available
      */
     public Double getPosition() {
-        LxControlState state = getState(LxControlJalousie.STATE_POSITION);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_POSITION);
     }
 
     /**
@@ -216,24 +209,20 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
     @Override
     public void onStateChange(LxControlState state) {
         // check position changes
-        if (state.getName().equals(STATE_POSITION) && targetPosition != null && targetPosition > 0
+        if (STATE_POSITION.equals(state.getName()) && targetPosition != null && targetPosition > 0
                 && targetPosition < 1) {
             // see in which direction jalousie is moving
-            LxControlState up = getState(STATE_UP);
-            LxControlState down = getState(STATE_DOWN);
-            if (up != null && down != null) {
-                Double currentPosition = state.getValue();
-                Double upValue = up.getValue();
-                Double downValue = down.getValue();
-                if (currentPosition != null && upValue != null && downValue != null) {
-                    if (((upValue == 1) && (currentPosition <= targetPosition))
-                            || ((downValue == 1) && (currentPosition >= targetPosition))) {
-                        targetPosition = null;
-                        try {
-                            stop();
-                        } catch (IOException e) {
-                            logger.debug("Error stopping jalousie when meeting target position.");
-                        }
+            Double currentPosition = state.getValue();
+            Double upValue = getStateValue(STATE_UP);
+            Double downValue = getStateValue(STATE_DOWN);
+            if (currentPosition != null && upValue != null && downValue != null) {
+                if (((upValue == 1) && (currentPosition <= targetPosition))
+                        || ((downValue == 1) && (currentPosition >= targetPosition))) {
+                    targetPosition = null;
+                    try {
+                        stop();
+                    } catch (IOException e) {
+                        logger.debug("Error stopping jalousie when meeting target position.");
                     }
                 }
             }

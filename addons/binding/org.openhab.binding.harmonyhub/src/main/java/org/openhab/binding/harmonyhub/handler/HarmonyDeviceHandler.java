@@ -72,11 +72,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command {}  for {}", command, channelUID);
+        logger.trace("Command {} for {}", command, channelUID);
         Channel channel = getThing().getChannel(channelUID.getId());
 
         if (channel == null) {
-            logger.warn("No such channel {] for device {}", channelUID, getThing());
+            logger.warn("No such channel {} for device {}", channelUID, getThing());
             return;
         }
 

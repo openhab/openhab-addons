@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.config;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
-
 /**
  * Test helper for RFXCom-binding
  *

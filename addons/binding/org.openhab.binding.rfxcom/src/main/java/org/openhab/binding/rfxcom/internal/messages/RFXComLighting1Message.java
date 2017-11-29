@@ -8,20 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -30,9 +24,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Evert van Es, Cycling Engineer - Initial contribution
  * @author Pauli Anttila
  */
-public class RFXComLighting1Message extends RFXComBaseMessage {
+public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighting1Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         X10(0),
         ARC(1),
         AB400D(2),
@@ -52,22 +46,13 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         OFF(0),
         ON(1),
         DIM(2),
@@ -82,40 +67,23 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND, RFXComValueSelector.CONTACT);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections
-            .singletonList(RFXComValueSelector.COMMAND);
 
     public SubType subType;
     public char houseCode;
     public byte unitCode;
     public Commands command;
-    public byte signalLevel;
     public boolean group;
 
     public RFXComLighting1Message() {
-        packetType = PacketType.LIGHTING1;
+        super(PacketType.LIGHTING1);
     }
 
     public RFXComLighting1Message(byte[] data) throws RFXComException {
-
         encodeMessage(data);
     }
 
@@ -134,12 +102,11 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = ByteEnumUtil.fromByte(SubType.class, super.subType);
         houseCode = (char) data[4];
-        command = Commands.fromByte(data[6]);
+        command = ByteEnumUtil.fromByte(Commands.class, data[6]);
 
         if ((command == Commands.GROUP_ON) || (command == Commands.GROUP_OFF)) {
             unitCode = 0;
@@ -175,95 +142,58 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
-        State state;
-
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == SwitchItem.class) {
-
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 switch (command) {
                     case OFF:
                     case GROUP_OFF:
                     case DIM:
-                        state = OnOffType.OFF;
-                        break;
+                        return OnOffType.OFF;
 
                     case ON:
                     case GROUP_ON:
                     case BRIGHT:
-                        state = OnOffType.ON;
-                        break;
+                        return OnOffType.ON;
 
                     case CHIME:
-                        state = OnOffType.ON;
-                        break;
+                        return OnOffType.ON;
 
                     default:
-                        throw new RFXComException("Can't convert " + command + " to SwitchItem");
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
-            }
-
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-
+            case CHANNEL_CONTACT:
                 switch (command) {
                     case OFF:
                     case GROUP_OFF:
                     case DIM:
-                        state = OpenClosedType.CLOSED;
-                        break;
+                        return OpenClosedType.CLOSED;
 
                     case ON:
                     case GROUP_ON:
                     case BRIGHT:
-                        state = OpenClosedType.OPEN;
-                        break;
+                        return OpenClosedType.OPEN;
 
                     case CHIME:
-                        state = OpenClosedType.OPEN;
-                        break;
+                        return OpenClosedType.OPEN;
 
                     default:
-                        throw new RFXComException("Can't convert " + command + " to ContactItem");
+                        throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
-            }
-
-        } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            default:
+                return super.convertToState(channelId);
         }
-
-        return state;
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-
         String[] ids = deviceId.split("\\" + ID_DELIMITER);
         if (ids.length != 2) {
             throw new RFXComException("Invalid device id '" + deviceId + "'");
@@ -280,51 +210,29 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        switch (valueSelector) {
-            case COMMAND:
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     if (group) {
                         command = (type == OnOffType.ON ? Commands.GROUP_ON : Commands.GROUP_OFF);
+
                     } else {
                         command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     }
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
 
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

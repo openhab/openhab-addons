@@ -8,18 +8,16 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import java.util.Arrays;
+
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -28,9 +26,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Mike Jagdis - Initial contribution
  */
-public class RFXComSecurity2Message extends RFXComBaseMessage {
+public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSecurity2Message.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         RAW_CLASSIC_KEELOQ(0),
         ROLLING_CODE_PACKET(1),
         RAW_AES_KEELOQ(2),
@@ -42,34 +40,15 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CONTACT,
-            RFXComValueSelector.CONTACT_1, RFXComValueSelector.CONTACT_2, RFXComValueSelector.CONTACT_3);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.CONTACT, RFXComValueSelector.CONTACT_1, RFXComValueSelector.CONTACT_2,
-            RFXComValueSelector.CONTACT_3);
 
     public SubType subType;
     public int sensorId;
     public int buttonStatus;
-    public byte batteryLevel;
-    public byte signalLevel;
 
     private final int BUTTON_0_BIT = 0x02;
     private final int BUTTON_1_BIT = 0x04;
@@ -77,7 +56,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     private final int BUTTON_3_BIT = 0x01;
 
     public RFXComSecurity2Message() {
-        packetType = PacketType.SECURITY2;
+        super(PacketType.SECURITY2);
     }
 
     public RFXComSecurity2Message(byte[] data) throws RFXComException {
@@ -92,10 +71,9 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
 
         sensorId = (data[11] & 0x0F) << 24 | (data[10] & 0xFF) << 16 | (data[9] & 0xFF) << 8 | (data[8] & 0xFF);
 
@@ -107,7 +85,6 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[29];
 
         Arrays.fill(data, (byte) 0);
@@ -133,50 +110,28 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_CONTACT:
+                return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        State state = UnDefType.UNDEF;
+            case CHANNEL_CONTACT_1:
+                return ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        if (valueSelector.getItemClass() == ContactItem.class) {
+            case CHANNEL_CONTACT_2:
+                return ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-                state = ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            case CHANNEL_CONTACT_3:
+                return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            } else if (valueSelector == RFXComValueSelector.CONTACT_1) {
-                state = ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-
-            } else if (valueSelector == RFXComValueSelector.CONTACT_2) {
-                state = ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-
-            } else if (valueSelector == RFXComValueSelector.CONTACT_3) {
-                state = ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
-            }
-
-        } else if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            default:
+                return super.convertToState(channelId);
         }
-
-        return state;
-
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = ((SubType) subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     @Override
@@ -185,85 +140,67 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        switch (valueSelector) {
-            case CONTACT:
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_CONTACT:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_0_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_0_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_1:
+            case CHANNEL_CONTACT_1:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_1_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_1_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_2:
+            case CHANNEL_CONTACT_2:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_2_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_2_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_3:
+            case CHANNEL_CONTACT_3:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_3_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_3_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
         }
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 }

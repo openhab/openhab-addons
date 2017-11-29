@@ -23,6 +23,18 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlRadio extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlRadio(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * Number of outputs a radio controller may have
      */
@@ -86,18 +98,6 @@ public class LxControlRadio extends LxControl {
     }
 
     /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
-    }
-
-    /**
      * Set radio-button control's active output
      * <p>
      * Sends a command to operate the radio-button control.
@@ -122,12 +122,9 @@ public class LxControlRadio extends LxControl {
      *         active output number 1-8 (or 1-16), or 0 if all outputs are off, or null if error occured
      */
     public Integer getActiveOutput() {
-        LxControlState state = getState(STATE_ACTIVE_OUTPUT);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return value.intValue();
-            }
+        Double value = getStateValue(STATE_ACTIVE_OUTPUT);
+        if (value != null) {
+            return value.intValue();
         }
         return null;
     }

@@ -104,7 +104,10 @@ public class RMEThingHandler extends SerialThingHandler {
                             } else if (matcher.group(i).equals("1")) {
                                 stringType = AUTOMATIC;
                             }
-                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
+                            if (stringType != null) {
+                                updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
+                                        stringType);
+                            }
                             break;
                         }
                         case SOURCE: {
@@ -114,7 +117,10 @@ public class RMEThingHandler extends SerialThingHandler {
                             } else if (matcher.group(i).equals("1")) {
                                 stringType = CITY;
                             }
-                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
+                            if (stringType != null) {
+                                updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
+                                        stringType);
+                            }
                             break;
                         }
                         default:

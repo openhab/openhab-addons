@@ -120,7 +120,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
                 logger.error("Could not start activity", e);
             }
         } else {
-            logger.warn("Command {]: Not a acceptable type (String or Decimal), ignorning", command);
+            logger.warn("Command {}: Not a acceptable type (String or Decimal), ignorning", command);
         }
     }
 
@@ -128,7 +128,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     public void initialize() {
         buttonExecutor = Executors.newSingleThreadScheduledExecutor();
         cancelRetry();
-        connect();
+        retryJob = scheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -216,16 +216,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         try {
             logger.debug("Connecting: host {}", host);
             client.connect(host);
-            heartBeatJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        client.sendPing();
-                    } catch (Exception e) {
-                        logger.warn("heartbeat failed", e);
-                        setOfflineAndReconnect("Hearbeat failed");
-                    }
+            heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    client.sendPing();
+                } catch (Exception e) {
+                    logger.warn("heartbeat failed", e);
+                    setOfflineAndReconnect("Hearbeat failed");
                 }
             }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -249,12 +245,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
-        retryJob = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-        }, RETRY_TIME, TimeUnit.SECONDS);
+        retryJob = scheduler.schedule(this::connect, RETRY_TIME, TimeUnit.SECONDS);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
     }
 
@@ -373,12 +364,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
      */
     public void pressButton(int device, String button) {
         if (buttonExecutor != null && !buttonExecutor.isShutdown()) {
-            buttonExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (client != null) {
-                        client.pressButton(device, button);
-                    }
+            buttonExecutor.execute(() -> {
+                if (client != null) {
+                    client.pressButton(device, button);
                 }
             });
         }
@@ -392,12 +380,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
      */
     public void pressButton(String device, String button) {
         if (buttonExecutor != null && !buttonExecutor.isShutdown()) {
-            buttonExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (client != null) {
-                        client.pressButton(device, button);
-                    }
+            buttonExecutor.execute(() -> {
+                if (client != null) {
+                    client.pressButton(device, button);
                 }
             });
         }

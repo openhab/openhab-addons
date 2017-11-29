@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import javax.xml.bind.DatatypeConverter;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * Base class for RFXCOM data classes. All other data classes should extend this class.
@@ -24,7 +24,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     public static final String ID_DELIMITER = ".";
 
-    public enum PacketType {
+    public enum PacketType implements ByteEnumWrapper {
         INTERFACE_CONTROL(0),
         INTERFACE_MESSAGE(1),
         TRANSMITTER_MESSAGE(2),
@@ -81,24 +81,14 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
             this.packetType = packetType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) packetType;
         }
-
-        public static PacketType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (PacketType packetType : PacketType.values()) {
-                if (packetType.packetType == input) {
-                    return packetType;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(PacketType.class, input);
-        }
-
     }
 
     public byte[] rawMessage;
-    public PacketType packetType;
+    private PacketType packetType;
     public byte packetId;
     public byte subType;
     public byte seqNbr;
@@ -109,8 +99,8 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     }
 
-    public RFXComBaseMessage(byte[] data) throws RFXComException {
-        encodeMessage(data);
+    public RFXComBaseMessage(PacketType packetType) {
+        this.packetType = packetType;
     }
 
     @Override
@@ -119,7 +109,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         rawMessage = data;
 
         packetId = data[1];
-        packetType = PacketType.fromByte(data[1]);
+        packetType = fromByte(PacketType.class, data[1]);
         subType = data[2];
         seqNbr = data[3];
         id1 = data[4];
@@ -127,6 +117,10 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         if (data.length > 5) {
             id2 = data[5];
         }
+    }
+
+    public PacketType getPacketType() {
+        return packetType;
     }
 
     @Override
@@ -146,42 +140,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     }
 
     @Override
-    public String getDeviceId() {
-        return id1 + ID_DELIMITER + id2;
-    }
-
-    /**
-     * Procedure for converting sub type as string to sub type object.
-     *
-     * @return sub type object.
-     */
-    abstract Object convertSubType(String subType) throws RFXComException;
-
-    /**
-     * Procedure to set sub type.
-     *
-     */
-    abstract void setSubType(Object subType) throws RFXComException;
-
-    /**
-     * Procedure to set device id.
-     *
-     */
-    abstract void setDeviceId(String deviceId) throws RFXComException;
-
-    @Override
-    public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
-        this.setSubType(this.convertSubType(config.subType));
-        this.setDeviceId(config.deviceId);
-    }
-
-    public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
-        String subTypeString = convertSubType(String.valueOf(subType)).toString();
-        String label = packetType + "-" + getDeviceId();
-
-        discoveryResultBuilder
-                .withLabel(label)
-                .withProperty(RFXComDeviceConfiguration.DEVICE_ID_LABEL, getDeviceId())
-                .withProperty(RFXComDeviceConfiguration.SUB_TYPE_LABEL, subTypeString);
+    public void setConfig(RFXComDeviceConfiguration deviceConfiguration) throws RFXComException {
+        // noop
     }
 }

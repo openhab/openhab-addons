@@ -21,10 +21,23 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlPushbutton extends LxControlSwitch {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlPushbutton(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to pushbutton controls
      */
-    public static final String TYPE_NAME = "pushbutton";
+    private static final String TYPE_NAME = "pushbutton";
     /**
      * Command string used to set control's state to ON and OFF (tap)
      */
@@ -46,18 +59,6 @@ public class LxControlPushbutton extends LxControlSwitch {
      */
     LxControlPushbutton(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**

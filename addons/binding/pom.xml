@@ -46,6 +46,7 @@
     <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lgtvserial</module>
+    <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
@@ -73,6 +74,7 @@
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rfxcom.test</module>
+    <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.sensebox</module>

@@ -41,7 +41,12 @@ public class DeviceActionHandler {
         try {
             deviceId = URLDecoder.decode(urlMatcher.group(1), CHARSET);
             action = URLDecoder.decode(urlMatcher.group(2), CHARSET);
-            value = URLDecoder.decode(urlMatcher.group(3), CHARSET);
+
+            if (urlMatcher.group(3) == null) {
+                value = null;
+            } else {
+                value = URLDecoder.decode(urlMatcher.group(3), CHARSET);
+            }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Could not decode request params", e);
         }

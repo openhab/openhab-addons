@@ -26,10 +26,22 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlSwitch extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlSwitch(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to switch controls
      */
-    private static final String TYPE_NAME = "switch";
+    static final String TYPE_NAME = "switch";
 
     /**
      * Switch has one state that can be on/off
@@ -64,18 +76,6 @@ public class LxControlSwitch extends LxControl {
     }
 
     /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
-    }
-
-    /**
      * Set switch to ON.
      * <p>
      * Sends a command to operate the switch.
@@ -106,10 +106,6 @@ public class LxControlSwitch extends LxControl {
      *         0 - switch off, 1 - switch on
      */
     public Double getState() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_ACTIVE);
     }
 }

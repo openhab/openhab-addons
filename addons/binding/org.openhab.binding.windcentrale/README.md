@@ -46,5 +46,4 @@ Number  ReigerKwh               "kwh [%1.0f]"                     <wind>    (gRe
 Number  ReigerKwhForecast       "Productie forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
 Number  ReigerRunPercentage     "Run percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
 Number  ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
-
 ```

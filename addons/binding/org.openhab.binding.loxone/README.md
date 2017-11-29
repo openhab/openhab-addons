@@ -85,7 +85,9 @@ This binding creates channels for controls that are [used in Loxone's user inter
 |InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)|`Number`|none (read-only value)|
 |InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|
 |Jalousie|Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated|`Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|
-|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|
+|LightController|[Lighting controller V1 (obsolete)](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`UpDownType.*` (swipe through scenes)<br>`OnOffType.*` (select all off or all on scene)|
+|LightControllerV2| [Lighting controller](https://www.loxone.com/enen/kb/lighting-controller-v2/)<br>Additionally, for each configured output and for each mood of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select mood)<br>`UpDownType.*` (swipe through moods)|
+|LightControllerV2 Mood|A mood defined for a [Lighting controller](https://www.loxone.com/enen/kb/lighting-controller-v2/). Each mood will have own channel and can be operated independently in order to allow mixing of moods.|`Switch`|`OnOffType.*` (mixes mood in or out of the controller)
 |Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|
 |Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|
 |Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|
@@ -186,6 +188,10 @@ Switch        Reset_Lights    "Switch all lights off"                <switch>   
 Rollershutter Kitchen_Blinds  "Kitchen blinds"                       <blinds>                   {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF204EB3C24B9E"}
 Dimmer        Kitchen_Dimmer  "Kitchen dimmer"                       <slider>      ["lighting"] {channel="loxone:miniserver:504F2414780F:0F2E2123-014D-3232-FFEF207EB3C24B9E"}
 Number        Light_Scene     "Lighting scene"                       <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE403FB0C34B9E"}
+Number        Mood_Selector   "Lighting mood"                        <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE203EA0C34B9E"}
+Switch        Mood_Enter_Home "Entering home"                        <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE203EA0C34B9E-M1"}
+Switch        Mood_Read_Book  "Reading book"                         <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE203EA0C34B9E-M2"}
+Switch        Mood_Evening    "Evening setup"                        <light>                    {channel="loxone:miniserver:504F2414780F:0FC4E0DF-0255-6ABD-FFFE203EA0C34B9E-M3"}
 Number        Garden_Valve    "Garden watering section"              <garden>                   {channel="loxone:miniserver:504F2414780F:0FC5E0DF-0355-6AAD-FFFE403FB0C34B9E"}
 String        Alarm_State     "Alarm state [%s]"                     <alarm>                    {channel="loxone:miniserver:504F2414780F:0F2E2134-017D-3E82-FFFF433FB4A34B9E"}
 ```
@@ -205,6 +211,10 @@ sitemap loxone label="Loxone Example Menu"
         Switch    item=Stairs_Light
         Text      item=Stairs_Light-1
         Selection item=Light_Scene mappings=[0="All off", 1="My scene 1", 2="My scene 2", 9="All on"]
+        Selection item=Mood_Selector
+        Switch    item=Mood_Enter_Home
+        Switch    item=Mood_Read_Book
+        Switch    item=Mood_Evening
         Setpoint  item=Garden_Valve minValue=0 maxValue=8 step=1
         Text      item=Alarm_State
     }
