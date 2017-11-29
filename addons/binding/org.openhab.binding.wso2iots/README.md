@@ -12,7 +12,7 @@ Further details on how to configure this binding can be found [here](https://med
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents one device agent. It has the `buildingMonitor` id. You can add multiple Things, e.g. Devices enrolled in different floors and different buildings.
+There are two supported thing types: WSO2 IoT Server Bridge and Building monitor. Building monitor thing type represents one device agent. It has the `buildingMonitor` id. You can add multiple Things, e.g. Devices enrolled in different floors and different buildings.
 
 ## Discovery
 
@@ -25,6 +25,18 @@ The binding has no configuration options, all configuration is done at Thing lev
 ## Thing Configuration
 
 The thing has the following configuration parameters:
+
+Thing type: WSO2 IoT Server Bridge
+
+| Parameter |                            Description                           |
+|:---------:|:----------------------------------------------------------------:|
+|  hostname | Host name of the machine on which the WSO2 IoT server is running |
+|    port   | Port to access WSO2 IoT Server                                   |
+|  refresh  | Refresh interval in minutes. Minimum is 1 minute.                |
+
+
+Thing type: Building Monitor
+
 
 | Parameter |                                Description                                |
 |:---------:|:-------------------------------------------------------------------------:|
