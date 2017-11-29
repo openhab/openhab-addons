@@ -602,24 +602,33 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 }
                 if (initialized) {
                     final HmDatapoint dp = getDatapoint(dpInfo);
-                    HmDatapointConfig config = gatewayAdapter.getDatapointConfig(dp);
-                    receiveDelayedExecutor.start(dpInfo, config.getReceiveDelay(), () -> {
-                        dp.setValue(newValue);
+                    final VirtualGateway virtualGateway = this;
+                    gatewayAdapter.getIdsForUpdate(dp, new IdForUpdateCallback() {
+                        @Override
+                        public void doUpdate(String id, HmDatapointConfig config) {
+                            try {
+                                receiveDelayedExecutor.start(dpInfo, config.getReceiveDelay(), () -> {
+                                    dp.setValue(newValue);
 
-                        gatewayAdapter.onStateUpdated(dp);
-                        if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
-                            disableDatapoint(dp, DEFAULT_DISABLE_DELAY);
-                        }
-                        for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
-                            if (vdph.canHandleEvent(dp)) {
-                                vdph.handleEvent(this, dp);
-                                gatewayAdapter.onStateUpdated(vdph.getVirtualDatapoint(dp.getChannel()));
+                                    gatewayAdapter.onStateUpdated(id, dp);
+                                    if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
+                                        disableDatapoint(dp, DEFAULT_DISABLE_DELAY);
+                                    }
+                                    for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
+                                        if (vdph.canHandleEvent(dp)) {
+                                            vdph.handleEvent(virtualGateway, dp);
+                                            gatewayAdapter.onStateUpdated(id,
+                                                    vdph.getVirtualDatapoint(dp.getChannel()));
+                                        }
+                                    }
+                                });
+                            } catch (HomematicClientException | IOException ex) {
+                                logger.warn(ex.getMessage());
                             }
                         }
-
                     });
                 }
-            } catch (HomematicClientException | IOException ex) {
+            } catch (HomematicClientException ex) {
                 // ignore
             }
         }
@@ -726,23 +735,29 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
     @Override
     public void disableDatapoint(final HmDatapoint dp, double delay) {
-        try {
-            sendDelayedExecutor.start(new HmDatapointInfo(dp), delay, new DelayedExecuterCallback() {
+        gatewayAdapter.getIdsForUpdate(dp, new IdForUpdateCallback() {
+            @Override
+            public void doUpdate(String id, HmDatapointConfig config) {
+                try {
+                    sendDelayedExecutor.start(new HmDatapointInfo(dp), delay, new DelayedExecuterCallback() {
 
-                @Override
-                public void execute() throws IOException {
-                    if (MiscUtils.isTrueValue(dp.getValue())) {
-                        dp.setValue(Boolean.FALSE);
-                        gatewayAdapter.onStateUpdated(dp);
-                    } else if (dp.getType() == HmValueType.ENUM && dp.getValue() != null && !dp.getValue().equals(0)) {
-                        dp.setValue(dp.getMinValue());
-                        gatewayAdapter.onStateUpdated(dp);
-                    }
+                        @Override
+                        public void execute() throws IOException {
+                            if (MiscUtils.isTrueValue(dp.getValue())) {
+                                dp.setValue(Boolean.FALSE);
+                                gatewayAdapter.onStateUpdated(id, dp);
+                            } else if (dp.getType() == HmValueType.ENUM && dp.getValue() != null
+                                    && !dp.getValue().equals(0)) {
+                                dp.setValue(dp.getMinValue());
+                                gatewayAdapter.onStateUpdated(id, dp);
+                            }
+                        }
+                    });
+                } catch (IOException | HomematicClientException ex) {
+                    logger.error("{}", ex.getMessage(), ex);
                 }
-            });
-        } catch (IOException | HomematicClientException ex) {
-            logger.error("{}", ex.getMessage(), ex);
-        }
+            }
+        });
     }
 
     /**

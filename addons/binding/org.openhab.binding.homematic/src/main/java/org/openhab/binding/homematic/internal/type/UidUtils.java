@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.BINDING_ID;
+import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -31,7 +33,6 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class UidUtils {
-
     /**
      * Generates the ThingTypeUID for the given device. If it's a Homegear device, add a prefix because a Homegear
      * device has more datapoints.
@@ -63,9 +64,9 @@ public class UidUtils {
     /**
      * Generates the ThingUID for the given device in the given bridge.
      */
-    public static ThingUID generateThingUID(HmDevice device, Bridge bridge) {
+    public static ThingUID generateThingUID(HmDevice device, Bridge bridge, String thingId) {
         ThingTypeUID thingTypeUID = generateThingTypeUID(device);
-        return new ThingUID(thingTypeUID, bridge.getUID(), device.getAddress());
+        return new ThingUID(thingTypeUID, bridge.getUID(), thingId);
     }
 
     /**
@@ -78,8 +79,8 @@ public class UidUtils {
     /**
      * Generates the HmDatapointInfo for the given thing and channelUID.
      */
-    public static HmDatapointInfo createHmDatapointInfo(ChannelUID channelUID) {
-        return new HmDatapointInfo(channelUID.getThingUID().getId(), HmParamsetType.VALUES,
+    public static HmDatapointInfo createHmDatapointInfo(Thing thing, ChannelUID channelUID) {
+        return new HmDatapointInfo(getHomematicAddress(thing), HmParamsetType.VALUES,
                 NumberUtils.toInt(channelUID.getGroupId()), channelUID.getIdWithoutGroup());
     }
 
@@ -87,7 +88,11 @@ public class UidUtils {
      * Returns the address of the Homematic device from the given thing.
      */
     public static String getHomematicAddress(Thing thing) {
-        return thing.getUID().getId();
+        String address = ObjectUtils.toString(thing.getConfiguration().get(PROPERTY_ADDRESS));
+        if (StringUtils.isBlank(address)) {
+            return thing.getUID().getId();
+        }
+        return address;
     }
 
 }

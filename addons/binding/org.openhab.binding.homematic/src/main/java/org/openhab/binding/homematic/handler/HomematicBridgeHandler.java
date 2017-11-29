@@ -27,6 +27,7 @@ import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
+import org.openhab.binding.homematic.internal.communicator.IdForUpdateCallback;
 import org.openhab.binding.homematic.internal.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -219,22 +220,38 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     }
 
     /**
-     * Updates the thing for the given Homematic device.
+     * Updates all things for the given Homematic device.
      */
-    private void updateThing(HmDevice device) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
-        if (hmThing != null && hmThing.getHandler() != null) {
-            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
-            thingHandler.thingUpdated(hmThing);
-            for (Channel channel : hmThing.getChannels()) {
-                thingHandler.handleRefresh(channel.getUID());
+    private void updateThings(HmDevice device) {
+        for (Thing hmThing : getThing().getThings()) {
+            if (device.getAddress().equals(UidUtils.getHomematicAddress(hmThing))) {
+                HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+                if (thingHandler != null) {
+                    thingHandler.thingUpdated(hmThing);
+                    for (Channel channel : hmThing.getChannels()) {
+                        thingHandler.handleRefresh(channel.getUID());
+                    }
+                }
             }
         }
     }
 
     @Override
-    public void onStateUpdated(HmDatapoint dp) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
+    public void getIdsForUpdate(HmDatapoint dp, IdForUpdateCallback callback) {
+        for (Thing hmThing : getThing().getThings()) {
+            if (dp.getChannel().getDevice().getAddress().equals(UidUtils.getHomematicAddress(hmThing))) {
+                HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+                if (thingHandler != null) {
+                    HmDatapointConfig config = thingHandler.getChannelConfig(dp);
+                    callback.doUpdate(hmThing.getUID().getId(), config);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onStateUpdated(String id, HmDatapoint dp) {
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing(), id));
         if (hmThing != null && hmThing.getHandler() != null) {
             final ThingStatus status = hmThing.getStatus();
             if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
@@ -245,25 +262,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     }
 
     @Override
-    public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
-        if (hmThing != null && hmThing.getHandler() != null) {
-            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
-            return thingHandler.getChannelConfig(dp);
-        }
-        return new HmDatapointConfig();
-    }
-
-    @Override
     public void onNewDevice(HmDevice device) {
         onDeviceLoaded(device);
-        updateThing(device);
+        updateThings(device);
     }
 
     @Override
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
-        updateThing(device);
+        updateThings(device);
     }
 
     @Override
@@ -287,7 +294,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void reloadDeviceValues(HmDevice device) {
-        updateThing(device);
+        updateThings(device);
         if (device.isGatewayExtras()) {
             typeGenerator.generate(device);
         }

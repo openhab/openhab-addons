@@ -6,14 +6,15 @@ This binding allows you to integrate, view, control and configure all Homematic 
 ## Supported Bridges
 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
-* CCU 1+2 
+* CCU 1+2
+* [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
 * [Homegear](https://www.homegear.eu)
 * [piVCCU](https://github.com/alexreinert/piVCCU)
 * [YAHM](https://github.com/leonsio/YAHM)
 * [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 * [OCCU](https://github.com/eq-3/occu)
 
-The Homematic IP Access Point does not support this API and can't be used with this binding. But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15.
+The Homematic IP Access Point does not support this API and can't be used with this binding. But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15 or use [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) RF module.
 
 These ports are used by the binding by default to communicate **TO** the gateway:  
 * RF components: 2001
@@ -140,20 +141,20 @@ If you really like to manually configure a thing:
 ```
 Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 {
-  Thing HM-LC-Dim1T-Pl-2    JEQ0999999
+  Thing HM-LC-Dim1T-Pl-2 MyDevice [address="JEQ0999999"]
 }
 ```
 
 The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type. This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ```
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
+  Thing HG-HM-LC-Dim1T-Pl-2 MyDevice [address="JEQ0999999"]
 ```
 
 As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
 
 ```
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
+  Thing HG-HM-LC-Dim1T-Pl-2 MyDevice  "Name"  @  "Location" [address="JEQ0999999"]
 ```
 
 All channels have two configs:
@@ -163,7 +164,7 @@ All channels have two configs:
 The receiveDelay is handy for dimmers and rollershutters for example. If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached. If you set the ```receiveDelay``` to some seconds, these events are filtered out and only the last position is distributed to openHab. The disadvantage is of course, that all events for this channel are delayed. 
 
 ```
-  Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
+  Thing HM-LC-Dim1T-Pl-2 MyDevice "Name"  @  "Location" [address="JEQ0999999"] {
       Channels:
           Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
               delay = 0,
@@ -179,19 +180,19 @@ The Type is the device type, channel number and lowercase channel name separated
 In the items file, you can map the datapoints, the syntax is:
 
 ```
-homematic:TYPE:BRIDGE:SERIAL:CHANNELNUMBER#DATAPOINTNAME
+homematic:TYPE:BRIDGE:THINGID:CHANNELNUMBER#DATAPOINTNAME
 ```
 
 * **homematic:** the binding id, fixed  
 * **type:** the type of the Homematic device  
 * **bridge:** the name of the bridge  
-* **serial:** the serial number of the Homematic device  
+* **thingid:** the thing id of the Homematic device in openHab  
 * **channelnumber:** the channel number of the Homematic datapoint
 * **datapointname:** the name of the Homematic datapoint
 
 ```
-Switch  RC_1  "Remote Control Button 1" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:1#PRESS_SHORT" }
-Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:JEQ0555555:1#LEVEL" }
+Switch  RC_1  "Remote Control Button 1" { channel="homematic:HM-RC-19-B:ccu:MyRemote:1#PRESS_SHORT" }
+Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:MyDevice:1#LEVEL" }
 ```
 
 **Note:** don't forget to add the ```HG-``` type prefix for Homegear devices
@@ -307,20 +308,20 @@ Example: Display text at line 1,3 and 5 when the bottom button on the display is
 - Items
 
 ```
-String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_1" }
-String Display_line_3   "Line 3"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_3" }
-String Display_line_5   "Line 5"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_5" }
+String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_LINE_1" }
+String Display_line_3   "Line 3"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_LINE_3" }
+String Display_line_5   "Line 5"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_LINE_5" }
 
-String Display_color_1  "Color 1"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_1" }
-String Display_color_3  "Color 3"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_3" }
-String Display_color_5  "Color 5"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_5" }
+String Display_color_1  "Color 1"   { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_COLOR_1" }
+String Display_color_3  "Color 3"   { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_COLOR_3" }
+String Display_color_5  "Color 5"   { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_COLOR_5" }
 
-String Display_icon_1   "Icon 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_1" }
-String Display_icon_3   "Icon 3"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_3" }
-String Display_icon_5   "Icon 5"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_5" }
+String Display_icon_1   "Icon 1"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_ICON_1" }
+String Display_icon_3   "Icon 3"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_ICON_3" }
+String Display_icon_5   "Icon 5"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_ICON_5" }
 
-Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#PRESS_SHORT" }
-Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_SUBMIT" }
+Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#PRESS_SHORT" }
+Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:THING_ID:1#DISPLAY_SUBMIT" }
 ```
 
 - Rule
@@ -351,12 +352,12 @@ end
 A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.  
 Available values: SHORT, LONG, LONG_RELEASE
 
-Example: to capture a key press on the 19 button remote control in a rule 
+Example: to capture a key press on the 19 button remote control with the thingId MyRemote in a rule 
 
 ```
 rule "example trigger rule"
 when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#PRESS' triggered SHORT 
+    Channel 'homematic:HM-RC-19-B:ccu:MyRemote:1#PRESS' triggered SHORT 
 then
     ...
 end
@@ -401,6 +402,28 @@ sendCommand(Var_1, RefreshType.REFRESH)
 ```
 
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again. 
+
+**Deprecated configuration for Thing ...: no address property available. Using old style configuration, please update your things and item file(s)**
+
+You are using a old configuration in your things and item file(s), example:  
+
+```
+// things file
+Thing HM-LC-Dim1T-Pl-2 JEQ0999999
+
+// items file
+Dimmer Light { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:JEQ0999999:1#LEVEL" }
+```
+
+change it to:  
+
+```
+// things file
+Thing HM-LC-Dim1T-Pl-2 MyDimmer [address="JEQ0999999"]
+
+// items file
+Dimmer Light { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:MyDimmer:1#LEVEL" }
+```
 
 ### Debugging and Tracing
 

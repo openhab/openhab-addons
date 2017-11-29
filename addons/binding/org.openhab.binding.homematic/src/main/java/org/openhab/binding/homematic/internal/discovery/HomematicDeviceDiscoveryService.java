@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.homematic.internal.discovery;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.BINDING_ID;
+import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.homematic.handler.HomematicBridgeHandler;
@@ -119,8 +120,11 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
      * Removes the Homematic device.
      */
     public void deviceRemoved(HmDevice device) {
-        ThingUID thingUID = UidUtils.generateThingUID(device, bridgeHandler.getThing());
-        thingRemoved(thingUID);
+        for (Thing hmThing : bridgeHandler.getThing().getThings()) {
+            if (device.getAddress().equals(UidUtils.getHomematicAddress(hmThing))) {
+                thingRemoved(hmThing.getUID());
+            }
+        }
     }
 
     /**
@@ -133,7 +137,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
         String label = device.getName() != null ? device.getName() : device.getAddress();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
-                .build();
+                .withProperty(PROPERTY_ADDRESS, device.getAddress()).build();
         thingDiscovered(discoveryResult);
     }
 
