@@ -59,15 +59,15 @@ import org.openhab.binding.osramlightify.internal.messages.LightifySetTemperatur
  *
  * @author Mike Jagdis - Initial contribution
  */
-public final class LightifyDeviceHandler extends BaseThingHandler {
+public class LightifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyDeviceHandler.class);
 
-    private String deviceAddress;
-    private LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
-    private boolean stateValid = false;
+    protected String deviceAddress;
+    protected LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
+    protected boolean stateValid = false;
 
-    private LightifyDeviceConfiguration configuration = null;
+    protected LightifyDeviceConfiguration configuration = null;
 
     private double whiteTemperatureFactor;
 
@@ -92,6 +92,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         // for) we do an immediate poll to trigger probes and bring it online without
         // undue delay.
         if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
+        && !thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_MOTION_SENSOR)
         && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
             LightifyBridgeHandler bridgeHandler = (LightifyBridgeHandler) getBridge().getHandler();
 
@@ -217,19 +218,40 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // If the thing is not online then there is no point passing the command on
-        // to the gateway. At best the gateway will just discard it, at worst the
-        // gateway's send queue will be clogged until the command times out (that
-        // could be as much as 7.680s on the ZigBee side as per the ZLL spec).
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
+        logger.debug("{}, Command: {} {}", channelUID, command.getClass().getSimpleName(), command);
 
         if (command instanceof RefreshType) {
-            // Ignored.
+            switch (channelUID.getId()) {
+                case CHANNEL_COLOR:
+                    updateState(CHANNEL_COLOR, lightifyDeviceState.getColor());
+                    break;
+
+                case CHANNEL_DIMMER:
+                    updateState(CHANNEL_DIMMER, lightifyDeviceState.getLuminance());
+                    break;
+
+                case CHANNEL_SWITCH:
+                    updateState(CHANNEL_SWITCH, lightifyDeviceState.getPower());
+                    break;
+
+                case CHANNEL_TEMPERATURE:
+                    updateState(CHANNEL_TEMPERATURE, temperatureToPercent(lightifyDeviceState.getTemperature()));
+                    break;
+
+                case CHANNEL_ABS_TEMPERATURE:
+                    updateState(CHANNEL_ABS_TEMPERATURE, lightifyDeviceState.getTemperature());
+                    break;
+            }
 
         } else {
-            logger.debug("{}, Command: {} {}", channelUID, command.getClass().getSimpleName(), command);
+            // If the thing is not online then there is no point passing the command on
+            // to the gateway. At best the gateway will just discard it, at worst the
+            // gateway's send queue will be clogged until the command times out (that
+            // could be as much as 7.680s on the ZigBee side as per the ZLL spec).
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                logger.debug("{}, command ignored - thing is not online", channelUID);
+                return;
+            }
 
             LightifyBridgeHandler bridgeHandler = (LightifyBridgeHandler) getBridge().getHandler();
 
@@ -323,7 +345,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
 
                 // A command on the absolute temperature channel generates a matching command
                 // on the percent temperature channel.
-                postCommand(CHANNEL_TEMPERATURE, temperatureToPercent(bridgeHandler, temperature));
+                postCommand(CHANNEL_TEMPERATURE, temperatureToPercent(temperature));
 
             } else if (command instanceof OnOffType) {
                 OnOffType onoff = (OnOffType) command;
@@ -356,7 +378,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         logger.debug("{}: update: temperature {}", getThing().getUID(), temperature);
 
         updateState(CHANNEL_ABS_TEMPERATURE, temperature);
-        updateState(CHANNEL_TEMPERATURE, temperatureToPercent(bridgeHandler, temperature));
+        updateState(CHANNEL_TEMPERATURE, temperatureToPercent(temperature));
     }
 
     public void changedColor(HSBType color) {
@@ -365,7 +387,7 @@ public final class LightifyDeviceHandler extends BaseThingHandler {
         updateState(CHANNEL_COLOR, color);
     }
 
-    private PercentType temperatureToPercent(LightifyBridgeHandler bridgeHandler, DecimalType temperature) {
+    private PercentType temperatureToPercent(DecimalType temperature) {
         if (temperature.doubleValue() <= configuration.whiteTemperatureMin) {
             return new PercentType(0);
         } else if (temperature.doubleValue() >= configuration.whiteTemperatureMax) {

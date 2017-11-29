@@ -1,6 +1,8 @@
 # OSRAM Lightify Binding
 
-This integration supports the OSRAM/Sylvania Lightify gateway and devices paired with it.
+This binding supports the OSRAM Lightify gateway and devices paired with it.
+
+OSRAM products may also be badged as Sylvania or Ledvance. Lightify products may be labelled as SMART+ and advertised as working with Lightify (and other ZigBee compatible systems). For the sake of simplicity we refer only to OSRAM and Lightify here.
 
 The binding uses the (undocumented but partially reverse engineered) OSRAM binary protocol for communication with the gateway. It does NOT use the cloud hosted REST API. This is not to say that the gateway will not be reporting home to the OSRAM servers (or more specifically their partner's, arrayent.com) if it is able. It is up to you to either not provide it with  a default gateway or to firewall it at the egress to the Internet if you wish to be certain of your privacy. However note that some operations such as pairing and firmware updates MUST be performed using the Lightify app and this may require Internet access either for the app or the gateway.
 
@@ -22,15 +24,18 @@ The author(s) are **not affiliated** to OSRAM GmbH in any way. Furthermore this 
 
 ## Supported Things
 
-This binding supports OSRAM Lightify gateways along with lights and power switches that are paired with them. Currently motion sensors and wireless switches are **not** supported.
+This binding supports OSRAM Lightify gateways along with lights, power switches and motion sensors that are paired with them. Currently wireless switches are **not** supported.
+
+Note that as of gateway firmware 1.1.3.53 and motion sensor firmware 1E005310 the temperature feature of the OSRAM motion sensor is **not** supported, it is not possible to enable/disable the motion sensor via openHAB and that the triggered status of a motionsensor thing indicates whether an associated action has been triggered rather than simply whether motion has been detected. You **must** associate an action with the motion sensor via the Lightify app or the triggered status never changes. It is not, however, necessary for the associated device to be powered on or reachable for the action to be triggered. The triggered status in openHAB therefore indicates when motion has been detected, the time is within the action's time window and the time since motion was last detected is less than the action's time to off.
 
 
 ### Tested Devices
 
 * CLA 60 RGBW - 10W, 810lm, Ra > 85, quoted white range of 2000K - 6500K
 * PAR16 50 RGBW - 6W, 300lm, Ra 80, quoted white range of 2000K - 6500K
+* OSRAM SMART+ Motion Sensor
 
-Both of these show a probed white range of 1801K - 6622K with firmware 01020412 and 1501K - 8000K with firmware 01020510. It isn't clear whether we see the actual ZigBee limits or some gateway concept of what lights should be capable of. No attempt has been made to verify the range via external measurement. However the increased range with the newer firmware is very real. The lower end of the range could now be described as golden firelight!
+Both lights show a probed white range of 1801K - 6622K with firmware 01020412 and 1501K - 8000K with firmware 01020510. It isn't clear whether we see the actual ZigBee limits or some gateway concept of what lights should be capable of. No attempt has been made to verify the range via external measurement. However the increased range with the newer firmware is very real. The lower end of the range could now be described as golden firelight!
 
 (This extended range looks as though it may be using the RGB LEDs so may not be available with non-RGBW lights)
 

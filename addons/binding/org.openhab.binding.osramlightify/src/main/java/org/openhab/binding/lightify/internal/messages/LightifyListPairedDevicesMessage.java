@@ -94,7 +94,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             data.getShort(); // deviceNumber
 
             String deviceAddress = decodeDeviceAddress(data);
-            int deviceType = ((int) data.get() & 0xff);
+            state.deviceType = ((int) data.get() & 0xff);
 
             String firmwareVersion = decodeHex(data, 4);
             state.reachable = ((int) data.get() & 0xff);
@@ -110,9 +110,9 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
             state.timeSinceSeen = data.getInt();
             state.joining = data.getInt();
 
-            logger.trace("{}: \"{}\" device type={}, firmware version={}, {}", deviceAddress, deviceName, deviceType, firmwareVersion, state);
+            logger.trace("{}: \"{}\" firmware version={}, {}", deviceAddress, deviceName, firmwareVersion, state);
 
-            ThingTypeUID thingTypeUID = DEVICE_TYPE_THING_TYPE_UID_MAP.get(deviceType);
+            ThingTypeUID thingTypeUID = DEVICE_TYPE_THING_TYPE_UID_MAP.get(state.deviceType);
 
             // When pairing devices may appear in the list as generic devices and then be
             // updated to their correct device type once the gateway has finished probing

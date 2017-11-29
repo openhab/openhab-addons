@@ -78,15 +78,13 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
         for (int i = 0; i < deviceCount; i++) {
-            LightifyDeviceState state = new LightifyDeviceState();
-
             short deviceNumber = data.getShort();
             String deviceAddress = makeGroupAddress(deviceNumber);
             ThingTypeUID thingTypeUID = THING_TYPE_LIGHTIFY_GROUP;
 
             String deviceName = decodeName(data);
 
-            logger.trace("{}: {}", i, state);
+            logger.trace("{}: group {} \"{}\"", deviceAddress, i, deviceName);
 
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, String.format("%d", (deviceNumber & 0xffff)));
 

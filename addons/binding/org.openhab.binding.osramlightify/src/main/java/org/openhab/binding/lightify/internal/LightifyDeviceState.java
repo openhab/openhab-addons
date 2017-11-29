@@ -19,8 +19,18 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_POWER;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_SWITCH_2GANG;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIFY_DEVICE_TYPE_SWITCH_4GANG;
+
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyGetDeviceInfoMessage;
@@ -41,6 +51,7 @@ public final class LightifyDeviceState {
     public Long[] transitionEndNanos = new Long[2];
 
     /* The state as given in a {@link LightifyListPairedDevicesMessage} response. */
+    public int deviceType;
     public int reachable;
     public int power;
     public int luminance;
@@ -248,16 +259,34 @@ public final class LightifyDeviceState {
                     deviceHandler.changedPower(getPower());
                 }
 
-                if (temperatureDelta != 0) {
-                    deviceHandler.changedTemperature(bridgeHandler, getTemperature());
-                }
+                if (deviceHandler instanceof LightifyMotionSensorHandler) {
+                    // Motion sensors are quite unlike other devices.
+                    LightifyMotionSensorHandler motionSensorHandler = (LightifyMotionSensorHandler) deviceHandler;
 
-                if (luminanceDelta != 0) {
-                    deviceHandler.changedLuminance(getLuminance());
-                }
+                    if (luminanceDelta != 0) {
+                        motionSensorHandler.changedBattery(getBattery());
+                    }
 
-                if (luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
-                    deviceHandler.changedColor(getColor());
+                    if (rDelta != 0) {
+                        motionSensorHandler.changedEnabled(getEnabled());
+                    }
+
+                    if (gDelta != 0) {
+                        motionSensorHandler.changedTriggered(getTriggered());
+                    }
+
+                } else {
+                    if (temperatureDelta != 0) {
+                        deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+                    }
+
+                    if (luminanceDelta != 0) {
+                        deviceHandler.changedLuminance(getLuminance());
+                    }
+
+                    if (luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
+                        deviceHandler.changedColor(getColor());
+                    }
                 }
 
                 changes = true;
@@ -274,9 +303,18 @@ public final class LightifyDeviceState {
             deviceHandler.changedPower(getPower());
         }
 
-        deviceHandler.changedTemperature(bridgeHandler, getTemperature());
-        deviceHandler.changedColor(getColor());
-        deviceHandler.changedLuminance(getLuminance());
+        if (deviceHandler instanceof LightifyMotionSensorHandler) {
+            // Motion sensors are quite unlike other devices.
+            LightifyMotionSensorHandler motionSensorHandler = (LightifyMotionSensorHandler) deviceHandler;
+
+            motionSensorHandler.changedBattery(getBattery());
+            motionSensorHandler.changedEnabled(getEnabled());
+            motionSensorHandler.changedTriggered(getTriggered());
+        } else {
+            deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+            deviceHandler.changedColor(getColor());
+            deviceHandler.changedLuminance(getLuminance());
+        }
 
         if (power == 0) {
             deviceHandler.changedPower(getPower());
@@ -284,6 +322,7 @@ public final class LightifyDeviceState {
     }
 
     private void copyFrom(LightifyDeviceState fromState) {
+        deviceType = fromState.deviceType;
         reachable = fromState.reachable;
         power = fromState.power;
         luminance = fromState.luminance;
@@ -323,21 +362,70 @@ public final class LightifyDeviceState {
         return whiteMode;
     }
 
+    public DecimalType getBattery() {
+        return new DecimalType(luminance);
+    }
+
+    public OnOffType getEnabled() {
+        return (r != 0 ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    public OnOffType getTriggered() {
+        return (g != 0 ? OnOffType.ON : OnOffType.OFF);
+    }
+
     public boolean isSaved() {
         return saved;
     }
 
     public String toString() {
-        return "reachable=" + reachable
-            + " power=" + (power != 0 ? "true" : "false")
-            + " luminance=" + (luminance & 0xff)
-            + " temperature=" + (temperature & 0xffff)
-            + " white mode=" + (whiteMode ? "true" : "false")
-            + " r=" + r
-            + " g=" + g
-            + " b=" + b
-            + " a=" + a
+        StringBuilder result = new StringBuilder(" device type=" + deviceType
+            + " reachable=" + reachable
             + " time since seen=" + timeSinceSeen * 5 + "mins"
-            + " joining=" + joining;
+            + " joining=" + joining
+            + " power=" + (power != 0 ? "true" : "false"));
+
+        switch (deviceType) {
+            // Unknown device types simply display the state as if it was an RGBW light.
+            // The labels are wrong, but the values contain everything we are told.
+            //case LIGHTIFY_DEVICE_TYPE_SWITCH_2GANG:
+            //case LIGHTIFY_DEVICE_TYPE_SWITCH_4GANG:
+            default:
+
+            // First section is light and power devices from most capable to least.
+            // Note the fall throughs!
+            case LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW:
+                result.append(" white mode=" + (whiteMode ? "true" : "false")
+                    + " r=" + r
+                    + " g=" + g
+                    + " b=" + b
+                    + " a=" + a);
+
+            case LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE:
+                result.append(" temperature=" + (temperature & 0xffff));
+
+            case LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE:
+            case LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE:
+                result.append(" luminance=" + (luminance & 0xff));
+
+            case LIGHTIFY_DEVICE_TYPE_POWER:
+                break;
+
+
+            // Second section is motion sensors. The values need to be labelled differently.
+            case LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR:
+                result.append(" battery=" + luminance + "%"
+                    + " enabled=" + r
+                    + " triggered=" + g
+                    + " ["
+                    + " b=" + b
+                    + " a=" + a
+                    + " temperature=" + temperature
+                    + " ]"
+                );
+                break;
+        }
+
+        return result.toString();
     }
 }

@@ -26,11 +26,23 @@ public final class LightifyBindingConstants {
 
     private static final String BINDING_ID = "osramlightify";
 
+    public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE = 0x01;
+    public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE = 0x02;
+    public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE = 0x04;
+    public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW = 0x0A;
+    public static final int LIGHTIFY_DEVICE_TYPE_POWER = 0x10;
+    public static final int LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR = 0x20;
+    public static final int LIGHTIFY_DEVICE_TYPE_SWITCH_2GANG = 0x40;
+    public static final int LIGHTIFY_DEVICE_TYPE_SWITCH_4GANG = 0x41;
+
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_ABS_TEMPERATURE = "absTemperature";
+    public static final String CHANNEL_ENABLED = "enabled";
+    public static final String CHANNEL_TRIGGERED = "triggered";
+    public static final String CHANNEL_BATTERY = "battery";
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
@@ -40,6 +52,7 @@ public final class LightifyBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_POWER = new ThingTypeUID(BINDING_ID, "power");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_TUNABLE = new ThingTypeUID(BINDING_ID, "tunable");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motionsensor");
 
     public static final String PROPERTY_CURRENT_ADDRESS = "Current address";
     public static final String PROPERTY_MINIMUM_WHITE_TEMPERATURE = "Minimum white temperature";
@@ -59,13 +72,13 @@ public final class LightifyBindingConstants {
 
     public static final Map<Integer, ThingTypeUID> DEVICE_TYPE_THING_TYPE_UID_MAP = ImmutableMap
         .<Integer, ThingTypeUID>builder()
-        .put(0x01, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE) // not soft-switchable
-        .put(0x02, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE)
-        .put(0x04, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE) // soft-switchable
-        .put(0x0A, THING_TYPE_LIGHTIFY_LIGHT_RGBW)
-        .put(0x10, THING_TYPE_LIGHTIFY_POWER)
-//      .put(0x20, THING_TYPE_LIGHTIFY_MOTION_SENSOR)
-//      .put(0x40, THING_TYPE_LIGHTIFY_SWITCH_2GANG)
-//      .put(0x41, THING_TYPE_LIGHTIFY_SWITCH_4GANG)
+        .put(LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE)
+        .put(LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE)
+        .put(LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE)
+        .put(LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW, THING_TYPE_LIGHTIFY_LIGHT_RGBW)
+        .put(LIGHTIFY_DEVICE_TYPE_POWER, THING_TYPE_LIGHTIFY_POWER)
+        .put(LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR, THING_TYPE_LIGHTIFY_MOTION_SENSOR)
+//      .put(LIGHTIFY_DEVICE_TYPE_SWITCH_2GANG, THING_TYPE_LIGHTIFY_SWITCH_2GANG)
+//      .put(LIGHTIFY_DEVICE_TYPE_SWITCH_4GANG, THING_TYPE_LIGHTIFY_SWITCH_4GANG)
         .build();
 }
