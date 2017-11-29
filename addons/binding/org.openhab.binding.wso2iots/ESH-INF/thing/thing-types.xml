@@ -19,12 +19,6 @@
 			<channel id="light" typeId="light" />
 		</channels>
 
-		<!-- meta data -->
-		<properties>
-			<property name="buildingId">buildingId</property>
-			<property name="floorId">floorId</property>
-		</properties>
-
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>

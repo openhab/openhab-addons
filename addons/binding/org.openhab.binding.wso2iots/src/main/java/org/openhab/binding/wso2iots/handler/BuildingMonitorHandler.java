@@ -370,10 +370,12 @@ public class BuildingMonitorHandler extends BaseThingHandler {
         return url;
     }
 
+    // Changes the thing state depending on the state of the bridge
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            this.dispose();
         } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
                 && ThingStatus.OFFLINE.equals(getThing().getStatusInfo().getStatus())
                 && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
