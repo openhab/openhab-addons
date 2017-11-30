@@ -87,6 +87,7 @@
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
+    <module>org.openhab.binding.te923</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
