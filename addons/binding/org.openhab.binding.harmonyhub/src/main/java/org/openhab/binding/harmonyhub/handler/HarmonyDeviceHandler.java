@@ -144,7 +144,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
-            bridge.getConfigFuture().thenAcceptAsync(this::updateChannel, scheduler);
+            bridge.getConfigFuture().thenAcceptAsync(this::updateChannel, scheduler).exceptionally(e -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Getting config failed: " + e.getMessage());
+                return null;
+            });
         } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }

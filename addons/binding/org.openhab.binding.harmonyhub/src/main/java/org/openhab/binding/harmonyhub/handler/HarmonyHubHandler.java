@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -69,18 +70,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
 
-    private static final Comparator<Activity> ACTIVITY_COMPERATOR = new Comparator<Activity>() {
-        @Override
-        public int compare(Activity a1, Activity a2) {
-            // if the order value is null we want it to be at the start of the list
-            int o1 = a1.getActivityOrder() == null ? -1 : a1.getActivityOrder().intValue();
-            int o2 = a2.getActivityOrder() == null ? -1 : a2.getActivityOrder().intValue();
-            return (o1 < o2) ? -1 : (o1 == o2) ? 0 : 1;
-        }
-    };
+    private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
+            Comparator.nullsFirst(Integer::compareTo));
 
     // one minute should be plenty short, but not overwhelm the hub with requests
-    private static final long CONFIG_CACHE_TIME = 60 * 1000;
+    private static final long CONFIG_CACHE_TIME = TimeUnit.MINUTES.toMillis(1);
 
     private static final int RETRY_TIME = 60;
 
@@ -129,7 +123,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
                 logger.error("Could not start activity", e);
             }
         } else {
-            logger.warn("Command {}: Not a acceptable type (String or Decimal), ignorning", command);
+            logger.warn("Command {}: Not an acceptable type (String or Decimal), ignoring", command);
         }
     }
 
@@ -296,6 +290,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
                                     getEventName(powerOff));
                         }
                     }
+                }).exceptionally(e -> {
+                    setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                    return null;
                 });
                 break;
             default:
@@ -384,24 +381,22 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         }
     }
 
-    public synchronized CompletableFuture<HarmonyConfig> getConfigFuture() {
+    public CompletableFuture<HarmonyConfig> getConfigFuture() {
+        Supplier<HarmonyConfig> configSupplier = () -> {
+            if (client == null) {
+                throw new IllegalStateException("Client is null");
+            }
+            try {
+                logger.debug("Getting config from client");
+                return client.getConfig();
+            } catch (Exception e) {
+                logger.debug("Could not get config from client", e);
+                throw e;
+            }
+        };
+
         return configCache.getValue(() -> {
-            return new CompletableFuture<HarmonyConfig>() {
-                {
-                    if (client == null) {
-                        logger.debug("Could not get config because client is null");
-                        complete(null);
-                    } else {
-                        try {
-                            logger.debug("Getting config from client");
-                            complete(client.getConfig());
-                        } catch (Exception e) {
-                            logger.debug("Could not get config from client", e);
-                            completeExceptionally(e);
-                        }
-                    }
-                }
-            };
+            return CompletableFuture.supplyAsync(configSupplier, scheduler);
         });
     }
 
