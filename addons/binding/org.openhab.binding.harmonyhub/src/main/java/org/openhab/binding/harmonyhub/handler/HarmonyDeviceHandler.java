@@ -144,7 +144,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
-            updateChannel();
+            bridge.getConfigFuture().thenAcceptAsync(this::updateChannel, scheduler);
         } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -153,11 +153,10 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     /**
      * Updates our channel with the available buttons as option states
      */
-    private void updateChannel() {
+    private void updateChannel(HarmonyConfig config) {
         try {
             logger.debug("updateChannel for device {}", logName);
 
-            HarmonyConfig config = bridge.getCachedConfig();
             if (config == null) {
                 logger.debug("updateChannel: could not get config from bridge {}", logName);
                 return;

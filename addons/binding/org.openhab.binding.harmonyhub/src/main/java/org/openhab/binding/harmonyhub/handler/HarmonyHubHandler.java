@@ -13,10 +13,10 @@ import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.HARMONY_
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.cache.ExpiringCacheAsync;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -68,6 +69,16 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
 
+    private static final Comparator<Activity> ACTIVITY_COMPERATOR = new Comparator<Activity>() {
+        @Override
+        public int compare(Activity a1, Activity a2) {
+            // if the order value is null we want it to be at the start of the list
+            int o1 = a1.getActivityOrder() == null ? -1 : a1.getActivityOrder().intValue();
+            int o2 = a2.getActivityOrder() == null ? -1 : a2.getActivityOrder().intValue();
+            return (o1 < o2) ? -1 : (o1 == o2) ? 0 : 1;
+        }
+    };
+
     // one minute should be plenty short, but not overwhelm the hub with requests
     private static final long CONFIG_CACHE_TIME = 60 * 1000;
 
@@ -81,9 +92,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private HarmonyClient client;
 
-    private HarmonyConfig cachedConfig;
-
-    private Date cacheConfigExpireDate;
+    private ExpiringCacheAsync<HarmonyConfig> configCache = new ExpiringCacheAsync<>(CONFIG_CACHE_TIME);
 
     private HarmonyHubHandlerFactory factory;
 
@@ -225,7 +234,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
                 }
             }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
-            buildChannel();
+            getConfigFuture().thenAcceptAsync(harmonyConfig -> buildChannel(harmonyConfig), scheduler)
+                    .exceptionally(e -> {
+                        setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                        return null;
+                    });
         } catch (Exception e) {
             logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
@@ -275,14 +288,15 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             case HUB_IS_TURNING_OFF:
                 // hub is turning off is received for current activity, we will translate it into activity starting
                 // trigger of power-off activity (with ID=-1)
-                HarmonyConfig config = getCachedConfig();
-                if (config != null) {
-                    Activity powerOff = config.getActivityById(-1);
-                    if (powerOff != null) {
-                        triggerChannel(HarmonyHubBindingConstants.CHANNEL_ACTIVITY_STARTING_TRIGGER,
-                                getEventName(powerOff));
+                getConfigFuture().thenAccept(config -> {
+                    if (config != null) {
+                        Activity powerOff = config.getActivityById(-1);
+                        if (powerOff != null) {
+                            triggerChannel(HarmonyHubBindingConstants.CHANNEL_ACTIVITY_STARTING_TRIGGER,
+                                    getEventName(powerOff));
+                        }
                     }
-                }
+                });
                 break;
             default:
                 break;
@@ -293,20 +307,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         return activity.getLabel().replaceAll("[^A-Za-z0-9]", "_");
     }
 
-    private void buildChannel() {
+    private void buildChannel(HarmonyConfig config) {
         try {
-            HarmonyConfig config = getCachedConfig();
             List<Activity> activities = config.getActivities();
             // sort our activities in order
-            Collections.sort(activities, new Comparator<Activity>() {
-                @Override
-                public int compare(Activity a1, Activity a2) {
-                    // if the order value is null we want it to be at the start of the list
-                    int o1 = a1.getActivityOrder() == null ? -1 : a1.getActivityOrder().intValue();
-                    int o2 = a2.getActivityOrder() == null ? -1 : a2.getActivityOrder().intValue();
-                    return (o1 < o2) ? -1 : (o1 == o2) ? 0 : 1;
-                }
-            });
+            Collections.sort(activities, ACTIVITY_COMPERATOR);
 
             // add our activities as channel state options
             List<StateOption> states = new LinkedList<StateOption>();
@@ -348,15 +353,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     }
 
     /**
-     * Returns an instance of our connected HarmonyClient
-     *
-     * @return
-     */
-    public HarmonyClient getClient() {
-        return client;
-    }
-
-    /**
      * Sends a button press to a device
      *
      * @param device
@@ -388,23 +384,25 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         }
     }
 
-    /**
-     * Cache a call to get the harmony config so we don't overwhelm it with requests.
-     *
-     * @return
-     */
-    public synchronized HarmonyConfig getCachedConfig() {
-        if (client == null) {
-            return null;
-        }
-
-        Date now = new Date();
-        if (cachedConfig == null || cacheConfigExpireDate == null || now.after(cacheConfigExpireDate)) {
-            logger.debug("Refreshing conf cache");
-            cachedConfig = client.getConfig();
-            cacheConfigExpireDate = new Date(System.currentTimeMillis() + CONFIG_CACHE_TIME);
-        }
-        return cachedConfig;
+    public synchronized CompletableFuture<HarmonyConfig> getConfigFuture() {
+        return configCache.getValue(() -> {
+            return new CompletableFuture<HarmonyConfig>() {
+                {
+                    if (client == null) {
+                        logger.debug("Could not get config because client is null");
+                        complete(null);
+                    } else {
+                        try {
+                            logger.debug("Getting config from client");
+                            complete(client.getConfig());
+                        } catch (Exception e) {
+                            logger.debug("Could not get config from client", e);
+                            completeExceptionally(e);
+                        }
+                    }
+                }
+            };
+        });
     }
 
     /**
