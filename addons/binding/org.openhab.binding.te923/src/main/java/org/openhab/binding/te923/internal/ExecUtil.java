@@ -33,71 +33,76 @@ public class ExecUtil {
     public static String exec(String cmd) {
 
         Logger logger = LoggerFactory.getLogger(ExecUtil.class);
+        String res;
 
-        int COMMAND_TIMEOUT = 10000;
+        synchronized (ExecUtil.class) {
 
-        Process proc = null;
-        try {
-            Runtime rt = Runtime.getRuntime();
-            proc = rt.exec(cmd);
-        } catch (Exception e) {
-            logger.error("An exception occurred while executing '{}' : '{}'", new Object[] { cmd, e.getMessage() });
-            return "";
-        }
+            int COMMAND_TIMEOUT = 10000;
 
-        StringBuilder outputBuilder = new StringBuilder();
-        StringBuilder errorBuilder = new StringBuilder();
-
-        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                BufferedReader br = new BufferedReader(isr);) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                outputBuilder.append(line).append("\n");
-                logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
+            Process proc = null;
+            try {
+                Runtime rt = Runtime.getRuntime();
+                proc = rt.exec(cmd);
+            } catch (Exception e) {
+                logger.error("An exception occurred while executing '{}' : '{}'", new Object[] { cmd, e.getMessage() });
+                return "";
             }
-            isr.close();
-        } catch (IOException e) {
-            logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                    new Object[] { cmd, e.getMessage() });
-        }
 
-        try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                BufferedReader br = new BufferedReader(isr);) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                errorBuilder.append(line).append("\n");
-                logger.debug("Exec [{}]: '{}'", "ERROR", line);
+            StringBuilder outputBuilder = new StringBuilder();
+            StringBuilder errorBuilder = new StringBuilder();
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                    BufferedReader br = new BufferedReader(isr);) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    outputBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
+                }
+                isr.close();
+            } catch (IOException e) {
+                logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
+                        new Object[] { cmd, e.getMessage() });
             }
-            isr.close();
-        } catch (IOException e) {
-            logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                    new Object[] { cmd, e.getMessage() });
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                    BufferedReader br = new BufferedReader(isr);) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+                isr.close();
+            } catch (IOException e) {
+                logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
+                        new Object[] { cmd, e.getMessage() });
+            }
+
+            boolean exitVal = false;
+            try {
+                exitVal = proc.waitFor(COMMAND_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
+                        new Object[] { cmd, e.getMessage() });
+            }
+
+            if (!exitVal) {
+                logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms",
+                        new Object[] { cmd, COMMAND_TIMEOUT });
+                proc.destroyForcibly();
+            }
+
+            // updateState(RUN, OnOffType.OFF);
+            // updateState(EXIT, new DecimalType(proc.exitValue()));
+
+            outputBuilder.append(errorBuilder.toString());
+
+            outputBuilder.append(errorBuilder.toString());
+
+            res = StringUtils.chomp(outputBuilder.toString());
+
         }
 
-        boolean exitVal = false;
-        try {
-            exitVal = proc.waitFor(COMMAND_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                    new Object[] { cmd, e.getMessage() });
-        }
-
-        if (!exitVal) {
-            logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms",
-                    new Object[] { cmd, COMMAND_TIMEOUT });
-            proc.destroyForcibly();
-        }
-
-        // updateState(RUN, OnOffType.OFF);
-        // updateState(EXIT, new DecimalType(proc.exitValue()));
-
-        outputBuilder.append(errorBuilder.toString());
-
-        outputBuilder.append(errorBuilder.toString());
-
-        String r = StringUtils.chomp(outputBuilder.toString());
-
-        return r;
+        return res;
 
     }
 
