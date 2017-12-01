@@ -29,9 +29,9 @@
 				<default>5</default>
 			</parameter>
 			<parameter name="googleAPIKey" type="text">
-			    <context>password</context>
-			    <label>Google API Key</label>
-			    <description>Google API key to be used for address lookup calls (to translate coordinates into a human readable string). Without a key the number of daily request are limited and the bindings address lookup functionality will stop working.</description>
+				<context>password</context>
+				<label>Google API Key</label>
+				<description>Google API key to be used for address lookup calls (to translate coordinates into a human readable string). Without a key the number of daily request are limited and the bindings address lookup functionality will stop working.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -57,15 +57,15 @@
 			<channel typeId="FormattedAddress" id="formattedAddress" />
 			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
-        
-        <representation-property>deviceId</representation-property>
-        
-        <config-description>
-           <parameter name="deviceId" type="text" required="true">
-               <label>Device id</label>
-           </parameter>   
-        </config-description>
-        
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device id</label>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<channel-type id="NumberOfDevices">
@@ -84,9 +84,9 @@
 		<description>Update all devices registered with this account immediately.</description>
 	</channel-type>
 	<channel-type id="EnableAddressLookup">
-	    <item-type>Switch</item-type>
-	    <label>Enable address lookup</label>
-	    <description>Enable address lookup. The coordinates are send to google to lookup a
+		<item-type>Switch</item-type>
+		<label>Enable address lookup</label>
+		<description>Enable address lookup. The coordinates are send to google to lookup a
 	    human readable address.</description>
 	</channel-type>
 	<channel-type id="BatteryStatus">
@@ -137,8 +137,8 @@
 		<label>Formatted address</label>
 	</channel-type>
 	<channel-type id="DeviceName">
-	    <item-type>String</item-type>
-	    <label>Device name</label>
+		<item-type>String</item-type>
+		<label>Device name</label>
 	</channel-type>
 </thing:thing-descriptions>
  
