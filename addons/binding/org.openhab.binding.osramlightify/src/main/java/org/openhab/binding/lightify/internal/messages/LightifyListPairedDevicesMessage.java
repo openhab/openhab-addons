@@ -125,7 +125,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
 
                 Thing thing = bridgeHandler.getThingByUID(thingUID);
 
-                if (thing != null && state.received(bridgeHandler, thing, deviceAddress, now)) {
+                if (thing != null && state.received(bridgeHandler, thing, now, false)) {
                     changes = true;
                 }
 

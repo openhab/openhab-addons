@@ -61,11 +61,9 @@ public final class LightifySetTemperatureMessage extends LightifyTransitionableM
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
-        state.setTransitionEndNanos(1, getThisTransitionEndNanos());
-
         return super.encodeMessage(4)
             .putShort((short) (temperature & 0xffff))
-            .putShort((short) (getThisTransitionTimeNanos() / 100000000L));
+            .putShort((short) (getThisTransitionTimeNanos(1) / 100000000L));
     }
 
     // ****************************************

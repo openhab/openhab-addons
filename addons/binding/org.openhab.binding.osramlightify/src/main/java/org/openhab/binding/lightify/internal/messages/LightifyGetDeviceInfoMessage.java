@@ -46,22 +46,7 @@ public class LightifyGetDeviceInfoMessage extends LightifyBaseGetDeviceInfoMessa
     @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
         if (super.handleResponse(bridgeHandler, data)) {
-            boolean debug = deviceHandler.getConfiguration().debugTransitions;
-
-            if (debug) {
-                // Log state for analysis purposes.
-                logger.debug("{}: TRANSITION {} {} {} {} {}", deviceHandler.getDeviceAddress(), state.r, state.g, state.b, state.luminance, state.temperature);
-            }
-
-            state.received(bridgeHandler, deviceHandler.getThing(), deviceHandler.getDeviceAddress(), System.nanoTime());
-
-            if (debug) {
-                // Poll state continuously throughout a transition for analysis purposes.
-                LightifyDeviceState state = deviceHandler.getLightifyDeviceState();
-                if (state.transitionEndNanos[0] != null || state.transitionEndNanos[1] != null) {
-                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(deviceHandler));
-                }
-            }
+            state.received(bridgeHandler, deviceHandler.getThing(), System.nanoTime(), true);
 
             return true;
         }

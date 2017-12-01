@@ -34,9 +34,4 @@ public final class LightifyDeviceConfiguration {
      * Maximum white temperature as configured via UI.
      */
     public Integer whiteTemperatureMax;
-
-    /**
-     * Log state during transitions for this device.
-     */
-    public boolean debugTransitions;
 }

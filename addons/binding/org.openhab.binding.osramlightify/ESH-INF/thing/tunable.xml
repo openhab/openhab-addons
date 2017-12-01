@@ -41,11 +41,6 @@
 				<description>Maximum white temperature in Kelvin supported by this device.</description>
 				<advanced>true</advanced>
 			</parameter>
-
-			<parameter name="debugTransitions" type="boolean" required="false">
-				<label>Log stats during transitions for debug and analysis</label>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</thing-type>
 

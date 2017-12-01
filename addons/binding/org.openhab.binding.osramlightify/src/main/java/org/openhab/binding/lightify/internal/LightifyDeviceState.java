@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.osramlightify.internal;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +52,8 @@ public final class LightifyDeviceState {
 
     private static final Logger logger = LoggerFactory.getLogger(LightifyDeviceState.class);
 
-    public Long[] transitionEndNanos = new Long[2];
+    private ScheduledFuture<?>[] transitionEndJob = new ScheduledFuture<?>[2];
+    private Long[] transitionEndJobNanos = new Long[2];
 
     /* The state as given in a {@link LightifyListPairedDevicesMessage} response. */
     public int deviceType;
@@ -65,23 +70,43 @@ public final class LightifyDeviceState {
     public boolean whiteMode = true;
     private boolean saved = false;
 
-    public void setTransitionEndNanos(int index, Long transitionEndNanos) {
-        // This should only be called from a message's encode method which is only called
-        // when a message is actually being sent. Since the connector thread is responsible
-        // for both transmitting requests and processing responses we can never be handling
-        // a response at the same time as another thread is sending a request so this does
-        // not need any synchronization.
+    public void setTransitionTimeNanos(LightifyDeviceHandler deviceHandler, int index, long transitionEndNanos, long transitionTimeNanos) {
+        synchronized (this) {
+            // If we had a transition already and we are doing an immediate (non-transition) change
+            // we log the transition as complete.
+            if (this.transitionEndJob[index] != null) {
+                transitionEndJob[index].cancel(true);
+                transitionEndJob[index] = null;
 
-        // If we had a transition already and we are doing an immediate (non-transition) change
-        // we log the transition as complete.
-        if (this.transitionEndNanos[index] != null && transitionEndNanos == null) {
-            logger.debug("--: {} transition complete", /* deviceAddress, */ (index == 0 ? "luminance" : "colour"));
+                if (transitionTimeNanos <= 0) {
+                    logger.debug("{}: {} transition cancelled", deviceHandler.getDeviceAddress(), (index == 0 ? "luminance" : "colour"));
+                }
+            }
+
+            if (transitionTimeNanos > 0) {
+                transitionEndJobNanos[index] = transitionEndNanos;
+
+                int otherIndex = (index == 0 ? 1 : 0);
+                if (transitionEndJob[otherIndex] == null || transitionEndJobNanos[otherIndex] != transitionEndNanos) {
+                    logger.debug("{}: schedule {} complete at {}", deviceHandler.getDeviceAddress(), (index == 0 ? "luminance" : "colour"), transitionEndNanos);
+
+                    transitionEndJob[index] = deviceHandler.getScheduler().schedule(
+                        () -> {
+                            synchronized (this) {
+
+                                transitionEndJob[index] = null;
+                                deviceHandler.sendMessage(new LightifyGetDeviceInfoMessage(deviceHandler));
+                            }
+                         },
+                        transitionTimeNanos, TimeUnit.NANOSECONDS);
+                } else {
+                    logger.debug("{}: {} completes with other transition at {}", deviceHandler.getDeviceAddress(), (index == 0 ? "luminance" : "colour"), transitionEndNanos);
+                }
+            }
         }
-
-        this.transitionEndNanos[index] = transitionEndNanos;
     }
 
-    public boolean received(LightifyBridgeHandler bridgeHandler, Thing thing, String deviceAddress, long now) {
+    public boolean received(LightifyBridgeHandler bridgeHandler, Thing thing, long now, boolean knownCurrent) {
         boolean changes = false;
 
         LightifyDeviceHandler deviceHandler = (LightifyDeviceHandler) thing.getHandler();
@@ -132,7 +157,7 @@ public final class LightifyDeviceState {
 
                 // setOnline may want to do some probes before we actually go online.
                 if (deviceHandler.setOnline(bridgeHandler)) {
-                    logger.debug("{}: ONLINE {}", deviceAddress, this);
+                    logger.debug("{}: ONLINE {}", deviceHandler.getDeviceAddress(), this);
                     state.saved = false;
                     changes = true;
                 } else {
@@ -141,21 +166,21 @@ public final class LightifyDeviceState {
                     // we have something to restore once the probes are done and tell the
                     // linked items what we have done.
                     if (!state.saved) {
-                        logger.debug("{}: INITIAL {}", deviceAddress, this);
+                        logger.debug("{}: INITIAL {}", deviceHandler.getDeviceAddress(), this);
                         state.copyFrom(this);
                         state.saved = true;
                         state.fullRefresh(bridgeHandler, deviceHandler);
                     }
                 }
             } else if (reachable != state.reachable) {
-                logger.trace("{}: waiting {}", deviceAddress, this);
+                logger.trace("{}: waiting {}", deviceHandler.getDeviceAddress(), this);
             }
 
         // reachable can become 0 in a LIST_PAIRED state report if the device fails to respond
         // to the gateway's periodic poll. This is fairly easy to trigger by spamming a device
         // which has poor connectivity with GET_DEVICE_INFO requests which we do when collecting
         // transition stats. This is not an immediate problem so we'll wait and see.
-        } else if (timeSinceSeen > 1 || (reachable != 2 && state.transitionEndNanos[0] == null && state.transitionEndNanos[1] == null)) {
+        } else if (timeSinceSeen > 1 || (reachable != 2 && state.transitionEndJob[0] == null && state.transitionEndJob[1] == null)) {
             // Always save state if we go unreachable with a time since seen of zero. This is
             // either a reboot (firmware upgrade?) or a fast (<5mins) power off/on. We will
             // restore the device state when it comes back.
@@ -164,77 +189,71 @@ public final class LightifyDeviceState {
                 // save may be up to 30s out of date since the gateway does not actively track
                 // state as it changes during transitions - it simply appears to poll devices
                 // periodically.
-                state.transitionEndNanos[0] = null;
-                state.transitionEndNanos[1] = null;
+                synchronized (this) {
+                    for (int i = 0; i < state.transitionEndJob.length; i++) {
+                        if (state.transitionEndJob[i] != null) {
+                            state.transitionEndJob[i].cancel(true);
+                            state.transitionEndJob[i] = null;
+                        }
+                    }
+                }
 
-                logger.debug("{}: SAVED {}", deviceAddress, state);
+                logger.debug("{}: SAVED {}", deviceHandler.getDeviceAddress(), state);
                 state.saved = true;
             }
 
-            logger.debug("{}: OFFLINE {}", deviceAddress, this);
+            logger.debug("{}: OFFLINE {}", deviceHandler.getDeviceAddress(), this);
             deviceHandler.setStatus(ThingStatus.OFFLINE);
 
             changes = true;
 
         } else {
-            for (int i = 0; i < state.transitionEndNanos.length; i++) {
-                if (state.transitionEndNanos[i] != null) {
-                    // State changes during transitions (that we know about - i.e. initiated ourselves)
-                    // are ignored. This is because when we initiate a transition we see an immediate
-                    // state change showing the device moving towards the desired state and then
-                    // nothing until up to 30s after the transition has completed when we see the final
-                    // state. It appears sending a command causes the gateway to immediately query the
-                    // new state of the device but that the gateway is not really transition aware and
-                    // only "discovers" the transitioned device state when it does a scheduled poll of
-                    // the device. And the poll time for the gateway appears to be 30s with wifi firmware
-                    // version 1.1.3.53.
-                    if (i == 0) {
-                        power = state.power;
-                        powerDelta = 0;
-                        luminance = state.luminance;
-                        luminanceDelta = 0;
-                    } else if (i == 1) {
-                        r = state.r;
-                        g = state.g;
-                        b = state.b;
-                        a = state.a;
-                        temperature = state.temperature;
-                        rDelta = 0;
-                        gDelta = 0;
-                        bDelta = 0;
-                        aDelta = 0;
-                        temperatureDelta = 0;
+            synchronized (this) {
+                // The gateway polls devices every 30s so if we are 30s beyond the expected end
+                // of a transition we have post-transition state but lost the GET_DEVICE_INFO
+                // for some reason.
+                for (int i = 0; i < state.transitionEndJob.length; i++) {
+                    if (state.transitionEndJobNanos[i] != null && ((knownCurrent && now - state.transitionEndJobNanos[i] >= 0) || now - state.transitionEndJobNanos[i] > 30000000000L)) {
+                        logger.debug("{}: received final state for {} transition", deviceHandler.getDeviceAddress(), (i == 0 ? "luminance" : "colour"));
+                        state.transitionEndJobNanos[i] = null;
                     }
+                }
 
-                    if (state.transitionEndNanos[i] >= now) {
-                        // Do fast polling when we have a transition so we complete it in a timely manner.
-                        // FIXME: Really we just want to make sure we are back to do a GET_DEVICE_INFO
-                        // at the appointed time. Fast polling throughout the transition is wasteful.
-                        changes = true;
-                    } else {
-                        logger.debug("{}: {} transition complete", deviceAddress, (i == 0 ? "luminance" : "colour"));
+                // State changes during transitions (that we know about - i.e. initiated ourselves)
+                // are ignored. This is because when we initiate a transition we see an immediate
+                // state change showing the device moving towards the desired state and then
+                // nothing until up to 30s after the transition has completed when we see the final
+                // state. For transitions we know about we ignore state changes during the transition
+                // and use a GET_DEVICE_INFO to ask the gateway to do an immediate state update after
+                // the transition completes. We can't do anything for other transitions though so
+                // they will generate updates every 30s with the update to the final state being
+                // up to 30s late :-(.
+                // N.B. 30s is the poll time for the gateway with firmware 1.1.3.53. It may change.
 
-                        state.transitionEndNanos[i] = null;
-
-                        // When the transition completes we then want to update to the final state.
-                        // We can force a poll of a particular device using a GET_DEVICE_INFO message.
-                        // At this point we KNOW the only LIST_PAIRED of ours in the request queue is
-                        // the one at head which we are in the middle of handling so we KNOW that this
-                        // GET_DEVICE_INFO request will get serviced before we next poll the gateway
-                        // for state using LIST_PAIRED (assuming GET_DEVICE_INFO has greater or equal
-                        // priority than LIST_PAIRED if priority queuing is implemented).
-                        // N.B. This is not true if transition stat reporting is enabled. However since
-                        // we are continuously force-polling the device in that case the LIST_PAIRED
-                        // data should be up to date and usable.
-                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(deviceHandler));
-                    }
+                if (state.transitionEndJobNanos[0] != null) {
+                    power = state.power;
+                    powerDelta = 0;
+                    luminance = state.luminance;
+                    luminanceDelta = 0;
+                }
+                if (state.transitionEndJobNanos[1] != null) {
+                    r = state.r;
+                    g = state.g;
+                    b = state.b;
+                    a = state.a;
+                    temperature = state.temperature;
+                    rDelta = 0;
+                    gDelta = 0;
+                    bDelta = 0;
+                    aDelta = 0;
+                    temperatureDelta = 0;
                 }
             }
 
             state.copyFrom(this);
 
             if (powerDelta != 0 || luminanceDelta != 0 || temperatureDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
-                logger.debug("{}: CHANGED {}", deviceAddress, state);
+                logger.debug("{}: CHANGED {}", deviceHandler.getDeviceAddress(), state);
 
                 // Let the thing's channels know about the new state.
 

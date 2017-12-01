@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.osramlightify.handler;
 
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -258,33 +259,22 @@ public class LightifyDeviceHandler extends BaseThingHandler {
             if (command instanceof HSBType) {
                 HSBType hsb = (HSBType) command;
 
+                logger.debug("{}: set HSB: {}", channelUID, hsb);
+
                 PercentType luminance = hsb.getBrightness();
-
-                if (lightifyDeviceState.getLuminance().intValue() != luminance.intValue()) {
-                    logger.debug("{}: set luminance: {}", channelUID, luminance);
-
-                    bridgeHandler.sendMessage(
-                        new LightifySetLuminanceMessage(this, luminance)
-                            .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
-                    );
-
-                    if (configuration.debugTransitions) {
-                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
-                    }
-                }
-
                 hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(100));
 
-                logger.debug("{}: set HSB: {}", channelUID, hsb);
+                long transitionEndNanos = System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime));
+
+                bridgeHandler.sendMessage(
+                    new LightifySetLuminanceMessage(this, luminance)
+                        .setTransitionEndNanos(transitionEndNanos)
+                );
 
                 bridgeHandler.sendMessage(
                     new LightifySetColorMessage(this, hsb)
-                        .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (hsb.getBrightness().intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
+                        .setTransitionEndNanos(transitionEndNanos)
                 );
-
-                if (configuration.debugTransitions) {
-                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
-                }
 
             } else if (command instanceof PercentType) {
                 if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
@@ -304,10 +294,6 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                             .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
                     );
 
-                    if (configuration.debugTransitions) {
-                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
-                    }
-
                     // A command on the percent temperature channel generates a matching command
                     // on the absolute temperature channel.
                     postCommand(CHANNEL_ABS_TEMPERATURE, temperature);
@@ -323,10 +309,6 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                         new LightifySetLuminanceMessage(this, luminance)
                             .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * (luminance.intValue() != 0 ? configuration.transitionTime : configuration.transitionToOffTime)))
                     );
-
-                    if (configuration.debugTransitions) {
-                        bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
-                    }
                 }
 
             } else if (command instanceof DecimalType) {
@@ -338,10 +320,6 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                     new LightifySetTemperatureMessage(this, temperature)
                         .setTransitionEndNanos(System.nanoTime() + (long) (TimeUnit.SECONDS.toNanos(1) * configuration.transitionTime))
                 );
-
-                if (configuration.debugTransitions) {
-                    bridgeHandler.sendMessage(new LightifyGetDeviceInfoMessage(this));
-                }
 
                 // A command on the absolute temperature channel generates a matching command
                 // on the percent temperature channel.
@@ -424,6 +402,14 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     public LightifyDeviceConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return ((LightifyBridgeHandler) getBridge().getHandler()).getScheduler();
+    }
+
+    public void sendMessage(LightifyMessage message) {
+        ((LightifyBridgeHandler) getBridge().getHandler()).sendMessage(message);
     }
 
     public void setMinimumWhiteTemperature(int temperature) {

@@ -40,7 +40,7 @@ public abstract class LightifyTransitionableMessage extends LightifyBaseMessage 
     protected final LightifyDeviceHandler deviceHandler;
     protected final LightifyDeviceState state;
 
-    private Long transitionEndNanos;
+    private long transitionEndNanos = 0;
     private long thisTransitionTimeNanos;
 
     public LightifyTransitionableMessage(LightifyDeviceHandler deviceHandler, Command command) {
@@ -62,31 +62,32 @@ public abstract class LightifyTransitionableMessage extends LightifyBaseMessage 
         return this;
     }
 
-    protected Long getThisTransitionEndNanos() {
-        long now = System.nanoTime();
+    protected long getThisTransitionTimeNanos(int transitionType) {
+        thisTransitionTimeNanos = 0;
 
-        if (transitionEndNanos != null && transitionEndNanos - now > 0) {
-            thisTransitionTimeNanos = transitionEndNanos - now;
+        if (transitionEndNanos != 0) {
+            long now = System.nanoTime();
 
-            // Transitions are in tenths of a second (that's defined in the ZigBee Light Link
-            // specification) so we round to the nearest tenth.
-            thisTransitionTimeNanos = ((thisTransitionTimeNanos + 49999999L) / 100000000L) * 100000000L;
+            if (transitionEndNanos - now > 0) {
+                thisTransitionTimeNanos = transitionEndNanos - now;
 
-            // Clip to the maximum transition time.
-            if (thisTransitionTimeNanos > 6553600000000L) {
-                thisTransitionTimeNanos = 6553600000000L;
-            }
+                // Transitions are in tenths of a second (that's defined in the ZigBee Light Link
+                // specification) so we round to the nearest tenth.
+                thisTransitionTimeNanos = ((thisTransitionTimeNanos + 49999999L) / 100000000L) * 100000000L;
 
-            if (thisTransitionTimeNanos > 0) {
-                return now + thisTransitionTimeNanos;
+                // Clip to the maximum transition time.
+                if (thisTransitionTimeNanos > 6553600000000L) {
+                    thisTransitionTimeNanos = 6553600000000L;
+                }
+
+                if (thisTransitionTimeNanos < 0) {
+                    thisTransitionTimeNanos = 0;
+                }
             }
         }
 
-        thisTransitionTimeNanos = 0;
-        return null;
-    }
+        state.setTransitionTimeNanos(deviceHandler, transitionType, transitionEndNanos, thisTransitionTimeNanos);
 
-    protected long getThisTransitionTimeNanos() {
         return thisTransitionTimeNanos;
     }
 }

@@ -61,11 +61,9 @@ public final class LightifySetLuminanceMessage extends LightifyTransitionableMes
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
-        state.setTransitionEndNanos(0, getThisTransitionEndNanos());
-
         return super.encodeMessage(3)
             .put((byte) (luminance & 0xff))
-            .putShort((short) (getThisTransitionTimeNanos() / 100000000L));
+            .putShort((short) (getThisTransitionTimeNanos(0) / 100000000L));
     }
 
     // ****************************************
