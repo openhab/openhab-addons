@@ -1,9 +1,8 @@
-# org.openhab.binding.heos
+
+# Denon HEOS Binding
+
 HEOS Binding for OpenHab
 
-
-
-# <bindingName> Binding
 This binding support the HEOS-System from Denon for OpenHab 2. The binding provides basic control for the player and groups of the network. It also supports selecting favorites and play them on several players or groups on the HEOS-Network. 
 The binding first establish a connection to one of the player of the HEOS-Network and use them as a bridge. After a connection is established, the binding searches for all player and grouped via the bridge. To keep the network traffic low it is recommended to establish only one bridge. Connection to the bridge is done via a Telnet connection.
 
@@ -28,6 +27,7 @@ The bridge is discovered through UPnP in the local network. Once it is added the
 Nether the less also manual configuration is possible
 
 ## Binding Configuration
+
 This binding does not require any configuration via a .cfg file. The configuration is done via the Thing definition.
 Within the binding the callback URL can be set. This URL is needed if a player or a group is registered as an audio sink within OpenHab.
 The URL is in most of the cases the URL if the OpenHab server. Also the port has to be defined.
@@ -35,20 +35,26 @@ Example: http://192.168.0.7:8080 or if the sound file is located on the OpenHab 
 
 
 ## Thing Configuration
+
 **It is recommended to configure the things via the PaperUI or HABmin**
 
 ### Bridge Configuration
+
 The bridge can be added via the PaperUI. After adding the bridge the user name and password can set by editing the thing via the PaperUI. For manual configuration the following parameter can be defined. The ipAddress has to be defined. All other fields are optional.
+
 ````
 Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", name="Default", unserName="xxx", password="123456"]  
 ````
 
 ### Player Configuration
+
 Player can be added via the PaperUI. All fields are then filled automatically.
 For manual configuration the player is defined as followed:
+
 ````
 Thing heos:player:pid "name" [pid="123456789", name="name", model="modelName", ipAdress="192.168.0.xxx", type="Player"] 
 ````
+
 PID behind the heos:player:--- should be changed as required. Every name or value can be used. It is recommended to use the player PID. Within the configuration the PID as well as the type field is mandatory. The rest is not required.
 
 *If player is configured by PaperUI the UID of the player is equal to the player ID (PID) from the HEOS system*
@@ -183,6 +189,7 @@ PlayURL | String | Plays a media file located at the URL. First select the playe
 ```
 heos://player/get_player_info?pid=975314685
 ```
+
 At the moment no feedback is provided which can be used. Result of the command can be seen on the DEBUG level at the console
 
 
@@ -200,6 +207,7 @@ Channel ID | Item Type | Description
  {mid} | Switch | A channel which represents the favorite. Please check via UI how the correct Channel Type looks like. (Experimental)
  
  Example
+
  ```
  Switch Favorite_1 "Fav 1 [%s]" {channel="heos:bridge:main:s17492"}
  ```
@@ -211,9 +219,11 @@ Channel ID | Item Type | Description
 {playerID} | Switch | A channel which represents the player. Please check via UI how the correct Channel Type looks like. (Experimental)
 
 Example
+
  ```
  Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}  
  ```
+
  The {playerUID} has either a P before the number which indicates that this is a player or a G to indicate this is a group.
  
  
@@ -242,10 +252,10 @@ Dimmer LivingRoom_Volume "Volume" {channel="heos:player:main:LivingRoom:Volume"}
 String LivingRoom_Title "Title [%s]" {channel="heos:player:main:LivingRoom:Title"}
 String LivingRoom_Interpret "Interpret [%s]" {channel="heos:player:main:LivingRoom:Interpret"}
 String LivingRoom_Album "Album [%s]" {channel="heos:player:main:LivingRoom:Album"}
-
 ```
 
 ###demo.sitemap
+
 ```
    Frame label="LivingRoom" {
     	Default item=LivingRoom_Control
@@ -281,6 +291,7 @@ Switch HeosBridge_Play_Living	"Living Room"	(gHeos)	{channel="heos:bridge:ed0ac1
 String HeosKitchen_Input			(gHeos) {channel="heos:player:918797451:Inputs"}
 String HeosKitchen_InputSelect	"Input"		(gHeos)	
 ```
+
 Rule for kitchen:
 
 ```
@@ -297,15 +308,15 @@ rule "Play AuxIn from Living Room"
 			sendCommand(HeosBridge_Play_Living, OFF)	//Switch player channel off again to be sure that it is OFF
 		}
 ```
+
 Sitemap:
+
 ```
 Switch item=HeosKitchen_InputSelect	mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
-
 ```
 
-
-
 ### The OnlineState
+
 The online state shows if an item is online or offline. This can be helpful for groups to control the visibility of group items within the sitemap. So if the group is removed the visibility of those items is also changed.,
 
 #### Example
@@ -345,7 +356,9 @@ To tell the binding at which player or group the playlist shall be played, selec
 This can be done by a rule within openHab
 
 #### Example
+
 Items:
+
 ```
 Switch HeosBridge_Play_Kitchen		"Kitchen"   (gHeos) {channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:P918797451"}
 String HeosBridge_Playlists		"Playlists" (gHeos) {channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:Playlists"}
@@ -353,6 +366,7 @@ Number HeosKitchen_Playlist		"Playlist"  (gHeos)
 ```
 
 Rule:
+
 ```
 rule"Playlist"
 	when
@@ -363,6 +377,7 @@ rule"Playlist"
 		sendCommand(HeosBridge_Play_Kitchen, OFF)		
 	end
 ```
+
 Sitemap:
 
 ```
