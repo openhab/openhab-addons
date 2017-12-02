@@ -34,6 +34,5 @@ Import-Package:
  org.openhab.binding.avmfritz,
  org.openhab.binding.avmfritz.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
