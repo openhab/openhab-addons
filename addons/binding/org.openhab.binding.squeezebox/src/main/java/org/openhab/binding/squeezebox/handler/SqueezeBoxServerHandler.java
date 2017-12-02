@@ -605,8 +605,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Parameter Playing Playlist Index
                 else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
-                    // player.setCurrentPlaylistIndex((int)
-                    // Integer.parseInt(value));
                     final int index = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
