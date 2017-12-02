@@ -28,6 +28,9 @@ And **FROM** the gateway to openHab:
 * XML-RPC: 9125
 * BIN-RPC: 9126
 
+CCU Autodiscovery :
+* UDP 43439
+
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
 * **CCU**
@@ -47,8 +50,12 @@ All devices connected to a Homematic gateway. All required openHAB metadata are 
 
 ## Discovery
 
-Gateway discovery is only available for Homegear, you need at least 0.6.x for gateway discovery. For all other gateways you have to manually add a bridge in a things file.  
-Device discovery is supported for all gateways.
+Gateway discovery is available:
+* CCU
+* RaspberryMatic, >= 2.29.23.20171022
+* Homegear >= 0.6.x
+
+For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways.  
 
 The binding has a gateway type autodetection, but sometimes a gateway does not clearly notify the type. If you are using a YAHM for example, you have to manually set the gateway type in the bride configuration to CCU.  
 
