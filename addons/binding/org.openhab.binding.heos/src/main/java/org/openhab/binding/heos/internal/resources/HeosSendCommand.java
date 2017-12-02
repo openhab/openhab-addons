@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +13,10 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.openhab.binding.heos.api.HeosEventController;
+import org.openhab.binding.heos.internal.api.HeosEventController;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeosSendCommand} is responsibel to send a command
@@ -28,12 +31,12 @@ public class HeosSendCommand {
     private HeosJsonParser parser;
     private HeosResponse response;
     private HeosEventController eventController;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String command = "";
 
     public HeosSendCommand(Telnet client, HeosJsonParser parser, HeosResponse response,
             HeosEventController eventController) {
-
         this.client = client;
         this.parser = parser;
         this.response = response;
@@ -44,7 +47,6 @@ public class HeosSendCommand {
         if (!isConnected()) {
             return false;
         }
-
         int sendTryCounter = 0;
         this.command = command;
 
@@ -55,15 +57,12 @@ public class HeosSendCommand {
                     ++sendTryCounter;
                 }
                 if (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(TRUE)) {
-
                     while (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(TRUE)) {
-
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            logger.debug("Interrupted Exception - Message: {}", e.getMessage());
                         }
-
                         ArrayList<String> readResultList = client.readLine(15000);
 
                         for (int i = 0; i < readResultList.size(); i++) {
@@ -71,17 +70,14 @@ public class HeosSendCommand {
                             eventController.handleEvent(0); // Important don't remove it. Costs you some live time... ;)
                         }
                     }
-
                 } else {
                     return true;
                 }
             }
             return true;
         } else {
-
             return false;
         }
-
     }
 
     /**
@@ -96,11 +92,9 @@ public class HeosSendCommand {
         try {
             return client.send(command);
         } catch (IOException e) {
-
-            e.printStackTrace();
+            logger.debug("IO Excecption - Message: {}", e.getMessage());
             return false;
         }
-
     }
 
     /*
@@ -111,23 +105,18 @@ public class HeosSendCommand {
      */
 
     private boolean executeSendCommand() throws ReadException, IOException {
-
         boolean sendSuccess = client.send(command);
         if (sendSuccess) {
-
             ArrayList<String> readResultList = client.readLine();
 
             for (int i = 0; i < readResultList.size(); i++) {
-
                 parser.parseResult(readResultList.get(i));
                 eventController.handleEvent(0);
             }
-
             return true;
         } else {
             return false;
         }
-
     }
 
     public boolean setTelnetClient(Telnet client) {
@@ -140,12 +129,10 @@ public class HeosSendCommand {
     }
 
     public boolean isConnected() {
-
         return client.isConnected();
     }
 
     public boolean isConnectionAlive() {
         return client.isConnectionAlive();
     }
-
 }

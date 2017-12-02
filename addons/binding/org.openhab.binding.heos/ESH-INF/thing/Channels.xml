@@ -95,7 +95,5 @@
         <channel-type id="play_URL" advanced="true">
         <item-type>String</item-type>
         <label>Play a media file from URL</label>
-     </channel-type>
-     
-    
-    </thing:thing-descriptions>
+     </channel-type>    
+</thing:thing-descriptions>

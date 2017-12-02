@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,19 +35,14 @@ public class HeosMediaObject {
     private String album_id;
 
     public HeosMediaObject() {
-
         initObject();
-
     }
 
     public void updateMediaInfo(HashMap<String, String> values) {
-
         this.mediaInfo = values;
 
         for (String key : this.mediaInfo.keySet()) {
-
             switch (key) {
-
                 case "song":
                     this.song = this.mediaInfo.get(key);
                     break;
@@ -78,7 +74,6 @@ public class HeosMediaObject {
                     break;
             }
         }
-
     }
 
     private void initObject() {
@@ -87,7 +82,6 @@ public class HeosMediaObject {
         for (String key : supportedMediaItems) {
             mediaInfo.put(key, null);
         }
-
     }
 
     public HashMap<String, String> getMediaInfo() {
@@ -137,13 +131,13 @@ public class HeosMediaObject {
         mediaInfo.put("artis", artist);
     }
 
-    public String getImage_url() {
+    public String getImageUrl() {
         return image_url;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
-        mediaInfo.put("image_url", image_url);
+    public void setImageUrl(String imageUrl) {
+        this.image_url = imageUrl;
+        mediaInfo.put("image_url", imageUrl);
     }
 
     public String getQid() {
@@ -164,17 +158,16 @@ public class HeosMediaObject {
         mediaInfo.put("mid", mid);
     }
 
-    public String getAlbum_id() {
+    public String getAlbumId() {
         return album_id;
     }
 
-    public void setAlbum_id(String album_id) {
-        this.album_id = album_id;
-        mediaInfo.put("album_id", album_id);
+    public void setAlbumId(String albumId) {
+        this.album_id = albumId;
+        mediaInfo.put("album_id", albumId);
     }
 
     public String[] getSupportedMediaItems() {
         return supportedMediaItems;
     }
-
 }

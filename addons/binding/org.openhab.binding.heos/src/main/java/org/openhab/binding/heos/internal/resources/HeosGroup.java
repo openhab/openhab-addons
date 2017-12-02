@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +21,6 @@ import java.util.List;
  */
 
 public class HeosGroup extends HeosMediaObject {
-
     private final String[] supportedGroupInfo = { "name", "gip", "leader" };
     private final String[] supportedGroupStates = { "state", "level", "mute" };
 
@@ -44,21 +44,19 @@ public class HeosGroup extends HeosMediaObject {
     private String level;
     private String mute;
 
-    private final static String PID = "pid";
-    private final static String GID = "gid";
-    private final static String NAME = "name";
-    private final static String LEADER = "leader";
-    private final static String STATE = "state";
-    private final static String LEVEL = "level";
-    private final static String MUTE = "mute";
+    private static final String PID = "pid";
+    private static final String GID = "gid";
+    private static final String NAME = "name";
+    private static final String LEADER = "leader";
+    private static final String STATE = "state";
+    private static final String LEVEL = "level";
+    private static final String MUTE = "mute";
 
     public HeosGroup() {
-
         initGroup();
     }
 
     public void updateGroupInfo(HashMap<String, String> values) {
-
         groupInfo = values;
         for (String key : values.keySet()) {
             if (key.equals(NAME)) {
@@ -68,7 +66,6 @@ public class HeosGroup extends HeosMediaObject {
                 } else {
                     nameHash = "";
                 }
-
             }
             if (key.equals(LEADER)) {
                 leader = values.get(key);
@@ -77,11 +74,9 @@ public class HeosGroup extends HeosMediaObject {
                 gid = values.get(key);
             }
         }
-
     }
 
     public void updateGroupState(HashMap<String, String> values) {
-
         groupState = values;
         for (String key : values.keySet()) {
             if (key.equals(STATE)) {
@@ -93,9 +88,7 @@ public class HeosGroup extends HeosMediaObject {
             if (key.equals(MUTE)) {
                 mute = values.get(key);
             }
-
         }
-
     }
 
     /**
@@ -112,7 +105,6 @@ public class HeosGroup extends HeosMediaObject {
         for (int i = 0; i < this.playerList.size(); i++) {
             HashMap<String, String> player = playerList.get(i);
             groupMemberPidList.add(player.get(PID));
-
         }
         // Generating a dedicated sorted and un-sorted list for different purposes
         groupMemberPidListSorted = new ArrayList<String>(playerList.size());
@@ -120,11 +112,9 @@ public class HeosGroup extends HeosMediaObject {
         // Collections.reverse(groupMemberPidList); // List has to be reversed so that leader is at the beginning
         Collections.sort(groupMemberPidListSorted);
         groupMembersHash = Integer.toUnsignedString(groupMemberPidListSorted.hashCode());
-
     }
 
     public String generateGroupUID() {
-
         List<String> groupUIDHashList = new ArrayList<String>();
         groupUIDHashList.add(name);
         groupUIDHashList.add(gid);
@@ -136,7 +126,6 @@ public class HeosGroup extends HeosMediaObject {
     }
 
     private void initGroup() {
-
         groupInfo = new HashMap<>(8);
         groupState = new HashMap<>(5);
         playerList = new ArrayList<>(5);
@@ -151,7 +140,6 @@ public class HeosGroup extends HeosMediaObject {
 
         updateGroupInfo(groupInfo);
         updateGroupState(groupState);
-
     }
 
     public HashMap<String, String> getGroupInfo() {
@@ -255,5 +243,4 @@ public class HeosGroup extends HeosMediaObject {
     public List<String> getGroupMemberPidList() {
         return groupMemberPidList;
     }
-
 }

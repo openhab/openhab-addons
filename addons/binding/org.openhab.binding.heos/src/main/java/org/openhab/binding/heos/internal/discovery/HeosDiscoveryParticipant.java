@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,16 +40,13 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-
         return Collections.singleton(THING_TYPE_BRIDGE);
     }
 
     @Override
     public DiscoveryResult createResult(RemoteDevice device) {
-
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-
             Map<String, Object> properties = new HashMap<>(2);
             properties.put(HOST, device.getIdentity().getDescriptorURL().getHost());
             properties.put(NAME, device.getDetails().getModelDetails().getModelName());
@@ -57,7 +55,6 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
             logger.info("Found HEOS device with UID: {}", uid.getAsString());
             return result;
         }
-
         return null;
     }
 
@@ -79,13 +76,9 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             }
                         }
                     }
-
                 }
             }
-
         }
-
         return null;
     }
-
 }

@@ -1,18 +1,12 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.heos.handler;
-
-/**
- * The {@link HeosPlayerHandler} handles the actions for a HEOS player.
- * Channel commands are received and send to the dedicated channels
- *
- * @author Johannes Einig - Initial contribution
- */
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
@@ -31,15 +25,21 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.heos.api.HeosAPI;
-import org.openhab.binding.heos.api.HeosSystem;
+import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HeosPlayerHandler extends BaseThingHandler implements HeosEventListener {
+/**
+ * The {@link HeosPlayerHandler} handles the actions for a HEOS player.
+ * Channel commands are received and send to the dedicated channels
+ *
+ * @author Johannes Einig - Initial contribution
+ */
 
+public class HeosPlayerHandler extends BaseThingHandler implements HeosEventListener {
     private HeosAPI api;
     private HeosSystem heos;
     private String pid;
@@ -54,22 +54,17 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
         this.heos = heos;
         this.api = api;
         pid = thing.getConfiguration().get(PID).toString();
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command.toString().equals("REFRESH")) {
             return;
         }
-
         if (channelUID.getId().equals(CH_ID_CONTROL)) {
-
             String com = command.toString();
 
             switch (com) {
-
                 case "PLAY":
                     api.play(pid);
                     break;
@@ -88,20 +83,15 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                 case "OFF":
                     api.pause(pid);
                     break;
-
             }
         } else if (channelUID.getId().equals(CH_ID_VOLUME)) {
-
             api.volume(command.toString(), pid);
-
         } else if (channelUID.getId().equals(CH_ID_MUTE)) {
-
             if (command.toString().equals("ON")) {
                 api.muteON(pid);
             } else {
                 api.muteOFF(pid);
             }
-
             // Allows playing external sources like Aux In
             // If no player on bridge is selected play input from this this player
             // Only one source can be selected
@@ -113,27 +103,22 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                         bridge.getSelectedPlayer().size());
                 bridge.getSelectedPlayer().clear();
             } else {
-                for (String source_pid : bridge.getSelectedPlayer().keySet()) {
-                    api.playInputSource(pid, source_pid, command.toString());
+                for (String sourcePid : bridge.getSelectedPlayer().keySet()) {
+                    api.playInputSource(pid, sourcePid, command.toString());
                     bridge.getSelectedPlayer().clear();
                 }
             }
-
         } else if (channelUID.getId().equals(CH_ID_PLAY_URL)) {
             api.playURL(pid, command.toString());
         }
-
     }
 
     @Override
     public void initialize() {
-
         api.registerforChangeEvents(this);
         ScheduledExecutorService executerPool = Executors.newScheduledThreadPool(1);
         executerPool.schedule(new InitializationRunnable(), 3, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
-        super.initialize();
-
     }
 
     @Override
@@ -160,13 +145,12 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
         api.volume(volume.toString(), pid);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void playerStateChangeEvent(String pid, String event, String command) {
-
         if (pid.equals(this.pid)) {
             if (event.equals(STATE)) {
                 switch (command) {
-
                     case PLAY:
                         updateState(CH_ID_CONTROL, PlayPauseType.PLAY);
                         player.setState(PLAY);
@@ -180,12 +164,9 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                         player.setState(PAUSE);
                         break;
                 }
-
             }
             if (event.equals(VOLUME)) {
-
                 updateState(CH_ID_VOLUME, PercentType.valueOf(command));
-
             }
             if (event.equals(MUTE)) {
                 if (command != null) {
@@ -198,7 +179,6 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                             break;
                     }
                 }
-
             }
             if (event.equals(CUR_POS)) {
                 this.updateState(CH_ID_CUR_POS, StringType.valueOf(command));
@@ -207,21 +187,17 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                 this.updateState(CH_ID_DURATION, StringType.valueOf(command));
                 player.setDuration(command);
             }
-
         }
-
     }
 
+    @SuppressWarnings("null")
     @Override
     public void playerMediaChangeEvent(String pid, HashMap<String, String> info) {
-
         this.player.updateMediaInfo(info);
 
         if (pid.equals(this.pid)) {
             for (String key : info.keySet()) {
-
                 switch (key) {
-
                     case SONG:
                         updateState(CH_ID_SONG, StringType.valueOf(info.get(key)));
                         break;
@@ -253,20 +229,17 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                         }
 
                         break;
-
                 }
-
             }
         }
-
     }
 
     @Override
     public void bridgeChangeEvent(String event, String result, String command) {
-        // TODO Auto-generated method stub
-
+        // Do nothing
     }
 
+    @SuppressWarnings("null")
     public void setStatusOffline() {
         api.unregisterforChangeEvents(this);
         updateState(CH_ID_STATUS, StringType.valueOf(OFFLINE));
@@ -274,10 +247,9 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
     }
 
     public class InitializationRunnable implements Runnable {
-
+        @SuppressWarnings("null")
         @Override
         public void run() {
-
             bridge = (HeosBridgeHandler) getBridge().getHandler();
 
             player = heos.getPlayerState(pid);
@@ -287,7 +259,6 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                 bridge.thingStatusOffline(thing.getUID());
                 return;
             }
-
             bridge.thingStatusOnline(thing.getUID());
 
             if (player.getLevel() != null) {
@@ -309,15 +280,13 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
             updateState(CH_ID_SONG, StringType.valueOf(player.getSong()));
             updateState(CH_ID_ARTIST, StringType.valueOf(player.getArtist()));
             updateState(CH_ID_ALBUM, StringType.valueOf(player.getAlbum()));
-            updateState(CH_ID_IMAGE_URL, StringType.valueOf(player.getImage_url()));
+            updateState(CH_ID_IMAGE_URL, StringType.valueOf(player.getImageUrl()));
             updateState(CH_ID_STATUS, StringType.valueOf(ONLINE));
             updateState(CH_ID_STATION, StringType.valueOf(player.getStation()));
             updateState(CH_ID_TYPE, StringType.valueOf(player.getType()));
             updateState(CH_ID_CUR_POS, StringType.valueOf("0"));
             updateState(CH_ID_DURATION, StringType.valueOf("0"));
             updateState(CH_ID_INPUTS, StringType.valueOf("NULL"));
-
         }
-
     }
 }

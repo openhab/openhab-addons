@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,10 +37,9 @@ import com.google.common.collect.Sets;
  */
 
 public class HeosPlayerDiscovery extends AbstractDiscoveryService {
-
-    private final static int SEARCH_TIME = 20;
-    private final static int INITIAL_DELAY = 5;
-    private final static int SCAN_INTERVAL = 20;
+    private static final int SEARCH_TIME = 20;
+    private static final int INITIAL_DELAY = 5;
+    private static final int SCAN_INTERVAL = 20;
 
     private Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
 
@@ -54,12 +54,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
         this.bridge = bridge;
         this.scanningRunnable = new PlayerScan();
         bridge.setHeosPlayerDiscovery(this);
-
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-
         Set<ThingTypeUID> supportedThings = Sets.newHashSet(THING_TYPE_GROUP, THING_TYPE_PLAYER);
 
         return supportedThings;
@@ -67,16 +65,14 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
         logger.info("Start scan for HEOS Player");
 
         HashMap<String, HeosPlayer> playerMap = new HashMap<>();
         playerMap = bridge.getNewPlayer();
 
         if (playerMap == null) {
-
+            return;
         } else {
-
             logger.info("Found: {} new Player", playerMap.size());
             ThingUID bridgeUID = bridge.getThing().getUID();
 
@@ -93,7 +89,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                         .withProperties(properties).withBridge(bridgeUID).build();
                 thingDiscovered(result);
             }
-
         }
 
         logger.info("Start scan for HEOS Groups");
@@ -102,10 +97,9 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
 
         groupMap = bridge.getNewGroups();
 
-        if (playerMap == null) {
-
+        if (groupMap == null) {
+            return;
         } else {
-
             if (!groupMap.isEmpty()) {
                 logger.info("Found: {} new Groups", groupMap.size());
                 ThingUID bridgeUID = bridge.getThing().getUID();
@@ -130,16 +124,12 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                             .withProperties(properties).withBridge(bridgeUID).build();
                     thingDiscovered(result);
                 }
-
             } else {
                 logger.info("No HEOS Groups found");
             }
-
         }
-
         removedPlayers();
         removedGroups();
-
     }
 
     // Informs the system of removed groups by using the thingRemoved method.
@@ -151,12 +141,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             for (String key : removedGroupMap.keySet()) {
                 // The same as above!
                 ThingUID uid = new ThingUID(THING_TYPE_GROUP, removedGroupMap.get(key).getGroupMemberHash());
-                logger.info("Removed HEOS Group: " + uid);
+                logger.info("Removed HEOS Group: {}", uid);
                 thingRemoved(uid);
             }
-
         }
-
     }
 
     // Informs the system of removed players by using the thingRemoved method.
@@ -168,17 +156,14 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             for (String key : removedPlayerMap.keySet()) {
                 // The same as above!
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, removedPlayerMap.get(key).getPid());
-                logger.info("Removed HEOS Player: " + uid);
+                logger.info("Removed HEOS Player: {} ", uid);
                 thingRemoved(uid);
             }
-
         }
-
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-
         logger.trace("Start HEOS Player background discovery");
 
         if (scanningJob == null || scanningJob.isCancelled()) {
@@ -205,18 +190,13 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     }
 
     public void scanForNewPlayers() {
-
         scanningRunnable.run();
     }
 
     public class PlayerScan implements Runnable {
-
         @Override
         public void run() {
             startScan();
-
         }
-
     }
-
 }

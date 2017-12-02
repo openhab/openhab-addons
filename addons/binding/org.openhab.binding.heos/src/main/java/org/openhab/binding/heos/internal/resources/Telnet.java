@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Telnet} is an Telnet Client which handles the connection
@@ -27,6 +30,8 @@ import org.apache.commons.net.telnet.TelnetInputListener;
  */
 
 public class Telnet {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String ip = "";
     private int port = 0;
@@ -50,7 +55,6 @@ public class Telnet {
 
     public Telnet() {
         client = new TelnetClient();
-
     }
 
     /**
@@ -64,26 +68,22 @@ public class Telnet {
      */
 
     public boolean connect(String ip, int port) throws SocketException, IOException {
-
         this.ip = ip;
         this.port = port;
         try {
             address = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.debug("Unknown Host Exception - Message: {}", e.getMessage());
         }
         return openConnection();
-
     }
 
     private boolean openConnection() throws SocketException, IOException {
-
         client.connect(ip, port);
         outStream = new DataOutputStream(client.getOutputStream());
         inputStream = client.getInputStream();
         bufferedStream = new BufferedInputStream(inputStream);
         return client.isConnected();
-
     }
 
     /**
@@ -96,14 +96,12 @@ public class Telnet {
      */
 
     public boolean send(String command) throws IOException {
-
         if (client.isConnected()) {
             sendClear(command + "\r\n");
             return true;
         } else {
             return false;
         }
-
     }
 
     /**
@@ -115,18 +113,14 @@ public class Telnet {
      */
 
     public boolean sendClear(String command) throws IOException {
-
         if (client.isConnected()) {
-
             outStream.writeBytes(command);
             outStream.flush();
 
             return true;
-
         } else {
             return false;
         }
-
     }
 
     /**
@@ -140,9 +134,7 @@ public class Telnet {
      */
 
     public boolean read() throws IOException {
-
         if (client.isConnected()) {
-
             int i = 1;
             while (i != -1) {
                 i = bufferedStream.available();
@@ -152,13 +144,9 @@ public class Telnet {
                 i = concatReadResult(str);
             }
             return true;
-
         } else {
-
             return false;
-
         }
-
     }
 
     /**
@@ -191,7 +179,6 @@ public class Telnet {
      */
 
     public ArrayList<String> readLine(int timeOut) throws ReadException, IOException {
-
         readResultList.clear();
 
         long timeZero = System.currentTimeMillis();
@@ -215,15 +202,12 @@ public class Telnet {
                     throw new ReadException();
                 }
                 ;
-
             }
-
             return readResultList;
         } else {
             readResultList.add(null);
             return readResultList;
         }
-
     }
 
     /*
@@ -235,7 +219,6 @@ public class Telnet {
      */
 
     private int concatReadLineResult(String value) {
-
         readLineResult = readLineResult.concat(value);
 
         if (readLineResult.endsWith("\r\n")) {
@@ -260,11 +243,9 @@ public class Telnet {
      */
 
     public void disconnect() throws IOException {
-
         inputStream.close();
         outStream.close();
         client.disconnect();
-
     }
 
     /**
@@ -272,7 +253,6 @@ public class Telnet {
      */
 
     public void startInputListener() {
-
         inputListener = new TelnetInputListener() {
             @Override
             public void telnetInputAvailable() {
@@ -280,13 +260,10 @@ public class Telnet {
             }
         };
         client.registerInputListener(inputListener);
-
     }
 
     public void stopInputListener() {
-
         client.unregisterInputListener();
-
     }
 
     /**
@@ -296,20 +273,15 @@ public class Telnet {
      */
 
     private void inputAvailableRead() {
-
         try {
-
             int i = bufferedStream.available();
             byte[] buffer = new byte[i];
             bufferedStream.read(buffer);
             String str = new String(buffer, "UTF-8");
             i = concatReadResult(str);
-
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            logger.debug("IO Excpetion- Message: {}", e.getMessage());
         }
-
     }
 
     /**
@@ -320,7 +292,6 @@ public class Telnet {
      *         else returns 0
      */
     private int concatReadResult(String value) {
-
         readResult = readResult.concat(value);
         if (readResult.contains("\r\n")) {
             eolNotifyer.setValue(readResult.trim());
@@ -342,7 +313,7 @@ public class Telnet {
         try {
             return address.isReachable(IS_ALIVE_TIMEOUT);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.debug("IO Excpetion- Message: {}", e.getMessage());
             return false;
         }
     }
@@ -360,6 +331,5 @@ public class Telnet {
         public ReadException() {
             super("Can not read from client");
         }
-
     }
 }

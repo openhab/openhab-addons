@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +26,6 @@ public class HeosJsonParser {
     Gson gson = null;
 
     public HeosJsonParser(HeosResponse response) {
-
         this.response = response;
         this.eventResponse = response.getEvent();
         this.payloadResponse = response.getPayload();
@@ -34,11 +34,9 @@ public class HeosJsonParser {
         gsonBuilder.registerTypeAdapter(HeosResponseEvent.class, new HeosDeserializerEvent());
         gsonBuilder.registerTypeAdapter(HeosResponsePayload.class, new HeosDeserializerPayload());
         this.gson = gsonBuilder.create();
-
     }
 
     public synchronized HeosResponse parseResult(String receivedMessage) {
-
         response.setRawResponseMessage(receivedMessage);
 
         this.eventResponse = gson.fromJson(receivedMessage, HeosResponseEvent.class);
@@ -52,10 +50,8 @@ public class HeosJsonParser {
         // Setting the pid to 0 can be used to check of message failed during further investigation
 
         if (eventResponse.getMessagesMap().containsKey("pid")) {
-
             response.setPid((eventResponse.getMessagesMap().get("pid")));
         }
-
         return response;
     }
 }

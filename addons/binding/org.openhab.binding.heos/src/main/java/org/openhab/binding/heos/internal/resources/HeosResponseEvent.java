@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +9,9 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeosResponseEvent} returns the event part of the
@@ -31,16 +35,20 @@ public class HeosResponseEvent {
     private String errorCode = null;
     private String errorMessage = null;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public String toString() {
         return commandType;
     }
 
     public void getInfos() {
-        System.out.println("\n\nEvent Type: " + eventType + "\nCommand: " + commandType);
+        logger.debug("Event Type: {} \n Command: {}", eventType, commandType);
+        // System.out.println("\n\nEvent Type: " + eventType + "\nCommand: " + commandType);
         if (message != null) {
             for (String key : messagesMap.keySet()) {
-                System.out.println(key + ": " + messagesMap.get(key));
+                logger.debug("{} : {}", key, messagesMap.get(key));
+                // System.out.println(key + ": " + messagesMap.get(key));
             }
         }
     }
@@ -152,5 +160,4 @@ public class HeosResponseEvent {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-
 }

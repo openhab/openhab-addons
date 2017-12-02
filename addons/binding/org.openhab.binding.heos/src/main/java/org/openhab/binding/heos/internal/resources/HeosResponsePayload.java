@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,11 +30,9 @@ public class HeosResponsePayload {
     }
 
     private String payloadToString() {
-
         String returnString = "";
 
         for (int i = 0; i < payload.size(); i++) {
-
             returnString = returnString + "\n\nPayload: " + (i + 1);
 
             for (String key : payload.get(i).keySet()) {
@@ -42,7 +41,6 @@ public class HeosResponsePayload {
         }
 
         return returnString;
-
     }
 
     /**
@@ -80,7 +78,5 @@ public class HeosResponsePayload {
 
     public void setPlayerList(List<List<HashMap<String, String>>> player) {
         this.groupMembers = player;
-
     }
-
 }

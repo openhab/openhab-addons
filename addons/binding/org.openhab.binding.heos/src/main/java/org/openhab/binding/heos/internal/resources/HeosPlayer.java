@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,11 +46,9 @@ public class HeosPlayer extends HeosMediaObject {
     public HeosPlayer() {
         super();
         initPlayer();
-
     }
 
     public void updatePlayerInfo(HashMap<String, String> values) {
-
         playerInfo = values;
         for (String key : values.keySet()) {
             if (key.equals("name")) {
@@ -77,11 +76,9 @@ public class HeosPlayer extends HeosMediaObject {
                 gid = values.get(key);
             }
         }
-
     }
 
     public void updatePlayerState(HashMap<String, String> values) {
-
         playerState = values;
         for (String key : values.keySet()) {
             if (key.equals("state")) {
@@ -99,27 +96,21 @@ public class HeosPlayer extends HeosMediaObject {
             if (key.equals("cur_pos")) {
                 cur_pos = values.get(key);
             }
-
         }
-
     }
 
     private void initPlayer() {
-
         playerInfo = new HashMap<>(8);
         playerState = new HashMap<>(5);
 
         for (String key : supportedPlayerInfo) {
             playerInfo.put(key, null);
         }
-
         for (String key : supportedPlayerStates) {
             playerState.put(key, null);
         }
-
         updatePlayerInfo(playerInfo);
         updatePlayerState(playerState);
-
     }
 
     public HashMap<String, String> getPlayerInfo() {
@@ -240,11 +231,11 @@ public class HeosPlayer extends HeosMediaObject {
         playerState.put("duration", duration);
     }
 
-    public String getCur_pos() {
+    public String getCurPos() {
         return cur_pos;
     }
 
-    public void setCur_pos(String cur_pos) {
+    public void setCurPos(String cur_pos) {
         this.cur_pos = cur_pos;
         playerState.put("cur_pos", cur_pos);
     }
@@ -264,5 +255,4 @@ public class HeosPlayer extends HeosMediaObject {
     public void setOnline(boolean online) {
         this.online = online;
     }
-
 }

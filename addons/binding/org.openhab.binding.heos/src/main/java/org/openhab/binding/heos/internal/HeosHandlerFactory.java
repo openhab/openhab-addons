@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +14,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -25,14 +25,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.heos.HeosBindingConstants;
-import org.openhab.binding.heos.api.HeosAPI;
-import org.openhab.binding.heos.api.HeosGroupAudioSink;
-import org.openhab.binding.heos.api.HeosPlayerAudioSink;
-import org.openhab.binding.heos.api.HeosSystem;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.handler.HeosGroupHandler;
 import org.openhab.binding.heos.handler.HeosPlayerHandler;
+import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.openhab.binding.heos.internal.api.HeosGroupAudioSink;
+import org.openhab.binding.heos.internal.api.HeosPlayerAudioSink;
+import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.discovery.HeosPlayerDiscovery;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
@@ -46,7 +45,6 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosHandlerFactory extends BaseThingHandlerFactory {
-
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private Logger logger = LoggerFactory.getLogger(HeosHandlerFactory.class);
@@ -56,14 +54,13 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     private AudioHTTPServer audioHTTPServer;
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = HeosBindingConstants.supportedThingTypes();
+    // private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = HeosBindingConstants.supportedThingTypes();
 
     private String callbackUrl = null;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-
     }
 
     @Override
@@ -75,11 +72,9 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-
             HeosBridgeHandler bridgeHandler = new HeosBridgeHandler((Bridge) thing, heos, api);
             HeosPlayerDiscovery playerDiscovery = new HeosPlayerDiscovery(bridgeHandler);
             playerDiscovery.addDiscoveryListener(bridgeHandler);
@@ -89,10 +84,8 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
                     bridgeHandler.getThing().getUID().getId());
 
             return bridgeHandler;
-
         }
         if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
-
             HeosPlayerHandler playerHandler = new HeosPlayerHandler(thing, heos, api);
 
             // register the speaker as an audio sink
@@ -102,10 +95,8 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return playerHandler;
-
         }
         if (thingTypeUID.equals(THING_TYPE_GROUP)) {
-
             HeosGroupHandler groupHandler = new HeosGroupHandler(thing, heos, api);
             // register the group as an audio sink
             HeosGroupAudioSink audioSink = new HeosGroupAudioSink(groupHandler, audioHTTPServer, callbackUrl);
@@ -115,7 +106,6 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return groupHandler;
         }
-
         return null;
     }
 
@@ -138,7 +128,6 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
                 reg.unregister();
             }
         }
-
     }
 
     protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
@@ -148,5 +137,4 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = null;
     }
-
 }
