@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -444,6 +445,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
+        private String encode(String raw) {
+            try {
+                return URLEncoder.encode(raw, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("Failed to encode '{}' ", raw, e);
+                return null;
+            }
+        }
+
         private void handlePlayersList(String message) {
             // Split out players
             String[] playersList = message.split("playerindex\\S*\\s");
@@ -496,7 +506,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
 
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlN");
+                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNK");
                 }
             }
         }
@@ -533,6 +543,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            // default url for cover art
+            String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+
             for (String messagePart : messageParts) {
                 // Parameter Power
                 if (messagePart.startsWith("power%3A")) {
@@ -647,74 +661,63 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
                 // Parameter Remote Title (radio)
                 else if (messagePart.startsWith("remote_title%3A")) {
-                    final String value = messagePart.substring("remote_title%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.remoteTitleChangeEvent(mac, decode(value));
-                        }
-                    });
+                    remoteTitle = messagePart.substring("remote_title%3A".length());
                 }
                 // Parameter Artist
                 else if (messagePart.startsWith("artist%3A")) {
-                    final String value = messagePart.substring("artist%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.artistChangeEvent(mac, decode(value));
-                        }
-                    });
+                    artist = messagePart.substring("artist%3A".length());
                 }
                 // Parameter Album
                 else if (messagePart.startsWith("album%3A")) {
-                    final String value = messagePart.substring("album%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.albumChangeEvent(mac, decode(value));
-                        }
-                    });
+                    album = messagePart.substring("album%3A".length());
                 }
                 // Parameter Genre
                 else if (messagePart.startsWith("genre%3A")) {
-                    final String value = messagePart.substring("genre%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.genreChangeEvent(mac, decode(value));
-                        }
-                    });
+                    genre = messagePart.substring("genre%3A".length());
                 }
                 // Parameter Year
                 else if (messagePart.startsWith("year%3A")) {
-                    final String value = messagePart.substring("year%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.yearChangeEvent(mac, decode(value));
-                        }
-                    });
+                    year = messagePart.substring("year%3A".length());
                 }
-                // Parameter Artwork
-                else if (messagePart.startsWith("artwork_track_id%3A")) {
-                    String url = messagePart.substring("artwork_track_id%3A".length());
-                    // NOTE: what is returned if not an artwork id? i.e. if a
-                    // space?
-                    if (!url.startsWith(" ")) {
-                        url = "http://" + host + ":" + webport + "/music/" + url + "/cover.jpg";
+                // Parameter Artwork_url
+                else if (messagePart.startsWith("artwork_url%3A")
+                        && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
+                    url = messagePart.substring("artwork_url%3A".length());
+                    if (url.startsWith("%2F")) {
+                        url = "http://" + host + ":" + webport + decode(url);
+                    } else {
+                        url = "http://" + host + ":" + webport + "/" + decode(url);
                     }
-                    final String value = url;
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.coverArtChangeEvent(mac, decode(value));
-                        }
-                    });
                 } else {
                     // Added to be able to see additional status message types
                     logger.trace("Unhandled status message type '{}'", messagePart);
                 }
             }
+            // update cover art
+            // update remote title
+            // update artist
+            // update album
+            // update genre
+            // update year
+
+            final String f_url = url;
+            final String f_remoteTitle = remoteTitle;
+            final String f_artist = artist;
+            final String f_album = album;
+            final String f_genre = genre;
+            final String f_year = year;
+
+            updatePlayer(new PlayerUpdateEvent() {
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.coverArtChangeEvent(mac, f_url);
+                    listener.remoteTitleChangeEvent(mac, decode(f_remoteTitle));
+                    listener.artistChangeEvent(mac, decode(f_artist));
+                    listener.albumChangeEvent(mac, decode(f_album));
+                    listener.genreChangeEvent(mac, decode(f_genre));
+                    listener.yearChangeEvent(mac, decode(f_year));
+                }
+            });
         }
 
         private void handlePlaylistMessage(final String mac, String[] messageParts) {
