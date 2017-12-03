@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
@@ -46,10 +47,15 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
     @Override
     public boolean open(String portName, int baud) {
-        CommPortIdentifier commPort = findSerialPort(portName);
+        CommPortIdentifier commPort = null;
+
+        try {
+            commPort = CommPortIdentifier.getPortIdentifier(portName);
+        } catch (NoSuchPortException e) {
+            logger.debug("Port not found: {}", portName);
+        }
 
         if (commPort == null) {
-            logger.debug("Failed to find port {}", portName);
             logAvailablePorts();
             return false;
         }
@@ -99,16 +105,6 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
                 logger.debug("{}", port.getName());
             }
         }
-    }
-
-    protected CommPortIdentifier findSerialPort(String portName) {
-        for (CommPortIdentifier port : getAvailableSerialPorts()) {
-            if (port.getName().equals(portName)) {
-                return port;
-            }
-        }
-
-        return null;
     }
 
     protected List<CommPortIdentifier> getAvailableSerialPorts() {
