@@ -15,6 +15,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -30,7 +31,7 @@ import org.mockito.Mock;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
-import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class AVMFritzDiscoveryServiceTest {
             @Override
             public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
                     Collection<ThingTypeUID> thingTypeUIDs) {
-                return null;
+                return Collections.emptyList();
             }
         };
         discovery.addDiscoveryListener(listener);
@@ -98,7 +99,7 @@ public class AVMFritzDiscoveryServiceTest {
     public void invalidDiscoveryResult() {
         String xml = "<devicelist version=\"1\"><group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group></devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(0));
     }
@@ -107,7 +108,7 @@ public class AVMFritzDiscoveryServiceTest {
     public void validDECTRepeater100Result() {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0954669\" id=\"20\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device></devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -133,7 +134,7 @@ public class AVMFritzDiscoveryServiceTest {
     public void validDECT200DiscoveryResult() {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device></devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -159,7 +160,7 @@ public class AVMFritzDiscoveryServiceTest {
     public void validCometDECTDiscoveryResult() {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000435\" id=\"18\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>1</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>0</lock><devicelock>0</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device></devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -185,7 +186,7 @@ public class AVMFritzDiscoveryServiceTest {
     public void validPowerline546EDiscoveryResult() {
         String xml = "<devicelist version=\"1\"><device identifier=\"5C:49:79:F0:A3:84\" id=\"19\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter></device></devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 

@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp
  *
  */
-public class JAXBtUtils {
+public class JAXBUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(JAXBtUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(JAXBUtils.class);
 
     public static final JAXBContext JAXBCONTEXT = initJAXBContext();
 
@@ -44,7 +44,7 @@ public class JAXBtUtils {
     public static DevicelistModel buildResult(final String xml) {
         try {
             if (JAXBUnmarshaller == null) {
-                JAXBUnmarshaller = JAXBtUtils.JAXBCONTEXT.createUnmarshaller();
+                JAXBUnmarshaller = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
             }
             return (DevicelistModel) JAXBUnmarshaller.unmarshal(new StringReader(xml));
         } catch (JAXBException e) {

@@ -12,7 +12,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         super.execute(status, response);
         logger.trace("Received discovery callback response: {}", response);
         if (isValidRequest()) {
-            DevicelistModel model = JAXBtUtils.buildResult(response);
+            DevicelistModel model = JAXBUtils.buildResult(response);
             if (model != null) {
                 for (final DeviceModel device : model.getDevicelist()) {
                     service.onDeviceAddedInternal(device);

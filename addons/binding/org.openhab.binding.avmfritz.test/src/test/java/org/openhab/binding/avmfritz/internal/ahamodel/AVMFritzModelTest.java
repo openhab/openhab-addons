@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
-import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class AVMFritzModelTest {
                 + "<device identifier=\"08761 0954669\" id=\"20\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>"
                 + "</devicelist>";
 
-        DevicelistModel devices = JAXBtUtils.buildResult(xml);
+        DevicelistModel devices = JAXBUtils.buildResult(xml);
         assertNotNull(devices);
         assertEquals(devices.getDevicelist().size(), 4);
         assertEquals(devices.getXmlApiVersion(), "1");
