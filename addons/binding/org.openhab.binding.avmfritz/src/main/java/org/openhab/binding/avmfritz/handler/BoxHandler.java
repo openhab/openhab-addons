@@ -170,25 +170,27 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
-                        ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_LOCKED,
+                        BigDecimal.ZERO.equals(device.getSwitch().getLock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        device.getSwitch().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
                     updateThingChannelState(thing, CHANNEL_SWITCH,
-                            device.getSwitch().getState().equals(SwitchModel.ON) ? OnOffType.ON : OnOffType.OFF);
+                            SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
                 }
             }
             if (device.isHeatingThermostat() && device.getHkr() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
                 updateThingChannelState(thing, CHANNEL_LOCKED,
-                        device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getHkr().getLock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        device.getHkr().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
                 updateThingChannelState(thing, CHANNEL_SETTEMP,
@@ -218,7 +220,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                     updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
                 } else {
                     updateThingChannelState(thing, CHANNEL_BATTERY,
-                            device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON) ? OnOffType.ON
+                            HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON
                                     : OnOffType.OFF);
                 }
             }
