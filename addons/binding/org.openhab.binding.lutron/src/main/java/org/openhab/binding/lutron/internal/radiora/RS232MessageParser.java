@@ -36,6 +36,8 @@ public class RS232MessageParser {
             case "ZMP":
                 return new ZoneMapFeedback(msg);
             case "!":
+                // No action to take when this message is received but handle
+                // it to prevent the the default log statement from occurring.
                 break;
 
             default:
