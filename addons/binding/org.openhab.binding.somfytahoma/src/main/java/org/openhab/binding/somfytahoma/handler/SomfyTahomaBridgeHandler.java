@@ -211,8 +211,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             String oid = group.getOid();
             String label = group.getLabel();
             //actiongroups use oid as deviceURL
-            String deviceURL = oid;
-            discoveryService.actionGroupDiscovered(label, deviceURL, oid);
+            discoveryService.actionGroupDiscovered(label, oid, oid);
         }
     }
 
@@ -676,7 +675,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private Boolean cancelExecutionInternal(String executionId) {
-        String url = null;
+        String url;
 
         try {
             url = DELETE_URL + executionId;
@@ -695,27 +694,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         return null;
-    }
-
-    public ArrayList<SomfyTahomaAction> getTahomaActions(String actionGroup) {
-        String groups = getGroups();
-        if (StringUtils.equals(groups, UNAUTHORIZED)) {
-            login();
-            groups = getGroups();
-        }
-
-        if (groups == null || groups.equals(UNAUTHORIZED)) {
-            return new ArrayList<>();
-        }
-
-        SomfyTahomaActionGroupResponse data = gson.fromJson(groups, SomfyTahomaActionGroupResponse.class);
-        for (SomfyTahomaActionGroup group : data.getActionGroups()) {
-            if (group.getOid().equals(actionGroup)) {
-                return group.getActions();
-            }
-        }
-
-        return new ArrayList<>();
     }
 
     private void updateGatewayState(Thing thing, String id) {
@@ -760,5 +738,24 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             logger.error("Cannot get Tahoma gateway version!", e);
         }
         return null;
+    }
+
+    public void executeActionGroup(String id) {
+        try {
+            String url = EXEC_URL + id;
+            InputStream response = sendDataToTahomaWithCookie(url, "");
+            String line = readResponse(response);
+            SomfyTahomaApplyResponse data = gson.fromJson(line, SomfyTahomaApplyResponse.class);
+            if (data.getExecId() == null) {
+                logger.warn("Got empty exec response");
+            }
+        } catch (IOException e) {
+            if (e.toString().contains(UNAUTHORIZED)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+            }
+            logger.error("Cannot exec execution group!", e);
+        } catch (Exception e) {
+            logger.error("Cannot exec execution group!", e);
+        }
     }
 }

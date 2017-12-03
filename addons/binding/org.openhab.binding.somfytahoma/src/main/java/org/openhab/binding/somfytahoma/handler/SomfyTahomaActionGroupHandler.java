@@ -50,10 +50,7 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
         if (channelUID.getId().equals(TRIGGER) && command instanceof OnOffType) {
             if ("ON".equals(command.toString())) {
                 String url = getURL();
-                ArrayList<SomfyTahomaAction> actions = getBridgeHandler().getTahomaActions(url);
-                for (SomfyTahomaAction action : actions) {
-                    sendCommand(action);
-                }
+                getBridgeHandler().executeActionGroup(url);
             }
         }
     }

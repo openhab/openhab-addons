@@ -113,9 +113,11 @@ public class SomfyTahomaBindingConstants {
     public static final String INTRUSION_STATE = "intrusion_state";
 
     //Constants
-    final public static String TAHOMA_URL = "https://www.tahomalink.com/enduser-mobile-web/externalAPI/json/";
-    final public static String SETUP_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/setup/gateways/";
-    final public static String DELETE_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/exec/current/setup/";
+    final private static String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
+    final public static String TAHOMA_URL = API_URL + "externalAPI/json/";
+    final public static String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
+    final public static String EXEC_URL = API_URL + "enduserAPI/exec/";
+    final public static String DELETE_URL = EXEC_URL + "current/setup/";
     final public static String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
     final public static String UNAUTHORIZED = "Server returned HTTP response code: 401";
     final public static int TYPE_PERCENT = 1;
