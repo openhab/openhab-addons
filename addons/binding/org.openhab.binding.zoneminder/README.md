@@ -17,7 +17,7 @@ This binding supports the following thing types
 The binding consists of a Bridge (the ZoneMinder Server it self), and a number of Things, which relates to the induvidual monitors in ZoneMinder. ZoneMinder things can be configured either through the online configuration utility via discovery, or manually through the 'zoneminder.things' configuration file. The Bridge will not be autodiscovered, this behaviour is by design. That is because the ZoneMinder API can be configured to communicate on custom ports, you can even change the url from the default /zm/ to something userdefined. That makes it meaningless to scan for a ZoneMinder Server. The Bridge must therefore be added manually, this can be done from PaperUI. After adding the Bridge it will go ONLINE, and after a short while and the discovery process for monitors will start. When a new monitor is discovered it will appear in the Inbox.
 
 
-### Bridge ###
+### Bridge
 
 Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
@@ -25,7 +25,7 @@ online         | Switch    | Parameter indicating if the server is online
 CPU load       | Text      | Current CPU Load of server
 Disk Usage     | text      | Current Disk Usage on server
 
-### Thing ###
+### Thing
 
  Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
@@ -41,9 +41,9 @@ capture-daemon | Switch      | Run state of ZMC Daemon
 analysis-daemon| Switch      | Run state of ZMA Daemon 
 frame-daemon   | Switch      | Run state of ZMF Daemon 
 
-##Manual configuration##
+## Manual configuration
 
-###Things configuration###
+### Things configuration
 
 ```
 Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USERNAME>", password="<PASSWORD>", telnet_port=6802, refresh_interval_disk_usage=1 ]
@@ -53,7 +53,7 @@ Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USER
 
 ```
 
-###Items configuration###
+### Items configuration
 
 ```
 /* *****************************************
@@ -84,7 +84,7 @@ Switch zmMonitor1_FrameState		"Frame Daemon [%s]"			<switch>	{channel="zoneminde
 Switch zmMonitor1_Mode			"Monitor active [%s]"
 ```
 
-###Sample Rule###
+### Sample Rule
 
 ```
 rule "Monitor1 Alarm State"
@@ -128,7 +128,7 @@ end
 ```
 
 
-###Sitemap configuration###
+### Sitemap configuration
 
 ```
 sitemap zoneminder label="Zoneminder"
@@ -164,7 +164,7 @@ sitemap zoneminder label="Zoneminder"
 }
 ```
 
-##Troubleshooting##
+## Troubleshooting
 
 <table>
 <tr><td><b>Problem</b></td><td><b>Solution</b></td></tr>
