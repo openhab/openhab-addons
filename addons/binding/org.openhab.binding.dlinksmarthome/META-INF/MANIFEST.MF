@@ -1,13 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: D-Link Smart Home Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.dlinksmarthome;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Export-Package: 
+ org.openhab.binding.dlinksmarthome,
+ org.openhab.binding.dlinksmarthome.handler
 Import-Package: 
  javax.jmdns,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
@@ -26,5 +30,3 @@ Import-Package:
  org.openhab.binding.dlinksmarthome.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.dlinksmarthome,
- org.openhab.binding.dlinksmarthome.handler

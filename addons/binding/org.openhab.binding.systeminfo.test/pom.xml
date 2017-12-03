@@ -27,9 +27,6 @@
 				<version>${tycho-version}</version>
 				<configuration>
 					<providerHint>junit47</providerHint>
-					<providerProperties>
-						<excludegroups>org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface</excludegroups>
-					</providerProperties>
 					<dependencies>
 						<dependency>
 							<type>eclipse-plugin</type>

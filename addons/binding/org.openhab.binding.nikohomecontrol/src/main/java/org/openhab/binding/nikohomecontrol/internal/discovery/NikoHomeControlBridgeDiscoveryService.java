@@ -89,7 +89,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
     protected void startBackgroundDiscovery() {
         logger.debug("Niko Home Control: Start background bridge discovery");
         if (nhcDiscoveryJob == null || nhcDiscoveryJob.isCancelled()) {
-            nhcDiscoveryJob = scheduler.scheduleAtFixedRate(nhcDiscoveryRunnable, 0, REFRESH_INTERVAL,
+            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(nhcDiscoveryRunnable, 0, REFRESH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }

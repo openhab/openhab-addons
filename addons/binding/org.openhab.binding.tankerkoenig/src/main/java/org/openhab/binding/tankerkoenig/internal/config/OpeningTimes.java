@@ -54,4 +54,14 @@ public class OpeningTimes {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("WholeDay: ").append(this.getWholeDay().toString()).append("/ Days: ");
+        for (OpeningTime ot : this.getOpeningTimes()) {
+            sb.append(ot.toString());
+        }
+        return sb.toString();
+    }
+
 }

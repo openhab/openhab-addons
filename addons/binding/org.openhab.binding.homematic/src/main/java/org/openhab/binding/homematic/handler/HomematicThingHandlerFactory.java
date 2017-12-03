@@ -10,21 +10,29 @@ package org.openhab.binding.homematic.handler;
 
 import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.homematic.type.HomematicTypeGenerator;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HomematicThingHandlerFactory} is responsible for creating thing and bridge handlers.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.homematic", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
     private HomematicTypeGenerator typeGenerator;
+    private NetworkAddressService networkAddressService;
 
+    @Reference
     protected void setTypeGenerator(HomematicTypeGenerator typeGenerator) {
         this.typeGenerator = typeGenerator;
     }
@@ -33,21 +41,25 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
         this.typeGenerator = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BINDING_ID.equals(thingTypeUID.getBindingId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
-            return new HomematicBridgeHandler((Bridge) thing, typeGenerator);
+            return new HomematicBridgeHandler((Bridge) thing, typeGenerator,
+                    networkAddressService.getPrimaryIpv4HostAddress());
         } else {
             return new HomematicThingHandler(thing);
         }

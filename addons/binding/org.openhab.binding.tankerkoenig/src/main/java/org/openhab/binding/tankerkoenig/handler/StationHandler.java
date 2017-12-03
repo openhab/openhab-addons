@@ -13,8 +13,10 @@ import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -23,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
@@ -124,14 +127,25 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-
-        DecimalType diesel = new DecimalType(station.getDiesel());
-        DecimalType e10 = new DecimalType(station.getE10());
-        DecimalType e5 = new DecimalType(station.getE5());
-
-        updateState(CHANNEL_DIESEL, diesel);
-        updateState(CHANNEL_E10, e10);
-        updateState(CHANNEL_E5, e5);
+        if (StringUtils.containsOnly(station.getDiesel(), "01234567890.")) {
+            DecimalType diesel = new DecimalType(station.getDiesel());
+            updateState(CHANNEL_DIESEL, diesel);
+        } else {
+            updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
+        }
+        if (StringUtils.containsOnly(station.getE10(), "01234567890.")) {
+            DecimalType e10 = new DecimalType(station.getE10());
+            updateState(CHANNEL_E10, e10);
+        } else {
+            updateState(CHANNEL_E10, UnDefType.UNDEF);
+        }
+        if (StringUtils.containsOnly(station.getE5(), "01234567890.")) {
+            DecimalType e5 = new DecimalType(station.getE5());
+            updateState(CHANNEL_E5, e5);
+        } else {
+            updateState(CHANNEL_E5, UnDefType.UNDEF);
+        }
+        updateState(CHANNEL_STATION_OPEN, (station.isOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
         updateStatus(ThingStatus.ONLINE);
     }
 

@@ -157,4 +157,9 @@ public class ToonDisplayHandler extends AbstractToonHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
+    }
 }

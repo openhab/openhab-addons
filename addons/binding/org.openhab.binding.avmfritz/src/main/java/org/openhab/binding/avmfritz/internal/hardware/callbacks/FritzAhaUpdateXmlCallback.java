@@ -19,7 +19,7 @@ import org.openhab.binding.avmfritz.handler.IFritzHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf
  * @author Christoph Weitkamp
- * 
+ *
  */
 public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
 
@@ -42,7 +42,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
 
     /**
      * Constructor
-     * 
+     *
      * @param webIface Webinterface to FRITZ!Box
      * @param handler Bridge handler that will update things.
      */
@@ -51,9 +51,6 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
         this.handler = handler;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);

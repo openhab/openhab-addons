@@ -303,7 +303,7 @@ public class OnkyoConnection {
 
                 } catch (SocketTimeoutException e) {
 
-                    logger.error("No data received during supervision interval ({} sec)!", SOCKET_TIMEOUT);
+                    logger.error("No data received during supervision interval ({} ms)!", SOCKET_TIMEOUT);
 
                     restartConnection = true;
 

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.harmonyhub;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
 public class HarmonyHubBindingConstants {
 
     public static final String BINDING_ID = "harmonyhub";
@@ -26,6 +28,8 @@ public class HarmonyHubBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_ACTIVITY = "currentActivity";
+    public static final String CHANNEL_ACTIVITY_STARTING_TRIGGER = "activityStarting";
+    public static final String CHANNEL_ACTIVITY_STARTED_TRIGGER = "activityStarted";
 
     public static final String CHANNEL_BUTTON_PRESS = "buttonPress";
 

@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.sleepiq.config.SleepIQBedConfiguration;
+import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.SleepIQ;

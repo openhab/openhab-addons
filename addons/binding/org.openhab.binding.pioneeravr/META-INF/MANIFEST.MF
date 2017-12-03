@@ -1,15 +1,23 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: PioneerAvr Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.pioneeravr;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.base,
+Export-Package: 
+ org.openhab.binding.pioneeravr,
+ org.openhab.binding.pioneeravr.protocol,
+ org.openhab.binding.pioneeravr.protocol.event,
+ org.openhab.binding.pioneeravr.protocol.states,
+ org.openhab.binding.pioneeravr.protocol.utils
+Import-Package: 
+ com.google.common.base,
  com.google.common.collect,
  gnu.io;resolution:=optional,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.items,
@@ -19,17 +27,12 @@ Import-Package: com.google.common.base,
  org.eclipse.smarthome.core.types,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.osgi.service.cm,
- org.osgi.service.component,
- org.slf4j,
  org.openhab.binding.pioneeravr,
  org.openhab.binding.pioneeravr.protocol,
  org.openhab.binding.pioneeravr.protocol.event,
  org.openhab.binding.pioneeravr.protocol.states,
- org.openhab.binding.pioneeravr.protocol.utils
+ org.openhab.binding.pioneeravr.protocol.utils,
+ org.osgi.service.cm,
+ org.osgi.service.component,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.pioneeravr,
- org.openhab.binding.pioneeravr.protocol,
- org.openhab.binding.pioneeravr.protocol.event,
- org.openhab.binding.pioneeravr.protocol.states,
- org.openhab.binding.pioneeravr.protocol.utils

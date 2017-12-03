@@ -9,7 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.RFXComValueSelector.DATE_TIME;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -33,9 +33,9 @@ public class RFXComDateTimeMessageTest {
         assertEquals("Seq Number", 23, (short) (msg.seqNbr & 0xFF));
         assertEquals("Sensor Id", "47360", msg.getDeviceId());
         assertEquals("Date time", "2003-04-29T13:21:10", msg.dateTime);
-        assertEquals("Signal Level", (byte) 6, msg.signalLevel);
+        assertEquals("Signal Level", 2, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
 
-        assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"), msg.convertToState(DATE_TIME));
+        assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"), msg.convertToState(CHANNEL_DATE_TIME));
 
         byte[] decoded = msg.decodeMessage();
 

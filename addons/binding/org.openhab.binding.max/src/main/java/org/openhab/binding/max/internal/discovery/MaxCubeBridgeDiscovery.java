@@ -75,11 +75,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         discoverCube();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#stopBackgroundDiscovery()
-     */
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop MAX! Cube background discovery");
@@ -89,11 +84,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
-     */
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start MAX! Cube background discovery");

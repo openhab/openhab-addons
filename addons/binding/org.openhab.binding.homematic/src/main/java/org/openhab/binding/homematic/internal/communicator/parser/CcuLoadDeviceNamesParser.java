@@ -29,9 +29,6 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
         this.devices = devices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {

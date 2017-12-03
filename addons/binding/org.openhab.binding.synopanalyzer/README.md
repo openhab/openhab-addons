@@ -30,8 +30,10 @@ The weather information that is retrieved is available as these channels:
 | wind-speed-beaufort | Number    | Wind speed according to Beaufort scale     |
 | overcast            | String    | Appreciation of the cloud cover            |
 | octa                | Number    | Part of the sky covered by clouds (in 8th) |
+| attenuation-factor* | Number    | Cloud layer attenuation factor             |
 | time-utc            | DateTime  | Observation time of the Synop message      |
 
+* ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
 
 ## Example
 

@@ -34,33 +34,21 @@ public class BinRpcClient extends RpcClient<byte[]> {
         socketHandler = new SocketHandler(config);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         socketHandler.flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected RpcRequest<byte[]> createRpcRequest(String methodName) {
         return new BinRpcMessage(methodName, config.getEncoding());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getRpcCallbackUrl() {
         return "binary://" + config.getCallbackHost() + ":" + config.getBinCallbackPort();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(HmInterface hmInterface, String clientId) throws IOException {
         super.init(hmInterface, clientId);

@@ -314,7 +314,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (response == null) {
                 final RioSystemConfig rioConfig = getRioConfig();
                 if (rioConfig != null) {
-                    ping = this.scheduler.scheduleAtFixedRate(new Runnable() {
+                    ping = this.scheduler.scheduleWithFixedDelay(new Runnable() {
                         @Override
                         public void run() {
                             try {

@@ -13,8 +13,12 @@ import static org.openhab.binding.gardena.internal.GardenaSmartCommandName.*;
 
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,12 +35,14 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartCommandName;
+import org.openhab.binding.gardena.internal.GardenaSmartImpl;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Ability;
 import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.Setting;
 import org.openhab.binding.gardena.internal.util.DateUtils;
-import org.openhab.binding.gardena.util.UidUtils;
+import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,19 +59,31 @@ public class GardenaThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         try {
             Device device = getDevice();
             updateProperties(device);
+            updateSettings(device);
             updateStatus(device);
         } catch (GardenaException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
+        }
+    }
+
+    /**
+     * Updates the thing configuration from the Gardena device.
+     */
+    protected void updateSettings(Device device) throws GardenaException {
+        if (GardenaSmartImpl.DEVICE_CATEGORY_PUMP.equals(device.getCategory())) {
+            Configuration config = editConfiguration();
+            config.put(SETTING_LEAKAGE_DETECTION, device.getSetting(SETTING_LEAKAGE_DETECTION).getValue());
+            config.put(SETTING_OPERATION_MODE, device.getSetting(SETTING_OPERATION_MODE).getValue());
+            config.put(SETTING_TURN_ON_PRESSURE,
+                    ObjectUtils.toString(device.getSetting(SETTING_TURN_ON_PRESSURE).getValue()));
+            updateConfiguration(config);
         }
     }
 
@@ -84,9 +102,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         updateProperties(properties);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
@@ -157,9 +172,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -179,7 +191,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            logger.warn("{}", ex.getMessage(), ex);
         }
     }
 
@@ -244,6 +256,34 @@ public class GardenaThingHandler extends BaseThingHandler {
 
         if (oldStatus != newStatus || thing.getStatusInfo().getStatusDetail() != newDetail) {
             updateStatus(newStatus, newDetail);
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
+            throws ConfigValidationException {
+        validateConfigurationParameters(configurationParameters);
+
+        try {
+            GardenaSmart gardena = getGardenaSmart();
+            Device device = gardena.getDevice(UidUtils.getGardenaDeviceId(getThing()));
+
+            for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
+                String key = configurationParmeter.getKey();
+                Object newValue = configurationParmeter.getValue();
+                if (newValue != null && SETTING_TURN_ON_PRESSURE.equals(key)) {
+                    newValue = new Double((String) newValue);
+                }
+
+                Setting setting = device.getSetting(key);
+                if (ObjectUtils.notEqual(setting.getValue(), newValue)) {
+                    gardena.sendSetting(setting, newValue);
+                    setting.setValue(newValue);
+                }
+            }
+            updateSettings(device);
+        } catch (GardenaException | AccountHandlerNotAvailableException ex) {
+            logger.warn("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
 

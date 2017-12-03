@@ -17,8 +17,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.wifiled.WiFiLEDBindingConstants;
-import org.openhab.binding.wifiled.configuration.WiFiLEDConfig;
 import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver.Protocol;
+import org.openhab.binding.wifiled.internal.configuration.WiFiLEDConfig;
 import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver.Driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  * sent to one of the channels.
  *
  * @author Osman Basha - Initial contribution
+ * @author Ries van Twisk
  */
 public class WiFiLEDHandler extends BaseThingHandler {
 
@@ -92,6 +93,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+        driver.shutdown();
         driver = null;
     }
 

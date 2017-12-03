@@ -21,10 +21,6 @@ import org.apache.commons.lang.StringUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public List<String> parse(Object[] message) throws IOException {

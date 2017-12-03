@@ -8,13 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.List;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for transmitter message.
@@ -23,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         ERROR_RECEIVER_DID_NOT_LOCK(0),
         RESPONSE(1);
 
@@ -33,22 +30,13 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Response {
+    public enum Response implements ByteEnumWrapper {
         ACK(0), // ACK, transmit OK
         ACK_DELAYED(1), // ACK, but transmit started after 3 seconds delay
                         // anyway with RF receive data
@@ -63,18 +51,9 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.response = response;
         }
 
+        @Override
         public byte toByte() {
             return (byte) response;
-        }
-
-        public static Response fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Response response : Response.values()) {
-                if (response.response == input) {
-                    return response;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Response.class, input);
         }
     }
 
@@ -82,7 +61,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     public Response response;
 
     public RFXComTransmitterMessage() {
-        packetType = PacketType.TRANSMITTER_MESSAGE;
+        super(PacketType.TRANSMITTER_MESSAGE);
     }
 
     public RFXComTransmitterMessage(byte[] data) throws RFXComException {
@@ -108,16 +87,14 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
-        response = Response.fromByte(data[4]);
+        subType = fromByte(SubType.class, super.subType);
+        response = fromByte(Response.class, data[4]);
     }
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[5];
 
         data[0] = 0x04;
@@ -130,51 +107,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return null;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return null;
-    }
-
 }

@@ -22,15 +22,15 @@ public class Station {
     private String id;
     private String name;
 
-    private double e5;
-    private double e10;
-    private double diesel;
+    private String e5;
+    private String e10;
+    private String diesel;
 
     private String brand;
     private String street;
     private String place;
     private String postCode;
-    private boolean isOpen;
+    private Boolean open;
 
     public String getId() {
         return id;
@@ -48,27 +48,27 @@ public class Station {
         this.name = name;
     }
 
-    public double getE5() {
+    public String getE5() {
         return e5;
     }
 
-    public void setE5(double e5) {
+    public void setE5(String e5) {
         this.e5 = e5;
     }
 
-    public double getE10() {
+    public String getE10() {
         return e10;
     }
 
-    public void setE10(double e10) {
+    public void setE10(String e10) {
         this.e10 = e10;
     }
 
-    public double getDiesel() {
+    public String getDiesel() {
         return diesel;
     }
 
-    public void setDiesel(double diesel) {
+    public void setDiesel(String diesel) {
         this.diesel = diesel;
     }
 
@@ -104,12 +104,11 @@ public class Station {
         this.postCode = postCode;
     }
 
-    public boolean isOpen() {
-        return isOpen;
+    public Boolean isOpen() {
+        return open;
     }
 
-    public void setOpen(boolean isOpen) {
-        this.isOpen = isOpen;
+    public void setOpen(Boolean isOpen) {
+        this.open = isOpen;
     }
-
 }

@@ -49,33 +49,21 @@ public class XmlRpcRequest implements RpcRequest<String> {
         parms = new ArrayList<Object>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addArg(Object parameter) {
         parms.add(parameter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String createMessage() {
         return toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMethodName() {
         return methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         sb = new StringBuilder();

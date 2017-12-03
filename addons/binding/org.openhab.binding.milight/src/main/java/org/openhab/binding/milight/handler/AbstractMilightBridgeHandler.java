@@ -211,7 +211,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
 
     protected void setupRefreshTimer(int refrehIntervalSec) {
         this.refrehIntervalSec = refrehIntervalSec;
-        keepAliveTimer = scheduler.scheduleAtFixedRate(getKeepAliveRunnable(), refrehIntervalSec, refrehIntervalSec,
+        keepAliveTimer = scheduler.scheduleWithFixedDelay(getKeepAliveRunnable(), refrehIntervalSec, refrehIntervalSec,
                 TimeUnit.SECONDS);
     }
 

@@ -26,7 +26,7 @@ public class Location {
     private String id;
     private String name;
     @SerializedName("devices")
-    public List<String> deviceIds = new ArrayList<String>();
+    public List<String> deviceIds = new ArrayList<>();
 
     /**
      * Returns the id of the location.
@@ -49,17 +49,11 @@ public class Location {
         return deviceIds;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).toHashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Location)) {

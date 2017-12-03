@@ -24,7 +24,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.ui.cometvisu.backend.beans.StateBean;
+import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
 
 /**
  * {@link StateBeanMessageBodyWriter} is used to serialize state update messages

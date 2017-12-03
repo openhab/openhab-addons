@@ -34,9 +34,6 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
         this.paramsetType = paramsetType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {

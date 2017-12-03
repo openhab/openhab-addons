@@ -17,9 +17,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class MowerStartResumeScheduleCommand extends Command {
     private static final String COMMAND = "start_resume_schedule";
 
-    /**
-     * {@inheritDoc}
-     */
     public MowerStartResumeScheduleCommand() {
         super(COMMAND);
     }

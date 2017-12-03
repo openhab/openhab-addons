@@ -37,6 +37,11 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     private static final int DEFAULT_VOLUME_PCENT = 50;
     private static final int DEFAULT_COLOR = 0xffffff;
 
+    private static final String RGB = "rgb";
+    private static final String ILLUMINATION = "illumination";
+    private static final String MID = "mid";
+    private static final String VOL = "vol";
+
     private Integer lastBrigthness;
     private Integer lastVolume;
     private Integer lastColor;
@@ -162,14 +167,14 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
 
     @Override
     void parseDefault(JsonObject data) {
-        if (data.has("rgb")) {
-            long rgb = data.get("rgb").getAsLong();
+        if (data.has(RGB)) {
+            long rgb = data.get(RGB).getAsLong();
             updateState(CHANNEL_BRIGHTNESS, new PercentType((int) (((rgb >> 24) & 0xff))));
             updateState(CHANNEL_COLOR,
                     HSBType.fromRGB((int) (rgb >> 16) & 0xff, (int) (rgb >> 8) & 0xff, (int) rgb & 0xff));
         }
-        if (data.has("illumination")) {
-            int illu = data.get("illumination").getAsInt();
+        if (data.has(ILLUMINATION)) {
+            int illu = data.get(ILLUMINATION).getAsInt();
             updateState(CHANNEL_ILLUMINATION, new DecimalType(illu));
         }
     }
@@ -180,7 +185,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     }
 
     private void writeBridgeLightColor(long color) {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "rgb" }, new Object[] { color });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { RGB }, new Object[] { color });
     }
 
     /**
@@ -191,7 +196,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
      * @param ringtoneId
      */
     private void writeBridgeRingtone(int ringtoneId, int volume) {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "mid", "vol" }, new Object[] { ringtoneId, volume });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { MID, VOL }, new Object[] { ringtoneId, volume });
     }
 
     /**
@@ -199,7 +204,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
      * by setting "mid" parameter to 10000
      */
     private void stopRingtone() {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "mid" }, new Object[] { 10000 });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { MID }, new Object[] { 10000 });
     }
 
 }

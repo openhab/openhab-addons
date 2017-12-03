@@ -20,59 +20,58 @@ import org.eclipse.smarthome.core.types.Command;
 public interface SamsungTvService {
 
     /**
-     * Procedure to get service name.
-     * 
-     * @return Service name
-     */
-    public String getServiceName();
-
-    /**
      * Procedure to get list of supported channel names.
-     * 
+     *
      * @return List of supported
      */
-    public List<String> getSupportedChannelNames();
+    List<String> getSupportedChannelNames();
 
     /**
      * Procedure for sending command.
-     * 
-     * @param listener
-     *            Event listener instance to handle events.
+     *
+     * @param channel the channel to which the command applies
+     * @param command the command to be handled
      */
-    public void handleCommand(String channel, Command command);
+    void handleCommand(String channel, Command command);
 
     /**
      * Procedure for register event listener.
-     * 
+     *
      * @param listener
      *            Event listener instance to handle events.
      */
-    public void addEventListener(ValueReceiver listener);
+    void addEventListener(EventListener listener);
 
     /**
      * Procedure for remove event listener.
-     * 
+     *
      * @param listener
      *            Event listener instance to remove.
      */
-    public void removeEventListener(ValueReceiver listener);
+    void removeEventListener(EventListener listener);
 
     /**
      * Procedure for starting service.
-     * 
+     *
      */
-    public void start();
+    void start();
 
     /**
      * Procedure for stopping service.
-     * 
+     *
      */
-    public void stop();
+    void stop();
 
     /**
      * Procedure for clearing internal caches.
-     * 
+     *
      */
-    public void clearCache();
+    void clearCache();
 
+    /**
+     * Is this an UPnP configured service
+     *
+     * @return whether this service is an UPnP configured / discovered service
+     */
+    boolean isUpnp();
 }

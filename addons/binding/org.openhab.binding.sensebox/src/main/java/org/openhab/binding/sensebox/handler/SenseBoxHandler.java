@@ -27,11 +27,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.sensebox.config.SenseBoxConfiguration;
 import org.openhab.binding.sensebox.internal.SenseBoxAPIConnection;
-import org.openhab.binding.sensebox.model.SenseBoxData;
-import org.openhab.binding.sensebox.model.SenseBoxLocation;
-import org.openhab.binding.sensebox.model.SenseBoxSensor;
+import org.openhab.binding.sensebox.internal.config.SenseBoxConfiguration;
+import org.openhab.binding.sensebox.internal.model.SenseBoxData;
+import org.openhab.binding.sensebox.internal.model.SenseBoxLocation;
+import org.openhab.binding.sensebox.internal.model.SenseBoxSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

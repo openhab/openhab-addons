@@ -40,16 +40,23 @@ public class CustomTankerkoenigDetailResultDeserializer implements JsonDeseriali
         if (isOK) {
             final JsonObject jsonStation = jsonObject.get("station").getAsJsonObject();
             final Boolean isWholeDay = jsonStation.get("wholeDay").getAsBoolean();
-            final Double e10 = jsonStation.get("e10").getAsDouble();
-            final Double e5 = jsonStation.get("e5").getAsDouble();
-            final Double diesel = jsonStation.get("diesel").getAsDouble();
-            final String stationID = jsonStation.get("id").getAsString();
             final LittleStation littleStation = new LittleStation();
+            if (!jsonStation.get("e10").isJsonNull()) {
+                final String e10 = jsonStation.get("e10").getAsString();
+                littleStation.setE10(e10);
+            }
+            if (!jsonStation.get("e5").isJsonNull()) {
+                final String e5 = jsonStation.get("e5").getAsString();
+                littleStation.setE5(e5);
+            }
+            if (!jsonStation.get("diesel").isJsonNull()) {
+                final String diesel = jsonStation.get("diesel").getAsString();
+                littleStation.setDiesel(diesel);
+            }
+            final Boolean isOpen = jsonStation.get("isOpen").getAsBoolean();
+            final String stationID = jsonStation.get("id").getAsString();
             OpeningTime[] openingTime = context.deserialize(jsonStation.get("openingTimes"), OpeningTime[].class);
-
-            littleStation.setE10(e10);
-            littleStation.setE5(e5);
-            littleStation.setDiesel(diesel);
+            littleStation.setOpen(isOpen);
             littleStation.setID(stationID);
             final OpeningTimes openingTimes = new OpeningTimes(stationID, isWholeDay, openingTime);
             result.setLittleStation(littleStation);

@@ -43,7 +43,6 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         super(hostname, port, password);
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isStationOpen(int station) throws Exception {
         String returnContent;
@@ -74,7 +73,6 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void openStation(int station) throws Exception {
         String returnContent;
@@ -95,7 +93,6 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         resultParser(returnContent);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeStation(int station) throws Exception {
         String returnContent;
@@ -129,7 +126,6 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         connectionOpen = true;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeConnection() {
         connectionOpen = false;

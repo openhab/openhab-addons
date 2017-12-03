@@ -9,7 +9,8 @@
 package org.openhab.binding.rfxcom.internal;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
 
 /**
  * The {@link DeviceMessageListener} is notified when a message is received.
@@ -21,12 +22,11 @@ public interface DeviceMessageListener {
 
     /**
      * This method is called whenever the message is received from the bridge.
-     * 
+     *
      * @param bridge
      *            The RFXCom bridge where message is received.
      * @param message
      *            The message which received.
      */
-    public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message);
-
+    void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) throws RFXComException;
 }

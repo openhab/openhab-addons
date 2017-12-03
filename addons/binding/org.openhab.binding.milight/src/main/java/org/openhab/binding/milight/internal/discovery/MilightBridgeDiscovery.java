@@ -71,7 +71,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
         startDiscoveryService();
 
-        backgroundFuture = scheduler.scheduleAtFixedRate(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
     }
 
     @Override

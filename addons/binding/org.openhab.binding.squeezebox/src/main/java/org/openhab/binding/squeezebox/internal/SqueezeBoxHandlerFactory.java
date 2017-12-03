@@ -19,17 +19,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.squeezebox.discovery.SqueezeBoxPlayerDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.openhab.binding.squeezebox.internal.discovery.SqueezeBoxPlayerDiscoveryParticipant;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +48,7 @@ import com.google.common.collect.Sets;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Cancel request player job when handler removed
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.squeezebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);
@@ -52,6 +59,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private AudioHTTPServer audioHTTPServer;
+    private NetworkAddressService networkAddressService;
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
@@ -73,7 +81,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
             logger.trace("creating handler for player thing {}", thing);
-            SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing);
+            SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing, createCallbackUrl());
 
             // Register the player as an audio sink
             logger.trace("Registering an audio sink for player thing {}", thing.getUID());
@@ -155,11 +163,37 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    private String createCallbackUrl() {
+        final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        if (ipAddress == null) {
+            logger.warn("No network interface could be found.");
+            return null;
+        }
+
+        final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+        if (port == -1) {
+            logger.warn("Cannot find port of the http service.");
+            return null;
+        }
+
+        return "http://" + ipAddress + ":" + port;
+    }
+
+    @Reference
     protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = audioHTTPServer;
     }
 
     protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = null;
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

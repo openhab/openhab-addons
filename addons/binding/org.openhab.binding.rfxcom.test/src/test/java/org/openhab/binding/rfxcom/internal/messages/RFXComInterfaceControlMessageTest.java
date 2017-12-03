@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceControlMessage;
 
 /**
  * Test for RFXCom-binding

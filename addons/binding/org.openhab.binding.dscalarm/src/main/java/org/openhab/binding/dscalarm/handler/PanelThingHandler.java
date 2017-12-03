@@ -57,9 +57,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     private static final int PANEL_COMMAND_SET_TIME_DATE = 10;
     private static final int PANEL_COMMAND_CODE_SEND = 200;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Panel Channel UID: {}", channelUID);
@@ -183,9 +180,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -411,9 +405,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
 

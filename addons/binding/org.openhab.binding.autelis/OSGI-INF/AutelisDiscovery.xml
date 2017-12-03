@@ -9,8 +9,8 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" modified="modified" name="org.openhab.binding.autelis.discovery.AutelisDiscoveryService">
-   <implementation class="org.openhab.binding.autelis.discovery.AutelisDiscoveryParticipant"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" modified="modified" name="org.openhab.binding.autelis.internal.discovery.AutelisDiscoveryService">
+   <implementation class="org.openhab.binding.autelis.internal.discovery.AutelisDiscoveryParticipant"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
    </service>

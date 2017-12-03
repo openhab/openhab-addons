@@ -98,6 +98,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         }
         logger.debug("Init socket on Port: {}", port);
         socket = new XiaomiBridgeSocket(port);
+        socket.intialize();
         socket.registerListener(this);
 
         scheduler.schedule(() -> {
@@ -154,7 +155,6 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     private synchronized void retend(String sid, JsonObject message) {
-
         synchronized (retentionBox) {
             retentionBox.remove(sid);
             retentionBox.put(sid, message);

@@ -43,10 +43,10 @@ import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.matmaul.freeboxos.phone.PhoneStatus;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxAirPlayDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetInterfaceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxPhoneConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxPhoneConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +130,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone state job every {} seconds...", pollingInterval);
-                            phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, pollingInterval,
+                            phoneJob = scheduler.scheduleWithFixedDelay(phoneRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
@@ -139,7 +139,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone calls job every {} seconds...", pollingInterval);
-                            callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, pollingInterval,
+                            callsJob = scheduler.scheduleWithFixedDelay(callsRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }

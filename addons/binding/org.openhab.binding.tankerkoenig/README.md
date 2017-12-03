@@ -3,10 +3,12 @@
 The binding uses the Tankerkönig API (https://www.tankerkoenig.de) for collecting gas price data of german gas stations. 
 Special thanks to the creators of Tankerkönig for providing an easy way to get data from  the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
 
-Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests. This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle maximum of 10 stations.
+Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests. This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle a maximum of 10 stations).
 The data will be updated for each Station individually after the initialization and after each Refresh Interval for all (open) stations (Note: changing the Webservice will cause the Refresh Interval to restart).
-Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.
+Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.  For a correct usage of opening times the binding needs the information if the actual day is a holiday.
 
+Note: 
+While using the mode Opening-Times the channel "station_open" will NOT show "close" because during such times no update is being requested from that Station! 
 
 ## Preparation
 
@@ -46,14 +48,15 @@ Each Station needs to be configured with a LocationID and the Webservice to whic
 
 ## Channels
 
-The binding introduces the following channels:
+The binding introduces the channel holiday for the Webservice and the channels e10, e5 ,diesel and station_open for the Stations:
 
 | Channel ID                                      | Channel Description                                          | Supported item type | Advanced |
 |-------------------------------------------------|--------------------------------------------------------------|---------------------|----------|
+| holiday                                         | ON if today is a holiday                                     | Switch              | False    |
 | e10                                             | price of e10                                                 | Number              | False    |
 | e5                                              | price of e5                                                  | Number              | False    |
 | diesel                                          | price of diesel                                              | Number              | False    |
-
+| station_open                                    | reported opening-state of the station                        | Contact             | False    |
 
 ## Full example
 
@@ -72,10 +75,10 @@ Bridge tankerkoenig:webservice:WebserviceName "MyWebserviceName" [ apikey="xxxxx
 tankerkoenig.items:
 
 ```
-Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:StationName1:e10" }
+Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:e10" }
 Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:WebserviceName:StationName1:e5" }
 Number Diesel_1 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:diesel"}
-Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:StationName2:e10"}
+Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e10"}
 Number E5_2 "E5 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e5"}
 Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:diesel"}
 ```
@@ -89,7 +92,7 @@ The further price-updates for all Stations are scheduled by the Webservice using
 
 -The Station(s) and Webservice stay OFFLINE
 
-Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhabbinding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
+Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set DEBUG org.openhab.binding.tankerkoenig". Create a new Station (in order to start the "initialize" routine). Check the openhab.log for entries like:
 
 ```
  2017-06-25 16:02:12.679 [DEBUG] [ig.internal.data.TankerkoenigService] - getTankerkoenigDetailResult IOException: 
@@ -109,17 +112,22 @@ The required password is "changeit".
    
 -The Station(s) and Webservice go to OFFLINE after being ONLINE
 
-The web-request to Tankerkönig did either return a failure or no valid response was received.
-In both cases the Webservice and the Station(s) go OFFLINE.
-If the Tankerkönig return indicates an error a descriptive message (in German) is added which will be displayed on the Webservice and Station(s) pages on PaperUI. In this case the polling of price-data is stopped.  
-Users should check the log for any reports to solve the reason for this status. In order to restart the polling of price-data a change of the Webservice has to be saved (for example a change in the Refresh Interval). 
-next to the OFFLINE not return the status "OK", which could for an example be caused by a banned API-key. In such a case the polling of price-data is stopped. 
-If no valid response is received the polling will continue. On the next receipt of a valid message Webservice and Station(s) will go ONLINE again. 
+The web-request to Tankerkönig did either return a failure or no valid response was received (which could be caused by a banned API-key). In both cases the Webservice and the Station(s) go OFFLINE. If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on PaperUI.
+On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.
+The scheduled polling of price-data is canceled in case of no valid response.
+Users should check the log for any reports to solve the reason for the OFFLINE status. In order to restart the polling a change of the Webservice has to be saved (for example a change in the Refresh Interval).
+
+Note: If the API-key is banned by Tankerkönig, the reason has to be cleared with Tankerkönig!
+
+-How to set the switch item for the channel holiday?
+
+The correct usage of opening times needs the information if the actual day is a holiday. The binding expects a switch item linked to the Webservice channel holiday.
+This switch can be set either manually (only suggested for testing!), by a rule [openHAB1-addons rules] or by the usage of the CALDAV binding with a calendar.
 
 ## Tankerkönig API
 
 *  https://creativecommons.tankerkoenig.de/  (sorry, only available in german)
 
    [MTS-K]: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
-
+   [openhab1-addons rules]: <https://github.com/openhab/openhab1-addons/wiki/Samples-Rules#how-to-calculate-public-holidays>
 

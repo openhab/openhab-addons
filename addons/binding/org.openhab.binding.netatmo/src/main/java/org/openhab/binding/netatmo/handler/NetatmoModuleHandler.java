@@ -13,12 +13,11 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
-import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
+import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
+import org.openhab.binding.netatmo.internal.config.NetatmoModuleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +100,7 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
                 NetatmoDeviceConfiguration deviceConfiguration = deviceHandler.configuration;
                 if (deviceConfiguration.getEquipmentId().equalsIgnoreCase(configuration.getParentId())) {
                     // I'm your father Luke
-                    thingHandler.handleCommand(null, RefreshType.REFRESH);
+                    ((NetatmoDeviceHandler<?>) thingHandler).refreshAllChannels();
                 }
             }
         }

@@ -13,6 +13,7 @@ Devices connected to Gardena Smart Home, currently:
 | mower      | smart Sileno(+) Mower |
 | watering_computer | smart Water Control |
 | sensor | smart Sensor |
+| electronic_pressure_pump | smart Pressure Pump |
 
 The schedules are not yet integrated!
 

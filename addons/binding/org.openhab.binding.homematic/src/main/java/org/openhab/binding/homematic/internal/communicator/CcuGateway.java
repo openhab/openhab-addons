@@ -55,8 +55,8 @@ public class CcuGateway extends AbstractHomematicGateway {
     private HttpClient httpClient;
     private XStream xStream = new XStream(new StaxDriver());
 
-    protected CcuGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
-        super(id, config, eventListener);
+    protected CcuGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter) {
+        super(id, config, gatewayAdapter);
 
         xStream.setClassLoader(CcuGateway.class.getClassLoader());
         xStream.autodetectAnnotations(true);
@@ -65,9 +65,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         xStream.alias("result", HmResult.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startClients() throws IOException {
         super.startClients();
@@ -83,9 +80,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void stopClients() {
         super.stopClients();
@@ -100,36 +94,24 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadVariables(HmChannel channel) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllVariables", TclScriptDataList.class);
         new CcuVariablesAndScriptsParser(channel).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadScripts(HmChannel channel) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllPrograms", TclScriptDataList.class);
         new CcuVariablesAndScriptsParser(channel).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllDeviceNames", TclScriptDataList.class);
         new CcuLoadDeviceNamesParser(devices).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
@@ -159,9 +141,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
@@ -178,9 +157,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
         String strValue = StringUtils.replace(ObjectUtils.toString(value), "\"", "\\\"");
@@ -194,9 +170,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void executeScript(HmDatapoint dp) throws IOException {
         HmResult result = sendScriptByName("executeProgram", HmResult.class, new String[] { "program_name" },

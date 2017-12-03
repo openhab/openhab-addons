@@ -75,7 +75,6 @@ demo.sitemaps
         Setpoint item=ToonSetpoint minValue=16 maxValue=28 step=0.5
         Selection item=ToonSetpointMode label="Toon Program Selection" mappings=[0=Comfort, 1=Active, 2=Sleep, 3=Away]
     }
-
 ```
 
 

@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.zway.config.ZWayBridgeConfiguration;
+import org.openhab.binding.zway.internal.config.ZWayBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     // Initialize bridge polling
                     if (pollingJob == null || pollingJob.isCancelled()) {
                         logger.debug("Starting polling job at intervall {}", mConfig.getPollingInterval());
-                        pollingJob = scheduler.scheduleAtFixedRate(bridgePolling, 10, mConfig.getPollingInterval(),
+                        pollingJob = scheduler.scheduleWithFixedDelay(bridgePolling, 10, mConfig.getPollingInterval(),
                                 TimeUnit.SECONDS);
                     } else {
                         // Called when thing or bridge updated ...

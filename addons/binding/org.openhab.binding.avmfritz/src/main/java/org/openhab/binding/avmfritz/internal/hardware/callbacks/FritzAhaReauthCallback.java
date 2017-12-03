@@ -100,9 +100,6 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
         return webIface;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         if (status != 200 || "".equals(response) || ".".equals(response)) {

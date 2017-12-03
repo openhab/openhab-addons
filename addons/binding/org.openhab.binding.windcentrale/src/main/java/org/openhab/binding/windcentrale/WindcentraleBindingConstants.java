@@ -11,6 +11,7 @@ package org.openhab.binding.windcentrale;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public final class WindcentraleBindingConstants {
 
     public static final String BINDING_ID = "windcentrale";

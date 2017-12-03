@@ -165,9 +165,6 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         return methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] createMessage() {
         trimBinRpcData();
@@ -180,9 +177,6 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         binRpcData = trimmed;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object[] getResponseData() {
         return messageData;
@@ -346,9 +340,11 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             addInt(map.size());
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 String key = (String) entry.getKey();
-                addInt(key.length());
-                addString(key);
-                addList(Collections.singleton(entry.getValue()));
+                if (key != null) {
+                    addInt(key.length());
+                    addString(key);
+                    addList(Collections.singleton(entry.getValue()));
+                }
             }
         }
     }

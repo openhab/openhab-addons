@@ -33,17 +33,11 @@ import org.slf4j.LoggerFactory;
 public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(DeleteDeviceVirtualDatapointHandler.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (!device.isGatewayExtras() && !(device.getHmInterface() == HmInterface.CUXD)) {
@@ -51,17 +45,11 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
         return getName().equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {

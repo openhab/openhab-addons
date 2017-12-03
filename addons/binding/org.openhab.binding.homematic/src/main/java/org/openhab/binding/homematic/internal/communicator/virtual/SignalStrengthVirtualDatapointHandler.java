@@ -27,17 +27,11 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
     private static final int RSSI_STEP = 25;
     private static final int RSSI_UNITS = 4;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
@@ -45,9 +39,6 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();

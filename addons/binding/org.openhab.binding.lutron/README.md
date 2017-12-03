@@ -176,7 +176,8 @@ demo.Things:
 
 ```
 lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
-lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=10 ] ```
+lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=10 ] 
+```
 
 demo.items:
 

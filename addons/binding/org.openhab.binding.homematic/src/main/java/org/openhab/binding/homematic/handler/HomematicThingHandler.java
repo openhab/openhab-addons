@@ -33,11 +33,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.homematic.converter.ConverterException;
-import org.openhab.binding.homematic.converter.ConverterFactory;
-import org.openhab.binding.homematic.converter.ConverterTypeException;
-import org.openhab.binding.homematic.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
+import org.openhab.binding.homematic.internal.converter.ConverterException;
+import org.openhab.binding.homematic.internal.converter.ConverterFactory;
+import org.openhab.binding.homematic.internal.converter.ConverterTypeException;
+import org.openhab.binding.homematic.internal.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -45,9 +45,9 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.type.HomematicTypeGeneratorImpl;
-import org.openhab.binding.homematic.type.MetadataUtils;
-import org.openhab.binding.homematic.type.UidUtils;
+import org.openhab.binding.homematic.internal.type.HomematicTypeGeneratorImpl;
+import org.openhab.binding.homematic.internal.type.MetadataUtils;
+import org.openhab.binding.homematic.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +63,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         scheduler.execute(new Runnable() {
@@ -126,14 +123,18 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        handleRefresh(channelUID);
+    }
+
+    /**
+     * Updates the state of the given channel.
+     */
+    protected void handleRefresh(ChannelUID channelUID) {
         try {
             if (thing.getStatus() == ThingStatus.ONLINE) {
-                logger.debug("Channel linked '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
+                logger.debug("Updating channel '{}' from thing id '{}'", channelUID, getThing().getUID().getId());
                 updateChannelState(channelUID);
             }
         } catch (Exception ex) {
@@ -141,9 +142,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelUID);
@@ -243,12 +241,18 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
-        if (isLinked(channel)) {
+        if (dp.isTrigger()) {
+            triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+        } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
             TypeConverter<?> converter = ConverterFactory.createConverter(channel.getAcceptedItemType());
             State state = converter.convertFromBinding(dp);
-            updateState(channel.getUID(), state);
+            if (state != null) {
+                updateState(channel.getUID(), state);
+            } else {
+                logger.debug("Failed to get converted state from datapoint '{}'", dp.getName());
+            }
         }
     }
 
@@ -311,6 +315,15 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Returns the channel config for the given datapoint.
+     */
+    protected HmDatapointConfig getChannelConfig(HmDatapoint dp) {
+        ChannelUID channelUid = UidUtils.generateChannelUID(dp, getThing().getUID());
+        Channel channel = getThing().getChannel(channelUid.getId());
+        return channel != null ? getChannelConfig(channel, dp) : new HmDatapointConfig();
+    }
+
+    /**
      * Returns the config for a channel.
      */
     private HmDatapointConfig getChannelConfig(Channel channel, HmDatapoint dp) {
@@ -333,9 +346,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         return ((HomematicBridgeHandler) bridge.getHandler()).getGateway();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {

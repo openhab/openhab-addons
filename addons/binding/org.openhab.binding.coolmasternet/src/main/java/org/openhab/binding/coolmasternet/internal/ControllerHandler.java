@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
+import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +60,6 @@ public class ControllerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialising CoolMasterNet Controller handler...");
-        super.initialize();
 
         Configuration config = this.getConfig();
         host = (String) config.get(HOST);

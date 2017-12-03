@@ -15,16 +15,16 @@ import javax.xml.bind.Unmarshaller;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
-import org.openhab.binding.avmfritz.internal.discovery.AvmDiscoveryService;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Callback for discovering SmartHome devices connected to a FRITZ!Box
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  *
@@ -36,22 +36,19 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
     /**
      * Handler to update
      */
-    private AvmDiscoveryService service;
+    private AVMFritzDiscoveryService service;
 
     /**
      * Constructor
-     * 
+     *
      * @param webIface Webinterface to FRITZ!Box
      * @param service Discovery service to call with result.
      */
-    public FritzAhaDiscoveryCallback(FritzahaWebInterface webIface, AvmDiscoveryService service) {
+    public FritzAhaDiscoveryCallback(FritzahaWebInterface webIface, AVMFritzDiscoveryService service) {
         super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
         this.service = service;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);

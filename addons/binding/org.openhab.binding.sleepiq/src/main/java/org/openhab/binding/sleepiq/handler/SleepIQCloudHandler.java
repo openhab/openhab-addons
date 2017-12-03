@@ -9,7 +9,7 @@
 package org.openhab.binding.sleepiq.handler;
 
 import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.*;
+import static org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.sleepiq.SleepIQBindingConstants;
-import org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration;
 import org.openhab.binding.sleepiq.internal.SleepIQConfigStatusMessage;
+import org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.Configuration;
@@ -44,8 +44,6 @@ import org.syphr.sleepiq.api.UnauthorizedException;
 import org.syphr.sleepiq.api.model.Bed;
 import org.syphr.sleepiq.api.model.BedStatus;
 import org.syphr.sleepiq.api.model.FamilyStatus;
-
-import com.google.common.base.Objects;
 
 /**
  * The {@link SleepIQCloudHandler} is responsible for handling commands, which are
@@ -269,12 +267,14 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         if (bed != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, bed.getModel());
             properties.put(SleepIQBindingConstants.PROPERTY_BASE, bed.getBase());
-            properties.put(SleepIQBindingConstants.PROPERTY_KIDS_BED,
-                    Objects.firstNonNull(bed.isKidsBed(), "").toString());
+            if (bed.isKidsBed() != null) {
+                properties.put(SleepIQBindingConstants.PROPERTY_KIDS_BED, bed.isKidsBed().toString());
+            }
             properties.put(SleepIQBindingConstants.PROPERTY_MAC_ADDRESS, bed.getMacAddress());
             properties.put(SleepIQBindingConstants.PROPERTY_NAME, bed.getName());
-            properties.put(SleepIQBindingConstants.PROPERTY_PURCHASE_DATE,
-                    Objects.firstNonNull(bed.getPurchaseDate(), "").toString());
+            if (bed.getPurchaseDate() != null) {
+                properties.put(SleepIQBindingConstants.PROPERTY_PURCHASE_DATE, bed.getPurchaseDate().toString());
+            }
             properties.put(SleepIQBindingConstants.PROPERTY_SIZE, bed.getSize());
             properties.put(SleepIQBindingConstants.PROPERTY_SKU, bed.getSku());
         }

@@ -501,7 +501,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 final AtlonaPro3Config config = getAtlonaConfig();
                 if (config != null) {
 
-                    _polling = this.scheduler.scheduleAtFixedRate(new Runnable() {
+                    _polling = this.scheduler.scheduleWithFixedDelay(new Runnable() {
                         @Override
                         public void run() {
                             final ThingStatus status = getThing().getStatus();
@@ -520,7 +520,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         }
                     }, config.getPolling(), config.getPolling(), TimeUnit.SECONDS);
 
-                    _ping = this.scheduler.scheduleAtFixedRate(new Runnable() {
+                    _ping = this.scheduler.scheduleWithFixedDelay(new Runnable() {
                         @Override
                         public void run() {
                             final ThingStatus status = getThing().getStatus();

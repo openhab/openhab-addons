@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -51,6 +52,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private boolean modeOpeningTime;
     private String userAgent;
+    private boolean isHoliday;
     private final TankerkoenigService service = new TankerkoenigService();
 
     private Map<String, LittleStation> stationMap;
@@ -66,7 +68,10 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no code needed.
+        if (channelUID.getId().equals(TankerkoenigBindingConstants.CHANNEL_HOLIDAY)) {
+            logger.debug("HandleCommand recieved: {}", channelUID.getId());
+            isHoliday = (command == OnOffType.ON);
+        }
     }
 
     @Override
@@ -156,6 +161,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
                 setTankerkoenigListResult(result);
                 stationMap.clear();
                 for (LittleStation station : result.getPrices().getStations()) {
+                    station.setOpen("open".equals(station.getStatus()));
                     stationMap.put(station.getID(), station);
                 }
                 logger.debug("UpdateStationData: tankstellenList.size {}", stationMap.size());
@@ -237,6 +243,10 @@ public class WebserviceHandler extends BaseBridgeHandler {
                         DayOfWeek weekday = today.getDayOfWeek();
                         logger.debug("Checking day: {}", day);
                         logger.debug("Todays weekday: {}", weekday);
+                        if (isHoliday) {
+                            weekday = DayOfWeek.SUNDAY;
+                            logger.debug("Today is a holiday using : {}", weekday);
+                        }
                         // if Daily, further checking not needed!
                         if (day.contains("täglich")) {
                             logger.debug("Found a setting for daily opening times.");

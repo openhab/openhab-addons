@@ -18,15 +18,16 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.netatmo.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.handler.station.NAMainHandler;
-import org.openhab.binding.netatmo.handler.station.NAModule1Handler;
-import org.openhab.binding.netatmo.handler.station.NAModule2Handler;
-import org.openhab.binding.netatmo.handler.station.NAModule3Handler;
-import org.openhab.binding.netatmo.handler.station.NAModule4Handler;
-import org.openhab.binding.netatmo.handler.thermostat.NAPlugHandler;
-import org.openhab.binding.netatmo.handler.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
+import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.station.NAMainHandler;
+import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
+import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
+import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
+import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
+import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
+import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAModule4Handler(thing);
         } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
             return new NAMainHandler(thing);
+        } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
+            return new NAHealthyHomeCoachHandler(thing);
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {

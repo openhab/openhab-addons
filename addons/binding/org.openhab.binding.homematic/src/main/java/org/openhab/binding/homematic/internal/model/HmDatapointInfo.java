@@ -80,16 +80,17 @@ public class HmDatapointInfo {
     }
 
     /**
-     * {@inheritDoc}
+     * Return true, if this is a pong datapoint info.
      */
+    public boolean isPong() {
+        return "CENTRAL".equals(address) && "PONG".equals(name);
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(address).append(paramsetType).append(channel).append(name).toHashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof HmDatapointInfo)) {
@@ -100,9 +101,6 @@ public class HmDatapointInfo {
                 .append(channel, comp.getChannel()).append(name, comp.getName()).isEquals();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         if (paramsetType == HmParamsetType.VALUES) {

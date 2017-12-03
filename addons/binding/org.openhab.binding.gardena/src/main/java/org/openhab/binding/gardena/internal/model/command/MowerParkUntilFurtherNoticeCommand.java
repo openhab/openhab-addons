@@ -16,9 +16,6 @@ package org.openhab.binding.gardena.internal.model.command;
 public class MowerParkUntilFurtherNoticeCommand extends Command {
     private static final String COMMAND = "park_until_further_notice";
 
-    /**
-     * {@inheritDoc}
-     */
     public MowerParkUntilFurtherNoticeCommand() {
         super(COMMAND);
     }

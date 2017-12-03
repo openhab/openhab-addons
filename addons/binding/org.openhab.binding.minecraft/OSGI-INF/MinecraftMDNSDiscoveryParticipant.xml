@@ -14,7 +14,7 @@
 	is available at http://www.eclipse.org/legal/epl-v10.html -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
 	name="org.openhab.binding.minecraft.discovery.MinecraftMDNSDiscoveryParticipant">
-	<implementation class="org.openhab.binding.minecraft.discovery.MinecraftMDNSDiscoveryParticipant" />
+	<implementation class="org.openhab.binding.minecraft.internal.discovery.MinecraftMDNSDiscoveryParticipant" />
 	<service>
 		<provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant" />
 	</service>
