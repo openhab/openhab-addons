@@ -211,27 +211,27 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 break;
             case CHANNEL_RADIATOR_MODE:
                 if (command instanceof StringType) {
-                    if (command.equals(MODE_ON)) {
+                    if (MODE_ON.equals(command)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_ON);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_ON);
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_ON)));
-                    } else if (command.equals(MODE_OFF)) {
+                    } else if (MODE_OFF.equals(command)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_OFF);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_OFF);
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF)));
-                    } else if (command.equals(MODE_COMFORT)) {
+                    } else if (MODE_COMFORT.equals(command)) {
                         BigDecimal comfort_temp = state.getHkr().getKomfort();
                         state.getHkr().setTsoll(comfort_temp);
                         fritzBox.setSetTemp(ain, comfort_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(comfort_temp)));
-                    } else if (command.equals(MODE_ECO)) {
+                    } else if (MODE_ECO.equals(command)) {
                         BigDecimal eco_temp = state.getHkr().getAbsenk();
                         state.getHkr().setTsoll(eco_temp);
                         fritzBox.setSetTemp(ain, eco_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(eco_temp)));
-                    } else if (command.equals(MODE_BOOST)) {
+                    } else if (MODE_BOOST.equals(command)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_MAX);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_MAX);
                         updateState(CHANNEL_SETTEMP,
@@ -309,25 +309,26 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
                 updateThingChannelState(thing, CHANNEL_LOCKED,
-                        device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getSwitch().getLock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        device.getSwitch().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 if (device.getSwitch().getState() == null) {
                     updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
                     updateThingChannelState(thing, CHANNEL_SWITCH,
-                            device.getSwitch().getState().equals(SwitchModel.ON) ? OnOffType.ON : OnOffType.OFF);
+                            SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
                 }
             }
             if (device.isHeatingThermostat() && device.getHkr() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
                 updateThingChannelState(thing, CHANNEL_LOCKED,
-                        device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getHkr().getLock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        device.getHkr().getDevicelock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                                : OpenClosedType.OPEN);
+                        BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
                         new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
                 updateThingChannelState(thing, CHANNEL_SETTEMP,
@@ -357,7 +358,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
                 } else {
                     updateThingChannelState(thing, CHANNEL_BATTERY,
-                            device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON) ? OnOffType.ON
+                            HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON
                                     : OnOffType.OFF);
                 }
             }
