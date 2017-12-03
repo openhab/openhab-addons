@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +64,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     // time in seconds to try to reconnect
     private int RECONNECT_TIME = 60;
+
+    // utf8 charset name
+    private static final String UTF8_NAME = StandardCharsets.UTF_8.name();
 
     // the value by which the volume is changed by each INCREASE or
     // DECREASE-Event
@@ -438,7 +442,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String decode(String raw) {
             try {
-                return URLDecoder.decode(raw, "UTF-8");
+                return URLDecoder.decode(raw, UTF8_NAME);
             } catch (UnsupportedEncodingException e) {
                 logger.debug("Failed to decode '{}' ", raw, e);
                 return null;
@@ -447,7 +451,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String encode(String raw) {
             try {
-                return URLEncoder.encode(raw, "UTF-8");
+                return URLEncoder.encode(raw, UTF8_NAME);
             } catch (UnsupportedEncodingException e) {
                 logger.debug("Failed to encode '{}' ", raw, e);
                 return null;
@@ -542,10 +546,29 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
+        private String fetchUrl(String messagePart, final String mac) {
+            String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            if (messagePart != null && messagePart.startsWith("artwork_url%3A")
+                    && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
+                url = messagePart.substring("artwork_url%3A".length());
+                if (url.startsWith("%2F")) {
+                    url = "http://" + host + ":" + webport + decode(url);
+                } else {
+                    url = "http://" + host + ":" + webport + "/" + decode(url);
+                }
+            }
+            return url;
+        }
+
+        private String fetchUrl(final String mac) {
+            return fetchUrl(null, mac);
+        }
+
         private void handleStatusMessage(final String mac, String[] messageParts) {
             String remoteTitle = "", artist = "", album = "", genre = "", year = "";
             // default url for cover art
-            String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            // String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            String url = fetchUrl(mac);
 
             for (String messagePart : messageParts) {
                 // Parameter Power
@@ -678,42 +701,30 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     year = messagePart.substring("year%3A".length());
                 }
                 // Parameter Artwork_url
-                else if (messagePart.startsWith("artwork_url%3A")
-                        && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
-                    url = messagePart.substring("artwork_url%3A".length());
-                    if (url.startsWith("%2F")) {
-                        url = "http://" + host + ":" + webport + decode(url);
-                    } else {
-                        url = "http://" + host + ":" + webport + "/" + decode(url);
-                    }
+                else if (messagePart.startsWith("artwork_url%3A")) {
+                    url = fetchUrl(messagePart, mac);
                 } else {
                     // Added to be able to see additional status message types
                     logger.trace("Unhandled status message type '{}'", messagePart);
                 }
             }
-            // update cover art
-            // update remote title
-            // update artist
-            // update album
-            // update genre
-            // update year
 
-            final String f_url = url;
-            final String f_remoteTitle = remoteTitle;
-            final String f_artist = artist;
-            final String f_album = album;
-            final String f_genre = genre;
-            final String f_year = year;
+            final String finalUrl = url;
+            final String finalRemoteTitle = remoteTitle;
+            final String finalArtist = artist;
+            final String finalAlbum = album;
+            final String finalGenre = genre;
+            final String finalYear = year;
 
             updatePlayer(new PlayerUpdateEvent() {
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.coverArtChangeEvent(mac, f_url);
-                    listener.remoteTitleChangeEvent(mac, decode(f_remoteTitle));
-                    listener.artistChangeEvent(mac, decode(f_artist));
-                    listener.albumChangeEvent(mac, decode(f_album));
-                    listener.genreChangeEvent(mac, decode(f_genre));
-                    listener.yearChangeEvent(mac, decode(f_year));
+                    listener.coverArtChangeEvent(mac, finalUrl);
+                    listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
+                    listener.artistChangeEvent(mac, decode(finalArtist));
+                    listener.albumChangeEvent(mac, decode(finalAlbum));
+                    listener.genreChangeEvent(mac, decode(finalGenre));
+                    listener.yearChangeEvent(mac, decode(finalYear));
                 }
             });
         }
