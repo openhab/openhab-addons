@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.radiora.protocol;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ public class ZoneMapInquiryCommand extends RadioRACommand {
 
     @Override
     public List<String> getArgs() {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
 }

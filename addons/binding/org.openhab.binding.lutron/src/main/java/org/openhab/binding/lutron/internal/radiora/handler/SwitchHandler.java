@@ -31,19 +31,17 @@ public class SwitchHandler extends LutronHandler {
 
     private Logger logger = LoggerFactory.getLogger(SwitchHandler.class);
 
-    private SwitchConfig config;
-
     public SwitchHandler(Thing thing) {
         super(thing);
-        this.config = getConfigAs(SwitchConfig.class);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_SWITCH)) {
+        if (LutronBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
+                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(getConfigAs(SwitchConfig.class).getZoneNumber(),
+                        (OnOffType) command);
 
-                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), (OnOffType) command);
                 getChronosHandler().sendCommand(cmd);
             }
         }
@@ -60,7 +58,7 @@ public class SwitchHandler extends LutronHandler {
     }
 
     private void handleZoneMapFeedback(ZoneMapFeedback feedback) {
-        char value = feedback.getZoneValue(config.getZoneNumber());
+        char value = feedback.getZoneValue(getConfigAs(SwitchConfig.class).getZoneNumber());
 
         if (value == '1') {
             updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
@@ -70,8 +68,8 @@ public class SwitchHandler extends LutronHandler {
     }
 
     private void handleLocalZoneChangeFeedback(LocalZoneChangeFeedback feedback) {
-        if (feedback.getZoneNumber() == config.getZoneNumber()) {
-            if (feedback.getState().equals(LocalZoneChangeFeedback.State.CHG)) {
+        if (feedback.getZoneNumber() == getConfigAs(SwitchConfig.class).getZoneNumber()) {
+            if (LocalZoneChangeFeedback.State.CHG.equals(feedback.getState())) {
                 logger.debug("Not Implemented Yet - CHG state received from Local Zone Change Feedback.");
             }
 

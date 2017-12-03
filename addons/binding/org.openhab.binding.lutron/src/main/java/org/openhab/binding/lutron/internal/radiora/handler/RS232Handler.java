@@ -19,9 +19,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lutron.internal.radiora.RS232Connection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAFeedbackListener;
-import org.openhab.binding.lutron.internal.radiora.RS232Connection;
 import org.openhab.binding.lutron.internal.radiora.config.RS232Config;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRACommand;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
@@ -41,21 +41,13 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     private RadioRAConnection chronosConnection;
 
-    private RS232Config config;
     private ScheduledFuture<?> zoneMapScheduledTask;
-
-    RS232Handler(Bridge bridge, RadioRAConnection connection) {
-        super(bridge);
-
-        this.chronosConnection = connection;
-    }
 
     public RS232Handler(Bridge bridge) {
         super(bridge);
 
         this.chronosConnection = new RS232Connection();
         this.chronosConnection.setListener(this);
-
     }
 
     @Override
@@ -77,7 +69,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
     }
 
     protected void connectToChronos() {
-        this.config = getConfigAs(RS232Config.class);
+        RS232Config config = getConfigAs(RS232Config.class);
         String portName = config.getPortName();
         int baud = config.getBaud();
 
@@ -95,16 +87,13 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
     }
 
     protected void scheduleZoneMapQuery() {
+        RS232Config config = getConfigAs(RS232Config.class);
         logger.debug("Scheduling zone map query at {} second inverval", config.getZoneMapQueryInterval());
 
-        zoneMapScheduledTask = this.scheduler.scheduleAtFixedRate(new Runnable() {
+        Runnable task = () -> sendCommand(new ZoneMapInquiryCommand());
 
-            @Override
-            public void run() {
-                sendCommand(new ZoneMapInquiryCommand());
-            }
-
-        }, 3, config.getZoneMapQueryInterval(), TimeUnit.SECONDS);
+        zoneMapScheduledTask = this.scheduler.scheduleWithFixedDelay(task, 3, config.getZoneMapQueryInterval(),
+                TimeUnit.SECONDS);
     }
 
     public void sendCommand(RadioRACommand command) {
@@ -113,7 +102,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("Method handleCommand(...) not implemented");
+
     }
 
     @Override
@@ -123,7 +112,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
             if (handler instanceof LutronHandler) {
                 ((LutronHandler) handler).handleFeedback(feedback);
             } else {
-                logger.error("Unexpected - Thing {} is not a LutronHandler", thing.getClass());
+                logger.debug("Unexpected - Thing {} is not a LutronHandler", thing.getClass());
             }
         }
     }

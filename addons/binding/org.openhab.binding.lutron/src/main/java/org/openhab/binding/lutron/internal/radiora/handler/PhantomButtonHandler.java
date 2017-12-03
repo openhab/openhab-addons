@@ -26,11 +26,8 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
  */
 public class PhantomButtonHandler extends LutronHandler {
 
-    private PhantomButtonConfig config;
-
     public PhantomButtonHandler(Thing thing) {
         super(thing);
-        this.config = getConfigAs(PhantomButtonConfig.class);
     }
 
     @Override
@@ -38,7 +35,8 @@ public class PhantomButtonHandler extends LutronHandler {
         if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_SWITCH)) {
             if (command instanceof OnOffType) {
 
-                ButtonPressCommand cmd = new ButtonPressCommand(config.getButtonNumber(),
+                ButtonPressCommand cmd = new ButtonPressCommand(
+                        getConfigAs(PhantomButtonConfig.class).getButtonNumber(),
                         ButtonPressCommand.ButtonState.valueOf(command.toString()));
                 getChronosHandler().sendCommand(cmd);
             }
@@ -55,11 +53,10 @@ public class PhantomButtonHandler extends LutronHandler {
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
 
-        if (feedback.getZoneValue(config.getButtonNumber()) == '1') {
-            updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
-        } else {
-            updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
-        }
+        boolean zoneEnabled = feedback.getZoneValue(getConfigAs(PhantomButtonConfig.class).getButtonNumber()) == '1';
+
+        updateState(LutronBindingConstants.CHANNEL_SWITCH, zoneEnabled ? OnOffType.ON : OnOffType.OFF);
+
     }
 
 }

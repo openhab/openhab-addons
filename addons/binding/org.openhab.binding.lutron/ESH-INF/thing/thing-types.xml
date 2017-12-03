@@ -416,7 +416,7 @@
         
         <config-description>
             <parameter name="portName" type="text" required="true">
-                <context>network-address</context>
+                <context>serial-port</context>
                 <label>Serial Port</label>
                 <description>The serial port to use to communicate with a Lutron RadioRA system</description>
             </parameter>

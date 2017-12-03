@@ -45,7 +45,7 @@ public class ZoneMapFeedback extends RadioRAFeedback {
     }
 
     public char getZoneValue(int zone) {
-        if (zone > zoneStates.length()) {
+        if (zone < 1 || zone > zoneStates.length()) {
             return 'X';
         }
 

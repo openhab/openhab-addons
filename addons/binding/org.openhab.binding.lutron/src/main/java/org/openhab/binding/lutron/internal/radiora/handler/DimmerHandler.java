@@ -37,8 +37,6 @@ public class DimmerHandler extends LutronHandler {
 
     private Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
-    private DimmerConfig config;
-
     /**
      * Used to internally keep track of dimmer level. This helps us better respond
      * to external dimmer changes since RadioRA protocol does not send dimmer
@@ -50,12 +48,13 @@ public class DimmerHandler extends LutronHandler {
 
     public DimmerHandler(Thing thing) {
         super(thing);
-        this.config = getConfigAs(DimmerConfig.class);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_LIGHTLEVEL)) {
+        DimmerConfig config = getConfigAs(DimmerConfig.class);
+
+        if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
             if (command instanceof PercentType) {
                 int intensity = ((PercentType) command).intValue();
 
@@ -79,7 +78,7 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_LIGHTLEVEL)) {
+        if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
             PercentType percent = (PercentType) newState.as(PercentType.class);
             updateInternalState(percent.intValue());
         }
@@ -95,7 +94,7 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void handleZoneMapFeedback(ZoneMapFeedback feedback) {
-        char value = feedback.getZoneValue(config.getZoneNumber());
+        char value = feedback.getZoneValue(getConfigAs(DimmerConfig.class).getZoneNumber());
         if (value == '1') {
             turnDimmerOnToLastKnownIntensity();
         } else if (value == '0') {
@@ -104,14 +103,10 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void handleLocalZoneChangeFeedback(LocalZoneChangeFeedback feedback) {
-        if (feedback.getZoneNumber() == config.getZoneNumber()) {
-            if (feedback.getState().equals(LocalZoneChangeFeedback.State.CHG)) {
-                logger.debug("Not Implemented Yet - CHG state received from Local Zone Change Feedback.");
-            }
-
-            if (feedback.getState().equals(LocalZoneChangeFeedback.State.ON)) {
+        if (feedback.getZoneNumber() == getConfigAs(DimmerConfig.class).getZoneNumber()) {
+            if (LocalZoneChangeFeedback.State.ON.equals(feedback.getState())) {
                 turnDimmerOnToLastKnownIntensity();
-            } else if (feedback.getState().equals(LocalZoneChangeFeedback.State.OFF)) {
+            } else if (LocalZoneChangeFeedback.State.OFF.equals(feedback.getState())) {
                 turnDimmerOff();
             }
 
@@ -119,7 +114,7 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void turnDimmerOnToLastKnownIntensity() {
-        if (switchEnabled.get() == false) {
+        if (!switchEnabled.get()) {
             updateState(LutronBindingConstants.CHANNEL_LIGHTLEVEL, new PercentType(lastKnownIntensity.get()));
         }
         switchEnabled.set(true);
@@ -138,6 +133,6 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void updateInternalState(OnOffType type) {
-        switchEnabled.set(type.equals(OnOffType.ON));
+        switchEnabled.set(OnOffType.ON.equals(type));
     }
 }

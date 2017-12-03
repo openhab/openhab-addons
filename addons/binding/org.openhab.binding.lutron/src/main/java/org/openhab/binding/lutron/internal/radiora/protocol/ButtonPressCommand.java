@@ -33,7 +33,6 @@ public class ButtonPressCommand extends RadioRACommand {
     public ButtonPressCommand(int buttonNumber, ButtonState state) {
         this.buttonNumber = buttonNumber;
         this.state = state;
-
     }
 
     public void setFadeSeconds(int seconds) {

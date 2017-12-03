@@ -29,8 +29,8 @@ import gnu.io.UnsupportedCommOperationException;
 
 /**
  * RS232 connection to the RadioRA Classic system.
- * 
- * @author Jeff Lauterbach
+ *
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class RS232Connection implements RadioRAConnection, SerialPortEventListener {
@@ -49,37 +49,28 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
         CommPortIdentifier commPort = findSerialPort(portName);
 
         if (commPort == null) {
-            logger.error("Failed to find port {}", portName);
+            logger.debug("Failed to find port {}", portName);
             logAvailablePorts();
             return false;
         }
 
         try {
             serialPort = commPort.open("openhab", 5000);
-        } catch (PortInUseException e) {
-            logger.error("Port {} is already in use", commPort.getName());
-            return false;
-        }
-
-        serialPort.notifyOnDataAvailable(true);
-        try {
+            serialPort.notifyOnDataAvailable(true);
             serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-        } catch (UnsupportedCommOperationException e) {
-            logger.error("Error initializing - Failed to set serial port params");
-            return false;
-        }
-
-        try {
             serialPort.addEventListener(this);
-        } catch (TooManyListenersException e) {
-            logger.error("Error initializing - Failed to add event listener");
-            return false;
-        }
-
-        try {
             inputReader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+        } catch (PortInUseException e) {
+            logger.debug("Port {} is already in use", commPort.getName());
+            return false;
+        } catch (UnsupportedCommOperationException e) {
+            logger.debug("Error initializing - Failed to set serial port params");
+            return false;
+        } catch (TooManyListenersException e) {
+            logger.debug("Error initializing - Failed to add event listener");
+            return false;
         } catch (IOException e) {
-            logger.error("Error initializing - Failed to get input stream");
+            logger.debug("Error initializing - Failed to get input stream");
             return false;
         }
 
@@ -102,9 +93,11 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     }
 
     private void logAvailablePorts() {
-        logger.debug("Available ports:");
-        for (CommPortIdentifier port : getAvailableSerialPorts()) {
-            logger.debug("{}", port.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Available ports:");
+            for (CommPortIdentifier port : getAvailableSerialPorts()) {
+                logger.debug("{}", port.getName());
+            }
         }
     }
 
