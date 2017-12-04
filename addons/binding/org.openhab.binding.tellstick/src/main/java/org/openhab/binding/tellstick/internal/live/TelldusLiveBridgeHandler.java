@@ -132,46 +132,48 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         TellstickNetDevices newList = controller.callRestMethod(TelldusLiveDeviceController.HTTP_TELLDUS_DEVICES,
                 TellstickNetDevices.class);
         logger.debug("Device list {}", newList.getDevices());
-        if (previouslist == null) {
-            logger.debug("updateDevices, Creating devices.");
-            for (TellstickNetDevice device : newList.getDevices()) {
-                device.setUpdated(true);
-                for (DeviceStatusListener listener : deviceStatusListeners) {
-                    listener.onDeviceAdded(getThing(), device);
-                }
-            }
-            this.deviceList = newList;
-        } else {
-            logger.debug("updateDevices, Updating devices.");
-            for (TellstickNetDevice device : newList.getDevices()) {
-                int index = previouslist.getDevices().indexOf(device);
-                logger.debug("Device:{} found at {}", device, index);
-                if (index >= 0) {
-                    TellstickNetDevice orgDevice = previouslist.getDevices().get(index);
-                    if (device.getState() != orgDevice.getState()) {
-                        orgDevice.setState(device.getState());
-                        orgDevice.setStatevalue(device.getStatevalue());
-                        orgDevice.setUpdated(true);
-                    }
-                } else {
-                    logger.debug("New Device - Adding:{}", device);
-                    previouslist.getDevices().add(device);
+        if (newList.getDevices() != null) {
+            if (previouslist == null) {
+                logger.debug("updateDevices, Creating devices.");
+                for (TellstickNetDevice device : newList.getDevices()) {
                     device.setUpdated(true);
                     for (DeviceStatusListener listener : deviceStatusListeners) {
                         listener.onDeviceAdded(getThing(), device);
                     }
                 }
-            }
-        }
-
-        for (TellstickNetDevice device : deviceList.getDevices()) {
-            if (device.isUpdated()) {
-                logger.debug("Updated device:{}", device);
-                for (DeviceStatusListener listener : deviceStatusListeners) {
-                    listener.onDeviceStateChanged(getThing(), device,
-                            new TellstickDeviceEvent(device, null, null, null, System.currentTimeMillis()));
+                this.deviceList = newList;
+            } else {
+                logger.debug("updateDevices, Updating devices.");
+                for (TellstickNetDevice device : newList.getDevices()) {
+                    int index = previouslist.getDevices().indexOf(device);
+                    logger.debug("Device:{} found at {}", device, index);
+                    if (index >= 0) {
+                        TellstickNetDevice orgDevice = previouslist.getDevices().get(index);
+                        if (device.getState() != orgDevice.getState()) {
+                            orgDevice.setState(device.getState());
+                            orgDevice.setStatevalue(device.getStatevalue());
+                            orgDevice.setUpdated(true);
+                        }
+                    } else {
+                        logger.debug("New Device - Adding:{}", device);
+                        previouslist.getDevices().add(device);
+                        device.setUpdated(true);
+                        for (DeviceStatusListener listener : deviceStatusListeners) {
+                            listener.onDeviceAdded(getThing(), device);
+                        }
+                    }
                 }
-                device.setUpdated(false);
+            }
+
+            for (TellstickNetDevice device : deviceList.getDevices()) {
+                if (device.isUpdated()) {
+                    logger.debug("Updated device:{}", device);
+                    for (DeviceStatusListener listener : deviceStatusListeners) {
+                        listener.onDeviceStateChanged(getThing(), device,
+                                new TellstickDeviceEvent(device, null, null, null, System.currentTimeMillis()));
+                    }
+                    device.setUpdated(false);
+                }
             }
         }
     }
@@ -180,54 +182,57 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         TellstickNetSensors newList = controller.callRestMethod(TelldusLiveDeviceController.HTTP_TELLDUS_SENSORS,
                 TellstickNetSensors.class);
         logger.debug("Updated sensors:{}", newList.getSensors());
-        if (previouslist == null) {
-            logger.debug("First update of sensors");
-            this.sensorList = newList;
-            for (TellstickNetSensor sensor : sensorList.getSensors()) {
-                sensor.setUpdated(true);
-                for (DeviceStatusListener listener : deviceStatusListeners) {
-                    listener.onDeviceAdded(getThing(), sensor);
-                }
-            }
-        } else {
-            logger.debug("Update sensors, reset updated flag");
-            for (TellstickNetSensor sensor : previouslist.getSensors()) {
-                sensor.setUpdated(false);
-            }
-            for (TellstickNetSensor sensor : newList.getSensors()) {
-                int index = this.sensorList.getSensors().indexOf(sensor);
-                if (index >= 0) {
-                    TellstickNetSensor orgSensor = this.sensorList.getSensors().get(index);
-                    logger.debug("Update sensor {}, prev update {}, new update {}", sensor.getId(),
-                            orgSensor.getLastUpdated(), sensor.getLastUpdated());
-                    if (sensor.getLastUpdated() > orgSensor.getLastUpdated()) {
-                        logger.debug("Update for sensor:{}", sensor);
-                        orgSensor.setData(sensor.getData());
-                        orgSensor.setLastUpdated(sensor.getLastUpdated());
-                        orgSensor.setUpdated(true);
-                        sensor.setUpdated(true);
-                    }
-                } else {
-                    logger.debug("Adding sensor {}, new update {}", sensor.getId(), sensor.getLastUpdated());
-                    this.sensorList.getSensors().add(sensor);
+        if (newList.getSensors() != null) {
+            if (previouslist == null) {
+                logger.debug("First update of sensors");
+                this.sensorList = newList;
+                for (TellstickNetSensor sensor : sensorList.getSensors()) {
                     sensor.setUpdated(true);
                     for (DeviceStatusListener listener : deviceStatusListeners) {
                         listener.onDeviceAdded(getThing(), sensor);
                     }
                 }
+            } else {
+                logger.debug("Update sensors, reset updated flag");
+                for (TellstickNetSensor sensor : previouslist.getSensors()) {
+                    sensor.setUpdated(false);
+                }
+                logger.debug("Update sensors, reset updated flag1");
 
-            }
-        }
-        for (TellstickNetSensor sensor : sensorList.getSensors()) {
-            if (sensor.getData() != null && sensor.isUpdated()) {
-                for (DeviceStatusListener listener : deviceStatusListeners) {
-                    for (DataTypeValue type : sensor.getData()) {
-                        listener.onDeviceStateChanged(getThing(), sensor,
-                                new TellstickSensorEvent(sensor.getId(), type.getValue(), type.getName(),
-                                        sensor.getProtocol(), sensor.getModel(), System.currentTimeMillis()));
+                for (TellstickNetSensor sensor : newList.getSensors()) {
+                    int index = this.sensorList.getSensors().indexOf(sensor);
+                    if (index >= 0) {
+                        TellstickNetSensor orgSensor = this.sensorList.getSensors().get(index);
+                        logger.debug("Update sensor {}, prev update {}, new update {}", sensor.getId(),
+                                orgSensor.getLastUpdated(), sensor.getLastUpdated());
+                        if (sensor.getLastUpdated() > orgSensor.getLastUpdated()) {
+                            logger.debug("Update for sensor:{}", sensor);
+                            orgSensor.setData(sensor.getData());
+                            orgSensor.setLastUpdated(sensor.getLastUpdated());
+                            orgSensor.setUpdated(true);
+                            sensor.setUpdated(true);
+                        }
+                    } else {
+                        logger.debug("Adding sensor {}, new update {}", sensor.getId(), sensor.getLastUpdated());
+                        this.sensorList.getSensors().add(sensor);
+                        sensor.setUpdated(true);
+                        for (DeviceStatusListener listener : deviceStatusListeners) {
+                            listener.onDeviceAdded(getThing(), sensor);
+                        }
                     }
                 }
-                sensor.setUpdated(false);
+            }
+            for (TellstickNetSensor sensor : sensorList.getSensors()) {
+                if (sensor.getData() != null && sensor.isUpdated()) {
+                    for (DeviceStatusListener listener : deviceStatusListeners) {
+                        for (DataTypeValue type : sensor.getData()) {
+                            listener.onDeviceStateChanged(getThing(), sensor,
+                                    new TellstickSensorEvent(sensor.getId(), type.getValue(), type.getName(),
+                                            sensor.getProtocol(), sensor.getModel(), System.currentTimeMillis()));
+                        }
+                    }
+                    sensor.setUpdated(false);
+                }
             }
         }
     }
