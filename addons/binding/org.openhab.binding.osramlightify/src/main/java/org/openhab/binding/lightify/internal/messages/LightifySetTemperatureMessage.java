@@ -18,6 +18,8 @@ import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Set the white temperature of a light.
  *
@@ -27,7 +29,7 @@ public final class LightifySetTemperatureMessage extends LightifyTransitionableM
 
     private int temperature;
     private short unknown1;
-    private String deviceId;
+    private IEEEAddress deviceId = new IEEEAddress();
 
     public LightifySetTemperatureMessage(LightifyDeviceHandler deviceHandler, DecimalType temperature) {
         super(deviceHandler, Command.SET_TEMPERATURE);
@@ -75,7 +77,7 @@ public final class LightifySetTemperatureMessage extends LightifyTransitionableM
         super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
-        deviceId = decodeDeviceAddress(data);
+        data.get(deviceId.array());
 
         return true;
     }

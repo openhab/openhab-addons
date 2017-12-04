@@ -20,6 +20,8 @@ import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 import org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Get the state of a single device.
  *
@@ -81,7 +83,9 @@ abstract public class LightifyBaseGetDeviceInfoMessage extends LightifyBaseMessa
         super.handleResponse(bridgeHandler, data);
 
         data.getShort(); // deviceNumber
-        String deviceAddress = decodeDeviceAddress(data);
+
+        IEEEAddress deviceId = new IEEEAddress();
+        data.get(deviceId.array());
 
         int reachability = ((int) data.get() & 0xff);
 
@@ -102,7 +106,7 @@ abstract public class LightifyBaseGetDeviceInfoMessage extends LightifyBaseMessa
             return true;
         }
 
-        logger.debug("{}: reachability = {}", deviceAddress, reachability);
+        logger.debug("{}: reachability = {}", deviceId, reachability);
 
         try {
             Thread.sleep(100);

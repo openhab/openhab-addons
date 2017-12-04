@@ -18,6 +18,8 @@ import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Set the luminance of a light.
  *
@@ -27,7 +29,7 @@ public final class LightifySetLuminanceMessage extends LightifyTransitionableMes
 
     private int luminance;
     private short unknown1;
-    private String deviceId;
+    private IEEEAddress deviceId = new IEEEAddress();
 
     public LightifySetLuminanceMessage(LightifyDeviceHandler deviceHandler, PercentType luminance) {
         super(deviceHandler, Command.SET_LUMINANCE);
@@ -75,7 +77,7 @@ public final class LightifySetLuminanceMessage extends LightifyTransitionableMes
         super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
-        deviceId = decodeDeviceAddress(data);
+        data.get(deviceId.array());
 
         return true;
     }

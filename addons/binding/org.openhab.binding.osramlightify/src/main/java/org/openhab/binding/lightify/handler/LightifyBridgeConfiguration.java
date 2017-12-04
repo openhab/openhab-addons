@@ -21,7 +21,12 @@ public final class LightifyBridgeConfiguration {
     public String ipAddress;
 
     /**
-     * How often to poll for device changes (state or pairing).
+     * The interval between device discovery updates in seconds.
+     */
+    public double discoveryInterval;
+
+    /**
+     * How often to poll for device state changes.
      */
     public double minPollInterval;
     public double maxPollInterval;
@@ -50,6 +55,7 @@ public final class LightifyBridgeConfiguration {
      * Nanosecond equivalent of {@link minPollInterval}/{@link maxPollInterval}.
      * Calculated by the bridge handler when it loads the configuration.
      */
+    public long discoveryIntervalNanos;
     public long minPollIntervalNanos;
     public long maxPollIntervalNanos;
 }

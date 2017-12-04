@@ -18,6 +18,8 @@ import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Set a device on or off.
  *
@@ -27,7 +29,7 @@ public final class LightifySetSwitchMessage extends LightifyBaseMessage implemen
 
     private byte onoff;
     private short unknown1;
-    private String deviceId;
+    private IEEEAddress deviceId = new IEEEAddress();
 
     public LightifySetSwitchMessage(LightifyDeviceHandler deviceHandler, OnOffType onoff, LightifyDeviceState state) {
         super(deviceHandler, Command.SET_SWITCH);
@@ -68,7 +70,7 @@ public final class LightifySetSwitchMessage extends LightifyBaseMessage implemen
         super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
-        deviceId = decodeDeviceAddress(data);
+        data.get(deviceId.array());
 
         return true;
     }

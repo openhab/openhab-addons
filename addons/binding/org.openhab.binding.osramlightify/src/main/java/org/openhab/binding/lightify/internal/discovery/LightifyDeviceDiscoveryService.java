@@ -70,7 +70,7 @@ public final class LightifyDeviceDiscoveryService extends AbstractDiscoveryServi
      *
      * @param device
      */
-    public void discoveryResult(ThingUID thingUID, ThingTypeUID thingTypeUID, String deviceName, String deviceAddress, String firmwareVersion) {
+    public void discoveryResult(ThingUID thingUID, ThingTypeUID thingTypeUID, String deviceName, String deviceAddress) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
@@ -79,7 +79,6 @@ public final class LightifyDeviceDiscoveryService extends AbstractDiscoveryServi
             .withBridge(bridgeUID)
 //          .withRepresentationProperty(PROPERTY_DEVICE_NAME)
             .withProperty(PROPERTY_IEEE_ADDRESS, deviceAddress)
-            .withProperty(PROPERTY_FIRMWARE_VERSION, firmwareVersion)
             .build();
 
         thingDiscovered(discoveryResult);

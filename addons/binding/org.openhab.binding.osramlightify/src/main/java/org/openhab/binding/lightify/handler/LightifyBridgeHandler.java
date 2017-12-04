@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.osramlightify.handler;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * The {@link org.eclipse.smarthome.core.thing.binding.BridgeHandler} implementation to handle commands
  * and status of the OSRAM Lightify gateway device. This handler uses a native implementation of the
@@ -51,14 +55,15 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     private LightifyBridgeConfiguration configuration = null;
     private LightifyConnector connector;
 
+    public final HashMap<IEEEAddress, Object> knownDevices = new HashMap<>();
+    public final HashMap<Short, Object> knownGroups = new HashMap<>();
+
     public LightifyBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void initialize() {
-        // In theory we can do this. In practice there are races in the core that
-        // mean we have to hold off a little.
         thingUpdated(getThing());
         registerDeviceDiscoveryService();
         updateStatus(ThingStatus.UNKNOWN);
@@ -86,6 +91,7 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     public void thingUpdated(Thing thing) {
         configuration = getConfigAs(LightifyBridgeConfiguration.class);
 
+        configuration.discoveryIntervalNanos = TimeUnit.MILLISECONDS.toNanos((long) (configuration.discoveryInterval * 1000 + 0.5));
         configuration.minPollIntervalNanos = TimeUnit.MILLISECONDS.toNanos((long) (configuration.minPollInterval * 1000 + 0.5));
         configuration.maxPollIntervalNanos = TimeUnit.MILLISECONDS.toNanos((long) (configuration.maxPollInterval * 1000 + 0.5));
 

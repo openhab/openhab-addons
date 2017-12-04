@@ -19,6 +19,8 @@ import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Set the colour of a light.
  *
@@ -28,7 +30,7 @@ public final class LightifySetColorMessage extends LightifyTransitionableMessage
 
     private int[] rgba;
     private short unknown1;
-    private String deviceId;
+    private IEEEAddress deviceId = new IEEEAddress();
 
     public LightifySetColorMessage(LightifyDeviceHandler deviceHandler, int[] rgba) {
         super(deviceHandler, Command.SET_COLOR);
@@ -92,7 +94,7 @@ public final class LightifySetColorMessage extends LightifyTransitionableMessage
         super.handleResponse(bridgeHandler, data);
 
         unknown1 = data.getShort();
-        deviceId = decodeDeviceAddress(data);
+        data.get(deviceId.array());
 
         return true;
     }

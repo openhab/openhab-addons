@@ -46,7 +46,7 @@ public class LightifyGetDeviceInfoMessage extends LightifyBaseGetDeviceInfoMessa
     @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
         if (super.handleResponse(bridgeHandler, data)) {
-            state.received(bridgeHandler, deviceHandler.getThing(), System.nanoTime(), true);
+            state.received(bridgeHandler, deviceHandler, System.nanoTime(), true);
 
             return true;
         }

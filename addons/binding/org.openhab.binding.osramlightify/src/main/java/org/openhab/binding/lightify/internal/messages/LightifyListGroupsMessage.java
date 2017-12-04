@@ -9,7 +9,7 @@
 package org.openhab.binding.osramlightify.internal.messages;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -17,10 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_IEEE_ADDRESS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
+import static org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage.NAME_LENGTH;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
@@ -38,11 +39,17 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
 
     private final Logger logger = LoggerFactory.getLogger(LightifyListGroupsMessage.class);
 
-    private static final Map<ThingUID, Integer> known = new HashMap<>();
-    private static int seen = 0;
+    private byte[] deviceName = new byte[NAME_LENGTH];
+    private ByteBuffer encodedMessage;
 
     public LightifyListGroupsMessage() {
         super(null, Command.LIST_GROUPS);
+
+        try {
+            encodedMessage = super.encodeMessage(1)
+                .put((byte) 0x01);
+        } catch (LightifyMessageTooLongException e) {
+        }
     }
 
     @Override
@@ -61,13 +68,17 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
 
     @Override
     public ByteBuffer encodeMessage() throws LightifyMessageTooLongException {
-        return super.encodeMessage(1)
-            .put((byte) 0x01);
+        return super.encodeMessage(encodedMessage);
     }
 
     // ****************************************
     //        Response handling section
     // ****************************************
+
+    private String makeGroupAddress(short id) {
+        return String.format("00:00:00:00:00:00:%02X:%02X",
+            ((id >> 8) & 0xff), (id & 0xff));
+    }
 
     @Override
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
@@ -77,55 +88,82 @@ public final class LightifyListGroupsMessage extends LightifyBaseMessage impleme
 
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
+        HashMap<Short, Object> known = bridgeHandler.knownGroups;
+        HashMap<Short, Object> toRemove = (HashMap) known.clone();
+
         for (int i = 0; i < deviceCount; i++) {
             short deviceNumber = data.getShort();
-            String deviceAddress = makeGroupAddress(deviceNumber);
-            ThingTypeUID thingTypeUID = THING_TYPE_LIGHTIFY_GROUP;
+            toRemove.remove(deviceNumber);
 
-            String deviceName = decodeName(data);
+            data.get(deviceName);
 
-            logger.trace("{}: group {} \"{}\"", deviceAddress, i, deviceName);
+            Object obj = known.get(deviceNumber);
 
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, String.format("%d", (deviceNumber & 0xffff)));
+            LightifyDeviceHandler deviceHandler = null;
+            ThingUID thingUID = null;
 
-            known.put(thingUID, seen);
+            if (obj != null && obj instanceof LightifyDeviceHandler) {
+                deviceHandler = (LightifyDeviceHandler) obj;
 
-            Thing thing = bridgeHandler.getThingByUID(thingUID);
+                // If we have a thing but it is no longer initialized we put it straight back in
+                // the inbox and carry on.
+                if (!deviceHandler.isStatusInitialized()) {
+                    Thing thing = deviceHandler.getThing();
 
-            if (thing != null) {
-                if (thing.getStatus() != ThingStatus.ONLINE) {
-                    LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
-                    thingHandler.setStatus(ThingStatus.ONLINE);
+                    // N.B. The IEEE address can't have changed but the name on the gateway might have.
+                    bridgeHandler.getDiscoveryService().discoveryResult(thing.getUID(), THING_TYPE_LIGHTIFY_GROUP,
+                        new String(deviceName, StandardCharsets.UTF_8).trim(),
+                        thing.getProperties().get(PROPERTY_IEEE_ADDRESS));
+
+                    known.put(deviceNumber, thing.getUID());
+                    continue;
                 }
             } else {
-                bridgeHandler.getDiscoveryService().discoveryResult(thingUID, thingTypeUID,
-                    deviceName, deviceAddress, null);
+                // We don't know of a thing for this. Is there one?
+                if (obj != null) {
+                    thingUID = (ThingUID) obj;
+                } else {
+                    thingUID = new ThingUID(THING_TYPE_LIGHTIFY_GROUP, bridgeUID, String.format("%d", (deviceNumber & 0xffff)));
+                }
+
+                Thing thing = bridgeHandler.getThingByUID(thingUID);
+
+                if (thing != null) {
+                    deviceHandler = (LightifyDeviceHandler) thing.getHandler();
+                    known.put(deviceNumber, deviceHandler);
+                }
+            }
+
+            if (deviceHandler != null) {
+                // We have a thing so make sure it is online.
+                if (deviceHandler.isStatusInitialized() && deviceHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+                    deviceHandler.setStatus(ThingStatus.ONLINE);
+                }
+            } else if (!known.containsKey(deviceNumber)) {
+                // No thing so if we haven't seen this before it goes in the inbox.
+                bridgeHandler.getDiscoveryService().discoveryResult(thingUID, THING_TYPE_LIGHTIFY_GROUP,
+                    new String(deviceName, StandardCharsets.UTF_8).trim(),
+                    makeGroupAddress(deviceNumber));
+
+                known.put(deviceNumber, thingUID);
             }
         }
 
-        // If there are groups on this bridge that we didn't see data for in the above
-        // we set them offline.
-        ThingUID[] removed = known.entrySet().stream()
-            .filter(entry -> entry.getValue() < seen)
-            .map(entry -> entry.getKey())
-            .toArray(ThingUID[]::new);
+        // If there are groups we saw before but that do not exist now then we either remove
+        // them from the inbox or set their status to UNKNOWN.
+        toRemove.forEach((deviceNumber, obj) -> {
+            if (obj instanceof LightifyDeviceHandler) {
+                LightifyDeviceHandler deviceHandler = (LightifyDeviceHandler) obj;
 
-        for (ThingUID thingUID : removed) {
-            Thing thing = bridgeHandler.getThingByUID(thingUID);
-
-            if (thing != null) {
-                if (thing.getStatus() != ThingStatus.UNKNOWN) {
-                    LightifyDeviceHandler thingHandler = (LightifyDeviceHandler) thing.getHandler();
-                    thingHandler.setStatus(ThingStatus.UNKNOWN);
+                if (deviceHandler.isStatusInitialized() && deviceHandler.getThing().getStatus() != ThingStatus.UNKNOWN) {
+                    deviceHandler.setStatus(ThingStatus.UNKNOWN);
                 }
             } else {
-                bridgeHandler.getDiscoveryService().removeThing(thingUID);
+                bridgeHandler.getDiscoveryService().removeThing((ThingUID) obj);
             }
 
-            known.remove(thingUID);
-        }
-
-        seen++;
+            known.remove(deviceNumber);
+        });
 
         return true;
     }

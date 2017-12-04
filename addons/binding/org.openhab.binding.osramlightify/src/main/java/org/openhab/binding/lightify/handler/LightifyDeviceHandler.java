@@ -8,8 +8,13 @@
  */
 package org.openhab.binding.osramlightify.handler;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.xml.bind.DatatypeConverter;
+
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -34,10 +39,14 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_ABS_TEMPERATURE;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.CHANNEL_TEMPERATURE;
 
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_IEEE_ADDRESS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MAXIMUM_WHITE_TEMPERATURE;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MINIMUM_WHITE_TEMPERATURE;
-import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_IEEE_ADDRESS;
+
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_MOTION_SENSOR;
+
+import static org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage.ADDRESS_LENGTH;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceConfiguration;
@@ -54,6 +63,8 @@ import org.openhab.binding.osramlightify.internal.messages.LightifySetLuminanceM
 import org.openhab.binding.osramlightify.internal.messages.LightifySetSwitchMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifySetTemperatureMessage;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * The {@link org.eclipse.smarthome.core.thing.binding.ThingHandler} implementation
  * for devices paired with an OSRAM/Sylvania Lightify gateway.
@@ -64,9 +75,11 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyDeviceHandler.class);
 
-    protected String deviceAddress;
+    private IEEEAddress deviceAddress;
     protected LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
     protected boolean stateValid = false;
+
+    private byte[] firmwareVersionBytes;
 
     protected LightifyDeviceConfiguration configuration = null;
 
@@ -81,7 +94,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         Thing thing = getThing();
 
         // The IEEE address is constant.
-        deviceAddress = thing.getProperties().get(PROPERTY_IEEE_ADDRESS);
+        deviceAddress = new IEEEAddress(thing.getProperties().get(PROPERTY_IEEE_ADDRESS));
 
         thingUpdated(thing);
 
@@ -392,7 +405,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public String getDeviceAddress() {
+    public IEEEAddress getDeviceAddress() {
         return deviceAddress;
     }
 
@@ -406,6 +419,10 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     public ScheduledExecutorService getScheduler() {
         return ((LightifyBridgeHandler) getBridge().getHandler()).getScheduler();
+    }
+
+    public boolean isStatusInitialized() {
+        return isInitialized();
     }
 
     public void sendMessage(LightifyMessage message) {
@@ -425,6 +442,16 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
         if (configuration.whiteTemperatureMax == null) {
             configuration.whiteTemperatureMax = temperature;
+        }
+    }
+
+    public void updateFirmwareVersion(byte[] firmwareVersionBytes) {
+        if (this.firmwareVersionBytes == null || !Arrays.equals(this.firmwareVersionBytes, firmwareVersionBytes)) {
+            this.firmwareVersionBytes = firmwareVersionBytes.clone();
+
+            thing.setProperty(PROPERTY_FIRMWARE_VERSION, String.format("%02X%02X%02X%02X",
+                firmwareVersionBytes[0], firmwareVersionBytes[1],
+                firmwareVersionBytes[2], firmwareVersionBytes[3]));
         }
     }
 }

@@ -37,6 +37,7 @@ import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooL
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyGatewayFirmwareMessage;
+import org.openhab.binding.osramlightify.internal.messages.LightifyListGroupsMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyListPairedDevicesMessage;
 
 import org.openhab.binding.osramlightify.internal.LightifyTransmitQueue;
@@ -53,14 +54,14 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     private static final int LIGHTIFY_GATEWAY_PORT = 4000;
 
     /**
-     * How long to block in the start-of-message read before exiting to check
-     * if we've been interrupted.
+     * The maximum time we wait for data from the gateway before breaking off to
+     * check for interrupts or to see if it is time to poll for state updates.
      *
-     * The smaller this is the faster we will respond to termination requests
-     * but the more CPU we will consume just spinning.
+     * The smaller this is the more cpu we will use but the faster we will respond
+     * to requests to stop the connector thread (for instance when reloading the
+     * binding). It MUST be less than SafeMethodCaller.DEFAULT_TIMEOUT in the core.
      */
-    private static final int PRE_MESSAGE_TIMEOUT = 500; // milliseconds
-
+    private static final int MAX_PRE_MESSAGE_TIMEOUT = 4800; // milliseconds
     /**
      * How long to wait for data while in the middle of reading a message
      * from the gateway.
@@ -102,6 +103,8 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     private OutputStream out;
     private LightifyListPairedDevicesMessage initialPoll;
 
+    private final LightifyListGroupsMessage listGroups = new LightifyListGroupsMessage();
+    private final LightifyListPairedDevicesMessage listPairedDevices = new LightifyListPairedDevicesMessage();
     private boolean havePoll = false;
     private long nextPoll;
     private long pollInterval;
@@ -197,8 +200,8 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
             // to everything we send until a LIST_PAIRED_DEVICES. It isn't clear what 0x16 means or
             // why a LIST_PAIRED_DEVICES clears the condition. Currently this has only been observed
             // at the start of a connection.
-            initialPoll = new LightifyListPairedDevicesMessage();
-            transmitMessage(initialPoll);
+            initialPoll = listPairedDevices;
+            transmitMessage(listPairedDevices.discovery(true));
             havePoll = true;
 
             return true;
@@ -222,6 +225,8 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
     @Override
     public void run() {
         nextPoll = System.nanoTime();
+        long nextDiscovery= nextPoll;
+        boolean doDiscovery = true;
         pollInterval = bridgeHandler.getConfiguration().minPollIntervalNanos;
 
         logger.debug("Lightify connector started");
@@ -245,13 +250,30 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                     continue;
                 }
 
-                // First byte times out so we can check for interrupt
-                socket.setSoTimeout(PRE_MESSAGE_TIMEOUT);
+                long timeout = bridgeHandler.getConfiguration().maxPollIntervalNanos;
 
-                if (!havePoll && System.nanoTime() - nextPoll >= 0) {
-                    havePoll = true;
-                    bridgeHandler.getDiscoveryService().startScan(null);
+                if (!havePoll) {
+                    long now = System.nanoTime();
+                    if (nextPoll - now <= 0) {
+                        havePoll = true;
+                        doDiscovery = (nextDiscovery - now <= 0);
+                        if (doDiscovery) {
+                            bridgeHandler.sendMessage(listGroups);
+                        }
+                        bridgeHandler.sendMessage(listPairedDevices.discovery(doDiscovery));
+                    } else {
+                        timeout = nextPoll - now;
+                    }
                 }
+
+                // First byte times out so we can check for interrupt and do state/discovery polls
+                int intTimeout = (int) TimeUnit.NANOSECONDS.toMillis(timeout);
+                if (intTimeout <= 0) {
+                    intTimeout = 1;
+                } else if (intTimeout > MAX_PRE_MESSAGE_TIMEOUT) {
+                    intTimeout = MAX_PRE_MESSAGE_TIMEOUT;
+                }
+                socket.setSoTimeout(intTimeout);
 
                 try {
                     read = in.read();
@@ -310,7 +332,6 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                                         LightifyListPairedDevicesMessage pollResponse = (LightifyListPairedDevicesMessage) request;
 
                                         havePoll = false;
-                                        bridgeHandler.getDiscoveryService().scanComplete();
 
                                         if (pollResponse.hasChanges()) {
                                             // If there are changes happening that we didn't initiate we
@@ -328,7 +349,12 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
                                             }
                                         }
 
-                                        nextPoll = System.nanoTime() + pollInterval;
+                                        long now = System.nanoTime();
+                                        nextPoll = now + pollInterval;
+                                        if (doDiscovery) {
+                                            doDiscovery = false;
+                                            nextDiscovery = now + bridgeHandler.getConfiguration().discoveryIntervalNanos;
+                                        }
                                     }
 
                                     resendCount = 0;

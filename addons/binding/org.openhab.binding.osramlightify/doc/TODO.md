@@ -74,8 +74,9 @@
 
 * Groups should ignore reachable in state - they always show as 0
 
-* Changing the luminance via the color channel should update the dimmer channel and vice versa - groups have both
+* Changing the luminance via the color channel should update the dimmer channel and vice versa - groups have both. Similar goes for the switch channel.
   * Would it be too confusing if groups only had the color channel bearing in mind they may not have _any_ RGBW members?
+  * Yes. It is not logical to require switches to be linked to a colour channel when you have a group of power sockets.
 
 * Currently groups never update state themselves. This means that a transition on a group will transition each individual member but the members do not know about the transition and thus do not suppress updates during it and do not force an update after it.
   * We could record group membership and use that when starting transitions to start the transition on each member. Then they would suppress updates and force a GET_DEVICE_INFO on completion. Of course, that means there are potentially lots of GET_DEVICE_INFOs all at the same time...

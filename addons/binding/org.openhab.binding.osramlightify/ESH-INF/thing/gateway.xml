@@ -15,6 +15,12 @@
 				<required>false</required>
 			</parameter>
 
+			<parameter name="discoveryInterval" type="decimal" required="true" min="0">
+				<default>5.0</default>
+				<label>Discovery Interval</label>
+				<description>Time between device discovery updates in seconds to 3 d.p. Minimum is 0. There is no maximum.</description>
+			</parameter>
+
 			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
 				<default>0.3</default>
 				<label>Transition Time</label>

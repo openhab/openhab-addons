@@ -106,10 +106,8 @@ public final class LightifyDeviceState {
         }
     }
 
-    public boolean received(LightifyBridgeHandler bridgeHandler, Thing thing, long now, boolean knownCurrent) {
+    public boolean received(LightifyBridgeHandler bridgeHandler, LightifyDeviceHandler deviceHandler, long now, boolean knownCurrent) {
         boolean changes = false;
-
-        LightifyDeviceHandler deviceHandler = (LightifyDeviceHandler) thing.getHandler();
 
         LightifyDeviceState state = deviceHandler.getLightifyDeviceState();
 
@@ -138,7 +136,7 @@ public final class LightifyDeviceState {
         }
 
         // If power changes then luminance, at least the the luminance we advertise
-        // to linked items // anyway, must also change.
+        // to linked items anyway, must also change.
         if (luminanceDelta == 0) {
             luminanceDelta = powerDelta;
         }
@@ -148,9 +146,7 @@ public final class LightifyDeviceState {
             luminanceDelta = 0;
         }
 
-        ThingStatus thingStatus = thing.getStatus();
-
-        if (thingStatus != ThingStatus.ONLINE) {
+        if (deviceHandler.isStatusInitialized() && deviceHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             if (reachable == 2 && timeSinceSeen == 0) {
                 // If we have state from before the device went offline we'll stay with it
                 // otherwise the state is whatever the device is telling us.

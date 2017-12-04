@@ -21,6 +21,8 @@ import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyMessageTooLongException;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyUnsupportedValueException;
 
+import org.openhab.binding.osramlightify.internal.util.IEEEAddress;
+
 /**
  * Base class for Lightify messages classes.
  *
@@ -41,31 +43,18 @@ public abstract class LightifyBaseMessage {
         GROUPCAST(0x02),
         GROUPCAST_RESPONSE(0x03);
 
-        private final int packetType;
+        private final byte packetType;
 
         PacketType(int packetType) {
-            this.packetType = packetType;
+            this.packetType = (byte) packetType;
         }
 
         public byte toByte() {
-            return (byte) packetType;
+            return packetType;
         }
-
-        public static PacketType fromByte(int input) throws LightifyUnsupportedValueException {
-            input &= 0xff;
-            for (PacketType packetType : PacketType.values()) {
-                if (packetType.packetType == input) {
-                    return packetType;
-                }
-            }
-
-            throw new LightifyUnsupportedValueException(PacketType.class, input);
-        }
-
     }
 
     public enum Command {
-        GATEWAY_RESET(0x00), // Blind guess, no data yet...
         LIST_PAIRED_DEVICES(0x13),
         LIST_GROUPS(0x1E),
         GET_GROUP_INFO(0x26),
@@ -78,59 +67,53 @@ public abstract class LightifyBaseMessage {
         GET_GATEWAY_FIRMWARE_VERSION(0x6F),
         GET_WIFI_VERSION(0xE3);
 
-        private final int command;
+        private final byte command;
 
         Command(int command) {
-            this.command = command;
+            this.command = (byte) command;
         }
 
         public byte toByte() {
-            return (byte) command;
+            return command;
         }
-
-        public static Command fromByte(int input) throws LightifyUnsupportedValueException {
-            input &= 0xff;
-            for (Command command : Command.values()) {
-                if (command.command == input) {
-                    return command;
-                }
-            }
-
-            throw new LightifyUnsupportedValueException(Command.class, input);
-        }
-
     }
 
-    public enum StatusCode {
-        OK(0x00),
-        INCORRECT_PARAMETERS(0x01),
-        WRONG_TYPE(0x15),           // Group address but not a GROUPCAST packet type
-                                    // or GROUPCAST packet type for a UNICAST only command
-        RESYNC_REQUIRED(0x16),      // Next command MUST be a LIST_PAIRED_DEVICES. This appears to be a form
-                                    // of resync procedure and 0x16 will repeat until a LIST_PAIRED_DEVICES
-                                    // is sent.
-        UNKNOWN_COMMAND(0xFF);      // ??? followed by RESYNC_REQUIRED in response to everything?
+    private static String describeStatusCode(byte statusCode) {
+        String description;
 
-        private final int statusCode;
+        switch ((int) statusCode & 0xff) {
+            case 0x00:
+                description = "OK";
+                break;
 
-        StatusCode(int statusCode) {
-            this.statusCode = statusCode;
+            case 0x01:
+                description = "INCORRECT_PARAMETERS";
+                break;
+
+            case 0x15:
+                description = "WRONG_TYPE";
+                // Group address but not a GROUPCAST packet type
+                // or GROUPCAST packet type for a UNICAST only command
+                break;
+
+            case 0x16:
+                description = "RESYNC_REQUIRED";
+                // Next command MUST be a LIST_PAIRED_DEVICES. This appears to be a form
+                // of resync procedure and 0x16 will repeat until a LIST_PAIRED_DEVICES
+                // is sent.
+                break;
+
+            case 0xFF:
+                description = "UNKNOWN_COMMAND";
+                // ??? followed by RESYNC_REQUIRED in response to everything?
+                break;
+
+            default:
+                description = "UNKNOWN";
+                break;
         }
 
-        public byte toByte() {
-            return (byte) statusCode;
-        }
-
-        public static StatusCode fromByte(int input) throws LightifyUnsupportedValueException {
-            input &= 0xff;
-            for (StatusCode statusCode : StatusCode.values()) {
-                if (statusCode.statusCode == input) {
-                    return statusCode;
-                }
-            }
-
-            throw new LightifyUnsupportedValueException(StatusCode.class, input);
-        }
+        return String.format("%02X (%s)", statusCode, description);
     }
 
     private boolean haveResponse = false;
@@ -138,18 +121,15 @@ public abstract class LightifyBaseMessage {
     private PacketType packetType;
     private Command command;
     private int seqNo;
-    private StatusCode statusCode;
-    private byte[] addressBytes;
+    private byte statusCode;
+    private IEEEAddress deviceAddress;
 
     public LightifyBaseMessage(LightifyDeviceHandler deviceHandler, Command command) {
         if (deviceHandler != null) {
-            byte[] bytes = DatatypeConverter.parseHexBinary(deviceHandler.getDeviceAddress().replaceAll(":", ""));
-            addressBytes = new byte[] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0] };
+            deviceAddress = deviceHandler.getDeviceAddress();
         }
 
-        if (addressBytes != null
-        && (addressBytes[2] != 0 || addressBytes[3] != 0 || addressBytes[4] != 0
-        || addressBytes[5] != 0 || addressBytes[6] != 0 || addressBytes[7] != 0)) {
+        if (deviceAddress != null && deviceAddress.isUnicast()) {
             packetType = PacketType.UNICAST;
         } else {
             packetType = PacketType.GROUPCAST;
@@ -164,11 +144,8 @@ public abstract class LightifyBaseMessage {
             "Packet type = " + packetType
             + ", Command = " + command
             + ", Seq number = " + seqNo
-            + (statusCode != null ? ", Status = " + statusCode : "")
-            + (addressBytes == null ? "" : ", Address = "
-                + String.format("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
-                    (addressBytes[7] & 0xff), (addressBytes[6] & 0xff), (addressBytes[5] & 0xff), (addressBytes[4] & 0xff),
-                    (addressBytes[3] & 0xff), (addressBytes[2] & 0xff), (addressBytes[1] & 0xff), (addressBytes[0] & 0xff)));
+            + (statusCode != 0 ? ", Status = " + describeStatusCode(statusCode) : "")
+            + (deviceAddress == null ? "" : ", Address = " + deviceAddress);
     }
 
     public boolean isPoller() {
@@ -184,7 +161,7 @@ public abstract class LightifyBaseMessage {
     // ****************************************
 
     protected ByteBuffer encodeMessage(int length) throws LightifyMessageTooLongException {
-        int messageLength = HEADER_LENGTH + (addressBytes != null ? addressBytes.length : 0) + length;
+        int messageLength = HEADER_LENGTH + (deviceAddress != null ? deviceAddress.ADDRESS_LENGTH : 0) + length;
         if ((messageLength & ~0xffff) != 0) {
             throw new LightifyMessageTooLongException("Requested message length of " + messageLength + " must be less than 65535");
         }
@@ -200,17 +177,21 @@ public abstract class LightifyBaseMessage {
 
         // When encoding messages we are creating wire-format commands so no
         // status code but there might be an address.
-        if (addressBytes != null) {
-            encodedMessage.put(addressBytes);
+        if (deviceAddress != null) {
+            encodedMessage.put(deviceAddress.array());
         }
 
         return encodedMessage;
     }
 
+    protected ByteBuffer encodeMessage(ByteBuffer message) throws LightifyMessageTooLongException {
+        message.putInt(4, seqNo);
+        return message;
+    }
+
     public void setSeqNo(int seqNo) {
         this.seqNo = seqNo;
     }
-
 
     // ****************************************
     //        Response handling section
@@ -225,44 +206,19 @@ public abstract class LightifyBaseMessage {
         data.rewind();
 
         data.getShort(); // message length
-        PacketType packetType = PacketType.fromByte(data.get());
-        Command command = Command.fromByte(data.get());
+        data.get(); // packet type - same as we sent
+        data.get(); // command - sames as we sent
         seqNo = data.getInt();
 
         // When decoding messages we are interpreting a wire-format response so
         // there is a status code but no address (at least not as part of the header).
-        statusCode = StatusCode.fromByte(data.get());
+        statusCode = data.get();
 
-        if (statusCode != StatusCode.OK) {
-            throw new LightifyException("status = " + statusCode + " response to " + this);
+        if (statusCode != 0) {
+            throw new LightifyException("status = " + describeStatusCode(statusCode) + " response to " + this);
         }
 
         haveResponse = true;
         return true;
-    }
-
-    public String decodeDeviceAddress(ByteBuffer data) {
-        byte[] bytes = new byte[ADDRESS_LENGTH];
-        data.get(bytes);
-        return String.format("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
-            (bytes[7] & 0xff), (bytes[6] & 0xff), (bytes[5] & 0xff), (bytes[4] & 0xff),
-            (bytes[3] & 0xff), (bytes[2] & 0xff), (bytes[1] & 0xff), (bytes[0] & 0xff));
-    }
-
-    public String makeGroupAddress(short id) {
-        return String.format("00:00:00:00:00:00:%02X:%02X",
-            ((id >> 8) & 0xff), (id & 0xff));
-    }
-
-    public String decodeHex(ByteBuffer data, int length) {
-        byte[] bytes = new byte[length];
-        data.get(bytes);
-        return DatatypeConverter.printHexBinary(bytes);
-    }
-
-    public String decodeName(ByteBuffer data) {
-        byte[] bytes = new byte[NAME_LENGTH];
-        data.get(bytes);
-        return new String(bytes, StandardCharsets.UTF_8).trim();
     }
 }
