@@ -25,7 +25,4 @@ public class Te923BindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WEATHER = new ThingTypeUID(BINDING_ID, "weather");
 
-    // location of the te923 executable
-    public static final String DEFAULT_CMD = "/opt/te923/te923con";
-
 }

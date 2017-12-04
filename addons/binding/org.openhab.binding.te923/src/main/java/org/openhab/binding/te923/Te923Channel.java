@@ -61,9 +61,20 @@ public enum Te923Channel {
     private final int positionInResponse;
 
     /**
+     * Construct the enum
+     *
+     * @param mappingName is the mapping id of this parameter
+     * @param positionInResponse is the position of this parameter in the response of the te923con command line
+     */
+    private Te923Channel(String mappingName, int positionInResponse) {
+        this.mappingName = mappingName;
+        this.positionInResponse = positionInResponse;
+    }
+
+    /**
      * Get name used for mapping
      *
-     * @return
+     * @return the mapping id of this parameter
      */
     public String getMappingName() {
         return mappingName;
@@ -72,15 +83,10 @@ public enum Te923Channel {
     /**
      * Get position in cmd response
      *
-     * @return
+     * @return the position of this parameter in the response of the te923con command line
      */
     public int getPositionInResponse() {
         return positionInResponse;
-    }
-
-    private Te923Channel(String mappingName, int positionInResponse) {
-        this.mappingName = mappingName;
-        this.positionInResponse = positionInResponse;
     }
 
 }

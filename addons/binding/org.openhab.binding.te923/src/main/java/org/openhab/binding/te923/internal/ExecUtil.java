@@ -24,11 +24,13 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecUtil {
 
+    private static final int COMMAND_TIMEOUT = 10000;
+
     /**
      * Execute some command
      *
-     * @param string
-     * @return
+     * @param cmd is the command line to be executed
+     * @return a string that contain the result of this call or the error
      */
     public static String exec(String cmd) {
 
@@ -37,14 +39,12 @@ public class ExecUtil {
 
         synchronized (ExecUtil.class) {
 
-            int COMMAND_TIMEOUT = 10000;
-
             Process proc = null;
             try {
                 Runtime rt = Runtime.getRuntime();
                 proc = rt.exec(cmd);
             } catch (Exception e) {
-                logger.error("An exception occurred while executing '{}' : '{}'", new Object[] { cmd, e.getMessage() });
+                logger.warn("An exception occurred while executing '{}' : '{}'", cmd, e.getMessage());
                 return "";
             }
 
@@ -60,8 +60,8 @@ public class ExecUtil {
                 }
                 isr.close();
             } catch (IOException e) {
-                logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                        new Object[] { cmd, e.getMessage() });
+                logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", cmd,
+                        e.getMessage());
             }
 
             try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
@@ -73,16 +73,16 @@ public class ExecUtil {
                 }
                 isr.close();
             } catch (IOException e) {
-                logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                        new Object[] { cmd, e.getMessage() });
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", cmd,
+                        e.getMessage());
             }
 
             boolean exitVal = false;
             try {
                 exitVal = proc.waitFor(COMMAND_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                        new Object[] { cmd, e.getMessage() });
+                logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'", cmd,
+                        e.getMessage());
             }
 
             if (!exitVal) {
@@ -91,13 +91,8 @@ public class ExecUtil {
                 proc.destroyForcibly();
             }
 
-            // updateState(RUN, OnOffType.OFF);
-            // updateState(EXIT, new DecimalType(proc.exitValue()));
-
             outputBuilder.append(errorBuilder.toString());
-
             outputBuilder.append(errorBuilder.toString());
-
             res = StringUtils.chomp(outputBuilder.toString());
 
         }
