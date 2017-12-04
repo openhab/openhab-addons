@@ -2,7 +2,8 @@
 
 ## Overview
 
-PollyTTS is a TTS voice service for Openhab 2.x utilizing a Internet based TTS service provided by amazon called Polly. There are five servers set in various geographic locations. It requires a set of API keys provided by Amazon to get access to the service. Provides multiple languages and multiple voices for each language. The free tier includes 5 million characters per month for the first 12 months. Then it's $4 for a million characters after the one year.
+PollyTTS is a TTS voice service for Openhab 2.x utilizing a Internet based TTS service provided by amazon called Polly. There are servers set in various geographic locations. It requires a set of API keys provided by Amazon to get access to the service. Provides multiple languages and multiple voices for each language. The free tier includes 5 million characters per month for the first 12 months.
+https://aws.amazon.com/polly/
 
 ## Samples
 ```
@@ -20,7 +21,7 @@ Establish Amazon Polly User Credentials to get values for accessKey and secretKe
 
 1.) Sign up for AWS
 
-When you sign up for Amazon Web Services (AWS), your AWS account is automatically signed up for all services in AWS, including Amazon Polly. You are charged only for the services that you use. For example, I use AWS lamda service to host an Amazon echo skill I built. Free tier is 1 Million request per month. I've never had a charge.
+When you sign up for Amazon Web Services (AWS), your AWS account is automatically signed up for all services in AWS, including Amazon Polly. 
 
 2.) Create an IAM User
 
@@ -40,7 +41,7 @@ serviceRegion - Required value select region closest for best response. ServiceR
 ["us-west-2"] in US West (Oregon)  
 ["eu-west-1"] in EU (Ireland)
 
-cacheExpiration - Cache expiration life in days (Optional value). As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. If not specified, default value of 0 set to disable functionality.  
+cacheExpiration - Cache expiration life in days. As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. A default value of 0 set to disable functionality.  
 Example, 365 not used in a year.
 
 audioFormat - (only works under openhab 2.1) Optional User specified audio format. 
@@ -66,7 +67,7 @@ audioFormat=mp3
 
 The Polly extension does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide same time offline capability.
 
-For convenience, there is a tool where the audio cache can be generated in advance, to have a prefilled cache when starting this extension. You have to copy the generated data to your userdata/pollytts/cache folder.
+For convenience, there is a tool where the audio cache can be generated in advance, to have a prefilled cache when starting this extension. You have to copy the generated data to the UserData Folder. Linux (Packaged): /var/lib/openhab2/pollytts/cache or Others (Manual):  /[extracted location]/userdata/pollytts/cache
 
 Synopsis of this tool:
 

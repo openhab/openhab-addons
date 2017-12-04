@@ -14,7 +14,7 @@
 			<label>Secret Key</label>
 			<description>The Secret Key to get access. You need to register to get a key.</description>
 		</parameter>
-		<parameter name="serviceRegion" type="text" required="true">
+		<parameter name="serviceRegion" type="text">
                     <label>Service Region</label>
                     <description>The Service Region is need to select which region is closest to you.</description>
                     <options>
@@ -25,7 +25,7 @@
                    </options>
                   <default>eu-west-1</default>
                </parameter>
-	       <parameter name="audioFormat" type="text" required="false">
+	       <parameter name="audioFormat" type="text" >
                   <label>Optional User specified audio format</label>
                   <description>The user can override the system default audio format with their prefered option. 
                    "MP3"" and "OGG" are the only audio formats that are supported. </description>
@@ -34,13 +34,14 @@
                       <option value="MP3">MP3 format</option>
                       <option value="disable">Use system selected audio format</option>
                   </options>
-                  <default>"disabled"</default>
+                  <default>"default"</default>
                </parameter>
 
-             <parameter name="cacheExpiration" type="text" required="false">
+             <parameter name="cacheExpiration" type="text">
                 <label>Cache expiration life</label>
                 <description>Optional value, determines the age in days that cache files will be purged. 
-                 If not specified, default value of 30 days used. if set to 0 functionality disabled.</description>
+                 Default value set to 0 to disable functionality.</description>
+				<default>0</default>
             </parameter>
 	</config-description>
 
