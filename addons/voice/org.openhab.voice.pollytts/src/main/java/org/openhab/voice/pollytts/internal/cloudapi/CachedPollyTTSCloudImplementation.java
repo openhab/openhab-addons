@@ -9,7 +9,6 @@
 package org.openhab.voice.pollytts.internal.cloudapi;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,11 +70,8 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
             writeText(txtFileInCache, text);
             // return from cache
             return audioFileInCache;
-        } catch (FileNotFoundException ex) {
-            logger.warn("Could not write {} to cache, return null", audioFileInCache, ex);
-            return null;
         } catch (IOException ex) {
-            logger.error("Could not write {} to cache, return null", audioFileInCache, ex);
+            logger.warn("Could not write {} to cache, return null", audioFileInCache, ex);
             return null;
         }
     }

@@ -85,7 +85,7 @@ public class PollyTTSService implements TTSService {
                 val = config.containsKey(CONFIG_FORMAT) ? config.get(CONFIG_FORMAT).toString() : "default";
                 polly.setAudioFormat(val);
                 val = config.containsKey(CONFIG_EXPIRE) ? config.get(CONFIG_EXPIRE).toString() : "0";
-                polly.setExpireDate(Integer.parseInt(val));
+                polly.setExpireDate((int) Double.parseDouble(val));
                 successful = polly.initPollyServiceInterface();
             }
             if (successful) {

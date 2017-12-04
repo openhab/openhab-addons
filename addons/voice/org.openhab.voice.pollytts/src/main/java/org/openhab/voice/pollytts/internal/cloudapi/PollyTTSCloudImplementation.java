@@ -105,12 +105,12 @@ public class PollyTTSCloudImplementation {
         InputStream is = null;
         try {
             String voiceID = PollyClientConfig.labelToID.get(label);
-            audioFormat = audioFormat.toLowerCase();
+            String format = audioFormat.toLowerCase();
             if (audioFormat.equals("ogg")) {
-                audioFormat = "ogg_vorbis";
+                format = "ogg_vorbis";
             }
             SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
-                    .withOutputFormat(OutputFormat.fromValue(audioFormat));
+                    .withOutputFormat(OutputFormat.fromValue(format));
             SynthesizeSpeechResult synthRes = PollyClientConfig.polly.synthesizeSpeech(synthReq);
 
             is = synthRes.getAudioStream();
