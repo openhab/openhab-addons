@@ -409,7 +409,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         String addressFromConfiguration = ObjectUtils.toString(getConfig().get("address"));
         if (!addressFromAutodiscovery && StringUtils.isBlank(addressFromConfiguration)) {
             logger.warn(
-                    "Deprecated configuration for Thing '{}': no address property available. Using old style configuration, please update your things and item file(s). (see doc)",
+                    "Deprecated configuration for Thing '{}': no address property available. Using old style configuration, please update your things and items file(s). (see doc)",
                     thing.getUID());
         }
     }

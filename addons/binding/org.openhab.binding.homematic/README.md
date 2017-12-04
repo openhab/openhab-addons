@@ -52,7 +52,7 @@ All devices connected to a Homematic gateway. All required openHAB metadata are 
 
 Gateway discovery is available:
 * CCU
-* RaspberryMatic, >= 2.29.23.20171022
+* RaspberryMatic >= 2.29.23.20171022
 * Homegear >= 0.6.x
 
 For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways.  
@@ -161,7 +161,7 @@ The first parameter after Thing is the device type, the second the serial number
 As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
 
 ```
-  Thing HG-HM-LC-Dim1T-Pl-2 MyDevice  "Name"  @  "Location" [address="JEQ0999999"]
+  Thing HG-HM-LC-Dim1T-Pl-2 MyDevice "Name" @ "Location" [address="JEQ0999999"]
 ```
 
 All channels have two configs:
@@ -171,7 +171,7 @@ All channels have two configs:
 The receiveDelay is handy for dimmers and rollershutters for example. If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached. If you set the ```receiveDelay``` to some seconds, these events are filtered out and only the last position is distributed to openHab. The disadvantage is of course, that all events for this channel are delayed. 
 
 ```
-  Thing HM-LC-Dim1T-Pl-2 MyDevice "Name"  @  "Location" [address="JEQ0999999"] {
+  Thing HM-LC-Dim1T-Pl-2 MyDevice "Name" @ "Location" [address="JEQ0999999"] {
       Channels:
           Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
               delay = 0,
@@ -193,7 +193,7 @@ homematic:TYPE:BRIDGE:THINGID:CHANNELNUMBER#DATAPOINTNAME
 * **homematic:** the binding id, fixed  
 * **type:** the type of the Homematic device  
 * **bridge:** the name of the bridge  
-* **thingid:** the thing id of the Homematic device in openHab  
+* **thingid:** the thing id of the Homematic device in openHAB  
 * **channelnumber:** the channel number of the Homematic datapoint
 * **datapointname:** the name of the Homematic datapoint
 
@@ -410,9 +410,9 @@ sendCommand(Var_1, RefreshType.REFRESH)
 
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again. 
 
-**Deprecated configuration for Thing ...: no address property available. Using old style configuration, please update your things and item file(s)**
+**Deprecated configuration for Thing ...: no address property available. Using old style configuration, please update your things and items file(s)**
 
-You are using a old configuration in your things and item file(s), example:  
+You are using an old configuration in your things and items file(s), example:  
 
 ```
 // things file
