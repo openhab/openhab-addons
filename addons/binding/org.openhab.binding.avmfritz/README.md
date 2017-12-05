@@ -90,29 +90,29 @@ If correct credentials are set in the bridge configuration, connected AHA device
 demo.things:
 
 ```
-Bridge avmfritz:fritzbox:1 [ ipAddress="192.168.xxx.xxx", password ="xxx", user="xxx" ] {
-	FRITZ_DECT_200 DECT1 [ ain="xxxxxxxxxxx" ]
-	FRITZ_Powerline_546E PL1 [ ain="yy:yy:yy:yy:yyy" ]
-	Comet_DECT CD1 [ ain="aaaaaabbbbbb" ]
+Bridge avmfritz:fritzbox:1 @ "Office" [ ipAddress="192.168.x.x", password="xxx", user="xxx" ] {
+    Thing FRITZ_DECT_200 xxxxxxxxxxxx "FRITZ!DECT 200 #1" @ "Living Room" [ ain="xxxxxxxxxxxx" ]
+    Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" @ "Office" [ ain="yy:yy:yy:yy:yy:yy" ]
+    Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" @ "Office" [ ain="aaaaaabbbbbb" ]
 }
 ```
 
 demo.items:
 
 ```
-Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:outlet" }
-Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
-Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:energy" }
-Number Power1 "Current power consumption [%.2f W]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:power" }
+Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
+Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
+Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
+Number Power1 "Current power consumption [%.2f W]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:power" }
 
-Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:PL1:outlet" }
+Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:yy_yy_yy_yy_yy_yy:outlet" }
 
 Group gCOMETDECT "Comet DECT heating thermostat" <temperature>
 
-Number COMETDECTActualTemp "Actual measured temperature [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:actual_temp" }
-Number COMETDECTSetTemp "Thermostat temperature setpoint [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:set_temp" }
-String COMETDECTRadiatorMode "Radiator mode [%s]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:radiator_mode" }
-Switch COMETDECTBattery "Battery low" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:CD1:battery_low" }
+Number COMETDECTActualTemp "Actual measured temperature [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:actual_temp" }
+Number COMETDECTSetTemp "Thermostat temperature set point [%.1f °C]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:set_temp" }
+String COMETDECTRadiatorMode "Radiator mode [%s]" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:radiator_mode" }
+Switch COMETDECTBattery "Battery low" (gCOMETDECT) { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:battery_low" }
 ```
 
 demo.sitemap:
