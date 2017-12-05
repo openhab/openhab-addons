@@ -191,7 +191,7 @@ public class Thermostat extends BaseNestDevice {
      * Turns the time to target string into a real value.
      */
     static Integer parseTimeToTarget(String timeToTarget) {
-        if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<")) {
+        if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<") || timeToTarget.startsWith(">")) {
             return Integer.valueOf(timeToTarget.substring(1));
         }
         return Integer.valueOf(timeToTarget);
