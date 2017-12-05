@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description>
+	<config-description uri="voice:pollytts">
 		<parameter name="accessKey" type="text">
 			<label>Access Key</label>
 			<description>The Access Key to get access. You need to register to get a key.</description>
