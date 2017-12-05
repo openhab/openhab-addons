@@ -5,15 +5,19 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="voice:pollytts">
-		<parameter name="accessKey" type="text" required="true">
+	<config-description>
+		<parameter name="accessKey" type="text">
 			<label>Access Key</label>
 			<description>The Access Key to get access. You need to register to get a key.</description>
+		    <default>"accessKey"</default>
 		</parameter> 
-		<parameter name="secretKey" type="text" required="true">
+		
+		<parameter name="secretKey" type="text">
 			<label>Secret Key</label>
 			<description>The Secret Key to get access. You need to register to get a key.</description>
+		    <default>"secretKey"</default>
 		</parameter>
+		
 		<parameter name="serviceRegion" type="text">
                     <label>Service Region</label>
                     <description>The Service Region is need to select which region is closest to you.</description>
@@ -23,8 +27,9 @@
                        <option value="us-west-2">US West (Oregon)</option>
                        <option value="eu-west-1">EU (Ireland)</option>
                    </options>
-                  <default>eu-west-1</default>
-               </parameter>
+                  <default>"eu-west-1"</default>
+           </parameter>
+           
 	       <parameter name="audioFormat" type="text" >
                   <label>Optional User specified audio format</label>
                   <description>The user can override the system default audio format with their prefered option. 
@@ -32,7 +37,7 @@
                   <options>
                       <option value="OGG">OGG audio format</option>
                       <option value="MP3">MP3 format</option>
-                      <option value="disable">Use system selected audio format</option>
+                      <option value="default">Use system selected audio format</option>
                   </options>
                   <default>"default"</default>
                </parameter>

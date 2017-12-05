@@ -14,6 +14,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -34,100 +35,107 @@ public class PollyClientConfig {
 
     private final Logger logger = LoggerFactory.getLogger(PollyClientConfig.class);
 
-    private static String accessKey = null;
-    private static String secretKey = null;
-    private static String regionVal = null;
+    private static String accessKey;
+    private static String secretKey;
+    private static String regionVal;
     private static int expireDate = 30;
-    private static String audioFormat = null;
+    private static String audioFormat;
     private static long today = 0;
 
-    public static AmazonPollyClient polly;
+    public static AmazonPollyClient pollyClientInterface;
     public static List<Voice> pollyVoices;
     // translation function from unique voice label to voice id
-    public static HashMap<String, String> labelToID = new HashMap<String, String>();
+    public static HashMap<String, String> labelToID = new HashMap<>();
 
+    /**
+     * class constructor
+     */
     public PollyClientConfig() {
 
     }
 
+    /**
+     * save the user unique accessKey for the service
+     */
     public void setAccessKey(String key) {
         PollyClientConfig.accessKey = key;
     }
 
+    /**
+     * save the user unique secretKey for the service
+     */
     public void setSecretKey(String key) {
         PollyClientConfig.secretKey = key;
     }
 
+    /**
+     * save regional location for the server to be used
+     */
     public void setRegionVal(String val) {
         PollyClientConfig.regionVal = val;
     }
 
+    /**
+     * save the life time for cache files
+     * 0 means forever
+     */
     public void setExpireDate(int days) {
         PollyClientConfig.expireDate = days;
     }
 
+    /**
+     * get the life time for cache files
+     */
     static public int getExpireDate() {
         return PollyClientConfig.expireDate;
     }
 
+    /**
+     * sets audio format specified for audio
+     */
     public void setAudioFormat(String format) {
         PollyClientConfig.audioFormat = format;
     }
 
-    static public String getAudioFormat() {
+    /**
+     * returns audio format specified for audio
+     */
+    public static String getAudioFormat() {
         return PollyClientConfig.audioFormat;
     }
 
-    static public long getlastDelete() {
+    /**
+     * get the date when cache was cleaned last
+     */
+    public static long getlastDelete() {
         return PollyClientConfig.today;
     }
 
-    static public void setLastDelete(long today) {
+    /**
+     * set the date when cache was cleaned last
+     */
+    public static void setLastDelete(long today) {
         PollyClientConfig.today = today;
         ;
     }
 
+    /**
+     * Initializes the amazon service Credentials
+     * as a one time event, saved for future reference
+     */
     public boolean initPollyServiceInterface() {
-        // config file correct
-        boolean configOK = true;
-
-        // Validate access key
-        if (PollyClientConfig.accessKey == null) {
-            logger.error("Failed to activate PollyTTS: Missing access key, configure it first before using");
-            configOK = false;
-        }
-        // Validate secret key
-        if (PollyClientConfig.secretKey == null) {
-            logger.error("Failed to activate PollyTTS: Missing secret key, configure it first before using");
-            configOK = false;
-        }
-        // "us-east-1" ex.
-        if (PollyClientConfig.regionVal == null) {
-            logger.error("Failed to activate PollyTTS: Missing user region, configure it first before using");
-            configOK = false;
-        }
-        if (!PollyClientConfig.audioFormat.equals("default") && !PollyClientConfig.audioFormat.equals("MP3")
-                && !PollyClientConfig.audioFormat.equals("OGG")) {
-            logger.error("PollyTTS:  Invalid Audio Format specified in cfg: {} using default",
-                    PollyClientConfig.audioFormat);
-            setAudioFormat("default");
-        }
-        if (!configOK) {
-            return false;
-        }
-
         // service interface not created
         boolean initialized = false;
         try {
             AWSCredentials credentials = new BasicAWSCredentials(PollyClientConfig.accessKey,
                     PollyClientConfig.secretKey);
 
-            polly = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
+            pollyClientInterface = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
                     .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
             DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
             // ask Amazon Polly to describe available TTS voices.
-            DescribeVoicesResult describeVoicesResult = polly.describeVoices(describeVoicesRequest);
+            DescribeVoicesResult describeVoicesResult = pollyClientInterface.describeVoices(describeVoicesRequest);
             pollyVoices = describeVoicesResult.getVoices();
 
             // create voice to ID translation for service invocation
@@ -141,8 +149,8 @@ public class PollyClientConfig {
             today = 172800001;
 
             initialized = true;
-        } catch (Throwable t) {
-            logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
+        } catch (AmazonServiceException e) {
+            logger.error("Failed to activate PollyTTS: {}", e.getMessage(), e);
         }
         return initialized;
     }

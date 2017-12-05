@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
 import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
@@ -40,7 +37,7 @@ import com.amazonaws.services.polly.model.Voice;
 
 public class PollyTTSCloudImplementation {
 
-    private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
+    // private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
 
     private static Set<String> supportedAudioFormats = new HashSet<String>();
     static {
@@ -103,20 +100,15 @@ public class PollyTTSCloudImplementation {
      */
     public InputStream getTextToSpeech(String text, String label, String audioFormat) {
         InputStream is = null;
-        try {
-            String voiceID = PollyClientConfig.labelToID.get(label);
-            String format = audioFormat.toLowerCase();
-            if (audioFormat.equals("ogg")) {
-                format = "ogg_vorbis";
-            }
-            SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
-                    .withOutputFormat(OutputFormat.fromValue(format));
-            SynthesizeSpeechResult synthRes = PollyClientConfig.polly.synthesizeSpeech(synthReq);
-
-            is = synthRes.getAudioStream();
-        } catch (Throwable t) {
-            logger.error("Failed to obtain audio stream from service:", t.getMessage(), t);
+        String voiceID = PollyClientConfig.labelToID.get(label);
+        String format = audioFormat.toLowerCase();
+        if (audioFormat.equals("ogg")) {
+            format = "ogg_vorbis";
         }
+        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
+                .withOutputFormat(OutputFormat.fromValue(format));
+        SynthesizeSpeechResult synthRes = PollyClientConfig.pollyClientInterface.synthesizeSpeech(synthReq);
+        is = synthRes.getAudioStream();
         return is;
     }
 

@@ -26,6 +26,9 @@ import org.eclipse.smarthome.core.audio.FileAudioStream;
  */
 class PollyTTSAudioStream extends FileAudioStream {
 
+    /**
+     * main method the passes the audio file to system audio services
+     */
     public PollyTTSAudioStream(File audioFile, AudioFormat format) throws AudioException {
         super(audioFile, format);
     }

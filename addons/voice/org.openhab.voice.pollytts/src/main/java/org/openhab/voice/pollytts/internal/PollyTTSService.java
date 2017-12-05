@@ -37,16 +37,9 @@ import org.slf4j.LoggerFactory;
 public class PollyTTSService implements TTSService {
 
     /** Cache folder name is below userdata/polly/cache. */
-    private static final String CACHE_FOLDER_NAME = "pollytts/cache";
+    private final String CACHE_FOLDER_NAME = "pollytts/cache";
 
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
-
-    // Keys come from ConfigAdmin
-    private static final String CONFIG_ACCESS_KEY = "accessKey";
-    private static final String CONFIG_SECRET_KEY = "secretKey";
-    private static final String CONFIG_REGION = "serviceRegion";
-    private static final String CONFIG_EXPIRE = "cacheExpiration";
-    private static final String CONFIG_FORMAT = "audioFormat";
 
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
@@ -67,64 +60,70 @@ public class PollyTTSService implements TTSService {
      * DS activate, with access to ConfigAdmin
      */
     protected void activate(Map<String, Object> config) {
-        modified(config);
-    }
-
-    protected void modified(Map<String, Object> config) {
         try {
-            boolean successful = false;
-            if (config != null) {
-                PollyClientConfig polly = new PollyClientConfig();
-                String val = null;
-                val = config.containsKey(CONFIG_ACCESS_KEY) ? config.get(CONFIG_ACCESS_KEY).toString() : null;
-                polly.setAccessKey(val);
-                val = config.containsKey(CONFIG_SECRET_KEY) ? config.get(CONFIG_SECRET_KEY).toString() : null;
-                polly.setSecretKey(val);
-                val = config.containsKey(CONFIG_REGION) ? config.get(CONFIG_REGION).toString() : null;
-                polly.setRegionVal(val);
-                val = config.containsKey(CONFIG_FORMAT) ? config.get(CONFIG_FORMAT).toString() : "default";
-                polly.setAudioFormat(val);
-                val = config.containsKey(CONFIG_EXPIRE) ? config.get(CONFIG_EXPIRE).toString() : "0";
-                polly.setExpireDate((int) Double.parseDouble(val));
-                successful = polly.initPollyServiceInterface();
-            }
-            if (successful) {
-                pollyTssImpl = initVoiceImplementation();
-                audioFormats = initAudioFormats();
-                voices = initVoices();
-                logger.info("PollyTTS cfg data loaded and static elements (re)initialized");
-                logger.info("Using PollyTTS cache folder {}", getCacheFolderName());
-            } else {
-                logger.info("PollyTTS not initialized");
-            }
-
-        } catch (Throwable t) {
-            logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
+            modified(config);
+        } catch (IOException e) {
+            logger.error("config file error, could not initialize", e);
         }
     }
 
+    /**
+     * initialize voice service according to config values
+     * Keys come from ConfigAdmin
+     */
+    protected void modified(Map<String, Object> config) throws IOException {
+        PollyClientConfig polly = new PollyClientConfig();
+        polly.setAccessKey(config.get("accessKey").toString());
+        polly.setSecretKey(config.get("secretKey").toString());
+        polly.setRegionVal(config.get("serviceRegion").toString());
+        polly.setAudioFormat(config.get("audioFormat").toString());
+        polly.setExpireDate((int) Double.parseDouble(config.get("cacheExpiration").toString()));
+
+        boolean successful = polly.initPollyServiceInterface();
+
+        if (successful) {
+            pollyTssImpl = initVoiceImplementation();
+            audioFormats = initAudioFormats();
+            voices = initVoices();
+            logger.info("PollyTTS voice service initialized");
+            logger.debug("Using PollyTTS cache folder {}", getCacheFolderName());
+        } else {
+            logger.error("PollyTTS not initialized");
+        }
+    }
+
+    /**
+     * return voices available for the user to select
+     */
     @Override
     public Set<Voice> getAvailableVoices() {
         if (this.voices == null) {
-            logger.error("PollyTTS interface never initalized, check congiguration elements");
+            logger.debug("PollyTTS interface never initalized, check congiguration elements");
         }
         return this.voices;
     }
 
+    /**
+     * return possible auto formats provided by the system
+     */
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return this.audioFormats;
     }
 
+    /**
+     * obtain audio stream from cach to amazon polly service and return it
+     * to play the audio
+     */
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-        logger.debug("Synthesize '{}' in format {}", text, requestedFormat);
+    public AudioStream synthesize(String inText, Voice voice, AudioFormat requestedFormat) throws TTSException {
+        logger.debug("Synthesize '{}' in format {}", inText, requestedFormat);
         logger.debug("voice UID: '{}'   voice Label: '{}'  voice Locale: {}", voice.getUID(), voice.getLabel(),
                 voice.getLocale());
 
         // Validate arguments
         // trim text
-        text = text.trim();
+        String text = inText.trim();
         if ((null == text) || text.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
         }
@@ -152,7 +151,6 @@ public class PollyTTSService implements TTSService {
             }
             logger.debug("Audio Stream for '{}' in format {}", text, requestedFormat);
             AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
-            // AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile);
             return audioStream;
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -227,22 +225,31 @@ public class PollyTTSService implements TTSService {
         }
     }
 
-    private final CachedPollyTTSCloudImplementation initVoiceImplementation() {
+    private final CachedPollyTTSCloudImplementation initVoiceImplementation() throws IOException {
         CachedPollyTTSCloudImplementation apiImpl = new CachedPollyTTSCloudImplementation(getCacheFolderName());
         return apiImpl;
     }
 
+    /**
+     * fetch the name of cache folder to use
+     */
     String getCacheFolderName() {
         String folderName = ConfigConstants.getUserDataFolder();
         // we assume that this folder does NOT have a trailing separator
         return folderName + File.separator + CACHE_FOLDER_NAME;
     }
 
+    /**
+     * returns a unique identifier for the service
+     */
     @Override
     public String getId() {
         return "pollytts";
     }
 
+    /**
+     * returns txt description of this service
+     */
     @Override
     public String getLabel(Locale locale) {
         return "PollyTTS Text-to-Speech Engine";
