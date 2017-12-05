@@ -114,12 +114,12 @@ public class GsonParsingTest {
         assertEquals((Integer) 10, Thermostat.parseTimeToTarget("<10"));
         assertEquals((Integer) 15, Thermostat.parseTimeToTarget("~15"));
         assertEquals((Integer) 90, Thermostat.parseTimeToTarget("~90"));
-        assertEquals((Integer) 120, Thermostat.parseTimeToTarget("120"));
+        assertEquals((Integer) 120, Thermostat.parseTimeToTarget(">120"));
     }
 
     @Test(expected = NumberFormatException.class)
     public void thermostatTimeToTargetUnsupportedValueParsing() {
-        Thermostat.parseTimeToTarget(">5");
+        Thermostat.parseTimeToTarget("#5");
     }
 
     @Test

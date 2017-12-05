@@ -8,13 +8,13 @@ Because the Nest API runs on Nest's servers a connection with the Internet is re
 
 The table below lists the Nest binding thing types:
 
-| Things                                  | Description                              | Thing Type     |
-| --------------------------------------- | ---------------------------------------- | -------------- |
-| Nest Account                            | An account for using the Nest REST API   | account        |
-| Nest Cam (Indoor, IQ, Outdoor), Dropcam | A Nest Cam registered with your account  | camera         |
-| Nest Protect                            | The smoke detector/Nest Protect for the account | smoke_detector |
-| Structure                               | The Nest structure defines the house the account has setup on Nest.	You will only have more than one structure if you have more than one house | structure      |
-| Nest Thermostat (E)                     | A Thermostat to control the various aspects of the house's HVAC system | thermostat     |
+| Things                                  | Description                                                                                                                                    | Thing Type     |
+|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| Nest Account                            | An account for using the Nest REST API                                                                                                         | account        |
+| Nest Cam (Indoor, IQ, Outdoor), Dropcam | A Nest Cam registered with your account                                                                                                        | camera         |
+| Nest Protect                            | The smoke detector/Nest Protect for the account                                                                                                | smoke_detector |
+| Structure                               | The Nest structure defines the house the account has setup on Nest. You will only have more than one structure if you have more than one house | structure      |
+| Nest Thermostat (E)                     | A Thermostat to control the various aspects of the house's HVAC system                                                                         | thermostat     |
 
 ## Authorization
 
@@ -47,67 +47,68 @@ The account Thing Type does not have any channels.
 
 ### Camera Channels
 
-
-| Channel Type ID       | Item Type | Description                              | Read Write |
-| --------------------- | --------- | ---------------------------------------- | :--------: |
-| app_url               | String    | The app URL to see the camera            |     R      |
-| audio_input_enabled   | Switch    | If the audio input is currently enabled  |     R      |
-| public_share_enabled  | Switch    | If public sharing is currently enabled   |     R      |
-| public_share_url      | String    | The URL to see the public share of the camera |     R      |
-| snapshot_url          | String    | The URL to use for a snapshot of the video stream |     R      |
-| streaming             | Switch    | If the camera is currently streaming     |    R/W     |
-| video_history_enabled | Switch    | If the video history is currently enabled |     R      |
-| web_url               | String    | The web URL to see the camera            |     R      |
+| Channel Type ID       | Item Type | Description                                       | Read Write |
+|-----------------------|-----------|---------------------------------------------------|:----------:|
+| app_url               | String    | The app URL to see the camera                     |      R     |
+| audio_input_enabled   | Switch    | If the audio input is currently enabled           |      R     |
+| public_share_enabled  | Switch    | If public sharing is currently enabled            |      R     |
+| public_share_url      | String    | The URL to see the public share of the camera     |      R     |
+| snapshot_url          | String    | The URL to use for a snapshot of the video stream |      R     |
+| streaming             | Switch    | If the camera is currently streaming              |     R/W    |
+| video_history_enabled | Switch    | If the video history is currently enabled         |      R     |
+| web_url               | String    | The web URL to see the camera                     |      R     |
 
 ### Smoke Detector Channels
 
-| Channel Type ID    | Item Type | Description                              | Read Write |
-| ------------------ | --------- | ---------------------------------------- | :--------: |
-| co_alarm_state     | String    | The carbon monoxide alarm state of the Nest Protect (OK, EMERGENCY, WARNING) |     R      |
-| low_battery        | Switch    | Reports whether the battery of the Nest protect is low (if it is battery powered) |     R      |
-| manual_test_active | Switch    | Manual test active at the moment         |     R      |
-| smoke_alarm_state  | String    | The smoke alarm state of the Nest Protect (OK, EMERGENCY, WARNING) |     R      |
-| ui_color_state     | String    | The current color of the ring on the smoke detector (GRAY, GREEN, YELLOW, RED) |     R      |
+| Channel Type ID    | Item Type | Description                                                                       | Read Write |
+|--------------------|-----------|-----------------------------------------------------------------------------------|:----------:|
+| co_alarm_state     | String    | The carbon monoxide alarm state of the Nest Protect (OK, EMERGENCY, WARNING)      |      R     |
+| low_battery        | Switch    | Reports whether the battery of the Nest protect is low (if it is battery powered) |      R     |
+| manual_test_active | Switch    | Manual test active at the moment                                                  |      R     |
+| smoke_alarm_state  | String    | The smoke alarm state of the Nest Protect (OK, EMERGENCY, WARNING)                |      R     |
+| ui_color_state     | String    | The current color of the ring on the smoke detector (GRAY, GREEN, YELLOW, RED)    |      R     |
 
 ### Structure Channels
 
-| Channel Type ID              | Item Type | Description                              | Read Write |
-| ---------------------------- | --------- | ---------------------------------------- | :--------: |
-| away                         | String    | Away state of the structure (HOME, AWAY, AUTO_AWAY) |    R/W     |
-| country_code                 | String    | Country code of the structure ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)) |     R      |
-| co_alarm_state               | String    | Carbon Monoxide alarm state (OK, EMERGENCY, WARNING) |     R      |
-| eta_begin                    | DateTime  | Estimated time of arrival at home, will setup the heat to turn on and be warm |     R      |
-| peak_period_end_time         | DateTime  | Peak period end for the Rush Hour Rewards program |     R      |
-| peak_period_start_time       | DateTime  | Peak period start for the Rush Hour Rewards program |     R      |
-| postal_code                  | String    | Postal code of the structure             |     R      |
-| rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not |     R      |
-| smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING) |     R      |
-| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones)) |     R      |
+| Channel Type ID              | Item Type | Description                                                                                            | Read Write |
+|------------------------------|-----------|--------------------------------------------------------------------------------------------------------|:----------:|
+| away                         | String    | Away state of the structure (HOME, AWAY, AUTO_AWAY)                                                    |     R/W    |
+| country_code                 | String    | Country code of the structure ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)) |      R     |
+| co_alarm_state               | String    | Carbon Monoxide alarm state (OK, EMERGENCY, WARNING)                                                   |      R     |
+| eta_begin                    | DateTime  | Estimated time of arrival at home, will setup the heat to turn on and be warm                          |      R     |
+| peak_period_end_time         | DateTime  | Peak period end for the Rush Hour Rewards program                                                      |      R     |
+| peak_period_start_time       | DateTime  | Peak period start for the Rush Hour Rewards program                                                    |      R     |
+| postal_code                  | String    | Postal code of the structure                                                                           |      R     |
+| rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not                                                          |      R     |
+| smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING)                                                             |      R     |
+| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones))              |      R     |
 
 ### Thermostat Channels
 
-| Channel Type ID             | Item Type | Description                              | Read Write |
-| --------------------------- | --------- | ---------------------------------------- | :--------: |
-| can_cool                    | Switch    | If the thermostat can actually turn on cooling |     R      |
-| can_heat                    | Switch    | If the thermostat can actually turn on heating |     R      |
-| fan_timer_active            | Switch    | If the fan timer is engaged              |    R/W     |
-| fan_timer_duration          | Number    | Length of time (in minutes) that the fan is set to run (15, 30, 45, 60, 120, 240, 480, 960) |    R/W     |
-| has_fan                     | Switch    | If the thermostat can control the fan    |     R      |
-| has_leaf                    | Switch    | If the thermostat is currently in a leaf mode |     R      |
-| humidity                    | Number    | Indicates the current relative humidity  |     R      |
-| locked                      | Switch    | If the thermostat has the temperature locked to only be within a set range |    R     |
-| locked_max_set_point        | Number    | The locked range max set point in degrees Celsius |    R/W     |
-| locked_min_set_point        | Number    | The locked range min set point in degrees Celsius |    R/W     |
-| max_set_point               | Number    | The max set point in degrees Celsius     |    R/W     |
-| min_set_point               | Number    | The min set point in degrees Celsius     |    R/W     |
-| mode                        | String    | Current mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF) |    R/W     |
-| previous_mode               | String    | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF) |     R      |
-| temperature                 | Number    | Current temperature in degrees Celsius   |     R      |
-| time_to_target_mins         | Number    | Time left to the target temperature (mins) approximately |     R      |
-| set_point                   | Number    | The set point in degrees Celsius         |    R/W     |
-| sunlight_correction_active  | Switch    | If sunlight correction is active         |     R      |
-| sunlight_correction_enabled | Switch    | If sunlight correction is enabled        |     R      |
-| using_emergency_heat        | Switch    | If the system is currently using emergency heat |     R      |
+| Channel Type ID             | Item Type | Description                                                                                 | Read Write |
+|-----------------------------|-----------|---------------------------------------------------------------------------------------------|:----------:|
+| can_cool                    | Switch    | If the thermostat can actually turn on cooling                                              |      R     |
+| can_heat                    | Switch    | If the thermostat can actually turn on heating                                              |      R     |
+| fan_timer_active            | Switch    | If the fan timer is engaged                                                                 |     R/W    |
+| fan_timer_duration          | Number    | Length of time (in minutes) that the fan is set to run (15, 30, 45, 60, 120, 240, 480, 960) |     R/W    |
+| fan_timer_timeout           | DateTime  | Timestamp when the fan stops running                                                        |      R     |
+| has_fan                     | Switch    | If the thermostat can control the fan                                                       |      R     |
+| has_leaf                    | Switch    | If the thermostat is currently in a leaf mode                                               |      R     |
+| humidity                    | Number    | Indicates the current relative humidity                                                     |      R     |
+| locked                      | Switch    | If the thermostat has the temperature locked to only be within a set range                  |      R     |
+| locked_max_set_point        | Number    | The locked range max set point in degrees Celsius                                           |     R/W    |
+| locked_min_set_point        | Number    | The locked range min set point in degrees Celsius                                           |     R/W    |
+| max_set_point               | Number    | The max set point in degrees Celsius                                                        |     R/W    |
+| min_set_point               | Number    | The min set point in degrees Celsius                                                        |     R/W    |
+| mode                        | String    | Current mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                       |     R/W    |
+| previous_mode               | String    | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                  |      R     |
+| state                       | String    | The active state of the Nest thermostat (HEATING, COOLING, OFF)                             |      R     |
+| temperature                 | Number    | Current temperature in degrees Celsius                                                      |      R     |
+| time_to_target_mins         | Number    | Time left to the target temperature (mins) approximately                                    |      R     |
+| set_point                   | Number    | The set point in degrees Celsius                                                            |     R/W    |
+| sunlight_correction_active  | Switch    | If sunlight correction is active                                                            |      R     |
+| sunlight_correction_enabled | Switch    | If sunlight correction is enabled                                                           |      R     |
+| using_emergency_heat        | Switch    | If the system is currently using emergency heat                                             |      R     |
 
 Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App. The Nest API applies the following rounding:
 
@@ -156,6 +157,9 @@ String Smoke_UI_Color    "UI Color [%s]"    { channel="nest:smoke_detector:demo_
 /* Thermostat */
 Switch Thermostat_Can_Cool     "Can Cool"                       { channel="nest:thermostat:demo_account:living_thermostat:can_cool" }
 Switch Thermostat_Can_Heat     "Can Heat"                       { channel="nest:thermostat:demo_account:living_thermostat:can_heat" }
+Switch Thermostat_FT_Active    "Fan Timer Active"               { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_active" }
+Number Thermostat_FT_Duration  "Fan Timer Duration"             { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_duration" }
+DateTime Thermostat_FT_Timeout "Fan Timer Timeout [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_timeout" }
 Switch Thermostat_Has_Fan      "Has Fan"                        { channel="nest:thermostat:demo_account:living_thermostat:has_fan" }
 Switch Thermostat_Has_Leaf     "Has Leaf"                       { channel="nest:thermostat:demo_account:living_thermostat:has_leaf" }
 Number Thermostat_Humidity     "Humidity [%.1f %%]"             { channel="nest:thermostat:demo_account:living_thermostat:humidity" }
@@ -166,6 +170,7 @@ Number Thermostat_Max_SP       "Max Set Point [%.1f °C]"        { channel="nest
 Number Thermostat_Min_SP       "Min Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
 String Thermostat_Mode         "Mode [%s]"                      { channel="nest:thermostat:demo_account:living_thermostat:mode" }
 String Thermostat_PreviousMode "Previous Mode [%s]"             { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
+String Thermostat_State        "State [%s]"                     { channel="nest:thermostat:demo_account:living_thermostat:state" }
 Number Thermostat_Set_Point    "Set Point [%.1f °C]"            { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
 Switch Thermostat_SunlightCA   "Sunlight Correction Active"     { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
 Switch Thermostat_SunlightCE   "Sunlight Correction Enabled"    { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
