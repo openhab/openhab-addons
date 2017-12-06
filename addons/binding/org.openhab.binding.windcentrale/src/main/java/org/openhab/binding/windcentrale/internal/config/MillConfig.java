@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.windcentrale.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The configuration of a Mill thing.
  *
  * @author Wouter Born - Add Mill configuration object
  */
+@NonNullByDefault
 public class MillConfig {
 
     /**
