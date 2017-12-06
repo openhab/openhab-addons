@@ -102,7 +102,7 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_AUDIO_ZONE_MUTE = "zone_mute";
     public static final String CHANNEL_AUDIO_ZONE_VOLUME = "zone_volume";
     public static final String CHANNEL_AUDIO_ZONE_SOURCE = "zone_source";
-    public static final String CHANNEL_AUDIO_ZONE_CONTROLE = "zone_control";
+    public static final String CHANNEL_AUDIO_ZONE_CONTROL = "zone_control";
 
     // trigger channels
     public final static String TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT = "activated_event";

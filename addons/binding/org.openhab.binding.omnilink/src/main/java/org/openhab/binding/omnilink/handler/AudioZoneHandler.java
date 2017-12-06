@@ -53,7 +53,7 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler<AudioZoneStatus> i
                 case OmnilinkBindingConstants.CHANNEL_AUDIO_ZONE_SOURCE:
                     handleSourceCommand(command, audioZoneID);
                     break;
-                case OmnilinkBindingConstants.CHANNEL_AUDIO_ZONE_CONTROLE:
+                case OmnilinkBindingConstants.CHANNEL_AUDIO_ZONE_CONTROL:
                     handleControlCommand(command, audioZoneID);
                     break;
                 default:
