@@ -18,6 +18,12 @@ import org.openhab.binding.lgwebos.LGWebOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This action handler allows to send a toast message.
+ *
+ * @author Sebastian Prehn - initial contribution
+ *
+ */
 public class ToastActionHandler extends BaseModuleHandler<Action> implements ActionHandler {
     public static final String TYPE_ID = "lgwebos.ToastAction";
     public static final String PARAM_THING_ID = "thingId";

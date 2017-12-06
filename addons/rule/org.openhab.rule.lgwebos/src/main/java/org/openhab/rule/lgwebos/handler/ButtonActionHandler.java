@@ -16,6 +16,12 @@ import org.eclipse.smarthome.automation.handler.BaseModuleHandler;
 import org.openhab.binding.lgwebos.LGWebOS;
 import org.openhab.binding.lgwebos.LGWebOS.Button;
 
+/**
+ * This action handler allows to send a key press.
+ *
+ * @author Sebastian Prehn - initial contribution
+ *
+ */
 public class ButtonActionHandler extends BaseModuleHandler<Action> implements ActionHandler {
     public static final String TYPE_ID = "lgwebos.ButtonAction";
     public static final String PARAM_THING_ID = "thingId";

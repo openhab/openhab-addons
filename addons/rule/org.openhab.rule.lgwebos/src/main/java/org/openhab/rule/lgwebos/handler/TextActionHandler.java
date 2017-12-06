@@ -15,6 +15,12 @@ import org.eclipse.smarthome.automation.handler.ActionHandler;
 import org.eclipse.smarthome.automation.handler.BaseModuleHandler;
 import org.openhab.binding.lgwebos.LGWebOS;
 
+/**
+ * This action handler allows to send text input.
+ *
+ * @author Sebastian Prehn - initial contribution
+ *
+ */
 public class TextActionHandler extends BaseModuleHandler<Action> implements ActionHandler {
     public static final String TYPE_ID = "lgwebos.TextAction";
     public static final String PARAM_THING_ID = "thingId";
