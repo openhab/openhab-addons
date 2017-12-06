@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
  * @author Mark Hilbush - Added login/password authentication for LMS
+ * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -547,10 +548,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private String fetchUrl(String messagePart, final String mac) {
+            // default url for cover art. Works all the time except for some particular case
             String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            // if messagePart start with "artwork_url:http://", default url works
             if (messagePart != null && messagePart.startsWith("artwork_url%3A")
                     && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
                 url = messagePart.substring("artwork_url%3A".length());
+                // example of particular case.
+                // this web radio : http://broadcast.infomaniak.net/tsfjazz-high.mp3
+                // default url return error 404
+                // messagePart = artwork_url%3Ahtml%2Fimages%2Fradio.png (artwork_url:html/images/radio.png)
+                // working url : "http://" + host + ":" + webport + "/" + "html/images/radio.png";
                 if (url.startsWith("%2F")) {
                     url = "http://" + host + ":" + webport + decode(url);
                 } else {
@@ -566,8 +574,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
             String remoteTitle = "", artist = "", album = "", genre = "", year = "";
-            // default url for cover art
-            // String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
             String url = fetchUrl(mac);
 
             for (String messagePart : messageParts) {
