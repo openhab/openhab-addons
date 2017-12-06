@@ -10,6 +10,7 @@ package org.openhab.binding.windcentrale.handler;
 
 import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +60,7 @@ public class WindcentraleHandler extends BaseThingHandler {
     private final ExpiringCache<@Nullable String> windcentraleCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         try {
             return millUrl != null ? HttpUtil.executeUrl("GET", millUrl, 5000) : null;
-        } catch (Exception e) {
+        } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
