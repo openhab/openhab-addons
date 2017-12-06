@@ -13,6 +13,7 @@
             <channel id="zone_mute" typeId="audio_zone_mute" />
             <channel id="zone_volume" typeId="audio_zone_volume" />
             <channel id="zone_source" typeId="audio_zone_source" />
+            <channel id="zone_control" typeId="audio_zone_control" />
         </channels>
         <properties>
             <property name="name" />
@@ -53,4 +54,11 @@
         <state min="1" max="100"/>
     </channel-type>
     
+    <channel-type id="audio_zone_control">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Control the Zone, e.g. start/stop/next/previous/ffward/rewind</description>
+        <category>Player</category>
+    </channel-type>
+        
 </thing:thing-descriptions>
