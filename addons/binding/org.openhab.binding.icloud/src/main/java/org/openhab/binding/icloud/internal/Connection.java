@@ -23,6 +23,9 @@ import java.util.Base64;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
+ * Handles communication with the apple server. Provides methods to
+ * get device information and to ping a device.
+ *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
