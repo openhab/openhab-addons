@@ -24,12 +24,18 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
 
     private final static long POLL_DELAY = 5; // 5 Second polling
 
-    private final static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     private ScheduledFuture<?> scheduledPolling = null;
 
-    public static void shutdownExecutor() {
+    public synchronized static void shutdownExecutor() {
         executorService.shutdownNow();
+    }
+
+    public synchronized static void startExecutor() {
+        if (executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadScheduledExecutor();
+        }
     }
 
     public AudioSourceHandler(Thing thing) {
