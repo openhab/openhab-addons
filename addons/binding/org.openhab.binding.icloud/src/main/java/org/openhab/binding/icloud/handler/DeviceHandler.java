@@ -83,7 +83,7 @@ public class DeviceHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
-                bridge.pingPhone(deviceId);
+                bridge.findMyDevice(deviceId);
                 updateState(FIND_MY_PHONE, OnOffType.OFF);
             }
         }

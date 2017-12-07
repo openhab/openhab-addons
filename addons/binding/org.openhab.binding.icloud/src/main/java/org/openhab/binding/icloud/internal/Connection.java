@@ -24,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Handles communication with the apple server. Provides methods to
- * get device information and to ping a device.
+ * get device information and to find a device.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
@@ -55,11 +55,11 @@ public class Connection {
     }
 
     /***
-     * Sends a ping request (find my phone).
+     * Sends a "find my device" request.
      *
      * @throws Exception
      */
-    public void pingPhone(String id) throws Exception {
+    public void findMyDevice(String id) throws Exception {
         String request = "{ \n \"device\": \"" + id + "\", \n \"subject\": \"Find My Device alert\" \n }";
         getResponse(postRequest(iCloudPingDeviceURL, request));
     }

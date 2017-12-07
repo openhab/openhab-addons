@@ -150,11 +150,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         return address;
     }
 
-    public void pingPhone(String deviceId) {
+    public void findMyDevice(String deviceId) {
         try {
-            connection.pingPhone(deviceId);
+            connection.findMyDevice(deviceId);
         } catch (Exception e) {
-            logger.warn("Unable to execute device ping", e);
+            logger.warn("Unable to execute \"find my device\" ", e);
         }
     }
 
