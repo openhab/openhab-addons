@@ -26,7 +26,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
  * @author Craig Hamilton
  *
  */
-public class ZoneHandler extends AbstractOmnilinkHandler<ZoneStatus> {
+public class ZoneHandler extends AbstractOmnilinkStatusHandler<ZoneStatus> {
     private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
 
     public ZoneHandler(Thing thing) {

@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
  * @author Craig Hamilton
  *
  */
-public class UpbUnitHandler extends AbstractOmnilinkHandler<UnitStatus> implements UnitHandler {
+public class UpbUnitHandler extends AbstractOmnilinkStatusHandler<UnitStatus> implements UnitHandler {
 
     private final static Map<Type, OmniLinkCmd> sCommandMappingMap = ImmutableMap.<Type, OmniLinkCmd> of(
             IncreaseDecreaseType.INCREASE, OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1, IncreaseDecreaseType.DECREASE,

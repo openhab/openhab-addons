@@ -25,6 +25,7 @@ import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
@@ -73,6 +74,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             discoverButtons();
             discoverThermostats();
             discoverAudioZones();
+            discoverAudioSources();
             discoverTempSensors();
             discoverHumiditySensors();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
@@ -128,6 +130,27 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         for (AudioZoneProperties objectProperties : objectPropertyRequest) {
 
             ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
+                    Integer.toString(objectProperties.getNumber()));
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName()).build();
+            thingDiscovered(discoveryResult);
+        }
+    }
+
+    private void discoverAudioSources()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        ObjectPropertyRequest<AudioSourceProperties> objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, ObjectPropertyRequests.AUDIO_SOURCE).selectNamed().build();
+
+        for (AudioSourceProperties objectProperties : objectPropertyRequest) {
+
+            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AUDIO_SOURCE,
                     Integer.toString(objectProperties.getNumber()));
 
             Map<String, Object> properties = new HashMap<>();

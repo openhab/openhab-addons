@@ -6,14 +6,18 @@
         <supported-bridge-type-refs>
             <bridge-type-ref id="controller" />
         </supported-bridge-type-refs>
-        <label>Code</label>
-        <description>User Code</description>
+        <label>Audio Source</label>
+        <description>Audio Source</description>
         <channels>
-            <channel id="name" typeId="audio_source_name" />
+            <channel id="source_text_1" typeId="audio_source_text" />
+            <channel id="source_text_2" typeId="audio_source_text" />
+            <channel id="source_text_3" typeId="audio_source_text" />
+            <channel id="source_text_4" typeId="audio_source_text" />
+            <channel id="source_text_5" typeId="audio_source_text" />
+            <channel id="source_text_6" typeId="audio_source_text" />
         </channels>
         <properties>
             <property name="name" />
-            <property name="area" />
         </properties>
         <config-description>
             <parameter name="number" type="integer" required="true">
@@ -22,4 +26,13 @@
             </parameter>
         </config-description>
     </thing-type>
+    
+    <!-- Audio Source Channels -->
+    <channel-type id="audio_source_text">
+        <item-type>String</item-type>
+        <label>Line of source data</label>
+        <description>A line of source data</description>
+    </channel-type>
+    
+    
 </thing:thing-descriptions>

@@ -5,6 +5,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -34,6 +36,7 @@ import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
@@ -206,6 +209,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
                         omniConnection.addDisconnectListener(retryingDisconnectListener);
                         omniConnection.enableNotifications();
+
+                        Message m;
+                        int pos = 0;
+                        List<String> text = new LinkedList<String>();
+                        while ((m = omniConnection.reqAudioSourceStatus(1, pos))
+                                .getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
+                            AudioSourceStatus a = (AudioSourceStatus) m;
+                            text.add(a.getSourceData());
+                            pos = a.getPosition();
+                        }
+
                         temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
 
                         updateStatus(ThingStatus.ONLINE);
@@ -409,6 +423,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    public Message requestAudioSourceStatus(final int source, final int position)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqAudioSourceStatus(source, position);
+        } catch (OmniNotConnectedException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+    }
+
     public ObjectStatus requestObjectStatus(final int objType, final int startObject, final int endObject,
             boolean extended)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
@@ -442,6 +466,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.removeDisconnecListener(retryingDisconnectListener);
             omniConnection.disconnect();
         }
+        AudioSourceHandler.shutdownExecutor();
     }
 
     private Optional<Thing> getChildThing(ThingTypeUID type, int number) {

@@ -23,7 +23,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
  * @author Craig Hamilton
  *
  */
-public class FlagHandler extends AbstractOmnilinkHandler<UnitStatus> implements UnitHandler {
+public class FlagHandler extends AbstractOmnilinkStatusHandler<UnitStatus> implements UnitHandler {
 
     public FlagHandler(Thing thing) {
         super(thing);

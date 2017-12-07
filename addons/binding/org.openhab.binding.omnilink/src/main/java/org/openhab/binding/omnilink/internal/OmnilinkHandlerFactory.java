@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
+import org.openhab.binding.omnilink.handler.AudioSourceHandler;
 import org.openhab.binding.omnilink.handler.AudioZoneHandler;
 import org.openhab.binding.omnilink.handler.ButtonHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
@@ -62,7 +63,7 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_OMNI_AREA,
             THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON,
             THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE, THING_TYPE_AUDIO_ZONE,
-            THING_TYPE_TEMP_SENSOR, THING_TYPE_HUMIDITY_SENSOR);
+            THING_TYPE_AUDIO_SOURCE, THING_TYPE_TEMP_SENSOR, THING_TYPE_HUMIDITY_SENSOR);
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -94,6 +95,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new ThermostatHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_AUDIO_ZONE)) {
             return new AudioZoneHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_AUDIO_SOURCE)) {
+            return new AudioSourceHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TEMP_SENSOR)) {
             return new TempSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_HUMIDITY_SENSOR)) {

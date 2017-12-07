@@ -22,7 +22,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AuxSensorStatus;
  * @author Craig Hamilton
  *
  */
-public class TempSensorHandler extends AbstractOmnilinkHandler<AuxSensorStatus> implements ThingHandler {
+public class TempSensorHandler extends AbstractOmnilinkStatusHandler<AuxSensorStatus> implements ThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(TempSensorHandler.class);
 

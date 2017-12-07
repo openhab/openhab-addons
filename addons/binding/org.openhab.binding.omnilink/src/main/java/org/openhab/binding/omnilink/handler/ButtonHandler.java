@@ -21,7 +21,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
  * @author Craig Hamilton
  *
  */
-public class ButtonHandler extends AbstractOmnilinkHandler {
+public class ButtonHandler extends AbstractOmnilinkStatusHandler {
     private Logger logger = LoggerFactory.getLogger(ButtonHandler.class);
 
     public ButtonHandler(Thing thing) {
