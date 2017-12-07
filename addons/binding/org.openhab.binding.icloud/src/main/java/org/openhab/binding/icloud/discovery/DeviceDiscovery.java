@@ -40,25 +40,23 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
 
     public void discover(List<Content> content) {
         if (content != null) {
-            for (int i = 0; i < content.toArray().length; i++) {
+            for (Content record : content) {
                 try {
-                    logger.debug("Discovery for index [{}]", i);
-
-                    String deviceTypeName = content.get(i).getDeviceDisplayName();
-                    String deviceOwnerName = content.get(i).getName();
+                    String deviceTypeName = record.getDeviceDisplayName();
+                    String deviceOwnerName = record.getName();
 
                     String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
-                    String deviceId = content.get(i).getId();
+                    String deviceId = record.getId();
                     String deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
-                    logger.debug("iCloud device discovery for [{}]", content.get(i).getDeviceDisplayName());
+                    logger.debug("iCloud device discovery for [{}]", record.getDeviceDisplayName());
 
                     ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
                             .withProperty(DEVICE_PROPERTY_ID, deviceId).withRepresentationProperty(DEVICE_PROPERTY_ID)
                             .withLabel(thingLabel).build();
 
-                    logger.debug("Device id [{}] found.", deviceIdHash);
+                    logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
 
                     thingDiscovered(result);
                 } catch (Exception exception) {
