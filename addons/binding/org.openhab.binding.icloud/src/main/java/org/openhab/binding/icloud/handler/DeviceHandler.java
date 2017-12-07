@@ -51,7 +51,7 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     public void update(ArrayList<Content> content) {
-        Content deviceData = getDeviceData(content);
+        Content deviceData = getDeviceInformationRecord(content);
         if (deviceData != null) {
             deviceId = deviceData.getId();
             updateStatus(ThingStatus.ONLINE);
@@ -95,16 +95,16 @@ public class DeviceHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    private void updateLocationRelatedStates(Content deviceData) {
-        DecimalType latitude = new DecimalType(deviceData.getLocation().getLatitude());
-        DecimalType longitude = new DecimalType(deviceData.getLocation().getLongitude());
-        DecimalType accuracy = new DecimalType(deviceData.getLocation().getHorizontalAccuracy());
+    private void updateLocationRelatedStates(Content deviceInformationRecord) {
+        DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
+        DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
+        DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
 
         PointType location = new PointType(latitude, longitude);
 
         updateState(LOCATION, location);
         updateState(LOCATION_ACCURACY, accuracy);
-        updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceData));
+        updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
 
         updateAddressStates(location);
 
@@ -165,16 +165,16 @@ public class DeviceHandler extends BaseThingHandler {
         }
     }
 
-    private Content getDeviceData(ArrayList<Content> content) {
+    private Content getDeviceInformationRecord(ArrayList<Content> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
         try {
-            for (int i = 0; i < content.size(); i++) {
-                String currentId = content.get(i).getId();
+            for (Content deviceInformationRecord : deviceInformationList) {
+                String currentId = deviceInformationRecord.getId();
 
                 logger.debug("Current data element: [{}]", currentId);
 
-                if (deviceId.compareToIgnoreCase(currentId) == 0) {
-                    return content.get(i);
+                if (deviceId.equalsIgnoreCase(currentId)) {
+                    return deviceInformationRecord;
                 }
             }
 
