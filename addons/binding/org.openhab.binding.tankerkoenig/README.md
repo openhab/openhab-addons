@@ -15,6 +15,7 @@ While using the mode Opening-Times the channel "station_open" will NOT show "clo
 In order to use this binding one needs to prepare:
 
 -minimal Java Varsion is 1.8.0_101-b13 (otherwise the https request will not produce a usable return)
+
 -a personal API-Key
 
 Demand free Tankerkönig API key from: https://creativecommons.tankerkoenig.de/  Select the tab "API-Key".
