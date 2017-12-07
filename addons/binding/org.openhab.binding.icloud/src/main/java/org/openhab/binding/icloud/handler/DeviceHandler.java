@@ -136,7 +136,7 @@ public class DeviceHandler extends BaseThingHandler {
                         : UnDefType.UNDEF;
             }
         } catch (Exception e) {
-            logException(e);
+            logger.warn("Unable to retrieve human readable address.", e);
         }
 
         updateState(ADDRESS_STREET, streetState);
@@ -179,8 +179,7 @@ public class DeviceHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            logger.error("Get content for thing with id [{}] failed", deviceId);
-            logException(e);
+            logger.warn("Get content for thing with id [{}] failed", deviceId, e);
         }
         logger.debug("Unable to find device data.");
         return null;
@@ -198,10 +197,6 @@ public class DeviceHandler extends BaseThingHandler {
         }
 
         return dateTime;
-    }
-
-    private void logException(Exception exception) {
-        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
     }
 
 }
