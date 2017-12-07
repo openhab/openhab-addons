@@ -153,7 +153,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         try {
             connection.pingPhone(deviceId);
         } catch (Exception e) {
-            logger.debug("{}", e.getMessage(), e.getStackTrace().toString());
+            logger.warn("Unable to execute device ping", e);
         }
     }
 
@@ -215,7 +215,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
                 logger.debug("iCloud bridge data refresh complete.");
             } catch (Exception e) {
-                logException(e);
+                logger.warn("Unable to read data from iCloud", e);
                 updateStatus(ThingStatus.OFFLINE);
             }
         }
@@ -237,10 +237,6 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         updateState(NUMBER_OF_DEVICES, new DecimalType(iCloudData.getContent().toArray().length));
         updateState(OWNER, new StringType(firstName + " " + lastName));
-    }
-
-    private void logException(Exception exception) {
-        logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
     }
 
 }
