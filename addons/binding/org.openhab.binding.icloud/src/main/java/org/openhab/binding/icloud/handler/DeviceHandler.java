@@ -50,23 +50,23 @@ public class DeviceHandler extends BaseThingHandler {
         this.locationProvider = locationProvider;
     }
 
-    public void update(ArrayList<Content> content) {
-        Content deviceData = getDeviceInformationRecord(content);
-        if (deviceData != null) {
-            deviceId = deviceData.getId();
+    public void update(ArrayList<Content> deviceInformationList) {
+        Content deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
+        if (deviceInformationRecord != null) {
+            deviceId = deviceInformationRecord.getId();
             updateStatus(ThingStatus.ONLINE);
 
-            updateState(BATTERY_STATUS, new StringType(deviceData.getBatteryStatus()));
+            updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
 
-            Double batteryLevel = deviceData.getBatteryLevel();
+            Double batteryLevel = deviceInformationRecord.getBatteryLevel();
             if ((batteryLevel != null) && (batteryLevel != Double.NaN)) {
-                updateState(BATTERY_LEVEL, new DecimalType(deviceData.getBatteryLevel() * 100));
+                updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
             }
 
-            if (deviceData.getLocation() != null) {
-                updateLocationRelatedStates(deviceData);
+            if (deviceInformationRecord.getLocation() != null) {
+                updateLocationRelatedStates(deviceInformationRecord);
             }
-            updateState(DEVICE_NAME, new StringType(deviceData.getName()));
+            updateState(DEVICE_NAME, new StringType(deviceInformationRecord.getName()));
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -185,11 +185,11 @@ public class DeviceHandler extends BaseThingHandler {
         return null;
     }
 
-    private State getLastLocationUpdateDateTimeState(Content deviceData) {
+    private State getLastLocationUpdateDateTimeState(Content deviceInformationRecord) {
         State dateTime = UnDefType.UNDEF;
 
-        if (deviceData.getLocation().getTimeStamp() > 0) {
-            Date javaDate = new Date(deviceData.getLocation().getTimeStamp());
+        if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {
+            Date javaDate = new Date(deviceInformationRecord.getLocation().getTimeStamp());
             SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
             String lastUpdate = javaDateFormat.format(javaDate);
 
