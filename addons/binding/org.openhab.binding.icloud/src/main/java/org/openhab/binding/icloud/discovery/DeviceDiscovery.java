@@ -10,7 +10,7 @@ package org.openhab.binding.icloud.discovery;
 
 import static org.openhab.binding.icloud.BindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Device discovery creates a thing in the inbox for each icloud device
+ * found in the data received from {@link BridgeHandler}.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
@@ -36,7 +38,7 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
         this.bridgeUID = iCloudBridgeHandler.getThing().getUID();
     }
 
-    public void discover(ArrayList<Content> content) {
+    public void discover(List<Content> content) {
         if (content != null) {
             for (int i = 0; i < content.toArray().length; i++) {
                 try {
