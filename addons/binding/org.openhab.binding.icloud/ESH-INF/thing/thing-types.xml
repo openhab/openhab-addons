@@ -29,7 +29,6 @@
 				<default>5</default>
 			</parameter>
 			<parameter name="googleAPIKey" type="text">
-				<context>password</context>
 				<label>Google API Key</label>
 				<description>Google API key to be used for address lookup calls (to translate coordinates into a human readable string). Without a key the number of daily request are limited and the bindings address lookup functionality will stop working.</description>
 			</parameter>
