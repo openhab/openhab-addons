@@ -111,8 +111,9 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        service.unregister();
-        this.refreshJob.cancel(true);
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
         super.dispose();
     }
 
