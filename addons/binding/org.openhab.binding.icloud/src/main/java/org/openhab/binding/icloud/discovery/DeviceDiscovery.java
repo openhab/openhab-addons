@@ -60,7 +60,7 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
 
                     thingDiscovered(result);
                 } catch (Exception exception) {
-                    logger.error("{}", exception.getMessage() + "\n" + exception.getStackTrace().toString());
+                    logger.warn("Failed to process discovery result", exception);
                 }
             }
         }
