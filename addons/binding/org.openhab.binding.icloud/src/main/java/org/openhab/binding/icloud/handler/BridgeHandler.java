@@ -217,7 +217,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 logger.debug("iCloud bridge data refresh complete.");
             } catch (Exception e) {
                 logger.warn("Unable to read data from iCloud", e);
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
