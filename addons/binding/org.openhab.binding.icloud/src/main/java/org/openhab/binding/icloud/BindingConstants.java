@@ -35,24 +35,24 @@ public class BindingConstants {
             Arrays.asList(THING_TYPE_ICLOUD, THING_TYPE_ICLOUDDEVICE));
 
     // List of all Channel IDs
-    public static final String NUMBEROFDEVICES = "numberOfDevices";
+    public static final String NUMBER_OF_DEVICES = "numberOfDevices";
     public static final String OWNER = "owner";
     public static final String REFRESH = "refresh";
 
-    public static final String BATTERYSTATUS = "batteryStatus";
-    public static final String BATTERYLEVEL = "batteryLevel";
-    public static final String FINDMYPHONE = "findMyPhone";
+    public static final String BATTERY_STATUS = "batteryStatus";
+    public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String FIND_MY_PHONE = "findMyPhone";
     public static final String LOCATION = "location";
-    public static final String LOCATIONACCURACY = "locationAccuracy";
-    public static final String LOCATIONLASTUPDATE = "locationLastUpdate";
-    public static final String DISTANCEFROMHOME = "distanceFromHome";
-    public static final String ADDRESSSTREET = "addressStreet";
-    public static final String ADDRESSCITY = "addressCity";
-    public static final String ADDRESSCOUNTRY = "addressCountry";
-    public static final String FORMATTEDADDRESS = "formattedAddress";
-    public static final String DEVICENAME = "deviceName";
+    public static final String LOCATION_ACCURACY = "locationAccuracy";
+    public static final String LOCATION_LASTUPDATE = "locationLastUpdate";
+    public static final String DISTANCE_FROM_HOME = "distanceFromHome";
+    public static final String ADDRESS_STREET = "addressStreet";
+    public static final String ADDRESS_CITY = "addressCity";
+    public static final String ADDRESS_COUNTRY = "addressCountry";
+    public static final String ADDRESS_HUMAN_READABLE = "formattedAddress";
+    public static final String DEVICE_NAME = "deviceName";
 
     // Device properties
-    public static final String DEVICEIDHASHPROPERTY = "deviceIdHash";
-    public static final String DEVICEIDPROPERTY = "deviceId";
+    public static final String DEVICE_PROPERTY_IDHASH = "deviceIdHash";
+    public static final String DEVICE_PROPERTY_ID = "deviceId";
 }

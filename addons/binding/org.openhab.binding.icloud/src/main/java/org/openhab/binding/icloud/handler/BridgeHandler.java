@@ -232,7 +232,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         String firstName = iCloudData.getUserInfo().getFirstName();
         String lastName = iCloudData.getUserInfo().getLastName();
 
-        updateState(NUMBEROFDEVICES, new DecimalType(iCloudData.getContent().toArray().length));
+        updateState(NUMBER_OF_DEVICES, new DecimalType(iCloudData.getContent().toArray().length));
         updateState(OWNER, new StringType(firstName + " " + lastName));
     }
 

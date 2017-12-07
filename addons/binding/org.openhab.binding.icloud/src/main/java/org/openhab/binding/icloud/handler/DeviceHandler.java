@@ -56,17 +56,17 @@ public class DeviceHandler extends BaseThingHandler {
             deviceId = deviceData.getId();
             updateStatus(ThingStatus.ONLINE);
 
-            updateState(BATTERYSTATUS, new StringType(deviceData.getBatteryStatus()));
+            updateState(BATTERY_STATUS, new StringType(deviceData.getBatteryStatus()));
 
             Double batteryLevel = deviceData.getBatteryLevel();
             if ((batteryLevel != null) && (batteryLevel != Double.NaN)) {
-                updateState(BATTERYLEVEL, new DecimalType(deviceData.getBatteryLevel() * 100));
+                updateState(BATTERY_LEVEL, new DecimalType(deviceData.getBatteryLevel() * 100));
             }
 
             if (deviceData.getLocation() != null) {
                 updateLocationRelatedStates(deviceData);
             }
-            updateState(DEVICENAME, new StringType(deviceData.getName()));
+            updateState(DEVICE_NAME, new StringType(deviceData.getName()));
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -81,10 +81,10 @@ public class DeviceHandler extends BaseThingHandler {
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
-        if (channelId.equals(FINDMYPHONE)) {
+        if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 bridge.pingPhone(deviceId);
-                updateState(FINDMYPHONE, OnOffType.OFF);
+                updateState(FIND_MY_PHONE, OnOffType.OFF);
             }
         }
     }
@@ -103,8 +103,8 @@ public class DeviceHandler extends BaseThingHandler {
         PointType location = new PointType(latitude, longitude);
 
         updateState(LOCATION, location);
-        updateState(LOCATIONACCURACY, accuracy);
-        updateState(LOCATIONLASTUPDATE, getLastLocationUpdateDateTimeState(deviceData));
+        updateState(LOCATION_ACCURACY, accuracy);
+        updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceData));
 
         updateAddressStates(location);
 
@@ -113,7 +113,7 @@ public class DeviceHandler extends BaseThingHandler {
             if (homeLocation != null) {
                 DecimalType distanceFromHome = homeLocation.distanceFrom(location);
 
-                updateState(DISTANCEFROMHOME, distanceFromHome);
+                updateState(DISTANCE_FROM_HOME, distanceFromHome);
             }
         }
     }
@@ -139,10 +139,10 @@ public class DeviceHandler extends BaseThingHandler {
             logException(e);
         }
 
-        updateState(ADDRESSSTREET, streetState);
-        updateState(ADDRESSCITY, cityState);
-        updateState(ADDRESSCOUNTRY, countryState);
-        updateState(FORMATTEDADDRESS, formattedAddressState);
+        updateState(ADDRESS_STREET, streetState);
+        updateState(ADDRESS_CITY, cityState);
+        updateState(ADDRESS_COUNTRY, countryState);
+        updateState(ADDRESS_HUMAN_READABLE, formattedAddressState);
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
