@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DeviceDiscovery extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
 
