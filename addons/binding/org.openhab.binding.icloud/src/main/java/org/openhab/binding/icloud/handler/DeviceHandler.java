@@ -36,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Handles updates of an icloud device thing.
+ *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
@@ -59,7 +61,7 @@ public class DeviceHandler extends BaseThingHandler {
             updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
 
             Double batteryLevel = deviceInformationRecord.getBatteryLevel();
-            if ((batteryLevel != null) && (batteryLevel != Double.NaN)) {
+            if (batteryLevel != Double.NaN) {
                 updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
             }
 
