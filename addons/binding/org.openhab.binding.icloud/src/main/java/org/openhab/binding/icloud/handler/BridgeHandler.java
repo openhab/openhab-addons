@@ -208,7 +208,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                         discoveryService.discover(iCloudData.getContent());
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Status = " + statusCode);
+                                "Status = " + statusCode + ", Response = " + json);
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE);
