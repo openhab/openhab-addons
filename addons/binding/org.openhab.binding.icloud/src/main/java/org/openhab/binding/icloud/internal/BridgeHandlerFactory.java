@@ -25,7 +25,6 @@ import org.openhab.binding.icloud.handler.DeviceHandler;
  *
  * @author Patrik Gfeller - Initial contribution
  */
-// @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
 public class BridgeHandlerFactory extends BaseThingHandlerFactory {
     private LocationProvider locationProvider;
 
