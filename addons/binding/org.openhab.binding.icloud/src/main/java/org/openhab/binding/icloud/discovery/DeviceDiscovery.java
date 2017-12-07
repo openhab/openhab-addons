@@ -38,18 +38,18 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
         this.bridgeUID = iCloudBridgeHandler.getThing().getUID();
     }
 
-    public void discover(List<Content> content) {
-        if (content != null) {
-            for (Content record : content) {
+    public void discover(List<Content> deviceInformationList) {
+        if (deviceInformationList != null) {
+            for (Content deviceInformationRecord : deviceInformationList) {
                 try {
-                    String deviceTypeName = record.getDeviceDisplayName();
-                    String deviceOwnerName = record.getName();
+                    String deviceTypeName = deviceInformationRecord.getDeviceDisplayName();
+                    String deviceOwnerName = deviceInformationRecord.getName();
 
                     String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
-                    String deviceId = record.getId();
+                    String deviceId = deviceInformationRecord.getId();
                     String deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
-                    logger.debug("iCloud device discovery for [{}]", record.getDeviceDisplayName());
+                    logger.debug("iCloud device discovery for [{}]", deviceInformationRecord.getDeviceDisplayName());
 
                     ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
