@@ -33,7 +33,7 @@ public class DeviceInformationParser {
             Gson gson = new GsonBuilder().create();
             data = gson.fromJson(json, JSONRootObject.class);
         } catch (Exception e) {
-            logger.error("{}", e.getMessage(), e.getStackTrace().toString());
+            logger.warn("Unable to parse json {}", json, e);
         }
     }
 }
