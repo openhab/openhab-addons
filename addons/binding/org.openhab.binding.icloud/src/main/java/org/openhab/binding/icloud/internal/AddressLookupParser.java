@@ -20,7 +20,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class AddressLookupParser {

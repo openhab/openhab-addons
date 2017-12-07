@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class DeviceDiscovery extends AbstractDiscoveryService {

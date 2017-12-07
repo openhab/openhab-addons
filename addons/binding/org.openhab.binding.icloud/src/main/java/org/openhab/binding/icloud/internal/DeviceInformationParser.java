@@ -22,7 +22,7 @@ import com.google.gson.GsonBuilder;
 /**
  * Extracts iCloud device information from a given JSON string
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class DeviceInformationParser {

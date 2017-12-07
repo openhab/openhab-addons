@@ -23,7 +23,7 @@ import java.util.Base64;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class Connection {

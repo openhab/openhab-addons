@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
 public class BridgeHandler extends BaseBridgeHandler {

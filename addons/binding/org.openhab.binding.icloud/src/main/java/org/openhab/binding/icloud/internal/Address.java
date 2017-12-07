@@ -10,7 +10,7 @@ package org.openhab.binding.icloud.internal;
 
 /**
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class Address {

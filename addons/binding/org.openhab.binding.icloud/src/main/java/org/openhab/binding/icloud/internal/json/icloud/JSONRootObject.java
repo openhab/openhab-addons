@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class JSONRootObject {

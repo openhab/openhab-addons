@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.library.types.PointType;
 /**
  * Lookup addresses from given coordinates.
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class AddressLookup {
