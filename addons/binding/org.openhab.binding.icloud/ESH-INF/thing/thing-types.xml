@@ -16,7 +16,7 @@
 			<parameter name="appleId" type="text" required="true">
 				<context>email</context>
 				<label>Apple Id</label>
-				<description>Apple Id (eMail) to access iCloud information.</description>
+				<description>Apple Id (e-mail) to access iCloud information.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
