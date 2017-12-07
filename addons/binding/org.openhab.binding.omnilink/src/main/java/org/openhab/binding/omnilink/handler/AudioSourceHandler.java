@@ -29,6 +29,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
     private ScheduledFuture<?> scheduledPolling = null;
 
     public synchronized static void shutdownExecutor() {
+        logger.debug("Shutting down audio polling executor service");
         executorService.shutdownNow();
     }
 

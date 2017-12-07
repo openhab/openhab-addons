@@ -3,13 +3,16 @@ package org.openhab.binding.omnilink.handler;
 import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.handler.audio.AudioPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +53,9 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
                 case OmnilinkBindingConstants.CHANNEL_AUDIO_ZONE_SOURCE:
                     handleSourceCommand(command, audioZoneID);
                     break;
+                case OmnilinkBindingConstants.CHANNEL_AUDIO_ZONE_CONTROL:
+                    handleControlCommand(command, audioZoneID);
+                    break;
                 default:
                     logger.warn("Channel ID ({}) not processed", channelID);
                     break;
@@ -57,6 +63,35 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
             }
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("received exception handling command", e);
+        }
+
+    }
+
+    private void handleControlCommand(Command command, int audioZoneID)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        Optional<AudioPlayer> audioPlayer = getOmnilinkBridgeHander().getAudioPlayer();
+        if (audioPlayer.isPresent()) {
+            AudioPlayer player = audioPlayer.get();
+            if (command instanceof PlayPauseType) {
+                if (command.equals(PlayPauseType.PLAY)) {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
+                            player.getPlayCommand(), audioZoneID);
+                } else if (command.equals(PlayPauseType.PAUSE)) {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
+                            player.getPauseCommand(), audioZoneID);
+                }
+            }
+            if (command instanceof NextPreviousType) {
+                if (command.equals(NextPreviousType.NEXT)) {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
+                            player.getNextCommand(), audioZoneID);
+                } else if (command.equals(NextPreviousType.PREVIOUS)) {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
+                            player.getPreviousCommand(), audioZoneID);
+                }
+            }
+        } else {
+            logger.warn("No Audio Player Detected");
         }
 
     }

@@ -5,8 +5,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
+import org.openhab.binding.omnilink.handler.audio.AudioPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +35,10 @@ import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
-import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemFeatures;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemFormats;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
@@ -69,6 +68,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
     private Connection omniConnection;
     private TemperatureFormat temperatureFormat;
+    private Optional<AudioPlayer> audioPlayer = Optional.empty();
     private DisconnectListener retryingDisconnectListener;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
@@ -130,6 +130,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
             return omniConnection.reqSystemFormats();
+        } catch (IOException | OmniNotConnectedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+    }
+
+    private SystemFeatures reqSystemFeatures()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqSystemFeatures();
         } catch (IOException | OmniNotConnectedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw new BridgeOfflineException(e);
@@ -206,21 +216,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
                         omniConnection = new Connection(config.getIpAddress(), config.getPort(),
                                 config.getKey1() + ":" + config.getKey2());
+                        temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
+                        // HAI only supports one audio player - cycle through features until we find a featue that is an
+                        // audio player.
+                        audioPlayer = reqSystemFeatures().getFeatures().stream()
+                                .map(featureCode -> AudioPlayer.getAudioPlayerForFeatureCode(featureCode))
+                                .filter(Optional::isPresent).findFirst().orElse(Optional.empty());
+
+                        temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
+
                         omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
                         omniConnection.addDisconnectListener(retryingDisconnectListener);
                         omniConnection.enableNotifications();
-
-                        Message m;
-                        int pos = 0;
-                        List<String> text = new LinkedList<String>();
-                        while ((m = omniConnection.reqAudioSourceStatus(1, pos))
-                                .getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
-                            AudioSourceStatus a = (AudioSourceStatus) m;
-                            text.add(a.getSourceData());
-                            pos = a.getPosition();
-                        }
-
-                        temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
 
                         updateStatus(ThingStatus.ONLINE);
                     } catch (UnknownHostException e) {
@@ -486,6 +493,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, unitId);
         }
         return theThing;
+    }
+
+    public Optional<AudioPlayer> getAudioPlayer() {
+        return audioPlayer;
     }
 
 }
