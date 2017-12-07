@@ -39,18 +39,19 @@ public class Connection {
 
     private final byte[] authorization;
     private URL iCloudDataRequestURL;
-    private URL iCloudPingDeviceURL;
+    private URL iCloudFindMyDeviceURL;
 
     public Connection(String appleId, String password) throws MalformedURLException {
         authorization = Base64.getEncoder().encode((appleId + ":" + password).getBytes());
         iCloudDataRequestURL = new URL(iCloudApiURL + appleId + iCloudAPIRequestDataCommand);
-        iCloudPingDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);
+        iCloudFindMyDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);
     }
 
     public String requestDeviceStatusJSON() throws Exception {
-        HttpsURLConnection connection = postRequest(iCloudDataRequestURL, dataRequest);
+        HttpsURLConnection connection = connect(iCloudDataRequestURL);
+        String response = postRequest(connection, dataRequest);
+        connection.disconnect();
 
-        String response = getResponse(connection);
         return response;
     }
 
@@ -61,7 +62,9 @@ public class Connection {
      */
     public void findMyDevice(String id) throws Exception {
         String request = "{ \n \"device\": \"" + id + "\", \n \"subject\": \"Find My Device alert\" \n }";
-        getResponse(postRequest(iCloudPingDeviceURL, request));
+        HttpsURLConnection connection = connect(iCloudFindMyDeviceURL);
+        postRequest(connection, request);
+        connection.disconnect();
     }
 
     private void setRequestProperties(HttpsURLConnection connection, String payload)
@@ -80,17 +83,20 @@ public class Connection {
         connection.setRequestProperty("Content-Length", Integer.toString(payload.getBytes("UTF-8").length));
     }
 
-    private HttpsURLConnection postRequest(URL url, String payload) throws Exception {
-        HttpsURLConnection connection;
-        connection = (HttpsURLConnection) url.openConnection();
+    private String postRequest(HttpsURLConnection connection, String payload) throws Exception {
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.setRequestMethod("POST");
         setRequestProperties(connection, payload);
 
-        connection.connect();
         connection.getOutputStream().write(payload.getBytes("UTF-8"));
-        connection.disconnect();
+
+        return getResponse(connection);
+    }
+
+    private HttpsURLConnection connect(URL url) throws IOException {
+        HttpsURLConnection connection;
+        connection = (HttpsURLConnection) url.openConnection();
         return connection;
     }
 
