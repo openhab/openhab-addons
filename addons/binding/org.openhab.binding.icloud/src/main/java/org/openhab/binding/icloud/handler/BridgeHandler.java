@@ -46,6 +46,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Retrieves the data for a given account from iCloud and passes the
+ * information to {@link DeviceDiscover} and to the {@link DeviceHandler}s.
+ *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
@@ -82,7 +85,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("iCloud bridge handler initializing ...");
         startHandler();
-        logger.debug("lCloud bridge initialized.");
+        logger.debug("iCloud bridge initialized.");
     }
 
     @Override
