@@ -16,18 +16,18 @@ package org.openhab.binding.icloud.internal.json.google;
 public class Bounds {
     private Northeast northeast;
 
+    private Southwest southwest;
+
     public Northeast getNortheast() {
         return this.northeast;
     }
 
-    public void setNortheast(Northeast northeast) {
-        this.northeast = northeast;
-    }
-
-    private Southwest southwest;
-
     public Southwest getSouthwest() {
         return this.southwest;
+    }
+
+    public void setNortheast(Northeast northeast) {
+        this.northeast = northeast;
     }
 
     public void setSouthwest(Southwest southwest) {

@@ -16,18 +16,18 @@ package org.openhab.binding.icloud.internal.json.google;
 public class Northeast {
     private double lat;
 
+    private double lng;
+
     public double getLat() {
         return this.lat;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    private double lng;
-
     public double getLng() {
         return this.lng;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
     public void setLng(double lng) {

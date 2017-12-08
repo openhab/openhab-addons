@@ -18,18 +18,18 @@ import java.util.ArrayList;
 public class JSONRootObject {
     private ArrayList<Result> results;
 
+    private String status;
+
     public ArrayList<Result> getResults() {
         return this.results;
     }
 
-    public void setResults(ArrayList<Result> results) {
-        this.results = results;
-    }
-
-    private String status;
-
     public String getStatus() {
         return this.status;
+    }
+
+    public void setResults(ArrayList<Result> results) {
+        this.results = results;
     }
 
     public void setStatus(String status) {

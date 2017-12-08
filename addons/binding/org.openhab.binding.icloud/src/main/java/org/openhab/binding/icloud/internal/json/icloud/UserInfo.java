@@ -16,51 +16,51 @@ package org.openhab.binding.icloud.internal.json.icloud;
 public class UserInfo {
     private int accountFormatter;
 
+    private String firstName;
+
+    private boolean hasMembers;
+
+    private String lastName;
+
+    private Object membersInfo;
+
     public int getAccountFormatter() {
         return this.accountFormatter;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public boolean getHasMembers() {
+        return this.hasMembers;
+    }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public Object getMembersInfo() {
+        return this.membersInfo;
     }
 
     public void setAccountFormatter(int accountFormatter) {
         this.accountFormatter = accountFormatter;
     }
 
-    private String firstName;
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    private String lastName;
-
-    public String getLastName() {
-        return this.lastName;
+    public void setHasMembers(boolean hasMembers) {
+        this.hasMembers = hasMembers;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    private Object membersInfo;
-
-    public Object getMembersInfo() {
-        return this.membersInfo;
-    }
-
     public void setMembersInfo(Object membersInfo) {
         this.membersInfo = membersInfo;
-    }
-
-    private boolean hasMembers;
-
-    public boolean getHasMembers() {
-        return this.hasMembers;
-    }
-
-    public void setHasMembers(boolean hasMembers) {
-        this.hasMembers = hasMembers;
     }
 }

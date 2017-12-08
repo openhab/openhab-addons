@@ -16,48 +16,48 @@ package org.openhab.binding.icloud.internal.json.icloud;
 public class Timezone {
     private int currentOffset;
 
+    private int previousOffset;
+
+    private long previousTransition;
+
+    private String tzCurrentName;
+
+    private String tzName;
+
     public int getCurrentOffset() {
         return this.currentOffset;
+    }
+
+    public int getPreviousOffset() {
+        return this.previousOffset;
+    }
+
+    public long getPreviousTransition() {
+        return this.previousTransition;
+    }
+
+    public String getTzCurrentName() {
+        return this.tzCurrentName;
+    }
+
+    public String getTzName() {
+        return this.tzName;
     }
 
     public void setCurrentOffset(int currentOffset) {
         this.currentOffset = currentOffset;
     }
 
-    private long previousTransition;
-
-    public long getPreviousTransition() {
-        return this.previousTransition;
+    public void setPreviousOffset(int previousOffset) {
+        this.previousOffset = previousOffset;
     }
 
     public void setPreviousTransition(long previousTransition) {
         this.previousTransition = previousTransition;
     }
 
-    private int previousOffset;
-
-    public int getPreviousOffset() {
-        return this.previousOffset;
-    }
-
-    public void setPreviousOffset(int previousOffset) {
-        this.previousOffset = previousOffset;
-    }
-
-    private String tzCurrentName;
-
-    public String getTzCurrentName() {
-        return this.tzCurrentName;
-    }
-
     public void setTzCurrentName(String tzCurrentName) {
         this.tzCurrentName = tzCurrentName;
-    }
-
-    private String tzName;
-
-    public String getTzName() {
-        return this.tzName;
     }
 
     public void setTzName(String tzName) {

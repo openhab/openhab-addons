@@ -14,123 +14,123 @@ package org.openhab.binding.icloud.internal.json.icloud;
  *
  */
 public class Location {
-    private boolean isOld;
+    private double altitude;
 
-    public boolean getIsOld() {
-        return this.isOld;
-    }
+    private int floorLevel;
 
-    public void setIsOld(boolean isOld) {
-        this.isOld = isOld;
-    }
+    private double horizontalAccuracy;
 
     private boolean isInaccurate;
+
+    private boolean isOld;
+
+    private double latitude;
+
+    private boolean locationFinished;
+
+    private String locationType;
+
+    private double longitude;
+
+    private String positionType;
+
+    private long timeStamp;
+
+    private double verticalAccuracy;
+
+    public double getAltitude() {
+        return this.altitude;
+    }
+
+    public int getFloorLevel() {
+        return this.floorLevel;
+    }
+
+    public double getHorizontalAccuracy() {
+        return this.horizontalAccuracy;
+    }
 
     public boolean getIsInaccurate() {
         return this.isInaccurate;
     }
 
-    public void setIsInaccurate(boolean isInaccurate) {
-        this.isInaccurate = isInaccurate;
+    public boolean getIsOld() {
+        return this.isOld;
     }
 
-    private double altitude;
+    public double getLatitude() {
+        return this.latitude;
+    }
 
-    public double getAltitude() {
-        return this.altitude;
+    public boolean getLocationFinished() {
+        return this.locationFinished;
+    }
+
+    public String getLocationType() {
+        return this.locationType;
+    }
+
+    public double getLongitude() {
+        return this.longitude;
+    }
+
+    public String getPositionType() {
+        return this.positionType;
+    }
+
+    public long getTimeStamp() {
+        return this.timeStamp;
+    }
+
+    public double getVerticalAccuracy() {
+        return this.verticalAccuracy;
     }
 
     public void setAltitude(double altitude) {
         this.altitude = altitude;
     }
 
-    private String positionType;
-
-    public String getPositionType() {
-        return this.positionType;
-    }
-
-    public void setPositionType(String positionType) {
-        this.positionType = positionType;
-    }
-
-    private double latitude;
-
-    public double getLatitude() {
-        return this.latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    private int floorLevel;
-
-    public int getFloorLevel() {
-        return this.floorLevel;
-    }
-
     public void setFloorLevel(int floorLevel) {
         this.floorLevel = floorLevel;
-    }
-
-    private double horizontalAccuracy;
-
-    public double getHorizontalAccuracy() {
-        return this.horizontalAccuracy;
     }
 
     public void setHorizontalAccuracy(double horizontalAccuracy) {
         this.horizontalAccuracy = horizontalAccuracy;
     }
 
-    private String locationType;
-
-    public String getLocationType() {
-        return this.locationType;
+    public void setIsInaccurate(boolean isInaccurate) {
+        this.isInaccurate = isInaccurate;
     }
 
-    public void setLocationType(String locationType) {
-        this.locationType = locationType;
+    public void setIsOld(boolean isOld) {
+        this.isOld = isOld;
     }
 
-    private long timeStamp;
-
-    public long getTimeStamp() {
-        return this.timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    private boolean locationFinished;
-
-    public boolean getLocationFinished() {
-        return this.locationFinished;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public void setLocationFinished(boolean locationFinished) {
         this.locationFinished = locationFinished;
     }
 
-    private double verticalAccuracy;
-
-    public double getVerticalAccuracy() {
-        return this.verticalAccuracy;
-    }
-
-    public void setVerticalAccuracy(double verticalAccuracy) {
-        this.verticalAccuracy = verticalAccuracy;
-    }
-
-    private double longitude;
-
-    public double getLongitude() {
-        return this.longitude;
+    public void setLocationType(String locationType) {
+        this.locationType = locationType;
     }
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setPositionType(String positionType) {
+        this.positionType = positionType;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public void setVerticalAccuracy(double verticalAccuracy) {
+        this.verticalAccuracy = verticalAccuracy;
     }
 }

@@ -14,223 +14,223 @@ package org.openhab.binding.icloud.internal.json.icloud;
  *
  */
 public class Features {
-    private boolean MSG;
+    private boolean CLK;
 
-    public boolean getMSG() {
-        return this.MSG;
-    }
+    private boolean CLT;
 
-    public void setMSG(boolean MSG) {
-        this.MSG = MSG;
-    }
+    private boolean CWP;
+
+    private boolean KEY;
+
+    private boolean KPD;
+
+    private boolean LCK;
+
+    private boolean LKL;
+
+    private boolean LKM;
+
+    private boolean LLC;
+
+    private boolean LMG;
 
     private boolean LOC;
 
-    public boolean getLOC() {
-        return this.LOC;
+    private boolean LST;
+
+    private boolean MCS;
+
+    private boolean MSG;
+
+    private boolean PIN;
+
+    private boolean REM;
+
+    private boolean SND;
+
+    private boolean SVP;
+
+    private boolean TEU;
+
+    private boolean WIP;
+
+    private boolean WMG;
+
+    private boolean XRM;
+
+    public boolean getCLK() {
+        return this.CLK;
     }
 
-    public void setLOC(boolean LOC) {
-        this.LOC = LOC;
+    public boolean getCLT() {
+        return this.CLT;
     }
 
-    private boolean LLC;
+    public boolean getCWP() {
+        return this.CWP;
+    }
+
+    public boolean getKEY() {
+        return this.KEY;
+    }
+
+    public boolean getKPD() {
+        return this.KPD;
+    }
+
+    public boolean getLCK() {
+        return this.LCK;
+    }
+
+    public boolean getLKL() {
+        return this.LKL;
+    }
+
+    public boolean getLKM() {
+        return this.LKM;
+    }
 
     public boolean getLLC() {
         return this.LLC;
     }
 
-    public void setLLC(boolean LLC) {
-        this.LLC = LLC;
+    public boolean getLMG() {
+        return this.LMG;
     }
 
-    private boolean CLK;
+    public boolean getLOC() {
+        return this.LOC;
+    }
 
-    public boolean getCLK() {
-        return this.CLK;
+    public boolean getLST() {
+        return this.LST;
+    }
+
+    public boolean getMCS() {
+        return this.MCS;
+    }
+
+    public boolean getMSG() {
+        return this.MSG;
+    }
+
+    public boolean getPIN() {
+        return this.PIN;
+    }
+
+    public boolean getREM() {
+        return this.REM;
+    }
+
+    public boolean getSND() {
+        return this.SND;
+    }
+
+    public boolean getSVP() {
+        return this.SVP;
+    }
+
+    public boolean getTEU() {
+        return this.TEU;
+    }
+
+    public boolean getWIP() {
+        return this.WIP;
+    }
+
+    public boolean getWMG() {
+        return this.WMG;
+    }
+
+    public boolean getXRM() {
+        return this.XRM;
     }
 
     public void setCLK(boolean CLK) {
         this.CLK = CLK;
     }
 
-    private boolean TEU;
-
-    public boolean getTEU() {
-        return this.TEU;
-    }
-
-    public void setTEU(boolean TEU) {
-        this.TEU = TEU;
-    }
-
-    private boolean LMG;
-
-    public boolean getLMG() {
-        return this.LMG;
-    }
-
-    public void setLMG(boolean LMG) {
-        this.LMG = LMG;
-    }
-
-    private boolean SND;
-
-    public boolean getSND() {
-        return this.SND;
-    }
-
-    public void setSND(boolean SND) {
-        this.SND = SND;
-    }
-
-    private boolean CLT;
-
-    public boolean getCLT() {
-        return this.CLT;
-    }
-
     public void setCLT(boolean CLT) {
         this.CLT = CLT;
-    }
-
-    private boolean LKL;
-
-    public boolean getLKL() {
-        return this.LKL;
-    }
-
-    public void setLKL(boolean LKL) {
-        this.LKL = LKL;
-    }
-
-    private boolean SVP;
-
-    public boolean getSVP() {
-        return this.SVP;
-    }
-
-    public void setSVP(boolean SVP) {
-        this.SVP = SVP;
-    }
-
-    private boolean LST;
-
-    public boolean getLST() {
-        return this.LST;
-    }
-
-    public void setLST(boolean LST) {
-        this.LST = LST;
-    }
-
-    private boolean LKM;
-
-    public boolean getLKM() {
-        return this.LKM;
-    }
-
-    public void setLKM(boolean LKM) {
-        this.LKM = LKM;
-    }
-
-    private boolean WMG;
-
-    public boolean getWMG() {
-        return this.WMG;
-    }
-
-    public void setWMG(boolean WMG) {
-        this.WMG = WMG;
-    }
-
-    private boolean XRM;
-
-    public boolean getXRM() {
-        return this.XRM;
-    }
-
-    public void setXRM(boolean XRM) {
-        this.XRM = XRM;
-    }
-
-    private boolean PIN;
-
-    public boolean getPIN() {
-        return this.PIN;
-    }
-
-    public void setPIN(boolean PIN) {
-        this.PIN = PIN;
-    }
-
-    private boolean LCK;
-
-    public boolean getLCK() {
-        return this.LCK;
-    }
-
-    public void setLCK(boolean LCK) {
-        this.LCK = LCK;
-    }
-
-    private boolean REM;
-
-    public boolean getREM() {
-        return this.REM;
-    }
-
-    public void setREM(boolean REM) {
-        this.REM = REM;
-    }
-
-    private boolean MCS;
-
-    public boolean getMCS() {
-        return this.MCS;
-    }
-
-    public void setMCS(boolean MCS) {
-        this.MCS = MCS;
-    }
-
-    private boolean CWP;
-
-    public boolean getCWP() {
-        return this.CWP;
     }
 
     public void setCWP(boolean CWP) {
         this.CWP = CWP;
     }
 
-    private boolean KEY;
-
-    public boolean getKEY() {
-        return this.KEY;
-    }
-
     public void setKEY(boolean KEY) {
         this.KEY = KEY;
-    }
-
-    private boolean KPD;
-
-    public boolean getKPD() {
-        return this.KPD;
     }
 
     public void setKPD(boolean KPD) {
         this.KPD = KPD;
     }
 
-    private boolean WIP;
+    public void setLCK(boolean LCK) {
+        this.LCK = LCK;
+    }
 
-    public boolean getWIP() {
-        return this.WIP;
+    public void setLKL(boolean LKL) {
+        this.LKL = LKL;
+    }
+
+    public void setLKM(boolean LKM) {
+        this.LKM = LKM;
+    }
+
+    public void setLLC(boolean LLC) {
+        this.LLC = LLC;
+    }
+
+    public void setLMG(boolean LMG) {
+        this.LMG = LMG;
+    }
+
+    public void setLOC(boolean LOC) {
+        this.LOC = LOC;
+    }
+
+    public void setLST(boolean LST) {
+        this.LST = LST;
+    }
+
+    public void setMCS(boolean MCS) {
+        this.MCS = MCS;
+    }
+
+    public void setMSG(boolean MSG) {
+        this.MSG = MSG;
+    }
+
+    public void setPIN(boolean PIN) {
+        this.PIN = PIN;
+    }
+
+    public void setREM(boolean REM) {
+        this.REM = REM;
+    }
+
+    public void setSND(boolean SND) {
+        this.SND = SND;
+    }
+
+    public void setSVP(boolean SVP) {
+        this.SVP = SVP;
+    }
+
+    public void setTEU(boolean TEU) {
+        this.TEU = TEU;
     }
 
     public void setWIP(boolean WIP) {
         this.WIP = WIP;
+    }
+
+    public void setWMG(boolean WMG) {
+        this.WMG = WMG;
+    }
+
+    public void setXRM(boolean XRM) {
+        this.XRM = XRM;
     }
 }
