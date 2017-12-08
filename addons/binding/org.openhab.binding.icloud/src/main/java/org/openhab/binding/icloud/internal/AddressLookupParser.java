@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.internal.json.google.AddressComponent;
 import org.openhab.binding.icloud.internal.json.google.JSONRootObject;
 import org.openhab.binding.icloud.internal.json.google.Result;
@@ -19,12 +18,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * Parses a google API address lookup response (json).
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class AddressLookupParser {
-    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AddressLookupParser.class);
     private JSONRootObject data;
 
     public AddressLookupParser(String json) {
@@ -32,7 +32,7 @@ public class AddressLookupParser {
             Gson gson = new GsonBuilder().create();
             data = gson.fromJson(json, JSONRootObject.class);
         } catch (Exception e) {
-            logger.error("{}", e.getMessage(), e.getStackTrace().toString());
+            logger.warn("Unable to parse address lookup response: {}", json, e);
         }
     }
 
@@ -47,8 +47,7 @@ public class AddressLookupParser {
 
         address.FormattedAddress = result.getFormattedAddress();
 
-        for (int i = 0; i < result.getAddressComponents().size(); i++) {
-            AddressComponent component = result.getAddressComponents().get(i);
+        for (AddressComponent component : result.getAddressComponents()) {
             String componentType = component.getTypes().get(0).toString();
 
             switch (componentType) {
