@@ -10,6 +10,8 @@ package org.openhab.binding.windcentrale.internal;
 
 import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,6 +28,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Marcel Verpaalen - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.windcentrale", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@NonNullByDefault
 public class WindcentraleHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
@@ -34,7 +37,7 @@ public class WindcentraleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MILL)) {

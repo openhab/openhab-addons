@@ -10,10 +10,13 @@ package org.openhab.binding.windcentrale.handler;
 
 import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -26,32 +29,45 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.windcentrale.internal.config.MillConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link WindcentraleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 public class WindcentraleHandler extends BaseThingHandler {
+
+    private static final String URL_FORMAT = "https://zep-api.windcentrale.nl/production/%d/live?ignoreLoadingBar=true";
+    private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
+
     private final Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
+    private final JsonParser parser = new JsonParser();
 
-    private static final String BASE_URL = "https://zep-api.windcentrale.nl/production/";
-    private BigDecimal wd = BigDecimal.ONE;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable MillConfig millConfig;
+    private @Nullable String millUrl;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    private JsonParser parser;
-    private final int CACHE_EXPIRY = 5 * 1000; // 5s
-    private ExpiringCache<String> windcentraleCache;
+    private final ExpiringCache<@Nullable String> windcentraleCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        try {
+            return millUrl != null ? HttpUtil.executeUrl("GET", millUrl, 5000) : null;
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            return null;
+        }
+    });
 
     public WindcentraleHandler(Thing thing) {
         super(thing);
-        parser = new JsonParser();
     }
 
     @Override
@@ -68,46 +84,18 @@ public class WindcentraleHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Windcentrale handler '{}'", getThing().getUID());
 
-        Object param;
+        MillConfig config = getConfig().as(MillConfig.class);
 
-        param = getConfig().get(PROPERTY_MILL_ID);
-        int millId;
-        if (param instanceof BigDecimal) {
-            millId = ((BigDecimal) param).intValue();
-        } else {
-            millId = 1;
-        }
+        millConfig = config;
+        millUrl = String.format(URL_FORMAT, config.millId);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, config.refreshInterval, TimeUnit.SECONDS);
 
-        param = getConfig().get(PROPERTY_QTY_WINDDELEN);
-        if (param instanceof BigDecimal) {
-            wd = (BigDecimal) param;
-        } else {
-            wd = BigDecimal.ONE;
-        }
-
-        int pollingPeriod = 30;
-        param = getConfig().get(PROPERTY_REFRESH_INTERVAL);
-        if (param instanceof BigDecimal) {
-            pollingPeriod = ((BigDecimal) param).intValue();
-        }
+        logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.refreshInterval,
+                getThing().getUID());
 
         updateProperty(Thing.PROPERTY_VENDOR, "Windcentrale");
         updateProperty(Thing.PROPERTY_MODEL_ID, "Windmolen");
-        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Integer.toString(millId));
-
-        String millUrl = BASE_URL + millId + "/live?ignoreLoadingBar=true";
-
-        windcentraleCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                return HttpUtil.executeUrl("GET", millUrl, 5000);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                return null;
-            }
-        });
-
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
-        logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Integer.toString(config.millId));
     }
 
     @Override
@@ -122,19 +110,22 @@ public class WindcentraleHandler extends BaseThingHandler {
     private synchronized void updateData() {
         logger.debug("Update windmill data '{}'", getThing().getUID());
 
+        MillConfig config = millConfig;
+        String getMillData = windcentraleCache.getValue();
+
+        if (config == null || getMillData == null) {
+            return;
+        }
+
         try {
-            String getMillData = windcentraleCache.getValue();
-            if (getMillData == null) {
-                return;
-            }
             JsonObject millData = (JsonObject) parser.parse(getMillData);
             logger.trace("Retrieved updated mill data: {}", millData);
 
             updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
             updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
             updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
-            updateState(CHANNEL_POWER_PER_WD,
-                    new DecimalType(millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(wd)));
+            updateState(CHANNEL_POWER_PER_WD, new DecimalType(
+                    millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(new BigDecimal(config.wd))));
             updateState(CHANNEL_POWER_RELATIVE,
                     new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
             updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
@@ -146,7 +137,7 @@ public class WindcentraleHandler extends BaseThingHandler {
             if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.debug("Failed to process windmill data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Failed to process mill data");
