@@ -26,6 +26,14 @@ public final class LightifyBindingConstants {
 
     private static final String BINDING_ID = "osramlightify";
 
+    // Probed temperature range is clipped to this due to gateway/wifi
+    // firmware 1.2.2.0 permitting the full 0-65535. The prior firmware
+    // gave 1501-8000.
+    // N.B. Earlier firmware still gave the advertised range. The 1501-8000
+    // range uses the colour LEDs to extend the range.
+    public static final int MIN_TEMPERATURE = 1501;
+    public static final int MAX_TEMPERATURE = 8000;
+
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE = 0x01;
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE = 0x02;
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE = 0x04;

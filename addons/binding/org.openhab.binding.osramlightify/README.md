@@ -70,6 +70,8 @@ Different devices can have different white temperature ranges. The range possibl
 
 N.B. The range advertised by devices in response to probing is neither consistent with the quoted range nor constant between firmware versions. The actual range supported by hardware is likely to be a subset of the probed range. If you want to avoid areas at the top and bottom of temperature sliders where moving the slider does not change the temperature you will have to configure the range manually. Currently no table of tested temperature capabilities for lights is available, nor is there any way to determine the specific type of a particular device.
 
+**Important**: As of gateway/wifi firmware 1.2.2.0 we no longer see adjusted temperature values in response to our probes so the binding itself limits the range to 1501-8000K. This matches the range given by the prior firmware for RGBW lights which is itself an enhancement of the advertised range using the colour LEDs to extend the limits.
+
 
 ### State restore after powercycle
 

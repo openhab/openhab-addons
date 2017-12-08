@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import org.eclipse.smarthome.core.thing.Thing;
 
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.MIN_TEMPERATURE;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.MAX_TEMPERATURE;
+
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
@@ -63,6 +66,12 @@ public final class LightifyGetProbedTemperatureMessage extends LightifyBaseGetDe
     public boolean handleResponse(LightifyBridgeHandler bridgeHandler, ByteBuffer data) throws LightifyException {
         if (super.handleResponse(bridgeHandler, data)) {
             logger.debug("{}: {} = {}", thing.getUID(), propertyName, state.temperature);
+
+            if (state.temperature < MIN_TEMPERATURE) {
+                state.temperature = MIN_TEMPERATURE;
+            } else if (state.temperature > MAX_TEMPERATURE) {
+                state.temperature = MAX_TEMPERATURE;
+            }
 
             thing.setProperty(propertyName, Integer.toString(state.temperature));
 

@@ -39,6 +39,7 @@
 * Although we probe for the minimum and maximum colour temperatures for a device it is not clear whether what we see are device limits (i.e. the ZigBee ColorTempPhysical{Min,Max} attributes) or simply gateway capabilities.
   * PAR16 RGBW firmware 01020510 reports white range to be 1501K to 8000K, firmware 01020412 reported 2702K to 6622K. The only difference is light firmware, there is no bridge change. That suggests we are probing device capabilities as per ZLL but why has it changed? The quoted range for PAR16 RGBW is 2000K to 6500K and surely that is dependent on hardware? Perhaps the firmware is generic and Osram have lights with a wider range in the pipeline? Or some of the existing devices were firmware-crippled?
   * This appears to be an enhancement. From observation it appears that 1501K is definitely different from 2000K. It looks as though the new extended temperatures may be using the RGB (mainly R and B) LEDs to extend the range?
+  * Gateway firmware 1.2.2.0 no longer lets us probe for the range. We just get 0-65535.
 
 
 * In LIST_PAIRED (unknown1 and unknown2 are the last two ints in each device state block - they have since been renamed):
