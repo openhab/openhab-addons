@@ -50,20 +50,23 @@ public class AddressLookupParser {
         for (int i = 0; i < result.getAddressComponents().size(); i++) {
             AddressComponent component = result.getAddressComponents().get(i);
             String componentType = component.getTypes().get(0).toString();
-            if (componentType.equals("street_number")) {
-                streetNumber = component.getLongName();
-            }
-            if (componentType.equals("route")) {
-                street = component.getLongName();
-            }
-            if (componentType.equals("locality")) {
-                city = component.getLongName();
-            }
-            if (componentType.equals("country")) {
-                address.Country = component.getLongName();
-            }
-            if (componentType.equals("postal_code")) {
-                postalCode = component.getLongName();
+
+            switch (componentType) {
+                case "street_number":
+                    streetNumber = component.getLongName();
+                    break;
+                case "route":
+                    street = component.getLongName();
+                    break;
+                case "locality":
+                    city = component.getLongName();
+                    break;
+                case "country":
+                    address.Country = component.getLongName();
+                    break;
+                case "postal_code":
+                    postalCode = component.getLongName();
+                    break;
             }
         }
 
