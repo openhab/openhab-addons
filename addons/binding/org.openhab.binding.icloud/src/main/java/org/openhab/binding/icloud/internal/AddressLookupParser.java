@@ -48,7 +48,7 @@ public class AddressLookupParser {
         address.formattedAddress = result.getFormattedAddress();
 
         for (AddressComponent component : result.getAddressComponents()) {
-            String componentType = component.getTypes().get(0).toString();
+            String componentType = component.getTypes().get(0);
 
             switch (componentType) {
                 case "street_number":
