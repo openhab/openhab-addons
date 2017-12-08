@@ -1,6 +1,6 @@
 # iCloud Binding
+The Apple [iCloud](https://www.apple.com/icloud/) is used to retrieve data such as the battery level or current location of one or multiple Apple devices connected to an iCloud account. Updates are quick and accurate without significant battery time impact. The Binding also offers access to the "Find My iPhone" function.
 
-This binding uses the Apple [iCloud](https://www.apple.com/icloud/) service for providing device based information such as battery details or location.
 An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
@@ -14,7 +14,7 @@ The following devices are known to work with this binding:
 * iPhone 6s
 * iPhone 5c
 * iPhone 7
-* iWatch 2
+* Apple Watch Series 2
 * iPad Air 2/2017/Pro
 * MacBook Pro
 
@@ -116,21 +116,3 @@ String   iPhone_Country                   "Country [%s]"                        
 String   iPhone_FormattedAddress          "Address [%s]"                                 (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:formattedAddress"}
 String   iPhone_DeviceName                "Device Name [%s]"                             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:deviceName"}
 ```
-
-# Configuration with Paper UI
-
-First select iCloud Binding in "Paper UI > Configuration > Things" and provide your id, password and refresh interval. Devices are automatically discovered once the thing is configured and online.
-
-1.  Select the "iCloud Binding": ![Select binding](./doc/Config_1.png "Step 1")
-2.  Select the "iCloud Account: ![Select bridge](./doc/Config_2.png "Step 2") 
-3.  Configure your account and the desired refresh rate. ![Configure](./doc/Config_3.png "Step 3") 
-
-# Logging
-
-Use the following command in a console session to change the loglevel of the binding to DEBUG:
-
-```
- log:set DEBUG org.openhab.binding.icloud
-```
-
-See also [OpenHAB documentation](http://docs.openhab.org/administration/logging.html) .
