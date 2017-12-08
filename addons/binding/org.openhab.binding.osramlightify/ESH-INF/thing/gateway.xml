@@ -45,17 +45,17 @@
 				<description>Default maximum white temperature in Kelvin for devices unless otherwise specified.</description>
 			</parameter>
 
-			<parameter name="minPollInterval" type="decimal" min="0.05" required="true">
+			<parameter name="minPollInterval" type="decimal" min="0.01" required="true">
 				<label>Minimum polling interval (seconds to 3 d.p. minimum is 0.01s or 10ms)</label>
 				<description>The minimum interval between polls of the gateway for changes to device states or pairings. If changes are seen that have not been initiate by openHAB the polling interval is set to this value. Each poll that does not find changes doubles the polling interval until it reaches the maximum polling interval.</description>
 				<default>0.1</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="maxPollInterval" type="decimal" min="0.0" required="true">
+			<parameter name="maxPollInterval" type="decimal" min="0.01" required="true">
 				<label>Maximum polling interval (seconds to 3 d.p.)</label>
 				<description>The maximum interval between polls of the gateway for changes to device states or pairings. Setting this too low effectively means "as fast as possible" and will keep your cpu busy. It is recommended not to go below 0.5s unless you really need to track changes being made externally at high speed.</description>
-				<default>5.0</default>
+				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
