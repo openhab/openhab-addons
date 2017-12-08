@@ -163,7 +163,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(AccountThingConfiguration.class);
 
         // Enable google address lookup if an API key is configured
-        if (config.googleAPIKey != "") {
+        if (config.googleAPIKey != null && config.googleAPIKey != "") {
             addressLookupIsEnabled = true;
         } else {
             addressLookupIsEnabled = false;
