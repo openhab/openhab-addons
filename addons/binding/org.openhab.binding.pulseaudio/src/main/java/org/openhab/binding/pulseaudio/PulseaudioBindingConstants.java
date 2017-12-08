@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,8 @@
 package org.openhab.binding.pulseaudio;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -44,4 +46,13 @@ public class PulseaudioBindingConstants {
     public static final String BRIDGE_PARAMETER_REFRESH_INTERVAL = "refresh";
 
     public static final String DEVICE_PARAMETER_NAME = "name";
+    
+    public static Map<String, Boolean> TYPE_FILTERS = new HashMap<String, Boolean>();
+    
+    static {
+        TYPE_FILTERS.put(SINK_THING_TYPE.getId(), true);
+        TYPE_FILTERS.put(SINK_INPUT_THING_TYPE.getId(), false);
+        TYPE_FILTERS.put(SOURCE_THING_TYPE.getId(), false);
+        TYPE_FILTERS.put(SOURCE_OUTPUT_THING_TYPE.getId(), false);
+    }
 }
