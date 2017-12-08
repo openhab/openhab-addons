@@ -11,12 +11,12 @@ package org.openhab.binding.lutron.internal.radiora;
 /**
  * Interface to the RadioRA Classic system
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public interface RadioRAConnection {
 
-    public boolean open(String portName, int baud);
+    public void open(String portName, int baud) throws RadioRAConnectionException;
 
     public void disconnect();
 

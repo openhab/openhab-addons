@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lutron.internal.radiora.RS232Connection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnection;
+import org.openhab.binding.lutron.internal.radiora.RadioRAConnectionException;
 import org.openhab.binding.lutron.internal.radiora.RadioRAFeedbackListener;
 import org.openhab.binding.lutron.internal.radiora.config.RS232Config;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRACommand;
@@ -39,15 +40,15 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     private Logger logger = LoggerFactory.getLogger(RS232Handler.class);
 
-    private RadioRAConnection chronosConnection;
+    private RadioRAConnection connection;
 
     private ScheduledFuture<?> zoneMapScheduledTask;
 
     public RS232Handler(Bridge bridge) {
         super(bridge);
 
-        this.chronosConnection = new RS232Connection();
-        this.chronosConnection.setListener(this);
+        this.connection = new RS232Connection();
+        this.connection.setListener(this);
     }
 
     @Override
@@ -56,28 +57,29 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
             zoneMapScheduledTask.cancel(true);
         }
 
-        if (chronosConnection != null) {
-            chronosConnection.disconnect();
+        if (connection != null) {
+            connection.disconnect();
         }
     }
 
     @Override
     public void initialize() {
-        connectToChronos();
+        connectToRS232();
 
         scheduleZoneMapQuery();
     }
 
-    protected void connectToChronos() {
+    protected void connectToRS232() {
         RS232Config config = getConfigAs(RS232Config.class);
         String portName = config.getPortName();
         int baud = config.getBaud();
 
-        logger.debug("Attempting to connect to Chronos on port {}", portName);
+        logger.debug("Attempting to connect to RS232 on port {}", portName);
 
-        if (!chronosConnection.open(portName, baud)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Error initializing - Failed to connect to chronos");
+        try {
+            connection.open(portName, baud);
+        } catch (RadioRAConnectionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
 
@@ -97,7 +99,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
     }
 
     public void sendCommand(RadioRACommand command) {
-        chronosConnection.write(command.toString());
+        connection.write(command.toString());
     }
 
     @Override

@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  * Set Switch Level (SSL)
  * Turn an individual Switch ON or OFF.
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class SetSwitchLevelCommand extends RadioRACommand {

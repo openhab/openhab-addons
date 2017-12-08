@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 /**
  * Base class for Feedback from RadioRA
  * 
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class RadioRAFeedback {

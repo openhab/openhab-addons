@@ -6,24 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lutron.internal.radiora.config;
+package org.openhab.binding.lutron.internal.radiora;
 
 /**
- * Configuration class for Switch thing type.
- * 
+ * Thrown when an attempt to open a RadioRA Connection fails.
+ *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
-public class SwitchConfig {
+public class RadioRAConnectionException extends Exception {
 
-    private int zoneNumber;
+    private static final long serialVersionUID = 1L;
 
-    public int getZoneNumber() {
-        return zoneNumber;
-    }
-
-    public void setZoneNumber(int zoneNumber) {
-        this.zoneNumber = zoneNumber;
+    public RadioRAConnectionException(String message) {
+        super(message);
     }
 
 }

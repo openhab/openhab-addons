@@ -33,7 +33,7 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
  * LZC,04,ON
  * </pre>
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class LocalZoneChangeFeedback extends RadioRAFeedback {

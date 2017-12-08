@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Requests an updated ZoneMap.
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class ZoneMapInquiryCommand extends RadioRACommand {

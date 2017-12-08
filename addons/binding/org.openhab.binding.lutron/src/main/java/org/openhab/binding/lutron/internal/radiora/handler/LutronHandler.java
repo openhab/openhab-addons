@@ -19,7 +19,7 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 /**
  * Base class for non bridge handlers for Lutron RadioRA devices
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public abstract class LutronHandler extends BaseThingHandler {
@@ -28,7 +28,7 @@ public abstract class LutronHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public RS232Handler getChronosHandler() {
+    public RS232Handler getRS232Handler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Unable to get bridge");

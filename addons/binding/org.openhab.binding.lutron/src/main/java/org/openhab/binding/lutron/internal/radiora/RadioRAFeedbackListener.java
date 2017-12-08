@@ -13,7 +13,7 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 /**
  * Interface for handling feedback messages from RadioRA system
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public interface RadioRAFeedbackListener {

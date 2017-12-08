@@ -10,9 +10,9 @@ package org.openhab.binding.lutron.internal.radiora.config;
 
 import java.math.BigDecimal;
 
-
 /**
  * Configuration class for Dimmer type
+ * 
  * @author Jeff Lauterbach
  *
  */

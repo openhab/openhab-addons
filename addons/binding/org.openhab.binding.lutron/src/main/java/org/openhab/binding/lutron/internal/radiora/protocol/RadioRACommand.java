@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Abstract base class for commands.
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public abstract class RadioRACommand {

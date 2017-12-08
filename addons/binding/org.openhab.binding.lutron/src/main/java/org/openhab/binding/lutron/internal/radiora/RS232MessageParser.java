@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles decoding message types from RadioRA
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class RS232MessageParser {
@@ -41,7 +41,7 @@ public class RS232MessageParser {
                 break;
 
             default:
-                logger.debug("Unhandled msg received from Chronos [{}]", msg);
+                logger.debug("Unhandled msg received from RS232 [{}]", msg);
                 break;
         }
 
@@ -51,7 +51,7 @@ public class RS232MessageParser {
     protected String parsePrefix(String msg) {
         String[] arr = msg.split(",");
         if (arr.length < 1) {
-            logger.warn("Unexpected msg received from Chronos [{}]", msg);
+            logger.debug("Unexpected msg received from RS232 [{}]", msg);
             return "";
         }
 

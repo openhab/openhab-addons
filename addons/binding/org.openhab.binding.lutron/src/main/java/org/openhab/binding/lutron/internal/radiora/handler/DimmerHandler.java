@@ -24,18 +24,14 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 import org.openhab.binding.lutron.internal.radiora.protocol.SetDimmerLevelCommand;
 import org.openhab.binding.lutron.internal.radiora.protocol.SetSwitchLevelCommand;
 import org.openhab.binding.lutron.internal.radiora.protocol.ZoneMapFeedback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for RadioRA dimmers
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class DimmerHandler extends LutronHandler {
-
-    private Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     /**
      * Used to internally keep track of dimmer level. This helps us better respond
@@ -59,7 +55,7 @@ public class DimmerHandler extends LutronHandler {
                 int intensity = ((PercentType) command).intValue();
 
                 SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity);
-                getChronosHandler().sendCommand(cmd);
+                getRS232Handler().sendCommand(cmd);
 
                 updateInternalState(intensity);
             }
@@ -68,7 +64,7 @@ public class DimmerHandler extends LutronHandler {
                 OnOffType onOffCmd = (OnOffType) command;
 
                 SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd);
-                getChronosHandler().sendCommand(cmd);
+                getRS232Handler().sendCommand(cmd);
 
                 updateInternalState(onOffCmd);
 

@@ -14,15 +14,15 @@ import java.util.List;
 /**
  * Set Dimmer Level (SDL)
  * Set an individual Dimmer’s light level.
- * 
- * @author Jeff Lauterbach
+ *
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class SetDimmerLevelCommand extends RadioRACommand {
 
     private int zoneNumber; // 1 to 32
     private int dimmerLevel; // 0 to 100
-    private Integer fadeSec = null; // 0 to 240 (optional)
+    private Integer fadeSec; // 0 to 240 (optional)
 
     public SetDimmerLevelCommand(int zoneNumber, int dimmerLevel) {
         this.zoneNumber = zoneNumber;

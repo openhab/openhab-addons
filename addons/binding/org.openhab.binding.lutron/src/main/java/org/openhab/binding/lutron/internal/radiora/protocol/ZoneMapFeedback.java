@@ -27,7 +27,7 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
  * ZMP,010000001000000000000000000000XX
  * </pre>
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class ZoneMapFeedback extends RadioRAFeedback {

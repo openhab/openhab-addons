@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.radiora.config;
 /**
  * Configuration class for RS232 thing type.
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class RS232Config {

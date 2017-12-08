@@ -46,18 +46,14 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     protected RS232MessageParser parser = new RS232MessageParser();
 
     @Override
-    public boolean open(String portName, int baud) {
+    public void open(String portName, int baud) throws RadioRAConnectionException {
         CommPortIdentifier commPort = null;
 
         try {
             commPort = CommPortIdentifier.getPortIdentifier(portName);
         } catch (NoSuchPortException e) {
-            logger.debug("Port not found: {}", portName);
-        }
-
-        if (commPort == null) {
             logAvailablePorts();
-            return false;
+            throw new RadioRAConnectionException(String.format("Port not found", portName));
         }
 
         try {
@@ -67,20 +63,14 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
             serialPort.addEventListener(this);
             inputReader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
         } catch (PortInUseException e) {
-            logger.debug("Port {} is already in use", commPort.getName());
-            return false;
+            throw new RadioRAConnectionException(String.format("Port %s already in use", commPort.getName()));
         } catch (UnsupportedCommOperationException e) {
-            logger.debug("Error initializing - Failed to set serial port params");
-            return false;
+            throw new RadioRAConnectionException("Error initializing - Failed to set serial port params");
         } catch (TooManyListenersException e) {
-            logger.debug("Error initializing - Failed to add event listener");
-            return false;
+            throw new RadioRAConnectionException("Error initializing - Failed to add event listener");
         } catch (IOException e) {
-            logger.debug("Error initializing - Failed to get input stream");
-            return false;
+            throw new RadioRAConnectionException("Error initializing - Failed to get input stream");
         }
-
-        return true;
     }
 
     @Override
@@ -89,7 +79,7 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
         try {
             serialPort.getOutputStream().write(command.getBytes());
         } catch (IOException e) {
-            logger.error("An error occurred writing to serial port", e);
+            logger.debug("An error occurred writing to serial port", e);
         }
     }
 
@@ -126,7 +116,7 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
             case SerialPortEvent.DATA_AVAILABLE:
                 try {
                     if (!inputReader.ready()) {
-                        logger.warn("Serial Data Available but input reader not ready");
+                        logger.debug("Serial Data Available but input reader not ready");
                         return;
                     }
 
@@ -138,14 +128,13 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
                         logger.debug("Msg Parsed as {}", feedback.getClass().getName());
                         listener.handleRadioRAFeedback(feedback);
                     }
+                    logger.debug("Finished handling feedback");
                 } catch (IOException e) {
-                    logger.error("IOException occurred", e);
-                    return;
+                    logger.debug("IOException occurred", e);
                 }
-                logger.debug("Finished handling feedback");
                 break;
             default:
-                logger.warn("Unhandled SerialPortEvent raised [{}]", ev.getEventType());
+                logger.debug("Unhandled SerialPortEvent raised [{}]", ev.getEventType());
                 break;
         }
     }

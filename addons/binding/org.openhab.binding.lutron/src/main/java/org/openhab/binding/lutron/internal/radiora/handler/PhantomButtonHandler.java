@@ -21,7 +21,7 @@ import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 /**
  * Handler for RadioRA Phantom buttons
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class PhantomButtonHandler extends LutronHandler {
@@ -38,7 +38,7 @@ public class PhantomButtonHandler extends LutronHandler {
                 ButtonPressCommand cmd = new ButtonPressCommand(
                         getConfigAs(PhantomButtonConfig.class).getButtonNumber(),
                         ButtonPressCommand.ButtonState.valueOf(command.toString()));
-                getChronosHandler().sendCommand(cmd);
+                getRS232Handler().sendCommand(cmd);
             }
         }
     }

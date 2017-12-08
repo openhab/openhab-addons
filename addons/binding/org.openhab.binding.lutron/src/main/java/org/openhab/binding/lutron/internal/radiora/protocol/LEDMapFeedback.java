@@ -27,7 +27,7 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
  * LMP,100010000000000
  * </pre>
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class LEDMapFeedback extends RadioRAFeedback {

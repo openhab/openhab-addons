@@ -15,7 +15,7 @@ import java.util.List;
  * Button Press (BP) Command.
  * Trigger a Phantom Button Press on the RadioRA Serial Device.
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class ButtonPressCommand extends RadioRACommand {
@@ -28,7 +28,7 @@ public class ButtonPressCommand extends RadioRACommand {
 
     private int buttonNumber; // 1 to 15, 16 ALL ON, 17 ALL OFF
     private ButtonState state; // ON/OFF/TOG
-    private Integer fadeSec = null; // 0 to 240 (optional)
+    private Integer fadeSec; // 0 to 240 (optional)
 
     public ButtonPressCommand(int buttonNumber, ButtonState state) {
         this.buttonNumber = buttonNumber;

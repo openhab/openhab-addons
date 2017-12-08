@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for RadioRA switches
  *
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class SwitchHandler extends LutronHandler {
@@ -42,7 +42,7 @@ public class SwitchHandler extends LutronHandler {
                 SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(getConfigAs(SwitchConfig.class).getZoneNumber(),
                         (OnOffType) command);
 
-                getChronosHandler().sendCommand(cmd);
+                getRS232Handler().sendCommand(cmd);
             }
         }
     }

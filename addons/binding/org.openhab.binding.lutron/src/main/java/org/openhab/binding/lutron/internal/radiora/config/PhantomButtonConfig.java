@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * Configuration class for PhantomButton thing type.
  * 
- * @author Jeff Lauterbach
+ * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class PhantomButtonConfig {
