@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.handler.DeviceHandler;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BridgeHandlerFactory} is responsible for creating things and thing
@@ -33,6 +34,7 @@ public class BridgeHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    @Reference
     protected void setLocationProvider(LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
     }
