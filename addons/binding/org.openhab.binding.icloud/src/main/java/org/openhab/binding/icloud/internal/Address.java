@@ -9,13 +9,14 @@
 package org.openhab.binding.icloud.internal;
 
 /**
+ * Container for a device location as human readable address.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class Address {
-    public String Street;
-    public String City;
-    public String Country;
-    public String FormattedAddress;
+    public String street;
+    public String city;
+    public String country;
+    public String formattedAddress;
 }

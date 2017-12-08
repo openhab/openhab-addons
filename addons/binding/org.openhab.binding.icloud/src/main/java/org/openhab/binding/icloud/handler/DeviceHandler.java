@@ -131,10 +131,10 @@ public class DeviceHandler extends BaseThingHandler {
             Address address = null;
             address = bridge.getAddress(location);
             if (address != null) {
-                streetState = (address.Street != null) ? new StringType(address.Street) : UnDefType.UNDEF;
-                cityState = (address.City != null) ? new StringType(address.City) : UnDefType.UNDEF;
-                countryState = (address.Country != null) ? new StringType(address.Country) : UnDefType.UNDEF;
-                formattedAddressState = (address.FormattedAddress != null) ? new StringType(address.FormattedAddress)
+                streetState = (address.street != null) ? new StringType(address.street) : UnDefType.UNDEF;
+                cityState = (address.city != null) ? new StringType(address.city) : UnDefType.UNDEF;
+                countryState = (address.country != null) ? new StringType(address.country) : UnDefType.UNDEF;
+                formattedAddressState = (address.formattedAddress != null) ? new StringType(address.formattedAddress)
                         : UnDefType.UNDEF;
             }
         } catch (Exception e) {

@@ -45,7 +45,7 @@ public class AddressLookupParser {
         String postalCode = "";
         String city = "";
 
-        address.FormattedAddress = result.getFormattedAddress();
+        address.formattedAddress = result.getFormattedAddress();
 
         for (AddressComponent component : result.getAddressComponents()) {
             String componentType = component.getTypes().get(0).toString();
@@ -61,7 +61,7 @@ public class AddressLookupParser {
                     city = component.getLongName();
                     break;
                 case "country":
-                    address.Country = component.getLongName();
+                    address.country = component.getLongName();
                     break;
                 case "postal_code":
                     postalCode = component.getLongName();
@@ -69,8 +69,8 @@ public class AddressLookupParser {
             }
         }
 
-        address.Street = street + " " + streetNumber;
-        address.City = postalCode + " " + city;
+        address.street = street + " " + streetNumber;
+        address.city = postalCode + " " + city;
 
         return address;
     }
