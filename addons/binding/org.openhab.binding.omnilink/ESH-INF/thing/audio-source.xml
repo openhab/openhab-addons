@@ -15,6 +15,7 @@
             <channel id="source_text_4" typeId="audio_source_text" />
             <channel id="source_text_5" typeId="audio_source_text" />
             <channel id="source_text_6" typeId="audio_source_text" />
+            <channel id="polling" typeId="audio_source_polling" />
         </channels>
         <properties>
             <property name="name" />
@@ -24,6 +25,11 @@
                 <label>Audio Source Number</label>
                 <description>Audio Source Number</description>
             </parameter>
+            <parameter name="autostart" type="boolean" required="false">
+                <label>Start polling of source on thing creation</label>
+                <description>Start polling of audio source on creation of thing</description>
+                <default>true</default>
+            </parameter>
         </config-description>
     </thing-type>
     
@@ -32,6 +38,13 @@
         <item-type>String</item-type>
         <label>Line of source data</label>
         <description>A line of source data</description>
+    </channel-type>
+    
+    <channel-type id="audio_source_polling">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Enable or disable polling of this audio source</description>
+        <category>Switch</category>
     </channel-type>
     
     

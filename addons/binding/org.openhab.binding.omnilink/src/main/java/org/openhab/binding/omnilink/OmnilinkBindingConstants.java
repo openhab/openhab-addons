@@ -111,6 +111,7 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_AUDIO_SOURCE_TEXT4 = "source_text_4";
     public static final String CHANNEL_AUDIO_SOURCE_TEXT5 = "source_text_5";
     public static final String CHANNEL_AUDIO_SOURCE_TEXT6 = "source_text_6";
+    public static final String CHANNEL_AUDIO_SOURCE_POLLING = "polling";
 
     // trigger channels
     public final static String TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT = "activated_event";
@@ -129,6 +130,7 @@ public class OmnilinkBindingConstants {
     public final static String THING_PROPERTIES_NUMBER = "number";
     public final static String THING_PROPERTIES_AREA = "area";
     public final static String THING_PROPERTIES_ROOM = "room";
+    public final static String THING_PROPERTIES_AUTO_START = "autostart";
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "controller");
