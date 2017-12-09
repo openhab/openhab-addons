@@ -122,7 +122,6 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
         setName(getClass().getSimpleName() + "(" + bridgeHandler.getThing().getUID() + ")");
         this.bridgeHandler = bridgeHandler;
         setUncaughtExceptionHandler(new ExceptionHandler());
-        start();
     }
 
     @Override

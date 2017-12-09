@@ -66,8 +66,9 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         thingUpdated(getThing());
         registerDeviceDiscoveryService();
-        updateStatus(ThingStatus.UNKNOWN);
         connector = new LightifyConnector(this);
+        updateStatus(ThingStatus.UNKNOWN);
+        connector.start();
     }
 
     @Override
