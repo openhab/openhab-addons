@@ -121,24 +121,19 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void updateAddressStates(PointType location) {
-
         State streetState = UnDefType.UNDEF;
         State cityState = UnDefType.UNDEF;
         State countryState = UnDefType.UNDEF;
         State formattedAddressState = UnDefType.UNDEF;
 
-        try {
-            Address address = null;
-            address = bridge.getAddress(location);
-            if (address != null) {
-                streetState = (address.street != null) ? new StringType(address.street) : UnDefType.UNDEF;
-                cityState = (address.city != null) ? new StringType(address.city) : UnDefType.UNDEF;
-                countryState = (address.country != null) ? new StringType(address.country) : UnDefType.UNDEF;
-                formattedAddressState = (address.formattedAddress != null) ? new StringType(address.formattedAddress)
-                        : UnDefType.UNDEF;
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to retrieve human readable address.", e);
+        Address address = null;
+        address = bridge.getAddress(location);
+        if (address != null) {
+            streetState = (address.street != null) ? new StringType(address.street) : UnDefType.UNDEF;
+            cityState = (address.city != null) ? new StringType(address.city) : UnDefType.UNDEF;
+            countryState = (address.country != null) ? new StringType(address.country) : UnDefType.UNDEF;
+            formattedAddressState = (address.formattedAddress != null) ? new StringType(address.formattedAddress)
+                    : UnDefType.UNDEF;
         }
 
         updateState(ADDRESS_STREET, streetState);
@@ -169,20 +164,17 @@ public class DeviceHandler extends BaseThingHandler {
 
     private Content getDeviceInformationRecord(ArrayList<Content> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
-        try {
-            for (Content deviceInformationRecord : deviceInformationList) {
-                String currentId = deviceInformationRecord.getId();
 
-                logger.debug("Current data element: [{}]", currentId);
+        for (Content deviceInformationRecord : deviceInformationList) {
+            String currentId = deviceInformationRecord.getId();
 
-                if (deviceId.equalsIgnoreCase(currentId)) {
-                    return deviceInformationRecord;
-                }
+            logger.debug("Current data element: [{}]", currentId);
+
+            if (deviceId.equalsIgnoreCase(currentId)) {
+                return deviceInformationRecord;
             }
-
-        } catch (Exception e) {
-            logger.warn("Get content for thing with id [{}] failed", deviceId, e);
         }
+
         logger.debug("Unable to find device data.");
         return null;
     }
