@@ -55,6 +55,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private final AddressLookupParser addressLoopupParser = new AddressLookupParser();
+    private final DeviceInformationParser deviceInformationParser = new DeviceInformationParser();
     private Connection connection;
     private AccountThingConfiguration config;
     private boolean addressLookupIsEnabled = false;
@@ -186,8 +187,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 logger.trace("json: {}", json);
 
                 if (json != null && !json.equals("")) {
-                    DeviceInformationParser parser = new DeviceInformationParser(json);
-                    iCloudData = parser.data;
+                    iCloudData = deviceInformationParser.parse(json);
 
                     int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
                     if (statusCode == 200) {
