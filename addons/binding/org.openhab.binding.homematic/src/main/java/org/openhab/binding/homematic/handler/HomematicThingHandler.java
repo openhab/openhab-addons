@@ -70,6 +70,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
+                    validateConfiguration();
                     HomematicGateway gateway = getHomematicGateway();
                     HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
                     HmChannel channelZero = device.getChannel(0);
@@ -84,6 +85,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                             VIRTUAL_DATAPOINT_NAME_FIRMWARE);
                     setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
                     setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
+                    properties.put(PROPERTY_ADDRESS, device.getAddress());
                     updateProperties(properties);
 
                     // update configurations
@@ -91,9 +93,11 @@ public class HomematicThingHandler extends BaseThingHandler {
                     for (HmChannel channel : device.getChannels()) {
                         for (HmDatapoint dp : channel.getDatapoints().values()) {
                             if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                                loadHomematicChannelValues(dp.getChannel());
-                                config.put(MetadataUtils.getParameterName(dp),
-                                        dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                                if (!HomematicTypeGeneratorImpl.isIgnoreConfig(dp)) {
+                                    loadHomematicChannelValues(dp.getChannel());
+                                    config.put(MetadataUtils.getParameterName(dp),
+                                            dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                                }
                             }
                         }
                     }
@@ -148,7 +152,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         HmDatapoint dp = null;
         try {
             HomematicGateway gateway = getHomematicGateway();
-            HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(channelUID);
+            HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(getThing(), channelUID);
             if (RefreshType.REFRESH == command) {
                 logger.debug("Refreshing {}", dpInfo);
                 dpInfo = new HmDatapointInfo(dpInfo.getAddress(), HmParamsetType.VALUES, 0,
@@ -199,7 +203,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(ChannelUID channelUID)
             throws BridgeHandlerNotAvailableException, HomematicClientException, IOException, ConverterException {
         HomematicGateway gateway = getHomematicGateway();
-        HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(channelUID);
+        HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(getThing(), channelUID);
         HmDatapoint dp = gateway.getDatapoint(dpInfo);
         Channel channel = getThing().getChannel(channelUID.getId());
         updateChannelState(dp, channel);
@@ -242,7 +246,9 @@ public class HomematicThingHandler extends BaseThingHandler {
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
         if (dp.isTrigger()) {
-            triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+            if (dp.getValue() != null) {
+                triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+            }
         } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
@@ -397,4 +403,15 @@ public class HomematicThingHandler extends BaseThingHandler {
             logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
+
+    private void validateConfiguration() {
+        boolean addressFromAutodiscovery = getThing().getProperties().containsKey(PROPERTY_ADDRESS);
+        String addressFromConfiguration = ObjectUtils.toString(getConfig().get("address"));
+        if (!addressFromAutodiscovery && StringUtils.isBlank(addressFromConfiguration)) {
+            logger.warn(
+                    "Deprecated configuration for Thing '{}': no address property available. Using old style configuration, please update your things and items file(s). (see doc)",
+                    thing.getUID());
+        }
+    }
+
 }

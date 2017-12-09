@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(immediate = true)
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
@@ -77,6 +77,10 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
     private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
             VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
+
+    private static final String[] IGNORE_CONFIG_NAMES = new String[] { "STATIC_ROUTE_HOST", "WP_FIXED", "ROUTER_STATIC",
+            "ROUTER_FILTER", "WP_TARGET", "WP_CONDITION", "WP_DURATION", "WP_LEVEL", "WP_FIXED_HOUR", "WP_ASTRO",
+            "WP_WEEKDAY" };
 
     public HomematicTypeGeneratorImpl() {
         try {
@@ -301,35 +305,39 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             groups.add(new ConfigDescriptionParameterGroup(groupName, null, false, groupLabel, null));
 
             for (HmDatapoint dp : channel.getDatapoints().values()) {
-                if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                    ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
-                            MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
+                if (!isIgnoreConfig(dp)) {
+                    if (dp.getParamsetType() == HmParamsetType.MASTER) {
+                        ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
+                                MetadataUtils.getParameterName(dp),
+                                MetadataUtils.getConfigDescriptionParameterType(dp));
 
-                    builder.withLabel(MetadataUtils.getLabel(dp));
-                    builder.withDefault(ObjectUtils.toString(dp.getDefaultValue()));
-                    builder.withDescription(MetadataUtils.getDatapointDescription(dp));
+                        builder.withLabel(MetadataUtils.getLabel(dp));
+                        builder.withDefault(ObjectUtils.toString(dp.getDefaultValue()));
+                        builder.withDescription(MetadataUtils.getDatapointDescription(dp));
 
-                    if (dp.isEnumType()) {
-                        builder.withLimitToOptions(dp.isEnumType());
-                        List<ParameterOption> options = MetadataUtils.generateOptions(dp,
-                                new OptionsBuilder<ParameterOption>() {
-                                    @Override
-                                    public ParameterOption createOption(String value, String description) {
-                                        return new ParameterOption(value, description);
-                                    }
-                                });
-                        builder.withOptions(options);
+                        if (dp.isEnumType()) {
+                            builder.withLimitToOptions(dp.isEnumType());
+                            List<ParameterOption> options = MetadataUtils.generateOptions(dp,
+                                    new OptionsBuilder<ParameterOption>() {
+                                        @Override
+                                        public ParameterOption createOption(String value, String description) {
+                                            return new ParameterOption(value, description);
+                                        }
+                                    });
+                            builder.withOptions(options);
+                        }
+
+                        if (dp.isNumberType()) {
+                            builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
+                            builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
+                            builder.withStepSize(
+                                    MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L));
+                            builder.withUnitLabel(MetadataUtils.getUnit(dp));
+                        }
+
+                        builder.withGroupName(groupName);
+                        parms.add(builder.build());
                     }
-
-                    if (dp.isNumberType()) {
-                        builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
-                        builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L));
-                        builder.withUnitLabel(MetadataUtils.getUnit(dp));
-                    }
-
-                    builder.withGroupName(groupName);
-                    parms.add(builder.build());
                 }
             }
         }
@@ -362,4 +370,15 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
     }
 
+    /**
+     * Returns true, if the given datapoint can be ignored for config generation.
+     */
+    public static boolean isIgnoreConfig(HmDatapoint dp) {
+        for (String ignoreConfigName : IGNORE_CONFIG_NAMES) {
+            if (dp.getName().contains(ignoreConfigName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

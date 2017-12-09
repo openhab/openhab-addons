@@ -9,7 +9,6 @@
 package org.openhab.binding.homematic.internal.communicator;
 
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
-import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 
 /**
@@ -22,7 +21,7 @@ public interface HomematicGatewayAdapter {
     /**
      * Called when a datapoint has been updated.
      */
-    public void onStateUpdated(HmDatapoint dp);
+    public void onStateUpdated(String id, HmDatapoint dp);
 
     /**
      * Called when a new device has been detected on the gateway.
@@ -60,8 +59,8 @@ public interface HomematicGatewayAdapter {
     public void onConnectionResumed();
 
     /**
-     * Returns the configuration of a datapoint.
+     * Returns all id's with the config's that must be updated after a event from the gateway has been received.
      */
-    public HmDatapointConfig getDatapointConfig(HmDatapoint dp);
+    public void getIdsForUpdate(HmDatapoint dp, IdForUpdateCallback callback);
 
 }
