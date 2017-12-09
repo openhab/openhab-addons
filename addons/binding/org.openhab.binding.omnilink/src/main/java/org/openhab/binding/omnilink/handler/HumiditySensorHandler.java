@@ -22,7 +22,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AuxSensorStatus;
  * @author Craig Hamilton
  *
  */
-public class HumiditySensorHandler extends AbstractOmnilinkHandler<AuxSensorStatus> implements ThingHandler {
+public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<AuxSensorStatus> implements ThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(HumiditySensorHandler.class);
 

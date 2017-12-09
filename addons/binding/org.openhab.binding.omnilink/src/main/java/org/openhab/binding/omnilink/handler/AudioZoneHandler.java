@@ -27,7 +27,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
  * @author Craig Hamilton
  *
  */
-public class AudioZoneHandler extends AbstractOmnilinkHandler<AudioZoneStatus> implements ThingHandler {
+public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneStatus> implements ThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(AudioZoneHandler.class);
 

@@ -24,7 +24,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus
  * @author Craig Hamilton
  *
  */
-public class ThermostatHandler extends AbstractOmnilinkHandler<ExtendedThermostatStatus> {
+public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThermostatStatus> {
 
     private enum ThermostatStatus {
         HEATING(0, 1),

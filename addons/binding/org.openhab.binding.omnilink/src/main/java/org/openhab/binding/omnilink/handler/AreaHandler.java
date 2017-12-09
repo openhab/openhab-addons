@@ -26,7 +26,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
  * @author Craig Hamilton
  *
  */
-public class AreaHandler extends AbstractOmnilinkHandler<AreaStatus> {
+public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
     private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
 
     public AreaHandler(Thing thing) {

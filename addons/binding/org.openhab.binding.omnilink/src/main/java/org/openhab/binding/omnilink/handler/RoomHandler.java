@@ -22,7 +22,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
  * @author craigh
  *
  */
-public class RoomHandler extends AbstractOmnilinkHandler<UnitStatus> implements UnitHandler {
+public class RoomHandler extends AbstractOmnilinkStatusHandler<UnitStatus> implements UnitHandler {
 
     private Logger logger = LoggerFactory.getLogger(RoomHandler.class);
 

@@ -104,6 +104,15 @@ public class OmnilinkBindingConstants {
     public static final String CHANNEL_AUDIO_ZONE_SOURCE = "zone_source";
     public static final String CHANNEL_AUDIO_ZONE_CONTROL = "zone_control";
 
+    // audio sources
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT1 = "source_text_1";
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT2 = "source_text_2";
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT3 = "source_text_3";
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT4 = "source_text_4";
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT5 = "source_text_5";
+    public static final String CHANNEL_AUDIO_SOURCE_TEXT6 = "source_text_6";
+    public static final String CHANNEL_AUDIO_SOURCE_POLLING = "polling";
+
     // trigger channels
     public final static String TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT = "activated_event";
     public final static String TRIGGER_CHANNEL_PHONE_LINE_EVENT = "phone_line_event";
@@ -121,6 +130,7 @@ public class OmnilinkBindingConstants {
     public final static String THING_PROPERTIES_NUMBER = "number";
     public final static String THING_PROPERTIES_AREA = "area";
     public final static String THING_PROPERTIES_ROOM = "room";
+    public final static String THING_PROPERTIES_AUTO_START = "autostart";
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "controller");
@@ -134,6 +144,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
     public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public final static ThingTypeUID THING_TYPE_AUDIO_ZONE = new ThingTypeUID(BINDING_ID, "audio_zone");
+    public final static ThingTypeUID THING_TYPE_AUDIO_SOURCE = new ThingTypeUID(BINDING_ID, "audio_source");
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
     public static final ThingTypeUID THING_TYPE_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "temp_sensor");
     public static final ThingTypeUID THING_TYPE_HUMIDITY_SENSOR = new ThingTypeUID(BINDING_ID, "humidity_sensor");

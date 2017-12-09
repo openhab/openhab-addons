@@ -223,6 +223,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                                 .map(featureCode -> AudioPlayer.getAudioPlayerForFeatureCode(featureCode))
                                 .filter(Optional::isPresent).findFirst().orElse(Optional.empty());
 
+                        temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
+
                         omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
                         omniConnection.addDisconnectListener(retryingDisconnectListener);
                         omniConnection.enableNotifications();
@@ -428,6 +430,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    public Message requestAudioSourceStatus(final int source, final int position)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqAudioSourceStatus(source, position);
+        } catch (OmniNotConnectedException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+    }
+
     public ObjectStatus requestObjectStatus(final int objType, final int startObject, final int endObject,
             boolean extended)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
@@ -461,6 +473,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.removeDisconnecListener(retryingDisconnectListener);
             omniConnection.disconnect();
         }
+        AudioSourceHandler.shutdownExecutor();
     }
 
     private Optional<Thing> getChildThing(ThingTypeUID type, int number) {
