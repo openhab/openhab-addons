@@ -41,27 +41,25 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
     public void discover(List<Content> deviceInformationList) {
         if (deviceInformationList != null) {
             for (Content deviceInformationRecord : deviceInformationList) {
-                try {
-                    String deviceTypeName = deviceInformationRecord.getDeviceDisplayName();
-                    String deviceOwnerName = deviceInformationRecord.getName();
 
-                    String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
-                    String deviceId = deviceInformationRecord.getId();
-                    String deviceIdHash = Integer.toHexString(deviceId.hashCode());
+                String deviceTypeName = deviceInformationRecord.getDeviceDisplayName();
+                String deviceOwnerName = deviceInformationRecord.getName();
 
-                    logger.debug("iCloud device discovery for [{}]", deviceInformationRecord.getDeviceDisplayName());
+                String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
+                String deviceId = deviceInformationRecord.getId();
+                String deviceIdHash = Integer.toHexString(deviceId.hashCode());
 
-                    ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
-                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                            .withProperty(DEVICE_PROPERTY_ID, deviceId).withRepresentationProperty(DEVICE_PROPERTY_ID)
-                            .withLabel(thingLabel).build();
+                logger.debug("iCloud device discovery for [{}]", deviceInformationRecord.getDeviceDisplayName());
 
-                    logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
+                ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                        .withProperty(DEVICE_PROPERTY_ID, deviceId).withRepresentationProperty(DEVICE_PROPERTY_ID)
+                        .withLabel(thingLabel).build();
 
-                    thingDiscovered(result);
-                } catch (Exception exception) {
-                    logger.warn("Failed to process discovery result", exception);
-                }
+                logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
+
+                thingDiscovered(result);
+
             }
         }
     }
