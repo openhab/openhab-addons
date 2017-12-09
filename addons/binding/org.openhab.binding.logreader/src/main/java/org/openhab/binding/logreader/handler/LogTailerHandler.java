@@ -11,7 +11,9 @@ package org.openhab.binding.logreader.handler;
 import static org.openhab.binding.logreader.LogReaderBindingConstants.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -54,11 +56,16 @@ public class LogTailerHandler extends BaseThingHandler {
 
     private Tailer tailer;
 
-    private Matcher warningMatcher;
-    private Matcher errorMatcher;
+    private List<Pattern> warningMatchers;
+    private List<Pattern> warningBlacklistingMatchers;
+    private List<Pattern> errorMatchers;
+    private List<Pattern> errorBlacklistingMatchers;
+    private List<Pattern> customMatchers;
+    private List<Pattern> customBlacklistingMatchers;
 
     private long warningCount;
     private long errorCount;
+    private long customCount;
 
     public LogTailerHandler(Thing thing) {
         super(thing);
@@ -76,26 +83,29 @@ public class LogTailerHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            warningMatcher.reset(line);
-
-            if (warningMatcher.find()) {
-                if (!isBlacklisted(configuration.warningBlacklistingPatterns, line)) {
+            if (isMatching(warningMatchers, line)) {
+                if (!isBlacklisted(warningBlacklistingMatchers, line)) {
                     warningCount++;
                     updateChannelIfLinked(CHANNEL_TAILER_WARNINGS, new DecimalType(warningCount));
                     updateChannelIfLinked(CHANNEL_TAILER_LASTWARNING, new StringType(line));
                     triggerChannel(CHANNEL_TAILER_NEWWARNING, line);
                 }
-            } else {
-                errorMatcher.reset(line);
-                if (errorMatcher.find()) {
-                    if (!isBlacklisted(configuration.errorBlacklistingPatterns, line)) {
-                        errorCount++;
-                        updateChannelIfLinked(CHANNEL_TAILER_ERRORS, new DecimalType(errorCount));
-                        updateChannelIfLinked(CHANNEL_TAILER_LASTERROR, new StringType(line));
-                        triggerChannel(CHANNEL_TAILER_NEWERROR, line);
-                    }
+            } else if (isMatching(errorMatchers, line)) {
+                if (!isBlacklisted(errorBlacklistingMatchers, line)) {
+                    errorCount++;
+                    updateChannelIfLinked(CHANNEL_TAILER_ERRORS, new DecimalType(errorCount));
+                    updateChannelIfLinked(CHANNEL_TAILER_LASTERROR, new StringType(line));
+                    triggerChannel(CHANNEL_TAILER_NEWERROR, line);
+                }
+            } else if (isMatching(customMatchers, line)) {
+                if (!isBlacklisted(customBlacklistingMatchers, line)) {
+                    customCount++;
+                    updateChannelIfLinked(CHANNEL_TAILER_CUSTOMEVENTS, new DecimalType(customCount));
+                    updateChannelIfLinked(CHANNEL_TAILER_LASTCUSTOMEVENT, new StringType(line));
+                    triggerChannel(CHANNEL_TAILER_NEWCUSTOM, line);
                 }
             }
+
         }
 
         @Override
@@ -158,12 +168,16 @@ public class LogTailerHandler extends BaseThingHandler {
 
         warningCount = 0;
         errorCount = 0;
+        customCount = 0;
 
         try {
-            Pattern warningPattern = Pattern.compile(configuration.warningPattern);
-            Pattern errorPattern = Pattern.compile(configuration.errorPattern);
-            warningMatcher = warningPattern.matcher("");
-            errorMatcher = errorPattern.matcher("");
+            warningMatchers = compilePatterns(configuration.warningPatterns);
+            errorMatchers = compilePatterns(configuration.errorPatterns);
+            customMatchers = compilePatterns(configuration.customPatterns);
+            warningBlacklistingMatchers = compilePatterns(configuration.warningBlacklistingPatterns);
+            errorBlacklistingMatchers = compilePatterns(configuration.errorBlacklistingPatterns);
+            customBlacklistingMatchers = compilePatterns(configuration.customBlacklistingPatterns);
+
         } catch (PatternSyntaxException e) {
             logger.debug("Illegal search pattern syntax '{}'. ", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -215,21 +229,32 @@ public class LogTailerHandler extends BaseThingHandler {
         logger.debug("listenerExecutor shutdown");
     }
 
-    private boolean isBlacklisted(@Nullable String patterns, String line) {
-        if (patterns != null) {
+    private List<Pattern> compilePatterns(@Nullable String patterns) throws PatternSyntaxException {
+        List<Pattern> patternsList = new ArrayList<Pattern>();
+
+        if (patterns != null && !patterns.isEmpty()) {
             String list[] = patterns.split("\\|");
             if (list.length > 0) {
+
                 for (String patternStr : list) {
-                    try {
-                        Pattern pattern = Pattern.compile(patternStr);
-                        Matcher matcher = pattern.matcher(line);
-                        if (matcher.find()) {
-                            // logger.debug("Log line blacklisted by '{}'", patternStr);
-                            return true;
-                        }
-                    } catch (PatternSyntaxException e) {
-                        logger.debug("Illegal search pattern syntax '{}'. ", e.getMessage(), e);
-                    }
+                    patternsList.add(Pattern.compile(patternStr));
+                }
+            }
+        }
+        return patternsList;
+    }
+
+    private boolean isBlacklisted(@Nullable List<Pattern> patterns, String line) {
+        return isMatching(patterns, line);
+    }
+
+    private boolean isMatching(@Nullable List<Pattern> patterns, String line) {
+        if (patterns != null) {
+            for (Pattern pattern : patterns) {
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    // logger.debug("Log line blacklisted by '{}'", patternStr);
+                    return true;
                 }
             }
         }

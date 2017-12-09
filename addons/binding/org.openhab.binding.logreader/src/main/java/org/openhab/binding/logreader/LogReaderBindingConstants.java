@@ -36,14 +36,17 @@ public class LogReaderBindingConstants {
     public static final String CHANNEL_READER_LASTERROR = "lastErrorLine";
 
     // List of all Channel ids for "tailer"
-    public static final String CHANNEL_TAILER_LASTWARNING = "lastWarning";
-    public static final String CHANNEL_TAILER_LASTERROR = "lastError";
-    public static final String CHANNEL_TAILER_WARNINGS = "warningLines";
-    public static final String CHANNEL_TAILER_ERRORS = "errorLines";
+    public static final String CHANNEL_TAILER_LASTWARNING = "lastWarningEvent";
+    public static final String CHANNEL_TAILER_LASTERROR = "lastErrorEvent";
+    public static final String CHANNEL_TAILER_LASTCUSTOMEVENT = "lastCustomEvent";
+    public static final String CHANNEL_TAILER_WARNINGS = "warningEvents";
+    public static final String CHANNEL_TAILER_ERRORS = "errorEvents";
+    public static final String CHANNEL_TAILER_CUSTOMEVENTS = "customEvents";
     public static final String CHANNEL_TAILER_LOGROTATED = "logRotated";
 
-    public static final String CHANNEL_TAILER_NEWWARNING = "newWarning";
-    public static final String CHANNEL_TAILER_NEWERROR = "newError";
+    public static final String CHANNEL_TAILER_NEWWARNING = "newWarningEvent";
+    public static final String CHANNEL_TAILER_NEWERROR = "newErrorEvent";
+    public static final String CHANNEL_TAILER_NEWCUSTOM = "newCustomEvent";
 
     // List of config parameters
     public static final String FILEPATH = "filePath";

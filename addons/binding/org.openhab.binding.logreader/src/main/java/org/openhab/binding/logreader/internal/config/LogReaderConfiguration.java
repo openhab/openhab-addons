@@ -16,15 +16,18 @@ package org.openhab.binding.logreader.internal.config;
 public class LogReaderConfiguration {
     public String filePath;
     public int refreshRate;
-    public String warningPattern;
+    public String warningPatterns;
     public String warningBlacklistingPatterns;
-    public String errorPattern;
+    public String errorPatterns;
     public String errorBlacklistingPatterns;
+    public String customPatterns;
+    public String customBlacklistingPatterns;
 
     @Override
     public String toString() {
-        return "[" + "filePath=" + filePath + ", refreshRate=" + refreshRate + ", warningPattern=" + warningPattern
-                + ", warningBlacklistingPatterns=" + warningBlacklistingPatterns + ", errorPattern=" + errorPattern
-                + ", errorBlacklistingPatterns=" + errorBlacklistingPatterns + "]";
+        return "[" + "filePath=" + filePath + ", refreshRate=" + refreshRate + ", warningPatterns=" + warningPatterns
+                + ", warningBlacklistingPatterns=" + warningBlacklistingPatterns + ", errorPatterns=" + errorPatterns
+                + ", errorBlacklistingPatterns=" + errorBlacklistingPatterns + ", customPatterns=" + customPatterns
+                + ", customBlacklistingPatterns=" + customBlacklistingPatterns + "]";
     }
 }
