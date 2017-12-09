@@ -9,14 +9,14 @@
 		<description>Reader Thing for LogReader Binding using org.apache.ommons.io.input.Tailer</description>
 
 		<channels>
-			<channel typeId="lastWarning" id="lastWarning"/>
-			<channel typeId="lastError" id="lastError"/>
-            <channel typeId="warningLines" id="warningLines"/>
-            <channel typeId="errorLines" id="errorLines"/>
-            <channel typeId="logRotated" id="logRotated"/>
+			<channel typeId="lastWarning" id="lastWarning" />
+			<channel typeId="lastError" id="lastError" />
+			<channel typeId="warningLines" id="warningLines" />
+			<channel typeId="errorLines" id="errorLines" />
+			<channel typeId="logRotated" id="logRotated" />
 
-            <channel typeId="newWarning" id="newWarning"/>
-            <channel typeId="newError" id="newError"/>
+			<channel typeId="newWarning" id="newWarning" />
+			<channel typeId="newError" id="newError" />
 		</channels>
 
 		<config-description>
@@ -35,19 +35,19 @@
 				<description>Warning search pattern. Empty will default to WARN+</description>
 				<default>WARN+</default>
 			</parameter>
-            <parameter name="warningBlacklistingPatterns" type="text" required="false">
-                <label>Warning Blacklisting Patterns</label>
-                <description>Warning search pattern for blacklisting unwanted warnings separated by | character.</description>
-            </parameter>
+			<parameter name="warningBlacklistingPatterns" type="text" required="false">
+				<label>Warning Blacklisting Patterns</label>
+				<description>Warning search pattern for blacklisting unwanted warnings separated by | character.</description>
+			</parameter>
 			<parameter name="errorPattern" type="text" required="true">
 				<label>Error Pattern</label>
 				<description>Error search pattern. Empty will default to ERROR+</description>
 				<default>ERROR+</default>
 			</parameter>
-            <parameter name="errorBlacklistingPatterns" type="text" required="false">
-                <label>Error Blacklisting Patterns</label>
-                <description>Error search pattern for blacklisting unwanted warnings separated by | character. </description>
-            </parameter>
+			<parameter name="errorBlacklistingPatterns" type="text" required="false">
+				<label>Error Blacklisting Patterns</label>
+				<description>Error search pattern for blacklisting unwanted warnings separated by | character. </description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
