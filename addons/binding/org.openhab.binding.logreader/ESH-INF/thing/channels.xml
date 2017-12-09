@@ -3,49 +3,49 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="lastWarning">
-        <item-type>String</item-type>
-        <label>Last warning line</label>
-        <description>Displays contents of last [WARN] line</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="lastWarning">
+		<item-type>String</item-type>
+		<label>Last warning line</label>
+		<description>Displays contents of last [WARN] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="lastError">
-        <item-type>String</item-type>
-        <label>Last error line</label>
-        <description>Displays contents of last [ERROR] line</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="warningLines">
-        <item-type>Number</item-type>
-        <label>Warning lines matched</label>
-        <description>Displays number of [WARN] lines matched to search pattern</description>
-    </channel-type>
-    <channel-type id="errorLines">
-        <item-type>Number</item-type>
-        <label>Error lines matched</label>
-        <description>Displays number of [ERROR] lines matched to search pattern</description>
-    </channel-type>
-    <channel-type id="logRotated">
-        <item-type>DateTime</item-type>
-        <label>Log Rotated</label>
-        <description>Last time when log rotated recognized</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="newWarning">
-        <kind>trigger</kind>
-        <label>Last Warning</label>
-        <description>Trigger channel for last [WARN] line</description>
-        <event>
-        </event>
-    </channel-type>
-    <channel-type id="newError">
-        <kind>trigger</kind>
-        <label>Last Error</label>
-        <description>Trigger channel for last [ERROR] line</description>
-        <event>
-        </event>
-    </channel-type>
-    
+	<channel-type id="lastError">
+		<item-type>String</item-type>
+		<label>Last error line</label>
+		<description>Displays contents of last [ERROR] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="warningLines">
+		<item-type>Number</item-type>
+		<label>Warning lines matched</label>
+		<description>Displays number of [WARN] lines matched to search pattern</description>
+	</channel-type>
+	<channel-type id="errorLines">
+		<item-type>Number</item-type>
+		<label>Error lines matched</label>
+		<description>Displays number of [ERROR] lines matched to search pattern</description>
+	</channel-type>
+	<channel-type id="logRotated">
+		<item-type>DateTime</item-type>
+		<label>Log Rotated</label>
+		<description>Last time when log rotated recognized</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="newWarning">
+		<kind>trigger</kind>
+		<label>Last Warning</label>
+		<description>Trigger channel for last [WARN] line</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-type id="newError">
+		<kind>trigger</kind>
+		<label>Last Error</label>
+		<description>Trigger channel for last [ERROR] line</description>
+		<event>
+		</event>
+	</channel-type>
+
 </thing:thing-descriptions>
