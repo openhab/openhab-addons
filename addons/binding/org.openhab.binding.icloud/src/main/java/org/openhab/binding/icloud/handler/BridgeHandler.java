@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private final AddressLookupParser addressLoopupParser = new AddressLookupParser();
     private Connection connection;
     private AccountThingConfiguration config;
     private boolean addressLookupIsEnabled = false;
@@ -130,8 +131,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             if (addressLookupIsEnabled) {
                 json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
                 if (json != null && !json.equals("")) {
-                    AddressLookupParser parser = new AddressLookupParser(json);
-                    address = parser.getAddress();
+                    address = addressLoopupParser.getAddress(json);
                 }
             }
         } catch (Exception e) {

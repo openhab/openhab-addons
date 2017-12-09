@@ -11,8 +11,6 @@ package org.openhab.binding.icloud.internal;
 import org.openhab.binding.icloud.internal.json.google.AddressComponent;
 import org.openhab.binding.icloud.internal.json.google.JSONRootObject;
 import org.openhab.binding.icloud.internal.json.google.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,19 +22,11 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class AddressLookupParser {
-    private final Logger logger = LoggerFactory.getLogger(AddressLookupParser.class);
+    private final Gson gson = new GsonBuilder().create();
     private JSONRootObject data;
 
-    public AddressLookupParser(String json) {
-        try {
-            Gson gson = new GsonBuilder().create();
-            data = gson.fromJson(json, JSONRootObject.class);
-        } catch (Exception e) {
-            logger.warn("Unable to parse address lookup response: {}", json, e);
-        }
-    }
-
-    public Address getAddress() {
+    public Address getAddress(String json) {
+        data = gson.fromJson(json, JSONRootObject.class);
         Address address = new Address();
         Result result = data.getResults().get(0);
 
