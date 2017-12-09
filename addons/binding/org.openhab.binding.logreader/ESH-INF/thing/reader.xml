@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="logreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- LogReader thing using BufferedReader() -->
+
+	<thing-type id="reader">
+		<label>LogReader</label>
+		<description>Reader Thing for LogReader Binding</description>
+
+		<channels>
+			<channel typeId="logRotated" id="logRotated"></channel>
+			<channel typeId="lastLine" id="lastLine"></channel>
+			<channel typeId="lastRead" id="lastRead"></channel>
+			<channel typeId="warningLines" id="warningLines"></channel>
+			<channel typeId="errorLines" id="errorLines"></channel>
+			<channel typeId="lastWarningLine" id="lastWarningLine"></channel>
+			<channel typeId="lastErrorLine" id="lastErrorLine"></channel>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshRate" type="integer" required="true">
+				<label>Refresh rate</label>
+				<description>Refresh rate for reading logs</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<!-- Channels for LogReader -->
+
+	<channel-type id="logRotated">
+		<item-type>DateTime</item-type>
+		<label>Log Rotated</label>
+		<description>Time when log rotated</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastLine">
+		<item-type>DateTime</item-type>
+		<label>Last line</label>
+		<description>Displays DateTime of last line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastRead">
+		<item-type>DateTime</item-type>
+		<label>Last read</label>
+		<description>Displays DateTime of last read</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="warningLines">
+		<item-type>Number</item-type>
+		<label>Warning lines</label>
+		<description>Displays number of [WARN] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="errorLines">
+		<item-type>Number</item-type>
+		<label>Error lines</label>
+		<description>Displays number of [ERROR] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastWarningLine">
+		<item-type>String</item-type>
+		<label>Last warning line</label>
+		<description>Displays contents of last [WARN] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastErrorLine">
+		<item-type>String</item-type>
+		<label>Last error line</label>
+		<description>Displays contents of last [ERROR] line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
