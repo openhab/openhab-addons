@@ -9,21 +9,26 @@
 package org.openhab.binding.icloud.internal;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Lookup addresses from given coordinates.
+ * Lookup addresses from given coordinates via Google API.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class AddressLookup {
     final String baseURL = "https://maps.googleapis.com/maps/api/geocode/json";
+    private final Logger logger = LoggerFactory.getLogger(AddressLookup.class);
 
     private String key;
 
@@ -31,29 +36,35 @@ public class AddressLookup {
         key = googleAPIKey;
     }
 
-    public String getAddressJSON(PointType location) throws Exception {
+    public String getAddressJSON(PointType location) {
         String json = null;
-        String url = baseURL + "?latlng=" + location.toString();
-        if (key != null) {
-            url = url + "&key=" + key;
-        }
-        URL requestURL = new URL(url);
-        HttpsURLConnection connection;
-        connection = (HttpsURLConnection) requestURL.openConnection();
-        connection.setRequestMethod("GET");
-        setRequestProperties(connection);
+        String url = baseURL + "?latlng=" + location.toString() + "&key=" + key;
+        ;
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+        URL requestURL;
+        try {
+            requestURL = new URL(url);
+            HttpsURLConnection connection;
+            connection = (HttpsURLConnection) requestURL.openConnection();
+            connection.setRequestMethod("GET");
+            setRequestProperties(connection);
 
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                response.append(inputLine);
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = bufferedReader.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                bufferedReader.close();
+                json = response.toString();
             }
-            bufferedReader.close();
-            json = response.toString();
+        } catch (MalformedURLException e) {
+            logger.warn("Invalid Google API request URL: [{}]", url, e);
+        } catch (IOException e) {
+            logger.warn("Unable to communicate with Google to get human readable address.", e);
         }
 
         return json;
