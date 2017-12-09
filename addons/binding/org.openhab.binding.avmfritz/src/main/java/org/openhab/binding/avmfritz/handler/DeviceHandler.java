@@ -211,27 +211,28 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 break;
             case CHANNEL_RADIATOR_MODE:
                 if (command instanceof StringType) {
-                    if (MODE_ON.equals(command)) {
+                    String commandString = command.toString();
+                    if (MODE_ON.equals(commandString)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_ON);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_ON);
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_ON)));
-                    } else if (MODE_OFF.equals(command)) {
+                    } else if (MODE_OFF.equals(commandString)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_OFF);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_OFF);
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF)));
-                    } else if (MODE_COMFORT.equals(command)) {
+                    } else if (MODE_COMFORT.equals(commandString)) {
                         BigDecimal comfort_temp = state.getHkr().getKomfort();
                         state.getHkr().setTsoll(comfort_temp);
                         fritzBox.setSetTemp(ain, comfort_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(comfort_temp)));
-                    } else if (MODE_ECO.equals(command)) {
+                    } else if (MODE_ECO.equals(commandString)) {
                         BigDecimal eco_temp = state.getHkr().getAbsenk();
                         state.getHkr().setTsoll(eco_temp);
                         fritzBox.setSetTemp(ain, eco_temp);
                         updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(eco_temp)));
-                    } else if (MODE_BOOST.equals(command)) {
+                    } else if (MODE_BOOST.equals(commandString)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_MAX);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_MAX);
                         updateState(CHANNEL_SETTEMP,
