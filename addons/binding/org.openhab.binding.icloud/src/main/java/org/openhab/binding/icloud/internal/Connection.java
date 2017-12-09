@@ -19,6 +19,9 @@ import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Handles communication with the apple server. Provides methods to
  * get device information and to find a device.
@@ -27,6 +30,7 @@ import javax.net.ssl.HttpsURLConnection;
  *
  */
 public class Connection {
+    private final Logger logger = LoggerFactory.getLogger(Connection.class);
     private final String iCloudURL = "https://www.icloud.com";
     private final String iCloudApiURL = "https://fmipmobile.icloud.com/fmipservice/device/";
     private final String iCloudAPIRequestDataCommand = "/initClient";
@@ -97,25 +101,38 @@ public class Connection {
         return connection;
     }
 
-    private String getResponse(HttpsURLConnection connection) throws IOException {
+    private String getResponse(HttpsURLConnection connection) {
         String response;
-        BufferedInputStream inputStream = new BufferedInputStream(connection.getInputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedInputStream inputStream;
+        try {
+            inputStream = new BufferedInputStream(connection.getInputStream());
 
-        String inputLine;
-        StringBuffer stringBuffer = new StringBuffer();
-        while ((inputLine = reader.readLine()) != null) {
-            stringBuffer.append(inputLine);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String inputLine;
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((inputLine = reader.readLine()) != null) {
+                stringBuffer.append(inputLine);
+            }
+
+            reader.close();
+            inputStream.close();
+            response = stringBuffer.toString();
+            return response;
+        } catch (IOException e) {
+            logger.warn("Communication problem with icloud", e);
         }
-
-        reader.close();
-        inputStream.close();
-        response = stringBuffer.toString();
-        return response;
+        return null;
     }
 
-    private String getBasicAuthorization() throws UnsupportedEncodingException {
-        return "Basic " + new String(this.authorization, "UTF-8"); // for UTF-8 encoding
+    private String getBasicAuthorization() {
+        try {
+            return "Basic " + new String(this.authorization, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Unsupported encoding); unable to create basic authorization string", e);
+        }
+
+        return null;
     }
 
 }
