@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -102,23 +101,17 @@ public class Connection {
     }
 
     private String getResponse(HttpsURLConnection connection) {
-        String response;
-        BufferedInputStream inputStream;
         try {
-            inputStream = new BufferedInputStream(connection.getInputStream());
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String inputLine;
+                StringBuffer stringBuffer = new StringBuffer();
+                while ((inputLine = reader.readLine()) != null) {
+                    stringBuffer.append(inputLine);
+                }
 
-            String inputLine;
-            StringBuffer stringBuffer = new StringBuffer();
-            while ((inputLine = reader.readLine()) != null) {
-                stringBuffer.append(inputLine);
+                return stringBuffer.toString();
             }
-
-            reader.close();
-            inputStream.close();
-            response = stringBuffer.toString();
-            return response;
         } catch (IOException e) {
             logger.warn("Communication problem with icloud", e);
         }
