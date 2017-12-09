@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -86,14 +85,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge handler initializing ...");
         startHandler();
         logger.debug("iCloud bridge initialized.");
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        refreshJob.cancel(true);
-        refreshJob = null;
-        this.startHandler();
     }
 
     @Override
