@@ -1,6 +1,6 @@
 # LogReader Binding
 
-Binding to reads and analyze log files.
+Binding to reads and analyze log files. Binding can be used to monitor openHAB logs, but as search patterns are configurable any other system logs can be monitored as well. When certain log events is recognized, openHAB rules can used to send notification about the event e.g by email for further analyze.
 
 ## Supported Things
 
