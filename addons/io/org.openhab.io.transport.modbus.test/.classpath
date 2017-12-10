@@ -6,6 +6,6 @@
 	<classpathentry kind="output" path="target/classes"/>
 	<classpathentry exported="true" kind="lib" path="lib/mockito-all-1.10.19.jar"/>
 	<!-- jamod is needed just for tests (modbus server) -->
-	<classpathentry exported="true" kind="lib" path="../org.openhab.io.transport.modbus/lib/jamod-1.2.3.OH-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="../org.openhab.io.transport.modbus/lib/jamod-1.2.3.OH.jar"/>
 	
 </classpath>
