@@ -77,9 +77,6 @@ public class RokuCommands {
             case CHANNEL_BACKSPACE:
                 postMethod("/keypress/Backspace");
                 break;
-            case CHANNEL_SEARCH:
-                postMethod("/keypress/Search");
-                break;
             case CHANNEL_ENTER:
                 postMethod("/keypress/Enter");
                 break;

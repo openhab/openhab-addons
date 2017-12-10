@@ -40,7 +40,6 @@ public class RokuBindingConstants {
     public static final String CHANNEL_INSTANTREPLAY = "instant-replay";
     public static final String CHANNEL_INFO = "info";
     public static final String CHANNEL_BACKSPACE = "backspace";
-    public static final String CHANNEL_SEARCH = "search";
     public static final String CHANNEL_ENTER = "enter";
     public static final String CHANNEL_ICON = "icon";
     public static final String CHANNEL_APPBROWSER = "appbrowser";

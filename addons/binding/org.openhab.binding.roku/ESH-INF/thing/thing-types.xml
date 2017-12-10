@@ -174,12 +174,6 @@
         <description>emulates a backspace press on the roku device</description>
     </channel-type>
         
-    <channel-type id="search">
-        <item-type>Switch</item-type>
-        <label>Search</label>
-        <description>emulates a search press on the roku device</description>
-    </channel-type>
-        
     <channel-type id="enter">
         <item-type>Switch</item-type>
         <label>Enter</label>
