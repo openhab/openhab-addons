@@ -45,7 +45,7 @@ The following channels are available:
 
 | Channel Type ID   | Item Type | Description                                                                                |
 |-------------------|-----------|--------------------------------------------------------------------------------------------|
-| color             | Color     | This channel supports switching , brightness and adjusting the color of a light.                                      |
+| color             | Color     | This channel supports switching, brightness and adjusting the color of a light.            |
 | color_temperature | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).       |
 | white_brightness  | Dimmer    | This channel supports adjusting the brightness value of the white light.                   |
 | program           | String    | This channel supports setting the bulb to a static, jumping, gradient or flashing light.   |
