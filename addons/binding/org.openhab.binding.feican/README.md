@@ -20,8 +20,6 @@ It might be the Feican ledstrips also work as it seems they can be controlled wi
 It's not possible to get the state of the bulb from the bulb itself. Therefore the state visible to the user only reflects
 what was set in openHAB and may not correspond with the actual state.
 
-Due to the way the brightness works, the brightness can not be set to completely dim the light.
-
 ## Prerequisites
 
 Before using the Feican bulb with openHab the devices must be connected to the Wi-Fi network. This can be done using the
@@ -35,7 +33,7 @@ devices in a different network, but these must be added manually.
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The thing has a one configuration parameter:
 
 | Parameter | Description                                                              |
 |-----------|------------------------------------------------------------------------- |
@@ -47,10 +45,8 @@ The following channels are available:
 
 | Channel Type ID   | Item Type | Description                                                                                |
 |-------------------|-----------|--------------------------------------------------------------------------------------------|
-| switch            | Switch    | This channel supports switching the light on and off.                                      |
-| color             | Color     | This channel supports adjusting the color of a light.                                      |
+| color             | Color     | This channel supports switching , brightness and adjusting the color of a light.                                      |
 | color_temperature | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).       |
-| brightness        | Dimmer    | This channel supports adjusting the brightness of the color, color temperature of program. |
 | white_brightness  | Dimmer    | This channel supports adjusting the brightness value of the white light.                   |
 | program           | String    | This channel supports setting the bulb to a static, jumping, gradient or flashing light.   |
 | programSpeed      | Dimmer    | This channel supports adjusting speed of jump, gradient or flash programs                  |
@@ -104,7 +100,3 @@ Switch   FC_1_Switch  "Switch"                    { channel="feican:bulb:home:sw
 Color    FC_1_Color   "Color"            <slider> { channel="feican:bulb:home:color" }
 Dimmer   FC_1_Dimmer  "Brightness [%d]"  <slider> { channel="feican:bulb:home:brightness" }
 ```
-
-## Disclaimer
-
-This binding is not endorsed or sponsored by Feican.

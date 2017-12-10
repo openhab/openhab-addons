@@ -64,9 +64,9 @@ public class Commands {
     public byte[] color(HSBType color) {
         byte[] command = RGB_COMMAND.clone();
         PercentType[] rgb = color.toRGB();
-        command[4] = convertPercentToByte(rgb[0]);
-        command[5] = convertPercentToByte(rgb[1]);
-        command[6] = convertPercentToByte(rgb[2]);
+        command[4] = convertColorPercentToByte(rgb[0]);
+        command[5] = convertColorPercentToByte(rgb[1]);
+        command[6] = convertColorPercentToByte(rgb[2]);
         return command;
     }
 
@@ -77,7 +77,7 @@ public class Commands {
      * @param percent value to be converted.
      * @return converted value as a byte value
      */
-    private byte convertPercentToByte(PercentType percent) {
+    private byte convertColorPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
                 .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).byteValue();
     }
@@ -98,8 +98,8 @@ public class Commands {
     /**
      * Returns the command to set the brightness on a bulb running in color, color temperature or program.
      *
-     * @param percentage the color to set
-     * @return the color command
+     * @param percentage the brightness to set
+     * @return the brightness command
      */
     public byte[] brightness(PercentType percentage) {
         byte[] command = BRIGHTNESS_COMMAND.clone();

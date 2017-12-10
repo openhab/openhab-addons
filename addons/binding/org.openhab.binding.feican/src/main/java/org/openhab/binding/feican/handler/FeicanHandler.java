@@ -11,6 +11,8 @@ package org.openhab.binding.feican.handler;
 import static org.openhab.binding.feican.FeicanBindingConstants.*;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,7 +59,7 @@ public class FeicanHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (command instanceof OnOffType) {
-                handleSwithOnOff((OnOffType) command);
+                handleOnOff((OnOffType) command);
             } else if (command instanceof HSBType) {
                 handleColor(channelUID, (HSBType) command);
             } else if (command instanceof PercentType) {
@@ -74,9 +76,23 @@ public class FeicanHandler extends BaseThingHandler {
     public void initialize() {
         final FeicanConfiguration config = getConfigAs(FeicanConfiguration.class);
 
-        logger.info("Initializing Feican Wifi RGWB Bulb on IP address {}", config.ipAddress);
-        connection = new Connection(config.ipAddress);
-        updateStatus(ThingStatus.ONLINE);
+        logger.debug("Initializing Feican Wifi RGWB Bulb on IP address {}", config.ipAddress);
+        try {
+            connection = new Connection(config.ipAddress);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (SocketException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     /**
@@ -87,7 +103,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @param onOff value to set: on or off
      * @throws IOException Connection to the bulb failed
      */
-    private void handleSwithOnOff(OnOffType onOff) throws IOException {
+    private void handleOnOff(OnOffType onOff) throws IOException {
         connection.sendCommand(commands.switchOnOff(onOff));
     }
 
@@ -112,7 +128,7 @@ public class FeicanHandler extends BaseThingHandler {
             handleBrightness(command.getBrightness());
             connection.sendCommand(
                     commands.color(new HSBType(command.getHue(), command.getSaturation(), PercentType.HUNDRED)));
-            handleSwithOnOff((OnOffType) command.as(OnOffType.class));
+            handleOnOff((OnOffType) command.as(OnOffType.class));
         }
     }
 
@@ -132,19 +148,19 @@ public class FeicanHandler extends BaseThingHandler {
             case CHANNEL_BRIGHTNESS:
             case CHANNEL_COLOR:
                 handleBrightness(command);
-                handleSwithOnOff((OnOffType) command.as(OnOffType.class));
+                handleOnOff((OnOffType) command.as(OnOffType.class));
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 handleColorTemperature(command);
-                handleSwithOnOff(OnOffType.ON);
+                handleOnOff(OnOffType.ON);
                 break;
             case CHANNEL_WHITE_BRIGHTNESS:
                 handleWhiteBrightness(command);
-                handleSwithOnOff((OnOffType) command.as(OnOffType.class));
+                handleOnOff((OnOffType) command.as(OnOffType.class));
                 break;
             case CHANNEL_PROGRAM_SPEED:
                 handleProgramSpeed(command);
-                handleSwithOnOff(OnOffType.ON);
+                handleOnOff(OnOffType.ON);
                 break;
         }
     }

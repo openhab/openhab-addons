@@ -15,12 +15,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Discovery service for Feican Bulbs. When sending a discovery UDP broadcast command on port 5000 to a Feican bulb. The
- * bulp will respond with it's mac address send via UDP broadcast over port 6000.
+ * bulp will respond with its mac address send via UDP broadcast over port 6000.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -53,17 +50,11 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
 
     ///// Network
     private final byte[] buffer = new byte[32];
-    private final DatagramPacket receivePacket;
-    private final DatagramPacket discoverPacket;
     @Nullable
     private DatagramSocket discoverSocket;
 
-    public FeicanDiscoveryService() throws UnknownHostException {
+    public FeicanDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, false);
-        final InetAddress broadcast = InetAddress.getByName("255.255.255.255");
-        discoverPacket = new DatagramPacket(Commands.discover(), Commands.discover().length, broadcast,
-                Connection.FEICAN_SEND_PORT);
-        receivePacket = new DatagramPacket(buffer, buffer.length);
     }
 
     @Override
@@ -84,6 +75,7 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
      */
     private void discoverThings() {
         try {
+            final DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
             // No need to call close first, because the caller of this method already has done it.
             startDiscoverSocket();
             // Runs until the socket call gets a time out and throws an exception. When a time out is triggered it means
@@ -118,10 +110,12 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
      * @throws IOException
      */
     private void startDiscoverSocket() throws SocketException, IOException {
-        SocketAddress sa = new InetSocketAddress(Connection.FEICAN_RECEIVE_PORT);
-        discoverSocket = new DatagramSocket(sa);
+        discoverSocket = new DatagramSocket(new InetSocketAddress(Connection.FEICAN_RECEIVE_PORT));
         discoverSocket.setBroadcast(true);
         discoverSocket.setSoTimeout(UDP_PACKET_TIMEOUT);
+        final InetAddress broadcast = InetAddress.getByName("255.255.255.255");
+        final DatagramPacket discoverPacket = new DatagramPacket(Commands.discover(), Commands.discover().length,
+                broadcast, Connection.FEICAN_SEND_PORT);
         discoverSocket.send(discoverPacket);
         if (logger.isTraceEnabled()) {
             logger.trace("Discovery package sent: {}", new String(discoverPacket.getData(), StandardCharsets.UTF_8));
@@ -148,11 +142,11 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
         final String ipAddress = packet.getAddress().getHostAddress();
         if (packet.getData().length < 12) {
             logger.debug(
-                    "Feican device was detected, but the retreived data is incomplete: '{}'. Device not registered",
+                    "Feican device was detected, but the retrieved data is incomplete: '{}'. Device not registered",
                     new String(packet.getData(), 0, packet.getLength() - 1, StandardCharsets.UTF_8));
         } else {
             String thingName = createThingName(packet.getData());
-            ThingUID thingUID = new ThingUID(THING_TYPE_BULB, thingName.toLowerCase(Locale.ENGLISH));
+            ThingUID thingUID = new ThingUID(THING_TYPE_BULB, thingName.toLowerCase());
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(thingName)
                     .withProperties(collectProperties(ipAddress, stringToMac(packet.getData(), packet.getLength())))
                     .build());

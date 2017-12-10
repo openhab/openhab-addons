@@ -8,10 +8,13 @@
  */
 package org.openhab.binding.feican.internal;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -21,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class Connection {
+public class Connection implements Closeable {
 
     /**
      * UDP port to send command.
@@ -32,15 +35,19 @@ public class Connection {
      */
     public static final int FEICAN_RECEIVE_PORT = 6000;
 
-    private final String ipAddress;
+    private final InetAddress iNetAddress;
+    private final DatagramSocket socket;
 
     /**
      * Initializes a connection to the given IP address.
      *
      * @param ipAddress IP address of the connection
+     * @throws UnknownHostException if ipAddress could not be resolved.
+     * @throws SocketException if no Datagram socket connection could be made.
      */
-    public Connection(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public Connection(String ipAddress) throws SocketException, UnknownHostException {
+        iNetAddress = InetAddress.getByName(ipAddress);
+        socket = new DatagramSocket();
     }
 
     /**
@@ -50,10 +57,12 @@ public class Connection {
      * @throws IOException Connection to the bulb failed
      */
     public void sendCommand(byte[] command) throws IOException {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            InetAddress addr = InetAddress.getByName(ipAddress);
-            DatagramPacket sendPkt = new DatagramPacket(command, command.length, addr, FEICAN_SEND_PORT);
-            socket.send(sendPkt);
-        }
+        DatagramPacket sendPkt = new DatagramPacket(command, command.length, iNetAddress, FEICAN_SEND_PORT);
+        socket.send(sendPkt);
+    }
+
+    @Override
+    public void close() {
+        socket.close();
     }
 }
