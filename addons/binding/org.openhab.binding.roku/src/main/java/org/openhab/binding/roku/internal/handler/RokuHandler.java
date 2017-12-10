@@ -58,7 +58,11 @@ public class RokuHandler extends BaseThingHandler {
                 logger.debug("IOException occurred when attempting action with device '{}'", ipAddress, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            updateState(channelUID, OnOffType.OFF);
+            // Currently, all of the channels for this binding are implementations of button-presses on the Roku remote.
+            // After a button is "pressed", we'll want to turn it off ("unpress" it), so schedule a job to do so soon.
+            scheduler.schedule(() -> {
+                updateState(channelUID, OnOffType.OFF);
+            }, 1, TimeUnit.SECONDS);
         }
     }
 
@@ -84,7 +88,7 @@ public class RokuHandler extends BaseThingHandler {
             state.updateDeviceInformation();
         } catch (IOException e) {
             logger.debug("Roku device '{}' but is not communicating", ipAddress, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         updatePropertiesFromState(state);

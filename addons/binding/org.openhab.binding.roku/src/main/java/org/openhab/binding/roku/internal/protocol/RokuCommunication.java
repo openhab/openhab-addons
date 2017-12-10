@@ -64,20 +64,6 @@ public class RokuCommunication {
                 .replace("id=", "").replace("\"", "");
     }
 
-    /**
-     * Future Functionality
-     * private HashMap<String, String> getAllSubTags(String tag, Element eElement) {
-     * HashMap<String, String> map = new HashMap<String, String>();
-     * for (int i = 0; i < eElement.getElementsByTagName(tag).getLength(); i++) {
-     * String id = eElement.getElementsByTagName(tag).item(i).getAttributes().getNamedItem("id").toString()
-     * .replace("id=", "").replace("\"", "");
-     * String app = eElement.getElementsByTagName(tag).item(i).getTextContent();
-     * map.put(app, id);
-     * }
-     * return map;
-     * }
-     */
-
     private String getRokuStateFieldForXmlName(String name) {
         String[] parts = name.split("-");
         StringBuilder sb = new StringBuilder(name.length() - parts.length + 1);
@@ -148,26 +134,6 @@ public class RokuCommunication {
                 }
             }
         }
-
-        /**
-         * Future Functionality
-         * doc = getRequest(ROKU_QUERY_APPS);
-         * doc.getDocumentElement().normalize();
-         * if (doc != null) {
-         * NodeList nList = doc.getElementsByTagName("apps");
-         * for (int i = 0; i < nList.getLength(); i++) {
-         * Node nNode = nList.item(i);
-         * Element eElement = (Element) nNode;
-         * logger.debug("Current Element: " + nNode.getNodeName());
-         * HashMap<String, String> map = getAllSubTags("app", eElement);
-         * StringBuffer sb = new StringBuffer();
-         * for (String key : map.keySet()) {
-         * sb.append(key + " => " + map.get(key) + "\n");
-         * }
-         * state.application_menu = new StringType(sb.toString());
-         * }
-         * }
-         */
     }
 
     private Document getRequest(String context) throws IOException {
