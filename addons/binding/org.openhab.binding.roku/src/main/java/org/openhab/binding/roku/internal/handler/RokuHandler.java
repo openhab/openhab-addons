@@ -13,6 +13,7 @@ import static org.openhab.binding.roku.RokuBindingConstants.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -54,7 +55,8 @@ public class RokuHandler extends BaseThingHandler {
             try {
                 rokuDevice.generateAction(channelUID);
             } catch (IOException e) {
-                logger.error("IOException occurred when attempting action", e);
+                logger.debug("IOException occurred when attempting action with device '{}'", ipAddress, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             updateState(channelUID, OnOffType.OFF);
         }

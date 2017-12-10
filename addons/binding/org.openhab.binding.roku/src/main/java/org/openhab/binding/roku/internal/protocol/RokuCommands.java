@@ -84,7 +84,7 @@ public class RokuCommands {
                 postMethod("/keypress/Enter");
                 break;
             default:
-                throw new IOException("No action corresponding to CHANNEL " + channelUID.getId() + " requested");
+                logger.debug("No action corresponding to CHANNEL {} requested", channelUID.getId());
         }
     }
 
