@@ -75,13 +75,13 @@ Depending on your Tellstick model different API methods is available:
 #### Telldus Core Bridge
 
 ```
-Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval="200"]
+Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200]
 ```
 
 Optional:
 
 - **libraryPath:** The path to tellduscore.dll/so,
-- **resendInterval:** The interval between each transmission of command, default 100ms.
+- **resendInterval:** The interval between each transmission of command in ms, default 100ms.
 
 #### Telldus Live Bridge
 
@@ -158,7 +158,7 @@ end
 ### tellstick.things
 
 ```
-Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval="200"]
+Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200]
 Bridge tellstick:telldus-live:2 "Tellstick ZWave" [refreshInterval=10000, publicKey="XXXXXXXX", privateKey="YYYYYY", token= "ZZZZZZZZ", tokenSecret="UUUUUUUUUU"]
 ```
 
