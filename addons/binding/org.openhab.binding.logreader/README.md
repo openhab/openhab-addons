@@ -56,7 +56,7 @@ logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlac
 String   logreaderLastError         "Last error [%s]"                                      { channel="logreader:reader:openhablog:lastErrorEvent" }
 String   logreaderLastWarning       "Last warning [%s]"                                    { channel="logreader:reader:openhablog:lastWarningEvent" }
 Number   logreaderErrors            "Error events matched [%d]"                            { channel="logreader:reader:openhablog:errorEvents" }
-Number   logreaderWarnings          "Warning lines [%d]"                                   { channel="logreader:reader:openhablog:warningEvents" }
+Number   logreaderWarnings          "Warning events matched [%d]"                          { channel="logreader:reader:openhablog:warningEvents" }
 DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"          { channel="logreader:reader:openhablog:logRotated" } 
 
 ```
