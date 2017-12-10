@@ -870,7 +870,7 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 Date date = new Date(Long.valueOf(s));
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                 return super.getState(dateFormatter.format(date));
             }
         },
