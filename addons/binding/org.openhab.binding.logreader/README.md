@@ -15,9 +15,9 @@ Thing is configurable manually or through PaperUI. Binding support following par
 | `filePath`                    | String  |   yes    | `${OPENHAB_LOGDIR}/openhab.log`  | Path to log file. ${OPENHAB_LOGDIR} is automatically replaced by the correct directory. |
 | `refreshRate`                 | integer |   no     | `1000`                           | Time in milliseconds between individual log reads.                                      |
 | `errorPatterns`               | String  |   no     | `ERROR+`                         | Search patterns separated by \| character for warning events.                            |
-| `errorBlacklistingPatterns`   | String  |   no     |                                  | Search patterns for blacklisting unwanted error events separated by | character.       |
+| `errorBlacklistingPatterns`   | String  |   no     |                                  | Search patterns for blacklisting unwanted error events separated by \| character.       |
 | `warningPatterns`             | String  |   no     | `WARN+`                          | Search patterns separated by \| character for error events.                              |
-| `warningBlacklistingPatterns` | String  |   no     |                                  | Search patterns for blacklisting unwanted warning events separated by | character.     |
+| `warningBlacklistingPatterns` | String  |   no     |                                  | Search patterns for blacklisting unwanted warning events separated by \| character.     |
 | `customPatterns`              | String  |   no     |                                  | Search patterns separated by \| character for custom events.                             |
 | `customBlacklistingPatterns`  | String  |   no     |                                  | Search patterns for blacklisting unwanted custom events separated by \| character.      |
 
