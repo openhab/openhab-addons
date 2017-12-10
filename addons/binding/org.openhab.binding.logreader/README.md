@@ -4,7 +4,7 @@ Binding to reads and analyze log files. Binding can be used to monitor openHAB l
 
 ## Supported Things
 
-At this time Binding supports only one ThingType: `LogReader`
+At this time Binding supports only one ThingType: `LogReader`. One LogReader support 3 separated channels; One for errors, one for warnings and one custom channel for other purposes. If you need more channels, you can always add another Thing.
 
 ## Thing Configuration
 
