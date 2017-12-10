@@ -1,109 +1,93 @@
-# <bindingName> LogReader
+# LogReader Binding
 
-Binding that reads and parses openHABs `../openhab.log` and updates various channels. After this for example [Telegram Action](http://docs.openhab.org/addons/actions/telegram/readme.html)
-can be used to inform user if errors are found.
-
-You can find more info here: [OpenHAB community: LogReader binding](https://community.openhab.org/t/logreader-binding/36440)
-
-## How to get
-
-Download `.jar` from [here](http://lantee.arkku.net/files/org.openhab.binding.logreader-2.2.0-SNAPSHOT.jar) and drop it in your openhab/addons folder. 
-Distributing through IoT Marketplace is planned for easier installation.
+Binding to reads and analyze log files.
 
 ## Supported Things
 
 At this time Binding supports only one ThingType: `LogReader`
 
-In PaperUI when setting up the thing there's also listed another ThingType LogTailer.
-!Do not use this! For now it is only for testing purposes.
-
 ## Thing Configuration
 
-Thing is configurable manually or through PaperUI and there's only one configuration parameter. 
+Thing is configurable manually or through PaperUI. Binding support following parameters. 
 
-| Parameter        | Type    | Required | Default if omitted | Description                                   |                                                                                                                                        
-| -----------------| ------- | -------- | ------------------ |---------------------------------------------- |
-| `refreshRate`    | integer |    yes   | `60`               | Time between individual log reads. In seconds.|
-
-Log file path is automatically set using system properties.
+| Parameter                     | Type    | Required | Default if omitted               | Description                                                                             |
+| ------------------------------| ------- | -------- | -------------------------------- |-----------------------------------------------------------------------------------------|
+| `filePath`                    | String  |   yes    | `${OPENHAB_LOGDIR}/openhab.log`  | Path to log file. ${OPENHAB_LOGDIR} is automatically replaced by the correct directory. |
+| `refreshRate`                 | integer |   no     | `1000`                           | Time in milliseconds between individual log reads.                                      |
+| `errorPatterns`               | String  |   no     | `ERROR+`                         | Search patterns separated by | character for warning events.                            |
+| `errorBlacklistingPatterns`   | String  |   no     |                                  | Search patterns for blacklisting unwanted error events separated by \| character.       |
+| `warningPatterns`             | String  |   no     | `WARN+`                          | Search patterns separated by | character for error events.                              |
+| `warningBlacklistingPatterns` | String  |   no     |                                  | Search patterns for blacklisting unwanted warning events separated by \| character.     |
+| `customPatterns`              | String  |   no     |                                  | Search patterns separated by | character for custom events.                             |
+| `customBlacklistingPatterns`  | String  |   no     |                                  | Search patterns for blacklisting unwanted custom events separated by \| character.      |
 
 
 ## Channels
 
 List of channels
 
-| Channel Type ID  | Item Type    | Description                                       |
-| ---------------- | ------------ | ------------------------------------------------- |
-| `logRotated`     | `DateTime`   | Last time log rotated                             |
-| `lastRead`       | `DateTime`   | Last time when log was read                       |
-| `lastLine`       | `DateTime`   | Last log lines time stamp                         |
-| `warningLines`   | `Number`     | How many [WARN ] lines was found since last read  |
-| `errorLines`     | `Number`     | How many [ERROR ] lines was found since last read |
-| `lastWarningLine`| `String`     | Contents of last warning line                     |
-| `lastErrorLine`  | `String`     | Contents of last error line                       |
+| Channel Type ID    | Item Type    | Description                                                    |
+| ------------------ | ------------ | -------------------------------------------------------------- |
+| `lastErrorEvent`   | `String`     | Displays contents of last [ERROR] event                        |
+| `lastWarningEvent` | `String`     | Displays contents of last [WARN] event                         |
+| `lastCustomEvent`  | `String`     | Displays contents of last custom event                         |
+| `errorEvents`      | `Number`     | Displays number of [ERROR] lines matched to search pattern     |
+| `warningEvents`    | `Number`     | Displays number of [WARN] lines matched to search pattern      |
+| `customEvents`     | `Number`     | Displays number of custom lines matched to search pattern      |
+| `logRotated`       | `DateTime`   | Last time when log rotated recognized                          |
+| `newErrorEvent`    | -            | Trigger channel for last [ERROR] line                          |
+| `newWarningEvent`  | -            | Trigger channel for last [ERROR] line                          |
+| `newCustomEvent`   | -            | Trigger channel for last [ERROR] line                          |
 
 ## Examples
 
-### Logreader_example.things
+### example.things
 
 ```xtend
 
-logreader:reader:reader1[ refreshRate=60 ]
+logreader:reader:openhablog[ refreshRate=60, errorPatterns="ERROR+", errorBlacklistingPatterns="annoying error which should ignored|Another annoying error which should ignored" ]
 
 ```
 
-### logreader_example.items
+### example.items
 
 ```xtend
 
-DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"  <time>  { channel="logreader:reader:reader1:logRotated" } 
-DateTime logreaderLastRead          "Last Read [%1$tY.%1$tm.%1$te %1$tR]"          <time>  { channel="logreader:reader:reader1:lastRead" }
-DateTime logreaderLastLine          "Last Line [%1$tY.%1$tm.%1$te %1$tR]"          <time>  { channel="logreader:reader:reader1:lastLine" }
-Number   logreaderWarnings          "Warning lines [%d]"                           <alarm> { channel="logreader:reader:reader1:warningLines" }
-Number   logreaderErrors            "Error lines [%d]"                             <alarm> { channel="logreader:reader:reader1:errorLines" }
-String   logreaderLastWarningline   "Last warning line [%s]"                               { channel="logreader:reader:reader1:lastWarningLine" }
-String   logreaderLastErrorline     "Last error line [%s]"                                 { channel="logreader:reader:reader1:lastErrorLine" }
+String   logreaderLastError         "Last error [%s]"                                      { channel="logreader:reader:openhablog:lastErrorEvent" }
+String   logreaderLastWarning       "Last warning [%s]"                                    { channel="logreader:reader:openhablog:lastWarningEvent" }
+Number   logreaderErrors            "Error events matched [%d]"                            { channel="logreader:reader:openhablog:errorEvents" }
+Number   logreaderWarnings          "Warning lines [%d]"                                   { channel="logreader:reader:openhablog:warningEvents" }
+DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"          { channel="logreader:reader:openhablog:logRotated" } 
 
 ```
 
-### logreader_example.sitemap
+### example.sitemap
 
 ```xtend
 
 sitemap logreader_example label="Example" {
-   
     Frame label="LogReader" {
-        Text item=logreaderLogRotated
-        Text item=logreaderLastRead
-        Text item=logreaderLastLine
+        Text item=logreaderLastError
+        Text item=logreaderLastWarning
         Text item=logreaderErrors
         Text item=logreaderWarnings
-        Text item=logreaderLastWarningline
-        Text item=logreaderLastErrorline
+        Text item=logreaderLogRotated
     }
 }
 
 ```
 
-### logreader_example.rules
+### example.rules
 
 ```xtend
-
 rule "LogReader"
     when
-        Item logreaderLastLine changed
+        Channel "logreader:reader:openhablog:newErrorEvent" triggered
     then
-        if (logreaderErrors.state > 0) {
-            sendTelegram("<YourBot>", "LogReader alarm!\n\n" 
-                                       + logreaderErrors.state.toString 
-                                       + " Errors in log! Heres the last one:\n\n" 
-                                       + logreaderLastErrorline.state.toString)
-                                       // Lines split for readability
-        }
+        // do something
     end
-
-
 ```
+Be carefull when send e.g. email notifications. You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
 
 ## Troubleshooting
 

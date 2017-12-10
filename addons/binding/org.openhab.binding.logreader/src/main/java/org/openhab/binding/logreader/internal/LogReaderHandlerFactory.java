@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.logreader.internal;
 
-import static org.openhab.binding.logreader.LogReaderBindingConstants.*;
+import static org.openhab.binding.logreader.LogReaderBindingConstants.THING_READER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.logreader.handler.LogReaderHandler;
-import org.openhab.binding.logreader.handler.LogTailerHandler;
+import org.openhab.binding.logreader.handler.LogHandler;
+import org.openhab.binding.logreader.internal.filereader.FileTailer;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 public class LogReaderHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_READER, THING_TAILER).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_READER).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,11 +49,7 @@ public class LogReaderHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_READER)) {
-            return new LogReaderHandler(thing);
-        }
-
-        if (thingTypeUID.equals(THING_TAILER)) {
-            return new LogTailerHandler(thing);
+            return new LogHandler(thing, new FileTailer());
         }
 
         return null;

@@ -3,82 +3,63 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-
-	<!-- LogReader thing using BufferedReader() -->
-
 	<thing-type id="reader">
+
 		<label>LogReader</label>
-		<description>Reader Thing for LogReader Binding</description>
+		<description>Log reader to analyze log events</description>
 
 		<channels>
-			<channel typeId="logRotated" id="logRotated"></channel>
-			<channel typeId="lastLine" id="lastLine"></channel>
-			<channel typeId="lastRead" id="lastRead"></channel>
-			<channel typeId="warningLines" id="warningLines"></channel>
-			<channel typeId="errorLines" id="errorLines"></channel>
-			<channel typeId="lastWarningLine" id="lastWarningLine"></channel>
-			<channel typeId="lastErrorLine" id="lastErrorLine"></channel>
+			<channel typeId="lastWarningEvent" id="lastWarningEvent" />
+			<channel typeId="lastErrorEvent" id="lastErrorEvent" />
+			<channel typeId="lastCustomEvent" id="lastCustomEvent" />
+			<channel typeId="warningEvents" id="warningEvents" />
+			<channel typeId="errorEvents" id="errorEvents" />
+			<channel typeId="customEvents" id="customEvents" />
+			<channel typeId="logRotated" id="logRotated" />
+
+			<channel typeId="newWarningEvent" id="newWarningEvent" />
+			<channel typeId="newErrorEvent" id="newErrorEvent" />
+			<channel typeId="newCustomEvent" id="newCustomEvent" />
 		</channels>
 
 		<config-description>
-			<parameter name="refreshRate" type="integer" required="true">
-				<label>Refresh rate</label>
-				<description>Refresh rate for reading logs</description>
-				<default>60</default>
+			<parameter name="filePath" type="text" required="true">
+				<label>Log file path</label>
+				<description>Path to log file. Empty will default to ${OPENHAB_LOGDIR}/openhab.log</description>
+				<default>${OPENHAB_LOGDIR}/openhab.log</default>
 			</parameter>
-		</config-description>
+			<parameter name="refreshRate" type="integer" required="false">
+				<label>Refresh rate</label>
+				<description>Refresh rate in milliseconds for reading logs</description>
+				<default>1000</default>
+			</parameter>
+            <parameter name="errorPatterns" type="text" required="false">
+                <label>Error Patterns</label>
+                <description>Search patterns separated by | character for error events. Empty will default to ERROR+</description>
+                <default>ERROR+</default>
+            </parameter>
+            <parameter name="errorBlacklistingPatterns" type="text" required="false">
+                <label>Error Blacklisting Patterns</label>
+                <description>Search patterns for blacklisting unwanted error events separated by | character. </description>
+            </parameter>
+			<parameter name="warningPatterns" type="text" required="false">
+				<label>Warning Patterns</label>
+				<description>Search patterns separated by | character for warning events. Empty will default to WARN+</description>
+				<default>WARN+</default>
+			</parameter>
+			<parameter name="warningBlacklistingPatterns" type="text" required="false">
+				<label>Warning Blacklisting Patterns</label>
+				<description>Search patterns for blacklisting unwanted warning events separated by | character.</description>
+			</parameter>
+            <parameter name="customPatterns" type="text" required="false">
+                <label>Custom Patterns</label>
+                <description>Search patterns separated by | character for custom events.</description>
+            </parameter>
+            <parameter name="customBlacklistingPatterns" type="text" required="false">
+                <label>Custom Blacklisting Patterns</label>
+                <description>Search patterns for blacklisting unwanted custom events separated by | character.</description>
+            </parameter>
+        </config-description>
 	</thing-type>
-
-
-	<!-- Channels for LogReader -->
-
-	<channel-type id="logRotated">
-		<item-type>DateTime</item-type>
-		<label>Log Rotated</label>
-		<description>Time when log rotated</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="lastLine">
-		<item-type>DateTime</item-type>
-		<label>Last line</label>
-		<description>Displays DateTime of last line</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="lastRead">
-		<item-type>DateTime</item-type>
-		<label>Last read</label>
-		<description>Displays DateTime of last read</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="warningLines">
-		<item-type>Number</item-type>
-		<label>Warning lines</label>
-		<description>Displays number of [WARN] line</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="errorLines">
-		<item-type>Number</item-type>
-		<label>Error lines</label>
-		<description>Displays number of [ERROR] line</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="lastWarningLine">
-		<item-type>String</item-type>
-		<label>Last warning line</label>
-		<description>Displays contents of last [WARN] line</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="lastErrorLine">
-		<item-type>String</item-type>
-		<label>Last error line</label>
-		<description>Displays contents of last [ERROR] line</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 </thing:thing-descriptions>

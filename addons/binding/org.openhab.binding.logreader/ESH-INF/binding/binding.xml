@@ -5,7 +5,7 @@
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>LogReader Binding</name>
-	<description>Binding that reads through log files and searches errors and warnings</description>
-	<author>Miika Jukka</author>
+	<description>Binding that reads through log files and searches e.g. errors and warnings</description>
+	<author>Pauli Anttila, Miika Jukka</author>
 
 </binding:binding>
