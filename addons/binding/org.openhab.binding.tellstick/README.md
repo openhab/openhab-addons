@@ -101,7 +101,7 @@ Required:
 
 Optional:
 
-- **refreshInterval:** How often we should contact *Telldus Live* to check for updates
+- **refreshInterval:** How often we should contact *Telldus Live* to check for updates (in ms)
 
 ## Channels
 
@@ -159,7 +159,7 @@ end
 
 ```
 Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval="200"]
-Bridge tellstick:telldus-live:2 "Tellstick ZWave" [refresh="10000", publicKey="XXXXXXXX", privateKey="YYYYYY", token= "ZZZZZZZZ", tokenSecret="UUUUUUUUUU"]
+Bridge tellstick:telldus-live:2 "Tellstick ZWave" [refreshInterval=10000, publicKey="XXXXXXXX", privateKey="YYYYYY", token= "ZZZZZZZZ", tokenSecret="UUUUUUUUUU"]
 ```
 
 Devices are preferable discovered automatically.
@@ -170,8 +170,8 @@ Add them either with karaf: `inbox approve <thingId>` or in paperUI. The bridges
 List available devices in karaf with `things` or get the channels in paperUI.
 
 ```
-Slider living_room_ceiling  "Living room ceiling"       <light>                 {channel="tellstick:dimmer:1:3:state"}
-Switch living_room_table    "Living room table"         <light>                 {channel="tellstick:switch:1:3:state"}
-Number inside_temperature   "Inside temperature [%.1f °C]" <temperature> {channel="tellstick:sensor:1:47_temperaturehumidity_fineoffset:temperature"}
-Number inside_humidity      "Inside humidity [%.1f RH]" <humidity>	{channel="tellstick:sensor:1:47_temperaturehumidity_fineoffset:humidity"}
+Slider living_room_ceiling  "Living room ceiling"              <light>                 {channel="tellstick:dimmer:1:3:state"}
+Switch living_room_table    "Living room table"                <light>                 {channel="tellstick:switch:1:3:state"}
+Number inside_temperature   "Inside temperature [%.1f °C]"     <temperature>           {channel="tellstick:sensor:1:47_temperaturehumidity_fineoffset:temperature"}
+Number inside_humidity      "Inside humidity [%.1f RH]"        <humidity>              {channel="tellstick:sensor:1:47_temperaturehumidity_fineoffset:humidity"}
 ```
