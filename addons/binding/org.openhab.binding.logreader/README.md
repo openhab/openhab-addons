@@ -45,7 +45,7 @@ List of channels
 
 ```xtend
 
-logreader:reader:openhablog[ refreshRate=60, errorPatterns="ERROR+", errorBlacklistingPatterns="annoying error which should ignored|Another annoying error which should ignored" ]
+logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlacklistingPatterns="annoying error which should ignored|Another annoying error which should ignored" ]
 
 ```
 
