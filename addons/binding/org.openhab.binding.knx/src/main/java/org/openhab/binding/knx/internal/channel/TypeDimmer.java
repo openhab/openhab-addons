@@ -45,7 +45,7 @@ class TypeDimmer extends KNXChannelType {
         if (isEquals(configuration, INCREASE_DECREASE_GA, groupAddress)) {
             return "3.007";
         }
-        return null;
+        throw new IllegalArgumentException("Group address " + groupAddress + " is none of the configured addresses");
     }
 
     @Override

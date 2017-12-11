@@ -49,7 +49,7 @@ class TypeRollershutter extends KNXChannelType {
         if (isEquals(configuration, POSITION_STATUS_GA, groupAddress)) {
             return "5.001";
         }
-        return null;
+        throw new IllegalArgumentException("Group address " + groupAddress + " is none of the configured addresses");
     }
 
     @Override

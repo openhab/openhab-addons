@@ -19,32 +19,32 @@ The binding itself does not require any special configuration.
 
 The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the *ip* bridge accepts the following configuration parameters:
 
-|Name|Required|Description|Default value|
-|----|--------|-----------|-------------|
-|ipConnectionType|Y|The ip connection type for connecting to the KNX bus. Could be either TUNNEL or ROUTER||
-|ipAddress|N|Network address of the KNX/IP gateway|Not required if ipConnectionType is ROUTER|
-|portNumber|N|Port number of the KNX/IP gateway|Not required if ipConnectionType is ROUTER; 3671|
-|localIp|N|Network address of the local host to be used to set up the connection to the KNX/IP gateway||
-|localSourceAddr|N|The group address for identification of this KNX/IP gateway within the KNX bus|0.0.0|
-|readingPause|N|Time in milliseconds of how long should be paused between two read requests to the bus during initialization|50|
-|responseTimeout|N|Timeout in seconds to wait for a response from the KNX bus|10|
-|readRetriesLimit|N|Limits the read retries while initialization from the KNX bus|3|
-|autoReconnectPeriod|N|Seconds between connect retries when KNX link has been lost, 0 means never retry|0|
-|enableDiscovery|N|Enable or disable automatic Individual Address discovery|true|
-|useNAT|Y|Whether there is network address translation between the server and the gateway|false|
+| Name                | Required | Description                                                                                                  | Default value                                    |
+|---------------------|----------|--------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
+| ipConnectionType    | Y        | The ip connection type for connecting to the KNX bus. Could be either TUNNEL or ROUTER                       |                                                  |
+| ipAddress           | N        | Network address of the KNX/IP gateway                                                                        | Not required if ipConnectionType is ROUTER       |
+| portNumber          | N        | Port number of the KNX/IP gateway                                                                            | Not required if ipConnectionType is ROUTER; 3671 |
+| localIp             | N        | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  |                                                  |
+| localSourceAddr     | N        | The group address for identification of this KNX/IP gateway within the KNX bus                               | 0.0.0                                            |
+| readingPause        | N        | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50                                               |
+| responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                               |
+| readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                | 3                                                |
+| autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                             | 0                                                |
+| enableDiscovery     | N        | Enable or disable automatic Individual Address discovery                                                     | true                                             |
+| useNAT              | Y        | Whether there is network address translation between the server and the gateway                              | false                                            |
 
 ### Serial Gateway
 
 The *serial* bridge accepts the following configuration parameters:
 
-|Name|Required|Description|Default value|
-|----|--------|-----------|-------------|
-|serialPort|Y|The serial port to use for connecting to the KNX bus||
-|readingPause|N|Time in milliseconds of how long should be paused between two read requests to the bus during initialization|50|
-|responseTimeout|N|Timeout in seconds to wait for a response from the KNX bus|10|
-|readRetriesLimit|N|Limits the read retries while initialization from the KNX bus|3|
-|autoReconnectPeriod|N|Seconds between connect retries when KNX link has been lost, 0 means never retry|0|
-|enableDiscovery|N|Enable or disable automatic Individual Address discovery|true|
+| Name                | Required | Description                                                                                                  | Default value |
+|---------------------|----------|--------------------------------------------------------------------------------------------------------------|---------------|
+| serialPort          | Y        | The serial port to use for connecting to the KNX bus                                                         |               |
+| readingPause        | N        | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50            |
+| responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                   | 10            |
+| readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                | 3             |
+| autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                             | 0             |
+| enableDiscovery     | N        | Enable or disable automatic Individual Address discovery                                                     | true          |
 
 ## Thing Configuration
 
@@ -62,10 +62,10 @@ The *serial* bridge accepts the following configuration parameters:
 
 The Bridges support the following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|--------------|--------------|
-| errorsall|Number|The number of errors that occurred on the KNX bus since the start of the binding|
-| errors5min|Number|The number of errors that occurred on the KNX bus during the last 5 minutes|
+| Channel Type ID | Item Type | Description                                                                      |
+|-----------------|-----------|----------------------------------------------------------------------------------|
+| errorsall       | Number    | The number of errors that occurred on the KNX bus since the start of the binding |
+| errors5min      | Number    | The number of errors that occurred on the KNX bus during the last 5 minutes      |
 
 ### *basic* Thing Channels of Things defined by the end-user
 
@@ -73,7 +73,7 @@ Different kinds of Channels are defined and can be used to group together Group 
 
 For specific configurations reference is made to the *basic.xml* ESH-INF file of the source distribution. For example, the *statusswitch* Channel type defines two configuration parameters: *switchGA*, the group address in x/y/z notation to toggle the switch, and *statusGA*, the group address in x/y/z notation to read the switch status. Since it is about a switch, the DPT does not have to be defined, e.g. it is supposed to be 1.001. For example, the *number* Channel type is used to define Channels to read/write ordinary Numbers. 
 
-```
+```xtend
 Thing basic someactor {
     Type statusswitch :  someswitch [ switchGA="2/4/99", statusGA="2/4/100", read=true, interval=3600]
     Type number : ga_2_4_101 [ groupaddress="2/4/101", dpt="9.001", read=true, interval=3600]
@@ -84,7 +84,7 @@ Thing basic someactor {
 
 demo.Things:
 
-```
+```xtend
 Bridge knx:ip:ip1 [ ipAddress="192.168.0.10", portNumber=3671, localIp="192.168.0.166", ipConnectionType="TUNNEL", readingPause=50, responseTimeout=10, readRetriesLimit=3, autoReconnectPeriod=1,localSourceAddr="0.0.0"] {
     Thing basic someactor {
         Type statusswitch :  someswitch [ switchGA="2/4/99", statusGA="2/4/100", read=true, interval=3600]
@@ -95,7 +95,7 @@ Bridge knx:ip:ip1 [ ipAddress="192.168.0.10", portNumber=3671, localIp="192.168.
 
 demo.items:
 
-```
+```xtend
 Switch someSwitchItem "Manually Defined Switch" <switch> { channel="knx:basic:ip1:someactor:someswitch" }
 ```
 

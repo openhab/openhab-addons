@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.knx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 
 import tuwien.auto.calimero.GroupAddress;
@@ -20,6 +21,7 @@ import tuwien.auto.calimero.IndividualAddress;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public interface TelegramListener {
 
     /**

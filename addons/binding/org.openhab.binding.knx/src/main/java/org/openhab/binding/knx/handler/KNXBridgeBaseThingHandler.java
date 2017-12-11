@@ -10,7 +10,10 @@ package org.openhab.binding.knx.handler;
 
 import java.nio.ByteBuffer;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -22,6 +25,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -74,6 +79,7 @@ import tuwien.auto.calimero.process.ProcessListenerEx;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implements NetworkLinkListener {
 
     private static final int ERROR_INTERVAL_MINUTES = 5;
@@ -83,29 +89,42 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     private final Logger logger = LoggerFactory.getLogger(KNXBridgeBaseThingHandler.class);
 
     // Data structures related to the communication infrastructure
-    private Set<GroupAddressListener> groupAddressListeners = new ConcurrentHashMap<GroupAddressListener, Boolean>()
+    private final Set<GroupAddressListener> groupAddressListeners = new ConcurrentHashMap<GroupAddressListener, Boolean>()
             .keySet(Boolean.TRUE);
-    private Set<IndividualAddressListener> individualAddressListeners = new ConcurrentHashMap<IndividualAddressListener, Boolean>()
+    private final Set<IndividualAddressListener> individualAddressListeners = new ConcurrentHashMap<IndividualAddressListener, Boolean>()
             .keySet(Boolean.TRUE);
-    private Set<KNXBusListener> knxBusListeners = new CopyOnWriteArraySet<>();
+    private final Set<KNXBusListener> knxBusListeners = new CopyOnWriteArraySet<>();
     private final Collection<KNXTypeMapper> typeMappers = new CopyOnWriteArraySet<>();
 
-    private final LinkedBlockingQueue<RetryDatapoint> readDatapoints = new LinkedBlockingQueue<RetryDatapoint>();
-    protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<IndividualAddress, Destination>();
+    private final LinkedBlockingQueue<RetryDatapoint> readDatapoints = new LinkedBlockingQueue<>();
+    protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
 
     // Data structures related to the KNX protocol stack
-    private ProcessCommunicator processCommunicator = null;
+    @Nullable
+    private ProcessCommunicator processCommunicator;
+
+    @Nullable
     private ManagementProcedures managementProcedures;
+
+    @Nullable
     private ManagementClient managementClient;
+
+    @Nullable
     private KNXNetworkLink link;
+
     private final LogAdapter logAdapter = new LogAdapter();
 
     // Data structures related to the various jobs
+    @Nullable
     private ScheduledFuture<?> connectJob;
-    private ScheduledFuture<?> busJob;
-    private Lock connectLock = new ReentrantLock();
-    private Condition connectedCondition = connectLock.newCondition();
 
+    @Nullable
+    private ScheduledFuture<?> busJob;
+
+    private final Lock connectLock = new ReentrantLock();
+    private final Condition connectedCondition = connectLock.newCondition();
+
+    @Nullable
     private ScheduledExecutorService knxScheduler;
 
     private boolean shutdown = false;
@@ -113,8 +132,10 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     private long errorsSinceStart;
     private long errorsSinceInterval;
 
+    @Nullable
     private BridgeConfiguration config;
 
+    @NonNullByDefault({})
     private final ProcessListenerEx processListener = new ProcessListenerEx() {
 
         @Override
@@ -216,7 +237,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                 try {
                     connectedCondition.await();
                 } catch (InterruptedException e) {
-                    // Nothing to do here - we move on
+                    return;
                 }
             }
         } finally {
@@ -240,30 +261,18 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     public final boolean registerGroupAddressListener(GroupAddressListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("GroupAddressListener must not be null");
-        }
         return groupAddressListeners.contains(listener) ? true : groupAddressListeners.add(listener);
     }
 
     public final boolean unregisterGroupAddressListener(GroupAddressListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("GroupAddressListener must not be null");
-        }
         return groupAddressListeners.remove(listener);
     }
 
     public final boolean registerIndividualAddressListener(IndividualAddressListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("IndividualAddressListener must not be null");
-        }
         return individualAddressListeners.contains(listener) ? true : individualAddressListeners.add(listener);
     }
 
     public final boolean unregisterIndividualAddressListener(IndividualAddressListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("IndividualAddressListener must not be null");
-        }
         return individualAddressListeners.remove(listener);
     }
 
@@ -276,15 +285,11 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     public final void registerKNXBusListener(KNXBusListener knxBusListener) {
-        if (knxBusListener != null) {
-            knxBusListeners.add(knxBusListener);
-        }
+        knxBusListeners.add(knxBusListener);
     }
 
     public final void unregisterKNXBusListener(KNXBusListener knxBusListener) {
-        if (knxBusListener != null) {
-            knxBusListeners.remove(knxBusListener);
-        }
+        knxBusListeners.remove(knxBusListener);
     }
 
     public final int getReadRetriesLimit() {
@@ -467,7 +472,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         }
     }
 
-    public void writeToKNX(GroupAddress address, String dpt, Type value) {
+    public void writeToKNX(GroupAddress address, @Nullable String dpt, Type value) {
         if (dpt == null || address == null || value == null) {
             return;
         }
@@ -512,6 +517,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
      *
      * @return the corresponding KNX datapoint type value as a string
      */
+    @Nullable
     private String toDPTValue(Type type, String dpt) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             String value = typeMapper.toDPTValue(type, dpt);
@@ -531,6 +537,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
      *            the byte array of the raw data from the KNX bus
      * @return the openHAB command or state that corresponds to the data
      */
+    @Nullable
     private Type getType(Datapoint datapoint, byte[] asdu) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             Type type = typeMapper.toType(datapoint, asdu);
@@ -541,7 +548,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return null;
     }
 
-    public final boolean isDPTSupported(String dpt) {
+    public final boolean isDPTSupported(@Nullable String dpt) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             if (typeMapper.toTypeClass(dpt) != null) {
                 return true;
@@ -550,6 +557,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return false;
     }
 
+    @Nullable
     public final Class<? extends Type> toTypeClass(String dpt) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             Class<? extends Type> typeClass = typeMapper.toTypeClass(dpt);
@@ -560,12 +568,13 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return null;
     }
 
+    @Nullable
     public final Type getType(GroupAddress destination, String dpt, byte[] asdu) {
         Datapoint datapoint = new CommandDP(destination, getThing().getUID().toString(), 0, dpt);
         return getType(datapoint, asdu);
     }
 
-    public final synchronized boolean isReachable(IndividualAddress address) throws KNXException {
+    public final synchronized boolean isReachable(@Nullable IndividualAddress address) throws KNXException {
         if (managementProcedures == null || address == null) {
             return false;
         }
@@ -580,7 +589,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return false;
     }
 
-    public final synchronized void restartNetworkDevice(IndividualAddress address) {
+    public final synchronized void restartNetworkDevice(@Nullable IndividualAddress address) {
         if (address == null) {
             return;
         }
@@ -600,31 +609,33 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         }
     }
 
-    public synchronized IndividualAddress[] scanNetworkDevices(final int area, final int line) {
+    public synchronized List<IndividualAddress> scanNetworkDevices(final int area, final int line) {
         try {
-            return managementProcedures.scanNetworkDevices(area, line);
+            IndividualAddress[] ret = managementProcedures.scanNetworkDevices(area, line);
+            return ret != null ? Arrays.asList(ret) : Collections.emptyList();
         } catch (KNXException | InterruptedException e) {
             logger.error("Error scanning the KNX bus: {}", e.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.error("", e);
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
-    public synchronized IndividualAddress[] scanNetworkRouters() {
+    public synchronized List<IndividualAddress> scanNetworkRouters() {
         try {
-            return managementProcedures.scanNetworkRouters();
+            IndividualAddress[] ret = managementProcedures.scanNetworkRouters();
+            return ret != null ? Arrays.asList(ret) : Collections.emptyList();
         } catch (KNXException | InterruptedException e) {
             logger.error("An exception occurred while scanning the KNX bus: {}", e.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.error("", e);
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
-    private byte[] readFromManagementClient(String task, long timeout, IndividualAddress address,
+    private byte @Nullable [] readFromManagementClient(String task, long timeout, IndividualAddress address,
             ReadFunction<Destination, byte[]> function) {
         final long start = System.nanoTime();
         while ((System.nanoTime() - start) < TimeUnit.MILLISECONDS.toNanos(timeout)) {
@@ -659,8 +670,8 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         }
     }
 
-    public synchronized byte[] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate,
-            long timeout) {
+    public synchronized byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType,
+            boolean authenticate, long timeout) {
         String task = "read the device description";
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);
@@ -668,7 +679,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         });
     }
 
-    public synchronized byte[] readDeviceMemory(IndividualAddress address, int startAddress, int bytes,
+    public synchronized byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes,
             boolean authenticate, long timeout) {
         String task = MessageFormat.format("read {0} bytes at memory location {1}", bytes, startAddress);
         return readFromManagementClient(task, timeout, address, destination -> {
@@ -677,8 +688,9 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         });
     }
 
-    public synchronized byte[] readDeviceProperties(IndividualAddress address, final int interfaceObjectIndex,
-            final int propertyId, final int start, final int elements, boolean authenticate, long timeout) {
+    public synchronized byte @Nullable [] readDeviceProperties(IndividualAddress address,
+            final int interfaceObjectIndex, final int propertyId, final int start, final int elements,
+            boolean authenticate, long timeout) {
         String task = MessageFormat.format("read device property {} at index {}", propertyId, interfaceObjectIndex);
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);
@@ -686,12 +698,13 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         });
     }
 
+    @Nullable
     public ScheduledExecutorService getScheduler() {
         return knxScheduler;
     }
 
     @Override
-    public void linkClosed(CloseEvent e) {
+    public void linkClosed(@Nullable CloseEvent e) {
         if (!link.isOpen() && !(CloseEvent.USER_REQUEST == e.getInitiator()) && !shutdown) {
             logger.warn("KNX link has been lost (reason: {} on object {})", e.getReason(), e.getSource().toString());
             if (config.getAutoReconnectPeriod().intValue() > 0) {
@@ -704,16 +717,16 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     @Override
-    public void indication(FrameEvent e) {
+    public void indication(@Nullable FrameEvent e) {
         handleFrameEvent(e);
     }
 
     @Override
-    public void confirmation(FrameEvent e) {
+    public void confirmation(@Nullable FrameEvent e) {
         handleFrameEvent(e);
     }
 
-    private void handleFrameEvent(FrameEvent e) {
+    private void handleFrameEvent(@Nullable FrameEvent e) {
         checkErrorCounterTimeouts();
         int messageCode = e.getFrame().getMessageCode();
         switch (messageCode) {

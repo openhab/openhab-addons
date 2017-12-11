@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.knx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import tuwien.auto.calimero.IndividualAddress;
 
 /**
@@ -17,6 +19,7 @@ import tuwien.auto.calimero.IndividualAddress;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public interface IndividualAddressListener extends TelegramListener {
 
     /**

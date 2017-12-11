@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.types.Type;
 
@@ -21,7 +23,8 @@ import com.google.common.collect.Sets;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
-public class KNXChannelType {
+@NonNullByDefault
+public abstract class KNXChannelType {
 
     private final String channelTypeID;
 
@@ -33,7 +36,7 @@ public class KNXChannelType {
         return channelTypeID;
     }
 
-    protected final Set<GroupAddress> getAddresses(Configuration configuration, Iterable<String> addresses)
+    protected final Set<GroupAddress> getAddresses(@Nullable Configuration configuration, Iterable<String> addresses)
             throws KNXFormatException {
         Set<GroupAddress> ret = new HashSet<>();
         for (String address : addresses) {
@@ -44,7 +47,7 @@ public class KNXChannelType {
         return ret;
     }
 
-    protected final boolean isEquals(Configuration configuration, String address, GroupAddress groupAddress)
+    protected final boolean isEquals(@Nullable Configuration configuration, String address, GroupAddress groupAddress)
             throws KNXFormatException {
         if (configuration != null && configuration.get(address) != null) {
             return Objects.equals(new GroupAddress((String) configuration.get(address)), groupAddress);
@@ -52,40 +55,40 @@ public class KNXChannelType {
         return false;
     }
 
-    public String getDPT(GroupAddress groupAddress, Configuration configuration) throws KNXFormatException {
-        return null;
-    }
+    public abstract String getDPT(GroupAddress groupAddress, Configuration configuration) throws KNXFormatException;
 
     protected Set<String> getReadAddressKeys() {
         return Collections.emptySet();
     }
 
-    public final Set<GroupAddress> getReadAddresses(Configuration configuration) throws KNXFormatException {
+    public final Set<GroupAddress> getReadAddresses(@Nullable Configuration configuration) throws KNXFormatException {
         return getAddresses(configuration, getReadAddressKeys());
     }
 
-    protected Set<String> getWriteAddressKeys(Type type) {
+    protected Set<String> getWriteAddressKeys(@Nullable Type type) {
         return Collections.emptySet();
     }
 
-    public final Set<GroupAddress> getWriteAddresses(Configuration configuration, Type type) throws KNXFormatException {
+    public final Set<GroupAddress> getWriteAddresses(@Nullable Configuration configuration, @Nullable Type type)
+            throws KNXFormatException {
         return getAddresses(configuration, getWriteAddressKeys(type));
     }
 
-    protected Set<String> getTransmitAddressKeys(Type type) {
+    protected Set<String> getTransmitAddressKeys(@Nullable Type type) {
         return Collections.emptySet();
     }
 
-    public final Set<GroupAddress> getTransmitAddresses(Configuration configuration, Type type)
+    public final Set<GroupAddress> getTransmitAddresses(Configuration configuration, @Nullable Type type)
             throws KNXFormatException {
         return getAddresses(configuration, getTransmitAddressKeys(type));
     }
 
-    protected Set<String> getUpdateAddressKeys(Type type) {
+    protected Set<String> getUpdateAddressKeys(@Nullable Type type) {
         return Collections.emptySet();
     }
 
-    public Set<GroupAddress> getUpdateAddresses(Configuration configuration, Type type) throws KNXFormatException {
+    public Set<GroupAddress> getUpdateAddresses(Configuration configuration, @Nullable Type type)
+            throws KNXFormatException {
         return getAddresses(configuration, getUpdateAddressKeys(type));
     }
 
@@ -93,12 +96,9 @@ public class KNXChannelType {
         return Sets.newHashSet(values);
     }
 
-    public Type convertType(Configuration configuration, Type type) {
+    @Nullable
+    public Type convertType(Configuration configuration, @Nullable Type type) {
         return type;
-    }
-
-    public boolean isSlave() {
-        return false;
     }
 
     @Override

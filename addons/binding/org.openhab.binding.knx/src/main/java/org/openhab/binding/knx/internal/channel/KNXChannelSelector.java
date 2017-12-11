@@ -11,6 +11,11 @@ package org.openhab.binding.knx.internal.channel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+
+@NonNullByDefault
 public final class KNXChannelSelector {
 
     private KNXChannelSelector() {
@@ -24,7 +29,6 @@ public final class KNXChannelSelector {
             add(new TypeDimmer());
             add(new TypeRollershutter());
             add(new TypeSetpoint());
-            add(new TypeStatusSwitch());
             add(new TypeSwitch());
             add(new TypeWallButton());
 
@@ -34,16 +38,19 @@ public final class KNXChannelSelector {
         }
     };
 
-    public static KNXChannelType getValueSelectorFromChannelTypeId(String channelTypeID)
+    public static KNXChannelType getValueSelectorFromChannelTypeId(@Nullable ChannelTypeUID channelTypeUID)
             throws IllegalArgumentException {
+        if (channelTypeUID == null) {
+            throw new IllegalArgumentException("channel type UID was null");
+        }
 
         for (KNXChannelType c : types) {
-            if (c.getChannelID().equals(channelTypeID)) {
+            if (c.getChannelID().equals(channelTypeUID.getId())) {
                 return c;
             }
         }
+        throw new IllegalArgumentException(channelTypeUID.getId() + " is not a valid value channel type ID");
 
-        throw new IllegalArgumentException(channelTypeID + " is not a valid value channel type ID");
     }
 
 }

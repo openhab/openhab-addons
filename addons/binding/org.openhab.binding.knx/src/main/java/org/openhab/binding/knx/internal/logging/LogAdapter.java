@@ -24,7 +24,6 @@ import tuwien.auto.calimero.log.LogWriter;
  * All logging events from calimero are written to a single slf4j logger named <code>tuwien.auto.calimero</code>.
  *
  * @author Martin Renner
- * @since 1.5.0
  */
 public class LogAdapter extends LogWriter {
 

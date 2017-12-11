@@ -8,9 +8,12 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public enum Manufacturer {
     M1(1, "Siemens"),
     M2(2, "ABB"),
@@ -333,6 +336,6 @@ public enum Manufacturer {
                 return c.name;
             }
         }
-        return null;
+        return "Unknown";
     }
 }

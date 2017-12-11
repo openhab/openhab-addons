@@ -38,9 +38,4 @@ class TypeWallButton extends KNXChannelType {
         return asSet(STATUS_GA);
     }
 
-    @Override
-    public boolean isSlave() {
-        return true;
-    }
-
 }

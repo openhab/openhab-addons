@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class BasicConfig {
 
     private String address;
-    private Boolean fetch;
+    private boolean fetch;
     private BigDecimal interval;
 
     public String getAddress() {

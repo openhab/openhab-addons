@@ -51,7 +51,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private String localSource;
     private int port;
     private InetSocketAddress localEndPoint;
-    private Boolean useNAT;
+    private boolean useNAT;
 
     public IPBridgeThingHandler(Bridge bridge) {
         super(bridge);
@@ -67,8 +67,10 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 ip = (String) getConfig().get(IP_ADDRESS);
                 port = ((BigDecimal) getConfig().get(PORT_NUMBER)).intValue();
                 ipConnectionType = KNXNetworkLinkIP.TUNNELING;
-                useNAT = getConfigAs(BridgeConfiguration.class).getUseNAT();
+                BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
+                useNAT = config.getUseNAT() != null ? config.getUseNAT() : false;
             } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
+                useNAT = false;
                 ipConnectionType = KNXNetworkLinkIP.ROUTING;
                 if (StringUtils.isBlank(ip)) {
                     ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;

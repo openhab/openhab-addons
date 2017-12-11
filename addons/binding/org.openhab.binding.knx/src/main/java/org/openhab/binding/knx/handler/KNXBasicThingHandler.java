@@ -22,7 +22,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,7 +35,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.GroupAddressListener;
 import org.openhab.binding.knx.IndividualAddressListener;
@@ -61,6 +63,7 @@ import tuwien.auto.calimero.mgmt.PropertyAccess.PID;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class KNXBasicThingHandler extends BaseThingHandler implements IndividualAddressListener, GroupAddressListener {
 
     private final Random random = new Random();
@@ -68,19 +71,25 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     private final Logger logger = LoggerFactory.getLogger(KNXBasicThingHandler.class);
 
     // the physical address of the KNX actor represented by this Thing
+    @Nullable
     protected IndividualAddress address;
 
     // group addresses the handler is monitoring
-    protected Set<GroupAddress> groupAddresses = new HashSet<GroupAddress>();
+    protected Set<GroupAddress> groupAddresses = new HashSet<>();
 
     // group addresses read out from the device's firmware tables
-    protected Set<GroupAddress> foundGroupAddresses = new HashSet<GroupAddress>();
+    protected Set<GroupAddress> foundGroupAddresses = new HashSet<>();
 
-    private Map<GroupAddress, ScheduledFuture<?>> readFutures = new HashMap<>();
+    private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
+
+    @Nullable
     private ScheduledFuture<?> pollingJob;
+
+    @Nullable
     private ScheduledFuture<?> descriptionJob;
+
+    @Nullable
     private ScheduledExecutorService knxScheduler;
-    private BasicConfig config;
 
     private static final long OPERATION_TIMEOUT = 5000;
     private static final long OPERATION_INTERVAL = 2000;
@@ -92,7 +101,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
     @Override
     public void initialize() {
-        config = getConfigAs(BasicConfig.class);
+        BasicConfig config = getConfigAs(BasicConfig.class);
 
         initializeGroupAddresses();
 
@@ -114,10 +123,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
             }
         } catch (KNXFormatException e) {
             logger.error("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
-                    e.getMessage());
-            if (logger.isDebugEnabled()) {
-                logger.error("", e);
-            }
+                    e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         }
 
@@ -135,23 +141,28 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     }
 
     private KNXChannelType getKNXChannelType(Channel channel) {
-        String channelID = channel.getChannelTypeUID().getId();
-        KNXChannelType selector = KNXChannelSelector.getValueSelectorFromChannelTypeId(channelID);
-        return selector;
+        return KNXChannelSelector.getValueSelectorFromChannelTypeId(channel.getChannelTypeUID());
     }
 
     private KNXBridgeBaseThingHandler getBridgeHandler() {
-        return (KNXBridgeBaseThingHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            KNXBridgeBaseThingHandler handler = (KNXBridgeBaseThingHandler) bridge.getHandler();
+            if (handler != null) {
+                return handler;
+            }
+        }
+        throw new IllegalStateException("The bridge must not be null and must be initialized");
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
         }
 
-        if (descriptionJob != null && !descriptionJob.isCancelled()) {
+        if (descriptionJob != null) {
             descriptionJob.cancel(true);
             descriptionJob = null;
         }
@@ -159,19 +170,16 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
         cancelReadFutures();
 
         KNXBridgeBaseThingHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterGroupAddressListener(this);
-        }
+        bridgeHandler.unregisterGroupAddressListener(this);
     }
 
     private void cancelReadFutures() {
-        if (readFutures != null) {
-            for (ScheduledFuture<?> future : readFutures.values()) {
-                if (!future.isDone()) {
-                    future.cancel(true);
-                }
+        for (ScheduledFuture<?> future : readFutures.values()) {
+            if (!future.isDone()) {
+                future.cancel(true);
             }
         }
+        readFutures.clear();
     }
 
     @FunctionalInterface
@@ -195,21 +203,9 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     private void withKNXType(Channel channel, ChannelFunction function) {
         try {
             KNXChannelType selector = getKNXChannelType(channel);
-            if (selector != null) {
-                Configuration channelConfiguration = channel.getConfiguration();
-                if (channelConfiguration != null) {
-                    function.apply(selector, channelConfiguration);
-                } else {
-                    logger.warn("The configuration of channel {} is empty", channel.getUID());
-                }
-            } else {
-                logger.warn("The KNX channel type {} is not implemented", channel.getChannelTypeUID().getId());
-            }
+            function.apply(selector, channel.getConfiguration());
         } catch (KNXException e) {
-            logger.error("An error occurred on channel {}: {}", channel.getUID(), e.getMessage());
-            if (logger.isDebugEnabled()) {
-                logger.error("", e);
-            }
+            logger.error("An error occurred on channel {}: {}", channel.getUID(), e.getMessage(), e);
         }
     }
 
@@ -249,23 +245,33 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
         }
     }
 
-    private void scheduleReadJob(GroupAddress groupAddress, String dpt, boolean immediate, BigDecimal readInterval) {
+    private void scheduleReadJob(GroupAddress groupAddress, @Nullable String dpt, boolean immediate,
+            @Nullable BigDecimal readInterval) {
         if (knxScheduler == null) {
             return;
         }
 
         boolean recurring = readInterval != null && readInterval.intValue() > 0;
 
+        Runnable readRunnable = () -> {
+            if (getThing().getStatus() == ThingStatus.ONLINE && getBridge().getStatus() == ThingStatus.ONLINE) {
+                if (!getBridgeHandler().isDPTSupported(dpt)) {
+                    logger.warn("DPT '{}' is not supported by the KNX binding", dpt);
+                    return;
+                }
+                Datapoint datapoint = new CommandDP(groupAddress, getThing().getUID().toString(), 0, dpt);
+                getBridgeHandler().readDatapoint(datapoint, getBridgeHandler().getReadRetriesLimit());
+            }
+        };
         if (immediate) {
-            knxScheduler.schedule(new ReadRunnable(groupAddress, dpt), 0, TimeUnit.SECONDS);
+            knxScheduler.schedule(readRunnable, 0, TimeUnit.SECONDS);
         }
-
         if (recurring && readInterval != null) {
             ScheduledFuture<?> future = readFutures.get(groupAddress);
             if (future == null || future.isDone() || future.isCancelled()) {
                 int initialDelay = immediate ? 0 : readInterval.intValue();
-                future = knxScheduler.scheduleWithFixedDelay(new ReadRunnable(groupAddress, dpt), initialDelay,
-                        readInterval.intValue(), TimeUnit.SECONDS);
+                future = knxScheduler.scheduleWithFixedDelay(readRunnable, initialDelay, readInterval.intValue(),
+                        TimeUnit.SECONDS);
                 readFutures.put(groupAddress, future);
             }
         }
@@ -288,34 +294,12 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
     @Override
     public boolean listensTo(IndividualAddress source) {
-        if (address != null) {
-            return address.equals(source);
-        } else {
-            return false;
-        }
+        return address != null && address.equals(source);
     }
 
     @Override
     public boolean listensTo(GroupAddress destination) {
         return groupAddresses.contains(destination) || foundGroupAddresses.contains(destination);
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (getBridgeHandler() == null) {
-            logger.warn("KNX bridge handler not found. Cannot handle updates without bridge.");
-        }
-        logger.trace("Handling a State ({}) update for Channel {}", newState, channelUID);
-        switch (channelUID.getId()) {
-            case CHANNEL_RESET:
-                if (address != null) {
-                    restart();
-                }
-                break;
-            default:
-                sendToKNX(channelUID, newState, true);
-                break;
-        }
     }
 
     @Override
@@ -339,18 +323,15 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                     }
                     break;
                 default:
-                    sendToKNX(channelUID, command, false);
+                    sendToKNX(channelUID, command);
                     break;
             }
         }
 
     }
 
-    private void sendToKNX(ChannelUID channelUID, Type type, boolean toSlaves) {
+    private void sendToKNX(ChannelUID channelUID, Type type) {
         withKNXType(channelUID, (selector, channelConfiguration) -> {
-            if (selector.isSlave() != toSlaves) {
-                return;
-            }
             Type convertedType = selector.convertType(channelConfiguration, type);
             if (logger.isTraceEnabled()) {
                 logger.trace("Sending to channel {} {} {} {}/{} : {} -> {}", channelUID.getId(),
@@ -398,14 +379,14 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                     logger.trace("Thing {} processes a Group Write telegram for destination '{}' for channel '{}'",
                             getThing().getUID(), destination, channel.getUID());
                     processDataReceived(bridge, destination, asdu, selector.getDPT(destination, channelConfiguration),
-                            channel.getUID(), selector.isSlave());
+                            channel.getUID());
                 }
             });
         }
     }
 
     private void processDataReceived(KNXBridgeBaseThingHandler bridge, GroupAddress destination, byte[] asdu,
-            String dpt, ChannelUID channelUID, boolean slave) {
+            @Nullable String dpt, ChannelUID channelUID) {
 
         if (dpt != null) {
 
@@ -418,16 +399,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
             Type type = bridge.getType(destination, dpt, asdu);
 
             if (type != null) {
-                if (slave) {
-                    if (type instanceof Command) {
-                        postCommand(channelUID, (Command) type);
-                    }
-                } else {
-                    if (type instanceof State) {
-                        updateState(channelUID, (State) type);
-                    }
-                }
-
+                postCommand(channelUID, (Command) type);
             } else {
                 final char[] hexCode = "0123456789ABCDEF".toCharArray();
                 StringBuilder sb = new StringBuilder(2 + asdu.length * 2);
@@ -454,10 +426,12 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
     class ReadRunnable implements Runnable {
 
-        private GroupAddress address;
-        private String dpt;
+        private final GroupAddress address;
 
-        ReadRunnable(GroupAddress address, String dpt) {
+        @Nullable
+        private final String dpt;
+
+        ReadRunnable(GroupAddress address, @Nullable String dpt) {
             this.address = address;
             this.dpt = dpt;
         }
@@ -478,10 +452,11 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     private void pollDeviceStatus() {
         try {
             if (address != null && getBridge().getStatus() == ThingStatus.ONLINE) {
-                logger.debug("Polling the individual address {}", address.toString());
+                logger.debug("Polling the individual address {}", address);
                 boolean isReachable = getBridgeHandler().isReachable(address);
                 if (isReachable) {
                     updateStatus(ThingStatus.ONLINE);
+                    BasicConfig config = getConfigAs(BasicConfig.class);
                     if (!filledDescription && config.getFetch()) {
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
                             descriptionJob = knxScheduler.schedule(descriptionRunnable, 0, TimeUnit.MILLISECONDS);
@@ -493,21 +468,22 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
             }
         } catch (KNXException e) {
             logger.error("An error occurred while testing the reachability of a thing '{}' : {}", getThing().getUID(),
-                    e.getLocalizedMessage());
-            if (logger.isDebugEnabled()) {
-                logger.error("", e);
-            }
+                    e.getLocalizedMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private Runnable descriptionRunnable = new Runnable() {
+    private final Runnable descriptionRunnable = new Runnable() {
 
         @Override
         public void run() {
             try {
                 if (getBridge().getStatus() == ThingStatus.ONLINE) {
-                    logger.debug("Fetching device information for address {}", address.toString());
+                    IndividualAddress address = KNXBasicThingHandler.this.address;
+                    if (address == null) {
+                        return;
+                    }
+                    logger.debug("Fetching device information for address {}", address);
 
                     Thread.sleep(OPERATION_INTERVAL);
                     byte[] data = getBridgeHandler().readDeviceDescription(address, 0, false, OPERATION_TIMEOUT);
@@ -519,12 +495,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                         properties.put(FIRMWARE_TYPE, Firmware.getName(dd.getFirmwareType()));
                         properties.put(FIRMWARE_VERSION, Firmware.getName(dd.getFirmwareVersion()));
                         properties.put(FIRMWARE_SUBVERSION, Firmware.getName(dd.getSubcode()));
-                        try {
-                            updateProperties(properties);
-                        } catch (Exception e) {
-                            // TODO : ignore for now, but for Things created through the DSL, this should also NOT throw
-                            // an exception! See forum discussions
-                        }
+                        updateProperties(properties);
                         logger.info("The device with address {} is of type {}, version {}, subversion {}", address,
                                 Firmware.getName(dd.getFirmwareType()), Firmware.getName(dd.getFirmwareVersion()),
                                 Firmware.getName(dd.getSubcode()));
@@ -558,19 +529,14 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                         properties.put(MANUFACTURER_SERIAL_NO, serialNo);
                         properties.put(MANUFACTURER_HARDWARE_TYPE, hardwareType);
                         properties.put(MANUFACTURER_FIRMWARE_REVISION, firmwareRevision);
-                        try {
-                            updateProperties(properties);
-                        } catch (Exception e) {
-                            // TODO : ignore for now, but for Things created through the DSL, this should also NOT throw
-                            // an exception! See forum discussions
-                        }
+                        updateProperties(properties);
                         logger.info("Identified device {} as a {}, type {}, revision {}, serial number {}", address,
                                 ManufacturerID, hardwareType, firmwareRevision, serialNo);
                     } else {
                         logger.warn("The KNX Actor with address {} does not expose a Device Object", address);
                     }
 
-                    // TODO : According to the KNX specs, devices should expose the PID.IO_LIST property in the DEVICE
+                    // According to the KNX specs, devices should expose the PID.IO_LIST property in the DEVICE
                     // object, but it seems that a lot, if not all, devices do not do this. In this list we can find out
                     // what other kind of objects the device is exposing. Most devices do implement some set of objects,
                     // we will just go ahead and try to read them out irrespective of what is in the IO_LIST
@@ -621,42 +587,6 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                     } else {
                         logger.warn("The KNX Actor with address {} does not expose a Group Address table", address);
                     }
-
-                    Thread.sleep(OPERATION_INTERVAL);
-                    byte[] objecttableaddress = getBridgeHandler().readDeviceProperties(address, GROUPOBJECT_OBJECT,
-                            PID.TABLE_REFERENCE, 1, 1, true, OPERATION_TIMEOUT);
-
-                    if (objecttableaddress != null) {
-                        Thread.sleep(OPERATION_INTERVAL);
-                        elements = getBridgeHandler().readDeviceMemory(address, toUnsigned(objecttableaddress), 1,
-                                false, OPERATION_TIMEOUT);
-                        if (elements != null) {
-                            int numberOfElements = toUnsigned(elements);
-                            logger.debug("The KNX Actor with address {} has {} objects", address, numberOfElements);
-
-                            for (int i = 1; i < numberOfElements; i++) {
-                                byte[] objectData = null;
-                                while (objectData == null) {
-                                    Thread.sleep(OPERATION_INTERVAL);
-                                    objectData = getBridgeHandler().readDeviceMemory(address,
-                                            toUnsigned(objecttableaddress) + 1 + (i * 3), 3, false, OPERATION_TIMEOUT);
-
-                                    logger.debug("Byte 1 {}",
-                                            String.format("%8s", Integer.toBinaryString(objectData[0] & 0xFF))
-                                                    .replace(' ', '0'));
-                                    logger.debug("Byte 2 {}",
-                                            String.format("%8s", Integer.toBinaryString(objectData[1] & 0xFF))
-                                                    .replace(' ', '0'));
-                                    logger.debug("Byte 3 {}",
-                                            String.format("%8s", Integer.toBinaryString(objectData[2] & 0xFF))
-                                                    .replace(' ', '0'));
-                                }
-                            }
-                        }
-                    } else {
-                        logger.warn("The KNX Actor with address {} does not expose a Group Object table", address);
-                    }
-
                     filledDescription = true;
                 }
             } catch (Exception e) {
@@ -665,7 +595,10 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
             }
         }
 
-        private int toUnsigned(final byte[] data) {
+        private int toUnsigned(final byte @Nullable [] data) {
+            if (data == null) {
+                return 0;
+            }
             int value = data[0] & 0xff;
             if (data.length == 1) {
                 return value;

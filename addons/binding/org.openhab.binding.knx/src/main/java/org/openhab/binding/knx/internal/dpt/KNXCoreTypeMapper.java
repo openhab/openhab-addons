@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -57,9 +58,6 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorSceneNumber;
 import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorUtf8;
-//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPTXlator8BitEnum;
-//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPtXlator8BitSet;
-//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPtXlatorMeteringValue;
 import tuwien.auto.calimero.dptxlator.TranslatorTypes;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -70,13 +68,11 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
  *
  * @author Kai Kreuzer
  * @author Volker Daube
- * @author Helmut Lehmeyer
- *         generic DPT Mapper
- * @since 0.3.0
+ * @author Helmut Lehmeyer - generic DPT Mapper
  */
 public class KNXCoreTypeMapper implements KNXTypeMapper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
+    private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
 
     private static final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
     private static final String DATE_FORMAT = new String("yyyy-MM-dd");
@@ -102,11 +98,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 DPTXlator64BitSigned.class, DPTXlator8BitSigned.class, DPTXlator8BitUnsigned.class,
                 DPTXlatorBoolean.class, DPTXlatorDate.class, DPTXlatorDateTime.class, DPTXlatorRGB.class,
                 DPTXlatorSceneControl.class, DPTXlatorSceneNumber.class, DPTXlatorString.class, DPTXlatorTime.class,
-                DPTXlatorUtf8.class
-        // calimero 2.4 DPTXlator8BitEnum.class,
-        // calimero 2.4 DptXlator8BitSet.class,
-        // calimero 2.4 DptXlatorMeteringValue.class
-        );
+                DPTXlatorUtf8.class);
 
         dptTypeMap = new HashMap<String, Class<? extends Type>>();
         dptMainTypeMap = new HashMap<Integer, Class<? extends Type>>();
@@ -538,7 +530,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         DPT dpt;
         int mainNumber = getMainNumber(dptID);
         if (mainNumber == -1) {
-            LOGGER.error("toDPTValue couldn't identify mainnumber in dptID: {}", dptID);
+            logger.error("toDPTValue couldn't identify mainnumber in dptID: {}", dptID);
             return null;
         }
 
@@ -602,12 +594,12 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return formatDateTime((DateTimeType) type, dptID);
             }
         } catch (Exception e) {
-            LOGGER.error("An exception occurred converting type {} to dpt id {} : {}",
+            logger.error("An exception occurred converting type {} to dpt id {} : {}",
                     new Object[] { type, dptID, e.getMessage() });
             return null;
         }
 
-        LOGGER.debug("toDPTValue: Couldn't convert type {} to dpt id {} (no mapping).", type, dptID);
+        logger.debug("toDPTValue: Couldn't convert type {} to dpt id {} (no mapping).", type, dptID);
 
         return null;
     }
@@ -618,6 +610,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @see org.openhab.binding.knx1.config.KNXTypeMapper#toType(tuwien.auto.calimero.datapoint.Datapoint, byte[])
      */
     @Override
+    @Nullable
     public Type toType(Datapoint datapoint, byte[] data) {
         try {
             DPTXlator translator = TranslatorTypes.createTranslator(datapoint.getMainNumber(), datapoint.getDPT());
@@ -628,12 +621,12 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
             int mainNumber = getMainNumber(id);
             if (mainNumber == -1) {
-                LOGGER.debug("toType: couldn't identify mainnumber in dptID: {}.", id);
+                logger.debug("toType: couldn't identify mainnumber in dptID: {}.", id);
                 return null;
             }
             int subNumber = getSubNumber(id);
             if (subNumber == -1) {
-                LOGGER.debug("toType: couldn't identify su number in dptID: {}.", id);
+                logger.debug("toType: couldn't identify su number in dptID: {}.", id);
                 return null;
             }
             /*
@@ -666,7 +659,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
                         // Not supported: break
-                        LOGGER.debug("toType: KNX DPT_Control_Dimming: break ignored.");
+                        logger.debug("toType: KNX DPT_Control_Dimming: break ignored.");
                         return null;
                     }
                     switch (subNumber) {
@@ -711,25 +704,25 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlatorDateTime translatorDateTime = (DPTXlatorDateTime) translator;
                     if (translatorDateTime.isFaultyClock()) {
                         // Not supported: faulty clock
-                        LOGGER.debug("toType: KNX clock msg ignored: clock faulty bit set, which is not supported");
+                        logger.debug("toType: KNX clock msg ignored: clock faulty bit set, which is not supported");
                         return null;
                     } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && translatorDateTime.isValidField(DPTXlatorDateTime.DATE)) {
                         // Not supported: "/1/1" (month and day without year)
-                        LOGGER.debug(
+                        logger.debug(
                                 "toType: KNX clock msg ignored: no year, but day and month, which is not supported");
                         return null;
                     } else if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.DATE)) {
                         // Not supported: "1900" (year without month and day)
-                        LOGGER.debug(
+                        logger.debug(
                                 "toType: KNX clock msg ignored: no day and month, but year, which is not supported");
                         return null;
                     } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.DATE)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
                         // Not supported: No year, no date and no time
-                        LOGGER.debug("toType: KNX clock msg ignored: no day and month or year, which is not supported");
+                        logger.debug("toType: KNX clock msg ignored: no day and month or year, which is not supported");
                         return null;
                     }
 
@@ -777,7 +770,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (typeClass.equals(DateTimeType.class)) {
                 String date = formatDateTime(value, datapoint.getDPT());
                 if ((date == null) || (date.isEmpty())) {
-                    LOGGER.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
+                    logger.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
                     return null;
                 } else {
                     return DateTimeType.valueOf(date);
@@ -793,13 +786,13 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return HSBType.fromRGB(r, g, b);
             }
         } catch (KNXFormatException kfe) {
-            LOGGER.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXFormatException).",
+            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXFormatException).",
                     datapoint.getDPT());
         } catch (KNXIllegalArgumentException kiae) {
-            LOGGER.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXIllegalArgumentException).",
+            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXIllegalArgumentException).",
                     datapoint.getDPT());
         } catch (KNXException e) {
-            LOGGER.warn("Failed creating a translator for datapoint type ‘{}‘.", datapoint.getDPT(), e);
+            logger.warn("Failed creating a translator for datapoint type ‘{}‘.", datapoint.getDPT(), e);
         }
 
         return null;
@@ -817,7 +810,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         if (ohClass == null) {
             int mainNumber = getMainNumber(dptId);
             if (mainNumber == -1) {
-                LOGGER.debug("toType: couldn't convert dptID toTypeClass: {}.", dptId);
+                logger.debug("toType: couldn't convert dptID toTypeClass: {}.", dptId);
                 return null;
             }
             ohClass = dptMainTypeMap.get(mainNumber);
@@ -869,7 +862,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
         } catch (ParseException pe) {
             // do nothing but logging
-            LOGGER.warn("Could not parse '{}' to a valid date", value);
+            logger.warn("Could not parse '{}' to a valid date", value);
         }
 
         return date != null ? new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date) : "";
@@ -918,10 +911,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             try {
                 result = Integer.parseInt(dptID.substring(dptSepratorPosition + 1, dptID.length()));
             } catch (NumberFormatException nfe) {
-                LOGGER.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
+                logger.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
                         dptID);
             } catch (IndexOutOfBoundsException ioobe) {
-                LOGGER.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
+                logger.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
                         dptID);
             }
         }
@@ -934,7 +927,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param dptID String with DPT ID
      * @return main number or -1
      */
-    private static int getMainNumber(String dptID) {
+    private int getMainNumber(String dptID) {
         int result = -1;
         if (dptID == null) {
             throw new IllegalArgumentException("Parameter dptID cannot be null");
@@ -945,10 +938,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             try {
                 result = Integer.parseInt(dptID.substring(0, dptSepratorPosition));
             } catch (NumberFormatException nfe) {
-                LOGGER.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
+                logger.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
                         dptID);
             } catch (IndexOutOfBoundsException ioobe) {
-                LOGGER.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
+                logger.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
                         dptID);
             }
         }
