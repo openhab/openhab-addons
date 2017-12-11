@@ -9,10 +9,6 @@ An Apple account is required. Two factor authentication is supported.
 Please note: Application specific passwords are not supported.
 You´ll need to provide the account password to the binding.
 
-The Binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
-The request is sent if the device data is updated from apple cloud.
-Accuracy depends on the accuracy of the coordinates provided by the device.
-
 ## Supported Things
 
 The following devices are known to work with this Binding:
@@ -49,10 +45,6 @@ The following table lists the configuration parameters:
 | appleId              |                                                     | mandatory                   |
 | password             |                                                     | mandatory                   |
 | refreshTimeInMinutes |                                                     | optional, 5 minutes default |
-| googleAPIKey         | Google API key to be used for address lookup calls. | optional                    |
-
-Without a "GoogleAPIKey" the number of daily request are limited (see also [API useage limits](https://developers.google.com/maps/documentation/geocoding/usage-limitsv)) and the Bindings address lookup functionality will stop working.
-It is recommended to provide this value.
 
 A device is identified by a hash value calculated from the device id provided by apple.
 If a device is removed from the account the respective openHAB Thing will go OFFLINE.
@@ -79,12 +71,7 @@ The following channels are available (if supported by the device):
 | locationAccuracy             | Number   | Accuracy of the last position report.                                                                                                       |
 | locationLastUpdate           | DateTime | Timestamp of the last location update.                                                                                                      |
 | distanceFromHome             | Number   | Device distance from the location set in openHAB regional settings.                                                                         |
-| addressStreet<sup>i</sup>    | String   | Street component of the address.                                                                                                            |
-| addressCity<sup>i</sup>      | String   | City component of the address.                                                                                                              |
-| addressCountry<sup>i</sup>   | String   | Country component of the addess.                                                                                                            |
-| formattedAddress<sup>i</sup> | String   | Formatted human readable address string.                                                                                                    |
 | deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
-<sup>i</sup> A google API key needs to be configured for this channels to be populated.
 
 ## Full Example
 
