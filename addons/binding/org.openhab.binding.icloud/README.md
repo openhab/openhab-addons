@@ -10,6 +10,8 @@ Please note: Application specific passwords are not supported.
 You´ll need to provide the account password to the binding.
 
 The Binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
+The request is sent if the device data is updated from apple cloud.
+Accuracy depends on the accuracy of the coordinates provided by the device.
 
 ## Supported Things
 
