@@ -8,11 +8,11 @@ An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
 
-The binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
+The Binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
 
 ## Supported Things
 
-The following devices are known to work with this binding:
+The following devices are known to work with this Binding:
 
 * iPhone 6s
 * iPhone 5c
@@ -26,16 +26,16 @@ Please provide feedback if you have tested another device type.
 
 ## Discovery
 
-For each iCloud account to be included an iCloud binding thing needs to be configured with your ID and password.
+For each iCloud account to be included an iCloud Binding Thing needs to be configured with your ID and password.
 The devices registered to this account will then be automatically discovered.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The Binding has no configuration options, all configuration is done at Thing level.
 
 ## Thing Configuration
 
-The binding provides two thing types.
+The Binding provides two Thing types.
 
 ### iCloud Account (Bridge) Thing
 
@@ -48,11 +48,11 @@ The following table lists the configuration parameters:
 | refreshTimeInMinutes |                                                     | optional, 5 minutes default |
 | googleAPIKey         | Google API key to be used for address lookup calls. | optional                    |
 
-Without a "GoogleAPIKey" the number of daily request are limited (see also [API useage limits](https://developers.google.com/maps/documentation/geocoding/usage-limitsv)) and the bindings address lookup functionality will stop working.
+Without a "GoogleAPIKey" the number of daily request are limited (see also [API useage limits](https://developers.google.com/maps/documentation/geocoding/usage-limitsv)) and the Bindings address lookup functionality will stop working.
 It is recommended to provide this value.
 
 A device is identified by a hash value calculated from the device id provided by apple.
-If a device is removed from the account the respective openHAB thing will go OFFLINE.
+If a device is removed from the account the respective openHAB Thing will go OFFLINE.
 
 ## Channels
 
