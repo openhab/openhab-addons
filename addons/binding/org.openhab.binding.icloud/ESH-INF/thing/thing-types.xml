@@ -94,17 +94,17 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 	</channel-type>
-	<channel-type id="LocationAccuracy">
+	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
 		<label>Location accuracy</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
-	<channel-type id="DistanceFromHome">
+	<channel-type id="DistanceFromHome" advanced="true">
 		<item-type>Number</item-type>
 		<label>Distance from home</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
-	<channel-type id="LocationLastUpdate">
+	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last location update</label>
 	</channel-type>
