@@ -188,23 +188,19 @@ public class BridgeHandler extends BaseBridgeHandler {
 
                 logger.trace("json: {}", json);
 
-                if (json != null && !json.equals("")) {
-                    iCloudData = deviceInformationParser.parse(json);
+                iCloudData = deviceInformationParser.parse(json);
 
-                    int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
-                    if (statusCode == 200) {
-                        updateStatus(ThingStatus.ONLINE);
+                int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
+                if (statusCode == 200) {
+                    updateStatus(ThingStatus.ONLINE);
 
-                        updateBridgeChannels(iCloudData);
-                        updateDevices(iCloudData.getContent());
+                    updateBridgeChannels(iCloudData);
+                    updateDevices(iCloudData.getContent());
 
-                        discoveryService.discover(iCloudData.getContent());
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Status = " + statusCode + ", Response = " + json);
-                    }
+                    discoveryService.discover(iCloudData.getContent());
                 } else {
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Status = " + statusCode + ", Response = " + json);
                 }
 
                 logger.debug("iCloud bridge data refresh complete.");
