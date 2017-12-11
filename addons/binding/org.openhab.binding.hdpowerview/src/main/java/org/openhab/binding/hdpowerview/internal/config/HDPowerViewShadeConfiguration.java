@@ -17,6 +17,6 @@ public class HDPowerViewShadeConfiguration {
 
     public static String ID = "id";
 
-    public int id;
+    public String id;
 
 }

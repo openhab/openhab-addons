@@ -80,8 +80,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             }
             if (shades != null) {
                 for (Shade shade : shades.shadeData) {
-                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
-                            Integer.toString(shade.id));
+                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, shade.id);
                     DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                             .withProperty(HDPowerViewShadeConfiguration.ID, shade.id).withLabel(shade.getName())
                             .withBridge(hub.getThing().getUID()).build();
