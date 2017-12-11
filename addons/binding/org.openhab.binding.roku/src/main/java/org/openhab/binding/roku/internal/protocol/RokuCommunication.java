@@ -113,7 +113,7 @@ public class RokuCommunication {
         for (int i = 0; i < nList.getLength(); i++) {
             Node nNode = nList.item(i);
             Element eElement = (Element) nNode;
-            logger.debug("Current Element: " + nNode.getNodeName());
+            logger.debug("Current Element: {}", nNode.getNodeName());
             try {
                 state.activeApp = getTagName("screensaver", eElement);
                 String app_value = getSubTagName("screensaver", eElement);

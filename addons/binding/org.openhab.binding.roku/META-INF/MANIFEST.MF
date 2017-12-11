@@ -19,12 +19,10 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.openhab.binding.roku,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.roku,
- org.openhab.binding.roku.internal.handler
+Export-Package: org.openhab.binding.roku
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.smarthome.ui,
- org.eclipse.smarthome.io.net

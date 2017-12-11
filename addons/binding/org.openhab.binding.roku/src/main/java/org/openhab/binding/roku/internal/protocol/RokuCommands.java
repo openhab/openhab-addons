@@ -36,7 +36,7 @@ public class RokuCommands {
     }
 
     public void generateAction(ChannelUID channelUID) throws IOException {
-        logger.debug("Action requested for channel: " + channelUID.getId());
+        logger.debug("Action requested for channel: {}", channelUID.getId());
         switch (channelUID.getId()) {
             case CHANNEL_HOME:
                 postMethod("/keypress/Home");
