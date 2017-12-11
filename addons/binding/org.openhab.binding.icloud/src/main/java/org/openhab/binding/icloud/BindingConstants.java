@@ -35,7 +35,6 @@ public class BindingConstants {
             Arrays.asList(THING_TYPE_ICLOUD, THING_TYPE_ICLOUDDEVICE));
 
     // List of all Channel IDs
-    public static final String NUMBER_OF_DEVICES = "numberOfDevices";
     public static final String OWNER = "owner";
     public static final String REFRESH = "refresh";
 

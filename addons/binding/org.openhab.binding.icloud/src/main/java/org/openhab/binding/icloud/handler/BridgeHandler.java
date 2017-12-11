@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -225,7 +224,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         String firstName = iCloudData.getUserInfo().getFirstName();
         String lastName = iCloudData.getUserInfo().getLastName();
 
-        updateState(NUMBER_OF_DEVICES, new DecimalType(iCloudData.getContent().toArray().length));
         updateState(OWNER, new StringType(firstName + " " + lastName));
     }
 

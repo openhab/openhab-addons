@@ -60,7 +60,6 @@ If a device is removed from the account the respective openHAB thing will go OFF
 
 | Channel ID      | Type   | Description                                                  |
 |-----------------|--------|--------------------------------------------------------------|
-| numberOfDevices | Number | Number of registered devices with this iCloud account.       |
 | owner           | String | Registered owner of this iCloud account.                     |
 | refresh         | Switch | Update all devices registered with this account immediately. |
 
