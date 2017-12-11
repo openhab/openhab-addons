@@ -1,5 +1,8 @@
 # iCloud Binding
-The Apple [iCloud](https://www.apple.com/icloud/) is used to retrieve data such as the battery level or current location of one or multiple Apple devices connected to an iCloud account. Updates are quick and accurate without significant battery time impact. The Binding also offers access to the "Find My iPhone" function.
+
+The Apple [iCloud](https://www.apple.com/icloud/) is used to retrieve data such as the battery level or current location of one or multiple Apple devices connected to an iCloud account.
+Updates are quick and accurate without significant battery time impact.
+The Binding also offers access to the "Find My iPhone" function.
 
 An Apple account is required. Two factor authentication is supported.
 
