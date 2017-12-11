@@ -31,13 +31,27 @@
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="live-type-battery_charge">
-		<item-type>Number</item-type>
-		<label>Battery Charge</label>
-		<description>Current Charge Rate</description>
-		<state pattern="%.2f KW" readOnly="true">
-		</state>
-	</channel-type>
+    <channel-type id="live-type-battery_charge">
+        <item-type>Number</item-type>
+        <label>Battery Charge</label>
+        <description>Current Charge Rate</description>
+        <state pattern="%.2f KW" readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="live-type-battery_discharge">
+        <item-type>Number</item-type>
+        <label>Battery Discharge</label>
+        <description>Current Discharge Rate</description>
+        <state pattern="%.2f KW" readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="live-type-battery_charge_discharge">
+        <item-type>Number</item-type>
+        <label>Battery Charge/Discharge</label>
+        <description>Current Charge/Discharge Rate</description>
+        <state pattern="%.2f KW" readOnly="true">
+        </state>
+    </channel-type>
 	<channel-type id="live-type-battery_level">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>

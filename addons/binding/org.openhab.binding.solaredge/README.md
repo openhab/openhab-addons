@@ -75,6 +75,8 @@ Available channels depend on the specific heatpump model. Following models/chann
 | live#consumption                              | Number       | Current power consumption                        | not available in legacy mode                    |
 | live#load_status                              | String       | Current load status                              | not available in legacy mode                    |
 | live#battery_charge                           | Number       | Current charge flow                              | requires battery                                |
+| live#battery_discharge                        | Number       | Current discharge flow                           | requires battery                                |
+| live#battery_charge_discharge                 | Number       | Current charge/discharge flow (+/-)              | requires battery                                |
 | live#battery_level                            | Number       | Current charge level                             | requires battery                                |
 | live#battery_status                           | String       | Current battery status                           | requires battery                                |
 | live#battery_critical                         | String       | true or false                                    | requires battery                                |

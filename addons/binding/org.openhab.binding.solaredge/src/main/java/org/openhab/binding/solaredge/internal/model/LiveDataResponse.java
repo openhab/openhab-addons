@@ -101,6 +101,8 @@ public class LiveDataResponse implements DataResponse {
             valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
             valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
             valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), ZERO_POWER);
+            valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(), ZERO_POWER);
+            valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(), ZERO_POWER);
 
             // determine power flow from connection list
             for (Connection con : siteCurrentPowerFlow.connections) {
@@ -111,10 +113,14 @@ public class LiveDataResponse implements DataResponse {
 
                 }
                 if (con.from.equalsIgnoreCase(STORAGE)) {
-                    valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
+                    valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(),
+                            siteCurrentPowerFlow.storage.currentPower);
+                    valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
                             "-" + siteCurrentPowerFlow.storage.currentPower);
                 } else if (con.to.equalsIgnoreCase(STORAGE)) {
                     valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
+                            siteCurrentPowerFlow.storage.currentPower);
+                    valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
                             siteCurrentPowerFlow.storage.currentPower);
                 }
             }

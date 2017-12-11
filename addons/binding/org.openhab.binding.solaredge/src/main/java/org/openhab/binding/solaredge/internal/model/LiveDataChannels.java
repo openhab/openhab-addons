@@ -23,6 +23,9 @@ public enum LiveDataChannels implements Channel {
     LOAD_STATUS("load_status", "load status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
 
     BATTERY_CHARGE("battery_charge", "battery charge rate", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    BATTERY_DISCHARGE("battery_discharge", "battery discharge rate", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    BATTERY_CHARGE_DISCHARGE("battery_charge_discharge", "battery charge/discharge rate", ChannelType.LIVE,
+            ChannelGroup.LIVE, Double.class),
     BATTERY_LEVEL("battery_level", "battery level", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
     BATTERY_STATUS("battery_status", "battery status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
     BATTERY_CRITICAL("battery_critical", "battery critical", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
