@@ -10,24 +10,29 @@ package org.openhab.binding.icloud.internal.json.google;
 
 import java.util.ArrayList;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
+ * Object use the de-serialize json response from google API.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class AddressComponent {
-    private String long_name;
+    @SerializedName("long_name")
+    private String longName;
 
-    private String short_name;
+    @SerializedName("short_name")
+    private String shortName;
 
     private ArrayList<String> types;
 
     public String getLongName() {
-        return this.long_name;
+        return this.longName;
     }
 
     public String getShortName() {
-        return this.short_name;
+        return this.shortName;
     }
 
     public ArrayList<String> getTypes() {
@@ -35,11 +40,11 @@ public class AddressComponent {
     }
 
     public void setLongName(String long_name) {
-        this.long_name = long_name;
+        this.longName = long_name;
     }
 
     public void setShortName(String short_name) {
-        this.short_name = short_name;
+        this.shortName = short_name;
     }
 
     public void setTypes(ArrayList<String> types) {

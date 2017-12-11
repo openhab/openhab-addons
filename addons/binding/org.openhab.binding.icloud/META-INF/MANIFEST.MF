@@ -6,8 +6,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Import-Package: com.google.gson; resolution:=optional,
- org.eclipse.jdt.annotation; resolution:=optional,
+Import-Package: com.google.gson;resolution:=optional,
+ com.google.gson.annotations;version="2.7.0",
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.i18n,
