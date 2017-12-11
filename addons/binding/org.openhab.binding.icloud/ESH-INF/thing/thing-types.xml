@@ -82,12 +82,6 @@
 		<label>Refresh</label>
 		<description>Update all devices registered with this account immediately.</description>
 	</channel-type>
-	<channel-type id="EnableAddressLookup">
-		<item-type>Switch</item-type>
-		<label>Enable address lookup</label>
-		<description>Enable address lookup. The coordinates are send to google to lookup a
-	    human readable address.</description>
-	</channel-type>
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
 		<label>Battery Status</label>
