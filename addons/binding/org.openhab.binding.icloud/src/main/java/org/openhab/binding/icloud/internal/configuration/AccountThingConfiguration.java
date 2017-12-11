@@ -17,5 +17,4 @@ public class AccountThingConfiguration {
     public String appleId;
     public String password;
     public Integer refreshTimeInMinutes;
-    public String googleAPIKey;
 }

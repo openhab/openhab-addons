@@ -45,10 +45,6 @@ public class BindingConstants {
     public static final String LOCATION_ACCURACY = "locationAccuracy";
     public static final String LOCATION_LASTUPDATE = "locationLastUpdate";
     public static final String DISTANCE_FROM_HOME = "distanceFromHome";
-    public static final String ADDRESS_STREET = "addressStreet";
-    public static final String ADDRESS_CITY = "addressCity";
-    public static final String ADDRESS_COUNTRY = "addressCountry";
-    public static final String ADDRESS_HUMAN_READABLE = "formattedAddress";
     public static final String DEVICE_NAME = "deviceName";
 
     // Device properties

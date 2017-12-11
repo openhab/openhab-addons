@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -31,9 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.icloud.discovery.DeviceDiscovery;
-import org.openhab.binding.icloud.internal.Address;
-import org.openhab.binding.icloud.internal.AddressLookup;
-import org.openhab.binding.icloud.internal.AddressLookupParser;
 import org.openhab.binding.icloud.internal.Connection;
 import org.openhab.binding.icloud.internal.DeviceInformationParser;
 import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
@@ -53,12 +49,9 @@ import org.slf4j.LoggerFactory;
 public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
-    private final AddressLookupParser addressLoopupParser = new AddressLookupParser();
     private final DeviceInformationParser deviceInformationParser = new DeviceInformationParser();
-    private AddressLookup addressLookup;
     private Connection connection;
     private AccountThingConfiguration config;
-    private boolean addressLookupIsEnabled = false;
     ServiceRegistration<?> service;
     DeviceDiscovery discoveryService;
 
@@ -118,30 +111,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /***
-     * Use google API to lookup the address.
-     *
-     * @param location
-     * @return
-     */
-    public Address getAddress(PointType location) {
-        Address address = null;
-        String json = null;
-
-        try {
-            if (addressLookupIsEnabled) {
-                json = addressLookup.getAddressJSON(location);
-                if (json != null && !json.equals("")) {
-                    address = addressLoopupParser.getAddress(json);
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("getAddress failed: {}", json, e);
-        }
-
-        return address;
-    }
-
     public void findMyDevice(String deviceId) {
         try {
             connection.findMyDevice(deviceId);
@@ -153,14 +122,6 @@ public class BridgeHandler extends BaseBridgeHandler {
     private void startHandler() {
         logger.debug("iCloud bridge starting handler ...");
         config = getConfigAs(AccountThingConfiguration.class);
-        addressLookup = new AddressLookup(config);
-
-        // Enable google address lookup if an API key is configured
-        if (config.googleAPIKey != null && config.googleAPIKey != "") {
-            addressLookupIsEnabled = true;
-        } else {
-            addressLookupIsEnabled = false;
-        }
 
         registerDeviceDiscoveryService();
 

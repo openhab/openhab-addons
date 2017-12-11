@@ -27,10 +27,6 @@
 				<description>Refresh time in minutes.</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="googleAPIKey" type="text">
-				<label>Google API Key</label>
-				<description>Google API key to be used for address lookup calls to translate coordinates into a human readable string. Without a key the lookup feature is disabled.</description>
-			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -49,10 +45,6 @@
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
 			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
 			<channel typeId="DistanceFromHome" id="distanceFromHome" />
-			<channel typeId="AddressStreet" id="addressStreet" />
-			<channel typeId="AddressCity" id="addressCity" />
-			<channel typeId="AddressCountry" id="addressCountry" />
-			<channel typeId="FormattedAddress" id="formattedAddress" />
 			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
 
@@ -101,22 +93,6 @@
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last location update</label>
-	</channel-type>
-	<channel-type id="AddressStreet">
-		<item-type>String</item-type>
-		<label>Street</label>
-	</channel-type>
-	<channel-type id="AddressCity">
-		<item-type>String</item-type>
-		<label>City</label>
-	</channel-type>
-	<channel-type id="AddressCountry">
-		<item-type>String</item-type>
-		<label>Country</label>
-	</channel-type>
-	<channel-type id="FormattedAddress">
-		<item-type>String</item-type>
-		<label>Formatted address</label>
 	</channel-type>
 	<channel-type id="DeviceName">
 		<item-type>String</item-type>

@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.icloud.internal.Address;
 import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
 import org.openhab.binding.icloud.internal.json.icloud.Content;
 import org.slf4j.Logger;
@@ -108,8 +107,6 @@ public class DeviceHandler extends BaseThingHandler {
         updateState(LOCATION_ACCURACY, accuracy);
         updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
 
-        updateAddressStates(location);
-
         if (locationProvider != null) {
             PointType homeLocation = locationProvider.getLocation();
             if (homeLocation != null) {
@@ -118,28 +115,6 @@ public class DeviceHandler extends BaseThingHandler {
                 updateState(DISTANCE_FROM_HOME, distanceFromHome);
             }
         }
-    }
-
-    private void updateAddressStates(PointType location) {
-        State streetState = UnDefType.UNDEF;
-        State cityState = UnDefType.UNDEF;
-        State countryState = UnDefType.UNDEF;
-        State formattedAddressState = UnDefType.UNDEF;
-
-        Address address = null;
-        address = bridge.getAddress(location);
-        if (address != null) {
-            streetState = (address.street != null) ? new StringType(address.street) : UnDefType.UNDEF;
-            cityState = (address.city != null) ? new StringType(address.city) : UnDefType.UNDEF;
-            countryState = (address.country != null) ? new StringType(address.country) : UnDefType.UNDEF;
-            formattedAddressState = (address.formattedAddress != null) ? new StringType(address.formattedAddress)
-                    : UnDefType.UNDEF;
-        }
-
-        updateState(ADDRESS_STREET, streetState);
-        updateState(ADDRESS_CITY, cityState);
-        updateState(ADDRESS_COUNTRY, countryState);
-        updateState(ADDRESS_HUMAN_READABLE, formattedAddressState);
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
