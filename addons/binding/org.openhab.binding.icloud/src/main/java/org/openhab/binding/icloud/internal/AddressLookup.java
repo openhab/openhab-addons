@@ -17,6 +17,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +31,15 @@ public class AddressLookup {
     final String baseURL = "https://maps.googleapis.com/maps/api/geocode/json";
     private final Logger logger = LoggerFactory.getLogger(AddressLookup.class);
 
-    private String key;
+    private AccountThingConfiguration accountThingConfiguration;
 
-    public AddressLookup(String googleAPIKey) {
-        key = googleAPIKey;
+    public AddressLookup(AccountThingConfiguration config) {
+        accountThingConfiguration = config;
     }
 
     public String getAddressJSON(PointType location) {
         String json = null;
-        String url = baseURL + "?latlng=" + location.toString() + "&key=" + key;
+        String url = baseURL + "?latlng=" + location.toString() + "&key=" + accountThingConfiguration.googleAPIKey;
         ;
 
         URL requestURL;

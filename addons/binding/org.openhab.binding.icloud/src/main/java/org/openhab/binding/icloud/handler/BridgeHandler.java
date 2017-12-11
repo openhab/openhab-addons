@@ -56,6 +56,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
     private final AddressLookupParser addressLoopupParser = new AddressLookupParser();
     private final DeviceInformationParser deviceInformationParser = new DeviceInformationParser();
+    private AddressLookup addressLookup;
     private Connection connection;
     private AccountThingConfiguration config;
     private boolean addressLookupIsEnabled = false;
@@ -130,7 +131,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         try {
             if (addressLookupIsEnabled) {
-                json = new AddressLookup(config.googleAPIKey).getAddressJSON(location);
+                json = addressLookup.getAddressJSON(location);
                 if (json != null && !json.equals("")) {
                     address = addressLoopupParser.getAddress(json);
                 }
@@ -153,6 +154,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private void startHandler() {
         logger.debug("iCloud bridge starting handler ...");
         config = getConfigAs(AccountThingConfiguration.class);
+        addressLookup = new AddressLookup(config);
 
         // Enable google address lookup if an API key is configured
         if (config.googleAPIKey != null && config.googleAPIKey != "") {
