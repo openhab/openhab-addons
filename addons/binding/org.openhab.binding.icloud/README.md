@@ -7,6 +7,7 @@ The Binding also offers access to the "Find My iPhone" function.
 An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
+You´ll need to provide the account password to the binding.
 
 The Binding uses Google's [Geocode API](https://developers.google.com/maps/documentation/geocoding/) to derive a postal address from geographic coordinates.
 
