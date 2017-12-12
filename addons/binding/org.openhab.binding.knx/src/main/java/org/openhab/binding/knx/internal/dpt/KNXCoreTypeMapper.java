@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.KNXTypeMapper;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +71,7 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
  * @author Volker Daube
  * @author Helmut Lehmeyer - generic DPT Mapper
  */
+@Component
 public class KNXCoreTypeMapper implements KNXTypeMapper {
 
     private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);

@@ -9,7 +9,7 @@
 package org.openhab.binding.knx;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
+import org.openhab.binding.knx.internal.client.KNXClient;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
@@ -32,8 +32,7 @@ public interface TelegramListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupWrite(KNXBridgeBaseThingHandler bridge, IndividualAddress source, GroupAddress destination,
-            byte[] asdu);
+    public void onGroupWrite(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      *
@@ -43,8 +42,7 @@ public interface TelegramListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupRead(KNXBridgeBaseThingHandler bridge, IndividualAddress source, GroupAddress destination,
-            byte[] asdu);
+    public void onGroupRead(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      *
@@ -54,7 +52,6 @@ public interface TelegramListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupReadResponse(KNXBridgeBaseThingHandler bridge, IndividualAddress source,
-            GroupAddress destination, byte[] asdu);
+    public void onGroupReadResponse(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
 }

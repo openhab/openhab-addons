@@ -97,7 +97,4 @@ public class KNXBindingConstants {
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP
     public static final String DEFAULT_MULTICAST_IP = "224.0.23.12";
 
-    // The group address for identification of this KNX/IP gateway within the KNX bus. Default is 0.0.0
-    public static final String DEFAULT_LOCAL_SOURCE_ADDRESS = "0.0.0";
-
 }

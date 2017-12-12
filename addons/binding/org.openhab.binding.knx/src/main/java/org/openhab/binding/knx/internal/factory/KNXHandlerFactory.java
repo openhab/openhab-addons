@@ -18,18 +18,24 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.knx.KNXBridgeHandlerTracker;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.handler.KNXBasicThingHandler;
 import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.handler.SerialBridgeThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import com.google.common.collect.Lists;
 
@@ -39,6 +45,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class)
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_BASIC,
@@ -48,19 +55,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     private final Collection<KNXBridgeBaseThingHandler> bridgeHandlers = new HashSet<KNXBridgeBaseThingHandler>();
     private final Set<KNXBridgeHandlerTracker> trackers = new CopyOnWriteArraySet<>();
 
-    public synchronized void addKNXTypeMapper(KNXTypeMapper typeMapper) {
-        typeMappers.add(typeMapper);
-        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
-            aBridge.addKNXTypeMapper(typeMapper);
-        }
-    }
-
-    public synchronized void removeKNXTypeMapper(KNXTypeMapper typeMapper) {
-        typeMappers.remove(typeMapper);
-        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
-            aBridge.removeKNXTypeMapper(typeMapper);
-        }
-    }
+    private NetworkAddressService networkAddressService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -88,7 +83,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
-            return new IPBridgeThingHandler((Bridge) thing);
+            return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
             return new SerialBridgeThingHandler((Bridge) thing);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
@@ -154,6 +149,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         super.unregisterHandler(thing);
     }
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected synchronized void addBridgeHandlerTracker(KNXBridgeHandlerTracker tracker) {
         if (trackers.add(tracker)) {
             for (KNXBridgeBaseThingHandler handler : bridgeHandlers) {
@@ -168,6 +164,30 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
                 tracker.onBridgeRemoved(handler);
             }
         }
+    }
+
+    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
+    protected synchronized void addKNXTypeMapper(KNXTypeMapper typeMapper) {
+        typeMappers.add(typeMapper);
+        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
+            aBridge.addKNXTypeMapper(typeMapper);
+        }
+    }
+
+    protected synchronized void removeKNXTypeMapper(KNXTypeMapper typeMapper) {
+        typeMappers.remove(typeMapper);
+        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
+            aBridge.removeKNXTypeMapper(typeMapper);
+        }
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 
 }

@@ -8,20 +8,14 @@
  */
 package org.openhab.binding.knx.handler;
 
-import static org.openhab.binding.knx.KNXBindingConstants.SERIAL_PORT;
-
-import java.util.Enumeration;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.openhab.binding.knx.internal.client.KNXClient;
+import org.openhab.binding.knx.internal.client.SerialClient;
+import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.RXTXVersion;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
-import tuwien.auto.calimero.link.medium.TPSettings;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
@@ -31,42 +25,37 @@ import tuwien.auto.calimero.link.medium.TPSettings;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeThingHandler.class);
+
+    @NonNullByDefault({})
+    private SerialClient client;
 
     public SerialBridgeThingHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
-    public KNXNetworkLink establishConnection() throws KNXException {
-        String serialPort = (String) getConfig().get(SERIAL_PORT);
-        try {
-            RXTXVersion.getVersion();
-            logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
-            return new KNXNetworkLinkFT12(serialPort, new TPSettings());
-
-        } catch (NoClassDefFoundError e) {
-            throw new KNXException(
-                    "The serial FT1.2 KNX connection requires the RXTX libraries to be available, but they could not be found!",
-                    e);
-        } catch (KNXException e) {
-            if (e.getMessage().startsWith("can not open serial port")) {
-                StringBuilder sb = new StringBuilder("Available ports are:\n");
-                Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
-                while (portList.hasMoreElements()) {
-                    CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                    if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                        sb.append(id.getName());
-                        sb.append("\n");
-                    }
-                }
-                sb.deleteCharAt(sb.length() - 1);
-                throw new KNXException("Serial port '" + serialPort + "' could not be opened. " + sb.toString());
-            } else {
-                throw e;
-            }
-        }
+    public void initialize() {
+        SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
+        client = new SerialClient(config.getAutoReconnectPeriod().intValue(), thing.getUID(),
+                config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
+                config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), this);
+        client.initialize();
+        updateStatus(ThingStatus.UNKNOWN);
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        client.dispose();
+    }
+
+    @Override
+    protected KNXClient getClient() {
+        return client;
+    }
+
 }

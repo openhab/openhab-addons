@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.knx.internal.handler;
+package org.openhab.binding.knx.internal.config;
 
 import java.math.BigDecimal;
 
@@ -25,7 +25,6 @@ public class BridgeConfiguration {
     private BigDecimal readingPause;
     private BigDecimal readRetriesLimit;
     private BigDecimal responseTimeout;
-    private boolean useNAT;
 
     public BigDecimal getAutoReconnectPeriod() {
         return autoReconnectPeriod;
@@ -45,10 +44,6 @@ public class BridgeConfiguration {
 
     public BigDecimal getResponseTimeout() {
         return responseTimeout;
-    }
-
-    public Boolean getUseNAT() {
-        return useNAT;
     }
 
 }
