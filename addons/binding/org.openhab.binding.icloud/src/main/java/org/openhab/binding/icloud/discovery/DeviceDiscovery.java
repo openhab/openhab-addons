@@ -16,14 +16,14 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.icloud.handler.BridgeHandler;
+import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.json.icloud.DeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Device discovery creates a thing in the inbox for each icloud device
- * found in the data received from {@link BridgeHandler}.
+ * found in the data received from {@link ICloudAccountBridgeHandler}.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
@@ -32,9 +32,9 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
-    private BridgeHandler handler;
+    private ICloudAccountBridgeHandler handler;
 
-    public DeviceDiscovery(BridgeHandler bridgeHandler) {
+    public DeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
 
         this.handler = bridgeHandler;

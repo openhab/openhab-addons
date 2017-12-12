@@ -40,12 +40,12 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
-public class DeviceHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
+public class ICloudDeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
     private String deviceId;
-    private BridgeHandler bridge;
+    private ICloudAccountBridgeHandler bridge;
 
-    public DeviceHandler(@NonNull Thing thing) {
+    public ICloudDeviceHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -116,7 +116,7 @@ public class DeviceHandler extends BaseThingHandler {
         DeviceThingConfiguration configuration = getConfigAs(DeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
 
-        bridge = (BridgeHandler) getBridge().getHandler();
+        bridge = (ICloudAccountBridgeHandler) getBridge().getHandler();
 
         if (bridge != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {

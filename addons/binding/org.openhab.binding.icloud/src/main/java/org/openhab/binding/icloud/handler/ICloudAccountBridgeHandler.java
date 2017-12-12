@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Retrieves the data for a given account from iCloud and passes the
- * information to {@link DeviceDiscover} and to the {@link DeviceHandler}s.
+ * information to {@link DeviceDiscover} and to the {@link ICloudDeviceHandler}s.
  *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
-public class BridgeHandler extends BaseBridgeHandler {
+public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
     private final DeviceInformationParser deviceInformationParser = new DeviceInformationParser();
     private Connection connection;
     private AccountThingConfiguration config;
@@ -55,14 +55,14 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private Object synchronizeRefresh = new Object();
 
-    private List<DeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<DeviceHandler>());
+    private List<ICloudDeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<ICloudDeviceHandler>());
     private List<DeviceDiscovery> deviceDiscoveryListeners = Collections
             .synchronizedList(new ArrayList<DeviceDiscovery>());
 
     ScheduledFuture<?> refreshJob;
     private JSONRootObject iCloudData;
 
-    public BridgeHandler(@NonNull Bridge bridge) {
+    public ICloudAccountBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
 
@@ -88,11 +88,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         super.handleRemoval();
     }
 
-    public void registerDevice(DeviceHandler device) {
+    public void registerDevice(ICloudDeviceHandler device) {
         iCloudDeviceHandlers.add(device);
     }
 
-    public void unregisterDevice(DeviceHandler device) {
+    public void unregisterDevice(ICloudDeviceHandler device) {
         iCloudDeviceHandlers.remove(device);
     }
 
@@ -108,7 +108,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
         if (iCloudData != null) {
-            ((DeviceHandler) childHandler).update(iCloudData.getContent());
+            ((ICloudDeviceHandler) childHandler).update(iCloudData.getContent());
         }
     }
 

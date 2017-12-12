@@ -23,8 +23,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.icloud.discovery.DeviceDiscovery;
-import org.openhab.binding.icloud.handler.BridgeHandler;
-import org.openhab.binding.icloud.handler.DeviceHandler;
+import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
+import org.openhab.binding.icloud.handler.ICloudDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -48,32 +48,32 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
-            BridgeHandler bridgeHandler = new BridgeHandler((Bridge) thing);
+            ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUDDEVICE)) {
-            return new DeviceHandler(thing);
+            return new ICloudDeviceHandler(thing);
         }
         return null;
     }
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof BridgeHandler) {
-            unregisterDeviceDiscoveryService((BridgeHandler) thingHandler);
+        if (thingHandler instanceof ICloudAccountBridgeHandler) {
+            unregisterDeviceDiscoveryService((ICloudAccountBridgeHandler) thingHandler);
         }
     }
 
-    private synchronized void registerDeviceDiscoveryService(BridgeHandler bridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {
         DeviceDiscovery discoveryService = new DeviceDiscovery(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DeviceDiscovery.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private synchronized void unregisterDeviceDiscoveryService(BridgeHandler bridgeHandler) {
+    private synchronized void unregisterDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {
         ServiceRegistration<?> serviceRegistration = this.discoveryServiceRegistrations
                 .get(bridgeHandler.getThing().getUID());
         if (serviceRegistration != null) {
