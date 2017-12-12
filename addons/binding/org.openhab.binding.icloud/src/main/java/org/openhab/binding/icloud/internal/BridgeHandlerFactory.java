@@ -25,6 +25,7 @@ import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.handler.DeviceHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link BridgeHandlerFactory} is responsible for creating things and thing
@@ -32,6 +33,7 @@ import org.osgi.framework.ServiceRegistration;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@Component(service = BridgeHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
 public class BridgeHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
