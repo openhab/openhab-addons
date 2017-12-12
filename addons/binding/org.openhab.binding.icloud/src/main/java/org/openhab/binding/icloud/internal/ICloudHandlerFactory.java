@@ -29,13 +29,13 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link BridgeHandlerFactory} is responsible for creating things and thing
+ * The {@link ICloudHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Patrik Gfeller - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
-public class BridgeHandlerFactory extends BaseThingHandlerFactory {
+public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
