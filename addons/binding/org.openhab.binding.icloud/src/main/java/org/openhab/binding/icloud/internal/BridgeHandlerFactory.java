@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.handler.DeviceHandler;
@@ -33,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Patrik Gfeller - Initial contribution
  */
-@Component(service = BridgeHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
 public class BridgeHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
