@@ -133,6 +133,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 refreshData();
             } catch (IOException e) {
                 logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, 0, config.refreshTimeInMinutes, TimeUnit.MINUTES);
         logger.debug("iCloud bridge handler started.");
@@ -144,6 +145,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 refreshData();
             } catch (IOException e) {
                 logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             updateState(REFRESH, OnOffType.OFF);
         }
