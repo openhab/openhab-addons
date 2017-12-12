@@ -44,7 +44,6 @@
 			<channel typeId="Location" id="location" />
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
 			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
-			<channel typeId="DistanceFromHome" id="distanceFromHome" />
 			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
 
@@ -83,11 +82,6 @@
 	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
 		<label>Location accuracy</label>
-		<state readOnly="true" pattern="%d m" />
-	</channel-type>
-	<channel-type id="DistanceFromHome" advanced="true">
-		<item-type>Number</item-type>
-		<label>Distance from home</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
 	<channel-type id="LocationLastUpdate" advanced="true">

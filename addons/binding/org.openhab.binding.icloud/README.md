@@ -70,7 +70,6 @@ The following channels are available (if supported by the device):
 | location                     | Location | Location of the device.                                                                                                                     |
 | locationAccuracy             | Number   | Accuracy of the last position report.                                                                                                       |
 | locationLastUpdate           | DateTime | Timestamp of the last location update.                                                                                                      |
-| distanceFromHome             | Number   | Device distance from the location set in openHAB regional settings.                                                                         |
 | deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
 
 ## Full Example
@@ -101,10 +100,5 @@ Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"              
 Location iPhone_Location                  "Coordinates"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
 Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
-Number   iPhone_DistanceFromHome          "Distance from home [%.0f m]"                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:distanceFromHome"}
-String   iPhone_Street                    "Street [%s]"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:addressStreet"}
-String   iPhone_City                      "City [%s]"                                    (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:addressCity"}
-String   iPhone_Country                   "Country [%s]"                                 (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:addressCountry"}
-String   iPhone_FormattedAddress          "Address [%s]"                                 (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:formattedAddress"}
 String   iPhone_DeviceName                "Device Name [%s]"                             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:deviceName"}
 ```

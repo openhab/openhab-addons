@@ -4,5 +4,4 @@
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
    <implementation class="org.openhab.binding.icloud.internal.BridgeHandlerFactory"/>
-   <reference bind="setLocationProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.i18n.LocationProvider" name="LocationProvider" policy="static" unbind="unsetLocationProvider"/>
 </scr:component>

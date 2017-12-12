@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -44,11 +43,9 @@ public class DeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private String deviceId;
     private BridgeHandler bridge;
-    private LocationProvider locationProvider;
 
-    public DeviceHandler(@NonNull Thing thing, LocationProvider locationProvider) {
+    public DeviceHandler(@NonNull Thing thing) {
         super(thing);
-        this.locationProvider = locationProvider;
     }
 
     public void update(ArrayList<Content> deviceInformationList) {
@@ -106,15 +103,6 @@ public class DeviceHandler extends BaseThingHandler {
         updateState(LOCATION, location);
         updateState(LOCATION_ACCURACY, accuracy);
         updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
-
-        if (locationProvider != null) {
-            PointType homeLocation = locationProvider.getLocation();
-            if (homeLocation != null) {
-                DecimalType distanceFromHome = homeLocation.distanceFrom(location);
-
-                updateState(DISTANCE_FROM_HOME, distanceFromHome);
-            }
-        }
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {

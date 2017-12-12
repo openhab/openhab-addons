@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -26,7 +25,6 @@ import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.handler.DeviceHandler;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BridgeHandlerFactory} is responsible for creating things and thing
@@ -35,21 +33,11 @@ import org.osgi.service.component.annotations.Reference;
  * @author Patrik Gfeller - Initial contribution
  */
 public class BridgeHandlerFactory extends BaseThingHandlerFactory {
-    private LocationProvider locationProvider;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
     }
 
     @Override
@@ -63,7 +51,7 @@ public class BridgeHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUDDEVICE)) {
-            return new DeviceHandler(thing, locationProvider);
+            return new DeviceHandler(thing);
         }
         return null;
     }
