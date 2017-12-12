@@ -12,10 +12,12 @@ import java.util.ArrayList;
 
 /**
  *
+ * Contains device information received via iCloud (json).
+ *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Content {
+public class DeviceInformation {
     private boolean activationLocked;
 
     private ArrayList<Object> audioChannels;

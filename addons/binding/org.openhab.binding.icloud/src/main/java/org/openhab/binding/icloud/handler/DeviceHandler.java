@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.icloud.Content;
+import org.openhab.binding.icloud.internal.json.icloud.DeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +49,8 @@ public class DeviceHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public void update(ArrayList<Content> deviceInformationList) {
-        Content deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
+    public void update(ArrayList<DeviceInformation> deviceInformationList) {
+        DeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
             updateStatus(ThingStatus.ONLINE);
@@ -98,7 +98,7 @@ public class DeviceHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    private void updateLocationRelatedStates(Content deviceInformationRecord) {
+    private void updateLocationRelatedStates(DeviceInformation deviceInformationRecord) {
         DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
         DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
@@ -130,10 +130,10 @@ public class DeviceHandler extends BaseThingHandler {
         }
     }
 
-    private Content getDeviceInformationRecord(ArrayList<Content> deviceInformationList) {
+    private DeviceInformation getDeviceInformationRecord(ArrayList<DeviceInformation> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
 
-        for (Content deviceInformationRecord : deviceInformationList) {
+        for (DeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getId();
 
             logger.debug("Current data element: [{}]", currentId);
@@ -147,7 +147,7 @@ public class DeviceHandler extends BaseThingHandler {
         return null;
     }
 
-    private State getLastLocationUpdateDateTimeState(Content deviceInformationRecord) {
+    private State getLastLocationUpdateDateTimeState(DeviceInformation deviceInformationRecord) {
         State dateTime = UnDefType.UNDEF;
 
         if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {

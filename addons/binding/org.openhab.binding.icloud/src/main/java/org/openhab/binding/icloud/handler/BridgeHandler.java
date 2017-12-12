@@ -32,7 +32,7 @@ import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.internal.Connection;
 import org.openhab.binding.icloud.internal.DeviceInformationParser;
 import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
-import org.openhab.binding.icloud.internal.json.icloud.Content;
+import org.openhab.binding.icloud.internal.json.icloud.DeviceInformation;
 import org.openhab.binding.icloud.internal.json.icloud.JSONRootObject;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -178,11 +178,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void updateDiscovery(ArrayList<Content> content) {
+    private void updateDiscovery(ArrayList<DeviceInformation> content) {
         this.deviceDiscoveryListeners.forEach(discovery -> discovery.discover(content));
     }
 
-    private void updateDevices(ArrayList<Content> content) {
+    private void updateDevices(ArrayList<DeviceInformation> content) {
         this.iCloudDeviceHandlers.forEach(device -> device.update(content));
     }
 
