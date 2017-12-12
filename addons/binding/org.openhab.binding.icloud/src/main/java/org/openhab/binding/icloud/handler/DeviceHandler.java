@@ -10,6 +10,7 @@ package org.openhab.binding.icloud.handler;
 
 import static org.openhab.binding.icloud.BindingConstants.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,7 +82,11 @@ public class DeviceHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
-                bridge.findMyDevice(deviceId);
+                try {
+                    bridge.findMyDevice(deviceId);
+                } catch (IOException e) {
+                    logger.warn("Unable to execute find my device request", e);
+                }
                 updateState(FIND_MY_PHONE, OnOffType.OFF);
             }
         }

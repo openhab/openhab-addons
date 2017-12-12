@@ -47,7 +47,7 @@ public class Connection {
         iCloudFindMyDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);
     }
 
-    public String requestDeviceStatusJSON() throws Exception {
+    public String requestDeviceStatusJSON() throws IOException {
         HttpsURLConnection connection = connect(iCloudDataRequestURL);
         String response = postRequest(connection, dataRequest);
         connection.disconnect();
@@ -57,10 +57,10 @@ public class Connection {
 
     /***
      * Sends a "find my device" request.
-     *
-     * @throws Exception
+     * 
+     * @throws IOException
      */
-    public void findMyDevice(String id) throws Exception {
+    public void findMyDevice(String id) throws IOException {
         String request = "{ \n \"device\": \"" + id + "\", \n \"subject\": \"Find My Device alert\" \n }";
         HttpsURLConnection connection = connect(iCloudFindMyDeviceURL);
         postRequest(connection, request);
@@ -83,7 +83,7 @@ public class Connection {
         connection.setRequestProperty("Content-Length", Integer.toString(payload.getBytes("UTF-8").length));
     }
 
-    private String postRequest(HttpsURLConnection connection, String payload) throws Exception {
+    private String postRequest(HttpsURLConnection connection, String payload) throws IOException {
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.setRequestMethod("POST");
