@@ -57,7 +57,7 @@ public class Connection {
 
     /***
      * Sends a "find my device" request.
-     * 
+     *
      * @throws IOException
      */
     public void findMyDevice(String id) throws IOException {
@@ -100,22 +100,17 @@ public class Connection {
         return connection;
     }
 
-    private String getResponse(HttpsURLConnection connection) {
-        try {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+    private String getResponse(HttpsURLConnection connection) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
 
-                String inputLine;
-                StringBuffer stringBuffer = new StringBuffer();
-                while ((inputLine = reader.readLine()) != null) {
-                    stringBuffer.append(inputLine);
-                }
-
-                return stringBuffer.toString();
+            String inputLine;
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((inputLine = reader.readLine()) != null) {
+                stringBuffer.append(inputLine);
             }
-        } catch (IOException e) {
-            logger.warn("Communication problem with icloud", e);
+
+            return stringBuffer.toString();
         }
-        return null;
     }
 
     private String getBasicAuthorization() {
