@@ -12,13 +12,11 @@ import static org.openhab.binding.icloud.BindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -53,11 +51,13 @@ public class BridgeHandler extends BaseBridgeHandler {
     private Connection connection;
     private AccountThingConfiguration config;
     ServiceRegistration<?> service;
-    DeviceDiscovery discoveryService;
 
     private Object synchronizeRefresh = new Object();
 
     private List<DeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<DeviceHandler>());
+    private List<DeviceDiscovery> deviceDiscoveryListeners = Collections
+            .synchronizedList(new ArrayList<DeviceDiscovery>());
+
     ScheduledFuture<?> refreshJob;
     private JSONRootObject iCloudData;
 
@@ -119,11 +119,17 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public void registerDiscovery(DeviceDiscovery deviceDiscovery) {
+        deviceDiscoveryListeners.add(deviceDiscovery);
+    }
+
+    public void unregisterDiscovery(DeviceDiscovery deviceDiscovery) {
+        deviceDiscoveryListeners.remove(deviceDiscovery);
+    }
+
     private void startHandler() {
         logger.debug("iCloud bridge starting handler ...");
         config = getConfigAs(AccountThingConfiguration.class);
-
-        registerDeviceDiscoveryService();
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
@@ -156,8 +162,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
                     updateBridgeChannels(iCloudData);
                     updateDevices(iCloudData.getContent());
-
-                    discoveryService.discover(iCloudData.getContent());
+                    updateDiscovery(iCloudData.getContent());
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Status = " + statusCode + ", Response = " + json);
@@ -171,10 +176,8 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void registerDeviceDiscoveryService() {
-        discoveryService = new DeviceDiscovery(this);
-        service = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+    private void updateDiscovery(ArrayList<Content> content) {
+        this.deviceDiscoveryListeners.forEach(discovery -> discovery.discover(content));
     }
 
     private void updateDevices(ArrayList<Content> content) {

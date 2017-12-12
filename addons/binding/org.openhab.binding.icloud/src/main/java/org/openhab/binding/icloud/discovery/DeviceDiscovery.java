@@ -32,10 +32,13 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
+    private BridgeHandler handler;
 
-    public DeviceDiscovery(BridgeHandler iCloudBridgeHandler) {
+    public DeviceDiscovery(BridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
-        this.bridgeUID = iCloudBridgeHandler.getThing().getUID();
+
+        this.handler = bridgeHandler;
+        this.bridgeUID = bridgeHandler.getThing().getUID();
     }
 
     public void discover(List<Content> deviceInformationList) {
@@ -66,5 +69,15 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+    }
+
+    public void activate() {
+        handler.registerDiscovery(this);
+    }
+
+    @Override
+    public void deactivate() {
+        handler.unregisterDiscovery(this);
+        super.deactivate();
     }
 }

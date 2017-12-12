@@ -10,14 +10,22 @@ package org.openhab.binding.icloud.internal;
 
 import static org.openhab.binding.icloud.BindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.icloud.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.handler.BridgeHandler;
 import org.openhab.binding.icloud.handler.DeviceHandler;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -28,6 +36,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 public class BridgeHandlerFactory extends BaseThingHandlerFactory {
     private LocationProvider locationProvider;
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,12 +57,42 @@ public class BridgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
-            return new BridgeHandler((Bridge) thing);
+            BridgeHandler bridgeHandler = new BridgeHandler((Bridge) thing);
+            registerDeviceDiscoveryService(bridgeHandler);
+            return bridgeHandler;
         }
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUDDEVICE)) {
             return new DeviceHandler(thing, locationProvider);
         }
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof BridgeHandler) {
+            unregisterDeviceDiscoveryService((BridgeHandler) thingHandler);
+        }
+    }
+
+    private synchronized void registerDeviceDiscoveryService(BridgeHandler bridgeHandler) {
+        DeviceDiscovery discoveryService = new DeviceDiscovery(bridgeHandler);
+        discoveryService.activate();
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DeviceDiscovery.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    private synchronized void unregisterDeviceDiscoveryService(BridgeHandler bridgeHandler) {
+        ServiceRegistration<?> serviceRegistration = this.discoveryServiceRegistrations
+                .get(bridgeHandler.getThing().getUID());
+        if (serviceRegistration != null) {
+            DeviceDiscovery discoveryService = (DeviceDiscovery) bundleContext
+                    .getService(serviceRegistration.getReference());
+            if (discoveryService != null) {
+                discoveryService.deactivate();
+            }
+            serviceRegistration.unregister();
+            discoveryServiceRegistrations.remove(bridgeHandler.getThing().getUID());
+        }
     }
 }
