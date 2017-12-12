@@ -25,6 +25,10 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.PROPERTY_HARDWARE_VERSION;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.PROPERTY_FIRMWARE_VERSION;
+
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
@@ -232,10 +236,12 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 if (message instanceof RFXComInterfaceMessage) {
                     RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
                     if (msg.subType == SubType.RESPONSE) {
-                        logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
-                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
-
                         if (msg.command == Commands.GET_STATUS) {
+                            logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
+                            getThing().setProperty(PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
+                            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
+
                             if (configuration.ignoreConfig) {
                                 logger.debug("Ignoring transceiver configuration");
                             } else {
