@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.model;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import com.google.gson.annotations.Expose;
@@ -33,7 +32,6 @@ public class SetRelayState implements HasErrorResponse {
 
     public static class System {
         @Expose
-        @NonNull
         private RelayState setRelayState = new RelayState();
 
         @Override
@@ -43,7 +41,6 @@ public class SetRelayState implements HasErrorResponse {
     }
 
     @Expose
-    @NonNull
     private System system = new System();
 
     @Override

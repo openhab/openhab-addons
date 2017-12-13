@@ -38,16 +38,18 @@ public class BulbDevice extends SmartHomeDevice {
 
     protected Commands commands = new Commands();
 
-    private final int[] colorTempMinMax;
+    private final int colorTempMin;
+    private final int colorTempMax;
     private final int colorTempRangeFactor;
 
     public BulbDevice(ThingTypeUID thingTypeUID) {
-        if (THING_TYPE_LB130.equals(thingTypeUID)) {
-            colorTempMinMax = COLOR_TEMPERATURE_LB130_MIN_MAX;
-        } else {
-            colorTempMinMax = COLOR_TEMPERATURE_LB120_MIN_MAX;
-        }
-        colorTempRangeFactor = (colorTempMinMax[1] - colorTempMinMax[0]) / 100;
+        this(thingTypeUID, 0, 0);
+    }
+
+    public BulbDevice(ThingTypeUID thingTypeUID, int colorTempMin, int colorTempMax) {
+        this.colorTempMin = colorTempMin;
+        this.colorTempMax = colorTempMax;
+        colorTempRangeFactor = (colorTempMax - colorTempMin) / 100;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class BulbDevice extends SmartHomeDevice {
     public boolean handleCommand(String channelID, Connection connection, Command command,
             TPLinkSmartHomeConfiguration configuration) throws IOException {
         int transitionPeriod = configuration.transitionPeriod;
-        final HasErrorResponse response;
+        HasErrorResponse response;
 
         if (command instanceof OnOffType) {
             response = handleOnOffType(channelID, connection, (OnOffType) command, transitionPeriod);
@@ -92,15 +94,12 @@ public class BulbDevice extends SmartHomeDevice {
                     connection.sendCommand(commands.setBrightness(command.intValue(), transitionPeriod)));
         } else if (CHANNEL_COLOR_TEMPERATURE.equals(channelID)) {
             return handleColorTemperature(connection, convertPercentageToKelvin(command.intValue()), transitionPeriod);
-        } else if (CHANNEL_COLOR_TEMPERATURE_KELVIN.equals(channelID)) {
-            return handleColorTemperature(connection, command.intValue(), transitionPeriod);
         }
         return null;
     }
 
     private int convertPercentageToKelvin(int percentage) {
-        return Math.max(colorTempMinMax[0],
-                Math.min(colorTempMinMax[1], colorTempMinMax[0] + colorTempRangeFactor * percentage));
+        return Math.max(colorTempMin, Math.min(colorTempMax, colorTempMin + colorTempRangeFactor * percentage));
     }
 
     private TransitionLightStateResponse handleColorTemperature(Connection connection, int colorTemperature,
@@ -130,9 +129,6 @@ public class BulbDevice extends SmartHomeDevice {
                 break;
             case CHANNEL_COLOR:
                 state = new HSBType(lightState.getHue(), lightState.getSaturation(), lightState.getBrightness());
-                break;
-            case CHANNEL_COLOR_TEMPERATURE_KELVIN:
-                state = lightState.getColorTemp();
                 break;
             case CHANNEL_SWITCH:
                 state = lightState.getOnOff();

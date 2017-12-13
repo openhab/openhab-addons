@@ -21,7 +21,6 @@ import com.google.gson.annotations.Expose;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public final class GsonUtil {
 
     private GsonUtil() {

@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -32,10 +30,10 @@ import org.junit.runners.Parameterized.Parameters;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @RunWith(value = Parameterized.class)
-@NonNullByDefault
 public class BulbDeviceTest extends DeviceTestBase {
 
-    private final BulbDevice device = new BulbDevice(THING_TYPE_LB130);
+    private final BulbDevice device = new BulbDevice(THING_TYPE_LB130, COLOR_TEMPERATURE_LB130_MIN,
+            COLOR_TEMPERATURE_LB130_MAX);
 
     private static final List<Object[]> TESTS = Arrays
             .asList(new Object[][] { { "bulb_get_sysinfo_response" }, { "bulb_get_sysinfo_response_lb130" } });
@@ -96,24 +94,10 @@ public class BulbDeviceTest extends DeviceTestBase {
     }
 
     @Test
-    public void testHandleCommandColorTemperatureKelvin() throws IOException {
-        assertInput("bulb_transition_light_state_color_temp");
-        assertTrue("Color temperature kelvin channel should be handled", device
-                .handleCommand(CHANNEL_COLOR_TEMPERATURE_KELVIN, connection, new DecimalType(5100), configuration));
-    }
-
-    @Test
     public void testHandleCommandColorTemperatureOnOff() throws IOException {
         assertInput("bulb_transition_light_state_on");
         assertTrue("Color temperature channel with OnOff state should be handled",
                 device.handleCommand(CHANNEL_COLOR_TEMPERATURE, connection, OnOffType.ON, configuration));
-    }
-
-    @Test
-    public void testHandleCommandColorTemperatureKelvinOnOff() throws IOException {
-        assertInput("bulb_transition_light_state_on");
-        assertTrue("Color temperature channel with OnOff state should be handled",
-                device.handleCommand(CHANNEL_COLOR_TEMPERATURE_KELVIN, connection, OnOffType.ON, configuration));
     }
 
     @Test
@@ -131,12 +115,6 @@ public class BulbDeviceTest extends DeviceTestBase {
     @Test
     public void testUpdateChannelColor() {
         assertEquals("Switch should be on", new HSBType("7,44,92"), device.updateChannel(CHANNEL_COLOR, deviceState));
-    }
-
-    @Test
-    public void testUpdateChannelColorTemperature() {
-        assertEquals("Color temperature should be set", new DecimalType(2700),
-                device.updateChannel(CHANNEL_COLOR_TEMPERATURE_KELVIN, deviceState));
     }
 
     @Test

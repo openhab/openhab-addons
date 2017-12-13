@@ -94,7 +94,7 @@ public class SmartHomeHandlerTest {
 
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
         ThingStatusInfo thingStatusInfo = statusInfoCaptor.getValue();
-        assertEquals("Device should be offline", ThingStatus.OFFLINE, thingStatusInfo.getStatus());
+        assertEquals("Device should be unknown", ThingStatus.UNKNOWN, thingStatusInfo.getStatus());
     }
 
     @Test

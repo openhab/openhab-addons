@@ -86,10 +86,10 @@ public class SmartHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TPLinkSmartHomeConfiguration.class);
-        logger.info("Initializing TP-Link Smart device on ip {}", configuration.ipAddress);
+        logger.debug("Initializing TP-Link Smart device on ip {}", configuration.ipAddress);
         connection = createConnection(configuration);
         cache = new ExpiringCache<DeviceState>(TimeUnit.SECONDS.toMillis(configuration.refresh), this::refreshCache);
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh(configuration);
     }
 
@@ -121,9 +121,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     private void startAutomaticRefresh(TPLinkSmartHomeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Update Channels for:{}", thing.getUID().getAsString());
-                }
+                logger.trace("Update Channels for:{}", thing.getUID());
                 DeviceState value = cache.getValue();
                 for (Channel channel : getThing().getChannels()) {
                     updateChannelState(channel.getUID(), value);

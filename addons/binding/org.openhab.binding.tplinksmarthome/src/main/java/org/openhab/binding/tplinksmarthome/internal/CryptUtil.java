@@ -27,6 +27,7 @@ public final class CryptUtil {
     private static final int KEY = 171;
 
     private CryptUtil() {
+        // Util class
     }
 
     /**

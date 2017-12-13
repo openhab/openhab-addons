@@ -32,14 +32,14 @@ public final class ModelTestUtil {
      * Util method to read a json file into it's data class.
      *
      * @param <T> Type of the class the json data represents.
-     * @param builder gson builder
+     * @param gson gson class
      * @param filename filename of the json file to read. The file is read relative to the directory of this class
      * @param clazz Data class expected to be read from the json file
      * @return instance of clazz with read data from json file
      * @throws IOException when file could not be read.
      */
-    public static <T> T toJson(Gson builder, String filename, Class<T> clazz) throws IOException {
-        return builder.fromJson(readJson(filename), clazz);
+    public static <T> T toJson(Gson gson, String filename, Class<T> clazz) throws IOException {
+        return gson.fromJson(readJson(filename), clazz);
     }
 
     /**
@@ -51,7 +51,6 @@ public final class ModelTestUtil {
      * @return read json string
      * @throws IOException when file could not be read.
      */
-    @SuppressWarnings("null")
     public static String readJson(String filename) throws IOException {
         return IOUtils
                 .toString(ModelTestUtil.class.getResourceAsStream(filename + ".json"), StandardCharsets.UTF_8.name())

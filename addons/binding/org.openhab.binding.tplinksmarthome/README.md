@@ -11,6 +11,7 @@ The following TP-Link Smart Devices are supported:
 * Switch On/Off
 * Adjust the brightness
 * Wi-Fi signal strength (rssi)
+
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB110 Smart Wi-Fi LED Bulb with Dimmable Light
@@ -18,6 +19,7 @@ Switching and Brightness is done using the `brightness` channel.
 * Switch On/Off
 * Adjust the brightness
 * Wi-Fi signal strength (rssi)
+
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB120 Smart Wi-Fi LED Bulb with Tunable White Light
@@ -26,6 +28,7 @@ Switching and Brightness is done using the `brightness` channel.
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
 * Adjust the brightness
 * Wi-Fi signal strength (rssi)
+
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB130 Smart Wi-Fi LED Bulb with Color Changing Hue
@@ -35,6 +38,7 @@ Switching and Brightness is done using the `brightness` channel.
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
 * Wi-Fi signal strength (rssi)
+
 Switching, Brightness and Color is done using the `color` channel.
 
 ### HS105 and HS100 Smart Wi-Fi Plug
@@ -51,10 +55,11 @@ Switching, Brightness and Color is done using the `color` channel.
 ### HS200 Smart Wi-Fi Switch
 
 * Switch On/Off
+* Wi-Fi signal strength (rssi)
+
 The default refresh is set to 1 second. So it polls the switch for status changes. If you don't use the switch manually
 often, you can set it to a higher refresh. The refresh is only relevant to detect manual using the switch. Switching
 via openHAB activates the switch directly.
-* Wi-Fi signal strength (rssi)
 
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
@@ -95,11 +100,8 @@ All devices support some of the following channels:
 | Channel Type ID  | Item Type | Description                                    | Thing types supporting this channel                             |
 |------------------|-----------|------------------------------------------------|-----------------------------------------------------------------|
 | switch           | Switch    | Switch the Smart Home device on or off.        | HS100, HS105, HS110, RE270K, RE370K                             |
-| brightness       | Switch    | Switch the Smart Home device on or off.        | LB100, LB110, LB120                                             |
 | brightness       | Dimmer    | Set the brightness of Smart Home light.        | LB100, LB110, LB120                                             |
 | colorTemperature | Dimmer    | Set the color temperature of Smart Home light. | LB120, LB130                                                    |
-| color            | Switch    | Switch the Smart Home device on or off.        | LB130                                                           |
-| color            | Dimmer    | Set the brightness of Smart Home light.        | LB130                                                           |
 | color            | Color     | Set the color of the Smart Home light.         | LB130                                                           |
 | power            | Number    | Actual energy usage in Watt.                   | HS110                                                           |
 | eneryUsage       | Number    | Energy Usage in kWh.                           | HS110                                                           |
@@ -127,7 +129,3 @@ Dimmer   TP_LB_ColorT "Color Temperature [%d] K" <slider> { channel="tplinksmart
 Color    TP_LB_Color  "Color"                    <slider> { channel="tplinksmarthome:lb130:home:color" }
 Switch   TP_LB_ColorS "Switch"                            { channel="tplinksmarthome:lb130:home:color" }
 ```
-
-## Disclaimer
-
-This binding is not endorsed or sponsored by TP-LINK. TP-LINK is a registered trademark of TP-LINK Technologies CO., Ltd.

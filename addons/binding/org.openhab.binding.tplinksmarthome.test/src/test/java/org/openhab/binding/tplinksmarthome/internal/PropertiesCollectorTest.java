@@ -30,12 +30,11 @@ import com.google.gson.Gson;
  */
 public class PropertiesCollectorTest {
 
-    @NonNull
-    private Gson builder = GsonUtil.createGson();
+    private final Gson gson = GsonUtil.createGson();
 
     /**
      * Tests if properties for a bulb device are correctly parsed.
-     * 
+     *
      * @throws IOException exception in case device not reachable
      */
     @Test
@@ -56,7 +55,7 @@ public class PropertiesCollectorTest {
     private void assertProperties(@NonNull String responseFile, @NonNull ThingTypeUID thingTypeUID, int expectedSize)
             throws IOException {
         Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
-                ModelTestUtil.toJson(builder, responseFile, GetSysinfo.class).getSysinfo());
+                ModelTestUtil.toJson(gson, responseFile, GetSysinfo.class).getSysinfo());
         assertEquals("Number of properties not as expected for properties", expectedSize, props.size());
         props.entrySet().stream().forEach(
                 entry -> assertNotNull("Property '" + entry.getKey() + "' should not be null", entry.getValue()));

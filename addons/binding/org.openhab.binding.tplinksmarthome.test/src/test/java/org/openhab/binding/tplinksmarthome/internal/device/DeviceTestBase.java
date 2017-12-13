@@ -34,7 +34,6 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 public class DeviceTestBase {
 
     protected final Connection connection;
-    @NonNull
     protected final TPLinkSmartHomeConfiguration configuration = new TPLinkSmartHomeConfiguration();
     protected final DeviceState deviceState;
 

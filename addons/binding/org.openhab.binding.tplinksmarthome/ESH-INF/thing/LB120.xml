@@ -10,7 +10,6 @@
         <channels>
             <channel id="brightness" typeId="brightness" />
             <channel id="colorTemperature" typeId="colorTemperature" />
-            <channel id="colorTemperatureKelvin" typeId="colorTemperatureLb120" />
             <channel id="rssi" typeId="rssi" />
         </channels>
 

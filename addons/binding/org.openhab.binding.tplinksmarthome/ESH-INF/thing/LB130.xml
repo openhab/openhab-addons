@@ -10,7 +10,6 @@
         <channels>
             <channel id="color" typeId="color" />
             <channel id="colorTemperature" typeId="colorTemperature" /> 
-            <channel id="colorTemperatureKelvin" typeId="colorTemperatureLb130" />
             <channel id="rssi" typeId="rssi" />
         </channels>
 

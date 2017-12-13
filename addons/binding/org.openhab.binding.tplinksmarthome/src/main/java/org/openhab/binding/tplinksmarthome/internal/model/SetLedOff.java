@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.model;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import com.google.gson.annotations.Expose;
@@ -37,7 +36,6 @@ public class SetLedOff implements HasErrorResponse {
 
     public static class System {
         @Expose
-        @NonNull
         private LedOff setLedOff = new LedOff();
 
         @Override
@@ -47,7 +45,6 @@ public class SetLedOff implements HasErrorResponse {
     }
 
     @Expose
-    @NonNull
     private System system = new System();
 
     @Override

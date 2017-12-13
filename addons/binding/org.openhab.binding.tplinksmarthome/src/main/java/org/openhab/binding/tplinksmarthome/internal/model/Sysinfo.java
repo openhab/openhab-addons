@@ -39,7 +39,7 @@ public class Sysinfo extends ErrorResponse {
     }
 
     /**
-     *
+     * Alternative light state for different devices.
      */
     public static class ExtendedLightState extends LightState {
         private LightState dftOnState;

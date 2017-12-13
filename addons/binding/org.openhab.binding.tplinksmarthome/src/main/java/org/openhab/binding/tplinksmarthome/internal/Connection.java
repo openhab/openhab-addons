@@ -50,8 +50,8 @@ public class Connection {
      * @throws IOException exception in case device not reachable
      */
     public String sendCommand(String command) throws IOException {
-        logger.trace("Executing command{}", command);
-        try (final Socket socket = createSocket(); final OutputStream outputStream = socket.getOutputStream()) {
+        logger.trace("Executing command: {}", command);
+        try (Socket socket = createSocket(); final OutputStream outputStream = socket.getOutputStream()) {
             outputStream.write(CryptUtil.encryptWithLength(command));
             String response = readReturnValue(socket);
 

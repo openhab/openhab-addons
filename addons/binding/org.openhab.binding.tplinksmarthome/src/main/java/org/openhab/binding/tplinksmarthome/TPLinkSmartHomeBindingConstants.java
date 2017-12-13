@@ -57,17 +57,6 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final Set<ThingTypeUID> BULB_THING_TYPES = ImmutableSet.of(THING_TYPE_LB100, THING_TYPE_LB110,
             THING_TYPE_LB120, THING_TYPE_LB130);
 
-    // List of default refresh rates in seconds.
-    /**
-     * Default refresh rate for Smart Plugs.
-     */
-    public static final int REFRESH_SMART_PLUG = 30;
-    /**
-     * Default refresh rate for Smart Switches. Must lower because when the devices is switches an action needs to take
-     * place..
-     */
-    public static final int REFRESH_SMART_SWITCH = 1;
-
     // List of all channel ids
     public static final String CHANNEL_SWITCH = "switch";
 
@@ -77,13 +66,14 @@ public final class TPLinkSmartHomeBindingConstants {
     // List of all Light channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
-    public static final String CHANNEL_COLOR_TEMPERATURE_KELVIN = "colorTemperatureKelvin";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
-    public static final int[] COLOR_TEMPERATURE_LB120_MIN_MAX = { 2700, 6500 };
-    public static final int[] COLOR_TEMPERATURE_LB130_MIN_MAX = { 2500, 9000 };
+    public static final int COLOR_TEMPERATURE_LB120_MIN = 2700;
+    public static final int COLOR_TEMPERATURE_LB120_MAX = 6500;
+    public static final int COLOR_TEMPERATURE_LB130_MIN = 2500;
+    public static final int COLOR_TEMPERATURE_LB130_MAX = 9000;
 
     public static final Set<String> CHANNELS_BULB_SWITCH = ImmutableSet.of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR,
-            CHANNEL_COLOR_TEMPERATURE_KELVIN, CHANNEL_COLOR_TEMPERATURE, CHANNEL_SWITCH);
+            CHANNEL_COLOR_TEMPERATURE, CHANNEL_SWITCH);
 
     // List of all energy channel ids
     public static final String CHANNEL_ENERGY_POWER = "power";
