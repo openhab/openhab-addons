@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="wink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>Wink Binding</name>
+    <description>This is the OpenHab binding for the Wink Hub.</description>
+    <author>Shawn Crosby and Sebastien Marchand</author>
+    
+    <service-id>org.openhab.wink</service-id>
+    
+    <config-description>
+        <parameter name="client_id" type="text">
+            <label>Wink App ID</label>
+            <description>ID obtained from developer.wink.com</description>
+            <required>false</required>
+        </parameter>
+        <parameter name="client_secret" type="text">
+            <label>Wink App Secret</label>
+            <description>Secret for App obtained from developer.wink.com</description>
+            <required>false</required>
+        </parameter>
+        <parameter name="refresh_token" type="text">
+            <label>App Refresh Token</label>
+            <description>Valid refresh token generated from authentication with client_id and client_secret</description>
+            <required>false</required>
+        </parameter>
+        <parameter name="auth_service" type="text">
+            <label>Auth Service</label>
+            <description>Set this to 'delegated' if you want to use a hosted service to manage wink tokens at https://openhab-authservice.herokuapp.com rather than getting your own wink api application id</description>
+            <options>
+                <option value="delegated">Delegated</option>
+            </options>
+            <required>false</required>
+        </parameter>
+        <parameter name="auth_service_token" type="text">
+            <label>Auth Service Token</label>
+            <description>Token provided by the auth service that identifies you to the auth service</description>
+            <required>false</required>
+        </parameter>
+    </config-description>
+
+</binding:binding>
