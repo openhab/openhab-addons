@@ -57,7 +57,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
     ScheduledFuture<?> refreshJob;
-    private JSONRootObject iCloudData;
 
     public ICloudAccountBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
@@ -68,12 +67,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
         if (command instanceof RefreshType) {
-            try {
-                refreshData();
-            } catch (IOException e) {
-                logger.warn("Unable to refresh device data", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+            refreshData();
         }
     }
 
@@ -114,38 +108,40 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(AccountThingConfiguration.class);
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                refreshData();
-            } catch (IOException e) {
-                logger.warn("Unable to refresh device data", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+            refreshData();
         }, 0, config.refreshTimeInMinutes, TimeUnit.MINUTES);
         logger.debug("iCloud bridge handler started.");
     }
 
-    private void refreshData() throws IOException {
+    public void refreshData() {
         synchronized (synchronizeRefresh) {
             logger.debug("iCloud bridge refreshing data ...");
 
-            connection = new Connection(config.appleId, config.password);
-            String json = connection.requestDeviceStatusJSON();
+            try {
+                connection = new Connection(config.appleId, config.password);
+                String json;
 
-            logger.trace("json: {}", json);
+                json = connection.requestDeviceStatusJSON();
 
-            iCloudData = deviceInformationParser.parse(json);
+                logger.trace("json: {}", json);
 
-            int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
-            if (statusCode == 200) {
-                updateStatus(ThingStatus.ONLINE);
+                JSONRootObject iCloudData = deviceInformationParser.parse(json);
 
-                updateBridgeChannels(iCloudData);
-                informDeviceInformationListeners(iCloudData.getContent());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Status = " + statusCode + ", Response = " + json);
+                int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
+                if (statusCode == 200) {
+                    updateStatus(ThingStatus.ONLINE);
+
+                    updateBridgeChannels(iCloudData);
+                    informDeviceInformationListeners(iCloudData.getContent());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Status = " + statusCode + ", Response = " + json);
+                }
+
+            } catch (IOException e) {
+                logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-
             logger.debug("iCloud bridge data refresh complete.");
         }
     }
