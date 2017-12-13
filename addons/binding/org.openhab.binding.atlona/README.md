@@ -15,9 +15,9 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The Atlona AT-UHD-PRO3 switch can be discovered by starting a scan in the Paper UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.  The "SDDP" 
-(simple device discovery protocol) button will initiate the discovery process.  If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the
-username and password in the configuration of the newly discovered thing before a connection can be made. 
+The Atlona AT-UHD-PRO3 switch can be discovered by starting a scan in the Paper UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.
+The "SDDP" (simple device discovery protocol) button will initiate the discovery process.
+If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the username and password in the configuration of the newly discovered thing before a connection can be made.
 
 ## Binding configuration
 
@@ -25,12 +25,12 @@ username and password in the configuration of the newly discovered thing before 
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
-- ipAddress: Hostname or IP address of the matrix switch
-- userName: (optional) the username to login with (only if Telnet Login is enabled)
-- password: (optional) the password to login with (only if Telnet Login is enabled)
-- polling: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
-- ping: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
-- retryPolling: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
+-   ipAddress: Hostname or IP address of the matrix switch
+-   userName: (optional) the username to login with (only if Telnet Login is enabled)
+-   password: (optional) the password to login with (only if Telnet Login is enabled)
+-   polling: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
+-   ping: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
+-   retryPolling: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
 
 ### username/password
 
@@ -38,11 +38,14 @@ The userName/password configuration options are optional and are only required i
 
 ### polling
 
-Polling will automatically occur when (re)connecting to the switch to get the initial state of the switch.  If you have anything outside of openHAB that can modify the switch state (front panel, IR, telnet session or another automation system), you will likely want to set this setting to a much lower value.
+Polling will automatically occur when (re)connecting to the switch to get the initial state of the switch.
+If you have anything outside of openHAB that can modify the switch state (front panel, IR, telnet session or another automation system), you will likely want to set this setting to a much lower value.
 
 ### ping
 
-The Atlona switch will time out any IP connection after a specific time (specified by "IP Timeout" on the "Network" tab from the switch configuration UI - 120 by default).  The ping setting MUST be lower than that value.  If it is higher than the "IP Timeout" value, the switch will timeout our connection and the thing will go OFFLINE (until a reconnect attempt is made).
+The Atlona switch will time out any IP connection after a specific time (specified by "IP Timeout" on the "Network" tab from the switch configuration UI - 120 by default).
+The ping setting MUST be lower than that value.
+If it is higher than the "IP Timeout" value, the switch will timeout our connection and the thing will go OFFLINE (until a reconnect attempt is made).
 
 ## Channels
 
@@ -152,7 +155,8 @@ The presetcmd channel will take the following commands:
 | recallX | Sets the input/output to preset X |
 | clearX | Clears the preset X |
 
-Note: if X doesn't exist - nothing will occur.  The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
+Note: if X doesn't exist - nothing will occur.
+The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
 
 ### matrixcmd
 
@@ -164,22 +168,23 @@ The matrixcmd channel will take the following commands:
 | resetports | Resets the ports back to their default values (outputX=inputX) |
 | allportsX | Sets all the output ports to the input port X |
 
-Note: if X doesn't exist - nothing will occur.  The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
+Note: if X doesn't exist - nothing will occur.
+The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
 
 ## Changes/Warnings
 
 As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I've notified them on these issues):
 
-- clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
-- There is no way to query what the current status is of: panellock, and irenable.  This addon simply assumes that panellock is off and irenable is on at startup.  
-- If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this addon's connection will be inconsistently closed at different times.  The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
-- a bug in the firmware will sometimes cause memory presets to disappear after a reboot
+-   clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
+-   There is no way to query what the current status is of: panellock, and irenable.  This addon simply assumes that panellock is off and irenable is on at startup.  
+-   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this addon's connection will be inconsistently closed at different times.  The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
+-   a bug in the firmware will sometimes cause memory presets to disappear after a reboot
 
 As of firmware 1.6.8 (rev 14),
 
-- The "clearX" command has been fixed and works now.
-- The number of presets have increased to 10
-- If telnet mode is enabled, you must use the admin username/password to issue a matrixreset 
+-   The "clearX" command has been fixed and works now.
+-   The number of presets have increased to 10
+-   If telnet mode is enabled, you must use the admin username/password to issue a matrixreset
 
 
 ## Example
@@ -262,7 +267,7 @@ sitemap demo label="Main Menu"
             Text item=Atlona_Presets
         }
         Text label="Ports" {
-            Switch item=Atlona_PortPower1 
+            Switch item=Atlona_PortPower1
             Switch item=Atlona_PortPower2
             Switch item=Atlona_PortPower3
             Switch item=Atlona_PortPower4
@@ -305,7 +310,8 @@ sitemap demo label="Main Menu"
 
 # Transformation Maps
 
-The following is some example transformation maps you can create.  Be sure they are in sync with the mappings above.
+The following is some example transformation maps you can create.
+Be sure they are in sync with the mappings above.
 
 ### atlonainputports.map
 

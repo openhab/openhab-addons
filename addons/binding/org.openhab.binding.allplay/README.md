@@ -1,21 +1,24 @@
 # AllPlay Binding
 
 This binding integrates devices compatible with [Qualcomm AllPlay](https://www.qualcomm.com/products/allplay).
-The binding uses native libraries for the AllJoyn framework. Libraries for the following platforms are already included in the binding:
+The binding uses native libraries for the AllJoyn framework.
+Libraries for the following platforms are already included in the binding:
 
-* Linux ARM
-* Linux x86 (32 bit, AllJoyn v16.04a)
-* Linux x86-64 (64 bit, AllJoyn v16.04a)
-* Windows x86 (32 bit, AllJoyn v16.04a)
-* Windows x86-64 (64 bit, AllJoyn v16.04a)
+*   Linux ARM
+*   Linux x86 (32 bit, AllJoyn v16.04a)
+*   Linux x86-64 (64 bit, AllJoyn v16.04a)
+*   Windows x86 (32 bit, AllJoyn v16.04a)
+*   Windows x86-64 (64 bit, AllJoyn v16.04a)
 
-The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145). If you are using Windows, please make sure to install these components before using the AllPlay binding.
+The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145).
+If you are using Windows, please make sure to install these components before using the AllPlay binding.
 
 If there is need for another architecture/platform, please open a [ticket on GitHub](https://github.com/openhab/openhab/issues) so the missing native library can be added.
 
 ## Supported Things
 
-All AllPlay compatible speakers are supported by this binding. This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html). All AllPlay speakers are registered as an audio sink in the framework.
+All AllPlay compatible speakers are supported by this binding.
+This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html). All AllPlay speakers are registered as an audio sink in the framework.
 
 ## Discovery
 
@@ -29,7 +32,7 @@ The binding has the following configuration options, which can be set for "bindi
 |-----------|------|-------------|----------|
 | rewindSkipTimeInSec | Rewind skip time (s) | Seconds to jump backwards if the rewind command is executed | yes |
 | fastForwardSkipTimeInSec | Fast forward skip time (s) | Seconds to jump forward if the fastforward command is executed | yes |
-| callbackUrl | Callback URL | URL to use for playing audio streams, e.g. http://192.168.0.2:8080 | no |
+| callbackUrl | Callback URL | URL to use for playing audio streams, e.g. <http://192.168.0.2:8080> | no |
 
 
 ## Thing Configuration
@@ -52,8 +55,8 @@ The devices support the following channels:
 |-----------------|--------------|--------------|
 | clearzone | Switch | Remove the current speaker from the zone |
 | control | Player | Control the speaker, play/pause/next/previous/ffward/rewind |
-| coverart | Image | Image data of cover art of the current song | 
-| coverarturl | String | URL of the cover art of the current song | 
+| coverart | Image | Image data of cover art of the current song |
+| coverarturl | String | URL of the cover art of the current song |
 | currentalbum | String | Name of the album currently playing |
 | currentartist | String | Name of the artist currently playing |
 | currentduration | Number | Duration in seconds of the track currently playing |
@@ -106,7 +109,7 @@ sitemap demo label="Main Menu"
 		Frame label="All2" {
 			Default item=All2Control
 			Slider item=All2Volume
-			Text item=All2Title	
+			Text item=All2Title
 			Text item=All2Artist
 			Text item=All2State
 		}
