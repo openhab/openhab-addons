@@ -36,7 +36,6 @@ public class BindingConstants {
 
     // List of all Channel IDs
     public static final String OWNER = "owner";
-    public static final String REFRESH = "refresh";
 
     public static final String BATTERY_STATUS = "batteryStatus";
     public static final String BATTERY_LEVEL = "batteryLevel";

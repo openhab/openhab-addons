@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.BindingConstants.*;
+import static org.openhab.binding.icloud.BindingConstants.OWNER;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -28,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.icloud.internal.Connection;
 import org.openhab.binding.icloud.internal.DeviceInformationParser;
 import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
@@ -55,7 +55,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private Object synchronizeRefresh = new Object();
 
-    private List<ICloudDeviceHandler> iCloudDeviceHandlers = Collections.synchronizedList(new ArrayList<ICloudDeviceHandler>());
+    private List<ICloudDeviceHandler> iCloudDeviceHandlers = Collections
+            .synchronizedList(new ArrayList<ICloudDeviceHandler>());
     private List<DeviceDiscovery> deviceDiscoveryListeners = Collections
             .synchronizedList(new ArrayList<DeviceDiscovery>());
 
@@ -68,11 +69,15 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String channelId = channelUID.getId();
-        switch (channelId) {
-            case REFRESH:
-                refreshDeviceData(command);
-                break;
+        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+
+        if (command instanceof RefreshType) {
+            try {
+                refreshData();
+            } catch (IOException e) {
+                logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -137,18 +142,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             }
         }, 0, config.refreshTimeInMinutes, TimeUnit.MINUTES);
         logger.debug("iCloud bridge handler started.");
-    }
-
-    private void refreshDeviceData(Command command) {
-        if (command == OnOffType.ON) {
-            try {
-                refreshData();
-            } catch (IOException e) {
-                logger.warn("Unable to refresh device data", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-            updateState(REFRESH, OnOffType.OFF);
-        }
     }
 
     private void refreshData() throws IOException {

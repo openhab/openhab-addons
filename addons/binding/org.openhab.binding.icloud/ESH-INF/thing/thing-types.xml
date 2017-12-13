@@ -8,7 +8,6 @@
 
 		<channels>
 			<channel id="owner" typeId="Owner" />
-			<channel id="refresh" typeId="Refresh" />
 		</channels>
 
 		<config-description>

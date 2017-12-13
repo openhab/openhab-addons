@@ -40,11 +40,11 @@ The Binding provides two Thing types.
 
 The following table lists the configuration parameters:
 
-| Parameter            | Description                                         |                             |
-|----------------------|-----------------------------------------------------|-----------------------------|
-| appleId              |                                                     | mandatory                   |
-| password             |                                                     | mandatory                   |
-| refreshTimeInMinutes |                                                     | optional, 5 minutes default |
+| Parameter            | Description |                             |
+|----------------------|-------------|-----------------------------|
+| appleId              |             | mandatory                   |
+| password             |             | mandatory                   |
+| refreshTimeInMinutes |             | optional, 5 minutes default |
 
 A device is identified by a hash value calculated from the device id provided by apple.
 If a device is removed from the account the respective openHAB Thing will go OFFLINE.
@@ -53,24 +53,23 @@ If a device is removed from the account the respective openHAB Thing will go OFF
 
 ### Account
 
-| Channel ID      | Type   | Description                                                  |
-|-----------------|--------|--------------------------------------------------------------|
-| owner           | String | Registered owner of this iCloud account.                     |
-| refresh         | Switch | Update all devices registered with this account immediately. |
+| Channel ID | Type   | Description                              |
+|------------|--------|------------------------------------------|
+| owner      | String | Registered owner of this iCloud account. |
 
 ### Device
 
 The following channels are available (if supported by the device):
 
-| Channel ID                   | Type     | Description                                                                                                                                 |
-|------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| batteryStatus                | String   | Current battery status (Charging, Charged, Unknown)                                                                                         |
-| batteryLevel                 | Number   | Battery charge in %                                                                                                                         |
-| findMyPhone                  | Switch   | Triggers the ["Find my phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
-| location                     | Location | Location of the device.                                                                                                                     |
-| locationAccuracy             | Number   | Accuracy of the last position report.                                                                                                       |
-| locationLastUpdate           | DateTime | Timestamp of the last location update.                                                                                                      |
-| deviceName                   | String   | The device name assigned to the device through device settings.                                                                             |
+| Channel ID         | Type     | Description                                                                                                                                 |
+|--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| batteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                                                                                         |
+| batteryLevel       | Number   | Battery charge in %                                                                                                                         |
+| findMyPhone        | Switch   | Triggers the ["Find my phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
+| location           | Location | Location of the device.                                                                                                                     |
+| locationAccuracy   | Number   | Accuracy of the last position report.                                                                                                       |
+| locationLastUpdate | DateTime | Timestamp of the last location update.                                                                                                      |
+| deviceName         | String   | The device name assigned to the device through device settings.                                                                             |
 
 ## Full Example
 
