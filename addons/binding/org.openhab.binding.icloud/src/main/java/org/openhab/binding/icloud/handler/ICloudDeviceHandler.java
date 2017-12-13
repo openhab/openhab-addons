@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
@@ -81,6 +82,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
+        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+
         String channelId = channelUID.getId();
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
@@ -91,6 +94,10 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                 }
                 updateState(FIND_MY_PHONE, OnOffType.OFF);
             }
+        }
+
+        if (command instanceof RefreshType) {
+            bridge.refreshData();
         }
     }
 
