@@ -77,7 +77,7 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        handler.unregisterDiscovery(this);
         super.deactivate();
+        handler.unregisterDiscovery(this);
     }
 }
