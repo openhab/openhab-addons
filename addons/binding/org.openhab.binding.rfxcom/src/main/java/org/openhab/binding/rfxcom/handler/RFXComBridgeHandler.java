@@ -21,6 +21,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -235,8 +236,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                         if (msg.command == Commands.GET_STATUS) {
                             logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                 msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
-                            thing.setProperty(thing.PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
-                            thing.setProperty(thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
+                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
+                            thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
 
                             if (configuration.ignoreConfig) {
                                 logger.debug("Ignoring transceiver configuration");
