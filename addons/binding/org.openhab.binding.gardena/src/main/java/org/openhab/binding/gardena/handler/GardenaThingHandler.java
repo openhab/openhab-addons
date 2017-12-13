@@ -106,7 +106,9 @@ public class GardenaThingHandler extends BaseThingHandler {
     public void channelLinked(ChannelUID channelUID) {
         try {
             updateChannel(channelUID);
-        } catch (Exception ex) {
+        } catch (GardenaDeviceNotFoundException | AccountHandlerNotAvailableException ex) {
+            logger.debug("{}", ex.getMessage(), ex);
+        } catch (GardenaException ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
     }
