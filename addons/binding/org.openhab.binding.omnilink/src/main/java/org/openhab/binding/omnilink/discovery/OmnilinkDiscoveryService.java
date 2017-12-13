@@ -166,24 +166,31 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private void discoverTempSensors()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
-        ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
-                .builder(bridgeHandler, ObjectPropertyRequests.AUX_SENSORS).selectNamed().build();
+        for (AreaProperties areaProperties : areas) {
 
-        for (AuxSensorProperties objectProperties : objectPropertyRequest) {
+            int areaFilter = bitFilterForArea(areaProperties);
 
-            if (TEMP_SENSOR_TYPES.contains(objectProperties.getSensorType())) {
+            ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.AUX_SENSORS).selectNamed().areaFilter(areaFilter)
+                    .build();
 
-                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_TEMP_SENSOR,
-                        Integer.toString(objectProperties.getNumber()));
+            for (AuxSensorProperties objectProperties : objectPropertyRequest) {
 
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                if (TEMP_SENSOR_TYPES.contains(objectProperties.getSensorType())) {
 
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
-                        .build();
-                thingDiscovered(discoveryResult);
+                    ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_TEMP_SENSOR,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objectProperties.getNumber()));
+
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                            .build();
+                    thingDiscovered(discoveryResult);
+                }
             }
         }
 
@@ -192,24 +199,31 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private void discoverHumiditySensors()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
-        ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
-                .builder(bridgeHandler, ObjectPropertyRequests.AUX_SENSORS).selectNamed().build();
+        for (AreaProperties areaProperties : areas) {
 
-        for (AuxSensorProperties objectProperties : objectPropertyRequest) {
+            int areaFilter = bitFilterForArea(areaProperties);
 
-            if (objectProperties.getSensorType() == AuxSensorProperties.SENSOR_TYPE_HUMIDITY) {
+            ObjectPropertyRequest<AuxSensorProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.AUX_SENSORS).selectNamed().areaFilter(areaFilter)
+                    .build();
 
-                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_HUMIDITY_SENSOR,
-                        Integer.toString(objectProperties.getNumber()));
+            for (AuxSensorProperties objectProperties : objectPropertyRequest) {
 
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                if (objectProperties.getSensorType() == AuxSensorProperties.SENSOR_TYPE_HUMIDITY) {
 
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
-                        .build();
-                thingDiscovered(discoveryResult);
+                    ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_HUMIDITY_SENSOR,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objectProperties.getNumber()));
+
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                            .build();
+                    thingDiscovered(discoveryResult);
+                }
             }
         }
     }
@@ -378,9 +392,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private void discoverZones()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
-        // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"%s:%d\"}\n";
-        // String groupName = "Zones";
 
         for (AreaProperties areaProperties : areas) {
 
@@ -391,22 +402,26 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             for (ZoneProperties zoneProperties : objectPropertyRequest) {
 
-                int objnum = zoneProperties.getNumber();
+                if (TEMP_SENSOR_TYPES.contains(zoneProperties.getZoneType()) == false
+                        && zoneProperties.getZoneType() != AuxSensorProperties.SENSOR_TYPE_HUMIDITY) {
 
-                ThingUID thingUID = null;
-                String thingID = Integer.toString(objnum);
-                String thingLabel = zoneProperties.getName();
+                    int objnum = zoneProperties.getNumber();
 
-                Map<String, Object> properties = new HashMap<>();
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ZONE, bridgeHandler.getThing().getUID(),
-                        thingID);
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, thingLabel);
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+                    ThingUID thingUID = null;
+                    String thingID = Integer.toString(objnum);
+                    String thingLabel = zoneProperties.getName();
 
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(thingLabel).build();
-                thingDiscovered(discoveryResult);
+                    Map<String, Object> properties = new HashMap<>();
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ZONE, bridgeHandler.getThing().getUID(),
+                            thingID);
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, thingLabel);
+                    properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(bridgeUID).withLabel(thingLabel).build();
+                    thingDiscovered(discoveryResult);
+                }
             }
         }
     }
