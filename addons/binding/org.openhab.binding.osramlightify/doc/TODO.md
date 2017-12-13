@@ -1,3 +1,5 @@
+* Remove PROPERTY_FIRMWARE_VERSION in a few months when people are likely to have upgraded.
+
 * When we handle a LIST_PAIRED message we need to offline any devices that are no longer paired.
   * Can we use bridge-agnostic thing UIDs and reparent existing things to different bridges?
   * Yes. The thing can use getBridge().removeThing(this), setBridgeUID(<newUID>), bridge.addThing(thing).
