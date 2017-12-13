@@ -8,9 +8,9 @@ The CoolMasterNet protocol does not support automatic discovery.
 
 ## Thing Configuration
 
-* `controller` is a openHAB "bridge", and represents a single CoolMasterNet device. A single controller supports one or more HVAC units.
+*  `controller` is a openHAB "bridge", and represents a single CoolMasterNet device. A single controller supports one or more HVAC units.
 
-* `hvac` is an HVAC device connected to a controller. Each `hvac` thing is identified by a CoolMasterNet UID (refer to CoolMasterNet controller documentation).
+*  `hvac` is an HVAC device connected to a controller. Each `hvac` thing is identified by a CoolMasterNet UID (refer to CoolMasterNet controller documentation).
 
 Example demo.things configuration for two HVAC devices connected to a CoolMasterNet device found at IP 192.168.0.100:
 
