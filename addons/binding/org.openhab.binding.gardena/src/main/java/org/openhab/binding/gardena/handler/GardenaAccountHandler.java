@@ -178,9 +178,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 gardenaThingHandler.updateSettings(device);
                 gardenaThingHandler.updateStatus(device);
             } catch (GardenaException ex) {
-                logger.error("There is something wrong with your thing, please recreate the thing {}",
-                        gardenaThing.getUID(), ex);
-                updateStatus(ThingStatus.OFFLINE);
+                logger.error("There is something wrong with your thing '{}', please check or recreate it: {}",
+                        gardenaThing.getUID(), ex.getMessage());
+                logger.debug("Gardena exception caught on device update.", ex);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
