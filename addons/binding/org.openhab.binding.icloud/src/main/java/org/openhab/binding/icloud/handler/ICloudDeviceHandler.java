@@ -12,8 +12,8 @@ import static org.openhab.binding.icloud.BindingConstants.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
 import org.openhab.binding.icloud.internal.json.DeviceInformation;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
  */
-public class ICloudDeviceHandler extends BaseThingHandler {
+public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
     private String deviceId;
     private ICloudAccountBridgeHandler bridge;
@@ -49,7 +50,8 @@ public class ICloudDeviceHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public void update(ArrayList<DeviceInformation> deviceInformationList) {
+    @Override
+    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
         DeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
@@ -94,7 +96,7 @@ public class ICloudDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        bridge.unregisterDevice(this);
+        bridge.unregisterListener(this);
         super.dispose();
     }
 
@@ -120,7 +122,7 @@ public class ICloudDeviceHandler extends BaseThingHandler {
 
         if (bridge != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
-                bridge.registerDevice(this);
+                bridge.registerListener(this);
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -130,7 +132,7 @@ public class ICloudDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private DeviceInformation getDeviceInformationRecord(ArrayList<DeviceInformation> deviceInformationList) {
+    private DeviceInformation getDeviceInformationRecord(List<DeviceInformation> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
 
         for (DeviceInformation deviceInformationRecord : deviceInformationList) {

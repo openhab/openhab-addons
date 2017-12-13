@@ -21,11 +21,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.icloud.internal.Connection;
@@ -55,9 +53,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private Object synchronizeRefresh = new Object();
 
-    private List<ICloudDeviceHandler> iCloudDeviceHandlers = Collections
-            .synchronizedList(new ArrayList<ICloudDeviceHandler>());
-    private List<ICloudDeviceInformationListener> deviceDiscoveryListeners = Collections
+    private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
     ScheduledFuture<?> refreshJob;
@@ -93,14 +89,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         super.handleRemoval();
     }
 
-    public void registerDevice(ICloudDeviceHandler device) {
-        iCloudDeviceHandlers.add(device);
-    }
-
-    public void unregisterDevice(ICloudDeviceHandler device) {
-        iCloudDeviceHandlers.remove(device);
-    }
-
     @Override
     public void dispose() {
         if (refreshJob != null) {
@@ -109,24 +97,16 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
-    @Override
-    public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
-        super.childHandlerInitialized(childHandler, childThing);
-        if (iCloudData != null) {
-            ((ICloudDeviceHandler) childHandler).update(iCloudData.getContent());
-        }
-    }
-
     public void findMyDevice(String deviceId) throws IOException {
         connection.findMyDevice(deviceId);
     }
 
-    public void registerDiscovery(ICloudDeviceInformationListener deviceDiscovery) {
-        deviceDiscoveryListeners.add(deviceDiscovery);
+    public void registerListener(ICloudDeviceInformationListener listener) {
+        deviceInformationListeners.add(listener);
     }
 
-    public void unregisterDiscovery(ICloudDeviceInformationListener deviceDiscovery) {
-        deviceDiscoveryListeners.remove(deviceDiscovery);
+    public void unregisterListener(ICloudDeviceInformationListener listener) {
+        deviceInformationListeners.remove(listener);
     }
 
     private void startHandler() {
@@ -160,8 +140,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
 
                 updateBridgeChannels(iCloudData);
-                updateDevices(iCloudData.getContent());
-                updateDiscovery(iCloudData.getContent());
+                informDeviceInformationListeners(iCloudData.getContent());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Status = " + statusCode + ", Response = " + json);
@@ -171,12 +150,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void updateDiscovery(List<DeviceInformation> deviceInformationList) {
-        this.deviceDiscoveryListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
-    }
-
-    private void updateDevices(ArrayList<DeviceInformation> deviceInformationList) {
-        this.iCloudDeviceHandlers.forEach(device -> device.update(deviceInformationList));
+    private void informDeviceInformationListeners(List<DeviceInformation> deviceInformationList) {
+        this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
     }
 
     private void updateBridgeChannels(JSONRootObject iCloudData) {
@@ -185,5 +160,4 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
         updateState(OWNER, new StringType(firstName + " " + lastName));
     }
-
 }

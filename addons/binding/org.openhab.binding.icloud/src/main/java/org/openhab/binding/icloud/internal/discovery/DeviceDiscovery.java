@@ -74,13 +74,13 @@ public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudD
     }
 
     public void activate() {
-        handler.registerDiscovery(this);
+        handler.registerListener(this);
     }
 
     @Override
     public void deactivate() {
         super.deactivate();
-        handler.unregisterDiscovery(this);
+        handler.unregisterListener(this);
     }
 
 }
