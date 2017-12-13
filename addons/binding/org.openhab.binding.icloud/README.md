@@ -51,12 +51,6 @@ If a device is removed from the account the respective openHAB Thing will go OFF
 
 ## Channels
 
-### Account
-
-| Channel ID | Type   | Description                              |
-|------------|--------|------------------------------------------|
-| owner      | String | Registered owner of this iCloud account. |
-
 ### Device
 
 The following channels are available (if supported by the device):

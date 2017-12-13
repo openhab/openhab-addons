@@ -35,8 +35,6 @@ public class BindingConstants {
             Arrays.asList(THING_TYPE_ICLOUD, THING_TYPE_ICLOUDDEVICE));
 
     // List of all Channel IDs
-    public static final String OWNER = "owner";
-
     public static final String BATTERY_STATUS = "batteryStatus";
     public static final String BATTERY_LEVEL = "batteryLevel";
     public static final String FIND_MY_PHONE = "findMyPhone";

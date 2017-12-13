@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.BindingConstants.OWNER;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -144,8 +141,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             int statusCode = Integer.parseUnsignedInt(iCloudData.getStatusCode());
             if (statusCode == 200) {
                 updateStatus(ThingStatus.ONLINE);
-
-                updateBridgeChannels(iCloudData);
                 informDeviceInformationListeners(iCloudData.getContent());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -158,12 +153,5 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private void informDeviceInformationListeners(List<DeviceInformation> deviceInformationList) {
         this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
-    }
-
-    private void updateBridgeChannels(JSONRootObject iCloudData) {
-        String firstName = iCloudData.getUserInfo().getFirstName();
-        String lastName = iCloudData.getUserInfo().getLastName();
-
-        updateState(OWNER, new StringType(firstName + " " + lastName));
     }
 }

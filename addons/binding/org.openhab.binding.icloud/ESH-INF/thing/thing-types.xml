@@ -6,10 +6,6 @@
 		<label>iCloud Account</label>
 		<description>Provides various information for iCloud devices registered with this account.</description>
 
-		<channels>
-			<channel id="owner" typeId="Owner" />
-		</channels>
-
 		<config-description>
 			<parameter name="appleId" type="text" required="true">
 				<context>email</context>
@@ -55,12 +51,7 @@
 		</config-description>
 
 	</thing-type>
-
-	<channel-type id="Owner">
-		<item-type>String</item-type>
-		<label>Owner</label>
-		<description>Registered owner of this iCloud account.</description>
-	</channel-type>
+	
 	<channel-type id="Refresh">
 		<item-type>Switch</item-type>
 		<label>Refresh</label>
