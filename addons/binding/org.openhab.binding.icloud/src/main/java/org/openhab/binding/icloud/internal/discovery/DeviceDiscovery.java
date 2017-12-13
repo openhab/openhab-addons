@@ -17,6 +17,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
+import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.json.DeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceDiscovery extends AbstractDiscoveryService {
+public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
@@ -41,7 +42,8 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
         this.bridgeUID = bridgeHandler.getThing().getUID();
     }
 
-    public void discover(List<DeviceInformation> deviceInformationList) {
+    @Override
+    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
         if (deviceInformationList != null) {
             for (DeviceInformation deviceInformationRecord : deviceInformationList) {
 
@@ -80,4 +82,5 @@ public class DeviceDiscovery extends AbstractDiscoveryService {
         super.deactivate();
         handler.unregisterDiscovery(this);
     }
+
 }

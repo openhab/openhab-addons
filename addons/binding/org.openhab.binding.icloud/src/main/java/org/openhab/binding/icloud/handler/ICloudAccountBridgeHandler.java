@@ -30,8 +30,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.icloud.internal.Connection;
 import org.openhab.binding.icloud.internal.DeviceInformationParser;
+import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.AccountThingConfiguration;
-import org.openhab.binding.icloud.internal.discovery.DeviceDiscovery;
 import org.openhab.binding.icloud.internal.json.DeviceInformation;
 import org.openhab.binding.icloud.internal.json.JSONRootObject;
 import org.osgi.framework.ServiceRegistration;
@@ -57,8 +57,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private List<ICloudDeviceHandler> iCloudDeviceHandlers = Collections
             .synchronizedList(new ArrayList<ICloudDeviceHandler>());
-    private List<DeviceDiscovery> deviceDiscoveryListeners = Collections
-            .synchronizedList(new ArrayList<DeviceDiscovery>());
+    private List<ICloudDeviceInformationListener> deviceDiscoveryListeners = Collections
+            .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
     ScheduledFuture<?> refreshJob;
     private JSONRootObject iCloudData;
@@ -121,11 +121,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         connection.findMyDevice(deviceId);
     }
 
-    public void registerDiscovery(DeviceDiscovery deviceDiscovery) {
+    public void registerDiscovery(ICloudDeviceInformationListener deviceDiscovery) {
         deviceDiscoveryListeners.add(deviceDiscovery);
     }
 
-    public void unregisterDiscovery(DeviceDiscovery deviceDiscovery) {
+    public void unregisterDiscovery(ICloudDeviceInformationListener deviceDiscovery) {
         deviceDiscoveryListeners.remove(deviceDiscovery);
     }
 
@@ -171,12 +171,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void updateDiscovery(ArrayList<DeviceInformation> content) {
-        this.deviceDiscoveryListeners.forEach(discovery -> discovery.discover(content));
+    private void updateDiscovery(List<DeviceInformation> deviceInformationList) {
+        this.deviceDiscoveryListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
     }
 
-    private void updateDevices(ArrayList<DeviceInformation> content) {
-        this.iCloudDeviceHandlers.forEach(device -> device.update(content));
+    private void updateDevices(ArrayList<DeviceInformation> deviceInformationList) {
+        this.iCloudDeviceHandlers.forEach(device -> device.update(deviceInformationList));
     }
 
     private void updateBridgeChannels(JSONRootObject iCloudData) {
