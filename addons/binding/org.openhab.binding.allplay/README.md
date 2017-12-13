@@ -28,53 +28,58 @@ The AllPlay devices are discovered through the AllJoyn discovery mechanism and a
 
 The binding has the following configuration options, which can be set for "binding:allplay":
 
-| Parameter | Name | Description | Required |
-|-----------|------|-------------|----------|
-| rewindSkipTimeInSec | Rewind skip time (s) | Seconds to jump backwards if the rewind command is executed | yes |
-| fastForwardSkipTimeInSec | Fast forward skip time (s) | Seconds to jump forward if the fastforward command is executed | yes |
-| callbackUrl | Callback URL | URL to use for playing audio streams, e.g. <http://192.168.0.2:8080> | no |
+| Parameter                | Name                       | Description                                                          | Required |
+|--------------------------|----------------------------|----------------------------------------------------------------------|----------|
+| rewindSkipTimeInSec      | Rewind skip time (s)       | Seconds to jump backwards if the rewind command is executed          | yes      |
+| fastForwardSkipTimeInSec | Fast forward skip time (s) | Seconds to jump forward if the fastforward command is executed       | yes      |
+| callbackUrl              | Callback URL               | URL to use for playing audio streams, e.g. <http://192.168.0.2:8080> | no       |
+
 
 
 ## Thing Configuration
 
 AllPlay Players are identified by their device ID (e.g. 9fbe37ca-d015-47a2-b76e-8fce7bc25687). Available configuration parameters are:
 
-| Parameter Label | Parameter ID | Description | Required | Default |
-|-----------------|--------------|-------------|----------|---------|
-| Device ID | deviceId | The device identifier identifies one certain speaker | true | |
-| Device Name | deviceName | The device name of the speaker | false | |
-| Volume step size | volumeStepSize | Step size to use if the volume is changed using the increase/decrease command | true | 1 |
-| Zone Member Separator | zoneMemberSeparator | Separator which is used when sending multiple zone members to channel 'zonemembers' | true | , |
+| Parameter Label       | Parameter ID        | Description                                                                         | Required | Default |
+|-----------------------|---------------------|-------------------------------------------------------------------------------------|----------|---------|
+| Device ID             | deviceId            | The device identifier identifies one certain speaker                                | true     |         |
+| Device Name           | deviceName          | The device name of the speaker                                                      | false    |         |
+| Volume step size      | volumeStepSize      | Step size to use if the volume is changed using the increase/decrease command       | true     | 1       |
+| Zone Member Separator | zoneMemberSeparator | Separator which is used when sending multiple zone members to channel 'zonemembers' | true     | ,       |
+|
 
 
 ## Channels
 
 The devices support the following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|--------------|--------------|
-| clearzone | Switch | Remove the current speaker from the zone |
-| control | Player | Control the speaker, play/pause/next/previous/ffward/rewind |
-| coverart | Image | Image data of cover art of the current song |
-| coverarturl | String | URL of the cover art of the current song |
-| currentalbum | String | Name of the album currently playing |
-| currentartist | String | Name of the artist currently playing |
-| currentduration | Number | Duration in seconds of the track currently playing |
-| currentgenre | String | Genre of the track currently playing |
-| currenttitle | String | Title of the track currently playing |
-| currenturl | String | URL of the track or radio station currently playing |
-| currentuserdata | String | Custom user data (e.g. name of radio station) of the track currently playing |
-| input | String | Input of the speaker, e.g. Line-In (not supported by all speakers) |
-| loopmode | String | Loop mode of the speaker (ONE, ALL, NONE) |
-| mute | Switch | Set or get the mute state of the master volume of the speaker (not supported by all speakers) |
-| playstate | String | State of the Speaker, e.g. PLAYING, STOPPED,.. |
-| shufflemode | Switch | Toggle the shuffle mode of the speaker |
-| stop | Switch | Stop the playback |
-| stream | String | Play the given HTTP or file stream (file:// or http://) |
-| volume | Dimmer | Get and set the volume of the speaker |
-| volumecontrol | Switch | Flag if the volume control is enabled (might be disabled if speaker is not master of the zone) |
-| zoneid | String | Id of the Zone the speaker belongs to |
-| zonemembers | String | Set the zone members by providing a comma-separated list of device names. (This channel is currently only for setting the zone members. It does not update automatically if the zone members are changed from another source) |
+| Channel Type ID | Item Type | Description                                                                                    |
+|-----------------|-----------|------------------------------------------------------------------------------------------------|
+| clearzone       | Switch    | Remove the current speaker from the zone                                                       |
+| control         | Player    | Control the speaker, play/pause/next/previous/ffward/rewind                                    |
+| coverart        | Image     | Image data of cover art of the current song                                                    |
+| coverarturl     | String    | URL of the cover art of the current song                                                       |
+| currentalbum    | String    | Name of the album currently playing                                                            |
+| currentartist   | String    | Name of the artist currently playing                                                           |
+| currentduration | Number    | Duration in seconds of the track currently playing                                             |
+| currentgenre    | String    | Genre of the track currently playing                                                           |
+| currenttitle    | String    | Title of the track currently playing                                                           |
+| currenturl      | String    | URL of the track or radio station currently playing                                            |
+| currentuserdata | String    | Custom user data (e.g. name of radio station) of the track currently playing                   |
+| input           | String    | Input of the speaker, e.g. Line-In (not supported by all speakers)                             |
+| loopmode        | String    | Loop mode of the speaker (ONE, ALL, NONE)                                                      |
+| mute            | Switch    | Set or get the mute state of the master volume of the speaker (not supported by all speakers)  |
+| playstate       | String    | State of the Speaker, e.g. PLAYING, STOPPED,..                                                 |
+| shufflemode     | Switch    | Toggle the shuffle mode of the speaker                                                         |
+| stop            | Switch    | Stop the playback                                                                              |
+| stream          | String    | Play the given HTTP or file stream (file:// or http://)                                        |
+| volume          | Dimmer    | Get and set the volume of the speaker                                                          |
+| volumecontrol   | Switch    | Flag if the volume control is enabled (might be disabled if speaker is not master of the zone) |
+| zoneid          | String    | Id of the Zone the speaker belongs to                                                          |
+| zonemembers     | String    | Set the zone members by providing a comma-separated list of device names.                      |
+|                 |           | (This channel is currently only for setting the zone members.                                  |
+|                 |           | It does not update automatically if the zone members are changed from another source)          |
+
 
 ## Audio Support
 

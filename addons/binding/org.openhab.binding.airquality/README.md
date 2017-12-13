@@ -27,12 +27,13 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| apikey    | Data-platform token to access the AQIcn.org service. Mandatory. |
-| location  | Geo coordinates to be considered by the service. |
-| stationId | Unique ID of the measuring station. |
-| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes.  |
+| Parameter | Description                                                             |
+|-----------|-------------------------------------------------------------------------|
+| apikey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
+| location  | Geo coordinates to be considered by the service.                        |
+| stationId | Unique ID of the measuring station.                                     |
+| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
+
 
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
@@ -49,22 +50,23 @@ If you always want to receive data from specific station and you know its unique
 The AirQuality information that is retrieved is available as these channels:
 
 
-| Channel ID | Item Type    | Description              |
-|------------|--------------|------------------------- |
-| aqiLevel | Number | Air Quality Index |
-| aqiDescription | String | AQI Description |
-| locationName | String | Nearest measuring station location |
-| stationId | Number | Measuring station ID |
-| stationLocation | Location | Latitude/longitude of measuring station |
-| pm25 | Number | Fine particles pollution level (PM2.5) |
-| pm10 | Number | Coarse dust particles pollution level (PM10) |
-| o3 | Number | Ozone level (O3) |
-| no2 | Number | Nitrogen Dioxide level (NO2) |
-| co | Number | Carbon monoxide level (CO) |
-| observationTime | DateTime | Observation date and time |
-| temperature | Number | Temperature in Celsius degrees |
-| pressure | Number | Pressure level |
-| humidity | Number | Humidity level |
+| Channel ID      | Item Type | Description                                  |
+|-----------------|-----------|----------------------------------------------|
+| aqiLevel        | Number    | Air Quality Index                            |
+| aqiDescription  | String    | AQI Description                              |
+| locationName    | String    | Nearest measuring station location           |
+| stationId       | Number    | Measuring station ID                         |
+| stationLocation | Location  | Latitude/longitude of measuring station      |
+| pm25            | Number    | Fine particles pollution level (PM2.5)       |
+| pm10            | Number    | Coarse dust particles pollution level (PM10) |
+| o3              | Number    | Ozone level (O3)                             |
+| no2             | Number    | Nitrogen Dioxide level (NO2)                 |
+| co              | Number    | Carbon monoxide level (CO)                   |
+| observationTime | DateTime  | Observation date and time                    |
+| temperature     | Number    | Temperature in Celsius degrees               |
+| pressure        | Number    | Pressure level                               |
+| humidity        | Number    | Humidity level                               |
+
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 

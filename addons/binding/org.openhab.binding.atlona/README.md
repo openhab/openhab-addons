@@ -49,111 +49,113 @@ If it is higher than the "IP Timeout" value, the switch will timeout our connect
 
 ## Channels
 
-| Thing         | Channel Type ID            | Item Type    | Access | Description                                                                               |
-|---------------|----------------------------|--------------|--------|-------------------------------------------------------------------------------------------|
-| pro3-44m      | primary#power              | Switch       | RW     | Matrix Power Switch                                                                       |
-| pro3-44m      | primary#panellock          | Switch       | RW     | Sets the front panel locked or unlocked                                                   |
-| pro3-44m      | primary#irenable           | Switch       | RW     | Enables/Disabled the front panel IR                                                       |
-| pro3-44m      | primary#presetcmd          | Switch       | W      | Sends a preset command ('saveX', 'recallX', 'clearX') - see notes below                   |
-| pro3-44m      | primary#matrixcmd          | Switch       | W      | Sends a matrix command ('resetmatrix', 'resetports', 'allportsX') - see notes below       |
-| pro3-44m      | port1#portpower            | Switch       | RW     | Enables/Disables output port #1                                                           |
-| pro3-44m      | port1#portoutput           | Number       | RW     | Sets output port #1 to the specified input port                                           |
-| pro3-44m      | port2#portpower            | Switch       | RW     | Enables/Disables output port #2                                                           |
-| pro3-44m      | port2#portoutput           | Number       | RW     | Sets output port #2 to the specified input port                                           |
-| pro3-44m      | port3#portpower            | Switch       | RW     | Enables/Disables output port #3                                                           |
-| pro3-44m      | port3#portoutput           | Number       | RW     | Sets output port #3 to the specified input port                                           |
-| pro3-44m      | port4#portpower            | Switch       | RW     | Enables/Disables output port #4                                                           |
-| pro3-44m      | port4#portoutput           | Number       | RW     | Sets output port #4 to the specified input port                                           |
-| pro3-44m      | port5#portpower            | Switch       | RW     | Enables/Disables output port #5                                                           |
-| pro3-44m      | port5#portoutput           | Number       | RW     | Sets output port #5 to the specified input port                                           |
-| pro3-44m      | mirror5#portmirrorenabled  | Number       | RW     | Sets hdmi port #5 to enable/disable port mirroring                                        |
-| pro3-44m      | mirror5#portmirror         | Number       | RW     | Sets hdmi port #5 to mirror the specified output port (if enabled)                        |
-| pro3-44m      | volume1#volume             | Number       | RW     | Sets the volume of audio port #1 to the specified decibel level (between -79db to +15db)  |
-| pro3-44m      | volume1#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #1                                                               |
-| pro3-44m      | volume2#volume             | Number       | RW     | Sets the volume of audio port #2 to the specified decibel level (between -79db to +15db)  |
-| pro3-44m      | volume2#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #2                                                               |
-| pro3-44m      | volume3#volume             | Number       | RW     | Sets the volume of audio port #3 to the specified decibel level (between -79db to +15db)  |
-| pro3-44m      | volume3#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #3                                                               |
-|               |                            |              |        |                                                                                           |
-| pro3-66m      | ALL OF THE pro3-44M channels (except different mirror settings)                                                                                |
-| pro3-66m      | port6#portpower            | Switch       | RW     | Enables/Disables output port #6                                                           |
-| pro3-66m      | port6#portoutput           | Number       | RW     | Sets output port #6 to the specified input port                                           |
-| pro3-66m      | port7#portpower            | Switch       | RW     | Enables/Disables output port #7                                                           |
-| pro3-66m      | port7#portoutput           | Number       | RW     | Sets output port #7 to the specified input port                                           |
-| pro3-66m      | port8#portpower            | Switch       | RW     | Enables/Disables output port #8                                                           |
-| pro3-66m      | port8#portoutput           | Number       | RW     | Sets output port #8 to the specified input port                                           |
-| pro3-66m      | mirror6#portmirrorenabled  | Number       | RW     | Sets hdmi port #6 to enable/disable port mirroring                                        |
-| pro3-66m      | mirror6#portmirror         | Number       | RW     | Sets hdmi port #6 to mirror the specified output port (if enabled)                        |
-| pro3-66m      | mirror8#portmirrorenabled  | Number       | RW     | Sets hdmi port #8 to enable/disable port mirroring                                        |
-| pro3-66m      | mirror8#portmirror         | Number       | RW     | Sets hdmi port #8 to mirror the specified output port (if enabled)                        |
-| pro3-66m      | volume4#volume             | Number       | RW     | Sets the volume of audio port #4 to the specified decibel level (between -79db to +15db)  |
-| pro3-66m      | volume4#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #4                                                               |
-|               |                            |              |        |                                                                                           |
-| pro3-88m      | ALL OF THE pro3-66M channels (except different mirror settings)                                                                                |
-| pro3-88m      | port9#portpower            | Switch       | RW     | Enables/Disables output port #9                                                           |
-| pro3-88m      | port9#portoutput           | Number       | RW     | Sets output port #9 to the specified input port                                           |
-| pro3-88m      | port10#portpower           | Switch       | RW     | Enables/Disables output port #10                                                          |
-| pro3-88m      | port10#portoutput          | Number       | RW     | Sets output port #10 to the specified input port                                          |
-| pro3-88m      | mirror8#portmirrorenabled  | Number       | RW     | Sets hdmi port #8 to enable/disable port mirroring                                        |
-| pro3-88m      | mirror8#portmirror         | Number       | RW     | Sets hdmi port #8 to mirror the specified output port (if enabled)                        |
-| pro3-88m      | mirror10#portmirrorenabled | Number       | RW     | Sets hdmi port #10 to enable/disable port mirroring                                       |
-| pro3-88m      | mirror10#portmirror        | Number       | RW     | Sets hdmi port #10 to mirror the specified output port (if enabled)                       |
-| pro3-88m      | volume5#volume             | Number       | RW     | Sets the volume of audio port #5 to the specified decibel level (between -79db to +15db)  |
-| pro3-88m      | volume5#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #5                                                               |
-| pro3-88m      | volume6#volume             | Number       | RW     | Sets the volume of audio port #6 to the specified decibel level (between -79db to +15db)  |
-| pro3-88m      | volume6#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #6                                                               |
-|               |                            |              |        |                                                                                           |
-| pro3-1616m    | ALL OF THE pro3-88M channels (except different mirror settings)                                                                                |
-| pro3-1616m    | port11#portpower           | Switch       | RW     | Enables/Disables output port #11                                                          |
-| pro3-1616m    | port11#portoutput          | Number       | RW     | Sets output port #11 to the specified input port                                          |
-| pro3-1616m    | port12#portpower           | Switch       | RW     | Enables/Disables output port #12                                                          |
-| pro3-1616m    | port12#portoutput          | Number       | RW     | Sets output port #12 to the specified input port                                          |
-| pro3-1616m    | port13#portpower           | Switch       | RW     | Enables/Disables output port #13                                                          |
-| pro3-1616m    | port13#portoutput          | Number       | RW     | Sets output port #13 to the specified input port                                          |
-| pro3-1616m    | port14#portpower           | Switch       | RW     | Enables/Disables output port #14                                                          |
-| pro3-1616m    | port14#portoutput          | Number       | RW     | Sets output port #14 to the specified input port                                          |
-| pro3-1616m    | port15#portpower           | Switch       | RW     | Enables/Disables output port #15                                                          |
-| pro3-1616m    | port15#portoutput          | Number       | RW     | Sets output port #15 to the specified input port                                          |
-| pro3-1616m    | port16#portpower           | Switch       | RW     | Enables/Disables output port #16                                                          |
-| pro3-1616m    | port16#portoutput          | Number       | RW     | Sets output port #16 to the specified input port                                          |
-| pro3-1616m    | port17#portpower           | Switch       | RW     | Enables/Disables output port #17                                                          |
-| pro3-1616m    | port17#portoutput          | Number       | RW     | Sets output port #17 to the specified input port                                          |
-| pro3-1616m    | port18#portpower           | Switch       | RW     | Enables/Disables output port #18                                                          |
-| pro3-1616m    | port18#portoutput          | Number       | RW     | Sets output port #18 to the specified input port                                          |
-| pro3-1616m    | port19#portpower           | Switch       | RW     | Enables/Disables output port #19                                                          |
-| pro3-1616m    | port19#portoutput          | Number       | RW     | Sets output port #19 to the specified input port                                          |
-| pro3-1616m    | port20#portpower           | Switch       | RW     | Enables/Disables output port #20                                                          |
-| pro3-1616m    | port20#portoutput          | Number       | RW     | Sets output port #20 to the specified input port                                          |
-| pro3-1616m    | mirror17#portmirrorenabled | Number       | RW     | Sets hdmi port #17 to enable/disable port mirroring                                       |
-| pro3-1616m    | mirror17#portmirror        | Number       | RW     | Sets hdmi port #17 to mirror the specified output port (if enabled)                       |
-| pro3-1616m    | mirror18#portmirrorenabled | Number       | RW     | Sets hdmi port #18 to enable/disable port mirroring                                       |
-| pro3-1616m    | mirror18#portmirror        | Number       | RW     | Sets hdmi port #18 to mirror the specified output port (if enabled)                       |
-| pro3-1616m    | mirror19#portmirrorenabled | Number       | RW     | Sets hdmi port #19 to enable/disable port mirroring                                       |
-| pro3-1616m    | mirror19#portmirror        | Number       | RW     | Sets hdmi port #19 to mirror the specified output port (if enabled)                       |
-| pro3-1616m    | mirror20#portmirrorenabled | Number       | RW     | Sets hdmi port #20 to enable/disable port mirroring                                       |
-| pro3-1616m    | mirror20#portmirror        | Number       | RW     | Sets hdmi port #20 to mirror the specified output port (if enabled)                       |
-| pro3-1616m    | volume7#volume             | Number       | RW     | Sets the volume of audio port #7 to the specified decibel level (between -79db to +15db)  |
-| pro3-1616m    | volume7#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #7                                                               |
-| pro3-1616m    | volume8#volume             | Number       | RW     | Sets the volume of audio port #8 to the specified decibel level (between -79db to +15db)  |
-| pro3-1616m    | volume8#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #8                                                               |
-| pro3-1616m    | volume9#volume             | Number       | RW     | Sets the volume of audio port #9 to the specified decibel level (between -79db to +15db)  |
-| pro3-1616m    | volume9#volumemute         | Switch       | RW     | Mutes/Unmutes audio port #9                                                               |
-| pro3-1616m    | volume10#volume            | Number       | RW     | Sets the volume of audio port #10 to the specified decibel level (between -79db to +15db) |
-| pro3-1616m    | volume10#volumemute        | Switch       | RW     | Mutes/Unmutes audio port #10                                                              |
-| pro3-1616m    | volume11#volume            | Number       | RW     | Sets the volume of audio port #11 to the specified decibel level (between -79db to +15db) |
-| pro3-1616m    | volume11#volumemute        | Switch       | RW     | Mutes/Unmutes audio port #11                                                              |
-| pro3-1616m    | volume12#volume            | Number       | RW     | Sets the volume of audio port #12 to the specified decibel level (between -79db to +15db) |
-| pro3-1616m    | volume12#volumemute        | Switch       | RW     | Mutes/Unmutes audio port #12                                                              |
+| Thing      | Channel Type ID                                                 | Item Type | Access | Description                                                                               |
+|------------|-----------------------------------------------------------------|-----------|--------|-------------------------------------------------------------------------------------------|
+| pro3-44m   | primary#power                                                   | Switch    | RW     | Matrix Power Switch                                                                       |
+| pro3-44m   | primary#panellock                                               | Switch    | RW     | Sets the front panel locked or unlocked                                                   |
+| pro3-44m   | primary#irenable                                                | Switch    | RW     | Enables/Disabled the front panel IR                                                       |
+| pro3-44m   | primary#presetcmd                                               | Switch    | W      | Sends a preset command ('saveX', 'recallX', 'clearX') - see notes below                   |
+| pro3-44m   | primary#matrixcmd                                               | Switch    | W      | Sends a matrix command ('resetmatrix', 'resetports', 'allportsX') - see notes below       |
+| pro3-44m   | port1#portpower                                                 | Switch    | RW     | Enables/Disables output port #1                                                           |
+| pro3-44m   | port1#portoutput                                                | Number    | RW     | Sets output port #1 to the specified input port                                           |
+| pro3-44m   | port2#portpower                                                 | Switch    | RW     | Enables/Disables output port #2                                                           |
+| pro3-44m   | port2#portoutput                                                | Number    | RW     | Sets output port #2 to the specified input port                                           |
+| pro3-44m   | port3#portpower                                                 | Switch    | RW     | Enables/Disables output port #3                                                           |
+| pro3-44m   | port3#portoutput                                                | Number    | RW     | Sets output port #3 to the specified input port                                           |
+| pro3-44m   | port4#portpower                                                 | Switch    | RW     | Enables/Disables output port #4                                                           |
+| pro3-44m   | port4#portoutput                                                | Number    | RW     | Sets output port #4 to the specified input port                                           |
+| pro3-44m   | port5#portpower                                                 | Switch    | RW     | Enables/Disables output port #5                                                           |
+| pro3-44m   | port5#portoutput                                                | Number    | RW     | Sets output port #5 to the specified input port                                           |
+| pro3-44m   | mirror5#portmirrorenabled                                       | Number    | RW     | Sets hdmi port #5 to enable/disable port mirroring                                        |
+| pro3-44m   | mirror5#portmirror                                              | Number    | RW     | Sets hdmi port #5 to mirror the specified output port (if enabled)                        |
+| pro3-44m   | volume1#volume                                                  | Number    | RW     | Sets the volume of audio port #1 to the specified decibel level (between -79db to +15db)  |
+| pro3-44m   | volume1#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #1                                                               |
+| pro3-44m   | volume2#volume                                                  | Number    | RW     | Sets the volume of audio port #2 to the specified decibel level (between -79db to +15db)  |
+| pro3-44m   | volume2#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #2                                                               |
+| pro3-44m   | volume3#volume                                                  | Number    | RW     | Sets the volume of audio port #3 to the specified decibel level (between -79db to +15db)  |
+| pro3-44m   | volume3#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #3                                                               |
+|            |                                                                 |           |        |                                                                                           |
+| pro3-66m   | ALL OF THE pro3-44M channels (except different mirror settings) |           |        |                                                                                           |
+| pro3-66m   | port6#portpower                                                 | Switch    | RW     | Enables/Disables output port #6                                                           |
+| pro3-66m   | port6#portoutput                                                | Number    | RW     | Sets output port #6 to the specified input port                                           |
+| pro3-66m   | port7#portpower                                                 | Switch    | RW     | Enables/Disables output port #7                                                           |
+| pro3-66m   | port7#portoutput                                                | Number    | RW     | Sets output port #7 to the specified input port                                           |
+| pro3-66m   | port8#portpower                                                 | Switch    | RW     | Enables/Disables output port #8                                                           |
+| pro3-66m   | port8#portoutput                                                | Number    | RW     | Sets output port #8 to the specified input port                                           |
+| pro3-66m   | mirror6#portmirrorenabled                                       | Number    | RW     | Sets hdmi port #6 to enable/disable port mirroring                                        |
+| pro3-66m   | mirror6#portmirror                                              | Number    | RW     | Sets hdmi port #6 to mirror the specified output port (if enabled)                        |
+| pro3-66m   | mirror8#portmirrorenabled                                       | Number    | RW     | Sets hdmi port #8 to enable/disable port mirroring                                        |
+| pro3-66m   | mirror8#portmirror                                              | Number    | RW     | Sets hdmi port #8 to mirror the specified output port (if enabled)                        |
+| pro3-66m   | volume4#volume                                                  | Number    | RW     | Sets the volume of audio port #4 to the specified decibel level (between -79db to +15db)  |
+| pro3-66m   | volume4#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #4                                                               |
+|            |                                                                 |           |        |                                                                                           |
+| pro3-88m   | ALL OF THE pro3-66M channels (except different mirror settings) |           |        |                                                                                           |
+| pro3-88m   | port9#portpower                                                 | Switch    | RW     | Enables/Disables output port #9                                                           |
+| pro3-88m   | port9#portoutput                                                | Number    | RW     | Sets output port #9 to the specified input port                                           |
+| pro3-88m   | port10#portpower                                                | Switch    | RW     | Enables/Disables output port #10                                                          |
+| pro3-88m   | port10#portoutput                                               | Number    | RW     | Sets output port #10 to the specified input port                                          |
+| pro3-88m   | mirror8#portmirrorenabled                                       | Number    | RW     | Sets hdmi port #8 to enable/disable port mirroring                                        |
+| pro3-88m   | mirror8#portmirror                                              | Number    | RW     | Sets hdmi port #8 to mirror the specified output port (if enabled)                        |
+| pro3-88m   | mirror10#portmirrorenabled                                      | Number    | RW     | Sets hdmi port #10 to enable/disable port mirroring                                       |
+| pro3-88m   | mirror10#portmirror                                             | Number    | RW     | Sets hdmi port #10 to mirror the specified output port (if enabled)                       |
+| pro3-88m   | volume5#volume                                                  | Number    | RW     | Sets the volume of audio port #5 to the specified decibel level (between -79db to +15db)  |
+| pro3-88m   | volume5#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #5                                                               |
+| pro3-88m   | volume6#volume                                                  | Number    | RW     | Sets the volume of audio port #6 to the specified decibel level (between -79db to +15db)  |
+| pro3-88m   | volume6#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #6                                                               |
+|            |                                                                 |           |        |                                                                                           |
+| pro3-1616m | ALL OF THE pro3-88M channels (except different mirror settings) |           |        |                                                                                           |
+| pro3-1616m | port11#portpower                                                | Switch    | RW     | Enables/Disables output port #11                                                          |
+| pro3-1616m | port11#portoutput                                               | Number    | RW     | Sets output port #11 to the specified input port                                          |
+| pro3-1616m | port12#portpower                                                | Switch    | RW     | Enables/Disables output port #12                                                          |
+| pro3-1616m | port12#portoutput                                               | Number    | RW     | Sets output port #12 to the specified input port                                          |
+| pro3-1616m | port13#portpower                                                | Switch    | RW     | Enables/Disables output port #13                                                          |
+| pro3-1616m | port13#portoutput                                               | Number    | RW     | Sets output port #13 to the specified input port                                          |
+| pro3-1616m | port14#portpower                                                | Switch    | RW     | Enables/Disables output port #14                                                          |
+| pro3-1616m | port14#portoutput                                               | Number    | RW     | Sets output port #14 to the specified input port                                          |
+| pro3-1616m | port15#portpower                                                | Switch    | RW     | Enables/Disables output port #15                                                          |
+| pro3-1616m | port15#portoutput                                               | Number    | RW     | Sets output port #15 to the specified input port                                          |
+| pro3-1616m | port16#portpower                                                | Switch    | RW     | Enables/Disables output port #16                                                          |
+| pro3-1616m | port16#portoutput                                               | Number    | RW     | Sets output port #16 to the specified input port                                          |
+| pro3-1616m | port17#portpower                                                | Switch    | RW     | Enables/Disables output port #17                                                          |
+| pro3-1616m | port17#portoutput                                               | Number    | RW     | Sets output port #17 to the specified input port                                          |
+| pro3-1616m | port18#portpower                                                | Switch    | RW     | Enables/Disables output port #18                                                          |
+| pro3-1616m | port18#portoutput                                               | Number    | RW     | Sets output port #18 to the specified input port                                          |
+| pro3-1616m | port19#portpower                                                | Switch    | RW     | Enables/Disables output port #19                                                          |
+| pro3-1616m | port19#portoutput                                               | Number    | RW     | Sets output port #19 to the specified input port                                          |
+| pro3-1616m | port20#portpower                                                | Switch    | RW     | Enables/Disables output port #20                                                          |
+| pro3-1616m | port20#portoutput                                               | Number    | RW     | Sets output port #20 to the specified input port                                          |
+| pro3-1616m | mirror17#portmirrorenabled                                      | Number    | RW     | Sets hdmi port #17 to enable/disable port mirroring                                       |
+| pro3-1616m | mirror17#portmirror                                             | Number    | RW     | Sets hdmi port #17 to mirror the specified output port (if enabled)                       |
+| pro3-1616m | mirror18#portmirrorenabled                                      | Number    | RW     | Sets hdmi port #18 to enable/disable port mirroring                                       |
+| pro3-1616m | mirror18#portmirror                                             | Number    | RW     | Sets hdmi port #18 to mirror the specified output port (if enabled)                       |
+| pro3-1616m | mirror19#portmirrorenabled                                      | Number    | RW     | Sets hdmi port #19 to enable/disable port mirroring                                       |
+| pro3-1616m | mirror19#portmirror                                             | Number    | RW     | Sets hdmi port #19 to mirror the specified output port (if enabled)                       |
+| pro3-1616m | mirror20#portmirrorenabled                                      | Number    | RW     | Sets hdmi port #20 to enable/disable port mirroring                                       |
+| pro3-1616m | mirror20#portmirror                                             | Number    | RW     | Sets hdmi port #20 to mirror the specified output port (if enabled)                       |
+| pro3-1616m | volume7#volume                                                  | Number    | RW     | Sets the volume of audio port #7 to the specified decibel level (between -79db to +15db)  |
+| pro3-1616m | volume7#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #7                                                               |
+| pro3-1616m | volume8#volume                                                  | Number    | RW     | Sets the volume of audio port #8 to the specified decibel level (between -79db to +15db)  |
+| pro3-1616m | volume8#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #8                                                               |
+| pro3-1616m | volume9#volume                                                  | Number    | RW     | Sets the volume of audio port #9 to the specified decibel level (between -79db to +15db)  |
+| pro3-1616m | volume9#volumemute                                              | Switch    | RW     | Mutes/Unmutes audio port #9                                                               |
+| pro3-1616m | volume10#volume                                                 | Number    | RW     | Sets the volume of audio port #10 to the specified decibel level (between -79db to +15db) |
+| pro3-1616m | volume10#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #10                                                              |
+| pro3-1616m | volume11#volume                                                 | Number    | RW     | Sets the volume of audio port #11 to the specified decibel level (between -79db to +15db) |
+| pro3-1616m | volume11#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #11                                                              |
+| pro3-1616m | volume12#volume                                                 | Number    | RW     | Sets the volume of audio port #12 to the specified decibel level (between -79db to +15db) |
+| pro3-1616m | volume12#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #12                                                              |
+
 
 ### presetcmd
 
 The presetcmd channel will take the following commands:
 
-| Command | Description |
-|---------|-------------|
+| Command | Description                                |
+|---------|--------------------------------------------|
 | saveX   | Saves the current input/output to preset X |
-| recallX | Sets the input/output to preset X |
-| clearX | Clears the preset X |
+| recallX | Sets the input/output to preset X          |
+| clearX  | Clears the preset X                        |
+
 
 Note: if X doesn't exist - nothing will occur.
 The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
@@ -162,11 +164,12 @@ The # of presets allowed depends on the firmware you are using (5 presets up to 
 
 The matrixcmd channel will take the following commands:
 
-| Command | Description |
-|---------|-------------|
-| resetmatrix   | Resets the matrix back to it's default values (USE WITH CARE!).  Note: some firmware upgrades require a resetmatrix after installing. |
-| resetports | Resets the ports back to their default values (outputX=inputX) |
-| allportsX | Sets all the output ports to the input port X |
+| Command     | Description                                                                                                                           |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| resetmatrix | Resets the matrix back to it's default values (USE WITH CARE!).  Note: some firmware upgrades require a resetmatrix after installing. |
+| resetports  | Resets the ports back to their default values (outputX=inputX)                                                                        |
+| allportsX   | Sets all the output ports to the input port X                                                                                         |
+
 
 Note: if X doesn't exist - nothing will occur.
 The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
