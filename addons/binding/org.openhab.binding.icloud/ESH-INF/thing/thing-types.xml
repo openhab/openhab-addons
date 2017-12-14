@@ -52,11 +52,6 @@
 
 	</thing-type>
 
-	<channel-type id="Refresh">
-		<item-type>Switch</item-type>
-		<label>Refresh</label>
-		<description>Update all devices registered with this account immediately.</description>
-	</channel-type>
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
 		<label>Battery Status</label>
@@ -76,6 +71,7 @@
 	<channel-type id="Location">
 		<item-type>Location</item-type>
 		<label>Location</label>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
@@ -85,10 +81,12 @@
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Location Update</label>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="DeviceName">
 		<item-type>String</item-type>
 		<label>Device Name</label>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
  
