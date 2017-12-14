@@ -1,15 +1,14 @@
 # Chromecast Binding
 
 The binding integrates Google Chromecast streaming devices.
-
 It not only acts as a typical binding, but also registers each Chromecast device as an audio sink that can be used for playback.
 
-In order play audio streams that are served from the runtime, the binding needs to know the url to access. This can be configured on the binding level:
+In order play audio streams that are served from the runtime, the binding needs to know the url to access.
+This can be configured on the binding level:
 
-| Configuration Parameter | Type    | Description  |
-|-------------|--------|-----------------------------|
-| callbackUrl | text | optional Callback URL - url to use for playing notification sounds, e.g. http://192.168.0.2:8080 |
-
+| Configuration Parameter | Type | Description                                                                                        |
+|-------------------------|------|----------------------------------------------------------------------------------------------------|
+| callbackUrl             | text | optional Callback URL - url to use for playing notification sounds, e.g. <http://192.168.0.2:8080> |
 
 ## Supported Things
 
@@ -22,15 +21,17 @@ No authentication is required for accessing the devices on the network.
 
 ## Thing Configuration
 
-Chromecast devices can also be manually added. The only configuration parameter is the `ipAddress`.
+Chromecast devices can also be manually added.
+The only configuration parameter is the `ipAddress`.
 
 ## Channels
 
-| Channel Type ID | Item Type    | Description  |
-|-------------|--------|-----------------------------|
-| control | Player | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself |
-| volume | Dimmer | Control the volume, this is also updated if the volume is changed by another app |
-| playuri | String | Can be used to tell the Chromecast to play media from a given url |
+| Channel Type ID | Item Type | Description                                                                                                                 |
+|-----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------|
+| control         | Player    | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself |
+| volume          | Dimmer    | Control the volume, this is also updated if the volume is changed by another app                                            |
+| playuri         | String    | Can be used to tell the Chromecast to play media from a given url                                                           |
+
 
 ## Full Example
 
