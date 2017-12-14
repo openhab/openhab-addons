@@ -68,7 +68,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             if (deviceInformationRecord.getLocation() != null) {
                 updateLocationRelatedStates(deviceInformationRecord);
             }
-            updateState(DEVICE_NAME, new StringType(deviceInformationRecord.getName()));
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }

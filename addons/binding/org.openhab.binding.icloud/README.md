@@ -63,7 +63,6 @@ The following channels are available (if supported by the device):
 | location           | Location | Location of the device.                                                                                                                     |
 | locationAccuracy   | Number   | Accuracy of the last position report.                                                                                                       |
 | locationLastUpdate | DateTime | Timestamp of the last location update.                                                                                                      |
-| deviceName         | String   | The device name assigned to the device through device settings.                                                                             |
 
 ## Full Example
 

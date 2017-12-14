@@ -39,7 +39,6 @@
 			<channel typeId="Location" id="location" />
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
 			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
-			<channel typeId="DeviceName" id="deviceName" />
 		</channels>
 
 		<representation-property>deviceId</representation-property>
@@ -81,11 +80,6 @@
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Location Update</label>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="DeviceName">
-		<item-type>String</item-type>
-		<label>Device Name</label>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
