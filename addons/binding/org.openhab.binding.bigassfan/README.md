@@ -4,14 +4,20 @@ The [BigAssFan](http://www.bigassfans.com/) binding is used to enable communicat
 
 ## Overview
 
-Fans are discovered dynamically. There is a single thing created for each fan connected to the network.  Each thing has channels that allow control of the fan and the optional LED light, as well as to monitor the status of the fan. When the fan is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the fan's channels will be updated to reflect the fan's status.
-     
+Fans are discovered dynamically.
+There is a single thing created for each fan connected to the network.
+Each thing has channels that allow control of the fan and the optional LED light, as well as to monitor the status of the fan.
+When the fan is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the fan's channels will be updated to reflect the fan's status.
+
 
 ## Device Discovery
 
-The BigAssFan binding discovers Haiku fans on the network, and creates an inbox entry for each discovered device. Once added as a thing, the user can control the fan and optional LED light kit, similarly to how the fan is controlled using the remote, Wall Controller, or smartphone app.
+The BigAssFan binding discovers Haiku fans on the network, and creates an inbox entry for each discovered device.
+Once added as a thing, the user can control the fan and optional LED light kit, similarly to how the fan is controlled using the remote, Wall Controller, or smartphone app.
 
-Background discovery polls the network every few minutes for fans.  Background discovery is **enabled** by default.  To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
+Background discovery polls the network every few minutes for fans.
+Background discovery is **enabled** by default.
+To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
 ```
 org.openhab.binding.bigassfan.discovery.BigAssFanDiscoveryService:backgroundDiscovery.enabled=false
@@ -20,11 +26,13 @@ org.openhab.binding.bigassfan.discovery.BigAssFanDiscoveryService:backgroundDisc
 
 ## Thing Configuration
 
-The fan's IP address, MAC address, and name is set at time of discovery.  However, in the event that any of this information changes, the fan's configuration must be updated.
+The fan's IP address, MAC address, and name is set at time of discovery.
+However, in the event that any of this information changes, the fan's configuration must be updated.
 
 #### Manual Thing Creation
 
-Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.  See example below.
+Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+See example below.
 
 ## Channels
 
@@ -118,7 +126,8 @@ Frame label="Control My BigAssFan" {
 
 ### Manual Thing Creation
 
-Place a file named *bigassfan.things* in the *conf/things* directory.  The file should contain lines formatted like this.
+Place a file named *bigassfan.things* in the *conf/things* directory.
+The file should contain lines formatted like this.
 
 ```
 bigassfan:fan:20F85EDAA56A [ label="Porch Fan", ipAddress="192.168.12.62", macAddress="20:F8:5E:DA:A5:6A" ]
@@ -127,4 +136,3 @@ bigassfan:fan:20F85EDAA56A [ label="Porch Fan", ipAddress="192.168.12.62", macAd
 #### Unsupported Features
 
 Standalone lights are not supported.
-
