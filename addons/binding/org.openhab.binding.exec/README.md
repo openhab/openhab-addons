@@ -39,13 +39,13 @@ The following parameters are automatically added:
 
 All Things support the following channels:
 
-| Channel Type ID | Item Type | Description                                                                             |   |   |
-|-----------------|-----------|-----------------------------------------------------------------------------------------|---|---|
-| input           | String    | Input parameter to provide to the command                                               |   |   |
-| output          | String    | Output of the last execution of the command                                             |   |   |
-| exit            | Number    | The exit value of the last execution of the command                                     |   |   |
-| run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |   |   |
-| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |   |   |
+| Channel Type ID | Item Type | Description                                                                             |
+|-----------------|-----------|-----------------------------------------------------------------------------------------|
+| input           | String    | Input parameter to provide to the command                                               |
+| output          | String    | Output of the last execution of the command                                             |
+| exit            | Number    | The exit value of the last execution of the command                                     |
+| run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
+| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
 
 **Example**
