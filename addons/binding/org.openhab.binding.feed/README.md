@@ -20,14 +20,14 @@ No binding configuration required.
 
 ## Thing Configuration
 
-* Required configuration:
+Required configuration:
 
-    * **URL** - the URL of the feed (e.g http://example.com/path/file). The binding uses this URL to download data.
-    
-* Optional configuration:
+*   **URL** - the URL of the feed (e.g <http://example.com/path/file>). The binding uses this URL to download data
 
-    * **refresh** - a refresh interval defines after how many minutes the binding will check, if new content is available. Default value is 20 minutes.
-    
+Optional configuration:
+
+*   **refresh** - a refresh interval defines after how many minutes the binding will check, if new content is available. Default value is 20 minutes
+
 ## Channels
 
 The binding supports following channels
@@ -43,13 +43,13 @@ The binding supports following channels
 | last-update        | DateTime  | The last update date of the feed                    |
 | number-of-entries  | Number    | Number of entries in the feed                       |
 
-## Full Example
+**Example**
 
 Things:
 
 ```
 feed:feed:bbc  [ URL="http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk"]
-feed:feed:techCrunch [ URL="http://feeds.feedburner.com/TechCrunch/", refresh=60] 
+feed:feed:techCrunch [ URL="http://feeds.feedburner.com/TechCrunch/", refresh=60]
 ```
 
 Items:
