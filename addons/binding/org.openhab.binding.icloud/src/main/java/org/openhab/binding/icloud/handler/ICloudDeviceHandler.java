@@ -56,7 +56,12 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         DeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
-            updateStatus(ThingStatus.ONLINE);
+
+            if (deviceInformationRecord.getDeviceStatus() == 200) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
 
             updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
 

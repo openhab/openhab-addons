@@ -38,7 +38,7 @@ public class DeviceInformation {
 
     private String deviceModel;
 
-    private String deviceStatus;
+    private int deviceStatus;
 
     private Features features;
 
@@ -140,7 +140,7 @@ public class DeviceInformation {
         return this.deviceModel;
     }
 
-    public String getDeviceStatus() {
+    public int getDeviceStatus() {
         return this.deviceStatus;
     }
 
@@ -304,7 +304,7 @@ public class DeviceInformation {
         this.deviceModel = deviceModel;
     }
 
-    public void setDeviceStatus(String deviceStatus) {
+    public void setDeviceStatus(int deviceStatus) {
         this.deviceStatus = deviceStatus;
     }
 
