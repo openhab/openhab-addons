@@ -2,11 +2,12 @@
 
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
-This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface. It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
+This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
+It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
 
-This binding supports the following thing types
+This binding supports the following Thing types
 
 <table>
 <tr><td><b>Thing</b></td><td><b>Thing Type</b></td><td><b>Description</b></td></tr>
@@ -21,11 +22,14 @@ This binding supports the following thing types
 
 ## Binding Configuration
 
-There are essentially no overall binding configuration settings that need to be set.  Most settings are through thing configuration parameters.
+There are essentially no overall binding configuration settings that need to be set.
+Most settings are through thing configuration parameters.
 
 ## Discovery
 
-The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.  Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.  The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
+The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
+Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.
+The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
 Note: The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.  This may create issues on the network so it is suggested that caution be used when trying this discovery.  The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the PaperUI.  And then allow the binding to discover the DSC Alarm things.
 
@@ -36,7 +40,7 @@ Note: The Envisalink Bridge discovery does a TCP scan across your local network 
 DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.  The following table shows the available configuration parameters for each thing.
 
 <table>
-	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>	
+	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
 	<tr><td>envisalink</td><td><table><tr><td><b>ipAddress</b> - IP address for the Envisalink adapter - Required.</td></tr><tr><td><b>port</b> - TCP port for the Envisalink adapter - Not Required - default = 4025.</td></tr><tr><td><b>password</b> - Password to login to the Envisalink bridge - Not Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the Envisalink bridge - Not Required - default=1.</td></tr></table></td></tr>
 	<tr><td>it100</td><td><table><tr><td><b>serialPort</b> - Serial port for the IT-100s bridge - Required.</td></tr><tr><td><b>baud</b> - Baud rate of the IT-100 bridge - Not Required - default = 9600.</td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.</td></tr></table></td></tr>
     <tr><td>tcpserver</td><td><table><tr><td><b>ipAddress</b> - IP address for the TCP Server - Required.</td></tr><tr><td><b>port</b> - TCP port for the TCP Server - Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the TCP Server bridge - Not Required - default=1.</td></tr><tr><td><b>protocol</b> - The protocol used to interact with the DSC Alarm. Valid values are 1 for IT100 API or 2 for Envisalink TPI. The default is 1. - Not Required.</td></tr></table></td></tr>
@@ -168,7 +172,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
 </table>
 
-## Full Example
+##Example
 
 The following is an example of an item file (dscalarm.items):
 
@@ -393,9 +397,9 @@ Here is an example sitemap:
                     Switch item=PANEL_TIME_STAMP label="Panel Time Stamp"
                     Switch item=PANEL_TIME_BROADCAST label="Panel Time Broadcast"
                 }
-                
+
                 Text item=PANEL_SYSTEM_ERROR
-                                
+
                 Text item=PANEL_TROUBLE_LED label="Panel Trouble Condition" {
                     Text item=PANEL_TROUBLE_MESSAGE
                     Text item=PANEL_SERVICE_REQUIRED label="Service Required"
@@ -578,11 +582,11 @@ Here is an example sitemap:
                         }
                     }
                 }
-                
+
                 Group item=DSCAlarmDoorWindow label="Door/Window Sensors"
                 Group item=DSCAlarmMotion label="Motion Sensors"
                 Group item=DSCAlarmSmoke label="Smoke Detectors"
-                
+
             }
         }
     }
@@ -607,4 +611,6 @@ then
 end
 ```
 
-Notice the command variations in the examples. If a command has data, there needs to be a comma between the command and the data as seen above in the first example. If there is no data then it would only require the command itself as in the second example. 
+Notice the command variations in the examples.
+If a command has data, there needs to be a comma between the command and the data as seen above in the first example.
+If there is no data then it would only require the command itself as in the second example.
