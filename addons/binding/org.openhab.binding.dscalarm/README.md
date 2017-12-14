@@ -172,7 +172,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
 </table>
 
-**Example**
+##Example
 
 The following is an example of an item file (dscalarm.items):
 
