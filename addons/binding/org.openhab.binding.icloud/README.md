@@ -9,20 +9,6 @@ An Apple account is required. Two factor authentication is supported.
 Please note: Application specific passwords are not supported.
 You´ll need to provide the account password to the binding.
 
-## Supported Things
-
-The following devices are known to work with this Binding:
-
-* iPhone 6s
-* iPhone 5c
-* iPhone 7
-* Apple Watch Series 2
-* iPad Air 2/2017/Pro
-* MacBook Pro
-
-Other devices connected to your iCloud account should work as well.
-Please provide feedback if you have tested another device type.
-
 ## Discovery
 
 For each iCloud account to be included an iCloud Binding Thing needs to be configured with your ID and password.
