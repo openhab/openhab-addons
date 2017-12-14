@@ -30,13 +30,14 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
 
     private ScheduledFuture<?> scheduledPolling = null;
 
-    public synchronized static void shutdownExecutor() {
+    public static synchronized void shutdownExecutor() {
         logger.debug("Shutting down audio polling executor service");
         executorService.shutdownNow();
     }
 
-    public synchronized static void startExecutor() {
+    private static synchronized void startExecutor() {
         if (executorService.isShutdown()) {
+            logger.debug("Starting  audio polling executor service");
             executorService = Executors.newSingleThreadScheduledExecutor();
         }
     }
@@ -46,7 +47,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
     }
 
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
         if (scheduledPolling != null) {
             scheduledPolling.cancel(false);
         }
@@ -84,6 +85,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         cancelPolling();
         int sourceNumber = getThingNumber();
         logger.debug("Scheduling polling for Audio Source {}", sourceNumber);
+        startExecutor();
         scheduledPolling = executorService.scheduleWithFixedDelay(new PollAudioSource(getThingNumber()), 0, POLL_DELAY,
                 TimeUnit.SECONDS);
     }
