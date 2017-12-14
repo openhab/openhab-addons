@@ -68,15 +68,11 @@ The "label" @ "location" part is optional (as always).
 ```php
 Group    iCloud_Group
 
-String   iCloud_Account_Owner             "iCloud Account Owner [%s]"                    (iCloud_Group) {channel="icloud:account:myaccount:owner"}
-Number   iCloud_Account_NumberOfDevices   "iCloud Account NumberOfDevices [%d]"          (iCloud_Group) {channel="icloud:account:myaccount:numberOfDevices"}
-Switch   iCloud_Account_ForceRefresh      "iCloud Account Force Refresh"                 (iCloud_Group) {channel="icloud:account:myaccount:refresh"}
-
 String   iPhone_BatteryStatus             "Battery Status [%s %%]"             <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
 Number   iPhone_BatteryLevel              "Battery Level [%.0f]"               <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
 Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"                       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone"}
 Location iPhone_Location                  "Coordinates"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
 Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
-String   iPhone_DeviceName                "Device Name [%s]"                             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:deviceName"}
+
 ```
