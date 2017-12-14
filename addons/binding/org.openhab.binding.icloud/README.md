@@ -74,5 +74,4 @@ Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"              
 Location iPhone_Location                  "Coordinates"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
 Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
-
 ```

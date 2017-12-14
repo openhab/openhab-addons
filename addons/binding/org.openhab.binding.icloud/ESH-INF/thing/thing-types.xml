@@ -27,7 +27,7 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
 		<label>iCloud Device</label>
