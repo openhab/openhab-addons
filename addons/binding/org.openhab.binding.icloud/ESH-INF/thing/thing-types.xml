@@ -51,7 +51,7 @@
 		</config-description>
 
 	</thing-type>
-	
+
 	<channel-type id="Refresh">
 		<item-type>Switch</item-type>
 		<label>Refresh</label>
@@ -60,14 +60,14 @@
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
 		<label>Battery Status</label>
-	    <state>
-	        <options>
-	            <option value="NotCharging">Not charging</option>
-	            <option value="Charged">Charged</option>
-	            <option value="Charging">Charging</option>
-	            <option value="Unknown">Unknown</option>
-	        </options>
-	    </state>
+		<state readOnly="true">
+			<options>
+				<option value="NotCharging">Not charging</option>
+				<option value="Charged">Charged</option>
+				<option value="Charging">Charging</option>
+				<option value="Unknown">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="FindMyPhone">
 		<item-type>Switch</item-type>
