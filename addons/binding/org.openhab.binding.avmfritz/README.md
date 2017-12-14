@@ -7,19 +7,25 @@ The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/sm
 
 ### FRITZ!Box
 
-The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices. It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now. The Box has to run at least on firmware FRITZ!OS 6.00 and has to support the "Smart Home" service.
+The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices.
+It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now.
+The Box has to run at least on firmware FRITZ!OS 6.00 and has to support the "Smart Home" service.
 
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 
-This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol. They support switching the outlet, current power and accumulated energy consumption and temperature readings.
+This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol.
+They support switching the outlet, current power and accumulated energy consumption and temperature readings.
 
 ### FRITZ!DECT Repeater 100
 
-This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol. It only supports temperature readings.
+This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol.
+It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
+This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode.
+It supports switching the outlet and current power and energy consumption readings.
+This device does not contain a temperature sensor.
 
 ### FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT
 
@@ -31,7 +37,9 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 
 ## Discovery
 
-The FRITZ!Box and the powerline adapter are discovered through UPNP in the local network. When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration. The credentials given in the settings must have HomeAuto permissions.
+The FRITZ!Box and the powerline adapter are discovered through UPNP in the local network.
+When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration.
+The credentials given in the settings must have HomeAuto permissions.
 
 If correct credentials are set in the bridge configuration, connected AHA devices are discovered automatically (may last up to 3 minutes).
 
@@ -40,28 +48,28 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 ### FRITZ!Box
 
-* ipAddress (mandatory), default "fritz.box"
-* protocol (optional, http or https), default "http"
-* port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-* password (optional), no default (depends on FRITZ!Box security configuration)
-* user (optional), no default (depends on FRITZ!Box security configuration)
-* pollingInterval (optional, 5 to 60), default 15 (in seconds)
-* asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-* syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+*   ipAddress (mandatory), default "fritz.box"
+*   protocol (optional, http or https), default "http"
+*   port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+*   password (optional), no default (depends on FRITZ!Box security configuration)
+*   user (optional), no default (depends on FRITZ!Box security configuration)
+*   pollingInterval (optional, 5 to 60), default 15 (in seconds)
+*   asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
+*   syncTimeout (optional, 500 to 15000), default 2000 (in millis)
 
 ### FRITZ!Powerline 546E
 
-* ipAddress (mandatory), default "fritz.powerline"
-* protocol (optional, http or https), default "http"
-* port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-* password (optional), no default (depends on FRITZ!Powerline security configuration)
-* pollingInterval (optional, 5 to 60), default 15 (in seconds)
-* asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-* syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+*   ipAddress (mandatory), default "fritz.powerline"
+*   protocol (optional, http or https), default "http"
+*   port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+*   password (optional), no default (depends on FRITZ!Powerline security configuration)
+*   pollingInterval (optional, 5 to 60), default 15 (in seconds)
+*   asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
+*   syncTimeout (optional, 500 to 15000), default 2000 (in millis)
 
 ### AHA things connected to FRITZ!Box bridge
 
-* AIN (mandatory), no default (AIN number of device)
+*   AIN (mandatory), no default (AIN number of device)
 
 
 ## Supported Channels

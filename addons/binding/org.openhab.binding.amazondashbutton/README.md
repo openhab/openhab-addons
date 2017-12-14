@@ -1,7 +1,7 @@
 # Amazon Dash Button Binding
 
 The [Amazon Dash Button](https://www.amazon.com/Dash-Buttons/b?node=10667898011) is a cheap and small Wi-Fi connected device to order products from Amazon with the simple press of a button.
-This Binding allows to integrate Dash Buttons into your home automation setup.
+This Binding allows you to integrate Dash Buttons into your home automation setup.
 
 The Binding code is inspired by [hortinstein/node-dash-button](https://github.com/hortinstein/node-dash-button).
 
@@ -11,7 +11,8 @@ This might not be in line with your privacy preferences but can be prevented.
 Please refer to the ["Preventing Communication with Amazon Servers"](#no-phonehome) section for details.
 
 **Response Time:**
-Please be aware, that due to the operation method of this binding, the response time for a button press can be rather high (up to five seconds). You might want to keep that in mind during product selection or task assignment. 
+Please be aware, that due to the operation method of this binding, the response time for a button press can be rather high (up to five seconds).
+You might want to keep that in mind during product selection or task assignment.
 
 ## Prerequisites
 
@@ -33,8 +34,7 @@ Installing [libpcap](http://www.tcpdump.org/) should be as simple as:
 sudo apt-get install libpcap-dev
 ```
 
-You can run Pcap4J with a non-root openHAB user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
-to the openHAB java environment by the following command: 
+You can run Pcap4J with a non-root openHAB user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN` to the openHAB java environment by the following command:
 
 ```shell
 sudo setcap cap_net_raw,cap_net_admin=eip $(realpath /usr/bin/java)
@@ -58,8 +58,8 @@ sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath
 
 On a Windows system there are two options to go with.
 
-1. The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
-2. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
+1.  The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
+2.  An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
 
 ### Installing libpcap on Other Operating Systems
 
@@ -89,13 +89,13 @@ If your network doesn't provide that option, you can at least deal with the noti
 
 It has shown that blocking the Dash Button communication with the Amazon servers will provoke reconnection attempts.
 This increased amount of communication causes a reduced overall battery life.
-The built-in AAA battery can be easily replaced. 
+The built-in AAA battery can be easily replaced.
 
 Preventing the communication with the Amazon servers or the Amazon app is **not** necessary to integrate the Dash Button in openHAB.
 
 ## Supported Things
 
-There is one supported Thing, the "Amazon Dash Button". 
+There is one supported Thing, the "Amazon Dash Button".
 
 ## Discovery
 
@@ -112,15 +112,18 @@ You can ignore these devices in your Inbox.
 
 ### Amazon Dash Button
 
-* `macAddress` - The MAC address of the Amazon Dash Button.
-* `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
-* `packetInterval` - Often a single button press is recognized multiple times. You can specify how long any further detected button pressed should be ignored after one click was processed. The parameter is optional and 5000ms by default.
+*   `macAddress` - The MAC address of the Amazon Dash Button.
+*   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
+*   `packetInterval` - Often a single button press is recognized multiple times.
+You can specify how long any further detected button pressed should be ignored after one click was processed.
+The parameter is optional and 5000ms by default.
 
-For manual defintion of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with Wireshark.
+For manual defintion of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with [Wireshark](https://wireshark.org).
 
 ## Channels
 
-* **Press:** Trigger channel for recognizing presses on the Amazon Dash Button. A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
+*   **Press:** Trigger channel for recognizing presses on the Amazon Dash Button.
+A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
 
 ## Full Example
 

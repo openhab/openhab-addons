@@ -2,7 +2,7 @@
 
 This binding uses the [AQIcn.org service](http://aqicn.org) for providing air quality information for any location worldwide.
 
-The World Air Quality Index project is a social enterprise project started in 2007. Its mission is to promote Air Pollution awareness and provide a unified Air Quality information for the whole world. 
+The World Air Quality Index project is a social enterprise project started in 2007. Its mission is to promote Air Pollution awareness and provide a unified Air Quality information for the whole world.
 
 The project is proving a transparent Air Quality information for more than 70 countries, covering more than 9000 stations in 600 major cities, via those two websites: [aqicn.org](http://aqicn.org) and [waqi.info](http://waqi.info).
 
@@ -10,26 +10,30 @@ To use this binding, you first need to [register and get your API token](http://
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the air quality information for an observation location. It has the `aqi` id. Of course, you can add multiple Things, e.g. for measuring AQI for different locations.
+There is exactly one supported thing type, which represents the air quality information for an observation location.
+It has the `aqi` id.
+Of course, you can add multiple Things, e.g. for measuring AQI for different locations.
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually.
+There is no discovery implemented.
+You have to create your things manually.
 
 ## Binding Configuration
- 
+
 The binding has no configuration options, all configuration is done at Thing level.
- 
+
 ## Thing Configuration
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| apikey    | Data-platform token to access the AQIcn.org service. Mandatory. |
-| location  | Geo coordinates to be considered by the service. |
-| stationId | Unique ID of the measuring station. |
-| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes.  |
+| Parameter | Description                                                             |
+|-----------|-------------------------------------------------------------------------|
+| apikey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
+| location  | Geo coordinates to be considered by the service.                        |
+| stationId | Unique ID of the measuring station.                                     |
+| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
+
 
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
@@ -38,8 +42,7 @@ For the location parameter, the following syntax is allowed (comma separated lat
 37.8255,-122.456
 ```
 
-If you always want to receive data from specific station and you know its unique ID, you can enter it
-instead of the coordinates. 
+If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
 
 ## Channels
@@ -47,22 +50,23 @@ instead of the coordinates.
 The AirQuality information that is retrieved is available as these channels:
 
 
-| Channel ID | Item Type    | Description              |
-|------------|--------------|------------------------- |
-| aqiLevel | Number | Air Quality Index |
-| aqiDescription | String | AQI Description |
-| locationName | String | Nearest measuring station location |
-| stationId | Number | Measuring station ID |
-| stationLocation | Location | Latitude/longitude of measuring station |
-| pm25 | Number | Fine particles pollution level (PM2.5) |
-| pm10 | Number | Coarse dust particles pollution level (PM10) |
-| o3 | Number | Ozone level (O3) |
-| no2 | Number | Nitrogen Dioxide level (NO2) |
-| co | Number | Carbon monoxide level (CO) |
-| observationTime | DateTime | Observation date and time |
-| temperature | Number | Temperature in Celsius degrees |
-| pressure | Number | Pressure level |
-| humidity | Number | Humidity level |
+| Channel ID      | Item Type | Description                                  |
+|-----------------|-----------|----------------------------------------------|
+| aqiLevel        | Number    | Air Quality Index                            |
+| aqiDescription  | String    | AQI Description                              |
+| locationName    | String    | Nearest measuring station location           |
+| stationId       | Number    | Measuring station ID                         |
+| stationLocation | Location  | Latitude/longitude of measuring station      |
+| pm25            | Number    | Fine particles pollution level (PM2.5)       |
+| pm10            | Number    | Coarse dust particles pollution level (PM10) |
+| o3              | Number    | Ozone level (O3)                             |
+| no2             | Number    | Nitrogen Dioxide level (NO2)                 |
+| co              | Number    | Carbon monoxide level (CO)                   |
+| observationTime | DateTime  | Observation date and time                    |
+| temperature     | Number    | Temperature in Celsius degrees               |
+| pressure        | Number    | Pressure level                               |
+| humidity        | Number    | Humidity level                               |
+
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 
@@ -157,7 +161,7 @@ sitemap airquality label="Air Quality" {
         Text item=Aqi_Pressure
         Text item=Aqi_Humidity
     }
-    
+
     Frame label="Station Location" {
         Mapview item=Aqi_StationGeo height=10
     }
