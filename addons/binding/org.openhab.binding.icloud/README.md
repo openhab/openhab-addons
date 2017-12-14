@@ -11,7 +11,7 @@ You´ll need to provide the account password to the binding.
 
 ## Discovery
 
-For each iCloud account to be included an iCloud Binding Thing needs to be configured with your ID and password.
+An iCloud account can be added as a thing and needs to be configured with your ID and password.
 The devices registered to this account will then be automatically discovered.
 
 ## Binding Configuration
