@@ -21,6 +21,9 @@ import javax.net.ssl.HttpsURLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Handles communication with the apple server. Provides methods to
  * get device information and to find a device.
@@ -34,8 +37,8 @@ public class Connection {
     private final String iCloudApiURL = "https://fmipmobile.icloud.com/fmipservice/device/";
     private final String iCloudAPIRequestDataCommand = "/initClient";
     private final String iCloudAPIPingDeviceCommand = "/playSound";
-
-    private final String dataRequest = "{\"clientContext\":{\"appName\":\"iCloud Find (Web)\",\"fmly\": true,\"appVersion\":\"2.0\",\"timezone\":\"US/Eastern\",\"inactiveTime\":2255,\"apiVersion\":\"3.0\",\"webStats\":\"0:15\"}}\n";
+    private final Gson gson = new GsonBuilder().create();
+    private final String dataRequest = gson.toJson(ICloudDataRequest.defaultInstance());
 
     private final byte[] authorization;
     private URL iCloudDataRequestURL;
