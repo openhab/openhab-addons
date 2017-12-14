@@ -71,7 +71,7 @@
 	</channel-type>
 	<channel-type id="FindMyPhone">
 		<item-type>Switch</item-type>
-		<label>Find my phone</label>
+		<label>Find My Phone</label>
 	</channel-type>
 	<channel-type id="Location">
 		<item-type>Location</item-type>
@@ -79,16 +79,16 @@
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
-		<label>Location accuracy</label>
+		<label>Location Accuracy</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last location update</label>
+		<label>Last Location Update</label>
 	</channel-type>
 	<channel-type id="DeviceName">
 		<item-type>String</item-type>
-		<label>Device name</label>
+		<label>Device Name</label>
 	</channel-type>
 </thing:thing-descriptions>
  
