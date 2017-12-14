@@ -293,8 +293,8 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                 if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
                     // Everything else uses dimmers for white temperature so we have to too :-(
                     DecimalType temperature = new DecimalType(
-                        configuration.whiteTemperatureMin
-                        + (
+                        configuration.whiteTemperatureMax
+                        - (
                             ((PercentType) command).doubleValue()
                             * (configuration.whiteTemperatureMax - configuration.whiteTemperatureMin)
                           ) / 100.0
@@ -384,7 +384,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         } else if (temperature.doubleValue() >= configuration.whiteTemperatureMax) {
             return new PercentType(100);
         } else {
-            double percent = whiteTemperatureFactor * (temperature.doubleValue() - configuration.whiteTemperatureMin);
+            double percent = whiteTemperatureFactor * (configuration.whiteTemperatureMax - temperature.doubleValue());
 
             if (percent < 0) {
                 percent = 0;
