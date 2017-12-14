@@ -2,7 +2,11 @@
 
 This is an openHAB binding for the [Hunter Douglas PowerView Motorized Shades](http://www.hunterdouglas.com/operating-systems/powerview-motorization/support) via the PowerView Hub.
 
-PowerView shades have motorization control for their vertical position, as well as vane controls on the shade's slats. Make sure your Shades are visible in the dedicated PowerView app before attempting discovery. This binding also supports Scenes that are defined via the PowerView app. This helps to work around a limitation of the Hub - commands are executed serially with a several second delay between executions. By using a Scene to control multiple shades at once, the shades will all begin moving at the same time.
+PowerView shades have motorization control for their vertical position, as well as vane controls on the shade's slats.
+Make sure your Shades are visible in the dedicated PowerView app before attempting discovery.
+This binding also supports Scenes that are defined via the PowerView app.
+This helps to work around a limitation of the Hub - commands are executed serially with a several second delay between executions.
+By using a Scene to control multiple shades at once, the shades will all begin moving at the same time.
 
 ## Supported Things
 
@@ -15,7 +19,8 @@ PowerView shades have motorization control for their vertical position, as well 
  <tr>
   <td>PowerView Hub</td>
   <td>Bridge</td>
-  <td>The PowerView Hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes.</td>
+  <td>The PowerView Hub provides the interface between your network and the shade's radio network.
+  It also contains channels used to interact with scenes.</td>
  </tr>
  <tr>
   <td>PowerView Shade</td>
@@ -26,11 +31,14 @@ PowerView shades have motorization control for their vertical position, as well 
 
 ## Discovery
 
-The PowerView Hub is discovered via a NetBios query. This is the same method used by the dedicated PowerView app. After the Hub is added, Shades and Scenes will be discovered by querying the Hub.
+The PowerView Hub is discovered via a NetBios query.
+This is the same method used by the dedicated PowerView app.
+After the Hub is added, Shades and Scenes will be discovered by querying the Hub.
 
 ## Thing Configuration
 
-PowerView things should be configured via discovery - it would be difficult to configure manually as the IDs of the shades and scenes are not exposed via the dedicated app. However, the configuration parameters are described below:
+PowerView things should be configured via discovery - it would be difficult to configure manually as the IDs of the shades and scenes are not exposed via the dedicated app.
+However, the configuration parameters are described below:
 
 <table>
  <tr>
@@ -82,7 +90,6 @@ PowerView things should be configured via discovery - it would be difficult to c
   <td>Indicates ON when the battery level of the shade is low, as determined by the Hub's internal rules</td>
  </tr>
 </table>
-
 
 ### PowerView Scene
 
