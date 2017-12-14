@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="controller">
+		<label>Omnilink controller</label>
+		<description>A Omnilink enabled system</description>
+		<channels>
+			<channel id="sysdate" typeId="sysDate" />
+            <channel id="enable_beeper" typeId="console_enable_beeper">
+                <label>Enable All Console Beepers</label>
+                <description>Enable/Disable the beeper for all consoles</description>
+            </channel>
+            <channel id="beep" typeId="console_beep">
+                <label>ALL Console Beep</label>
+                <description>Send console beep command to all consoles</description>
+            </channel>
+            <channel id="phone_line_event" typeId="phone_line_event" />
+            <channel id="ac_power_event" typeId="ac_power_event" />
+            <channel id="battery_event" typeId="battery_event" />
+            <channel id="dcm_event" typeId="dcm_event" />
+            <channel id="energy_cost_event" typeId="energy_cost_event" />
+            <channel id="camera_trigger_event" typeId="camera_trigger_event" />
+		</channels>
+		<properties>
+			<property name="modelNumber" />
+			<property name="majorVersion" />
+			<property name="minorVersion" />
+			<property name="revision" />
+			<property name="phoneNUmber" />
+		</properties>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Omnilink Controller</description>
+			</parameter>
+			<parameter name="port" type="decimal" required="true">
+				<context>network-port</context>
+				<label>Port</label>
+				<description>The port of the Omnilink Controller</description>
+				<default>4369</default>
+			</parameter>
+			<parameter name="key1" type="text" required="true">
+				<label>Key 1</label>
+				<description>The first key</description>
+			</parameter>
+			<parameter name="key2" type="text" required="true">
+				<label>Key 2</label>
+				<description>The second key</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	
+	   
+    <!-- Controller Channels -->
+    <channel-type id="sysDate">
+        <item-type>DateTime</item-type>
+        <label>System Time</label>
+        <description>The date/time of omnilink last time received system status</description>
+        <!-- <state readOnly="true" /> pattern="%1$tF %1$tR" -->
+    </channel-type>
+    <channel-type id="phone_line_event">
+        <kind>trigger</kind>
+        <label>Phone Line Event</label>
+        <description>Event sent when the phone line changes state</description>
+        <event>
+            <options>
+                <option value="ON_HOOK">On Hook</option>
+                <option value="OFF_HOOK">Off Hook</option>
+                <option value="DEAD">Dead</option>
+                <option value="RING">Ring</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="ac_power_event">
+        <kind>trigger</kind>
+        <label>AC Power Event</label>
+        <description>Event sent when AC trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="OFF">Off</option>
+                <option value="RESTORED">Restored</option>
+            </options>
+        </event>
+    </channel-type>
+    <channel-type id="battery_event">
+        <kind>trigger</kind>
+        <label>Battery Event</label>
+        <description>Event sent when battery trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="LOW">Low</option>
+                <option value="OK">OK</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="dcm_event">
+        <kind>trigger</kind>
+        <label>DCM Event</label>
+        <description>Event sent when digital communicator trouble conditions are detected</description>
+        <event>
+            <options>
+                <option value="TROUBLE">Trouble</option>
+                <option value="OK">OK</option>
+            </options>
+        </event>
+    </channel-type>
+     <channel-type id="energy_cost_event">
+        <kind>trigger</kind>
+        <label>Energy Cost Event</label>
+        <description>Event sent when the cost of energy changes</description>
+        <event>
+            <options>
+                <option value="LOW">Trouble</option>
+                <option value="MID">Mid</option>
+                <option value="HIGH">High</option>
+                <option value="CRITCAL">Critical</option>
+            </options>
+        </event>
+    </channel-type>
+    <channel-type id="camera_trigger_event">
+        <kind>trigger</kind>
+        <label>Camera Trigger Event</label>
+        <description>Event sent when a camera trigger is detected</description>
+        <event>
+            <options>
+                <option value="1">Camera 1</option>
+                <option value="2">Camera 2</option>
+                <option value="3">Camera 3</option>
+                <option value="4">Camera 4</option>
+                <option value="5">Camera 5</option>
+                <option value="6">Camera 6</option>
+            </options>
+        </event>
+    </channel-type>
+</thing:thing-descriptions>
+    

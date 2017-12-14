@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing-type id="console">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Console</label>
+        <description>Console</description>
+        <channels>
+            <channel id="beeper_enabled" typeId="console_beeper_enabled"/>
+            <channel id="beep" typeId="console_beep"/>
+        </channels>
+        <properties>
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Console Number</label>
+                <description>Console Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <!-- Console Channels -->
+    <channel-type id="console_enable_beeper">
+        <item-type>Switch</item-type>
+        <label>Enable Beeper</label>
+        <description>Enable/Disable the beeper for this console</description>
+        <category>Contact</category>
+        <state pattern="%d" />
+    </channel-type>
+
+    <channel-type id="console_beep">
+        <item-type>Number</item-type>
+        <label>Console Beep</label>
+        <description>Console beep command</description>
+        <category>Contact</category>
+        <state>
+            <options>
+                <option value="0">Off</option>
+                <option value="1">Indefinitely</option>
+                <option value="2">1 time</option>
+                <option value="3">2 times</option>
+                <option value="4">3 times</option>
+                <option value="5">4 times</option>
+                <option value="6">5 times</option>
+            </options>
+        </state>
+    </channel-type>
+</thing:thing-descriptions>
