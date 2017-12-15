@@ -7,11 +7,11 @@ The Binding also offers access to the "Find My iPhone" function.
 An Apple account is required. Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
-You´ll need to provide the account password to the binding.
+You'll need to provide the account password to the Binding.
 
 ## Discovery
 
-An iCloud account can be added as a thing and needs to be configured with your ID and password.
+An iCloud account can be added as a Thing and needs to be configured with your ID and password.
 The devices registered to this account will then be automatically discovered.
 
 ## Binding Configuration
@@ -22,31 +22,33 @@ The Binding has no configuration options, all configuration is done at Thing lev
 
 The Binding provides two Thing types.
 
-### iCloud Account (Bridge) Thing
+### iCloud Account Thing
 
-The following table lists the configuration parameters:
+The account Thing, more precisely the account Bridge, represents one Apple iCloud account. The account can be connected to multiple Apple devices which are represented as Things below the Bridge, see the example below. You may create multiple account Things for multiple accounts.
 
-| Parameter            | Description |                             |
-|----------------------|-------------|-----------------------------|
-| appleId              |             | mandatory                   |
-| password             |             | mandatory                   |
-| refreshTimeInMinutes |             | optional, 5 minutes default |
+### iCloud Device Thing
 
-A device is identified by a hash value calculated from the device id provided by apple.
-If a device is removed from the account the respective openHAB Thing will go OFFLINE.
+A device is identified the device ID provided by Apple.
+If a device is removed or disconnects from the account the respective openHAB device Thing will go OFFLINE.
+
+All Things are updated according to the configured refresh time of their shared account Bridge. You may force an update by sending the REFRESH command to any channel of the Bridge Things.
 
 ## Channels
 
-### Device
+### Bridge Thing
+
+The account Thing does not provide any channels.
+
+### Device Thing
 
 The following channels are available (if supported by the device):
 
 | Channel ID         | Type     | Description                                                                                                                                 |
 |--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| batteryStatus      | String   | Current battery status (Charging, Charged, Unknown)                                                                                         |
-| batteryLevel       | Number   | Battery charge in %                                                                                                                         |
-| findMyPhone        | Switch   | Triggers the ["Find my phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
-| location           | Location | Location of the device.                                                                                                                     |
+| batteryStatus      | String   | Current battery status (Charging, NotCharging, Charged, Unknown)                                                                            |
+| batteryLevel       | Number   | Battery charge in percent                                                                                                                         |
+| findMyPhone        | Switch   | Triggers the ["Find My Phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
+| location           | Location | GPS coordinates of the devices current/last known location                                                                                  |
 | locationAccuracy   | Number   | Accuracy of the last position report.                                                                                                       |
 | locationLastUpdate | DateTime | Timestamp of the last location update.                                                                                                      |
 
@@ -61,8 +63,6 @@ Bridge icloud:account:myaccount [appleId="abc@xyz.tld", password="secure", refre
 }
 ```
 
-The "label" @ "location" part is optional (as always).
-
 ### icloud.items
 
 ```php
@@ -75,3 +75,5 @@ Location iPhone_Location                  "Coordinates"                         
 Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
 ```
+
+Apple, iPhone, and iCloud are registered trademarks of Apple Inc., registered in the U.S. and other countries.
