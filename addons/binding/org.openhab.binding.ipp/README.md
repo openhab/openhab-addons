@@ -5,28 +5,24 @@ The main purpose is to check if there are waiting print jobs on a printer, which
 
 ## Supported Things
 
-The binding has been tested against a CUPS Server (which implements the Internet Printing Protocol). 
-So all printers in a CUPS envorinment should work fine. Many network printers also use IPP, 
+The binding has been tested against a CUPS Server (which implements the Internet Printing Protocol).
+So all printers in a CUPS envorinment should work fine. Many network printers also use IPP,
 but there are many differencies on which parts of IPP are supported, is is not guaranteed, that every printer will work.
 
 ## Discovery
 
-The printers are discovered through mDNS in the local network. As mentioned before: a printer may be discoverable but not 
+The printers are discovered through mDNS in the local network. As mentioned before: a printer may be discoverable but not
 usable by the binding.
-
 
 ## Thing Configuration
 
-
-
 ## Channels
 
-All devices support some of the following channels:
+| Channel Type ID | Item Type | Description                                   |
+|-----------------|-----------|-----------------------------------------------|
+| jobs            | Number    | Total number of print jobs on the printer     |
+| waitingJobs     | Number    | Number of waiting print jobs on the printer   |
+| doneJobs        | Number    | Number of completed print jobs on the printer |
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|----------------- |------------- |
-| jobs | Number       | Total number of print jobs on the printer |
-| waitingJobs | Number       | Number of waiting print jobs on the printer |
-| doneJobs | Number       | Number of completed print jobs on the printer |
-
-## Full Example
+<!-- TOTO Create example
+## Full Example -->
