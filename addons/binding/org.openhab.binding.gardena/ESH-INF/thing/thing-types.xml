@@ -16,7 +16,6 @@
 			<channel-group id="device_info" typeId="deviceInfo" />
 			<channel-group id="battery" typeId="rechargeableBattery" />
 			<channel-group id="radio" typeId="radio" />
-			<channel-group id="internal_temperature" typeId="internalTemperature" />
 			<channel-group id="mower" typeId="mower" />
 			<channel-group id="firmware" typeId="firmware" />
 		</channel-groups>
@@ -75,15 +74,6 @@
 			<channel id="duration_property" typeId="mowerDurationProperty" />
 		</channels>
 	</channel-group-type>
-
-	<channel-group-type id="internalTemperature">
-		<label>Internal Temperature</label>
-		<description>The internal temperature of the robotic mower</description>
-		<channels>
-			<channel id="temperature" typeId="temperature" />
-		</channels>
-	</channel-group-type>
-
 
 	<channel-type id="mowerDurationProperty">
 		<item-type>Number</item-type>
