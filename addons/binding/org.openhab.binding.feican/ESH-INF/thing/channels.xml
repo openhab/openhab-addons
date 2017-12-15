@@ -22,17 +22,7 @@
         <category>ColorLight</category>
     </channel-type>
 
-    <channel-type id="white_brightness">
-        <item-type>Dimmer</item-type>
-        <label>White Brightness</label>
-        <description>This channel supports adjusting the brightness value of the white light.</description>
-        <category>DimmableLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
-
-    <channel-type id="program">
+    <channel-type id="program" advanced="true">
         <item-type>String</item-type>
         <label>Program</label>
         <description>This channel supports setting the bulb to a static, jumping, gradient or flashing light.</description>
@@ -71,7 +61,7 @@
        </state>
     </channel-type>
 
-    <channel-type id="program_speed">
+    <channel-type id="program_speed" advanced="true">
         <item-type>Dimmer</item-type>
         <label>Program speed</label>
         <description>Speed of flash and gradient programs from 0 (slow) to 100 (fast).</description>

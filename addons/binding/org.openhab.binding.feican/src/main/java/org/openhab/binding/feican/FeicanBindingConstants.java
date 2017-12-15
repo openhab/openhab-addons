@@ -31,11 +31,8 @@ public final class FeicanBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BULB);
 
     // List of all Channel ids
-    public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
-    public static final String CHANNEL_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_WHITE_BRIGHTNESS = "white_brightness";
     public static final String CHANNEL_PROGRAM = "program";
     public static final String CHANNEL_PROGRAM_SPEED = "program_speed";
 

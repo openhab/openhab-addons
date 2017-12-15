@@ -145,7 +145,6 @@ public class FeicanHandler extends BaseThingHandler {
         String id = channelUID.getId();
 
         switch (id) {
-            case CHANNEL_BRIGHTNESS:
             case CHANNEL_COLOR:
                 handleBrightness(command);
                 handleOnOff((OnOffType) command.as(OnOffType.class));
@@ -153,10 +152,6 @@ public class FeicanHandler extends BaseThingHandler {
             case CHANNEL_COLOR_TEMPERATURE:
                 handleColorTemperature(command);
                 handleOnOff(OnOffType.ON);
-                break;
-            case CHANNEL_WHITE_BRIGHTNESS:
-                handleWhiteBrightness(command);
-                handleOnOff((OnOffType) command.as(OnOffType.class));
                 break;
             case CHANNEL_PROGRAM_SPEED:
                 handleProgramSpeed(command);
@@ -183,16 +178,6 @@ public class FeicanHandler extends BaseThingHandler {
      */
     private void handleColorTemperature(PercentType command) throws IOException {
         connection.sendCommand(commands.colorTemperature(command));
-    }
-
-    /**
-     * Handles the brightness setting for setting the bulb to a white light with dimmed state.
-     *
-     * @param command the percentage of white light to set
-     * @throws IOException Connection to the bulb failed
-     */
-    private void handleWhiteBrightness(PercentType command) throws IOException {
-        connection.sendCommand(commands.whiteBrightness(command));
     }
 
     /**

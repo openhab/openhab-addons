@@ -28,7 +28,6 @@ public class Commands {
     private static final byte[] RGB_COMMAND = { 126, 7, 5, 3, 0, 0, 0, 0, -17 };
     private static final byte[] COLOR_TEMPERATURE_COMMAND = { 126, 6, 5, 2, 0, 0, -128, 8, -17 };
     private static final byte[] BRIGHTNESS_COMMAND = { 126, 4, 1, 0, -128, -128, -128, 0, -17 };
-    private static final byte[] WHITE_COMMAND = { 126, 5, 5, 1, 0, -128, -128, 8, -17 };
     private static final byte[] PROGRAM_COMMAND = { 126, 5, 3, 0, 3, -128, -128, 0, -17 };
     private static final byte[] PROGRAM_SPEED_COMMAND = { 126, 4, 2, 0, -128, -128, -128, 0, -17 };
 
@@ -104,18 +103,6 @@ public class Commands {
     public byte[] brightness(PercentType percentage) {
         byte[] command = BRIGHTNESS_COMMAND.clone();
         command[3] = percentage.byteValue();
-        return command;
-    }
-
-    /**
-     * Returns the command to set the bulb as a white light with a brightness between 0 and 100.
-     *
-     * @param percentage the brightness value to set the white light
-     * @return the white light brightness command
-     */
-    public byte[] whiteBrightness(PercentType percentage) {
-        byte[] command = WHITE_COMMAND.clone();
-        command[4] = percentage.byteValue();
         return command;
     }
 
