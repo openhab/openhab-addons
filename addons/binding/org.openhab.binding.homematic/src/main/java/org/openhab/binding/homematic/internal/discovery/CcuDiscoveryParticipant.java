@@ -72,7 +72,7 @@ public class CcuDiscoveryParticipant extends AbstractDiscoveryService {
             sendBroadcast();
             receiveResponses();
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         } finally {
             scanFuture = null;
         }
@@ -110,7 +110,7 @@ public class CcuDiscoveryParticipant extends AbstractDiscoveryService {
             socket.receive(packet);
 
             Eq3UdpResponse response = new Eq3UdpResponse(packet.getData());
-            logger.trace(response.toString());
+            logger.trace("{}", response.toString());
             if (response.isValid()) {
                 logger.debug("Discovered a CCU gateway with serial number '{}'", response.getSerialNumber());
 

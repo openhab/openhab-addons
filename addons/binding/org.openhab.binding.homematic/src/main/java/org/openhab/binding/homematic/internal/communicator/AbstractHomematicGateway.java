@@ -625,7 +625,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                                     }
                                 });
                             } catch (HomematicClientException | IOException ex) {
-                                logger.warn(ex.getMessage());
+                                logger.warn("{}", ex.getMessage());
                             }
                         }
                     });
