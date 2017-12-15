@@ -16,10 +16,12 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_MOTION_SENSOR;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.handler.LightifyGroupHandler;
 import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
 
 /**
@@ -41,6 +43,9 @@ public final class LightifyHandlerFactory extends BaseThingHandlerFactory {
         if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new LightifyDeviceHandler(thing);
         }
+        if (thingTypeUID.equals(THING_TYPE_LIGHTIFY_GROUP)) {
+            return new LightifyGroupHandler(thing);
+        }
         if (thingTypeUID.equals(THING_TYPE_LIGHTIFY_MOTION_SENSOR)) {
             return new LightifyMotionSensorHandler(thing);
         }
@@ -51,6 +56,7 @@ public final class LightifyHandlerFactory extends BaseThingHandlerFactory {
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)
             || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)
+            || thingTypeUID.equals(THING_TYPE_LIGHTIFY_GROUP)
             || thingTypeUID.equals(THING_TYPE_LIGHTIFY_MOTION_SENSOR);
     }
 }

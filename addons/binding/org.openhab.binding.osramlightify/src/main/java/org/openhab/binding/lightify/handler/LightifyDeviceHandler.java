@@ -43,8 +43,8 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERT
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MAXIMUM_WHITE_TEMPERATURE;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MINIMUM_WHITE_TEMPERATURE;
 
-import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
-import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_MOTION_SENSOR;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_LIGHT_RGBW;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_LIGHT_TUNABLE;
 
 import static org.openhab.binding.osramlightify.internal.messages.LightifyBaseMessage.ADDRESS_LENGTH;
 
@@ -75,7 +75,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyDeviceHandler.class);
 
-    private IEEEAddress deviceAddress;
+    protected IEEEAddress deviceAddress;
     protected LightifyDeviceState lightifyDeviceState = new LightifyDeviceState();
     protected boolean stateValid = false;
 
@@ -102,11 +102,10 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         // list paired/group response for a bridge.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // If we are adding a discovered thing (i.e. one we have no probed capabilities
-        // for) we do an immediate poll to trigger probes and bring it online without
-        // undue delay.
-        if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
-        && !thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_MOTION_SENSOR)
+        // If we are adding a discovered light thing (i.e. one we have no probed capabilities
+        // for) we do an immediate poll to trigger probes and bring it online without undue delay.
+        if ((thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_LIGHT_RGBW)
+        || thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_LIGHT_TUNABLE))
         && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
             LightifyBridgeHandler bridgeHandler = (LightifyBridgeHandler) getBridge().getHandler();
 
@@ -170,8 +169,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         // handler in LightifyListPairedDevices which is called from the connector thread
         // so all the probe message we queue here form an atomic block with respect to
         // the state polling.
-        if (!thing.getThingTypeUID().equals(THING_TYPE_LIGHTIFY_GROUP)
-        && thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
+        if (thing.getProperties().get(PROPERTY_MINIMUM_WHITE_TEMPERATURE) == null) {
             bridgeHandler.sendMessage(new LightifySetLuminanceMessage(this, new PercentType(1)));
 
             bridgeHandler.sendMessage(new LightifySetTemperatureMessage(this, new DecimalType(0)));
@@ -292,13 +290,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
             } else if (command instanceof PercentType) {
                 if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
                     // Everything else uses dimmers for white temperature so we have to too :-(
-                    DecimalType temperature = new DecimalType(
-                        configuration.whiteTemperatureMax
-                        - (
-                            ((PercentType) command).doubleValue()
-                            * (configuration.whiteTemperatureMax - configuration.whiteTemperatureMin)
-                          ) / 100.0
-                    );
+                    DecimalType temperature = percentToTemperature((PercentType) command);
 
                     logger.debug("{}: set temperature: {}", channelUID, temperature);
 
@@ -376,6 +368,16 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         logger.debug("{}: update: colour {}", getThing().getUID(), color);
 
         updateState(CHANNEL_COLOR, color);
+    }
+
+    private DecimalType percentToTemperature(PercentType percent) {
+        return new DecimalType(
+            configuration.whiteTemperatureMax
+            - (
+                percent.doubleValue()
+                * (configuration.whiteTemperatureMax - configuration.whiteTemperatureMin)
+              ) / 100.0
+        );
     }
 
     private PercentType temperatureToPercent(DecimalType temperature) {

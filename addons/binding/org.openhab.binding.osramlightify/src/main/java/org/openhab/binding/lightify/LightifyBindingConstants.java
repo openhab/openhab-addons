@@ -74,8 +74,7 @@ public final class LightifyBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(
         THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE, THING_TYPE_LIGHTIFY_LIGHT_RGBW,
-        THING_TYPE_LIGHTIFY_POWER,
-        THING_TYPE_LIGHTIFY_GROUP
+        THING_TYPE_LIGHTIFY_POWER
     );
 
     public static final Map<Integer, ThingTypeUID> DEVICE_TYPE_THING_TYPE_UID_MAP = ImmutableMap
