@@ -13,11 +13,11 @@ The Kodi binding is the successor to the openHAB 1.x xbmc binding.
 In order to allow control of Kodi by this binding, you need to enable the Kodi application remote control feature.
 Please enable "Allow remote control from applications on this/other systems" in the Kodi settings menu under:
 
-* Settings ➔ Services ➔ Control ➔ Allow remote control from applications on this/other systems
+*   Settings ➔ Services ➔ Control ➔ Allow remote control from applications on this/other systems
 
 To make use of the auto-discovery feature, you additionally need to enable "Allow control of Kodi via UPnP" in the Kodi settings menu.
 
-* Settings ➔ Services ➔ UPnP / DLNA ➔ Allow remote control via UPnP
+*   Settings ➔ Services ➔ UPnP / DLNA ➔ Allow remote control via UPnP
 
 ## Supported Things
 
@@ -43,7 +43,6 @@ The following configuration options are available for the Kodi binding:
 | Parameter     | Name         | Description                                                                | Required |
 |---------------|--------------|----------------------------------------------------------------------------|----------|
 | `callbackUrl` | Callback URL | URL to use for playing notification sounds, e.g. `http://192.168.0.2:8080` | no       |
-
 
 ### Thing Configuration
 
@@ -81,12 +80,14 @@ The Kodi thing supports the following channels:
 | systemcommand    | String    | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi                                                                                                    |
 | mediatype        | String    | The media type of the current file. Valid return values are: `unknown`, `channel`, `episode`, `movie`, `musicvideo`, `picture`, `radio`, `song`, `video`                                     |
 | thumbnail        | Image     | The URL to the thumbnail of the current file                                                                                                                                                 |
-| fanart           | Image     | The URL to the fanart of the current file                                                                                                                                                    |
-
+| fanart           | Image     | The URL to the fanart of the current file                                                                                                                                                    |                                                                          |
 
 ### Channel Configuration
 
-**group** The PVR channels can be put into user-defined PVR channel groups. There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle"). You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-radio` channels properly. You can optionally configure an user-defined PVR channel group.
+**group** The PVR channels can be put into user-defined PVR channel groups.
+There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle").
+You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-radio` channels properly.
+You can optionally configure an user-defined PVR channel group.
 
 A manual setup through a `things/kodi.things` file could look like this:
 
