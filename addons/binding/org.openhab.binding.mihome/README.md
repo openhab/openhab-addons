@@ -1,74 +1,74 @@
 # Xiaomi Mi Smart Home Binding
 
-This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite. 
+This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite.
 
-In order to connect the Gateway, you need to install the MiHome app 
+In order to connect the Gateway, you need to install the MiHome app
 from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480).
 
 ## Supported devices
 
-* Xiaomi Smart Gateway v2 (with radio support) 
-* Xiaomi Smart Temperature and Humidity Sensor (round one)
-* Xiaomi Smart Door/Window Sensor (round one)
-* Xiaomi Wireless Switch (round one)
-* Xiaomi Motion Sensor / IR Human Body sensor
-* Xiaomi Smart Plug
-* Xiaomi Smart Magic Cube
-* Xiaomi Aqara ZigBee Wired Wall Switch (1 and 2 buttons)
-* Xiaomi Aqara ZigBee Wireless Wall Switch (1 and 2 buttons)
-* Xiaomi Aqara Smart Curtain
-* Xiaomi Aqara Water Leak Sensor
-* Xiaomi Aqara Wireless Switch (square one)
-* Xiaomi Aqara Temperature, Humidity and Pressure Sensor (square one)
-* Xiaomi Aqara Door/Window Sensor (square one)
-* Xiaomi Aqara Motion Sensor (with light intensity support)
-* Xiaomi Mijia Honeywell Gas Alarm Detector
-* Xiaomi Mijia Honeywell Fire Alarm Detector
+*   Xiaomi Smart Gateway v2 (with radio support)
+*   Xiaomi Smart Temperature and Humidity Sensor (round one)
+*   Xiaomi Smart Door/Window Sensor (round one)
+*   Xiaomi Wireless Switch (round one)
+*   Xiaomi Motion Sensor / IR Human Body sensor
+*   Xiaomi Smart Plug
+*   Xiaomi Smart Magic Cube
+*   Xiaomi Aqara ZigBee Wired Wall Switch (1 and 2 buttons)
+*   Xiaomi Aqara ZigBee Wireless Wall Switch (1 and 2 buttons)
+*   Xiaomi Aqara Smart Curtain
+*   Xiaomi Aqara Water Leak Sensor
+*   Xiaomi Aqara Wireless Switch (square one)
+*   Xiaomi Aqara Temperature, Humidity and Pressure Sensor (square one)
+*   Xiaomi Aqara Door/Window Sensor (square one)
+*   Xiaomi Aqara Motion Sensor (with light intensity support)
+*   Xiaomi Mijia Honeywell Gas Alarm Detector
+*   Xiaomi Mijia Honeywell Fire Alarm Detector
 
 (not yet confirmed)
 
-* Xiaomi Aqara Neutral Wall Switch (1 and 2 buttons)
+*   Xiaomi Aqara Neutral Wall Switch (1 and 2 buttons)
 
 ## Setup
 
-* Install the binding
-* Setup Gateway to be discoverable
+*   Install the binding
+*   Setup Gateway to be discoverable
 
-    1. Add Gateway 2 or 3 to your WiFi Network
-    1. Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
-    1. Set your region to Mainland China under Settings -> Locale (seems to be required)
-    1. Update gateway to the latest firmware (note that update window may pop up sequentially)
-    1. Enable developer mode:
+    1.  Add Gateway 2 or 3 to your WiFi Network
+    2.  Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
+    3.  Set your region to Mainland China under Settings -> Locale (seems to be required)
+    4.  Update gateway to the latest firmware (note that update window may pop up sequentially)
+    5.  Enable developer mode:
 
-        1. Select your Gateway in the MiHome app
-        1. Go to the "..." menu on the top right corner and click "About"
-        1. Tap the version number "Version : 2.XX" at the bottom of the screen repeatedly until you enable developer mode
-        1. You should now have 2 extra options listed: `local area network communication protocol` and `gateway information`
-        1. Choose `local area network communication protocol`
-        1. Tap the toggle switch to enable LAN functions. Note down the developer key (something like: 91bg8zfkf9vd6uw7)
-        1. Make sure you hit the OK button (to the right of the cancel button) to save your changes
+        1.  Select your Gateway in the MiHome app
+        2.  Go to the "..." menu on the top right corner and click "About"
+        3.  Tap the version number "Version : 2.XX" at the bottom of the screen repeatedly until you enable developer mode
+        4.  You should now have 2 extra options listed: `local area network communication protocol` and `gateway information`
+        5.  Choose `local area network communication protocol`
+        6.  Tap the toggle switch to enable LAN functions. Note down the developer key (something like: 91bg8zfkf9vd6uw7)
+        7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
 
-* In openHAB you should now be able to discover the Xiaomi Gateway
-* From now on you don't really need the app anymore - only if you're keen on updates or you want to add devices (see below), which also can be done without the app
-* Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save
+*   In openHAB you should now be able to discover the Xiaomi Gateway
+*   From now on you don't really need the app anymore - only if you're keen on updates or you want to add devices (see below), which also can be done without the app
+*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save
     (This is required if you want to be able to send controls to the devices like the light of the gateway)
-* Your sensors should be getting discovered by openHAB as you add and use them
+*   Your sensors should be getting discovered by openHAB as you add and use them
 
 ## Connecting sub-devices (sensors) to the Gateway
 
 There are two ways of connecting Xiaomi devices to the gateway:
 
-* Online - within the MiHome App
-* Offline - manual
+*   Online - within the MiHome App
+*   Offline - manual
 
-    1. Click 3 times on the Gateway's button
-    1. Gateway will flash in blue and you will hear female voice in Chinese
-    1. Place the needle into the sensor and hold it for at least 3 seconds
-    1. You'll hear confirmation message in Chinese 
-    1. The device appears in openHAB thing Inbox
+    1.  Click 3 times on the Gateway's button
+    2.  Gateway will flash in blue and you will hear female voice in Chinese
+    3.  Place the needle into the sensor and hold it for at least 3 seconds
+    4.  You'll hear confirmation message in Chinese
+    5.  The device appears in openHAB thing Inbox
 
-* If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)
-* The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc.
+*   If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)
+*   The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc
 
 ## Important information
 
@@ -307,7 +307,7 @@ end
 
 ```
 sitemap xiaomi label="Xiaomi" {
-    
+
 	Frame {
         ...
 
@@ -317,12 +317,12 @@ sitemap xiaomi label="Xiaomi" {
         Selection item=Gateway_Sound mappings=[ 0="police car 1",
                                                 1="police car 2",
                                                 2="accident",
-                                                3="countdown", 
+                                                3="countdown",
                                                 4="ghost",
                                                 5="sniper rifle",
                                                 6="battle",
                                                 7="air raid",
-                                                8="bark", 
+                                                8="bark",
                                                 10="doorbell",
                                                 11="knock at a door",
                                                 12="amuse",
@@ -330,12 +330,12 @@ sitemap xiaomi label="Xiaomi" {
                                                 20="mimix",
                                                 21="enthusuastic",
                                                 22="guitar classic",
-                                                23="ice world piano", 
-                                                24="leisure time", 
-                                                25="child hood", 
-                                                26="morning stream liet", 
-                                                27="music box", 
-                                                28="orange", 
+                                                23="ice world piano",
+                                                24="leisure time",
+                                                25="child hood",
+                                                26="morning stream liet",
+                                                27="music box",
+                                                28="orange",
                                                 29="thinker"]
     }
 }
