@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal;
+package org.openhab.binding.icloud.internal.json.request;
 
 /**
  * Serializable request for icloud device data.

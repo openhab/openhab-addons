@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.openhab.binding.icloud.internal.json.JSONRootObject;
+import org.openhab.binding.icloud.internal.json.response.JSONRootObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

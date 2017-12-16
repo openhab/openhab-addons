@@ -18,6 +18,8 @@ import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.openhab.binding.icloud.internal.json.request.ICloudDataRequest;
+import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class ICloudConnection {
     private final String iCloudAPIRequestDataCommand = "/initClient";
     private final String iCloudAPIPingDeviceCommand = "/playSound";
     private final Gson gson = new GsonBuilder().create();
-    private final String dataRequest = gson.toJson(ICloudDataRequest.defaultInstance());
+    private final String iCloudDataRequest = gson.toJson(ICloudDataRequest.defaultInstance());
 
     private final byte[] authorization;
     private URL iCloudDataRequestURL;
@@ -52,7 +54,7 @@ public class ICloudConnection {
 
     public String requestDeviceStatusJSON() throws IOException {
         HttpsURLConnection connection = connect(iCloudDataRequestURL);
-        String response = postRequest(connection, dataRequest);
+        String response = postRequest(connection, iCloudDataRequest);
         connection.disconnect();
 
         return response;
@@ -64,9 +66,9 @@ public class ICloudConnection {
      * @throws IOException
      */
     public void findMyDevice(String id) throws IOException {
-        String request = "{ \n \"device\": \"" + id + "\", \n \"subject\": \"Find My Device alert\" \n }";
+        String iCloudFindMyDeviceRequest = gson.toJson(new ICloudFindMyDeviceRequest(id));
         HttpsURLConnection connection = connect(iCloudFindMyDeviceURL);
-        postRequest(connection, request);
+        postRequest(connection, iCloudFindMyDeviceRequest);
         connection.disconnect();
     }
 

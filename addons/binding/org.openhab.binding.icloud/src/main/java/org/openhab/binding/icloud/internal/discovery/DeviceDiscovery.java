@@ -18,7 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.json.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

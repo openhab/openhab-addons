@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

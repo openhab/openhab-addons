@@ -10,7 +10,7 @@ package org.openhab.binding.icloud.internal;
 
 import java.util.List;
 
-import org.openhab.binding.icloud.internal.json.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 
 /**
  * Classes that implement this interface are interested in device information updates.
