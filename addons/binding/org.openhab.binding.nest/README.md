@@ -1,8 +1,10 @@
 # Nest Binding
 
-The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest API](https://developers.nest.com/documentation/cloud/get-started) (REST). 
+The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest API](https://developers.nest.com/documentation/cloud/get-started) (REST).
 
-Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information. The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
+Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information.
+The binding uses HTTPS to connect to the Nest API using ports 443 and 9553.
+Make sure outbound connections to these ports are not blocked by a firewall.
 
 ## Supported Things
 
@@ -16,28 +18,38 @@ The table below lists the Nest binding thing types:
 | Structure                               | The Nest structure defines the house the account has setup on Nest. You will only have more than one structure if you have more than one house | structure      |
 | Nest Thermostat (E)                     | A Thermostat to control the various aspects of the house's HVAC system                                                                         | thermostat     |
 
+
 ## Authorization
 
-The Nest API uses OAuth for authorization. Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
+The Nest API uses OAuth for authorization.
+Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
 
-To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant). 
+To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant).
 
 While registering a new Product (on the Product Details page) make sure to:
 
-* Leave both "OAuth Redirect URI" fields empty to enable PIN-based authorization.
-* Grant all the permissions you intend to use. When in doubt, enable the permission because the binding needs to be reauthorized when permissions change at a later time.
+*   Leave both "OAuth Redirect URI" fields empty to enable PIN-based authorization.
+*   Grant all the permissions you intend to use. When in doubt, enable the permission because the binding needs to be reauthorized when permissions change at a later time.
 
-After creating the Product, your browser shows the Product Overview page. This page contains the **Product ID** and **Product Secret** authorization parameters that are used by the binding. Take note of both parameters or keep this page open in a browser tab. Now copy and paste the "Authorization URL" in a new browser tab. Accept the permissions and you will be presented the **Pincode** authorization parameter that is also used by the binding.
+After creating the Product, your browser shows the Product Overview page.
+This page contains the **Product ID** and **Product Secret** authorization parameters that are used by the binding.
+Take note of both parameters or keep this page open in a browser tab.
+Now copy and paste the "Authorization URL" in a new browser tab.
+Accept the permissions and you will be presented the **Pincode** authorization parameter that is also used by the binding.
 
 You can return to the Product Overview page at a later time by opening the [Products](https://console.developers.nest.com/products) page and selecting your Product.
 
 ## Discovery
 
-The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing. See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
+The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing.
+See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
 
-Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode. The configured Pincode is cleared because it can only be used once. The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
+Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode.
+The configured Pincode is cleared because it can only be used once.
+The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
 
-You can reuse an Access Token for authorization but not the Pincode. A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
+You can reuse an Access Token for authorization but not the Pincode.
+A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
 
 ## Channels
 
@@ -47,16 +59,7 @@ The account Thing Type does not have any channels.
 
 ### Camera Channels
 
-| Channel Type ID       | Item Type | Description                                       | Read Write |
-|-----------------------|-----------|---------------------------------------------------|:----------:|
-| app_url               | String    | The app URL to see the camera                     |      R     |
-| audio_input_enabled   | Switch    | If the audio input is currently enabled           |      R     |
-| public_share_enabled  | Switch    | If public sharing is currently enabled            |      R     |
-| public_share_url      | String    | The URL to see the public share of the camera     |      R     |
-| snapshot_url          | String    | The URL to use for a snapshot of the video stream |      R     |
-| streaming             | Switch    | If the camera is currently streaming              |     R/W    |
-| video_history_enabled | Switch    | If the video history is currently enabled         |      R     |
-| web_url               | String    | The web URL to see the camera                     |      R     |
+
 
 ### Smoke Detector Channels
 
@@ -70,18 +73,7 @@ The account Thing Type does not have any channels.
 
 ### Structure Channels
 
-| Channel Type ID              | Item Type | Description                                                                                            | Read Write |
-|------------------------------|-----------|--------------------------------------------------------------------------------------------------------|:----------:|
-| away                         | String    | Away state of the structure (HOME, AWAY, AUTO_AWAY)                                                    |     R/W    |
-| country_code                 | String    | Country code of the structure ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)) |      R     |
-| co_alarm_state               | String    | Carbon Monoxide alarm state (OK, EMERGENCY, WARNING)                                                   |      R     |
-| eta_begin                    | DateTime  | Estimated time of arrival at home, will setup the heat to turn on and be warm                          |      R     |
-| peak_period_end_time         | DateTime  | Peak period end for the Rush Hour Rewards program                                                      |      R     |
-| peak_period_start_time       | DateTime  | Peak period start for the Rush Hour Rewards program                                                    |      R     |
-| postal_code                  | String    | Postal code of the structure                                                                           |      R     |
-| rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not                                                          |      R     |
-| smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING)                                                             |      R     |
-| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones))              |      R     |
+
 
 ### Thermostat Channels
 
@@ -110,17 +102,19 @@ The account Thing Type does not have any channels.
 | sunlight_correction_enabled | Switch    | If sunlight correction is enabled                                                           |      R     |
 | using_emergency_heat        | Switch    | If the system is currently using emergency heat                                             |      R     |
 
-Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App. The Nest API applies the following rounding:
+Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App.
+The Nest API applies the following rounding:
 
-* degrees Celsius to 0.5 degrees
-* degrees Fahrenheit to whole degrees
-* humidity to 5%
+*   degrees Celsius to 0.5 degrees
+*   degrees Fahrenheit to whole degrees
+*   humidity to 5%
 
 ## Full Example
 
 You can use the discovery functionality of the binding to obtain the deviceId and structureId values for defining Nest things in files.
 
-Another way to get the deviceId and structureId values is by querying the Nest API yourself. First [obtain an Access Token](https://developers.nest.com/documentation/cloud/sample-code-auth) (or use the Access Token obtained by the binding). Then use it with one of the [API Read Examples](https://developers.nest.com/documentation/cloud/how-to-read-data). 
+Another way to get the deviceId and structureId values is by querying the Nest API yourself. First [obtain an Access Token](https://developers.nest.com/documentation/cloud/sample-code-auth) (or use the Access Token obtained by the binding).
+Then use it with one of the [API Read Examples](https://developers.nest.com/documentation/cloud/how-to-read-data).
 
 ### demo.things:
 
@@ -134,7 +128,6 @@ Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589
 ```
 
 ### demo.items:
-
 
 ```
 /* Camera */
@@ -193,10 +186,9 @@ String   Home_TZ   "Time Zone [%s]"                                             
 
 ## Known Issues
 
-1. The binding uses Celsius as unit for all Themostat temperature channels.
-2. Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
+1.  The binding uses Celsius as unit for all Themostat temperature channels.
+2.  Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
 
 ## Attribution
 
 This documentation contains parts written by John Cocula which were copied from the 1.0 Nest binding.
-
