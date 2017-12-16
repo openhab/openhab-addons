@@ -78,6 +78,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing iCloud device handler.");
@@ -123,6 +124,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
     }
 
+    @SuppressWarnings("null")
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
