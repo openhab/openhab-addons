@@ -93,9 +93,9 @@ The following channels are supported by all devices.
 
 The following are only support by the OpenSprinkler using the HTTP API interface.
 
-| Channel Type ID | Item Type |    | Description                                                           |   |   |
-|-----------------|-----------|----|-----------------------------------------------------------------------|---|---|
-| rainsensor      | Switch    | RO | This channel indicates whether rain is detected by the device or not. |   |   |
+| Channel Type ID | Item Type |    | Description                                                           |
+|-----------------|-----------|----|-----------------------------------------------------------------------|
+| rainsensor      | Switch    | RO | This channel indicates whether rain is detected by the device or not. |
 
 ## Example
 
