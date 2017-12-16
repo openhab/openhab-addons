@@ -21,6 +21,7 @@ import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for Modbus Slave endpoint thing handlers
@@ -64,14 +65,20 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     @Override
     public void initialize() {
         synchronized (this) {
+            LoggerFactory.getLogger(this.getClass()).trace("Initializing {} from status {}", this.getThing().getUID(),
+                    this.getThing().getStatus());
             try {
                 configure();
                 managerRef.get().addListener(this);
                 managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(this.getClass()).error("Exception during initialization", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
+            } finally {
+                LoggerFactory.getLogger(this.getClass()).trace("initialize() of thing {} '{}' finished", thing.getUID(),
+                        thing.getLabel());
             }
         }
     }
@@ -130,4 +137,5 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
             }
         }
     }
+
 }

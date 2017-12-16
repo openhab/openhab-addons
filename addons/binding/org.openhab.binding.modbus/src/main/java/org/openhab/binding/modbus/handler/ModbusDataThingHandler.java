@@ -299,6 +299,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Throwable e) {
+            logger.error("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
         } finally {

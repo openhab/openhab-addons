@@ -9,8 +9,6 @@
 package org.openhab.binding.modbus.handler;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -19,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
@@ -209,13 +206,21 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     @Override
     public void initialize() {
-        logger.debug("initialize()");
+        logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
-            config = getConfigAs(ModbusPollerConfiguration.class);
-            registerPollTask();
+            try {
+                config = getConfigAs(ModbusPollerConfiguration.class);
+                registerPollTask();
+            } catch (Throwable e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                        "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
+            }
         } catch (Throwable e) {
+            logger.error("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
+        } finally {
+            logger.trace("initialize() of thing {} '{}' finished", thing.getUID(), thing.getLabel());
         }
     }
 
