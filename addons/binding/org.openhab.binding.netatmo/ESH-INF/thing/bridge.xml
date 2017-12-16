@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="netatmo"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Netatmo API Bridge -->
-    <bridge-type id="netatmoapi">
-        <label>Netatmo API</label>
-        <description>This bridge represents the gateway to Netatmo API.</description>
-                        
-        <config-description-ref uri="thing-type:netatmo:bridge" />
-                
-    </bridge-type>
+	<!-- Netatmo API Bridge -->
+	<bridge-type id="netatmoapi">
+		<label>Netatmo API</label>
+		<description>This bridge represents the gateway to Netatmo API.</description>
+		<config-description-ref uri="thing-type:netatmo:bridge" />
+	</bridge-type>
 
 </thing:thing-descriptions>
