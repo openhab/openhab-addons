@@ -26,14 +26,14 @@ The Pulseaudio bridge requires the ip address (or a hostname) and a port (defaul
 
 All devices support some of the following channels:
 
-| Channel Type ID | Item Type | Description                                                             |   |   |
-|-----------------|-----------|-------------------------------------------------------------------------|---|---|
-| volume          | Dimmer    | Volume of an audio device in percent                                    |   |   |
-| mute            | Switch    | Mutes the device                                                        |   |   |
-| state           | String    | Current state of the device (suspended, idle, running, corked, drained) |   |   |
-| slaves          | String    | Slave sinks of a combined sink                                          |   |   |
-| routeToSink     | String    | Shows the sink a sink-input is currently routed to                      |   |   |
+| Channel Type ID | Item Type | Description                                                             |
+|-----------------|-----------|-------------------------------------------------------------------------|
+| volume          | Dimmer    | Volume of an audio device in percent                                    |
+| mute            | Switch    | Mutes the device                                                        |
+| state           | String    | Current state of the device (suspended, idle, running, corked, drained) |
+| slaves          | String    | Slave sinks of a combined sink                                          |
+| routeToSink     | String    | Shows the sink a sink-input is currently routed to                      |
 
-<!--ToDO
+<!--ToDO - needs an example.  It was left with the "## Full Example header, but everything after that was blank..."
 ## Full Example
 -->
