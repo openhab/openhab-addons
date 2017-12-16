@@ -147,7 +147,7 @@
         <!-- SmartHome p2 release repository -->
         <repository>
             <id>p2-smarthome-release</id>
-            <url>http://download.eclipse.org/smarthome/updates-release/${eshRelease.version}</url>
+            <url>http://download.eclipse.org/smarthome/updates-release/${esh.releaseVersion}</url>
             <layout>p2</layout>
             <releases>
                 <enabled>true</enabled>
