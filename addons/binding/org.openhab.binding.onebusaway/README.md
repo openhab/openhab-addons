@@ -4,7 +4,8 @@
 
 ## Preparation
 
-You'll need to obtain an API key from the transit provider you want to load data from.  Different providers of the service have different policies, so you'll have to figure this part out for each [deployment](https://github.com/OneBusAway/onebusaway/wiki/OneBusAway-Deployments). 
+You'll need to obtain an API key from the transit provider you want to load data from.
+Different providers of the service have different policies, so you'll have to figure this part out for each [deployment](https://github.com/OneBusAway/onebusaway/wiki/OneBusAway-Deployments).
 
 ## Supported Things
 
@@ -14,10 +15,11 @@ This binding supports route arrival and departure times for all stops provided f
 
 The following configuration options are available for the API binding:
 
-| Parameter | Name | Description | Required |
-|-----------|------|-------------|----------|
-| `apiKey` | API Key | The API key given to you by a transit provider for their deployment. | yes |
-| `apiServer` | API Server | The domain name of the deployment to talk to, e.g. `api.pugetsound.onebusaway.org`. | yes |
+| Parameter   | Name       | Description                                                                         | Required |
+|-------------|------------|-------------------------------------------------------------------------------------|----------|
+| `apiKey`    | API Key    | The API key given to you by a transit provider for their deployment.                | yes      |
+| `apiServer` | API Server | The domain name of the deployment to talk to, e.g. `api.pugetsound.onebusaway.org`. | yes      |
+
 
 The following configuration options are available for the Stop binding (which requires an API binding):
 
@@ -30,20 +32,22 @@ The following configuration options are available for the Stop binding (which re
 
 The following configuration options are available for a Route (which requires a Stop binding):
 
-| Parameter | Name | Description | Required |
-|-----------|------|-------------|----------|
-| `routeId` | Route ID | The OneBusAway ID of the route to obtain data for, e.g. `1_102574`. | yes |
+| Parameter | Name     | Description                                                         | Required |
+|-----------|----------|---------------------------------------------------------------------|----------|
+| `routeId` | Route ID | The OneBusAway ID of the route to obtain data for, e.g. `1_102574`. | yes      |
+
 
 ## Channels
 
 The Route Thing supports the following state channels:
 
-| Channel Type ID | Channel Kind | Item Type | Description |
-|-----------------|--------------|-----------|-------------|
-| arrival | state | DateTime | The arrival time of a Route at a Stop. |
-| departure | state | DateTime | The departure time of a Route at a Stop. |
-| update | state | DateTime | The last time this data was updated (per the data provider, not the last time OpenHAB updated the data). |
-| arrivalDeparture | trigger | DateTime | Triggered when a Route arrives or departs a Stop. |
+| Channel Type ID  | Channel Kind | Item Type | Description                                                                                              |
+|------------------|--------------|-----------|----------------------------------------------------------------------------------------------------------|
+| arrival          | state        | DateTime  | The arrival time of a Route at a Stop.                                                                   |
+| departure        | state        | DateTime  | The departure time of a Route at a Stop.                                                                 |
+| update           | state        | DateTime  | The last time this data was updated (per the data provider, not the last time OpenHAB updated the data). |
+| arrivalDeparture | trigger      | DateTime  | Triggered when a Route arrives or departs a Stop.                                                        |
+
 
 ### Channel Configurations
 
