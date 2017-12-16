@@ -71,6 +71,11 @@ import org.slf4j.LoggerFactory;
  * The {@link ModbusDataThingHandler} is responsible for interperting polled modbus data, as well as handling openhab
  * commands
  *
+ * Thing can be re-initialized by the bridge in case of configuration changes (bridgeStatusChanged).
+ * Because of this, initialize, dispose and all callback methods (onRegisters, onBits, onError, onWriteResponse) are
+ * synchronized
+ * to avoid data race conditions.
+ *
  * @author Sami Salonen - Initial contribution
  */
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
@@ -97,6 +102,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 new RollershutterItem("").getAcceptedDataTypes());
     }
 
+    //
+    // also note reset of values in dispose()
+    //
     private volatile ValueType readValueType;
     private volatile ValueType writeValueType;
     private volatile Transformation readTransformation;
@@ -109,9 +117,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile ModbusSlaveEndpoint slaveEndpoint;
     private volatile ModbusManager manager;
     private volatile PollTask pollTask;
-    private boolean isWriteEnabled;
-    private boolean isReadEnabled;
-    private boolean transformationOnlyInWrite;
+    private volatile boolean isWriteEnabled;
+    private volatile boolean isReadEnabled;
+    private volatile boolean transformationOnlyInWrite;
 
     public ModbusDataThingHandler(@NonNull Thing thing) {
         super(thing);
@@ -119,7 +127,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     @SuppressWarnings("null")
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Thing {} '{}' received command '{}' to channel '{}'", getThing().getUID(), getThing().getLabel(),
                 command, channelUID);
 
@@ -298,6 +306,32 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
+    @Override
+    public synchronized void dispose() {
+        readValueType = null;
+        writeValueType = null;
+        readTransformation = null;
+        writeTransformation = null;
+        readIndex = Optional.empty();
+        readSubIndex = Optional.empty();
+        writeStart = null;
+        pollStart = 0;
+        slaveId = 0;
+        slaveEndpoint = null;
+        manager = null;
+        pollTask = null;
+        isWriteEnabled = false;
+        isReadEnabled = false;
+        transformationOnlyInWrite = false;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Thing disposed -- bridge initializing?");
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
+        this.dispose();
+        this.initialize();
+    }
     private boolean hasConfigurationError() {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
@@ -547,7 +581,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     @Override
-    public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
+    public synchronized void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
         if (hasConfigurationError()) {
             return;
         } else if (!isReadEnabled) {
@@ -625,7 +659,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     @Override
-    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
+    public synchronized void onError(ModbusWriteRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {
@@ -649,7 +683,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     @Override
-    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
+    public synchronized void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {

@@ -9,6 +9,8 @@
 package org.openhab.binding.modbus.handler;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -17,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
@@ -282,6 +285,13 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
+        this.dispose();
+        this.initialize();
     }
 
     /**
