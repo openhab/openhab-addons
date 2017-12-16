@@ -23,8 +23,10 @@ import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.InboundEvent;
 import org.glassfish.jersey.media.sse.SseFeature;
+import org.openhab.binding.nest.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.data.TopLevelStreamingData;
+import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
 import org.openhab.binding.nest.internal.listener.NestStreamingDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,25 +56,30 @@ public class NestStreamingRestClient {
     private final Logger logger = LoggerFactory.getLogger(NestStreamingRestClient.class);
 
     private final List<NestStreamingDataListener> listeners = new CopyOnWriteArrayList<>();
-    private final EventSource eventSource;
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
     private final ScheduledExecutorService scheduler;
 
+    private String accessToken;
     private ScheduledFuture<?> checkConnectionJob;
     private boolean connected;
+    private boolean openingEventSource;
+    private EventSource eventSource;
     private long lastEventTimestamp;
     private TopLevelData lastReceivedTopLevelData;
+    private NestRedirectUrlSupplier redirectUrlSupplier;
 
-    public NestStreamingRestClient(String accessToken, String redirectUrl, ScheduledExecutorService scheduler) {
-        eventSource = createEventSource(accessToken, redirectUrl);
+    public NestStreamingRestClient(String accessToken, NestRedirectUrlSupplier redirectUrlSupplier,
+            ScheduledExecutorService scheduler) {
+        this.accessToken = accessToken;
+        this.redirectUrlSupplier = redirectUrlSupplier;
         this.scheduler = scheduler;
     }
 
-    private EventSource createEventSource(String accessToken, String redirectUrl) {
+    private EventSource createEventSource() throws FailedResolvingNestUrlException {
         SSLContext sslContext = SslConfigurator.newInstance().createSSLContext();
         Client client = ClientBuilder.newBuilder().sslContext(sslContext).register(SseFeature.class)
                 .register(new NestStreamingRequestFilter(accessToken)).build();
-        EventSource eventSource = new EventSource(client.target(redirectUrl), false);
+        EventSource eventSource = new EventSource(client.target(redirectUrlSupplier.getRedirectUrl()), false);
         eventSource.register(this::onEvent);
         return eventSource;
     }
@@ -85,15 +92,55 @@ public class NestStreamingRestClient {
                 connected = false;
                 listeners.forEach(listener -> listener.onDisconnected());
             }
+            redirectUrlSupplier.resetCache();
+            reopenEventSource();
         } else {
             logger.debug("Check: Receiving streaming events, millisSinceLastEvent={}", millisSinceLastEvent);
+        }
+    }
+
+    /**
+     * Closes the existing EventSource and opens a new EventSource as workaround when the EventSource fails to reconnect
+     * itself.
+     */
+    private void reopenEventSource() {
+        if (openingEventSource) {
+            logger.debug("EventSource is currently being opened");
+            return;
+        }
+
+        synchronized (this) {
+            try {
+                logger.debug("Reopening EventSource");
+                openingEventSource = true;
+
+                if (eventSource != null) {
+                    if (!eventSource.isOpen()) {
+                        logger.debug("Existing EventSource is already closed");
+                    } else if (eventSource.close(10, TimeUnit.SECONDS)) {
+                        logger.debug("Succesfully closed existing EventSource");
+                    } else {
+                        logger.debug("Failed to close existing EventSource");
+                    }
+                    eventSource = null;
+                }
+
+                logger.debug("Opening new EventSource");
+                eventSource = createEventSource();
+                eventSource.open();
+            } catch (FailedResolvingNestUrlException e) {
+                logger.debug("Failed to resolve Nest redirect URL while opening new EventSource");
+            } finally {
+                openingEventSource = false;
+            }
         }
     }
 
     public void start() {
         synchronized (this) {
             logger.debug("Opening EventSource and starting checkConnection job");
-            eventSource.open();
+            reopenEventSource();
+
             if (checkConnectionJob == null || checkConnectionJob.isCancelled()) {
                 checkConnectionJob = scheduler.scheduleWithFixedDelay(this::checkConnection, KEEP_ALIVE_MILLIS,
                         KEEP_ALIVE_MILLIS, TimeUnit.MILLISECONDS);
@@ -105,7 +152,9 @@ public class NestStreamingRestClient {
     public void stop() {
         synchronized (this) {
             logger.debug("Closing EventSource and stopping checkConnection job");
-            eventSource.close();
+            if (eventSource != null) {
+                eventSource.close();
+            }
             if (checkConnectionJob != null && !checkConnectionJob.isCancelled()) {
                 checkConnectionJob.cancel(true);
                 checkConnectionJob = null;
