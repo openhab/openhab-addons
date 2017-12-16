@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal.discovery;
 
-import static org.openhab.binding.icloud.BindingConstants.*;
+import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.json.DeviceInformation;
+import org.openhab.binding.icloud.internal.json.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +43,9 @@ public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudD
     }
 
     @Override
-    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
+    public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         if (deviceInformationList != null) {
-            for (DeviceInformation deviceInformationRecord : deviceInformationList) {
+            for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
 
                 String deviceTypeName = deviceInformationRecord.getDeviceDisplayName();
                 String deviceOwnerName = deviceInformationRecord.getName();

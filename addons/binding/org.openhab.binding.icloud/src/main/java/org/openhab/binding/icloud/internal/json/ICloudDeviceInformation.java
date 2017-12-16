@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceInformation {
+public class ICloudDeviceInformation {
     private boolean activationLocked;
 
     private ArrayList<Object> audioChannels;

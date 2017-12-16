@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.BindingConstants.*;
+import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.DeviceInformation;
+import org.openhab.binding.icloud.internal.json.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +52,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     }
 
     @Override
-    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
-        DeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
+    public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
+        ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
 
@@ -111,7 +111,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         super.dispose();
     }
 
-    private void updateLocationRelatedStates(DeviceInformation deviceInformationRecord) {
+    private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
         DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
         DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
@@ -144,10 +144,10 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
     }
 
-    private DeviceInformation getDeviceInformationRecord(List<DeviceInformation> deviceInformationList) {
+    private ICloudDeviceInformation getDeviceInformationRecord(List<ICloudDeviceInformation> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
 
-        for (DeviceInformation deviceInformationRecord : deviceInformationList) {
+        for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getId();
 
             logger.debug("Current data element: [{}]", currentId);
@@ -161,7 +161,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         return null;
     }
 
-    private State getLastLocationUpdateDateTimeState(DeviceInformation deviceInformationRecord) {
+    private State getLastLocationUpdateDateTimeState(ICloudDeviceInformation deviceInformationRecord) {
         State dateTime = UnDefType.UNDEF;
 
         if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {

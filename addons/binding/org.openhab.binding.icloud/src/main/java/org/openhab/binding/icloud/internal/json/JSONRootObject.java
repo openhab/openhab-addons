@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class JSONRootObject {
     private Object alert;
 
-    private ArrayList<DeviceInformation> content;
+    private ArrayList<ICloudDeviceInformation> content;
 
     private ServerContext serverContext;
 
@@ -32,7 +32,7 @@ public class JSONRootObject {
         return this.alert;
     }
 
-    public ArrayList<DeviceInformation> getContent() {
+    public ArrayList<ICloudDeviceInformation> getContent() {
         return this.content;
     }
 
@@ -56,7 +56,7 @@ public class JSONRootObject {
         this.alert = alert;
     }
 
-    public void setContent(ArrayList<DeviceInformation> content) {
+    public void setContent(ArrayList<ICloudDeviceInformation> content) {
         this.content = content;
     }
 

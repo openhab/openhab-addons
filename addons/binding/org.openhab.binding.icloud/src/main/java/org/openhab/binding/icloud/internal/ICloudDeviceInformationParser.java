@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceInformationParser {
+public class ICloudDeviceInformationParser {
     private final Gson gson = new GsonBuilder().create();
 
     public JSONRootObject parse(String json) {

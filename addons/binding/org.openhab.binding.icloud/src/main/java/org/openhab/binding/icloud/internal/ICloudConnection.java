@@ -31,8 +31,8 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Connection {
-    private final Logger logger = LoggerFactory.getLogger(Connection.class);
+public class ICloudConnection {
+    private final Logger logger = LoggerFactory.getLogger(ICloudConnection.class);
     private final String iCloudURL = "https://www.icloud.com";
     private final String iCloudApiURL = "https://fmipmobile.icloud.com/fmipservice/device/";
     private final String iCloudAPIRequestDataCommand = "/initClient";
@@ -44,7 +44,7 @@ public class Connection {
     private URL iCloudDataRequestURL;
     private URL iCloudFindMyDeviceURL;
 
-    public Connection(String appleId, String password) throws MalformedURLException {
+    public ICloudConnection(String appleId, String password) throws MalformedURLException {
         authorization = Base64.getEncoder().encode((appleId + ":" + password).getBytes());
         iCloudDataRequestURL = new URL(iCloudApiURL + appleId + iCloudAPIRequestDataCommand);
         iCloudFindMyDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);
