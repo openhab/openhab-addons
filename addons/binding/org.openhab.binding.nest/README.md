@@ -1,8 +1,9 @@
 # Nest Binding
 
-The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest API](https://developers.nest.com/documentation/cloud/get-started) (REST). 
+The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest API](https://developers.nest.com/documentation/cloud/get-started) (REST).
 
-Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information. The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
+Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information.
+The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
 
 ## Supported Things
 
@@ -18,26 +19,35 @@ The table below lists the Nest binding thing types:
 
 ## Authorization
 
-The Nest API uses OAuth for authorization. Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
+The Nest API uses OAuth for authorization.
+Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
 
-To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant). 
+To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant).
 
 While registering a new Product (on the Product Details page) make sure to:
 
-* Leave both "OAuth Redirect URI" fields empty to enable PIN-based authorization.
-* Grant all the permissions you intend to use. When in doubt, enable the permission because the binding needs to be reauthorized when permissions change at a later time.
+*   Leave both "OAuth Redirect URI" fields empty to enable PIN-based authorization.
+*   Grant all the permissions you intend to use. When in doubt, enable the permission because the binding needs to be reauthorized when permissions change at a later time.
 
-After creating the Product, your browser shows the Product Overview page. This page contains the **Product ID** and **Product Secret** authorization parameters that are used by the binding. Take note of both parameters or keep this page open in a browser tab. Now copy and paste the "Authorization URL" in a new browser tab. Accept the permissions and you will be presented the **Pincode** authorization parameter that is also used by the binding.
+After creating the Product, your browser shows the Product Overview page.
+This page contains the **Product ID** and **Product Secret** authorization parameters that are used by the binding.
+Take note of both parameters or keep this page open in a browser tab.
+Now copy and paste the "Authorization URL" in a new browser tab.
+Accept the permissions and you will be presented the **Pincode** authorization parameter that is also used by the binding.
 
 You can return to the Product Overview page at a later time by opening the [Products](https://console.developers.nest.com/products) page and selecting your Product.
 
 ## Discovery
 
-The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing. See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
+The binding will discover all Nest Things from your account when you add and configure a "Nest Account" Thing.
+See the Authorization paragraph above for details on how to obtain the Product ID, Product Secret and Pincode configuration parameters.
 
-Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode. The configured Pincode is cleared because it can only be used once. The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
+Once the binding has successfully authorized with the Nest API, it obtains an Access Token using the Pincode.
+The configured Pincode is cleared because it can only be used once.
+The obtained Access Token is saved as an advanced configuration parameter of the "Nest Account".
 
-You can reuse an Access Token for authorization but not the Pincode. A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
+You can reuse an Access Token for authorization but not the Pincode.
+A new Pincode can again be generated via the "Authorization URL" (see Authorization paragraph).
 
 ## Channels
 
@@ -110,17 +120,19 @@ The account Thing Type does not have any channels.
 | sunlight_correction_enabled | Switch    | If sunlight correction is enabled                                                           |      R     |
 | using_emergency_heat        | Switch    | If the system is currently using emergency heat                                             |      R     |
 
-Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App. The Nest API applies the following rounding:
+Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App.
+The Nest API applies the following rounding:
 
-* degrees Celsius to 0.5 degrees
-* degrees Fahrenheit to whole degrees
-* humidity to 5%
+*   degrees Celsius to 0.5 degrees
+*   degrees Fahrenheit to whole degrees
+*   humidity to 5%
 
-## Full Example
+## Example
 
 You can use the discovery functionality of the binding to obtain the deviceId and structureId values for defining Nest things in files.
 
-Another way to get the deviceId and structureId values is by querying the Nest API yourself. First [obtain an Access Token](https://developers.nest.com/documentation/cloud/sample-code-auth) (or use the Access Token obtained by the binding). Then use it with one of the [API Read Examples](https://developers.nest.com/documentation/cloud/how-to-read-data). 
+Another way to get the deviceId and structureId values is by querying the Nest API yourself. First [obtain an Access Token](https://developers.nest.com/documentation/cloud/sample-code-auth) (or use the Access Token obtained by the binding).
+Then use it with one of the [API Read Examples](https://developers.nest.com/documentation/cloud/how-to-read-data).
 
 ### demo.things:
 
@@ -193,10 +205,9 @@ String   Home_TZ   "Time Zone [%s]"                                             
 
 ## Known Issues
 
-1. The binding uses Celsius as unit for all Themostat temperature channels.
-2. Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
+1.   The binding uses Celsius as unit for all Themostat temperature channels.
+2.   Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
 
 ## Attribution
 
 This documentation contains parts written by John Cocula which were copied from the 1.0 Nest binding.
-
