@@ -13,8 +13,6 @@ package org.openhab.binding.icloud.internal.configuration;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class AccountThingConfiguration {
-    public String appleId;
-    public String password;
-    public Integer refreshTimeInMinutes;
+public class ICloudDeviceThingConfiguration {
+    public String deviceId;
 }

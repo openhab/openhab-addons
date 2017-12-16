@@ -40,7 +40,7 @@ public class ICloudDeviceInformation {
 
     private int deviceStatus;
 
-    private Features features;
+    private ICloudDeviceFeatures features;
 
     private boolean fmlyShare;
 
@@ -50,7 +50,7 @@ public class ICloudDeviceInformation {
 
     private boolean isMac;
 
-    private Location location;
+    private ICloudDeviceLocation location;
 
     private boolean locationCapable;
 
@@ -144,7 +144,7 @@ public class ICloudDeviceInformation {
         return this.deviceStatus;
     }
 
-    public Features getFeatures() {
+    public ICloudDeviceFeatures getFeatures() {
         return this.features;
     }
 
@@ -164,7 +164,7 @@ public class ICloudDeviceInformation {
         return this.isMac;
     }
 
-    public Location getLocation() {
+    public ICloudDeviceLocation getLocation() {
         return this.location;
     }
 
@@ -308,7 +308,7 @@ public class ICloudDeviceInformation {
         this.deviceStatus = deviceStatus;
     }
 
-    public void setFeatures(Features features) {
+    public void setFeatures(ICloudDeviceFeatures features) {
         this.features = features;
     }
 
@@ -328,7 +328,7 @@ public class ICloudDeviceInformation {
         this.isMac = isMac;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(ICloudDeviceLocation location) {
         this.location = location;
     }
 

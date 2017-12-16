@@ -13,7 +13,7 @@ package org.openhab.binding.icloud.internal.json.response;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class UserInfo {
+public class ICloudAccountUserInfo {
     private int accountFormatter;
 
     private String firstName;

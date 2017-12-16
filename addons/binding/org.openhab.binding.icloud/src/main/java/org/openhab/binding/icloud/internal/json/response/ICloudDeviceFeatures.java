@@ -13,7 +13,7 @@ package org.openhab.binding.icloud.internal.json.response;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Features {
+public class ICloudDeviceFeatures {
     private boolean CLK;
 
     private boolean CLT;

@@ -14,16 +14,16 @@ package org.openhab.binding.icloud.internal.json.request;
  * @author Patrik Gfeller
  *
  */
-public class ICloudDataRequest {
+public class ICloudAccountDataRequest {
     @SuppressWarnings("unused")
     private ClientContext clientContext;
 
-    private ICloudDataRequest() {
+    private ICloudAccountDataRequest() {
         this.clientContext = ClientContext.defaultInstance();
     }
 
-    public static ICloudDataRequest defaultInstance() {
-        return new ICloudDataRequest();
+    public static ICloudAccountDataRequest defaultInstance() {
+        return new ICloudAccountDataRequest();
     }
 
     public static class ClientContext {

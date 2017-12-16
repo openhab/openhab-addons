@@ -13,7 +13,7 @@ package org.openhab.binding.icloud.internal.json.response;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Location {
+public class ICloudDeviceLocation {
     private double altitude;
 
     private int floorLevel;

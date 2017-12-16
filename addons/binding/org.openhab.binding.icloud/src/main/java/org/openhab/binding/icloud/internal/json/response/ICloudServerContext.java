@@ -13,7 +13,7 @@ package org.openhab.binding.icloud.internal.json.response;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class ServerContext {
+public class ICloudServerContext {
     private String authToken;
 
     private int callbackIntervalInMS;
@@ -66,7 +66,7 @@ public class ServerContext {
 
     private boolean showSllNow;
 
-    private Timezone timezone;
+    private ICloudServerContextTimezone timezone;
 
     private int trackInfoCacheDurationInSecs;
 
@@ -178,7 +178,7 @@ public class ServerContext {
         return this.showSllNow;
     }
 
-    public Timezone getTimezone() {
+    public ICloudServerContextTimezone getTimezone() {
         return this.timezone;
     }
 
@@ -298,7 +298,7 @@ public class ServerContext {
         this.showSllNow = showSllNow;
     }
 
-    public void setTimezone(Timezone timezone) {
+    public void setTimezone(ICloudServerContextTimezone timezone) {
         this.timezone = timezone;
     }
 

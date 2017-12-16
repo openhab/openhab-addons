@@ -18,7 +18,7 @@ import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.openhab.binding.icloud.internal.json.request.ICloudDataRequest;
+import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class ICloudConnection {
     private final String iCloudAPIRequestDataCommand = "/initClient";
     private final String iCloudAPIPingDeviceCommand = "/playSound";
     private final Gson gson = new GsonBuilder().create();
-    private final String iCloudDataRequest = gson.toJson(ICloudDataRequest.defaultInstance());
+    private final String iCloudDataRequest = gson.toJson(ICloudAccountDataRequest.defaultInstance());
 
     private final byte[] authorization;
     private URL iCloudDataRequestURL;

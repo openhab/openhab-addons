@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudDeviceInformationListener {
-    private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
+public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements ICloudDeviceInformationListener {
+    private final Logger logger = LoggerFactory.getLogger(ICloudDeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
     private ICloudAccountBridgeHandler handler;
 
-    public DeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler) {
+    public ICloudDeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
 
         this.handler = bridgeHandler;

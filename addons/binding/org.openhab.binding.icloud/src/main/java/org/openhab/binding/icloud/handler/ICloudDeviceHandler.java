@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
+import org.openhab.binding.icloud.internal.configuration.ICloudDeviceThingConfiguration;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +128,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
-        DeviceThingConfiguration configuration = getConfigAs(DeviceThingConfiguration.class);
+        ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
 
         bridge = (ICloudAccountBridgeHandler) getBridge().getHandler();
