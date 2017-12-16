@@ -120,6 +120,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean transformationOnlyInWrite;
+    private volatile boolean childOfEndpoint;
 
     public ModbusDataThingHandler(@NonNull Thing thing) {
         super(thing);
@@ -268,6 +269,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 slaveId = bridgeHandler.getSlaveId();
                 slaveEndpoint = bridgeHandler.asSlaveEndpoint();
                 manager = bridgeHandler.getManagerRef().get();
+                childOfEndpoint = true;
             } else {
                 @SuppressWarnings("null")
                 @NonNull
@@ -284,6 +286,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 slaveEndpoint = pollTask.getEndpoint();
                 manager = bridgeHandler.getManagerRef().get();
                 pollStart = pollTask.getRequest().getReference();
+                childOfEndpoint = false;
             }
             if (!validateAndParseReadParameters()) {
                 // status already updated to OFFLINE
@@ -324,6 +327,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         isWriteEnabled = false;
         isReadEnabled = false;
         transformationOnlyInWrite = false;
+        childOfEndpoint = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Thing disposed -- bridge initializing?");
     }
 
@@ -333,6 +337,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         this.dispose();
         this.initialize();
     }
+
     private boolean hasConfigurationError() {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
@@ -356,6 +361,18 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 || functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES;
         boolean readStartMissing = StringUtils.isBlank(config.getReadStart());
         boolean readValueTypeMissing = StringUtils.isBlank(config.getReadValueType());
+
+        if (childOfEndpoint && pollTask == null) {
+            if (!readStartMissing || !readValueTypeMissing) {
+                logger.error(
+                        "Thing {} readStart={}, and readValueType={} were specified even though the data thing is child of endpoint (that is, write-only)!",
+                        getThing().getUID(), config.getReadStart(), config.getReadValueType());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                        "readStart=%s, and readValueType=%s were specified even though the data thing is child of endpoint (that is, write-only)!",
+                        config.getReadStart(), config.getReadValueType()));
+                return false;
+            }
+        }
 
         // we assume readValueType=bit by default if it is missing
         boolean allMissingOrAllPresent = (readStartMissing && readValueTypeMissing)
