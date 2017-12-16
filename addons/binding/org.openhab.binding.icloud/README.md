@@ -4,7 +4,8 @@ The Apple [iCloud](https://www.apple.com/icloud/) is used to retrieve data such 
 Updates are quick and accurate without significant battery time impact.
 The Binding also offers access to the "Find My iPhone" function.
 
-An Apple account is required. Two factor authentication is supported.
+An Apple account is required.
+Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
 You'll need to provide the account password to the Binding.
@@ -22,20 +23,23 @@ The Binding has no configuration options, all configuration is done at Thing lev
 
 The Binding provides two Thing types.
 
-### iCloud Account Thing
+### Account Thing
 
-The account Thing, more precisely the account Bridge, represents one Apple iCloud account. The account can be connected to multiple Apple devices which are represented as Things below the Bridge, see the example below. You may create multiple account Things for multiple accounts.
+The account Thing, more precisely the account Bridge, represents one Apple iCloud account.
+The account can be connected to multiple Apple devices which are represented as Things below the Bridge, see the example below.
+You may create multiple account Things for multiple accounts.
 
-### iCloud Device Thing
+### Device Thing
 
-A device is identified the device ID provided by Apple.
-If a device is removed or disconnects from the account the respective openHAB device Thing will go OFFLINE.
+A device is identified by the device ID provided by Apple.
+If a device is removed or disconnects from the account the respective openHAB device Thing status will change to `OFFLINE`.
 
-All Things are updated according to the configured refresh time of their shared account Bridge. You may force an update by sending the REFRESH command to any channel of the Bridge Things.
+All Things are updated according to the configured refresh time of their shared account Bridge.
+You may force an update by sending the `REFRESH` command to any channel of the Bridge Things.
 
 ## Channels
 
-### Bridge Thing
+### Account Thing
 
 The account Thing does not provide any channels.
 
@@ -49,8 +53,8 @@ The following channels are available (if supported by the device):
 | batteryLevel       | Number   | Battery charge in percent                                                                                                                         |
 | findMyPhone        | Switch   | Triggers the ["Find My Phone"](https://support.apple.com/explore/find-my-iphone-ipad-mac-watch) functionality of the device (if available). |
 | location           | Location | GPS coordinates of the devices current/last known location                                                                                  |
-| locationAccuracy   | Number   | Accuracy of the last position report.                                                                                                       |
-| locationLastUpdate | DateTime | Timestamp of the last location update.                                                                                                      |
+| locationAccuracy   | Number   | Accuracy of the last position report                                                                                                        |
+| locationLastUpdate | DateTime | Timestamp of the last location update                                                                                                       |
 
 ## Full Example
 
