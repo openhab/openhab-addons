@@ -1,6 +1,9 @@
 # Oceanic Binding
 
-This binding integrates the Oceanic water softener and management system (www.oceanic.be). The binding supports the Limex IQ and Limex Pro water softeners. The Oceanic systems are also distributed by Syr in Germany (www.syr.de). In order to integrate the Limex into openHAB, the optional CAN-Serial gateway has to be installed
+This binding integrates the Oceanic water softener and management system (www.oceanic.be).
+The binding supports the Limex IQ and Limex Pro water softeners.
+The Oceanic systems are also distributed by Syr in Germany (www.syr.de).
+In order to integrate the Limex into openHAB, the optional CAN-Serial gateway has to be installed.
 
 ## Supported Things
 
@@ -14,31 +17,30 @@ The Thing configuration requires the name of the serial port that is used to con
 
 All devices support the following channels (non-exhaustive):
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|----------------- |------------- |
-| alarm | String  | Current alarm description, if any|
-| alert | String | Current alert description, if any, to notify a shortage of salt |
-| totalflow | Number | Current flow in l/min |
-| maxflow | Number | Maximum flow recorded, in l/min |
-| reserve | Number | Water reserve in l before regeneration has to start |
-| cycle | String | Indicates the stage of the regeneration cycle |
-| endofcycle | String | Indicates the time to the end of the current cycle |
-| endofgeneration | String | Indicates the time to the end of the current generation |
-| inlethardness | Number | Water hardness at the inlet |
-| outlethardness | Number | Water hardness at the outlet |
-| salt | String | Volume of salt remaining, in kg |
-| consumption(today)(currentweek)(...) | String | Water consumption, in l, for that period |
-| regeneratenow | Switch | Start an immediate regeneration |
-| regeneratelater | Switch | Start a delayed regeneration |
-| lastgeneration | DateTime | Date and Time of the last regeneration cycle |
-| pressure | Number | Water pressure, in bar |
-| minpressure | Number | Minimum water pressure recorded, in bar |
-| maxpressure | Number | Maximum water pressure recorded, in bar |
-| normalregenerations | Number | Number of regenerations completed |
-| serviceregenerations | Number | Number of service regenerations completed |
-| incompleteregenerations | Number | Number of incomplete regenerations |
-| allregenerations | Number | Number of all regenerations |
-
+| Channel Type ID                      | Item Type | Description                                                     |   |   |
+|--------------------------------------|-----------|-----------------------------------------------------------------|---|---|
+| alarm                                | String    | Current alarm description, if any                               |   |   |
+| alert                                | String    | Current alert description, if any, to notify a shortage of salt |   |   |
+| totalflow                            | Number    | Current flow in l/min                                           |   |   |
+| maxflow                              | Number    | Maximum flow recorded, in l/min                                 |   |   |
+| reserve                              | Number    | Water reserve in l before regeneration has to start             |   |   |
+| cycle                                | String    | Indicates the stage of the regeneration cycle                   |   |   |
+| endofcycle                           | String    | Indicates the time to the end of the current cycle              |   |   |
+| endofgeneration                      | String    | Indicates the time to the end of the current generation         |   |   |
+| inlethardness                        | Number    | Water hardness at the inlet                                     |   |   |
+| outlethardness                       | Number    | Water hardness at the outlet                                    |   |   |
+| salt                                 | String    | Volume of salt remaining, in kg                                 |   |   |
+| consumption(today)(currentweek)(...) | String    | Water consumption, in l, for that period                        |   |   |
+| regeneratenow                        | Switch    | Start an immediate regeneration                                 |   |   |
+| regeneratelater                      | Switch    | Start a delayed regeneration                                    |   |   |
+| lastgeneration                       | DateTime  | Date and Time of the last regeneration cycle                    |   |   |
+| pressure                             | Number    | Water pressure, in bar                                          |   |   |
+| minpressure                          | Number    | Minimum water pressure recorded, in bar                         |   |   |
+| maxpressure                          | Number    | Maximum water pressure recorded, in bar                         |   |   |
+| normalregenerations                  | Number    | Number of regenerations completed                               |   |   |
+| serviceregenerations                 | Number    | Number of service regenerations completed                       |   |   |
+| incompleteregenerations              | Number    | Number of incomplete regenerations                              |   |   |
+| allregenerations                     | Number    | Number of all regenerations                                     |   |   |
 
 ## Full Example
 
@@ -79,16 +81,21 @@ Number oceanicConsLastWk "volume last week is [%d]"(oceanic) {channel="oceanic:s
 
 ## Known issues
 
-The Oceanic binding makes use of the nrjavaserial library. There is a known issue (https://github.com/NeuronRobotics/nrjavaserial/issues/96) that requires a workaround on some types of systems
+The Oceanic binding makes use of the nrjavaserial library.
+There is a known issue (<https://github.com/NeuronRobotics/nrjavaserial/issues/96>) that requires a workaround on some types of systems.
 
-On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the SerialPort. The solution is to implement a workaround with socat and pipe the data from the Serial Port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
+On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the SerialPort.
+The solution is to implement a workaround with socat and pipe the data from the Serial Port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
 
-             /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0         
+```
+             /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
+```         
 The workaround can be implemented using a systemd system manager script, for example:
 
+```
              [Install]
              WantedBy=multi-user.target   
-              
+
              [Service]
              #Type=forking
              ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
@@ -96,11 +103,15 @@ The workaround can be implemented using a systemd system manager script, for exa
              User=root
              Restart=always
              RestartSec=10             
-             
+```
+
 However, in order to fix permissions at the OS level, one has to issue following commands
 
+```
              sudo useradd  -G dialout openhab
              sudo chgrp dialout /dev/ttyS1
              sudo chmod 777 /dev/ttyS1        
+```
 
-in order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB runtime), and to make the tty both readable and writable. Alternatively, these commands can be executed through a script that is attached to the systemd system manager script
+In order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB runtime), and to make the tty both readable and writable.
+Alternatively, these commands can be executed through a script that is attached to the systemd system manager script.
