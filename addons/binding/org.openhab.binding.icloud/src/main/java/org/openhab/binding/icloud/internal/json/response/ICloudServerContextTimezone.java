@@ -43,24 +43,4 @@ public class ICloudServerContextTimezone {
     public String getTzName() {
         return this.tzName;
     }
-
-    public void setCurrentOffset(int currentOffset) {
-        this.currentOffset = currentOffset;
-    }
-
-    public void setPreviousOffset(int previousOffset) {
-        this.previousOffset = previousOffset;
-    }
-
-    public void setPreviousTransition(long previousTransition) {
-        this.previousTransition = previousTransition;
-    }
-
-    public void setTzCurrentName(String tzCurrentName) {
-        this.tzCurrentName = tzCurrentName;
-    }
-
-    public void setTzName(String tzName) {
-        this.tzName = tzName;
-    }
 }
