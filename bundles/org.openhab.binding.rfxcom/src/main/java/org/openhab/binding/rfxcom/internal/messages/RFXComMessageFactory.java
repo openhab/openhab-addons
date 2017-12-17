@@ -81,7 +81,7 @@ public class RFXComMessageFactory {
                     // put(PacketType.WEIGHT, RFXComWeightMessage.class);
                     // put(PacketType.GAS, RFXComGasMessage.class);
                     // put(PacketType.WATER, RFXComWaterMessage.class);
-                    // put(PacketType.RFXSENSOR, RFXComRFXSensorMessage.class);
+                    put(PacketType.RFXSENSOR, RFXComRFXSensorMessage.class);
                     // put(PacketType.RFXMETER, RFXComRFXMeterMessage.class);
                     // put(PacketType.FS20, RFXComFS20Message.class);
                     // put(PacketType.IO_LINES, RFXComIOLinesMessage.class);

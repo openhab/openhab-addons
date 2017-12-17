@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for thermostat1 message.
@@ -154,7 +155,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
@@ -174,7 +175,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
                 }
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

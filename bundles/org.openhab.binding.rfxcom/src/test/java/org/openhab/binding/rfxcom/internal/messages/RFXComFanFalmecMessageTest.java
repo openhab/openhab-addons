@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_FALMEC;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.FALMEC;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessageTest.testCommand;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_FALMEC;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.FALMEC;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessageTest.testCommand;
 
 /**
  * Test for RFXCom-binding
@@ -34,12 +33,14 @@ public class RFXComFanFalmecMessageTest {
 
     @Test
     public void testFalmecCommandOn() throws RFXComException {
-        testCommand(FALMEC, CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, new DecimalType(2), StringType.valueOf("SPEED_2"), FAN_FALMEC);
+        testCommand(FALMEC, CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, new DecimalType(2),
+                StringType.valueOf("SPEED_2"), FAN_FALMEC);
     }
 
     @Test
     public void testFalmecCommandOff() throws RFXComException {
-        testCommand(FALMEC, CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, new DecimalType(0), StringType.valueOf("POWER_OFF"), FAN_FALMEC);
+        testCommand(FALMEC, CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, new DecimalType(0),
+                StringType.valueOf("POWER_OFF"), FAN_FALMEC);
     }
 
     @Test
@@ -69,12 +70,14 @@ public class RFXComFanFalmecMessageTest {
 
     @Test
     public void testFalmecFanLightOn() throws RFXComException {
-        testCommand(FALMEC, CHANNEL_FAN_LIGHT, OnOffType.ON, null, OnOffType.ON, null, StringType.valueOf("LIGHT_ON"), FAN_FALMEC);
+        testCommand(FALMEC, CHANNEL_FAN_LIGHT, OnOffType.ON, null, OnOffType.ON, null, StringType.valueOf("LIGHT_ON"),
+                FAN_FALMEC);
     }
 
     @Test
     public void testFalmecFanLightOff() throws RFXComException {
-        testCommand(FALMEC, CHANNEL_FAN_LIGHT, OnOffType.OFF, null, OnOffType.OFF, null, StringType.valueOf("LIGHT_OFF"), FAN_FALMEC);
+        testCommand(FALMEC, CHANNEL_FAN_LIGHT, OnOffType.OFF, null, OnOffType.OFF, null,
+                StringType.valueOf("LIGHT_OFF"), FAN_FALMEC);
     }
 
     private void testFalmecFanSpeed(int value, OnOffType expectedCommand) throws RFXComException {
@@ -84,6 +87,7 @@ public class RFXComFanFalmecMessageTest {
         } else {
             expectedCommandString = StringType.valueOf("SPEED_" + value);
         }
-        testCommand(FALMEC, CHANNEL_FAN_SPEED, new DecimalType(value), expectedCommand, UnDefType.UNDEF, new DecimalType(value), expectedCommandString, FAN_FALMEC);
+        testCommand(FALMEC, CHANNEL_FAN_SPEED, new DecimalType(value), expectedCommand, UnDefType.UNDEF,
+                new DecimalType(value), expectedCommandString, FAN_FALMEC);
     }
 }

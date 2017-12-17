@@ -51,7 +51,8 @@ public class ByteEnumUtil {
         }
     }
 
-    public static <T extends ByteEnumWrapperWithSupportedSubTypes> T fromByte(Class<T> typeClass, int input, Object subType) throws RFXComUnsupportedValueException {
+    public static <T extends ByteEnumWrapperWithSupportedSubTypes> T fromByte(Class<T> typeClass, int input,
+            Object subType) throws RFXComUnsupportedValueException {
         for (T enumValue : typeClass.getEnumConstants()) {
             if (enumValue.toByte() == input && enumValue.supportedBySubTypes().contains(subType)) {
                 return enumValue;

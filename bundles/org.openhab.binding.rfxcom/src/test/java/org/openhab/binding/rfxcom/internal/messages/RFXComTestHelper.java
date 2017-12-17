@@ -55,6 +55,6 @@ public class RFXComTestHelper {
     }
 
     static int getActualIntValue(RFXComDeviceMessage msg, String channelId) throws RFXComException {
-        return ((DecimalType) msg.convertToState(channelId)).intValue();
+        return ((DecimalType) msg.convertToState(channelId, new MockDeviceState())).intValue();
     }
 }

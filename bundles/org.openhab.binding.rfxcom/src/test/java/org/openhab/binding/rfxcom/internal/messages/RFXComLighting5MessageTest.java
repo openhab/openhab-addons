@@ -31,6 +31,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
  * @author Martin van Wingerden
  */
 public class RFXComLighting5MessageTest {
+    private final MockDeviceState deviceState = new MockDeviceState();
 
     @Test
     public void convertFromStateItMessage() throws RFXComException {
@@ -64,7 +65,7 @@ public class RFXComLighting5MessageTest {
         RFXComLighting5Message msg = new RFXComLighting5Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OPEN_RELAY"));
-        assertEquals(StringType.valueOf("OPEN_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(StringType.valueOf("OPEN_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
         assertEquals(OPEN_RELAY, msg.command);
     }
 
@@ -73,7 +74,7 @@ public class RFXComLighting5MessageTest {
         RFXComLighting5Message msg = new RFXComLighting5Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("CLOSE_RELAY"));
-        assertEquals(StringType.valueOf("CLOSE_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(StringType.valueOf("CLOSE_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
         assertEquals(CLOSE_RELAY, msg.command);
     }
 
@@ -82,7 +83,7 @@ public class RFXComLighting5MessageTest {
         RFXComLighting5Message msg = new RFXComLighting5Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("STOP_RELAY"));
-        assertEquals(StringType.valueOf("STOP_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(StringType.valueOf("STOP_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
         assertEquals(STOP_RELAY, msg.command);
     }
 }

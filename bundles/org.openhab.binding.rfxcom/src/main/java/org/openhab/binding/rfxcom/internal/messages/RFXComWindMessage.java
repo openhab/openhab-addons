@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for temperature and humidity message.
@@ -70,16 +71,10 @@ public class RFXComWindMessage extends RFXComBatteryDeviceMessage<RFXComWindMess
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Device Id = " + getDeviceId()
-            + ", Wind direction = " + windDirection
-            + ", Wind gust = " + windSpeed
-            + ", Average wind speed = " + avgWindSpeed
-            + ", Temperature = " + temperature
-            + ", Chill temperature = " + chillTemperature
-            + ", Signal level = " + signalLevel
-            + ", Battery level = " + batteryLevel;
+        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", Wind direction = "
+                + windDirection + ", Wind gust = " + windSpeed + ", Average wind speed = " + avgWindSpeed
+                + ", Temperature = " + temperature + ", Chill temperature = " + chillTemperature + ", Signal level = "
+                + signalLevel + ", Battery level = " + batteryLevel;
     }
 
     @Override
@@ -166,7 +161,7 @@ public class RFXComWindMessage extends RFXComBatteryDeviceMessage<RFXComWindMess
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_WIND_DIRECTION:
                 return new DecimalType(windDirection);
@@ -184,7 +179,7 @@ public class RFXComWindMessage extends RFXComBatteryDeviceMessage<RFXComWindMess
                 return new DecimalType(chillTemperature);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

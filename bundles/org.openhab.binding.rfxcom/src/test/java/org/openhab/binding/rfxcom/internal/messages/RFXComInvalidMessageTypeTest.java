@@ -27,6 +27,6 @@ public class RFXComInvalidMessageTypeTest {
     @Test(expected = RFXComUnsupportedValueException.class)
     public void testMessage() throws RFXComException {
         byte[] message = HexUtils.hexToBytes("07CC01271356ECC0");
-        final RFXComMessage msg = RFXComMessageFactory.createMessage(message);
+        RFXComMessageFactory.createMessage(message);
     }
 }

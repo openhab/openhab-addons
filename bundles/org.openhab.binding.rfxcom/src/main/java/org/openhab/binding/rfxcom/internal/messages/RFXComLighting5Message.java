@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for lighting5 message.
@@ -226,7 +227,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
 
         switch (channelId) {
             case CHANNEL_MOOD:
@@ -285,7 +286,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

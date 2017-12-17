@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for lighting1 message. See X10, ARC, etc..
@@ -125,11 +126,11 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
             // the message unless the last X<n> ON they saw was for them. So we
             // redirect an incoming broadcast DIM/BRIGHT to the correct item
             // based on the last X<n> we saw or sent.
-            unitCode = lastUnit[(int)houseCode - (int)'A'];
+            unitCode = lastUnit[(int) houseCode - (int) 'A'];
         } else {
             unitCode = data[5];
             if (command == Commands.ON) {
-                lastUnit[(int)houseCode - (int)'A'] = unitCode;
+                lastUnit[(int) houseCode - (int) 'A'] = unitCode;
             }
         }
 
@@ -172,7 +173,8 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public Command convertToCommand(String channelId) throws RFXComUnsupportedChannelException {
+    public Command convertToCommand(String channelId, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -194,15 +196,16 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                         return OnOffType.ON;
 
                     default:
-                        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + command);
+                        throw new RFXComUnsupportedChannelException(
+                                "Channel " + channelId + " does not accept " + command);
                 }
 
             default:
-                return super.convertToCommand(channelId);
+                return super.convertToCommand(channelId, deviceState);
         }
     }
 
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -218,7 +221,8 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                         return OnOffType.ON;
 
                     default:
-                        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + command);
+                        throw new RFXComUnsupportedChannelException(
+                                "Channel " + channelId + " does not accept " + command);
                 }
 
             case CHANNEL_COMMAND_STRING:
@@ -238,7 +242,8 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                         return OpenClosedType.OPEN;
 
                     default:
-                        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + command);
+                        throw new RFXComUnsupportedChannelException(
+                                "Channel " + channelId + " does not accept " + command);
                 }
 
             default:

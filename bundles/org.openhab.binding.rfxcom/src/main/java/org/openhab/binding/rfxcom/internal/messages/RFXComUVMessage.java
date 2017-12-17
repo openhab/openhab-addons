@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for UV and temperature message.
@@ -63,13 +64,9 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Device Id = " + getDeviceId()
-            + ", UV = " + uv
-            + ", Temperature = " + temperature
-            + ", Signal level = " + signalLevel
-            + ", Battery level = " + batteryLevel;
+        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", UV = " + uv
+                + ", Temperature = " + temperature + ", Signal level = " + signalLevel + ", Battery level = "
+                + batteryLevel;
     }
 
     @Override
@@ -122,7 +119,7 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_UV:
                 return new DecimalType(uv);
@@ -131,7 +128,7 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
                 return (subType == SubType.UV3 ? new DecimalType(temperature) : UnDefType.UNDEF);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

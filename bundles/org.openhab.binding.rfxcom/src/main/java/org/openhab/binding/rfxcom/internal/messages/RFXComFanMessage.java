@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.Commands.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.*;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -23,14 +31,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.Commands.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.*;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for fan message.
@@ -153,15 +154,16 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
 
     private static final List<SubType> GENERIC_SUB_TYPES = Arrays.asList(WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN);
 
-    private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(LIGHT, LUCCI_AIR_DC_LIGHT, LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON);
-    private static final List<Commands> ON_COMMANDS = Arrays.asList(HI, MED, LOW,
-            FALMEC_SPEED_1, FALMEC_SPEED_2, FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3, LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
+    private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(LIGHT, LUCCI_AIR_DC_LIGHT,
+            LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON);
+    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, MED, LOW, FALMEC_SPEED_1, FALMEC_SPEED_2,
+            FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3,
+            LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
     private static final List<Commands> OFF_COMMANDS = Arrays.asList(OFF, FALMEC_POWER_OFF, LUCCI_AIR_DC_II_POWER_OFF);
 
     private SubType subType;
     private int sensorId;
     private Commands command;
-
 
     public RFXComFanMessage() {
         super(PacketType.FAN);
@@ -248,7 +250,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_FAN_LIGHT:
                 return handleLightChannel();
@@ -263,7 +265,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return handleCommandStringChannel();
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -358,7 +360,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     }
 
     private Commands handleCommandString(String channelId, Type type) throws RFXComUnsupportedChannelException {
-        if (type instanceof StringType){
+        if (type instanceof StringType) {
             String stringCommand = type.toString();
             switch (stringCommand) {
                 case "POWER":

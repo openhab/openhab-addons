@@ -107,6 +107,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_CONTACT_2 = "contact2";
     public static final String CHANNEL_CONTACT_3 = "contact3";
     public static final String CHANNEL_VOLTAGE = "voltage";
+    public static final String CHANNEL_REFERENCE_VOLTAGE = "referenceVoltage";
     public static final String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";
     public static final String CHANNEL_CHIME_SOUND = "chimeSound";
