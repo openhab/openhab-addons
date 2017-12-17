@@ -9,6 +9,7 @@
 package org.openhab.binding.icloud.internal.configuration;
 
 /**
+ * Represents the configuration of an iCloud Account Thing.
  *
  * @author Patrik Gfeller - Initial Contribution
  *

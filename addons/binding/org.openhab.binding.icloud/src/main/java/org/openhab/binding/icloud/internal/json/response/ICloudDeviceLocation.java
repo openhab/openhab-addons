@@ -9,6 +9,8 @@
 package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
+ * Contains device location information.
  *
  * @author Patrik Gfeller - Initial Contribution
  *

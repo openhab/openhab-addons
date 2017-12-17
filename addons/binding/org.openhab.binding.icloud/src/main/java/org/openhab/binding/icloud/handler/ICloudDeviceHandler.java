@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles updates of an icloud device thing.
+ * Handles updates of an icloud device Thing.
  *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk

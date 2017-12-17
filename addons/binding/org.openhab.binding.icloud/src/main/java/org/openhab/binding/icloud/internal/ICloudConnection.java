@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Handles communication with the apple server. Provides methods to
+ * Handles communication with the Apple server. Provides methods to
  * get device information and to find a device.
  *
  * @author Patrik Gfeller - Initial Contribution
@@ -122,7 +122,7 @@ public class ICloudConnection {
         try {
             return "Basic " + new String(this.authorization, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding); unable to create basic authorization string", e);
+            logger.warn("Unsupported encoding; unable to create basic authorization string", e);
         }
 
         return null;

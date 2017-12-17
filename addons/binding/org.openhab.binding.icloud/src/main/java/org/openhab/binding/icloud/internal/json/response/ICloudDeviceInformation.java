@@ -11,8 +11,8 @@ package org.openhab.binding.icloud.internal.json.response;
 import java.util.ArrayList;
 
 /**
- *
- * Contains device information received via iCloud (json).
+ * Serializable class to parse json response received from the Apple server.
+ * Contains device specific status information.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
