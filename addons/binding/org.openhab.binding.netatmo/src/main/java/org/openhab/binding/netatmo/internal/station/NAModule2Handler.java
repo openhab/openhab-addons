@@ -9,7 +9,7 @@
 package org.openhab.binding.netatmo.internal.station;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toDecimalType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -45,6 +45,8 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
                     return toDecimalType(dashboardData.getGustAngle());
                 case CHANNEL_GUST_STRENGTH:
                     return toDecimalType(dashboardData.getGustStrength());
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc());
             }
         }
         return super.getNAThingProperty(channelId);
