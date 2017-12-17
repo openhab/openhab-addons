@@ -14,7 +14,7 @@ Bundle-Name: Netatmo Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.netatmo;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.2.0
 Export-Package: 
  org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler
