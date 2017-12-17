@@ -4,7 +4,7 @@ Bundle-Name:  Nest Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: org.openhab.binding.nest;uses:="org.eclipse.smarthome.te
  st"
 Fragment-Host: org.openhab.binding.nest

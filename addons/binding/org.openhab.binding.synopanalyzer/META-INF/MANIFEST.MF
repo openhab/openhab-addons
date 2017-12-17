@@ -8,7 +8,7 @@ Bundle-Name: Synop Analyzer Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.synopanalyzer;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.synopanalyzer,
  org.openhab.binding.synopanalyzer.handler

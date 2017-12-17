@@ -5,7 +5,7 @@ Bundle-Name: Russound Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.russound;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: org.openhab.binding.russound
 Import-Package: 
  com.google.common.collect,
