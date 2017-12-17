@@ -93,7 +93,6 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         ? ChannelTypeUtils.toStringType(module.getSetpoint().getSetpointMode())
                         : UnDefType.NULL : UnDefType.UNDEF;
             }
-
         }
         return super.getNAThingProperty(channelId);
     }
@@ -124,7 +123,6 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 }
 
                 result = (int) (next * 60 + (mondayZero.getTimeInMillis() / 1000));
-
             }
         }
         return result;

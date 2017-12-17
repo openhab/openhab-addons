@@ -57,7 +57,6 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     @Override
     protected State getNAThingProperty(String channelId) {
-
         try {
             if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && module != null) {
                 Method getLastMessage = module.getClass().getMethod("getLastMessage");

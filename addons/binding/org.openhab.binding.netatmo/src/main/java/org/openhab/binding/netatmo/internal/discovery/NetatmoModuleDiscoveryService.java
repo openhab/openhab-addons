@@ -124,9 +124,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
                     });
                 });
             }
-
         }
-
     }
 
     private boolean checkAlreadyExists(String id) {
@@ -168,7 +166,6 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
             String uid = supportedThingTypeUID.getId();
 
             if (uid.equalsIgnoreCase(thingType)) {
-
                 return new ThingUID(supportedThingTypeUID, netatmoBridgeHandler.getThing().getUID(),
                         thingId.replaceAll("[^a-zA-Z0-9_]", ""));
             }

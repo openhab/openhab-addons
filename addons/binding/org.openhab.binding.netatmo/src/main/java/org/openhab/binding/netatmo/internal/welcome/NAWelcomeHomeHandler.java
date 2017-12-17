@@ -162,7 +162,6 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
         }
         return super.getNAThingProperty(channelId);
-
     }
 
     /**
