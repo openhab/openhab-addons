@@ -100,7 +100,6 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
                     return new DecimalType(userAdministrative.getWindunit());
                 case CHANNEL_PRESSURE_UNIT:
                     return new DecimalType(userAdministrative.getPressureunit());
-
             }
         }
         return super.getNAThingProperty(channelId);

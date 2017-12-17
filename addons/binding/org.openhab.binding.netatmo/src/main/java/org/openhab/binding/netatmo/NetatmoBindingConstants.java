@@ -54,9 +54,9 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID THERM1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NATherm1");
 
     // List of Welcome Home Things Type UIDs
-    public final static ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
-    public final static ThingTypeUID WELCOME_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NACamera");
-    public final static ThingTypeUID WELCOME_PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomePerson");
+    public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
+    public static final ThingTypeUID WELCOME_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NACamera");
+    public static final ThingTypeUID WELCOME_PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomePerson");
 
     // Weather Station Channel ids
     public static final String CHANNEL_TEMPERATURE = "Temperature";
@@ -115,46 +115,46 @@ public class NetatmoBindingConstants {
     public static final String PROPERTY_REFRESH_PERIOD = "refreshPeriod";
 
     // Welcome Home specific channels
-    public final static String CHANNEL_WELCOME_HOME_CITY = "welcomeHomeCity";
-    public final static String CHANNEL_WELCOME_HOME_COUNTRY = "welcomeHomeCountry";
-    public final static String CHANNEL_WELCOME_HOME_TIMEZONE = "welcomeHomeTimezone";
-    public final static String CHANNEL_WELCOME_HOME_PERSONCOUNT = "welcomeHomePersonCount";
-    public final static String CHANNEL_WELCOME_HOME_UNKNOWNCOUNT = "welcomeHomeUnknownCount";
+    public static final String CHANNEL_WELCOME_HOME_CITY = "welcomeHomeCity";
+    public static final String CHANNEL_WELCOME_HOME_COUNTRY = "welcomeHomeCountry";
+    public static final String CHANNEL_WELCOME_HOME_TIMEZONE = "welcomeHomeTimezone";
+    public static final String CHANNEL_WELCOME_HOME_PERSONCOUNT = "welcomeHomePersonCount";
+    public static final String CHANNEL_WELCOME_HOME_UNKNOWNCOUNT = "welcomeHomeUnknownCount";
 
-    public final static String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
+    public static final String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
 
-    public final static String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
-    public final static String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";
-    public final static String CHANNEL_WELCOME_PERSON_AVATAR_URL = "welcomePersonAvatarUrl";
-    public final static String CHANNEL_WELCOME_PERSON_AVATAR = "welcomePersonAvatar";
-    public final static String CHANNEL_WELCOME_PERSON_LASTMESSAGE = "welcomePersonLastEventMessage";
-    public final static String CHANNEL_WELCOME_PERSON_LASTTIME = "welcomePersonLastEventTime";
-    public final static String CHANNEL_WELCOME_PERSON_LASTEVENT = "welcomePersonLastEvent";
-    public final static String CHANNEL_WELCOME_PERSON_LASTEVENT_URL = "welcomePersonLastEventUrl";
+    public static final String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
+    public static final String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";
+    public static final String CHANNEL_WELCOME_PERSON_AVATAR_URL = "welcomePersonAvatarUrl";
+    public static final String CHANNEL_WELCOME_PERSON_AVATAR = "welcomePersonAvatar";
+    public static final String CHANNEL_WELCOME_PERSON_LASTMESSAGE = "welcomePersonLastEventMessage";
+    public static final String CHANNEL_WELCOME_PERSON_LASTTIME = "welcomePersonLastEventTime";
+    public static final String CHANNEL_WELCOME_PERSON_LASTEVENT = "welcomePersonLastEvent";
+    public static final String CHANNEL_WELCOME_PERSON_LASTEVENT_URL = "welcomePersonLastEventUrl";
 
-    public final static String CHANNEL_WELCOME_CAMERA_STATUS = "welcomeCameraStatus";
-    public final static String CHANNEL_WELCOME_CAMERA_SDSTATUS = "welcomeCameraSdStatus";
-    public final static String CHANNEL_WELCOME_CAMERA_ALIMSTATUS = "welcomeCameraAlimStatus";
-    public final static String CHANNEL_WELCOME_CAMERA_ISLOCAL = "welcomeCameraIsLocal";
-    public final static String CHANNEL_WELCOME_CAMERA_LIVEPICTURE = "welcomeCameraLivePicture";
-    public final static String CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL = "welcomeCameraLivePictureUrl";
-    public final static String CHANNEL_WELCOME_CAMERA_LIVESTREAM_URL = "welcomeCameraLiveStreamUrl";
+    public static final String CHANNEL_WELCOME_CAMERA_STATUS = "welcomeCameraStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_SDSTATUS = "welcomeCameraSdStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_ALIMSTATUS = "welcomeCameraAlimStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_ISLOCAL = "welcomeCameraIsLocal";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVEPICTURE = "welcomeCameraLivePicture";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL = "welcomeCameraLivePictureUrl";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVESTREAM_URL = "welcomeCameraLiveStreamUrl";
 
-    public final static String CHANNEL_WELCOME_EVENT_TYPE = "welcomeEventType";
-    public final static String CHANNEL_WELCOME_EVENT_TIME = "welcomeEventTime";
-    public final static String CHANNEL_WELCOME_EVENT_CAMERAID = "welcomeEventCameraId";
-    public final static String CHANNEL_WELCOME_EVENT_PERSONID = "welcomeEventPersonId";
-    public final static String CHANNEL_WELCOME_EVENT_SNAPSHOT = "welcomeEventSnapshot";
-    public final static String CHANNEL_WELCOME_EVENT_SNAPSHOT_URL = "welcomeEventSnapshotURL";
-    public final static String CHANNEL_WELCOME_EVENT_VIDEO_URL = "welcomeEventVideoURL";
-    public final static String CHANNEL_WELCOME_EVENT_VIDEOSTATUS = "welcomeEventVideoStatus";
-    public final static String CHANNEL_WELCOME_EVENT_ISARRIVAL = "welcomeEventIsArrival";
-    public final static String CHANNEL_WELCOME_EVENT_MESSAGE = "welcomeEventMessage";
-    public final static String CHANNEL_WELCOME_EVENT_SUBTYPE = "welcomeEventSubType";
+    public static final String CHANNEL_WELCOME_EVENT_TYPE = "welcomeEventType";
+    public static final String CHANNEL_WELCOME_EVENT_TIME = "welcomeEventTime";
+    public static final String CHANNEL_WELCOME_EVENT_CAMERAID = "welcomeEventCameraId";
+    public static final String CHANNEL_WELCOME_EVENT_PERSONID = "welcomeEventPersonId";
+    public static final String CHANNEL_WELCOME_EVENT_SNAPSHOT = "welcomeEventSnapshot";
+    public static final String CHANNEL_WELCOME_EVENT_SNAPSHOT_URL = "welcomeEventSnapshotURL";
+    public static final String CHANNEL_WELCOME_EVENT_VIDEO_URL = "welcomeEventVideoURL";
+    public static final String CHANNEL_WELCOME_EVENT_VIDEOSTATUS = "welcomeEventVideoStatus";
+    public static final String CHANNEL_WELCOME_EVENT_ISARRIVAL = "welcomeEventIsArrival";
+    public static final String CHANNEL_WELCOME_EVENT_MESSAGE = "welcomeEventMessage";
+    public static final String CHANNEL_WELCOME_EVENT_SUBTYPE = "welcomeEventSubType";
 
-    public final static String WELCOME_PICTURE_URL = "https://api.netatmo.com/api/getcamerapicture";
-    public final static String WELCOME_PICTURE_IMAGEID = "image_id";
-    public final static String WELCOME_PICTURE_KEY = "key";
+    public static final String WELCOME_PICTURE_URL = "https://api.netatmo.com/api/getcamerapicture";
+    public static final String WELCOME_PICTURE_IMAGEID = "image_id";
+    public static final String WELCOME_PICTURE_KEY = "key";
 
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream

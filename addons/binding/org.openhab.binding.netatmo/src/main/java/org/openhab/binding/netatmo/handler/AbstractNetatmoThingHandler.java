@@ -78,7 +78,6 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected void updateChannels() {
-
         getThing().getChannels().stream().filter(channel -> channel.getKind() != ChannelKind.TRIGGER)
                 .forEach(channel -> {
                     String channelId = channel.getUID().getId();

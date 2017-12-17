@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
@@ -58,15 +57,15 @@
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
-            <advanced>true</advanced>
+			<advanced>true</advanced>
 		</parameter>
-		
-        <parameter name="reconnectInterval" type="integer" required="true">
-            <label>Reconnect Interval</label>
-            <description>The reconnection interval to Netatmo API (in s).</description>
-            <default>5400</default>
-            <advanced>true</advanced>
-        </parameter>
+
+		<parameter name="reconnectInterval" type="integer" required="true">
+			<label>Reconnect Interval</label>
+			<description>The reconnection interval to Netatmo API (in s).</description>
+			<default>5400</default>
+			<advanced>true</advanced>
+		</parameter>
 
 	</config-description>
 
@@ -77,14 +76,14 @@
 			<required>true</required>
 		</parameter>
 	</config-description>
-	
-    <config-description uri="thing-type:netatmo:plug">
-        <parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
-            <label>Equipment ID</label>
-            <description>Id of the Device (mac address)</description>
-            <required>true</required>
-        </parameter>
-    </config-description>
+
+	<config-description uri="thing-type:netatmo:plug">
+		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
+			<label>Equipment ID</label>
+			<description>Id of the Device (mac address)</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
 
 	<config-description uri="thing-type:netatmo:device">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
