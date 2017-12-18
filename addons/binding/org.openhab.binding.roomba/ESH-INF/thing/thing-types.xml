@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="roomba"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="R98----">
+        <label>Roomba</label>
+        <description>iRobot Roomba 980</description>
+
+        <channels>
+            <channel id="start" typeId="start"/>
+            <channel id="stop" typeId="stop"/>
+            <channel id="dock" typeId="dock"/>
+            <channel id="pause" typeId="pause"/>
+            <channel id="resume" typeId="resume"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>Network Address</label>
+                <description>Enter the IP address of the Roomba</description>
+                <context>network-address</context>
+            </parameter>
+            
+            <parameter name="password" type="text" required="true">
+                <label>Password</label>
+                <description>Enter the password for the Roomba. You can obtain this using the dorita980 library.</description>
+                <context>password</context>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="start">
+        <item-type>String</item-type>
+        <label>Start</label>
+        <description>Begins Roomba's cleaning process</description>
+    </channel-type>
+
+    <channel-type id="stop">
+        <item-type>String</item-type>
+        <label>Stop</label>
+        <description>Stops Roomba's cleaning process</description>
+    </channel-type>
+
+    <channel-type id="dock">
+        <item-type>String</item-type>
+        <label>Dock</label>
+        <description>Sends Roomba back to its charging dock</description>
+    </channel-type>
+
+    <channel-type id="pause">
+        <item-type>String</item-type>
+        <label>Pause</label>
+        <description>Pauses Roomba's cleaning process</description>
+    </channel-type>
+    
+    <channel-type id="resume">
+        <item-type>String</item-type>
+        <label>Resume</label>
+        <description>Resumes Roomba's cleaning process</description>
+    </channel-type>
+
+</thing:thing-descriptions>
