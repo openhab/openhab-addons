@@ -41,9 +41,7 @@ public class CBusTriggerHandler extends CBusGroupHandler {
             try {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
-
                         group.ramp(255, 0);
-
                     } else if (command.equals(OnOffType.OFF)) {
                         group.ramp(0, 0);
                     }

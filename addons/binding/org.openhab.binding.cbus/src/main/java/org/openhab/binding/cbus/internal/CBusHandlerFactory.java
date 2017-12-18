@@ -41,7 +41,6 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_CGATE)) {

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CBusNetworkDiscovery extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
+    private final Logger Logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
 
     private CBusCGateHandler cBusCGateHandler;
 
@@ -47,7 +47,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
             try {
                 ArrayList<Network> networks = Network.listAll(cBusCGateHandler.getCGateSession(), false);
                 for (Network network : networks) {
-                    logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
+                    Logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
                     Map<String, Object> properties = new HashMap<>(2);
                     properties.put(CBusBindingConstants.PROPERTY_ID, network.getNetworkID());
                     properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
@@ -56,18 +56,15 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                             network.getProjectName().toLowerCase().replace(" ", "_")
                                     + Integer.toString(network.getNetworkID()),
                             cBusCGateHandler.getThing().getUID().getId());
-                    if (uid != null) {
-                        DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                                .withProperties(properties).withLabel(network.getProjectName() + "/"
-                                        + network.getNetworkID() + " - " + network.getName())
-                                .withBridge(cBusCGateHandler.getThing().getUID()).build();
-                        thingDiscovered(result);
-                    }
+                    DiscoveryResult result = DiscoveryResultBuilder.create(uid)
+                            .withProperties(properties).withLabel(network.getProjectName() + "/"
+                                    + network.getNetworkID() + " - " + network.getName())
+                            .withBridge(cBusCGateHandler.getThing().getUID()).build();
+                    thingDiscovered(result);
                 }
             } catch (CGateException e) {
-                logger.error("Failed to discover networks", e);
+                Logger.error("Failed to discover networks", e);
             }
-
         }
     }
 

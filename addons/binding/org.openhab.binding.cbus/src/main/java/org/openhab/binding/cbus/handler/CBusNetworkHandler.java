@@ -51,7 +51,6 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
@@ -109,18 +108,12 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 updateStatus();
                 return;
             }
-                
             logger.debug("State should be ok !!!!!!");
-                
-            
         } catch (CGateException e) {
             logger.error("Cannot load C-Bus network {}", networkID, e);
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
         }
-        
         updateStatus();
-
-
     }
     public void updateStatus() {
         logger.debug("updateStatus");

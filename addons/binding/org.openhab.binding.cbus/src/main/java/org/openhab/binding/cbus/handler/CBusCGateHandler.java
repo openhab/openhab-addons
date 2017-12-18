@@ -15,7 +15,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.lang.Thread;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -217,7 +216,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
         @Override
         public void processStatusChange(CGateSession cGateSession, String status) {
-            // TODO Auto-generated method stub
             String contents[] = status.split("#");
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
             LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
@@ -259,9 +257,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 } else if (type.equals("time")) {
                     address = tokenizer.poll() + "/0";
                     value = tokenizer.poll();
-                } else if (type.equals("request_refresh")) {
-
-                } else {
+                } else if (!type.equals("request_refresh")) {
                     logger.error("Received unknown clock event: {}", status);
                 }
                 if (value != "") {
@@ -329,7 +325,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_LIGHT)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_STATE).getUID();
                         ChannelUID channelLevelUID = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL).getUID();
 
@@ -351,14 +346,12 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         }
                         handled = true;
                         logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
-
                     }
                     // DALI Application
                     else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_DALI)
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_DALI)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL).getUID();
 
                         if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
@@ -380,14 +373,12 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         }
                         handled = true;
                         logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
-
                     }
                     // Temperature Application
                     else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE)
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP).getUID();
                         DecimalType temp = new DecimalType(value);
                         updateState(channelUID, temp);
@@ -399,7 +390,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE).getUID();
                         DecimalType val = new DecimalType(value);
                         // updateState(channelUID, val);

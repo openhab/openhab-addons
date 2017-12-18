@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CBusGroupDiscovery extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
+    private final Logger Logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
 
     private CBusNetworkHandler cbusNetworkHandler;
 
@@ -63,24 +63,25 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                     ArrayList<Group> groups = application.getGroups(false);
                     for (Group group : groups) {
-                        logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
+                        Logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
                                 group.getName());
                         Map<String, Object> properties = new HashMap<>(2);
                         properties.put(CBusBindingConstants.CONFIG_GROUP_ID, group.getGroupID());
                         properties.put(CBusBindingConstants.PROPERTY_NAME, group.getName());
-                        ThingUID uid = new ThingUID(applicationItem.getValue(), Integer.toString(group.getGroupID()),
-                                cbusNetworkHandler.getThing().getBridgeUID().getId(),
-                                cbusNetworkHandler.getThing().getUID().getId());
-                        if (uid != null) {
-                            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                    .withLabel(group.getGroupID() + " - " + group.getName())
-                                    .withBridge(cbusNetworkHandler.getThing().getUID()).build();
-                            thingDiscovered(result);
+                        ThingUID bridgeUid = cbusNetworkHandler.getThing().getBridgeUID();
+                        if (bridgeUid != null) {
+                                ThingUID uid = new ThingUID(applicationItem.getValue(), Integer.toString(group.getGroupID()),
+                                                            bridgeUid.getId(),
+                                                            cbusNetworkHandler.getThing().getUID().getId());
+                                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                        .withLabel(group.getGroupID() + " - " + group.getName())
+                                        .withBridge(cbusNetworkHandler.getThing().getUID()).build();
+                                thingDiscovered(result);
                         }
                     }
                 }
             } catch (CGateException e) {
-                logger.error("Failed to discover groups", e);
+                Logger.error("Failed to discover groups", e);
             }
         }
     }
