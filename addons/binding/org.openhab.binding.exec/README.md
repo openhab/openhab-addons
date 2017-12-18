@@ -83,9 +83,9 @@ Switch YourTrigger
 Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is runnung or finished
-Switch yourcommand { channel="exec:command:remote-send:run" }
+Switch yourcommand { channel="exec:command:yourcommand:run" }
 // Arguments to be placed for '%2$s' in command line
-String yourcommand_Args { channel="exec:command:remote-send:input"}
+String yourcommand_Args { channel="exec:command:yourcommand:input"}
 // Output of command line execution 
 String yourcommand_out { channel="exec:command:yourcommand:output" }
 ```
