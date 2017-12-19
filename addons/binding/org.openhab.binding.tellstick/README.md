@@ -25,8 +25,6 @@ Additionally the binding have two types of bridge things which correspond to ava
 *   *Telldus Core Bridge* - Oldest API, used by USB devices. `telldus-core`
 *   *Telldus Live Bridge* - Telldus Cloud service, all devices with online access. `telldus-live`
 
-The attentive reader discovers that there is many missing sensor types; `UV`, `Luminance`, `Dew point`, `Barometic pressure` `Rainrate`, `Raintotal`, `Winddirection`, `Windaverage` and `Windgust` which is supported by the Tellstick devices.
-Support have not been implemented on the openhab side yet, contributions are welcome.  
 
 ***Switchbased sensors workaround*** <br>
 *   Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things.
@@ -69,12 +67,13 @@ Depending on your Tellstick model, different bridge-types are available:
 
 <table>
 <tr><td><b>Model</b></td> <td><b>Telldus Core</b></td> <td><b>Telldus Live</b></td> <td>Local REST API</td> <td><b>Verified working with openHAB</b></td></tr>
-<tr><td>Tellstick Basic</td><td>X</td><td>X</td><td></td><td></td></tr>
+<tr><td>Tellstick Basic</td><td>X</td><td>X</td><td></td><td>X</td></tr>
 <tr><td>Tellstick Duo</td><td>X</td><td>X</td><td></td><td>X</td></tr>
 <tr><td>Tellstick Net v.1</td><td></td><td>X</td><td></td><td></td></tr>
 <tr><td>Tellstick Net v.2</td><td></td><td>X</td><td>X</td><td></td></tr>
 <tr><td>Tellstick ZNet Lite v.1</td><td></td><td>X</td><td>X</td><td>X</td></tr>
 <tr><td>Tellstick ZNet Lite v.2</td><td></td><td>X</td><td>X</td><td></td></tr>
+<tr><td><i>Tellstick ZNet Pro (Not released)</i></td><td></td><td>X</td><td>X</td><td>X</td></tr>
 </table>
 
 #### Telldus Core Bridge
@@ -132,6 +131,32 @@ Sensors (sensor) support the following channels:
 <tr><td>humidity</td><td>Number</td><td>This channel reports the current humidity in percentage.</td></tr>
 <tr><td>temperature</td><td>Number</td><td>This channel reports the current temperature in celsius.</td></tr>
 <tr><td>timestamp</td><td>DateTime</td><td> This channel reports the last time this sensor was updates.</td></tr>
+</table>
+
+PowerSensors ([powersensor]) support the following channels:
+
+<table>
+<tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
+<tr><td>watt</td><td>Number</td><td>This channel reports the current watt.</td></tr>
+<tr><td>ampere</td><td>Number</td><td>This channel reports the current ampere.</td></tr>
+<tr><td>timestamp</td><td>DateTime</td><td> This channel reports the last time this sensor was updates.</td></tr>
+</table>
+
+WindSensors ([windsensor]) support the following channels:
+
+<table>
+<tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
+<tr><td>windgust</td><td>Number</td><td>This current peak wind gust.</td></tr>
+<tr><td>winddirection</td><td>Number</td><td>The current wind direction.</td></tr>
+<tr><td>windaverage</td><td>DateTime</td><td> The current wind avarage.</td></tr>
+</table>
+
+RainSensors ([rainsensor]) support the following channels:
+
+<table>
+<tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
+<tr><td>rainrate</td><td>Number</td><td>This current rate of rain.</td></tr>
+<tr><td>raintotal</td><td>Number</td><td>The total rain.</td></tr>
 </table>
 
 ### Switchbased sensor workaround

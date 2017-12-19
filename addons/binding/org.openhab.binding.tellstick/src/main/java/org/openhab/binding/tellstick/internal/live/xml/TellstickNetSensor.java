@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tellstick.device.iface.Device;
-import org.tellstick.enums.DataType;
 import org.tellstick.enums.DeviceType;
 
 /**
@@ -44,6 +43,8 @@ public class TellstickNetSensor implements Device {
     @XmlAttribute()
     private Long lastUpdated;
     private boolean updated;
+    @XmlAttribute()
+    private Long battery;
 
     public TellstickNetSensor() {
     }
@@ -162,25 +163,24 @@ public class TellstickNetSensor implements Device {
         return updated;
     }
 
-    public boolean isWindSensor() {
+    public boolean isSensorOfType(LiveDataType type) {
         boolean res = false;
-        for (DataTypeValue val : data) {
-            if (val.getName() == DataType.WINDAVERAGE) {
-                res = true;
-
+        if (data != null) {
+            for (DataTypeValue val : data) {
+                if (val.getName() == type) {
+                    res = true;
+                    break;
+                }
             }
         }
         return res;
     }
 
-    public boolean isRainSensor() {
-        boolean res = false;
-        for (DataTypeValue val : data) {
-            if (val.getName() == DataType.RAINTOTAL) {
-                res = true;
+    public Long getBattery() {
+        return battery;
+    }
 
-            }
-        }
-        return res;
+    public void setBattery(Long battery) {
+        this.battery = battery;
     }
 }
