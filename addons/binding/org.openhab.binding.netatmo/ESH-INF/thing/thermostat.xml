@@ -26,12 +26,12 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">86,71,56</property>
-             <property name="refreshPeriod">3600000</property>
+			<property name="signalLevels">86,71,56</property>
+			<property name="refreshPeriod">3600000</property>
 		</properties>			 
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:plug" />
-
 	</thing-type>
 
 	<thing-type id="NATherm1">
@@ -61,10 +61,11 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">90,80,70,60</property>
-			 <property name="batteryLevels">2700,3300,4500</property>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">2700,3300,4500</property>
 		</properties>
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:natherm1" />
 	</thing-type>
 

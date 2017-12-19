@@ -13,7 +13,6 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -22,7 +21,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.netatmo.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
@@ -127,36 +125,27 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private boolean checkAlreadyExists(String id) {
-        return netatmoBridgeHandler.getThing().getThings().stream()
-                .filter(thing -> thing.getHandler() instanceof AbstractNetatmoThingHandler)
-                .map(device -> device.getProperties().get(EQUIPMENT_ID)).filter(Objects::nonNull)
-                .anyMatch(objId -> objId.equalsIgnoreCase(id));
-    }
-
     private void onDeviceAddedInternal(String id, String parentId, String type, String name, Integer firmwareVersion) {
-        // Prevent from adding already known devices
-        if (!checkAlreadyExists(id)) {
-            ThingUID thingUID = findThingUID(type, id);
-            Map<String, Object> properties = new HashMap<>();
+        ThingUID thingUID = findThingUID(type, id);
+        Map<String, Object> properties = new HashMap<>();
 
-            properties.put(EQUIPMENT_ID, id);
-            if (parentId != null) {
-                properties.put(PARENT_ID, parentId);
-            }
-            if (firmwareVersion != null) {
-                properties.put(Thing.PROPERTY_VENDOR, "Netatmo");
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
-                properties.put(Thing.PROPERTY_MODEL_ID, type);
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
-            }
-            addDiscoveredThing(thingUID, properties, name);
+        properties.put(EQUIPMENT_ID, id);
+        if (parentId != null) {
+            properties.put(PARENT_ID, parentId);
         }
+        if (firmwareVersion != null) {
+            properties.put(Thing.PROPERTY_VENDOR, "Netatmo");
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+            properties.put(Thing.PROPERTY_MODEL_ID, type);
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
+        }
+        addDiscoveredThing(thingUID, properties, name);
     }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(netatmoBridgeHandler.getThing().getUID()).withLabel(displayLabel).build();
+                .withBridge(netatmoBridgeHandler.getThing().getUID()).withLabel(displayLabel)
+                .withRepresentationProperty(EQUIPMENT_ID).build();
 
         thingDiscovered(discoveryResult);
     }

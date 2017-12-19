@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,13 +30,12 @@ public class RefreshStrategy {
     // By default we create dataTimeStamp to be outdated
     public RefreshStrategy(int dataValidityPeriod) {
         this.dataValidityPeriod = dataValidityPeriod;
-        Calendar now = Calendar.getInstance();
-        now.add(Calendar.MILLISECOND, -this.dataValidityPeriod);
-        dataTimeStamp = now.getTimeInMillis();
+        ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
+        dataTimeStamp = now.toInstant().toEpochMilli();
     }
 
     public void setDataTimeStamp(Integer dataTimestamp) {
-        this.dataTimeStamp = ChannelTypeUtils.toCalendar(dataTimestamp).getTimeInMillis();
+        this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp).toInstant().toEpochMilli();
     }
 
     public long dataAge() {

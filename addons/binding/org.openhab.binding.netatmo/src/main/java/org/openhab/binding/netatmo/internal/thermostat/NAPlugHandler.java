@@ -11,7 +11,8 @@ package org.openhab.binding.netatmo.internal.thermostat;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,16 +67,14 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
         return super.getNAThingProperty(channelId);
     }
 
-    public @Nullable Calendar getLastBilan() {
-        Calendar cal = null;
+    public @Nullable ZonedDateTime getLastBilan() {
         if (device != null) {
             NAYearMonth lastBilan = device.getLastBilan();
-            cal = Calendar.getInstance();
-            cal.setTimeInMillis(0);
-            cal.set(lastBilan.getY(), lastBilan.getM() - 1, 1);
-            cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+            ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
+                    ZonedDateTime.now().getZone());
+            return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
         }
-        return cal;
+        return null;
     }
 
     @Override

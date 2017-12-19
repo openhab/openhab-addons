@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -43,6 +44,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     protected Optional<RadioHelper> radioHelper;
     protected Optional<BatteryHelper> batteryHelper;
     protected Configuration config;
+    protected NetatmoBridgeHandler bridgeHandler;
 
     AbstractNetatmoThingHandler(@NonNull Thing thing) {
         super(thing);
@@ -109,7 +111,13 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected NetatmoBridgeHandler getBridgeHandler() {
-        return (NetatmoBridgeHandler) getBridge().getHandler();
+        if (bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                bridgeHandler = (NetatmoBridgeHandler) bridge.getHandler();
+            }
+        }
+        return bridgeHandler;
     }
 
     public boolean matchesId(String searchedId) {
