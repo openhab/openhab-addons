@@ -1,14 +1,16 @@
 # Toon Binding
 
 The Toon bindings shows among others current room temperature, setpoint, energy and gas usage information.
-It can control the setpoint and current program. Connected smart plugs can also be controlled.
+It can control the setpoint and current program.
+Connected smart plugs can also be controlled.
 
 ## Supported Things
 
 ### Toon Webaccount
 
-Before the binding can be used, a Toon Webaccount must be added. This needs to be done manually. Select `Toon Webaccount`, and enter your username and password.
-Afterwards start discovery so your display and connected plugs are discovered. 
+Before the binding can be used, a Toon Webaccount must be added.
+This needs to be done manually. Select `Toon Webaccount`, and enter your username and password.
+Afterwards start discovery so your display and connected plugs are discovered.
 
 ### Toon display unit
 
@@ -20,9 +22,10 @@ A Toon plug represents a connected wall plug that can be controlled via Toon.
 
 ## Discovery
 
-Once the binding is authorized, and the `Toon Webaccount` is added, you can start the discovery. This will find your Toon Display and put it in the Inbox.
+Once the binding is authorized, and the `Toon Webaccount` is added, you can start the discovery.
+This will find your Toon Display and put it in the Inbox.
 
-Currently only the display and plugs are discovered. So no Alarms or Hue lights will be discovered. 
+Currently only the display and plugs are discovered. So no Alarms or Hue lights will be discovered.
 
 ## Binding Configuration
 
@@ -57,7 +60,7 @@ Switch Heater           (Toon) {channel="toon:main:toontest:zzzz:Heating"}
 Switch Tapwater         (Toon) {channel="toon:main:toontest:zzzz:Tapwater"}
 Switch PreHeat          (Toon) {channel="toon:main:toontest:zzzz:Preheat"}
 
-// Plug items 
+// Plug items
 Switch Plug             (Toon) {channel="toon:plug:toontest:pppp:switch_binary"}
 Number PlugConsumption  (Toon) {channel="toon:plug:toontest:pppp:PowerConsumption"}
 ```
@@ -76,6 +79,3 @@ demo.sitemaps
         Selection item=ToonSetpointMode label="Toon Program Selection" mappings=[0=Comfort, 1=Active, 2=Sleep, 3=Away]
     }
 ```
-
-
-
