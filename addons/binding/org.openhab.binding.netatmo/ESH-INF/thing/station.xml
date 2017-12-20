@@ -20,7 +20,6 @@
 			<channel id="Pressure" typeId="pressure" />
 			<channel id="PressTrend" typeId="pressureTrend" />
 			<channel id="AbsolutePressure" typeId="absolutePressure" />
-			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="Humidity" typeId="humidity" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
@@ -31,6 +30,7 @@
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<!--  Common to all devices -->
+			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
 			<channel id="WifiStatus" typeId="system.signal-strength" />
 			<channel id="Location" typeId="location" />	 
@@ -60,7 +60,6 @@
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
-			<channel id="TimeStamp" typeId="timeUtc" />	  
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
@@ -70,6 +69,7 @@
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
 			<channel id="BatteryVP" typeId="system.battery-level" />
@@ -99,6 +99,7 @@
 			<channel id="GustAngle" typeId="GustAngle" />	  
 			<channel id="GustStrength" typeId="GustStrength" />
 			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
 			<channel id="BatteryVP" typeId="system.battery-level" />
@@ -127,6 +128,7 @@
 			<channel id="SumRain1" typeId="rain1"/> 
 			<channel id="SumRain24" typeId="rain24"/> 
 			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
 			<channel id="BatteryVP" typeId="system.battery-level" />
@@ -153,7 +155,6 @@
 			<channel id="Co2" typeId="co2"/>
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
-			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="Humidity" typeId="humidity" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
@@ -164,6 +165,7 @@
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
 			<channel id="BatteryVP" typeId="system.battery-level" />
