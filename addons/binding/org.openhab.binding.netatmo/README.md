@@ -38,7 +38,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
     Thing NAPlug    plugtherm  [ id="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
     Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
-    Thing NAWelcomeCamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
     Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
 }
