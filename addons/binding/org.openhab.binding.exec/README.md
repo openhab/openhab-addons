@@ -10,7 +10,7 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 The binding does not require any specific configuration.
 
-Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux Os needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
+Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
 
 ```
 sudo -u openhab <YOUR COMMAND>
