@@ -9,6 +9,7 @@
 		<description>This Bridge is for the serial KNX gateway running on the openHAB host</description>
 		<config-description>
 			<parameter name="serialPort" type="text">
+			    <context>serial-port </context>
 				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the KNX bus</description>
 				<required>true</required>
@@ -37,17 +38,6 @@
 				<description>Seconds between connect retries when KNX link has been lost, 0 means never retry</description>
 				<required>true</required>
 				<default>0</default>
-			</parameter>
-			<parameter name="enableDiscovery" type="boolean">
-				<label>Enable Discovery</label>
-				<description>Enable or disable automatic Individual Address discovery</description>
-				<required>true</required>
-				<default>true</default>
-			</parameter>
-			<parameter name="knxProj" type="text">
-				<label>KNX Project File</label>
-				<description>KNX Project File (knxproj) to parse and add to the Things managed by this Bridge</description>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</bridge-type>

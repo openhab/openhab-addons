@@ -1,9 +1,6 @@
 package org.openhab.binding.knx.internal.client;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -18,14 +15,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.knx.GroupAddressListener;
-import org.openhab.binding.knx.IndividualAddressListener;
 import org.openhab.binding.knx.KNXBusListener;
 import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.TelegramListener;
+import org.openhab.binding.knx.handler.GroupAddressListener;
+import org.openhab.binding.knx.handler.IndividualAddressListener;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
+import org.openhab.binding.knx.handler.TelegramListener;
 import org.openhab.binding.knx.internal.handler.RetryDatapoint;
 import org.openhab.binding.knx.internal.logging.LogAdapter;
 import org.slf4j.Logger;
@@ -55,15 +53,11 @@ import tuwien.auto.calimero.process.ProcessListenerEx;
 @NonNullByDefault
 public abstract class KNXClient implements NetworkLinkListener {
 
-    // private static final int ERROR_INTERVAL_MINUTES = 5;
     private static final int MAX_SEND_ATTEMPTS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(KNXClient.class);
     private final LogAdapter logAdapter = new LogAdapter();
 
-    // private long errorsSinceStart = 0;
-    // private long errorsSinceInterval = 0;
-    // private final long intervalTimestamp = 0;
     private boolean shutdown = false;
     private final int autoReconnectPeriod;
     private final Lock connectLock = new ReentrantLock();
@@ -155,8 +149,6 @@ public abstract class KNXClient implements NetworkLinkListener {
         this.responseTimeout = responseTimeout;
         this.readingPause = readingPause;
         this.readRetriesLimit = readRetriesLimit;
-        // errorsSinceStart = 0;
-        // errorsSinceInterval = 0;
         this.knxScheduler = knxScheduler;
         this.statusUpdateCallback = statusUpdateCallback;
 
@@ -199,10 +191,6 @@ public abstract class KNXClient implements NetworkLinkListener {
             this.processCommunicator = processCommunicator;
 
             link.addLinkListener(this);
-
-            // errorsSinceStart = 0;
-            // errorsSinceInterval = 0;
-            // intervalTimestamp = 0;
 
             busJob = knxScheduler.scheduleWithFixedDelay(() -> readNextQueuedDatapoint(), 0, readingPause,
                     TimeUnit.MILLISECONDS);
@@ -427,6 +415,8 @@ public abstract class KNXClient implements NetworkLinkListener {
             return;
         }
         if (!link.isOpen() && !(CloseEvent.USER_REQUEST == e.getInitiator()) && !shutdown) {
+            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getReason());
             logger.warn("KNX link has been lost (reason: {} on object {})", e.getReason(), e.getSource().toString());
             if (autoReconnectPeriod > 0) {
                 logger.info("KNX link will be retried in '{}' seconds", autoReconnectPeriod);
@@ -444,47 +434,6 @@ public abstract class KNXClient implements NetworkLinkListener {
     public void confirmation(@Nullable FrameEvent e) {
         // handleFrameEvent(e);
     }
-
-    // private void handleFrameEvent(@Nullable FrameEvent e) {
-    // checkErrorCounterTimeouts();
-    // int messageCode = e.getFrame().getMessageCode();
-    // switch (messageCode) {
-    // case CEMILData.MC_LDATA_IND:
-    // if (((CEMILData) e.getFrame()).isRepetition()) {
-    // incrementErrorCounter();
-    // }
-    // break;
-    // case CEMILData.MC_LDATA_CON:
-    // if (!((CEMILData) e.getFrame()).isPositiveConfirmation()) {
-    // incrementErrorCounter();
-    // }
-    // break;
-    // }
-    // }
-    //
-    // private void checkErrorCounterTimeouts() {
-    // if (intervalTimestamp == 0) {
-    // intervalTimestamp = System.nanoTime();
-    // updateErrorCounterChannels();
-    // } else if ((System.nanoTime() - intervalTimestamp) > TimeUnit.MINUTES.toNanos(ERROR_INTERVAL_MINUTES)) {
-    // intervalTimestamp = System.nanoTime();
-    // errorsSinceInterval = 0;
-    // updateErrorCounterChannels();
-    // }
-    // }
-    //
-    // private void incrementErrorCounter() {
-    // errorsSinceStart++;
-    // errorsSinceInterval++;
-    // updateErrorCounterChannels();
-    // }
-    //
-    // private void updateErrorCounterChannels() {
-    // updateState(new ChannelUID(getThing().getUID(), KNXBindingConstants.ERRORS_STARTUP),
-    // new DecimalType(errorsSinceStart));
-    // updateState(new ChannelUID(getThing().getUID(), KNXBindingConstants.ERRORS_INTERVAL),
-    // new DecimalType(errorsSinceInterval));
-    // }
 
     public final synchronized boolean isReachable(@Nullable IndividualAddress address) throws KNXException {
         ManagementProcedures managementProcedures = this.managementProcedures;
@@ -523,40 +472,6 @@ public abstract class KNXClient implements NetworkLinkListener {
         }
     }
 
-    public synchronized List<IndividualAddress> scanNetworkDevices(final int area, final int line) {
-        ManagementProcedures managementProcedures = this.managementProcedures;
-        if (managementProcedures == null) {
-            return Collections.emptyList();
-        }
-        try {
-            IndividualAddress[] ret = managementProcedures.scanNetworkDevices(area, line);
-            return ret != null ? Arrays.asList(ret) : Collections.emptyList();
-        } catch (KNXException | InterruptedException e) {
-            logger.error("Error scanning the KNX bus: {}", e.getMessage());
-            if (logger.isDebugEnabled()) {
-                logger.error("", e);
-            }
-        }
-        return Collections.emptyList();
-    }
-
-    public synchronized List<IndividualAddress> scanNetworkRouters() {
-        ManagementProcedures managementProcedures = this.managementProcedures;
-        if (managementProcedures == null) {
-            return Collections.emptyList();
-        }
-        try {
-            IndividualAddress[] ret = managementProcedures.scanNetworkRouters();
-            return ret != null ? Arrays.asList(ret) : Collections.emptyList();
-        } catch (KNXException | InterruptedException e) {
-            logger.error("An exception occurred while scanning the KNX bus: {}", e.getMessage());
-            if (logger.isDebugEnabled()) {
-                logger.error("", e);
-            }
-        }
-        return Collections.emptyList();
-    }
-
     public void readDatapoint(Datapoint datapoint) {
         synchronized (this) {
             RetryDatapoint retryDatapoint = new RetryDatapoint(datapoint, readRetriesLimit);
@@ -564,34 +479,6 @@ public abstract class KNXClient implements NetworkLinkListener {
                 readDatapoints.add(retryDatapoint);
             }
         }
-    }
-
-    public byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate,
-            long timeout) {
-        DeviceInfoClient deviceInfoClient = this.deviceInfoClient;
-        if (deviceInfoClient == null) {
-            return null;
-        }
-        return deviceInfoClient.readDeviceDescription(address, descType, authenticate, timeout);
-    }
-
-    public byte @Nullable [] readDeviceProperties(IndividualAddress address, final int interfaceObjectIndex,
-            final int propertyId, final int start, final int elements, boolean authenticate, long timeout) {
-        DeviceInfoClient deviceInfoClient = this.deviceInfoClient;
-        if (deviceInfoClient == null) {
-            return null;
-        }
-        return deviceInfoClient.readDeviceProperties(address, interfaceObjectIndex, propertyId, start, elements,
-                authenticate, timeout);
-    }
-
-    public byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes,
-            boolean authenticate, long timeout) {
-        DeviceInfoClient deviceInfoClient = this.deviceInfoClient;
-        if (deviceInfoClient == null) {
-            return null;
-        }
-        return deviceInfoClient.readDeviceMemory(address, startAddress, bytes, authenticate, timeout);
     }
 
     public final boolean registerGroupAddressListener(GroupAddressListener listener) {
@@ -616,6 +503,18 @@ public abstract class KNXClient implements NetworkLinkListener {
 
     public final void unregisterKNXBusListener(KNXBusListener knxBusListener) {
         knxBusListeners.remove(knxBusListener);
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public DeviceInfoClient getDeviceInfoClient() {
+        if (deviceInfoClient != null) {
+            return deviceInfoClient;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
 }

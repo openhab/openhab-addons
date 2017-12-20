@@ -847,20 +847,21 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
                 date = new SimpleDateFormat(DATE_FORMAT).parse(value);
             } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {
-                if (value.contains("no-day")) {
+                String convertedValue = value;
+                if (convertedValue.contains("no-day")) {
                     /*
-                     * KNX "no-day" needs special treatment since openHAB's DateTimeType doesn't support "no-day".
+                     * KNX "no-day" needs special treatment since the DateTimeType doesn't support "no-day".
                      * Workaround: remove the "no-day" String, parse the remaining time string, which will result in a
                      * date of "1970-01-01".
                      * Replace "no-day" with the current day name
                      */
-                    StringBuffer stb = new StringBuffer(value);
+                    StringBuffer stb = new StringBuffer(convertedValue);
                     int start = stb.indexOf("no-day");
                     int end = start + "no-day".length();
                     stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
-                    value = stb.toString();
+                    convertedValue = stb.toString();
                 }
-                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(convertedValue);
             }
         } catch (ParseException pe) {
             // do nothing but logging

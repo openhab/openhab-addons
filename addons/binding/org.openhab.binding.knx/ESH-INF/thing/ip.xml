@@ -78,24 +78,13 @@
 				<required>true</required>
 				<default>0</default>
 			</parameter>
-			<parameter name="enableDiscovery" type="boolean">
-				<label>Enable Discovery</label>
-				<description>Enable or disable automatic Individual Address discovery</description>
-				<required>true</required>
-				<default>true</default>
-			</parameter>
-			<parameter name="knxProj" type="text">
-				<label>KNX Project File</label>
-				<description>KNX Project File (knxproj) to parse automatically add to the system</description>
-				<required>false</required>
-			</parameter>
 		</config-description>
 	</bridge-type>
 
 	<channel-type id="errors">
 		<item-type>Number</item-type>
 		<label>Number of errors</label>
-		<description>The number of errors that occurred on the KNX bus since the start of the binding</description>
+		<description>The number of errors that occurred on the KNX bus</description>
 	</channel-type>
 
 </thing:thing-descriptions>

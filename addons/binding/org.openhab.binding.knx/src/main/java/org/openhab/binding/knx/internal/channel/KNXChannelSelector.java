@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import java.util.HashSet;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -18,25 +21,20 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public final class KNXChannelSelector {
 
+    private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
+            new TypeContact(), //
+            new TypeDimmer(), //
+            new TypeRollershutter(), //
+            new TypeSetpoint(), //
+            new TypeSwitch(), //
+            new TypeWallButton(), //
+            new TypeDateTime(), //
+            new TypeNumber(), //
+            new TypeString()).collect(toSet()));
+
     private KNXChannelSelector() {
         // prevent instantiation
     }
-
-    private static final Set<KNXChannelType> types = new HashSet<KNXChannelType>() {
-        private static final long serialVersionUID = 1L;
-        {
-            add(new TypeContact());
-            add(new TypeDimmer());
-            add(new TypeRollershutter());
-            add(new TypeSetpoint());
-            add(new TypeSwitch());
-            add(new TypeWallButton());
-
-            add(new TypeDateTime());
-            add(new TypeNumber());
-            add(new TypeString());
-        }
-    };
 
     public static KNXChannelType getValueSelectorFromChannelTypeId(@Nullable ChannelTypeUID channelTypeUID)
             throws IllegalArgumentException {
@@ -44,7 +42,7 @@ public final class KNXChannelSelector {
             throw new IllegalArgumentException("channel type UID was null");
         }
 
-        for (KNXChannelType c : types) {
+        for (KNXChannelType c : TYPES) {
             if (c.getChannelID().equals(channelTypeUID.getId())) {
                 return c;
             }

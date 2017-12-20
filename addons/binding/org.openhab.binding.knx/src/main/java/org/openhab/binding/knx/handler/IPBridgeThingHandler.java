@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -21,8 +22,6 @@ import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 
@@ -37,12 +36,10 @@ import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 @NonNullByDefault
 public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
-
     private static final String MODE_ROUTER = "ROUTER";
     private static final String MODE_TUNNEL = "TUNNEL";
 
-    @NonNullByDefault({})
+    @Nullable
     private IPClient client;
 
     private final NetworkAddressService networkAddressService;
@@ -99,12 +96,18 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
-        client.dispose();
+        if (client != null) {
+            client.dispose();
+        }
     }
 
     @Override
     protected KNXClient getClient() {
-        return client;
+        KNXClient ret = client;
+        if (ret == null) {
+            throw new IllegalStateException();
+        }
+        return ret;
     }
 
 }

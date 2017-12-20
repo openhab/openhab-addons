@@ -14,8 +14,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.SerialClient;
 import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
@@ -28,21 +26,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SerialBridgeThingHandler.class);
-
-    @NonNullByDefault({})
-    private SerialClient client;
+    private final SerialClient client;
 
     public SerialBridgeThingHandler(Bridge bridge) {
         super(bridge);
-    }
-
-    @Override
-    public void initialize() {
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         client = new SerialClient(config.getAutoReconnectPeriod().intValue(), thing.getUID(),
                 config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
                 config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), this);
+    }
+
+    @Override
+    public void initialize() {
         client.initialize();
         updateStatus(ThingStatus.UNKNOWN);
     }

@@ -93,4 +93,8 @@ public class DeviceInfoClient {
         });
     }
 
+    public boolean isConnected() {
+        return managementClient.isOpen();
+    }
+
 }

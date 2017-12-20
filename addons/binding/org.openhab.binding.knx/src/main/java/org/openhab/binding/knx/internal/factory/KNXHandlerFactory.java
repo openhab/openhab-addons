@@ -10,13 +10,13 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,18 +26,19 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.knx.KNXBridgeHandlerTracker;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.handler.KNXBasicThingHandler;
 import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.handler.SerialBridgeThingHandler;
+import org.openhab.binding.knx.handler.TypeHelper;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import com.google.common.collect.Lists;
+import tuwien.auto.calimero.datapoint.Datapoint;
 
 /**
  * The {@link KNXHandlerFactory} is responsible for creating things and thing
@@ -46,14 +47,13 @@ import com.google.common.collect.Lists;
  * @author Karel Goderis - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class)
-public class KNXHandlerFactory extends BaseThingHandlerFactory {
+public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHelper {
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_BASIC,
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_BASIC,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     private final Collection<KNXTypeMapper> typeMappers = new HashSet<KNXTypeMapper>();
     private final Collection<KNXBridgeBaseThingHandler> bridgeHandlers = new HashSet<KNXBridgeBaseThingHandler>();
-    private final Set<KNXBridgeHandlerTracker> trackers = new CopyOnWriteArraySet<>();
 
     private NetworkAddressService networkAddressService;
 
@@ -87,7 +87,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
             return new SerialBridgeThingHandler((Bridge) thing);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
-            return new KNXBasicThingHandler(thing);
+            return new KNXBasicThingHandler(thing, this);
         }
         return null;
     }
@@ -129,10 +129,6 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         if (handler instanceof KNXBridgeBaseThingHandler) {
             KNXBridgeBaseThingHandler bridgeHandler = (KNXBridgeBaseThingHandler) handler;
             bridgeHandlers.add(bridgeHandler);
-            typeMappers.forEach(it -> bridgeHandler.addKNXTypeMapper(it));
-            for (KNXBridgeHandlerTracker tracker : trackers) {
-                tracker.onBridgeAdded(bridgeHandler);
-            }
         }
         return handler;
     }
@@ -141,44 +137,52 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     public synchronized void unregisterHandler(Thing thing) {
         if (thing.getHandler() instanceof KNXBridgeBaseThingHandler) {
             KNXBridgeBaseThingHandler handler = (KNXBridgeBaseThingHandler) thing.getHandler();
-            for (KNXBridgeHandlerTracker tracker : trackers) {
-                tracker.onBridgeRemoved(handler);
-            }
-            bridgeHandlers.remove(thing.getHandler());
+            bridgeHandlers.remove(handler);
         }
         super.unregisterHandler(thing);
     }
 
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected synchronized void addBridgeHandlerTracker(KNXBridgeHandlerTracker tracker) {
-        if (trackers.add(tracker)) {
-            for (KNXBridgeBaseThingHandler handler : bridgeHandlers) {
-                tracker.onBridgeAdded(handler);
+    @Override
+    @Nullable
+    public Type getType(Datapoint datapoint, byte[] asdu) {
+        for (KNXTypeMapper typeMapper : typeMappers) {
+            Type type = typeMapper.toType(datapoint, asdu);
+            if (type != null) {
+                return type;
             }
         }
+        return null;
     }
 
-    protected synchronized void removeBridgeHandlerTracker(KNXBridgeHandlerTracker tracker) {
-        if (trackers.remove(tracker)) {
-            for (KNXBridgeBaseThingHandler handler : bridgeHandlers) {
-                tracker.onBridgeRemoved(handler);
+    @Override
+    public final boolean isDPTSupported(@Nullable String dpt) {
+        for (KNXTypeMapper typeMapper : typeMappers) {
+            if (typeMapper.toTypeClass(dpt) != null) {
+                return true;
             }
         }
+        return false;
+    }
+
+    @Override
+    @Nullable
+    public final Class<? extends Type> toTypeClass(String dpt) {
+        for (KNXTypeMapper typeMapper : typeMappers) {
+            Class<? extends Type> typeClass = typeMapper.toTypeClass(dpt);
+            if (typeClass != null) {
+                return typeClass;
+            }
+        }
+        return null;
     }
 
     @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
     protected synchronized void addKNXTypeMapper(KNXTypeMapper typeMapper) {
         typeMappers.add(typeMapper);
-        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
-            aBridge.addKNXTypeMapper(typeMapper);
-        }
     }
 
     protected synchronized void removeKNXTypeMapper(KNXTypeMapper typeMapper) {
         typeMappers.remove(typeMapper);
-        for (KNXBridgeBaseThingHandler aBridge : bridgeHandlers) {
-            aBridge.removeKNXTypeMapper(typeMapper);
-        }
     }
 
     @Reference

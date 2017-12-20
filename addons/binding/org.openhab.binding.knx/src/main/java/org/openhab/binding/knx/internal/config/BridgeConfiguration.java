@@ -21,17 +21,12 @@ import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 public class BridgeConfiguration {
 
     private BigDecimal autoReconnectPeriod;
-    private boolean enableDiscovery;
     private BigDecimal readingPause;
     private BigDecimal readRetriesLimit;
     private BigDecimal responseTimeout;
 
     public BigDecimal getAutoReconnectPeriod() {
         return autoReconnectPeriod;
-    }
-
-    public Boolean getEnableDiscovery() {
-        return enableDiscovery;
     }
 
     public BigDecimal getReadingPause() {
