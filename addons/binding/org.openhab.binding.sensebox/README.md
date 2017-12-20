@@ -37,6 +37,23 @@ Thing sensebox:box:home [ senseBoxId = "foothesmurfingbar", refreshInterval = 60
 In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
+| Channel ID                                      | Channel Description                                         | Supported item type | Advanced |
+|-------------------------------------------------|-------------------------------------------------------------|---------------------|----------|
+| descriptors#location                            | Location of the box                                         | Point               | False    |
+| measurements#uvIntensity                        | Intensity of Ultraviolet radiation                          | Number              | False    |
+| measurements#luminance                          | Illuminance                                                 | Number              | False    |
+| measurements#pressure                           | Air pressure                                                | Number              | False    |
+| measurements#humidity                           | Humidity                                                    | Number              | False    |
+| measurements#temperature                        | Temperature                                                 | Number              | False    |
+| measurements#particulateMatter2dot5             | Particulate Matter 2.5 µm in diameter                       | Number              | False    |
+| measurements#particulateMatter10                | Temperature Matter 10 µm in diameter                        | Number              | False    |
+| lastReported#uvIntensityLastReported            | The timestamp when uv radiation intensity was last reported | DateTime            | True     |
+| lastReported#luminanceLastReported              | The timestamp when illuminance was last reported            | DateTime            | True     |
+| lastReported#pressureLastReported               | The timestamp when pressure was last reported               | DateTime            | True     |
+| lastReported#humidityLastReported               | The timestamp when humidity was last reported               | DateTime            | True     |
+| lastReported#temperatureLastReported            | The timestamp when temperature was last reported            | DateTime            | True     |
+| lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported | DateTime            | True     |
+| lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported  | DateTime            | True     |
 
 Markdown Table Formatter
 
