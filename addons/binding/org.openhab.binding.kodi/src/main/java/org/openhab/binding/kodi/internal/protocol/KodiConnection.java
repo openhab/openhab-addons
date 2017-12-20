@@ -12,10 +12,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -42,6 +45,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
+    // possible are: int speeds[] = new int[] { -32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32 };
+    // we don't want speeds 0 = STOP or -1 = PLAY BACKWARDS
+    private static final List<Integer> SPEEDS = Arrays
+            .asList(new Integer[] { -32, -16, -8, -4, -2, 1, 2, 4, 8, 16, 32 });
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
@@ -112,67 +119,81 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playerNext() {
-        int activePlayer = getActivePlayer();
-
-        JsonObject params = new JsonObject();
-        params.addProperty("playerid", activePlayer);
-        params.addProperty("to", "next");
-        socket.callMethod("Player.GoTo", params);
+        internalGoTo("next");
 
         updatePlayerStatus();
     }
 
     public synchronized void playerPrevious() {
-        int activePlayer = getActivePlayer();
-
-        JsonObject params = new JsonObject();
-        params.addProperty("playerid", activePlayer);
-        params.addProperty("to", "previous");
-        socket.callMethod("Player.GoTo", params);
+        internalGoTo("previous");
 
         updatePlayerStatus();
     }
 
-    public synchronized void playerRewind() {
+    private void internalGoTo(@NonNull String to) {
         int activePlayer = getActivePlayer();
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", -2);
-        socket.callMethod("Player.SetSpeed", params);
+        params.addProperty("to", to);
+        socket.callMethod("Player.GoTo", params);
+    }
+
+    private int calcNextSpeed(int modifier) {
+        int activePlayer = getActivePlayer();
+        if (activePlayer >= 0) {
+            int position = SPEEDS.indexOf(getSpeed(activePlayer));
+            if (position == -1) {
+                return 0;
+            } else if (position == 0 || position == (SPEEDS.size() - 1)) {
+                return SPEEDS.get(position);
+            } else {
+                return (int) SPEEDS.get(position + modifier);
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    public synchronized void playerRewind() {
+        internalSetSpeed(calcNextSpeed(-1));
 
         updatePlayerStatus();
     }
 
     public synchronized void playerFastForward() {
-        int activePlayer = getActivePlayer();
-
-        JsonObject params = new JsonObject();
-        params.addProperty("playerid", activePlayer);
-        params.addProperty("speed", 2);
-        socket.callMethod("Player.SetSpeed", params);
+        internalSetSpeed(calcNextSpeed(1));
 
         updatePlayerStatus();
     }
 
+    private void internalSetSpeed(int speed) {
+        int activePlayer = getActivePlayer();
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playerid", activePlayer);
+        params.addProperty("speed", speed);
+        socket.callMethod("Player.SetSpeed", params);
+    }
+
     public synchronized void increaseVolume() {
         this.volume += VOLUMESTEP;
-        JsonObject params = new JsonObject();
-        params.addProperty("volume", volume);
-        socket.callMethod("Application.SetVolume", params);
+        internalSetVolume();
     }
 
     public synchronized void decreaseVolume() {
         this.volume -= VOLUMESTEP;
-        JsonObject params = new JsonObject();
-        params.addProperty("volume", volume);
-        socket.callMethod("Application.SetVolume", params);
+        internalSetVolume();
     }
 
     public synchronized void setVolume(int volume) {
         this.volume = volume;
+        internalSetVolume();
+    }
+
+    private void internalSetVolume() {
         JsonObject params = new JsonObject();
-        params.addProperty("volume", volume);
+        params.addProperty("volume", this.volume);
         socket.callMethod("Application.SetVolume", params);
     }
 
