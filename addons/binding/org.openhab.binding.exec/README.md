@@ -10,7 +10,8 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 The binding does not require any specific configuration.
 
-Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
+
+Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux Os needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
 
 ```
 sudo -u openhab <YOUR COMMAND>
@@ -18,7 +19,9 @@ sudo -u openhab <YOUR COMMAND>
 
 ## Thing Configuration
 
+
 The ```command``` Thing requires the command to execute on the shell. Optionally one can specify:
+
 
 -   a transformation to apply on the execution result,
 -   an interval, in seconds, the command will be repeatedly executed,
@@ -33,6 +36,7 @@ Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15,
 
 ```command``` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
 The following parameters are automatically added:
+
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
 -   the current State of the input channel (see below, example: `%2$s`)
@@ -51,6 +55,8 @@ All Things support the following channels:
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
 
+
+
 ## Minimal Example
 
 **demo.things**
@@ -63,7 +69,8 @@ Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2
 **demo.items**
 
 ```
-String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
+
+String APCRaw "[%s]" (All) {channel="exec:command:apc:output"} 
 String APCRunning { channel="exec:command:apc:run"}
 String APCExitValue {channel="exec:command:apc:exit"}
 String APCLastExecution {channel="exec:command:apc:lastexecution"}
@@ -74,7 +81,7 @@ Following is an example how to set up an exec Thing, debug it with a rule and se
 
 **demo.things**
 ```
-Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s"
+Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s"         
                                  interval=0,
                                  autorun=true ]
 ```
@@ -125,10 +132,11 @@ rule "Your Execution"
       
       // If the returned string is just a number it can be parsed
       // If not a regex or another transformation can be used
-      YourNumber.postUpdate(
-            (Integer::parseInt(yourcommand_out.state.toString) as Number )
-      )
+      YourNumber.postUpdate( 
+            (Integer::parseInt(yourcommand_out.state.toString) as Number ) 
+      ) 
 end
+
 ```
 The logging massages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information
 
