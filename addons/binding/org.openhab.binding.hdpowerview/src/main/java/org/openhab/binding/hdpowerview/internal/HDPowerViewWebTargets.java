@@ -61,7 +61,7 @@ public class HDPowerViewWebTargets {
         }
     }
 
-    public Response moveShade(int shadeId, ShadePosition position) throws IOException {
+    public Response moveShade(String shadeId, ShadePosition position) throws IOException {
         WebTarget target = shadeMove.resolveTemplate("id", shadeId);
         String body = gson.toJson(new ShadeMove(shadeId, position));
         return invoke(target.request().buildPut(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)), shadeMove);

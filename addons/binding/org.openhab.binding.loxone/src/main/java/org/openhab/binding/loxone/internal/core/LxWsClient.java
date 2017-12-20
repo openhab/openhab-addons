@@ -63,6 +63,7 @@ class LxWsClient {
     private int maxBinMsgSize = 3 * 1024; // 3 MB
     private int maxTextMsgSize = 512; // 512 KB
 
+    private final Gson gson = new Gson();
     private ScheduledFuture<?> timeout;
     private LxWebSocket socket;
     private WebSocketClient wsClient;
@@ -270,7 +271,6 @@ class LxWsClient {
 
                 logger.debug("[{}] Connecting to server : {} ", debugId, target);
                 return true;
-
             } catch (Exception e) {
                 setClientState(ClientState.IDLE);
                 close("Connection to websocket failed : " + e.getMessage());
@@ -407,6 +407,16 @@ class LxWsClient {
     }
 
     /**
+     * Returns {@link Gson} object so it can be reused without creating a new instance.
+     *
+     * @return
+     *         Gson object for reuse
+     */
+    Gson getGson() {
+        return gson;
+    }
+
+    /**
      * Sets a new websocket client state
      *
      * @param state
@@ -484,7 +494,6 @@ class LxWsClient {
     @WebSocket
     public class LxWebSocket {
         Session session;
-        Gson gson = new Gson();
         private ScheduledFuture<?> keepAlive;
         private LxWsBinaryHeader header;
 
@@ -564,7 +573,6 @@ class LxWsClient {
 
         @OnWebSocketMessage
         public void onBinaryMessage(byte data[], int offset, int length) {
-
             if (logger.isTraceEnabled()) {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);

@@ -34,9 +34,7 @@ public class DataConverters {
      * @return
      */
     public static int convertCommandToIntValue(Command command, int min, int max, int currentValue) {
-        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType
-                || command instanceof PercentType) {
-
+        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType) {
             int value;
             if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
                 value = Math.min(max, currentValue + 1);

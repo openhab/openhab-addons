@@ -72,6 +72,7 @@ public class HomematicConstants {
     public static final String DATAPOINT_NAME_VALUE = "VALUE";
     public static final String DATAPOINT_NAME_CALIBRATION = "CALIBRATION";
     public static final String DATAPOINT_NAME_LOWBAT_IP = "LOW_BAT";
+    public static final String DATAPOINT_NAME_CHANNEL_FUNCTION = "CHANNEL_FUNCTION";
 
     public static final String VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE = "BATTERY_TYPE";
     public static final String VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE = "DELETE_DEVICE_MODE";
@@ -87,6 +88,7 @@ public class HomematicConstants {
     public static final String VIRTUAL_DATAPOINT_NAME_RSSI = "RSSI";
     public static final String VIRTUAL_DATAPOINT_NAME_STATE_CONTACT = "STATE_CONTACT";
     public static final String VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH = "SIGNAL_STRENGTH";
+    public static final String VIRTUAL_DATAPOINT_NAME_PRESS = "PRESS";
 
     public static final String RPC_METHODNAME_EVENT = "event";
     public static final String RPC_METHODNAME_LIST_DEVICES = "listDevices";

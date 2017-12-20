@@ -11,11 +11,9 @@ package org.openhab.binding.loxone.internal.core;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,11 +68,14 @@ public class LxServer {
     private int comErrorDelay = 30;
 
     // Data structures
-    private Set<LxUuid> uuids = new HashSet<>();
     private Map<LxUuid, LxControl> controls = new HashMap<>();
     private Map<LxUuid, LxContainer> rooms = new HashMap<>();
     private Map<LxUuid, LxCategory> categories = new HashMap<>();
-    private Map<LxUuid, LxControlState> states = new HashMap<>();
+    // Map of state UUID to a map of control UUID and state objects
+    // State with a unique UUID can be configured in many controls and each control can even have a different name of
+    // the state. It must be ensured that updates received for this state UUID are passed to all controls that have this
+    // state UUID configured.
+    private Map<LxUuid, Map<LxUuid, LxControlState>> states = new HashMap<>();
     private List<LxServerListener> listeners = new ArrayList<>();
 
     // Services
@@ -173,7 +174,6 @@ public class LxServer {
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int connectTimeout,
             int userErrorDelay, int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
-
         logger.debug("[{}] Server update configuration", debugId);
 
         if (firstConDelay >= 0 && this.firstConDelay != firstConDelay) {
@@ -391,21 +391,23 @@ public class LxServer {
                                 break;
                             case STATE_UPDATE:
                                 LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
-                                LxControlState state = findState(update.getUuid());
-                                if (state != null) {
-                                    state.setValue(update.getValue(), update.getText());
-                                    LxControl control = state.getControl();
-                                    if (control != null) {
-                                        logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
-                                                update.getUuid(), control.getName(), state.getName(), update.getValue(),
-                                                update.getText());
-                                        for (LxServerListener listener : listeners) {
-                                            listener.onControlStateUpdate(control);
+                                Map<LxUuid, LxControlState> perStateUuid = findState(update.getUuid());
+                                if (perStateUuid != null) {
+                                    perStateUuid.forEach((controlUuid, state) -> {
+                                        state.setValue(update.getValue(), update.getText());
+                                        LxControl control = state.getControl();
+                                        if (control != null) {
+                                            logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
+                                                    update.getUuid(), control.getName(), state.getName(),
+                                                    update.getValue(), update.getText());
+                                            for (LxServerListener listener : listeners) {
+                                                listener.onControlStateUpdate(control, state.getName().toLowerCase());
+                                            }
+                                        } else {
+                                            logger.debug("[{}] State update {} ({}) of unknown control", debugId,
+                                                    update.getUuid(), state.getName());
                                         }
-                                    } else {
-                                        logger.debug("[{}] State update {} ({}) of unknown control", debugId,
-                                                update.getUuid(), state.getName());
-                                    }
+                                    });
                                 }
                                 break;
                             case SERVER_ONLINE:
@@ -470,12 +472,10 @@ public class LxServer {
     private void updateConfig(LxJsonApp3 config) {
         logger.trace("[{}] Updating configuration from Miniserver", debugId);
 
-        for (LxUuid id : uuids) {
-            id.setUpdate(false);
-        }
-        for (LxUuid id : states.keySet()) {
-            id.setUpdate(false);
-        }
+        invalidateMap(rooms);
+        invalidateMap(categories);
+        invalidateMap(controls);
+        invalidateMap(states);
 
         if (config.msInfo != null) {
             logger.trace("[{}] updating global config", debugId);
@@ -533,7 +533,6 @@ public class LxServer {
         for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
             Map.Entry<LxUuid, T> entry = it.next();
             if (!entry.getKey().getUpdate()) {
-                uuids.remove(entry.getKey());
                 it.remove();
                 if (entry.getValue() instanceof LxControl) {
                     ((LxControl) entry.getValue()).dispose();
@@ -543,41 +542,15 @@ public class LxServer {
     }
 
     /**
-     * Searches for an UUID of an object (control, category, room, ...) that this server contains
+     * Sets all entries in a map to not updated
      *
-     * @param id
-     *            UUID to search for
-     * @return
-     *         found UUID object or null if not found
+     * @param map
+     *            map to invalidate entries in
      */
-    private LxUuid findUuid(LxUuid id) {
-        if (uuids == null || id == null) {
-            return null;
-        }
-        for (LxUuid i : uuids) {
-            if (id.equals(i)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Adds a new UUID object to server, if an object with same UUID value does not exist yet. Otherwise return
-     * already existing object.
-     *
-     * @param id
-     *            UUID to search for
-     * @return
-     *         object belonging to server (either same as provided as an argument or already existing one)
-     */
-    private LxUuid addUuid(LxUuid id) {
-        LxUuid i = findUuid(id);
-        if (i != null) {
-            return i;
-        }
-        uuids.add(id);
-        return id;
+    private void invalidateMap(Map<LxUuid, ?> map) {
+        map.keySet().forEach(k -> {
+            k.setUpdate(false);
+        });
     }
 
     /**
@@ -617,7 +590,6 @@ public class LxServer {
             r.setName(name);
             return r;
         }
-        id = addUuid(id);
         LxContainer nr = new LxContainer(id, name);
         rooms.put(id, nr);
         return nr;
@@ -629,9 +601,9 @@ public class LxServer {
      * @param id
      *            UUID of state to locate
      * @return
-     *         state object
+     *         map of all state objects with control UUID as key
      */
-    private LxControlState findState(LxUuid id) {
+    private Map<LxUuid, LxControlState> findState(LxUuid id) {
         if (states == null || id == null) {
             return null;
         }
@@ -681,7 +653,6 @@ public class LxServer {
             c.setType(type);
             return c;
         }
-        id = addUuid(id);
         LxCategory nc = new LxCategory(id, name, type);
         categories.put(id, nc);
         return nc;
@@ -714,8 +685,7 @@ public class LxServer {
         if (control != null) {
             control.update(json, room, category);
         } else {
-            id = addUuid(id);
-            control = LxControl.createControl(socketClient, id, json, room, category);
+            control = LxControlFactory.createControl(socketClient, id, json, room, category);
         }
         if (control != null) {
             updateControls(control);
@@ -731,7 +701,12 @@ public class LxServer {
     private void updateControls(LxControl control) {
         for (LxControlState state : control.getStates().values()) {
             state.getUuid().setUpdate(true);
-            states.put(state.getUuid(), state);
+            Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
+            if (perUuid == null) {
+                perUuid = new HashMap<>();
+                states.put(state.getUuid(), perUuid);
+            }
+            perUuid.put(control.uuid, state);
         }
         controls.put(control.uuid, control);
         control.uuid.setUpdate(true);

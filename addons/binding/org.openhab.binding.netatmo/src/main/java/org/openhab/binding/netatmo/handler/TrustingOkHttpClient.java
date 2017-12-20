@@ -62,6 +62,5 @@ public class TrustingOkHttpClient extends OkHttpClient {
             this.setSslSocketFactory(ctx.getSocketFactory());
         } catch (final java.security.GeneralSecurityException ex) {
         }
-
     }
 }

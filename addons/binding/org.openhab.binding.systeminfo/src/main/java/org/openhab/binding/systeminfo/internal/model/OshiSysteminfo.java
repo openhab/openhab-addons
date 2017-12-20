@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -33,6 +35,8 @@ import oshi.util.EdidUtil;
  * information. OSHI is a free JNA-based (native) Operating System and Hardware Information library for Java.
  *
  * @author Svilen Valkanov
+ * @author Lyubomir Papazov - Move the initialization logic that could potentially take long time to the
+ *         initializeSysteminfo method
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI github repository</a>
  *
@@ -40,6 +44,8 @@ import oshi.util.EdidUtil;
 public class OshiSysteminfo implements SysteminfoInterface {
 
     HardwareAbstractionLayer hal;
+
+    private Logger logger = LoggerFactory.getLogger(OshiSysteminfo.class);
 
     // Dynamic objects (may be queried repeatedly)
     private GlobalMemory memory;
@@ -61,6 +67,13 @@ public class OshiSysteminfo implements SysteminfoInterface {
      *
      */
     public OshiSysteminfo() {
+        logger.debug("OshiSysteminfo service is created");
+    }
+
+    @Override
+    public void initializeSysteminfo() {
+        logger.debug("OshiSysteminfo service starts initializing");
+
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();
 
@@ -69,18 +82,16 @@ public class OshiSysteminfo implements SysteminfoInterface {
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
 
+        // Static objects, should be recreated on each request. In OSHI 4.0.0. it is planned to change this mechanism -
+        // see https://github.com/oshi/oshi/issues/310
+        // TODO: Once the issue is resolved in OSHI , remove unnecessary object recreations from the public get methods
         operatingSystem = systemInfo.getOperatingSystem();
+        networks = hal.getNetworkIFs();
         displays = hal.getDisplays();
-
-        updateStaticObjects();
-    }
-
-    public void updateStaticObjects() {
-        // In OSHI 4.0.0. it is planed to change this mechanism - see https://github.com/oshi/oshi/issues/310
         fileStores = operatingSystem.getFileSystem().getFileStores();
         powerSources = hal.getPowerSources();
-        networks = hal.getNetworkIFs();
         drives = hal.getDiskStores();
+
     }
 
     @SuppressWarnings("null")
@@ -182,6 +193,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the storage data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
         long totalSpace = fileStore.getTotalSpace();
         totalSpace = getSizeInMB(totalSpace);
@@ -190,6 +204,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the storage data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
         long freeSpace = fileStore.getUsableSpace();
         freeSpace = getSizeInMB(freeSpace);
@@ -198,6 +215,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the storage data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
@@ -208,6 +228,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the storage data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
@@ -222,6 +245,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the storage data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
@@ -258,6 +284,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkIp(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the network data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        networks = hal.getNetworkIFs();
         NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
         String[] ipAddresses = netInterface.getIPv4addr();
         String ipv4 = (String) getDevice(ipAddresses, 0);
@@ -317,6 +346,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the battery data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        powerSources = hal.getPowerSources();
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
         double remainingTimeInSeconds = powerSource.getTimeRemaining();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
@@ -326,6 +358,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the battery data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        powerSources = hal.getPowerSources();
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
         double remainingCapacity = powerSource.getRemainingCapacity();
         BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
@@ -529,6 +564,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the network data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long packRecv = network.getPacketsRecv();
@@ -537,6 +575,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the network data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long packSent = network.getPacketsSent();
@@ -545,6 +586,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the network data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long bytesSent = network.getBytesSent();
@@ -553,6 +597,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
+        // In the current OSHI version a new query is required for the network data values to be updated
+        // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long bytesRecv = network.getBytesRecv();

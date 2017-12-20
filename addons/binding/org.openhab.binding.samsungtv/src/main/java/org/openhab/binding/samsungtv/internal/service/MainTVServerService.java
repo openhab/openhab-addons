@@ -10,12 +10,12 @@ package org.openhab.binding.samsungtv.internal.service;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,12 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.samsungtv.internal.service.api.EventListener;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
-import org.openhab.binding.samsungtv.internal.service.api.ValueReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -58,7 +59,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
 
-    private List<ValueReceiver> listeners = new ArrayList<ValueReceiver>();
+    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Create a Samsung TV MainTVServer service");
@@ -76,22 +77,17 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     @Override
-    public String getServiceName() {
-        return SERVICE_NAME;
-    }
-
-    @Override
     public List<String> getSupportedChannelNames() {
         return supportedCommands;
     }
 
     @Override
-    public void addEventListener(ValueReceiver listener) {
+    public void addEventListener(EventListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeEventListener(ValueReceiver listener) {
+    public void removeEventListener(EventListener listener) {
         listeners.remove(listener);
     }
 
@@ -116,6 +112,11 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         stateMap.clear();
     }
 
+    @Override
+    public boolean isUpnp() {
+        return true;
+    }
+
     private Runnable pollingRunnable = new Runnable() {
 
         @Override
@@ -130,7 +131,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
                     updateResourceState("MainTVAgent2", "GetCurrentBrowserURL", null);
                 } catch (Exception e) {
-                    logger.debug("Exception during poll : {}", e);
+                    reportError("Error occurred during poll", e);
                 }
             }
         }
@@ -183,7 +184,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
         stateMap.put(variable, value);
 
-        for (ValueReceiver listener : listeners) {
+        for (EventListener listener : listeners) {
 
             switch (variable) {
                 case "ProgramTitle":
@@ -249,7 +250,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                     SamsungTvUtils.buildHashMap("Source", source, "ID", id, "UiID", "0"));
 
             if (result.get("Result").equals("OK")) {
-                logger.debug("Command succesfully executed");
+                logger.debug("Command successfully executed");
             } else {
                 logger.error("Command execution failed, result='{}'", result.get("Result"));
             }
@@ -264,7 +265,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 
         if (result.get("Result").equals("OK")) {
-            logger.debug("Command succesfully executed");
+            logger.debug("Command successfully executed");
         } else {
             logger.error("Command execution failed, result='{}'", result.get("Result"));
         }
@@ -275,7 +276,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         Map<String, String> result = updateResourceState("MainTVAgent2", "StopBrowser", null);
 
         if (result.get("Result").equals("OK")) {
-            logger.debug("Command succesfully executed");
+            logger.debug("Command successfully executed");
         } else {
             logger.error("Command execution failed, result='{}'", result.get("Result"));
         }
@@ -340,5 +341,11 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     @Override
     public void onStatusChanged(boolean status) {
         logger.debug("onStatusChanged: status={}", status);
+    }
+
+    private void reportError(String message, Throwable e) {
+        for (EventListener listener : listeners) {
+            listener.reportError(ThingStatusDetail.COMMUNICATION_ERROR, message, e);
+        }
     }
 }

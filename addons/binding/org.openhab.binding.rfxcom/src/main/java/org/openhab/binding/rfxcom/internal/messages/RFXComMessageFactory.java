@@ -119,7 +119,7 @@ public class RFXComMessageFactory {
     }
 
     public static RFXComMessage createMessage(byte[] packet) throws RFXComException {
-        PacketType packetType = PacketType.fromByte(packet[1]);
+        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, (int) packet[1]);
 
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);

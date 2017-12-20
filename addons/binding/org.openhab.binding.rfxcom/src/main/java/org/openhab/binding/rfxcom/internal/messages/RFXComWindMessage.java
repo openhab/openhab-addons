@@ -8,16 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -27,9 +25,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Pauli Anttila
  * @author Mike Jagdis - Support all available data from sensors
  */
-public class RFXComWindMessage extends RFXComBaseMessage {
+public class RFXComWindMessage extends RFXComBatteryDeviceMessage<RFXComWindMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         WIND1(1),
         WIND2(2),
         WIND3(3),
@@ -44,27 +42,11 @@ public class RFXComWindMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.WIND_DIRECTION,
-            RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED, RFXComValueSelector.TEMPERATURE,
-            RFXComValueSelector.CHILL_TEMPERATURE);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
@@ -73,11 +55,9 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     public double avgWindSpeed;
     public double temperature;
     public double chillTemperature;
-    public byte signalLevel;
-    public byte batteryLevel;
 
     public RFXComWindMessage() {
-        packetType = PacketType.WIND;
+        super(PacketType.WIND);
     }
 
     public RFXComWindMessage(byte[] data) throws RFXComException {
@@ -103,7 +83,7 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         windDirection = (short) ((data[6] & 0xFF) << 8 | (data[7] & 0xFF));
@@ -182,93 +162,45 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_WIND_DIRECTION:
+                return new DecimalType(windDirection);
 
-        State state;
+            case CHANNEL_AVG_WIND_SPEED:
+                return new DecimalType(avgWindSpeed);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+            case CHANNEL_WIND_SPEED:
+                return new DecimalType(windSpeed);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-                state = new DecimalType(signalLevel);
+            case CHANNEL_CHILL_TEMPERATURE:
+                return new DecimalType(chillTemperature);
 
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else if (valueSelector == RFXComValueSelector.WIND_DIRECTION) {
-
-                state = new DecimalType(windDirection);
-
-            } else if (valueSelector == RFXComValueSelector.AVG_WIND_SPEED) {
-
-                state = new DecimalType(avgWindSpeed);
-
-            } else if (valueSelector == RFXComValueSelector.WIND_SPEED) {
-
-                state = new DecimalType(windSpeed);
-
-            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
-
-                state = new DecimalType(temperature);
-
-            } else if (valueSelector == RFXComValueSelector.CHILL_TEMPERATURE) {
-
-                state = new DecimalType(chillTemperature);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
-        }
-
-        return state;
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
+            default:
+                return super.convertToState(channelId);
         }
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
+    public void setSubType(SubType subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
+    public void setDeviceId(String deviceId) {
+        throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
+    }
 }

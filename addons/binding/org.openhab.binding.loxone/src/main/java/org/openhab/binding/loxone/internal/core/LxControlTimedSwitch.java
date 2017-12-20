@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
-import java.io.IOException;
-
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
 /**
@@ -24,7 +22,19 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Stephan Brunner
  *
  */
-public class LxControlTimedSwitch extends LxControl {
+public class LxControlTimedSwitch extends LxControlPushbutton {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlTimedSwitch(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
 
     /**
      * A name by which Miniserver refers to timed switch controls
@@ -38,21 +48,6 @@ public class LxControlTimedSwitch extends LxControl {
      * otherwise it will count down from deactivationDelayTotal
      */
     private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
-
-    /**
-     * Command string used to set timed switch to ON without deactivation delay
-     */
-    private static final String CMD_ON = "On";
-
-    /**
-     * Command string used to set timed switch to ON with deactivation delay
-     */
-    private static final String CMD_PULSE = "pulse";
-
-    /**
-     * Command string used to set timed switch to OFF
-     */
-    private static final String CMD_OFF = "Off";
 
     /**
      * Create timed switch control object.
@@ -73,71 +68,23 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
-    }
-
-    /**
-     * Set timed switch to ON without deactivation delay.
-     * <p>
-     * Sends a command to operate the timed switch.
-     *
-     * @throws IOException
-     *             when something went wrong with communication
-     */
-    public void on() throws IOException {
-        socketClient.sendAction(uuid, CMD_ON);
-    }
-
-    /**
-     * Set timed switch to ON with deactivation delay.
-     * <p>
-     * Sends a command to operate the timed switch.
-     *
-     * @throws IOException
-     *             when something went wrong with communication
-     */
-    public void pulse() throws IOException {
-        socketClient.sendAction(uuid, CMD_PULSE);
-    }
-
-    /**
-     * Set timed switch to OFF.
-     * <p>
-     * Sends a command to operate the timed switch.
-     *
-     * @throws IOException
-     *             when something went wrong with communication
-     */
-    public void off() throws IOException {
-        socketClient.sendAction(uuid, CMD_OFF);
-    }
-
-    /**
      * Get current value of the timed switch'es state.
      *
      * @return
      *         0 - switch off, 1 - switch on
      */
+    @Override
     public Double getState() {
-
         /**
          * 0 = the output is turned off
          * -1 = the output is permanently on
          * otherwise it will count down from deactivationDelayTotal
          **/
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null && state.getValue() != null) {
-            if (state.getValue() == -1 || state.getValue() > 0) { // mapping
+        Double value = getStateValue(STATE_DEACTIVATION_DELAY);
+        if (value != null) {
+            if (value == -1 || value > 0) { // mapping
                 return 1d;
-            } else if (state.getValue() == 0) {
+            } else if (value == 0) {
                 return 0d;
             }
         }
@@ -145,15 +92,12 @@ public class LxControlTimedSwitch extends LxControl {
     }
 
     /**
+     * Get the time remaining to the switch off, in seconds
      *
      * @return deactivation delay in seconds
      *         Loxone also returns floating point values for the delay e.g. 9.99 seconds
      */
     public Double getDeactivationDelay() {
-        LxControlState state = getState(STATE_DEACTIVATION_DELAY);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_DEACTIVATION_DELAY);
     }
 }

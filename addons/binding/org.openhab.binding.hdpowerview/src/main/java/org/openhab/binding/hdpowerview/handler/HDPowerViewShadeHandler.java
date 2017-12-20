@@ -108,7 +108,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if ((bridge = getBridgeHandler()) == null) {
             return;
         }
-        int shadeId = getShadeId();
+        String shadeId = getShadeId();
         Response response;
         try {
             response = bridge.getWebTargets().moveShade(shadeId, position);
@@ -121,7 +121,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private int getShadeId() {
+    private String getShadeId() {
         return getConfigAs(HDPowerViewShadeConfiguration.class).id;
     }
 

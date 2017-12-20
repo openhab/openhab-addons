@@ -26,12 +26,47 @@ import com.google.gson.JsonElement;
  * the Miniserver, that is marked as visible in the Loxone UI. Controls can belong to a {@link LxContainer} room and a
  * {@link LxCategory} category.
  *
- * @author Pawel Pieczul
+ * @author Pawel Pieczul - initial contribution
  *
  */
 public abstract class LxControl {
+
+    /**
+     * This class is used to instantiate a particular control object by the {@link LxControlFactory}
+     * 
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    abstract static class LxControlInstance {
+        /**
+         * Creates an instance of a particular control class.
+         *
+         * @param client
+         *            websocket client to facilitate communication with Miniserver
+         * @param uuid
+         *            UUID of this control
+         * @param json
+         *            JSON describing the control as received from the Miniserver
+         * @param room
+         *            Room that this control belongs to
+         * @param category
+         *            Category that this control belongs to
+         * @return
+         *         a newly created control object
+         */
+        abstract LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
+                LxCategory category);
+
+        /**
+         * Return a type name for this control.
+         *
+         * @return
+         *         type name (as used on the Miniserver)
+         */
+        abstract String getType();
+    }
+
     private String name;
-    private String typeName;
     private LxContainer room;
     private LxCategory category;
     private Map<String, LxControlState> states = new HashMap<>();
@@ -59,35 +94,59 @@ public abstract class LxControl {
         logger.trace("Creating new LxControl: {}", json.type);
         socketClient = client;
         this.uuid = uuid;
-        if (json.type != null) {
-            this.typeName = json.type.toLowerCase();
-        }
         update(json, room, category);
     }
 
     /**
-     * Obtain control's type name (e.g. switch, rollershutter) by which Miniserver recognizes it
-     *
-     * @return
-     *         name of the control type
-     */
-    public String getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * Gets state object of given name, if exists
+     * Gets value of a state object of given name, if exists
      *
      * @param name
      *            name of state object
      * @return
-     *         state object
+     *         state object's value
      */
-    public LxControlState getState(String name) {
-        if (states.containsKey(name)) {
-            return states.get(name);
+    Double getStateValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getValue();
         }
         return null;
+    }
+
+    /**
+     * Gets text value of a state object of given name, if exists
+     *
+     * @param name
+     *            name of state object
+     * @return
+     *         state object's text value
+     */
+    String getStateTextValue(String name) {
+        LxControlState state = getState(name);
+        if (state != null) {
+            return state.getTextValue();
+        }
+        return null;
+    }
+
+    /**
+     * Adds a listener for a particular state, if the state exists for the control.
+     *
+     * @param stateName
+     *            name of the state to add listener for
+     * @param listener
+     *            listener to listen for state changes
+     * @return
+     *         state that listener was added to or null if no such state
+     */
+    public LxControlState addStateListener(String stateName, LxControlStateListener listener) {
+        LxControlState state = getState(stateName);
+        if (state != null) {
+            state.addListener(listener);
+        } else {
+            logger.debug("Attempt to add listener for not existing state {}", stateName);
+        }
+        return state;
     }
 
     public Map<LxUuid, LxControl> getSubControls() {
@@ -195,7 +254,6 @@ public abstract class LxControl {
      *            New category that this control belongs to
      */
     void update(LxJsonControl json, LxContainer room, LxCategory category) {
-
         logger.trace("Updating LxControl: {}", json.type);
 
         this.name = json.name;
@@ -211,7 +269,6 @@ public abstract class LxControl {
 
         // retrieve all states from the configuration
         if (json.states != null) {
-
             logger.trace("Reading states for LxControl: {}", json.type);
 
             for (Map.Entry<String, JsonElement> jsonState : json.states.entrySet()) {
@@ -241,64 +298,7 @@ public abstract class LxControl {
         }
     }
 
-    /**
-     * Create a {@link LxControl} object for a control received from the Miniserver
-     *
-     * @param client
-     *            websocket client to facilitate communication with Miniserver
-     * @param uuid
-     *            UUID of the control to be created
-     * @param json
-     *            JSON describing the control as received from the Miniserver
-     * @param room
-     *            Room that this control belongs to
-     * @param category
-     *            Category that this control belongs to
-     * @return
-     *         created control object or null if error
-     */
-    static LxControl createControl(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-
-        if (json == null || json.type == null || json.name == null) {
-            return null;
-        }
-        LxControl ctrl = null;
-        String type = json.type.toLowerCase();
-
-        if (LxControlSwitch.accepts(type)) {
-            ctrl = new LxControlSwitch(client, uuid, json, room, category);
-
-        } else if (LxControlPushbutton.accepts(type)) {
-            ctrl = new LxControlPushbutton(client, uuid, json, room, category);
-
-        } else if (LxControlTimedSwitch.accepts(type)) {
-            ctrl = new LxControlTimedSwitch(client, uuid, json, room, category);
-
-        } else if (LxControlDimmer.accepts(type)) {
-            ctrl = new LxControlDimmer(client, uuid, json, room, category);
-
-        } else if (LxControlJalousie.accepts(type)) {
-            ctrl = new LxControlJalousie(client, uuid, json, room, category);
-
-        } else if (LxControlTextState.accepts(type)) {
-            ctrl = new LxControlTextState(client, uuid, json, room, category);
-
-        } else if (json.details != null) {
-
-            if (LxControlInfoOnlyDigital.accepts(type) && json.details.text != null) {
-                ctrl = new LxControlInfoOnlyDigital(client, uuid, json, room, category);
-
-            } else if (LxControlInfoOnlyAnalog.accepts(type)) {
-                ctrl = new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
-
-            } else if (LxControlLightController.accepts(type)) {
-                ctrl = new LxControlLightController(client, uuid, json, room, category);
-
-            } else if (LxControlRadio.accepts(type)) {
-                ctrl = new LxControlRadio(client, uuid, json, room, category);
-            }
-        }
-        return ctrl;
+    private LxControlState getState(String name) {
+        return states.get(name);
     }
 }

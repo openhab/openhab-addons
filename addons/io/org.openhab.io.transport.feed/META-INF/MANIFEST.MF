@@ -6,7 +6,7 @@ Bundle-Name: Feed Transport bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.transport.feed
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  com.rometools.rome.feed,
  com.rometools.rome.feed.atom,

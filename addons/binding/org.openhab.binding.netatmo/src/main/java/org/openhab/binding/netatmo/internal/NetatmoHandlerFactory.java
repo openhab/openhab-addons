@@ -12,12 +12,14 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import java.util.Hashtable;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
@@ -28,9 +30,15 @@ import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
 import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
 import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
+import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
+import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.swagger.client.model.NAWebhookCameraEvent;
 
 /**
  * The {@link NetatmoHandlerFactory} is responsible for creating things and
@@ -38,9 +46,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+
+@Component(service = { ThingHandlerFactory.class,
+        NetatmoHandlerFactory.class }, immediate = true, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
     private ServiceRegistration<?> discoveryServiceReg;
+    private NetatmoBridgeHandler bridgeHandler;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -51,7 +63,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
-            NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing);
+            bridgeHandler = new NetatmoBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
@@ -70,25 +82,40 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
             return new NATherm1Handler(thing);
+        } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
+            return new NAWelcomeHomeHandler(thing);
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
+            return new NAWelcomeCameraHandler(thing);
+        } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
+            return new NAWelcomePersonHandler(thing);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;
         }
     }
 
-    private void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
+    private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
         NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
-        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+        if (bundleContext != null) {
+            discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                    new Hashtable<String, Object>());
+        }
     }
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (discoveryServiceReg != null && thingHandler.getThing().getThingTypeUID().equals(APIBRIDGE_THING_TYPE)) {
+        if (discoveryServiceReg != null && APIBRIDGE_THING_TYPE.equals(thingHandler.getThing().getThingTypeUID())) {
             discoveryServiceReg.unregister();
             discoveryServiceReg = null;
         }
         super.removeHandler(thingHandler);
+    }
+
+    public void webHookEvent(NAWebhookCameraEvent event) {
+        logger.debug("Event transmitted from restService");
+        if (bridgeHandler != null) {
+            bridgeHandler.webHookEvent(event);
+        }
     }
 
 }

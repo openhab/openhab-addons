@@ -65,7 +65,10 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
     @Override
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
-        bridgeHandler.getGateway().cancelLoadAllDeviceMetadata();
+        HomematicGateway gateway = bridgeHandler.getGateway();
+        if (gateway != null) {
+            gateway.cancelLoadAllDeviceMetadata();
+        }
         waitForScanFinishing();
         super.stopScan();
     }

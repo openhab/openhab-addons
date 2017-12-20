@@ -19,6 +19,11 @@ import org.eclipse.smarthome.core.library.types.StringType;
  */
 public interface SysteminfoInterface {
 
+    /**
+     * Initialize logic for the Systeminfo implementation
+     */
+    public void initializeSysteminfo();
+
     // Operating system info
     /**
      * Get the Family of the operating system /e.g. Windows,Unix,.../

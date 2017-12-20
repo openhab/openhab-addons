@@ -5,7 +5,7 @@ Bundle-Name: GlobalCache Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.globalcache;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.globalcache,
  org.openhab.binding.globalcache.handler
@@ -29,6 +29,5 @@ Import-Package:
  org.openhab.binding.globalcache.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -9,9 +9,9 @@
         DHCP sniffing is performed for faster network reentry discovery.</description>
 
 		<channels>
-			<channel id="online" typeId="online"></channel>
-			<channel id="latency" typeId="latency"></channel>
-			<channel id="lastseen" typeId="lastseen"></channel>
+			<channel id="online" typeId="online" />
+			<channel id="latency" typeId="latency" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 
 		<properties>
@@ -54,9 +54,9 @@
         DHCP sniffing is performed for faster network reentry discovery.</description>
 
 		<channels>
-			<channel id="online" typeId="online"></channel>
-			<channel id="latency" typeId="latency"></channel>
-			<channel id="lastseen" typeId="lastseen"></channel>
+			<channel id="online" typeId="online" />
+			<channel id="latency" typeId="latency" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 
 		<properties>

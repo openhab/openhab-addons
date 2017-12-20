@@ -9,13 +9,12 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.SECURITY2;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComSecurity2Message.SubType;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity2Message.SubType;
 
 /**
  * Test for RFXCom-binding

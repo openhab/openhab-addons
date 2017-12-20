@@ -10,6 +10,7 @@ Currently, the binding supports a single type of Thing, being the ```command``` 
 
 The binding does not require any specific configuration.
 
+
 Note that the commands are executed in the context and with the privileges of the process running the java virtual machine. It is not advised to run the virtual machine as superuser/root. Linux Os needs the user openhab/openhabian to be able to execute dedicated command, it is advised to always test in the command line if this is possible.
 
 ```
@@ -18,12 +19,14 @@ sudo -u openhab <YOUR COMMAND>
 
 ## Thing Configuration
 
+
 The ```command``` Thing requires the command to execute on the shell. Optionally one can specify:
 
-- a transformation to apply on the execution result, 
-- an interval, in seconds, the command will be repeatedly executed, 
-- a time-out, in seconds, the execution of the command will time out, and lastly, 
-- a boolean parameter to make the command execute immediately every time the state of the input channel has changed. 
+
+-   a transformation to apply on the execution result,
+-   an interval, in seconds, the command will be repeatedly executed,
+-   a time-out, in seconds, the execution of the command will time out, and lastly,
+-   a boolean parameter to make the command execute immediately every time the state of the input channel has changed.
 
 For each command a separate Thing has to be defined.
 
@@ -34,12 +37,14 @@ Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15,
 ```command``` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
 The following parameters are automatically added:
 
-- the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
-- the current State of the input channel (see below, example: `%2$s`)
+
+-   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
+-   the current State of the input channel (see below, example: `%2$s`)
 
 ## Channels
 
 All Things support the following channels:
+
 
 | Channel Type ID | Item Type | Description                                                                             |
 |-----------------|-----------|-----------------------------------------------------------------------------------------|
@@ -48,6 +53,9 @@ All Things support the following channels:
 | exit            | Number    | The exit value of the last execution of the command                                     |
 | run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
+
+
+
 
 ## Minimal Example
 
@@ -61,6 +69,7 @@ Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2
 **demo.items**
 
 ```
+
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"} 
 String APCRunning { channel="exec:command:apc:run"}
 String APCExitValue {channel="exec:command:apc:exit"}
@@ -83,9 +92,9 @@ Switch YourTrigger
 Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is runnung or finished
-Switch yourcommand { channel="exec:command:remote-send:run" }
+Switch yourcommand { channel="exec:command:yourcommand:run" }
 // Arguments to be placed for '%2$s' in command line
-String yourcommand_Args { channel="exec:command:remote-send:input"}
+String yourcommand_Args { channel="exec:command:yourcommand:input"}
 // Output of command line execution 
 String yourcommand_out { channel="exec:command:yourcommand:output" }
 ```

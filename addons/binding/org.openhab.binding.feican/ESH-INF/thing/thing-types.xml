@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="feican"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="bulb">
+        <label>Wifi RGBW Bulb</label>
+        <description>A dimmable light with changeable colors.</description>
+
+        <channels>
+            <channel id="color" typeId="color" />
+            <channel id="color_temperature" typeId="color_temperature" />
+            <channel id="program" typeId="program" />
+            <channel id="program_speed" typeId="program_speed" />
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP Address</label>
+                <description>IP Address of the device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>

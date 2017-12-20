@@ -69,8 +69,10 @@ public class NestBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PREVIOUS_MODE = "previous_mode";
+    public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_CAN_HEAT = "can_heat";
     public static final String CHANNEL_CAN_COOL = "can_cool";
+    public static final String CHANNEL_FAN_TIMER_TIMEOUT = "fan_timer_timeout";
     public static final String CHANNEL_HAS_FAN = "has_fan";
     public static final String CHANNEL_HAS_LEAF = "has_leaf";
     public static final String CHANNEL_SUNLIGHT_CORRECTION_ENABLED = "sunlight_correction_enabled";

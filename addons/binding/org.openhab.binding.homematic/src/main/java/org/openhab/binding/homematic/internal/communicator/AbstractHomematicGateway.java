@@ -47,6 +47,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.HmwIoModuleVi
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.OnTimeAutomaticVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.PressVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadAllFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
@@ -118,6 +119,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new SignalStrengthVirtualDatapointHandler());
         virtualDatapointHandlers.add(new DisplayTextVirtualDatapoint());
         virtualDatapointHandlers.add(new HmwIoModuleVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new PressVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter) {
@@ -370,7 +372,13 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                                     logger.trace("    Loading datapoints into channel {}", channel);
                                     addChannelDatapoints(channel, HmParamsetType.MASTER);
                                     addChannelDatapoints(channel, HmParamsetType.VALUES);
-                                    datapointsByChannelIdCache.put(channelId, channel.getDatapoints().values());
+
+                                    // Make sure to only cache non-reconfigurable channels. For reconfigurable channels,
+                                    // the data point set might change depending on the selected mode.
+                                    if (channel.getDatapoint(HmParamsetType.MASTER,
+                                            DATAPOINT_NAME_CHANNEL_FUNCTION) == null) {
+                                        datapointsByChannelIdCache.put(channelId, channel.getDatapoints().values());
+                                    }
                                 }
                             }
                         }
@@ -598,25 +606,25 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 if (connectionTrackerThread != null && dpInfo.isPong() && id.equals(newValue)) {
                     connectionTrackerThread.pongReceived();
                 }
+                if (initialized) {
+                    final HmDatapoint dp = getDatapoint(dpInfo);
+                    HmDatapointConfig config = gatewayAdapter.getDatapointConfig(dp);
+                    receiveDelayedExecutor.start(dpInfo, config.getReceiveDelay(), () -> {
+                        dp.setValue(newValue);
 
-                final HmDatapoint dp = getDatapoint(dpInfo);
-                HmDatapointConfig config = gatewayAdapter.getDatapointConfig(dp);
-                receiveDelayedExecutor.start(dpInfo, config.getReceiveDelay(), () -> {
-                    dp.setValue(newValue);
-
-                    gatewayAdapter.onStateUpdated(dp);
-                    if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
-                        disableDatapoint(dp, DEFAULT_DISABLE_DELAY);
-                    }
-                    for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
-                        if (vdph.canHandleEvent(dp)) {
-                            vdph.handleEvent(this, dp);
-                            gatewayAdapter.onStateUpdated(vdph.getVirtualDatapoint(dp.getChannel()));
+                        gatewayAdapter.onStateUpdated(dp);
+                        if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
+                            disableDatapoint(dp, DEFAULT_DISABLE_DELAY);
                         }
-                    }
+                        for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
+                            if (vdph.canHandleEvent(dp)) {
+                                vdph.handleEvent(this, dp);
+                                gatewayAdapter.onStateUpdated(vdph.getVirtualDatapoint(dp.getChannel()));
+                            }
+                        }
 
-                });
-
+                    });
+                }
             } catch (HomematicClientException | IOException ex) {
                 // ignore
             }

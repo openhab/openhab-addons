@@ -6,6 +6,7 @@
     <config-description uri="bridge-type:plugwise:stick">
         <parameter name="serialPort" type="text" required="true">
             <label>Serial port</label>
+            <context>serial-port</context>
             <description>The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows</description>
             <default>/dev/ttyUSB0</default>
         </parameter>

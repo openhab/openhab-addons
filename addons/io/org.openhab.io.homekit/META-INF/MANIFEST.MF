@@ -14,7 +14,7 @@ Bundle-Name: HomeKit Integration
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
 Bundle-Vendor: openhab.org
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: org.openhab.io.homekit
 Import-Package: 
  com.google.common.collect,

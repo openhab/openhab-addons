@@ -174,7 +174,7 @@
 		<label>Set Point</label>
 		<description>The set point in degrees Celsius</description>
 		<category>Temperature</category>
-        <state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MaxSetPoint">
@@ -182,7 +182,7 @@
 		<label>Max Set Point</label>
 		<description>The max set point in degrees Celsius</description>
 		<category>Temperature</category>
-        <state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MinSetPoint">
@@ -190,7 +190,7 @@
 		<label>Min Set Point</label>
 		<description>The min set point in degrees Celsius</description>
 		<category>Temperature</category>
-        <state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="LockedMaxSetPoint" advanced="true">
@@ -206,7 +206,7 @@
 		<label>Locked Min Set Point</label>
 		<description>The locked range min set point in degrees Celsius</description>
 		<category>Temperature</category>
-        <state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f °C" step="0.5" />
 	</channel-type>
 
 	<channel-type id="Locked" advanced="true">
@@ -246,6 +246,19 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="State" advanced="true">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>The active state of the Nest thermostat</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">off</option>
+				<option value="HEATING">heating</option>
+				<option value="COOLING">cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="Humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
@@ -279,14 +292,21 @@
 		<item-type>Switch</item-type>
 		<label>Fan Timer Active</label>
 		<description>If the fan timer is engaged</description>
-		<state/>
+		<state />
 	</channel-type>
 
 	<channel-type id="FanTimerDuration" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan Timer Duration</label>
 		<description>Length of time (in minutes) that the fan is set to run</description>
-		<state/>
+		<state />
+	</channel-type>
+
+	<channel-type id="FanTimerTimeout" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Fan Timer Timeout</label>
+		<description>Timestamp when the fan stops running</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="HasFan" advanced="true">

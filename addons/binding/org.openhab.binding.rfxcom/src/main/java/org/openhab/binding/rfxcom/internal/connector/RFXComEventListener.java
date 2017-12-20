@@ -17,7 +17,7 @@ public interface RFXComEventListener {
 
     /**
      * Procedure for receive raw data from RFXCOM controller.
-     * 
+     *
      * @param data
      *            Received raw data.
      */
@@ -25,7 +25,7 @@ public interface RFXComEventListener {
 
     /**
      * Procedure for receiving information fatal error.
-     * 
+     *
      * @param error
      *            Error occurred.
      */

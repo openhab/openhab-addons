@@ -9,8 +9,6 @@
 package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,7 +26,20 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightController extends LxControl implements LxControlStateListener {
+public class LxControlLightController extends LxControlAbstractController implements LxControlStateListener {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlLightController(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * Number of scenes supported by the Miniserver. Indexing starts with 0 to NUM_OF_SCENES-1.
      */
@@ -44,9 +55,9 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     private static final String STATE_ACTIVE_SCENE = "activescene";
     /**
-     * List of available scenes
+     * List of available scenes (public state, so user can monitor scene list updates)
      */
-    private static final String STATE_SCENE_LIST = "scenelist";
+    public static final String STATE_SCENE_LIST = "scenelist";
     /**
      * Command string used to set control's state to ON
      */
@@ -66,7 +77,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
     private static final int SCENE_ALL_ON = 9;
 
     private Map<String, String> sceneNames = new TreeMap<>();
-    private boolean newSceneNames = false;
     private Integer movementScene;
 
     /**
@@ -85,17 +95,9 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
-
         super(client, uuid, json, room, category);
-
-        if (json.details != null) {
-            this.movementScene = json.details.movementScene;
-        }
         // sub-controls of this control have been created when update() method was called by super class constructor
-        LxControlState sceneListState = getState(STATE_SCENE_LIST);
-        if (sceneListState != null) {
-            sceneListState.addListener(this);
-        }
+        addStateListener(STATE_SCENE_LIST, this);
     }
 
     /**
@@ -110,46 +112,10 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     @Override
     void update(LxJsonControl json, LxContainer room, LxCategory category) {
-
         super.update(json, room, category);
-
-        if (json.subControls != null) {
-            for (LxJsonControl subControl : json.subControls.values()) {
-                // recursively create a subcontrol as a new control
-                subControl.room = json.room;
-                subControl.cat = json.cat;
-                LxUuid uuid = new LxUuid(subControl.uuidAction);
-                if (subControls.containsKey(uuid)) {
-                    subControls.get(uuid).update(subControl, room, category);
-                } else {
-                    LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
-                    if (control != null) {
-                        subControls.put(control.uuid, control);
-                    }
-                }
-            }
+        if (json.details != null) {
+            this.movementScene = json.details.movementScene;
         }
-        List<LxUuid> toRemove = new ArrayList<>(subControls.size());
-        for (LxControl control : subControls.values()) {
-            if (!control.uuid.getUpdate()) {
-                toRemove.add(control.uuid);
-            }
-        }
-        for (LxUuid id : toRemove) {
-            subControls.remove(id);
-        }
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -215,12 +181,9 @@ public class LxControlLightController extends LxControl implements LxControlStat
      *         number of the active scene (0-9, 0-all off, 9-all on) or null if error
      */
     public Integer getCurrentScene() {
-        LxControlState state = getState(STATE_ACTIVE_SCENE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return value.intValue();
-            }
+        Double value = getStateValue(STATE_ACTIVE_SCENE);
+        if (value != null) {
+            return value.intValue();
         }
         return null;
     }
@@ -246,18 +209,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
     }
 
     /**
-     * Check if scene names were updated since last check.
-     *
-     * @return
-     *         true if there are new scene names
-     */
-    public boolean sceneNamesUpdated() {
-        boolean ret = newSceneNames;
-        newSceneNames = false;
-        return ret;
-    }
-
-    /**
      * Get scene names from new state value received from the Miniserver
      */
     @Override
@@ -273,7 +224,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
                     sceneNames.put(params[0], params[1]);
                 }
             }
-            newSceneNames = true;
         }
     }
 }

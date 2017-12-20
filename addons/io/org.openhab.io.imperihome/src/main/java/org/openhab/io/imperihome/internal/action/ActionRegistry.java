@@ -31,6 +31,7 @@ public class ActionRegistry {
         actions.put("setMode", new SetModeAction(eventPublisher, deviceRegistry));
         actions.put("setSetPoint", new SetSetPointAction(eventPublisher));
         actions.put("launchScene", new LaunchSceneAction(eventPublisher));
+        actions.put("stopShutter", new StopShutterAction(eventPublisher, deviceRegistry));
     }
 
     public Action get(String action) {

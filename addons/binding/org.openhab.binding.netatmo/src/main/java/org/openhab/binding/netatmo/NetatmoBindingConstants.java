@@ -9,10 +9,13 @@
 package org.openhab.binding.netatmo;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.common.collect.ImmutableSet;
+import io.swagger.client.model.NAWebhookCameraEvent.EventTypeEnum;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
@@ -22,24 +25,40 @@ import com.google.common.collect.ImmutableSet;
  */
 public class NetatmoBindingConstants {
 
+    @NonNull
     private static final String BINDING_ID = "netatmo";
 
     // Configuration keys
-    public static final String EQUIPMENT_ID = "equipmentId";
+    public static final String EQUIPMENT_ID = "id";
     public static final String PARENT_ID = "parentId";
+    public static final String REFRESH_INTERVAL = "refreshInterval";
+    public static final String SETPOINT_DEFAULT_DURATION = "setpointDefaultDuration";
 
-    // List of all Thing Type UIDs
+    public static final String WEBHOOK_APP = "app_security";
+
+    // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "netatmoapi");
+
+    // List of Weather Station Things Type UIDs
     public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAMain");
     public static final ThingTypeUID MODULE1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule1");
     public static final ThingTypeUID MODULE2_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule2");
     public static final ThingTypeUID MODULE3_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule3");
     public static final ThingTypeUID MODULE4_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule4");
+
+    // Netatmo Health Coach
     public static final ThingTypeUID HOMECOACH_THING_TYPE = new ThingTypeUID(BINDING_ID, "NHC");
+
+    // List of Thermostat Things Type UIDs
     public static final ThingTypeUID PLUG_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAPlug");
     public static final ThingTypeUID THERM1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NATherm1");
 
-    // List of all Channel ids
+    // List of Welcome Home Things Type UIDs
+    public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
+    public static final ThingTypeUID WELCOME_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NACamera");
+    public static final ThingTypeUID WELCOME_PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomePerson");
+
+    // Weather Station Channel ids
     public static final String CHANNEL_TEMPERATURE = "Temperature";
     public static final String CHANNEL_TEMP_TREND = "TempTrend";
     public static final String CHANNEL_HUMIDITY = "Humidity";
@@ -91,21 +110,79 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
     // Module Properties
-    public static final String PROPERTY_BATTERY_MIN = "batteryMin";
-    public static final String PROPERTY_BATTERY_MAX = "batteryMax";
-    public static final String PROPERTY_BATTERY_LOW = "batteryLow";
     public static final String PROPERTY_SIGNAL_LEVELS = "signalLevels";
+    public static final String PROPERTY_BATTERY_LEVELS = "batteryLevels";
+    public static final String PROPERTY_REFRESH_PERIOD = "refreshPeriod";
+
+    // Welcome Home specific channels
+    public static final String CHANNEL_WELCOME_HOME_CITY = "welcomeHomeCity";
+    public static final String CHANNEL_WELCOME_HOME_COUNTRY = "welcomeHomeCountry";
+    public static final String CHANNEL_WELCOME_HOME_TIMEZONE = "welcomeHomeTimezone";
+    public static final String CHANNEL_WELCOME_HOME_PERSONCOUNT = "welcomeHomePersonCount";
+    public static final String CHANNEL_WELCOME_HOME_UNKNOWNCOUNT = "welcomeHomeUnknownCount";
+
+    public static final String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
+
+    public static final String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
+    public static final String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";
+    public static final String CHANNEL_WELCOME_PERSON_AVATAR_URL = "welcomePersonAvatarUrl";
+    public static final String CHANNEL_WELCOME_PERSON_AVATAR = "welcomePersonAvatar";
+    public static final String CHANNEL_WELCOME_PERSON_LASTMESSAGE = "welcomePersonLastEventMessage";
+    public static final String CHANNEL_WELCOME_PERSON_LASTTIME = "welcomePersonLastEventTime";
+    public static final String CHANNEL_WELCOME_PERSON_LASTEVENT = "welcomePersonLastEvent";
+    public static final String CHANNEL_WELCOME_PERSON_LASTEVENT_URL = "welcomePersonLastEventUrl";
+
+    public static final String CHANNEL_WELCOME_CAMERA_STATUS = "welcomeCameraStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_SDSTATUS = "welcomeCameraSdStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_ALIMSTATUS = "welcomeCameraAlimStatus";
+    public static final String CHANNEL_WELCOME_CAMERA_ISLOCAL = "welcomeCameraIsLocal";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVEPICTURE = "welcomeCameraLivePicture";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL = "welcomeCameraLivePictureUrl";
+    public static final String CHANNEL_WELCOME_CAMERA_LIVESTREAM_URL = "welcomeCameraLiveStreamUrl";
+
+    public static final String CHANNEL_WELCOME_EVENT_TYPE = "welcomeEventType";
+    public static final String CHANNEL_WELCOME_EVENT_TIME = "welcomeEventTime";
+    public static final String CHANNEL_WELCOME_EVENT_CAMERAID = "welcomeEventCameraId";
+    public static final String CHANNEL_WELCOME_EVENT_PERSONID = "welcomeEventPersonId";
+    public static final String CHANNEL_WELCOME_EVENT_SNAPSHOT = "welcomeEventSnapshot";
+    public static final String CHANNEL_WELCOME_EVENT_SNAPSHOT_URL = "welcomeEventSnapshotURL";
+    public static final String CHANNEL_WELCOME_EVENT_VIDEO_URL = "welcomeEventVideoURL";
+    public static final String CHANNEL_WELCOME_EVENT_VIDEOSTATUS = "welcomeEventVideoStatus";
+    public static final String CHANNEL_WELCOME_EVENT_ISARRIVAL = "welcomeEventIsArrival";
+    public static final String CHANNEL_WELCOME_EVENT_MESSAGE = "welcomeEventMessage";
+    public static final String CHANNEL_WELCOME_EVENT_SUBTYPE = "welcomeEventSubType";
+
+    public static final String WELCOME_PICTURE_URL = "https://api.netatmo.com/api/getcamerapicture";
+    public static final String WELCOME_PICTURE_IMAGEID = "image_id";
+    public static final String WELCOME_PICTURE_KEY = "key";
 
     // List of all supported physical devices and modules
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
-            PLUG_THING_TYPE, THERM1_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
+            .of(MAIN_THING_TYPE, MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE,
+                    HOMECOACH_THING_TYPE, PLUG_THING_TYPE, THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE,
+                    WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE)
+            .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, HOMECOACH_THING_TYPE,
-            PLUG_THING_TYPE, THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), Stream.of(APIBRIDGE_THING_TYPE))
+            .collect(Collectors.toSet());
 
-    public static final Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
+    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF)
+            .collect(Collectors.toSet());
+
+    public static final Set<EventTypeEnum> HOME_EVENTS = Stream.of(EventTypeEnum.PERSON_AWAY)
+            .collect(Collectors.toSet());
+    public static final Set<EventTypeEnum> WELCOME_EVENTS = Stream
+            .of(EventTypeEnum.PERSON, EventTypeEnum.MOVEMENT, EventTypeEnum.CONNECTION, EventTypeEnum.DISCONNECTION,
+                    EventTypeEnum.ON, EventTypeEnum.OFF, EventTypeEnum.BOOT, EventTypeEnum.SD, EventTypeEnum.ALIM,
+                    EventTypeEnum.NEW_MODULE, EventTypeEnum.MODULE_CONNECT, EventTypeEnum.MODULE_DISCONNECT,
+                    EventTypeEnum.MODULE_LOW_BATTERY, EventTypeEnum.MODULE_END_UPDATE, EventTypeEnum.TAG_BIG_MOVE,
+                    EventTypeEnum.TAG_SMALL_MOVE, EventTypeEnum.TAG_UNINSTALLED, EventTypeEnum.TAG_OPEN)
+            .collect(Collectors.toSet());
+    public static final Set<EventTypeEnum> PERSON_EVENTS = Stream.of(EventTypeEnum.PERSON, EventTypeEnum.PERSON_AWAY)
+            .collect(Collectors.toSet());
+    public static final Set<EventTypeEnum> PRESENCE_EVENTS = Stream
+            .of(EventTypeEnum.OUTDOOR, EventTypeEnum.ALIM, EventTypeEnum.DAILY_SUMMARY).collect(Collectors.toSet());
 
 }

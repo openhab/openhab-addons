@@ -17,10 +17,6 @@ public class RemoteControllerException extends Exception {
 
     private static final long serialVersionUID = -5292218577704635666L;
 
-    public RemoteControllerException() {
-        super();
-    }
-
     public RemoteControllerException(String message) {
         super(message);
     }

@@ -68,47 +68,38 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         config = createHomematicConfig();
         registerDeviceDiscoveryService();
         final HomematicBridgeHandler instance = this;
-        scheduler.execute(new Runnable() {
+        scheduler.execute(() -> {
+            try {
+                String id = getThing().getUID().getId();
+                gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                gateway.initialize();
 
-            @Override
-            public void run() {
-                try {
-                    String id = getThing().getUID().getId();
-                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
-                    gateway.initialize();
-
-                    discoveryService.startScan(null);
-                    discoveryService.waitForScanFinishing();
-                    updateStatus(ThingStatus.ONLINE);
-                    if (!config.getGatewayInfo().isHomegear()) {
-                        try {
-                            gateway.loadRssiValues();
-                        } catch (IOException ex) {
-                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
-                            logger.error("{}", ex.getMessage(), ex);
-                        }
+                discoveryService.startScan(null);
+                discoveryService.waitForScanFinishing();
+                updateStatus(ThingStatus.ONLINE);
+                if (!config.getGatewayInfo().isHomegear()) {
+                    try {
+                        gateway.loadRssiValues();
+                    } catch (IOException ex) {
+                        logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                        logger.error("{}", ex.getMessage(), ex);
                     }
-                    gateway.startWatchdogs();
-                } catch (IOException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                    dispose();
-                    scheduleReinitialize();
                 }
+                gateway.startWatchdogs();
+            } catch (IOException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                dispose();
+                scheduleReinitialize();
             }
         });
-
     }
 
     /**
      * Schedules a reinitialization, if the Homematic gateway is not reachable at bridge startup.
      */
     private void scheduleReinitialize() {
-        scheduler.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                initialize();
-            }
+        scheduler.schedule(() -> {
+            initialize();
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -149,7 +140,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (discoveryServiceRegistration != null && bundleContext != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
-            service.deactivate();
+            if (service != null) {
+                service.deactivate();
+            }
 
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;

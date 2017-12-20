@@ -69,23 +69,19 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     private void initializeGardena() {
         final GardenaAccountHandler instance = this;
-        scheduler.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    String id = getThing().getUID().getId();
-                    gardenaSmart.init(id, gardenaConfig, instance, scheduler);
-                    registerDeviceDiscoveryService();
-                    discoveryService.startScan(null);
-                    discoveryService.waitForScanFinishing();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (GardenaException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                    disposeGardena();
-                    scheduleReinitialize();
-                    logger.debug("{}", ex.getMessage(), ex);
-                }
+        scheduler.execute(() -> {
+            try {
+                String id = getThing().getUID().getId();
+                gardenaSmart.init(id, gardenaConfig, instance, scheduler);
+                registerDeviceDiscoveryService();
+                discoveryService.startScan(null);
+                discoveryService.waitForScanFinishing();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (GardenaException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                disposeGardena();
+                scheduleReinitialize();
+                logger.debug("{}", ex.getMessage(), ex);
             }
         });
     }
@@ -94,12 +90,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      * Schedules a reinitialization, if Gardea Smart Home account is not reachable at startup.
      */
     private void scheduleReinitialize() {
-        scheduler.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                initializeGardena();
-            }
+        scheduler.schedule(() -> {
+            initializeGardena();
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -178,9 +170,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 gardenaThingHandler.updateSettings(device);
                 gardenaThingHandler.updateStatus(device);
             } catch (GardenaException ex) {
-                logger.error("There is something wrong with your thing, please recreate the thing {}",
-                        gardenaThing.getUID(), ex);
-                updateStatus(ThingStatus.OFFLINE);
+                logger.error("There is something wrong with your thing '{}', please check or recreate it: {}",
+                        gardenaThing.getUID(), ex.getMessage());
+                logger.debug("Gardena exception caught on device update.", ex);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } catch (AccountHandlerNotAvailableException ignore) {
             }
         }

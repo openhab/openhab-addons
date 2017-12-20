@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
@@ -35,6 +36,8 @@ import org.openhab.binding.harmonyhub.handler.HarmonyDeviceHandler;
 import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
 import org.openhab.binding.harmonyhub.internal.discovery.HarmonyDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Sets;
 
@@ -44,6 +47,8 @@ import com.google.common.collect.Sets;
  *
  * @author Dan Cunningham - Initial contribution
  */
+@Component(service = { ThingHandlerFactory.class,
+        ChannelTypeProvider.class }, immediate = true, configurationPid = "binding.harmonyhub", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets

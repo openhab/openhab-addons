@@ -11,6 +11,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>@text/parameter.serialport.label</label>
+				<context>serial-port</context>
 				<description>@text/parameter.serialport.description</description>
 			</parameter>
 			<parameter name="baudRate" type="integer" required="false">

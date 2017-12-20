@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.DeleteDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.EventParser;
@@ -57,9 +58,11 @@ public abstract class RpcResponseHandler<T> {
         } else if (RPC_METHODNAME_SYSTEM_MULTICALL.equals(methodName)) {
             for (Object o : (Object[]) responseData[0]) {
                 Map<?, ?> call = (Map<?, ?>) o;
-                String method = call.get("methodName").toString();
-                Object[] data = (Object[]) call.get("params");
-                handleMethodCall(method, data);
+                if (call != null) {
+                    String method = ObjectUtils.toString(call.get("methodName"));
+                    Object[] data = (Object[]) call.get("params");
+                    handleMethodCall(method, data);
+                }
             }
             return getEmptyEventListResult();
         } else if (RPC_METHODNAME_SET_CONFIG_READY.equals(methodName)) {

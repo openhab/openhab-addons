@@ -78,8 +78,14 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Telldus Core Handler disposed.");
-        deviceController.dispose();
-        eventHandler.remove();
+        if (deviceController != null) {
+            deviceController.dispose();
+            deviceController = null;
+        }
+        if (eventHandler != null) {
+            eventHandler.remove();
+            eventHandler = null;
+        }
         clearDeviceList();
         initialized = false;
         JNA.CLibrary.INSTANCE.tdClose();
@@ -108,10 +114,14 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         TellstickBridgeConfiguration configuration = getConfigAs(TellstickBridgeConfiguration.class);
         init(configuration.libraryPath);
 
-        rescanTelldusDevices();
-        setupListeners();
-        setupDeviceController(configuration);
-        updateStatus(ThingStatus.ONLINE);
+        scheduler.submit(() -> {
+            rescanTelldusDevices();
+            setupListeners();
+            setupDeviceController(configuration);
+            updateStatus(ThingStatus.ONLINE);
+        });
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private void setupDeviceController(TellstickBridgeConfiguration configuration) {
@@ -191,6 +201,8 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     public void clearDeviceList() {
+        deviceList.clear();
+        sensorList.clear();
     }
 
     private Device getDevice(String id, List<TellstickDevice> devices) {

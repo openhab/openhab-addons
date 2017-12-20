@@ -11,10 +11,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
-import org.junit.Test;
 
+import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
  * Test for RFXCom-binding

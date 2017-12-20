@@ -9,10 +9,12 @@
 package org.openhab.binding.netatmo.internal.thermostat;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import java.util.Calendar;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -26,11 +28,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.NAModuleAdapter;
-import org.openhab.binding.netatmo.internal.config.NATherm1Configuration;
 
-import io.swagger.client.CollectionFormats.CSVParams;
 import io.swagger.client.api.ThermostatApi;
+import io.swagger.client.model.NAMeasureResponse;
+import io.swagger.client.model.NASetpoint;
 import io.swagger.client.model.NAThermProgram;
 import io.swagger.client.model.NAThermostat;
 import io.swagger.client.model.NATimeTableItem;
@@ -42,62 +43,55 @@ import io.swagger.client.model.NATimeTableItem;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration> {
+public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
-    public NATherm1Handler(Thing thing) {
-        super(thing, NATherm1Configuration.class);
-
+    public NATherm1Handler(@NonNull Thing thing) {
+        super(thing);
     }
 
     @Override
-    public void updateChannels(NAModuleAdapter module) {
-        if (measuredChannels.size() > 0) {
+    public void updateChannels(Object module) {
+        measurableChannels.getAsCsv().ifPresent(csvParams -> {
             ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
-            String parentId = configuration.getParentId();
-            String moduleId = module.getId();
-            CSVParams csvParams = new CSVParams(measuredChannels);
-            measures = thermostatApi.getmeasure(parentId, "max", csvParams, moduleId, null, null, 1, true, true);
-        }
+            NAMeasureResponse measures = thermostatApi.getmeasure(getParentId(), "max", csvParams, getId(), null, null,
+                    1, true, true);
+            measurableChannels.setMeasures(measures);
+        });
         super.updateChannels(module);
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
-
-        if (module != null) {
-            NAThermostat thermostat = module.getThermostat();
-            if (thermostat != null) {
-                switch (channelId) {
-                    case CHANNEL_THERM_ORIENTATION:
-                        return ChannelTypeUtils.toDecimalType(thermostat.getThermOrientation());
-                    case CHANNEL_THERM_RELAY:
-                        return thermostat.getThermRelayCmd() == 100 ? OnOffType.ON : OnOffType.OFF;
-                    case CHANNEL_TEMPERATURE:
-                        return ChannelTypeUtils.toDecimalType(thermostat.getMeasured().getTemperature());
-                    case CHANNEL_SETPOINT_TEMP:
-                        return ChannelTypeUtils.toDecimalType(thermostat.getMeasured().getSetpointTemp());
-                    case CHANNEL_TIMEUTC:
-                        return ChannelTypeUtils.toDateTimeType(thermostat.getMeasured().getTime());
-                    case CHANNEL_SETPOINT_END_TIME: {
-                        if (thermostat.getSetpoint() == null) {
-                            return UnDefType.NULL;
+        switch (channelId) {
+            case CHANNEL_THERM_ORIENTATION:
+                return module != null ? toDecimalType(module.getThermOrientation()) : UnDefType.UNDEF;
+            case CHANNEL_THERM_RELAY:
+                return module != null ? module.getThermRelayCmd() == 100 ? OnOffType.ON : OnOffType.OFF
+                        : UnDefType.UNDEF;
+            case CHANNEL_TEMPERATURE:
+                return module != null ? toDecimalType(module.getMeasured().getTemperature()) : UnDefType.UNDEF;
+            case CHANNEL_SETPOINT_TEMP:
+                return module != null ? toDecimalType(module.getMeasured().getSetpointTemp()) : UnDefType.UNDEF;
+            case CHANNEL_TIMEUTC:
+                return module != null ? toDateTimeType(module.getMeasured().getTime()) : UnDefType.UNDEF;
+            case CHANNEL_SETPOINT_END_TIME: {
+                if (module != null) {
+                    NASetpoint setpoint = module.getSetpoint();
+                    if (setpoint != null) {
+                        Integer endTime = setpoint.getSetpointEndtime();
+                        if (endTime == null) {
+                            endTime = getNextSchedule(module.getThermProgramList());
                         }
-
-                        Integer endTime = thermostat.getSetpoint().getSetpointEndtime();
-                        if (endTime != null) {
-                            return ChannelTypeUtils.toDateTimeType(endTime);
-                        } else {
-                            return ChannelTypeUtils.toDateTimeType(getNextSchedule(thermostat.getThermProgramList()));
-                        }
-
+                        return toDateTimeType(endTime);
                     }
-                    case CHANNEL_SETPOINT_MODE: {
-                        return thermostat.getSetpoint() != null
-                                ? ChannelTypeUtils.toStringType(thermostat.getSetpoint().getSetpointMode())
-                                : UnDefType.NULL;
-                    }
-
+                    return UnDefType.NULL;
                 }
+                return UnDefType.UNDEF;
+            }
+            case CHANNEL_SETPOINT_MODE: {
+                return module != null ? module.getSetpoint() != null
+                        ? ChannelTypeUtils.toStringType(module.getSetpoint().getSetpointMode())
+                        : UnDefType.NULL : UnDefType.UNDEF;
             }
         }
         return super.getNAThingProperty(channelId);
@@ -129,7 +123,6 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
                 }
 
                 result = (int) (next * 60 + (mondayZero.getTimeInMillis() / 1000));
-
             }
         }
         return result;
@@ -142,8 +135,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
             try {
                 switch (channelUID.getId()) {
                     case CHANNEL_SETPOINT_MODE: {
-                        getBridgeHandler().getThermostatApi().setthermpoint(configuration.getParentId(),
-                                configuration.getEquipmentId(), command.toString(), null, null);
+                        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), command.toString(),
+                                null, null);
 
                         updateState(channelUID, new StringType(command.toString()));
                         requestParentRefresh();
@@ -152,10 +145,9 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
                     case CHANNEL_SETPOINT_TEMP: {
                         // Switch the thermostat to manual mode on the desired setpoint for given duration
                         Calendar cal = Calendar.getInstance();
-                        cal.add(Calendar.MINUTE, configuration.setpointDefaultDuration);
-                        getBridgeHandler().getThermostatApi().setthermpoint(configuration.getParentId(),
-                                configuration.getEquipmentId(), "manual", (int) (cal.getTimeInMillis() / 1000),
-                                Float.parseFloat(command.toString()));
+                        cal.add(Calendar.MINUTE, getSetpointDefaultDuration());
+                        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
+                                (int) (cal.getTimeInMillis() / 1000), Float.parseFloat(command.toString()));
                         updateState(channelUID, new DecimalType(command.toString()));
                         requestParentRefresh();
                         break;
@@ -165,6 +157,10 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
         }
+    }
+
+    private Integer getSetpointDefaultDuration() {
+        return (Integer) config.get(SETPOINT_DEFAULT_DURATION);
     }
 
 }

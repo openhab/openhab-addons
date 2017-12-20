@@ -5,7 +5,7 @@ Bundle-Name: PHP support for the CometVisu backend
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.ui.cometvisu.php;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Import-Package: 
  com.caucho.java;version="[4.0,5)",
  com.caucho.quercus.env;version="[4.0,5)",

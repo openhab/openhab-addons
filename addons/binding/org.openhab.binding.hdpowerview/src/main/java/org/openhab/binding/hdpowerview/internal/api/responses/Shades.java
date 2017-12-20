@@ -24,7 +24,7 @@ public class Shades {
     public List<String> shadeIds;
 
     public static class Shade {
-        public int id;
+        public String id;
         String name;
         public int roomId;
         public int groupId;

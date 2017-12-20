@@ -36,7 +36,7 @@ public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             YamahaReceiverBindingConstants.BRIDGE_THING_TYPES_UIDS,
             YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS);
-    private Logger logger = LoggerFactory.getLogger(YamahaZoneThingHandler.class);
+    private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -168,7 +169,8 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
 
     @Override
     public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            Collection<ThingTypeUID> thingTypeUIDs) {
-        return null;
+            Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+        return Collections.emptyList();
     }
+
 }

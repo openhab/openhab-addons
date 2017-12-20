@@ -454,13 +454,24 @@ Number  WindDirection  "Wind direction [%d deg]"  ["iss:type:DevGenericSensor", 
 
 The _DevThermostat_ combines a setpoint, current temperature and mode in one ImperiHome device. To accomplish this using openHAB items, it uses a _curtemp_ and _curmode_ link and a few additional tags. 
  
- ```
- Number Thermos_Setpoint   "Thermostat"      ["iss:room:Test", "iss:type:DevThermostat", "iss:step:0.5", "iss:minVal:15", "iss:maxVal:24", "iss:modes:Home,Away,Comfort,Sleeping", "iss:link:curmode:Thermos_Mode", "iss:link:curtemp:Thermos_Temp"] { channel="..." }
- Number Thermos_Temp       "Thermos temp"    ["iss:room:Test", "iss:type:DevTemperature", "iss:unit:K"]  { channel="..." }
- String Thermos_Mode       "Thermos mode"    ["iss:room:Test", "iss:type:DevGenericSensor"]              { channel="..." }
- ```
+```
+Number Thermos_Setpoint   "Thermostat"      ["iss:room:Test", "iss:type:DevThermostat", "iss:step:0.5", "iss:minVal:15", "iss:maxVal:24", "iss:modes:Home,Away,Comfort,Sleeping", "iss:link:curmode:Thermos_Mode", "iss:link:curtemp:Thermos_Temp"] { channel="..." }
+Number Thermos_Temp       "Thermos temp"    ["iss:room:Test", "iss:type:DevTemperature", "iss:unit:K"]  { channel="..." }
+String Thermos_Mode       "Thermos mode"    ["iss:room:Test", "iss:type:DevGenericSensor"]              { channel="..." }
+```
  
- The main _DevThermostat_ device must be the Item holding the setpoint. Using tags, this device specifies the minimum and maximum setpoint value, the setpoint step and the available modes. The two links specify what Items contain the current temperature and current mode. If you want to use a custom unit, set the _unit_ tag on the current temperature device.
+The main _DevThermostat_ device must be the Item holding the setpoint. Using tags, this device specifies the minimum and maximum setpoint value, the setpoint step and the available modes. The two links specify what Items contain the current temperature and current mode. If you want to use a custom unit, set the _unit_ tag on the current temperature device.
+
+### Shutter stopper
+
+The _DevShutter_ device of ImperiHome support a 'stop' action. To use this, link a Switch item to your shutter item, like so:
+
+```
+Dimmer MyShutter     "Shutter"      ["iss:room:Test", "iss:type:DevShutter", "iss:link:stopper:MyShutterStop"] { channel="..." }
+Switch MyShutterStop "Stop shutter" ["iss:room:Test", "iss:type:DevSwitch"]  { channel="..." }
+```
+
+Implement a Rule listening for the ON command on the switch to handle the stop action yourself. 
 
 ## Items example
 

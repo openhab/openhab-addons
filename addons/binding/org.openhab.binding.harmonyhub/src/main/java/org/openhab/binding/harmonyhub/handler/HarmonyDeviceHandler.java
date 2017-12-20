@@ -72,11 +72,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command {}  for {}", command, channelUID);
+        logger.trace("Command {} for {}", command, channelUID);
         Channel channel = getThing().getChannel(channelUID.getId());
 
         if (channel == null) {
-            logger.warn("No such channel {] for device {}", channelUID, getThing());
+            logger.warn("No such channel {} for device {}", channelUID, getThing());
             return;
         }
 
@@ -144,7 +144,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
-            updateChannel();
+            bridge.getConfigFuture().thenAcceptAsync(this::updateChannel, scheduler).exceptionally(e -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Getting config failed: " + e.getMessage());
+                return null;
+            });
         } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -153,11 +157,10 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     /**
      * Updates our channel with the available buttons as option states
      */
-    private void updateChannel() {
+    private void updateChannel(HarmonyConfig config) {
         try {
             logger.debug("updateChannel for device {}", logName);
 
-            HarmonyConfig config = bridge.getCachedConfig();
             if (config == null) {
                 logger.debug("updateChannel: could not get config from bridge {}", logName);
                 return;

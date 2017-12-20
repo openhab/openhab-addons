@@ -20,6 +20,19 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlInfoOnlyDigital extends LxControl {
+
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlInfoOnlyDigital(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to digital virtual state controls
      */
@@ -49,22 +62,25 @@ public class LxControlInfoOnlyDigital extends LxControl {
     LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    /**
+     * Update Miniserver's control in runtime.
+     *
+     * @param json
+     *            JSON describing the control as received from the Miniserver
+     * @param room
+     *            New room that this control belongs to
+     * @param category
+     *            New category that this control belongs to
+     */
+    @Override
+    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+        super.update(json, room, category);
         if (json.details != null && json.details.text != null) {
             textOn = json.details.text.on;
             textOff = json.details.text.off;
         }
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -74,15 +90,12 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *         string for on/off value of the state or null if current value is not available
      */
     public String getFormattedValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                if (value == 0) {
-                    return textOff;
-                } else if (value == 1) {
-                    return textOn;
-                }
+        Double value = getStateValue(STATE_ACTIVE);
+        if (value != null) {
+            if (value == 0) {
+                return textOff;
+            } else if (value == 1) {
+                return textOn;
             }
         }
         return null;
@@ -95,10 +108,6 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *         1 for ON, 0 for OFF and -1 if current value is not available
      */
     public Double getValue() {
-        LxControlState state = getState(STATE_ACTIVE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_ACTIVE);
     }
 }

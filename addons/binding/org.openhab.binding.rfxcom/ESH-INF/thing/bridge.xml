@@ -9,24 +9,28 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>
+				<context>serial-port</context>
 				<description>Serial port where RFXCOM transceiver is connected.</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
 				<label>Disable discovery of unknown devices</label>
-				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox
+					enabling this will stop devices being added to your inbox.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean" required="true">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
 					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
-					configurations are ignored.</description>
+					configurations are ignored.
+				</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
 				<label>RFXCOM transceiver mode</label>
 				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
-					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+					(14 bytes) long. If set mode command is given, individual message configurations are ignored.
+				</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
 				<label>RFXCOM transceiver type</label>

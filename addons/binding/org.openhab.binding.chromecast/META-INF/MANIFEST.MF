@@ -3,7 +3,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.10.1-SNAPSHOT.jar,
+ lib/api-v2-0.10.1.jar,
  lib/jackson-core-asl-1.9.2.jar,
  lib/jackson-mapper-asl-1.9.2.jar
 Bundle-ManifestVersion: 2
@@ -11,7 +11,7 @@ Bundle-Name: Chromecast Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.chromecast;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.chromecast,
  org.openhab.binding.chromecast.handler
@@ -30,6 +30,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.transport.mdns.discovery,
  org.jupnp.model.meta,
  org.jupnp.model.types,
@@ -37,6 +38,5 @@ Import-Package:
  org.openhab.binding.chromecast.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

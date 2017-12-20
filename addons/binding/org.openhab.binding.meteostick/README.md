@@ -1,6 +1,7 @@
 # Meteostick Binding
 
-This is the binding for the [Meteostick](http://www.smartbedded.com/wiki/index.php/Meteostick) weather receiver dongle. This is an RF receiver that can receive data directly from Davis weather devices (and others)
+This is the binding for the [Meteostick](http://www.smartbedded.com/wiki/index.php/Meteostick) weather receiver dongle.
+This is an RF receiver that can receive data directly from Davis weather devices (and others).
 
 ## Supported Things
 
@@ -30,7 +31,7 @@ Next add the sensor and configure the channel number.
 
 Set mode to one of the following depending on your device and region:
 
-| Mode  | Device       | Region           |Frequency  |
+| Mode  | Device       | Region           | Frequency |
 |-------|--------------|------------------|-----------|
 | 0     | Davis        | North America    | 915 Mhz   |
 | 1     | Davis        | Australia        | 915 Mhz   |
@@ -49,31 +50,32 @@ Set mode to one of the following depending on your device and region:
 
 ### Meteostick
 
-| Channel Type ID | Item Type    | Description  |
-|------------------|------------------------|--------------|
-| pressure | Number       | Air pressure |
-| indoor-temperature | Number       | Indoor temperature |
+| Channel Type ID    | Item Type | Description        |
+|--------------------|-----------|--------------------|
+| pressure           | Number    | Air pressure       |
+| indoor-temperature | Number    | Indoor temperature |
 
 ### Davis ISS
 
-| Channel Type ID | Item Type    | Description  |
-|------------------|------------------------|--------------|
-| outdoor-temperature | Number       | Outside temperature |
-| humidity | Number       | Humidity |
-| wind-direction | Number       | Wind direction |
-| wind-speed | Number       | Wind speed |
-| rain-raw | Number       | Raw rain counter from the tipping bucket sensor |
-| rain-currenthour | Number       | The rainfall in the last 60 minutes |
-| rain-lasthour | Number       | The rainfall in the previous hour |
-| solar-power | Number       | Solar power from the sensor station |
-| signal-strength | Number       | Received signal strength |
-| low-battery | Number       | Low battery warning |
+| Channel Type ID     | Item Type | Description                                     |
+|---------------------|-----------|-------------------------------------------------|
+| outdoor-temperature | Number    | Outside temperature                             |
+| humidity            | Number    | Humidity                                        |
+| wind-direction      | Number    | Wind direction                                  |
+| wind-speed          | Number    | Wind speed                                      |
+| rain-raw            | Number    | Raw rain counter from the tipping bucket sensor |
+| rain-currenthour    | Number    | The rainfall in the last 60 minutes             |
+| rain-lasthour       | Number    | The rainfall in the previous hour               |
+| solar-power         | Number    | Solar power from the sensor station             |
+| signal-strength     | Number    | Received signal strength                        |
+| low-battery         | Number    | Low battery warning                             |
+
 
 #### Rainfall
 
-There are three channels associated with rainfall. The raw counter from the tipping bucket is provided, the rainfall 
-in the last 60 minutes is updated on each received rainfall and provides the past 60 minutes of rainfall. The rainfall
-in the previous hour is the rainfall for each hour of the day and is updated on the hour.
+There are three channels associated with rainfall.
+The raw counter from the tipping bucket is provided, the rainfall in the last 60 minutes is updated on each received rainfall and provides the past 60 minutes of rainfall.
+The rainfall in the previous hour is the rainfall for each hour of the day and is updated on the hour.
 
 ## Full Example
 

@@ -14,10 +14,10 @@ None
 
 ## Channels
 
-- acPower
-- totalEnergy
-- dayEnergy
-- status
+-   acPower
+-   totalEnergy
+-   dayEnergy
+-   status
 
 ## Thing Configuration
 
@@ -27,8 +27,8 @@ demo.things
 Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 ```
 
-If the thing goes online then the connection to the web interface is successful. In case
-it is offline you should see an error message.
+If the thing goes online then the connection to the web interface is successful.
+In case it is offline you should see an error message.
 
 ## Items
 
@@ -40,4 +40,3 @@ Number SolarEnergyDay "Solar day energy[%.2f kwh]" <energy> (gGF)  { channel="ko
 Number SolarTotalEnergy "Solar total energy[%.2f kwh]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
 String SolarStatus "Solar status [%s]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:status" }
 ```
-

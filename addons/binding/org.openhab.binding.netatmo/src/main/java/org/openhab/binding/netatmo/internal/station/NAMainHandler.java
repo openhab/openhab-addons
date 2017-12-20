@@ -9,20 +9,19 @@
 package org.openhab.binding.netatmo.internal.station;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.NADeviceAdapter;
-import org.openhab.binding.netatmo.internal.NAStationAdapter;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
-import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
 
 import io.swagger.client.model.NADashboardData;
+import io.swagger.client.model.NAMain;
 import io.swagger.client.model.NAStationDataBody;
-import io.swagger.client.model.NAUserAdministrative;
 
 /**
  * {@link NAMainHandler} is the base class for all current Netatmo
@@ -31,75 +30,90 @@ import io.swagger.client.model.NAUserAdministrative;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
+public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
 
-    public NAMainHandler(Thing thing) {
-        super(thing, NetatmoDeviceConfiguration.class);
+    public NAMainHandler(@NonNull Thing thing) {
+        super(thing);
     }
 
     @Override
-    protected NADeviceAdapter<?> updateReadings(String equipmentId) {
-        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(equipmentId);
+    protected NAMain updateReadings() {
+        NAMain result = null;
+        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
         if (stationDataBody != null) {
-            return new NAStationAdapter(stationDataBody);
-        } else {
-            return null;
+            userAdministrative = stationDataBody.getUser().getAdministrative();
+
+            result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
+                    .findFirst().get();
+            if (result != null) {
+                result.getModules().forEach(child -> childs.put(child.getId(), child));
+            }
         }
+        return result;
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAStationAdapter stationAdapter = (NAStationAdapter) device;
-        NADashboardData dashboardData = stationAdapter.getDashboardData();
-        NAUserAdministrative userAdministrative = device.getUserAdministrative();
-        switch (channelId) {
-            case CHANNEL_CO2:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
-            case CHANNEL_TEMPERATURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
-            case CHANNEL_MIN_TEMP:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getMinTemp());
-            case CHANNEL_MAX_TEMP:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getMaxTemp());
-            case CHANNEL_TEMP_TREND:
-                return ChannelTypeUtils.toStringType(dashboardData.getTempTrend());
-            case CHANNEL_NOISE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getNoise());
-            case CHANNEL_PRESSURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getPressure());
-            case CHANNEL_PRESS_TREND:
-                return ChannelTypeUtils.toStringType(dashboardData.getPressureTrend());
-            case CHANNEL_ABSOLUTE_PRESSURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getAbsolutePressure());
-            case CHANNEL_TIMEUTC:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
-            case CHANNEL_DATE_MIN_TEMP:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMinTemp());
-            case CHANNEL_DATE_MAX_TEMP:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getDateMaxTemp());
-            case CHANNEL_HUMIDITY:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
-            case CHANNEL_HUMIDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_HEATINDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINT:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINTDEP:
-                Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity());
-                return ChannelTypeUtils
-                        .toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
-            case CHANNEL_WIND_UNIT:
-                return new DecimalType(userAdministrative.getWindunit());
-            case CHANNEL_PRESSURE_UNIT:
-                return new DecimalType(userAdministrative.getPressureunit());
-
-            default:
-                return super.getNAThingProperty(channelId);
+        if (device != null) {
+            NADashboardData dashboardData = device.getDashboardData();
+            switch (channelId) {
+                case CHANNEL_CO2:
+                    return toDecimalType(dashboardData.getCO2());
+                case CHANNEL_TEMPERATURE:
+                    return toDecimalType(dashboardData.getTemperature());
+                case CHANNEL_MIN_TEMP:
+                    return toDecimalType(dashboardData.getMinTemp());
+                case CHANNEL_MAX_TEMP:
+                    return toDecimalType(dashboardData.getMaxTemp());
+                case CHANNEL_TEMP_TREND:
+                    return toStringType(dashboardData.getTempTrend());
+                case CHANNEL_NOISE:
+                    return toDecimalType(dashboardData.getNoise());
+                case CHANNEL_PRESSURE:
+                    return toDecimalType(dashboardData.getPressure());
+                case CHANNEL_PRESS_TREND:
+                    return toStringType(dashboardData.getPressureTrend());
+                case CHANNEL_ABSOLUTE_PRESSURE:
+                    return toDecimalType(dashboardData.getAbsolutePressure());
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc());
+                case CHANNEL_DATE_MIN_TEMP:
+                    return toDateTimeType(dashboardData.getDateMinTemp());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return toDateTimeType(dashboardData.getDateMaxTemp());
+                case CHANNEL_HUMIDITY:
+                    return toDecimalType(dashboardData.getHumidity());
+                case CHANNEL_HUMIDEX:
+                    return toDecimalType(
+                            WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_HEATINDEX:
+                    return toDecimalType(
+                            WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_DEWPOINT:
+                    return toDecimalType(
+                            WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_DEWPOINTDEP:
+                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                            dashboardData.getHumidity());
+                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
+                case CHANNEL_WIND_UNIT:
+                    return new DecimalType(userAdministrative.getWindunit());
+                case CHANNEL_PRESSURE_UNIT:
+                    return new DecimalType(userAdministrative.getPressureunit());
+            }
         }
+        return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected @Nullable Integer getDataTimestamp() {
+        if (device != null) {
+            Integer lastStored = device.getLastStatusStore();
+            if (lastStored != null) {
+                return lastStored;
+            }
+        }
+        return null;
     }
 
 }

@@ -8,18 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_DATE_TIME;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.library.items.DateTimeItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -28,9 +24,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * @author Damien Servant
  * @since 1.9.0
  */
-public class RFXComDateTimeMessage extends RFXComBaseMessage {
+public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage<RFXComDateTimeMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         RTGR328N(1);
 
         private final int subType;
@@ -39,25 +35,11 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
-
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.DATE_TIME);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
@@ -70,11 +52,8 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
     private int minute;
     private int second;
 
-    public byte signalLevel;
-    public byte batteryLevel;
-
     public RFXComDateTimeMessage() {
-        packetType = PacketType.DATE_TIME;
+        super(PacketType.DATE_TIME);
     }
 
     public RFXComDateTimeMessage(byte[] data) throws RFXComException {
@@ -96,10 +75,9 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
 
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
@@ -140,45 +118,17 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state;
-
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == DateTimeItem.class) {
-
-            if (valueSelector == RFXComValueSelector.DATE_TIME) {
-
-                state = new DateTimeType(dateTime);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
-
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        if (channelId.equals(CHANNEL_DATE_TIME)) {
+            return new DateTimeType(dateTime);
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            return super.convertToState(channelId);
         }
-
-        return state;
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -187,38 +137,17 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setDeviceId(String deviceId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        // try to find sub type by number
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = (SubType) subType;
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 }

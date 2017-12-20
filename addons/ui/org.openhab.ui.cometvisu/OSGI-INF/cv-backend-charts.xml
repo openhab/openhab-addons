@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="org.openhab.ui.cometvisu.backend.ChartResource">
-   <implementation class="org.openhab.ui.cometvisu.backend.ChartResource"/>
+   <implementation class="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
    <service>
       <provide interface="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
       <provide interface="org.eclipse.smarthome.io.rest.RESTResource"/>

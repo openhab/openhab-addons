@@ -21,6 +21,18 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlInfoOnlyAnalog extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlInfoOnlyAnalog(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to analog virtual state controls
      */
@@ -53,23 +65,26 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      */
     LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
+    }
+
+    /**
+     * Update Miniserver's control in runtime.
+     *
+     * @param json
+     *            JSON describing the control as received from the Miniserver
+     * @param room
+     *            New room that this control belongs to
+     * @param category
+     *            New category that this control belongs to
+     */
+    @Override
+    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+        super.update(json, room, category);
         if (json.details != null && json.details.format != null) {
             format = json.details.format;
         } else {
             format = "%.1f";
         }
-    }
-
-    /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
     }
 
     /**
@@ -79,12 +94,9 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      *         string for the value of the state or null if current value is not compatible with this control
      */
     public String getFormattedValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            Double value = state.getValue();
-            if (value != null) {
-                return String.format(format, value);
-            }
+        Double value = getStateValue(STATE_VALUE);
+        if (value != null) {
+            return String.format(format, value);
         }
         return null;
     }
@@ -106,10 +118,6 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      *         value of the state or null if current value is not compatible with this control
      */
     public Double getValue() {
-        LxControlState state = getState(STATE_VALUE);
-        if (state != null) {
-            return state.getValue();
-        }
-        return null;
+        return getStateValue(STATE_VALUE);
     }
 }

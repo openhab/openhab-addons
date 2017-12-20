@@ -241,12 +241,18 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
-        if (isLinked(channel)) {
+        if (dp.isTrigger()) {
+            triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+        } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
             TypeConverter<?> converter = ConverterFactory.createConverter(channel.getAcceptedItemType());
             State state = converter.convertFromBinding(dp);
-            updateState(channel.getUID(), state);
+            if (state != null) {
+                updateState(channel.getUID(), state);
+            } else {
+                logger.debug("Failed to get converted state from datapoint '{}'", dp.getName());
+            }
         }
     }
 

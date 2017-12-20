@@ -106,7 +106,9 @@ public class GardenaThingHandler extends BaseThingHandler {
     public void channelLinked(ChannelUID channelUID) {
         try {
             updateChannel(channelUID);
-        } catch (Exception ex) {
+        } catch (GardenaDeviceNotFoundException | AccountHandlerNotAvailableException ex) {
+            logger.debug("{}", ex.getMessage(), ex);
+        } catch (GardenaException ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
     }
@@ -116,7 +118,10 @@ public class GardenaThingHandler extends BaseThingHandler {
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
         Device device = getDevice();
-        updateState(channelUID, convertToState(device, channelUID));
+        State state = convertToState(device, channelUID);
+        if (state != null) {
+            updateState(channelUID, state);
+        }
     }
 
     /**
@@ -125,39 +130,45 @@ public class GardenaThingHandler extends BaseThingHandler {
     private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         String abilityName = channelUID.getGroupId();
         String propertyName = channelUID.getIdWithoutGroup();
-        String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-        if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
-                || StringUtils.startsWith(value, "1970-01-01")) {
-            return UnDefType.NULL;
-        }
+        try {
+            String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-        switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
-            case "String":
-                return new StringType(value);
-            case "Number":
-                if (ABILITY_RADIO.equals(abilityName) && PROPERTY_STATE.equals(propertyName)) {
-                    switch (value) {
-                        case "poor":
-                            return new DecimalType(1);
-                        case "good":
-                            return new DecimalType(2);
-                        case "excellent":
-                            return new DecimalType(4);
-                        default:
-                            return UnDefType.NULL;
+            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
+                    || StringUtils.startsWith(value, "1970-01-01")) {
+                return null;
+            }
+
+            switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
+                case "String":
+                    return new StringType(value);
+                case "Number":
+                    if (ABILITY_RADIO.equals(abilityName) && PROPERTY_STATE.equals(propertyName)) {
+                        switch (value) {
+                            case "poor":
+                                return new DecimalType(1);
+                            case "good":
+                                return new DecimalType(2);
+                            case "excellent":
+                                return new DecimalType(4);
+                            default:
+                                return UnDefType.NULL;
+                        }
                     }
-                }
-                return new DecimalType(value);
-            case "Switch":
-                return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
-            case "DateTime":
-                Calendar cal = DateUtils.parseToCalendar(value);
-                if (cal != null) {
-                    return new DateTimeType(cal);
-                }
+                    return new DecimalType(value);
+                case "Switch":
+                    return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
+                case "DateTime":
+                    Calendar cal = DateUtils.parseToCalendar(value);
+                    if (cal != null) {
+                        return new DateTimeType(cal);
+                    }
+            }
+        } catch (GardenaException e) {
+            logger.warn("Channel '{}' cannot be updated as device does not contain property '{}:{}'", channelUID,
+                    abilityName, propertyName);
         }
-        return UnDefType.NULL;
+        return null;
     }
 
     /**

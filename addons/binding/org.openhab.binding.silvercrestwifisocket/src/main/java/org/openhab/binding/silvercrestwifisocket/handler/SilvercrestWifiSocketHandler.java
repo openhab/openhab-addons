@@ -33,6 +33,7 @@ import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingCon
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketRequest;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketRequestType;
+import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.silvercrestwifisocket.internal.utils.NetworkUtils;
 import org.openhab.binding.silvercrestwifisocket.internal.utils.ValidationUtils;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jaime Vaz - Initial contribution
+ * @author Christian Heimerl - for integration of EasyHome
  */
 public class SilvercrestWifiSocketHandler extends BaseThingHandler {
 
@@ -52,6 +54,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
 
     private String hostAddress;
     private String macAddress;
+    private SilvercrestWifiSocketVendor vendor = SilvercrestWifiSocketBindingConstants.DEFAULT_VENDOR;
     private Long updateInterval = SilvercrestWifiSocketBindingConstants.DEFAULT_REFRESH_INTERVAL;
 
     private final WifiSocketPacketConverter converter = new WifiSocketPacketConverter();
@@ -69,6 +72,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
         this.saveMacAddressFromConfiguration(this.getConfig());
         this.saveHostAddressFromConfiguration(this.getConfig());
         this.saveUpdateIntervalFromConfiguration(this.getConfig());
+        this.saveVendorFromConfiguration(this.getConfig());
     }
 
     @Override
@@ -160,7 +164,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
      */
     private void lookupForSocketHostAddress() {
         SilvercrestWifiSocketRequest requestPacket = new SilvercrestWifiSocketRequest(this.macAddress,
-                SilvercrestWifiSocketRequestType.DISCOVERY);
+                SilvercrestWifiSocketRequestType.DISCOVERY, this.vendor);
 
         for (InetAddress broadcastAddressFound : NetworkUtils.getAllBroadcastAddresses()) {
             logger.debug("Will query for device with mac address {} in network with broadcast address {}",
@@ -175,11 +179,11 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
      * @param receivedMessage the received {@link SilvercrestWifiSocketResponse}.
      */
     public void newReceivedResponseMessage(final SilvercrestWifiSocketResponse receivedMessage) {
-        // if the host of the packet is different that the host address setted in handler, update the host
+        // if the host of the packet is different from the host address set in handler, update the host
         // address.
         if (!receivedMessage.getHostAddress().equals(this.hostAddress)) {
             logger.debug(
-                    "The host of the packet is different that the host address setted in handler. "
+                    "The host of the packet is different from the host address set in handler. "
                             + "Will update the host address. handler of mac: {}. "
                             + "Old host address: '{}' -> new host address: '{}'",
                     this.macAddress, this.hostAddress, receivedMessage.getHostAddress());
@@ -258,7 +262,19 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends one command to the Wifi Socket. If the host address is not setted, it will trigger the lookup of the
+     * Saves the vendor from configuration in field.
+     *
+     * @param configuration The {@link Configuration}
+     */
+    private void saveVendorFromConfiguration(final Configuration configuration) {
+        if ((configuration != null) && (configuration.get(SilvercrestWifiSocketBindingConstants.VENDOR_ARG) != null)) {
+            this.vendor = SilvercrestWifiSocketVendor
+                    .valueOf(String.valueOf(configuration.get(SilvercrestWifiSocketBindingConstants.VENDOR_ARG)));
+        }
+    }
+
+    /**
+     * Sends one command to the Wifi Socket. If the host address is not set, it will trigger the lookup of the
      * host address and discard the command queried.
      *
      * @param type the {@link SilvercrestWifiSocketRequestType} of the command.
@@ -268,14 +284,14 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
                 type.name(), this.hostAddress);
         if (this.hostAddress == null) {
             logger.debug(
-                    "Send command cannot proceed until one Host Address is setted for mac address: {} Will invoque one mac address lookup!",
+                    "Send command cannot proceed until one Host Address is set for mac address: {} Will invoke one mac address lookup!",
                     this.macAddress);
             this.lookupForSocketHostAddress();
         } else {
             InetAddress address;
             try {
                 address = InetAddress.getByName(this.hostAddress);
-                this.sendRequestPacket(new SilvercrestWifiSocketRequest(this.macAddress, type), address);
+                this.sendRequestPacket(new SilvercrestWifiSocketRequest(this.macAddress, type, this.vendor), address);
             } catch (UnknownHostException e) {
                 logger.debug("Host Address not found: {}. Will lookup Mac address.");
                 this.hostAddress = null;
@@ -331,6 +347,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
                 this.lookupForSocketHostAddress();
             }
             this.saveUpdateIntervalFromConfiguration(configuration);
+            this.saveVendorFromConfiguration(configuration);
 
             this.initGetStatusAndKeepAliveThread();
             this.saveConfigurationsUsingCurrentStates();
@@ -348,6 +365,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
         Map<String, Object> map = new HashMap<>();
         map.put(SilvercrestWifiSocketBindingConstants.MAC_ADDRESS_ARG, this.macAddress);
         map.put(SilvercrestWifiSocketBindingConstants.HOST_ADDRESS_ARG, this.hostAddress);
+        map.put(SilvercrestWifiSocketBindingConstants.VENDOR_ARG, this.vendor.toString());
         map.put(SilvercrestWifiSocketBindingConstants.UPDATE_INTERVAL_ARG, this.updateInterval);
 
         Configuration newConfiguration = new Configuration(map);
@@ -361,5 +379,9 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
 
     public String getMacAddress() {
         return this.macAddress;
+    }
+
+    public SilvercrestWifiSocketVendor getVendor() {
+        return this.vendor;
     }
 }

@@ -9,10 +9,8 @@
 package org.openhab.binding.rfxcom.handler;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -20,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
@@ -37,6 +36,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
+import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceControlMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
@@ -57,21 +57,18 @@ import gnu.io.NoSuchPortException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeHandler extends BaseBridgeHandler {
-    private static final int TIMEOUT = 5000;
-
     private Logger logger = LoggerFactory.getLogger(RFXComBridgeHandler.class);
 
-    RFXComConnectorInterface connector = null;
+    private RFXComConnectorInterface connector = null;
     private MessageListener eventListener = new MessageListener();
 
     private List<DeviceMessageListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
     private RFXComBridgeConfiguration configuration = null;
     private ScheduledFuture<?> connectorTask;
-    private Set<ThingUID> knownDevices = new HashSet<>();
 
     private class TransmitQueue {
-        private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<RFXComBaseMessage>();
+        private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<>();
 
         public synchronized void enqueue(RFXComBaseMessage msg) throws IOException {
             boolean wasEmpty = queue.isEmpty();
@@ -108,7 +105,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private TransmitQueue transmitQueue = new TransmitQueue();
 
-    public RFXComBridgeHandler(Bridge br) {
+    public RFXComBridgeHandler(@NonNull Bridge br) {
         super(br);
     }
 
@@ -236,10 +233,12 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 if (message instanceof RFXComInterfaceMessage) {
                     RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
                     if (msg.subType == SubType.RESPONSE) {
-                        logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
-                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
-
                         if (msg.command == Commands.GET_STATUS) {
+                            logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
+                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
+                            thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
+
                             if (configuration.ignoreConfig) {
                                 logger.debug("Ignoring transceiver configuration");
                             } else {
@@ -288,15 +287,19 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Transmitter response received: {}", resp);
 
                     transmitQueue.sendNext();
-                } else {
-
+                } else if (message instanceof RFXComDeviceMessage) {
                     for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
                         try {
-                            deviceStatusListener.onDeviceMessageReceived(getThing().getUID(), message);
+                            deviceStatusListener.onDeviceMessageReceived(getThing().getUID(),
+                                    (RFXComDeviceMessage) message);
                         } catch (Exception e) {
+                            // catch all exceptions give all handlers a fair chance of handling the messages
                             logger.error("An exception occurred while calling the DeviceStatusListener", e);
                         }
                     }
+                } else {
+                    logger.warn("The received message cannot be processed, please create an "
+                            + "issue at the relevant tracker. Received message: {}", message);
                 }
             } catch (RFXComMessageNotImplementedException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));

@@ -45,8 +45,6 @@ import org.syphr.sleepiq.api.model.Bed;
 import org.syphr.sleepiq.api.model.BedStatus;
 import org.syphr.sleepiq.api.model.FamilyStatus;
 
-import com.google.common.base.Objects;
-
 /**
  * The {@link SleepIQCloudHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -269,12 +267,14 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         if (bed != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, bed.getModel());
             properties.put(SleepIQBindingConstants.PROPERTY_BASE, bed.getBase());
-            properties.put(SleepIQBindingConstants.PROPERTY_KIDS_BED,
-                    Objects.firstNonNull(bed.isKidsBed(), "").toString());
+            if (bed.isKidsBed() != null) {
+                properties.put(SleepIQBindingConstants.PROPERTY_KIDS_BED, bed.isKidsBed().toString());
+            }
             properties.put(SleepIQBindingConstants.PROPERTY_MAC_ADDRESS, bed.getMacAddress());
             properties.put(SleepIQBindingConstants.PROPERTY_NAME, bed.getName());
-            properties.put(SleepIQBindingConstants.PROPERTY_PURCHASE_DATE,
-                    Objects.firstNonNull(bed.getPurchaseDate(), "").toString());
+            if (bed.getPurchaseDate() != null) {
+                properties.put(SleepIQBindingConstants.PROPERTY_PURCHASE_DATE, bed.getPurchaseDate().toString());
+            }
             properties.put(SleepIQBindingConstants.PROPERTY_SIZE, bed.getSize());
             properties.put(SleepIQBindingConstants.PROPERTY_SKU, bed.getSku());
         }

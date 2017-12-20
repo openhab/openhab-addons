@@ -55,7 +55,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     // TCP port 548 (Apple Filing Protocol (AFP))
     // TCP port 554 (Windows share / Linux samba)
-    // TCP port 1025 (XBox / MS-RPC)
+    // TCP port 1025 (Xbox / MS-RPC)
     private Set<Integer> tcp_service_ports = Sets.newHashSet(80, 548, 554, 1025);
     private Integer scannedIPcount;
     private ExecutorService executorService = null;
@@ -117,7 +117,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
         removeOlderResults(getTimestampOfLastScan(), null);
-        logger.trace("Starting Discovery");
+        logger.trace("Starting Network Device Discovery");
 
         final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
@@ -182,29 +182,29 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      * @param tcpPort The TCP port
      */
     public void newServiceDevice(String ip, int tcpPort) {
-        logger.trace("Found service device at {} with port", ip, tcpPort);
+        logger.trace("Found reachable service for device with IP address {} on port {}", ip, tcpPort);
 
         String label;
         // TCP port 548 (Apple Filing Protocol (AFP))
         // TCP port 554 (Windows share / Linux samba)
-        // TCP port 1025 (XBox / MS-RPC)
+        // TCP port 1025 (Xbox / MS-RPC)
         switch (tcpPort) {
             case 80:
-                label = "Device with webserver";
+                label = "Device providing a Webserver";
                 break;
             case 548:
-                label = "Apple Device";
+                label = "Device providing the Apple AFP Service";
                 break;
             case 554:
-                label = "Windows compatible device";
+                label = "Device providing Network/Samba Shares";
                 break;
             case 1025:
-                label = "Xbox compatible device";
+                label = "Device providing Xbox/MS-RPC Capability";
                 break;
             default:
-                label = "Computer/Laptop";
+                label = "Network Device";
         }
-        label += "(" + ip + ")";
+        label += " (" + ip + ":" + tcpPort + ")";
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);
@@ -224,7 +224,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      * @param ip The device IP
      */
     public void newPingDevice(String ip) {
-        logger.trace("Found service device at {}", ip);
+        logger.trace("Found pingable network device with IP address {}", ip);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);

@@ -394,6 +394,10 @@
           value="2"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.ui/content_assist_favorite_static_members"
+          value="org.junit.Assert.*;org.mockito.Mockito.*;org.mockito.MockitoAnnotations.*;org.hamcrest.CoreMatchers.*;java.util.stream.Collectors.*"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.jdt.ui/editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup"
           value="true"/>
       <setupTask

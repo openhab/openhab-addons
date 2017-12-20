@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
-Bundle-ClassPath: 
- .,
+Bundle-ClassPath: .,
  lib/retrofit-1.9.0.jar,
  lib/okhttp-2.3.0.jar,
  lib/org.apache.oltu.oauth2.client-1.0.0.jar,
@@ -9,29 +8,33 @@ Bundle-ClassPath:
  lib/json-20131018.jar,
  lib/commons-codec-1.8.jar,
  lib/gson-2.3.1.jar,
- lib/netatmo-java-retrofit-1.1.0.jar
+ lib/netatmo-java-retrofit-1.1.1.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Netatmo Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.netatmo;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler
 Import-Package: 
- com.google.common.collect,
- javax.net,
- javax.net.ssl,
+ javax.servlet,
+ javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.validation,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler,
  org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

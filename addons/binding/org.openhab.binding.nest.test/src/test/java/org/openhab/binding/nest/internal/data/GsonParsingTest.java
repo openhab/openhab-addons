@@ -108,6 +108,21 @@ public class GsonParsingTest {
     }
 
     @Test
+    public void thermostatTimeToTargetSupportedValueParsing() {
+        assertEquals((Integer) 0, Thermostat.parseTimeToTarget("~0"));
+        assertEquals((Integer) 5, Thermostat.parseTimeToTarget("<5"));
+        assertEquals((Integer) 10, Thermostat.parseTimeToTarget("<10"));
+        assertEquals((Integer) 15, Thermostat.parseTimeToTarget("~15"));
+        assertEquals((Integer) 90, Thermostat.parseTimeToTarget("~90"));
+        assertEquals((Integer) 120, Thermostat.parseTimeToTarget(">120"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void thermostatTimeToTargetUnsupportedValueParsing() {
+        Thermostat.parseTimeToTarget("#5");
+    }
+
+    @Test
     public void verifyCamera() throws UnsupportedEncodingException {
         Camera camera = fromJson("camera-data.json", Camera.class);
 

@@ -5,7 +5,7 @@ Bundle-Name: Kodi Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.kodi;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.kodi,
  org.openhab.binding.kodi.handler
@@ -22,6 +22,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
@@ -29,12 +30,12 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.kodi,
  org.openhab.binding.kodi.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

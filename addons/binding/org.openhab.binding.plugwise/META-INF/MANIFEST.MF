@@ -6,7 +6,7 @@ Bundle-Name: Plugwise Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.plugwise;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.plugwise,
  org.openhab.binding.plugwise.handler
@@ -29,6 +29,5 @@ Import-Package:
  org.openhab.binding.plugwise,
  org.openhab.binding.plugwise.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

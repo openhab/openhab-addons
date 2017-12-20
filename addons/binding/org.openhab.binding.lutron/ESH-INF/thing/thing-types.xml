@@ -409,7 +409,88 @@
             </parameter>            
         </config-description>
     </thing-type>
+    
+    <bridge-type id="ra-rs232">
+        <label>Lutron RadioRA RS232</label>
+        <description>RS-232 access to Lutron RadioRA</description>
+        
+        <config-description>
+            <parameter name="portName" type="text" required="true">
+                <context>serial-port</context>
+                <label>Serial Port</label>
+                <description>The serial port to use to communicate with a Lutron RadioRA system</description>
+            </parameter>
+            <parameter name="baud" type="text" required="false">
+                <label>Baud Rate</label>
+                <description>Baud Rate (defaults to 9600)</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="ra-dimmer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ra-rs232"/>
+        </supported-bridge-type-refs>
+        <label>RadioRA Dimmer</label>
+        <description>RadioRA Dimmer</description>
 
+        <channels>
+            <channel id="lightlevel" typeId="lightDimmer"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="zoneNumber" type="integer" required="true">
+                <label>Zone Number</label>
+                <description>Assigned Zone Number within the Lutron RadioRA system.</description>
+            </parameter>
+            <parameter name="fadeOutSec" type="integer" required="false">
+                <label>Fade Out (sec)</label>
+                <description>Time in seconds dimmer should take when lowering the level</description>
+            </parameter>
+            <parameter name="fadeInSec" type="integer" required="false">
+                <label>Fade In (sec)</label>
+                <description>Time in seconds dimmer should take when increasing the level</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="ra-switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ra-rs232"/>
+        </supported-bridge-type-refs>
+        <label>RadioRA Switch</label>
+        <description>RadioRA Switch</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="zoneNumber" type="integer" required="true">
+                <label>Zone Number</label>
+                <description>Assigned Zone Number within the Lutron RadioRA system.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="ra-phantomButton">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ra-rs232"/>
+        </supported-bridge-type-refs>
+        <label>RadioRA Phantom Button</label>
+        <description>RadioRA Phantom Button</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="buttonNumber" type="integer" required="true">
+                <label>Phantom Button Number</label>
+                <description>Phantom Button Number within the Lutron RadioRA system.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>

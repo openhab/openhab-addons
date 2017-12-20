@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -32,6 +27,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * The {@link ChromecastHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -40,23 +40,25 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.chromecast", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandlerFactory.class);
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
-
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
 
-    // url (scheme+server+port) to use for playing notification sounds
+    /** url (scheme+server+port) to use for playing notification sounds. */
     private String callbackUrl = null;
+
+    public ChromecastHandlerFactory() {
+        logger.debug("Creating new instance of ChromecastHandlerFactory");
+    }
 
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
-    };
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,20 +67,15 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+        String callbackUrl = createCallbackUrl();
+        ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, callbackUrl);
 
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        @SuppressWarnings("unchecked")
+        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
+        audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
-        if (ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            String callbackUrl = createCallbackUrl();
-            ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, callbackUrl);
-            @SuppressWarnings("unchecked")
-            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
-            audioSinkRegistrations.put(thing.getUID().toString(), reg);
-            return handler;
-        }
-
-        return null;
+        return handler;
     }
 
     private String createCallbackUrl() {

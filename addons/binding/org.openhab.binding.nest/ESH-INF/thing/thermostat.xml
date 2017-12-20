@@ -16,6 +16,7 @@
 			<channel id="humidity" typeId="Humidity" />
 			<channel id="mode" typeId="Mode" />
 			<channel id="previous_mode" typeId="PreviousMode" />
+			<channel id="state" typeId="State" />
 			<channel id="set_point" typeId="SetPoint" />
 			<channel id="max_set_point" typeId="MaxSetPoint" />
 			<channel id="min_set_point" typeId="MinSetPoint" />
@@ -23,6 +24,7 @@
 			<channel id="can_cool" typeId="CanCool" />
 			<channel id="fan_timer_active" typeId="FanTimerActive" />
 			<channel id="fan_timer_duration" typeId="FanTimerDuration" />
+			<channel id="fan_timer_timeout" typeId="FanTimerTimeout" />
 			<channel id="has_fan" typeId="HasFan" />
 			<channel id="has_leaf" typeId="HasLeaf" />
 			<channel id="sunlight_correction_enabled" typeId="SunlightCorrectionEnabled" />

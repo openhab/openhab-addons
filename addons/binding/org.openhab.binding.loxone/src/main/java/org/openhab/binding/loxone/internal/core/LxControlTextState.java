@@ -20,6 +20,18 @@ import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
  */
 public class LxControlTextState extends LxControl {
 
+    static class Factory extends LxControlInstance {
+        @Override
+        LxControl create(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+            return new LxControlTextState(client, uuid, json, room, category);
+        }
+
+        @Override
+        String getType() {
+            return TYPE_NAME;
+        }
+    }
+
     /**
      * A name by which Miniserver refers to text state controls
      */
@@ -49,28 +61,12 @@ public class LxControlTextState extends LxControl {
     }
 
     /**
-     * Check if control accepts provided type name from the Miniserver
-     *
-     * @param type
-     *            name of the type received from Miniserver
-     * @return
-     *         true if this control is suitable for this type
-     */
-    public static boolean accepts(String type) {
-        return type.equalsIgnoreCase(TYPE_NAME);
-    }
-
-    /**
      * Return current text value of the state
      *
      * @return
      *         string with current value
      */
     public String getText() {
-        LxControlState textState = getState(STATE_TEXT_AND_ICON);
-        if (textState != null) {
-            return textState.getTextValue();
-        }
-        return null;
+        return getStateTextValue(STATE_TEXT_AND_ICON);
     }
 }

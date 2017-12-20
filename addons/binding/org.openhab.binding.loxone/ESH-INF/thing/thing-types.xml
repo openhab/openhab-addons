@@ -122,7 +122,7 @@
     <channel-type id="roNumberTypeId">
         <item-type>Number</item-type>
         <label>Loxone State Read-only Information</label>
-        <description>Loxone's state information controls (NumberState, read-only).</description>
+        <description>Loxone's time counter (TimedSwitch, read-only).</description>
         <state readOnly="true"/>
     </channel-type>
     
@@ -160,5 +160,11 @@
         <state pattern="%d" min="0" max="16" step="1"/>
     </channel-type>
    
+    <channel-type id="dimmerTypeId">
+        <item-type>Dimmer</item-type>
+        <label>Loxone Dimmer</label>
+        <description>Loxone's dimmer control</description>
+    </channel-type>
+    
 </thing:thing-descriptions>
 
