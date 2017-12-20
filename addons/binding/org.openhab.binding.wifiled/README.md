@@ -1,6 +1,7 @@
 # WiFi LED Binding
 
-This binding is used to control LED stripes connected by WiFi. These devices are sold with different names, i.e. Magic Home LED, UFO LED, LED NET controller, etc.  
+This binding is used to control LED strips connected by WiFi.
+These devices are sold with different names, i.e. Magic Home LED, UFO LED, LED NET controller, etc.  
 
 ## Supported Things
 
@@ -14,13 +15,12 @@ Device table with supported channels:
 | LD382A      |   ✓   |   ✓   |   ✓   |        |    ✓    |      ✓       |
 | LD686       |   ✓   |   ✓   |   ✓   |   ✓    |    ✓    |      ✓       |
 
-Other LD*** devices might work but probably need some small adaptions.
+Other LD*** devices might work but probably need some small adaptations.
 
 ## Discovery
 
 The LED WiFi Controllers can be discovered by triggering a search in openHAB's inbox.
-Your device needs to be connected to your local network
-(i.e. by using the WiFi PBC connection method or the native App shipped with the device).
+Your device needs to be connected to your local network (i.e. by using the WiFi PBC connection method or the native App shipped with the device).
 Read the device manual for more information about how to connect your device to your network.
 
 ## Binding Configuration
@@ -51,12 +51,10 @@ you should try the FADING driver.
 If selected you can also set the number of fading steps and the fading duration in the thing configuration.
 Note that each fading step will at least take 10 ms for being processed.
 This natural limit is given by the speed of the LED controller and your network speed.
-Thus, a color fading with a configured fading duration of 0s might still take some time
-(count with more than 1 second for 100 steps).
+Thus, a color fading with a configured fading duration of 0s might still take some time (count with more than 1 second for 100 steps).
 IF the "FADING" driver is chosen the program channel and the programSpeed channel will not have any effect.
 
-The polling period is a parameter only used by the CLASSIC driver and specifies a the time in seconds
-after the LED state is refreshed in openHAB.
+The polling period is a parameter only used by the CLASSIC driver and specifies a the time in seconds after the LED state is refreshed in openHAB.
 
 ### Device Discovery
 
@@ -65,16 +63,16 @@ Moreover, make sure that the device protocol matches you device type.
 
 ## Channels
 
-| Channel Type ID | Item Type | Description                                          | Access |
-|-----------------|-----------|------------------------------------------------------|--------|
-| power           | Switch    | Power state of the LEDs (ON/OFF)                     | R/W    |
-| color           | Color     | Color of the RGB LEDs                                | R/W    |
-| white           | Dimmer    | Brightness of the first (warm) white LEDs (min=0, max=100) | R/W    |
-| white2          | Dimmer    | Brightness of the second (warm) white LEDs (min=0, max=100) | R/W    |
-| program         | String    | Program to run by the controller (i.e. color cross fade, strobe, etc.) | R/W |
-| programSpeed    | Dimmer    | Speed of the program                                 | R/W    |
+| Channel Type ID | Item Type | Description                                                            | Access |
+|-----------------|-----------|------------------------------------------------------------------------|--------|
+| power           | Switch    | Power state of the LEDs (ON/OFF)                                       | R/W    |
+| color           | Color     | Color of the RGB LEDs                                                  | R/W    |
+| white           | Dimmer    | Brightness of the first (warm) white LEDs (min=0, max=100)             | R/W    |
+| white2          | Dimmer    | Brightness of the second (warm) white LEDs (min=0, max=100)            | R/W    |
+| program         | String    | Program to run by the controller (i.e. color cross fade, strobe, etc.) | R/W    |
+| programSpeed    | Dimmer    | Speed of the program                                                   | R/W    |
 
-## Full example
+## Example
 
 Usually, there is no need to define your WiFi LED controllers via configuration files.
 However, if you like to do it, here is an example.
