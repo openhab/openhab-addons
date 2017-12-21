@@ -68,7 +68,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         @Override
         public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
             // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError()) {
+            if (hasConfigurationError() || disposed) {
                 return;
             }
             resetCommunicationError();
@@ -78,7 +78,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         @Override
         public void onBits(ModbusReadRequestBlueprint request, BitArray coils) {
             // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError()) {
+            if (hasConfigurationError() || disposed) {
                 return;
             }
             resetCommunicationError();
@@ -88,7 +88,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         @Override
         public void onError(ModbusReadRequestBlueprint request, Exception error) {
             // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError()) {
+            if (hasConfigurationError() || disposed) {
                 return;
             }
             forEachAllChildCallbacks(callback -> callback.onError(request, error));
@@ -161,6 +161,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     private ModbusPollerConfiguration config;
     private volatile PollTask pollTask;
     private Supplier<ModbusManager> managerRef;
+    private volatile boolean disposed;
 
     private ModbusReadCallback callbackDelegator = new ReadCallbackDelegator();
 
@@ -206,6 +207,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     @Override
     public void initialize() {
+        disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
             try {
@@ -227,6 +229,8 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     @Override
     public synchronized void dispose() {
         logger.debug("dispose()");
+        // Mark handler as disposed as soon as possible to halt processing of callbacks
+        disposed = true;
         unregisterPollTask();
     }
 
