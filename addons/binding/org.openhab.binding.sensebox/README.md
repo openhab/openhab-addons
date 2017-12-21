@@ -55,22 +55,7 @@ The binding introduces the following channels:
 | lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported | DateTime            | True     |
 | lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported  | DateTime            | True     |
 
-Markdown Table Formatter
-
-This tool formats basic MultiMarkdown style tables for easier plain text reading. It adds padding to all the cells to line up the pipe separators when using a mono-space font.
-
-To see what it's all about, try one of these examples, or format your own.
-
-Load: Example 1 - Example 2 - Example 3
-
-For more information:
-I'm on Twitter as @TheIdOfAlan
-I sometimes post on my personal site alanwsmith.com
-This is an Open Source GitHub Project.
-It has a Jasmine Test Suite.
-What to show your appreciation? Buy me a book
-
-The channels starting with "descriptors" are defined on the API server.
+Channels starting with "descriptors" are defined on the API server.
 
 ## Example
 
