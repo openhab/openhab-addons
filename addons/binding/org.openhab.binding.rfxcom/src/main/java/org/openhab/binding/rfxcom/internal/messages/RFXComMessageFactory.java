@@ -63,7 +63,7 @@ public class RFXComMessageFactory {
                     put(PacketType.WIND, RFXComWindMessage.class);
                     put(PacketType.UV, RFXComUVMessage.class);
                     put(PacketType.DATE_TIME, RFXComDateTimeMessage.class);
-                    // put(PacketType.CURRENT, RFXComCurrentMessage.class);
+                    put(PacketType.CURRENT, RFXComCurrentMessage.class);
                     put(PacketType.ENERGY, RFXComEnergyMessage.class);
                     put(PacketType.CURRENT_ENERGY, RFXComCurrentEnergyMessage.class);
                     // put(PacketType.POWER, RFXComPowerMessage.class);
