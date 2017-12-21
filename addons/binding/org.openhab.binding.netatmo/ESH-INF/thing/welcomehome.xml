@@ -33,8 +33,8 @@
 			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
 		</channels>
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:welcomehome" />
-
 	</thing-type>
 
 	<channel-type id="homecity">

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	  
+
 	<thing-type id="NAMain">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="netatmoapi" />
@@ -41,10 +41,11 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">86,71,56</property>
-			 <property name="refreshPeriod">600000</property>
+			<property name="signalLevels">86,71,56</property>
+			<property name="refreshPeriod">600000</property>
 		</properties>		 
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:station" />
 	</thing-type>
 
@@ -77,12 +78,12 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">90,80,70,60</property>
-			 <property name="batteryLevels">3600,4500,6000</property>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3600,4500,6000</property>
 		</properties> 
-	   
+
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
-	   
 	</thing-type>
 
 	<thing-type id="NAModule2">
@@ -107,12 +108,12 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">90,80,70,60</property>
-			 <property name="batteryLevels">3950,4770,6000</property>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3950,4770,6000</property>
 		</properties>		 
-	   
+
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
-	   
 	</thing-type>
 
 	 <thing-type id="NAModule3">
@@ -136,10 +137,11 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">90,80,70,60</property>
-			 <property name="batteryLevels">3600,4500,6000</property>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3600,4500,6000</property>
 		</properties>		   
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
 	</thing-type>
 
@@ -173,10 +175,11 @@
 		</channels>
 
 		<properties>
-			 <property name="signalLevels">90,80,70,60</property>
-			 <property name="batteryLevels">4200,4920,6000</property>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">4200,4920,6000</property>
 		</properties>		  
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
 	</thing-type>
 

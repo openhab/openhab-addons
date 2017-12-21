@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -60,9 +61,10 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     @Override
     public void initialize() {
         super.initialize();
-        if (getBridge() != null) {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
             logger.debug("Initializing {} with id '{}'", getClass(), getId());
-            if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 defineRefreshInterval();
                 updateStatus(ThingStatus.ONLINE);
                 scheduleRefreshJob();

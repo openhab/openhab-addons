@@ -22,8 +22,8 @@
 			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
 		</channels>
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:nawelcomecamera" />
-
 	</thing-type>
 
 
@@ -75,6 +75,5 @@
 		<description>Url of the live stream for this camera</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
 
 </thing:thing-descriptions>

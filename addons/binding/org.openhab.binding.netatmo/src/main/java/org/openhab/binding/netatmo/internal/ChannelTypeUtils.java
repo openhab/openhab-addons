@@ -9,7 +9,9 @@
 package org.openhab.binding.netatmo.internal;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,18 +34,17 @@ public class ChannelTypeUtils {
         return (value == null) ? UnDefType.NULL : new StringType(value);
     }
 
-    public static Calendar toCalendar(Integer netatmoTS) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(netatmoTS * 1000L);
-        return calendar;
+    public static ZonedDateTime toZonedDateTime(Integer netatmoTS) {
+        Instant i = Instant.ofEpochSecond(netatmoTS);
+        return ZonedDateTime.ofInstant(i, ZoneOffset.UTC);
     }
 
     public static State toDateTimeType(@Nullable Integer netatmoTS) {
-        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toCalendar(netatmoTS));
+        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS));
     }
 
-    public static State toDateTimeType(@Nullable Calendar calendar) {
-        return (calendar == null) ? UnDefType.NULL : new DateTimeType(calendar);
+    public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {
+        return (zonedDateTime == null) ? UnDefType.NULL : new DateTimeType(zonedDateTime);
     }
 
     public static State toDecimalType(@Nullable Float value) {
