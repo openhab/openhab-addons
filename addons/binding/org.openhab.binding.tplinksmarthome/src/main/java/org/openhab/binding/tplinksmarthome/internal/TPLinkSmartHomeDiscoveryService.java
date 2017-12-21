@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.SUPPORTED_THING_TYPES;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

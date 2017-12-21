@@ -11,7 +11,6 @@ package org.openhab.binding.tplinksmarthome;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -25,37 +24,6 @@ import com.google.common.collect.ImmutableSet;
 public final class TPLinkSmartHomeBindingConstants {
 
     public static final String BINDING_ID = "tplinksmarthome";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_HS100 = new ThingTypeUID(BINDING_ID, "hs100");
-    public static final ThingTypeUID THING_TYPE_HS105 = new ThingTypeUID(BINDING_ID, "hs105");
-    public static final ThingTypeUID THING_TYPE_HS110 = new ThingTypeUID(BINDING_ID, "hs110");
-    public static final ThingTypeUID THING_TYPE_HS200 = new ThingTypeUID(BINDING_ID, "hs200");
-    public static final ThingTypeUID THING_TYPE_LB100 = new ThingTypeUID(BINDING_ID, "lb100");
-    public static final ThingTypeUID THING_TYPE_LB110 = new ThingTypeUID(BINDING_ID, "lb110");
-    public static final ThingTypeUID THING_TYPE_LB120 = new ThingTypeUID(BINDING_ID, "lb120");
-    public static final ThingTypeUID THING_TYPE_LB130 = new ThingTypeUID(BINDING_ID, "lb130");
-    public static final ThingTypeUID THING_TYPE_RE270K = new ThingTypeUID(BINDING_ID, "re270");
-    public static final ThingTypeUID THING_TYPE_RE370K = new ThingTypeUID(BINDING_ID, "re370");
-
-    /**
-     * All supported Smart Devices.
-     */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = ImmutableSet.of(THING_TYPE_HS100, THING_TYPE_HS105,
-            THING_TYPE_HS110, THING_TYPE_HS200, THING_TYPE_LB100, THING_TYPE_LB110, THING_TYPE_LB120, THING_TYPE_LB130,
-            THING_TYPE_RE270K, THING_TYPE_RE370K);
-    /**
-     * All Smart Home on/off devices, like switch and plugs.
-     */
-    public static final Set<ThingTypeUID> SWITCH_THING_TYPES = ImmutableSet.of(THING_TYPE_HS100, THING_TYPE_HS105,
-            THING_TYPE_HS200, THING_TYPE_RE270K, THING_TYPE_RE370K);
-    /**
-     * All Smart Home on/off devices that also can monitor energy. Only HS110 supports this.
-     */
-    public static final Set<ThingTypeUID> SWITCH_ENERY_THING_TYPES = ImmutableSet.of(THING_TYPE_HS110);
-
-    public static final Set<ThingTypeUID> BULB_THING_TYPES = ImmutableSet.of(THING_TYPE_LB100, THING_TYPE_LB110,
-            THING_TYPE_LB120, THING_TYPE_LB130);
 
     // List of all channel ids
     public static final String CHANNEL_SWITCH = "switch";

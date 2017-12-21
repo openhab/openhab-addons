@@ -9,7 +9,6 @@
 package org.openhab.binding.tplinksmarthome.internal;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class PropertiesCollectorTest {
      */
     @Test
     public void testBulbProperties() throws IOException {
-        assertProperties("bulb_get_sysinfo_response", THING_TYPE_LB130, 11);
+        assertProperties("bulb_get_sysinfo_response", TPLinkSmartHomeThingType.LB130, 11);
     }
 
     /**
@@ -49,13 +48,15 @@ public class PropertiesCollectorTest {
      */
     @Test
     public void testSwitchProperties() throws IOException {
-        assertProperties("plug_get_sysinfo_response", THING_TYPE_HS100, 12);
+        assertProperties("plug_get_sysinfo_response", TPLinkSmartHomeThingType.HS100, 12);
     }
 
-    private void assertProperties(@NonNull String responseFile, @NonNull ThingTypeUID thingTypeUID, int expectedSize)
-            throws IOException {
+    private void assertProperties(@NonNull String responseFile, @NonNull TPLinkSmartHomeThingType thingType,
+            int expectedSize) throws IOException {
+        ThingTypeUID thingTypeUID = thingType.thingTypeUID();
         Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
                 ModelTestUtil.toJson(gson, responseFile, GetSysinfo.class).getSysinfo());
+
         assertEquals("Number of properties not as expected for properties", expectedSize, props.size());
         props.entrySet().stream().forEach(
                 entry -> assertNotNull("Property '" + entry.getKey() + "' should not be null", entry.getValue()));

@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class BulbDeviceTest extends DeviceTestBase {
 
-    private final BulbDevice device = new BulbDevice(THING_TYPE_LB130, COLOR_TEMPERATURE_LB130_MIN,
+    private final BulbDevice device = new BulbDevice(new ThingTypeUID(BINDING_ID, "lb130"), COLOR_TEMPERATURE_LB130_MIN,
             COLOR_TEMPERATURE_LB130_MAX);
 
     private static final List<Object[]> TESTS = Arrays

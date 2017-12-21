@@ -42,7 +42,7 @@ public final class PropertiesCollector {
 
         putNonNull(properties, CONFIG_IP, ipAddress);
         collectProperties(properties, sysinfo);
-        if (BULB_THING_TYPES.contains(thingTypeUID)) {
+        if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
             collectPropertiesBulb(properties, sysinfo);
         } else {
             collectPropertiesOther(properties, sysinfo);
