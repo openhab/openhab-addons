@@ -2,18 +2,21 @@
 
 ## Introduction
 
-This adds a backend for the web based visualization CometVisu (http://www.cometvisu.org). The CometVisu is a highly customizable visualization, that runs in any browser. Despite the existing browser based UI´s in openHAB, the CometVisu does not rely on sitemaps (although they can be used). The layout is defined with an XML-based configuration file, which allows a multi column layout.
+This adds a backend for the web based visualization CometVisu <http://www.cometvisu.org>.
+The CometVisu is a highly customizable visualization, that runs in any browser.
+Unlike the browser based UI´s in openHAB, the CometVisu does not rely on sitemaps (although they can be used).
+The layout is defined with an XML-based configuration file, which allows a multi column layout.
 
 ## Requirements
 
-* openHAB 2.0 or greater<br>
-* CometVisu 0.8.6 or greater (https://github.com/CometVisu/CometVisu/releases).<br>
+*   openHAB 2.0 or greater
+*   CometVisu 0.8.6 or greater <https://github.com/CometVisu/CometVisu/releases>
 
 ## Installation
 
-* Install the CometVisu addon (optionally you can also install the CometVisu-PHP addon, but it is not required to run the CometVisu)
-* Enable the auto-download feature via configuration setting *OR*
-* Download the CometVisu release (https://github.com/CometVisu/CometVisu/releases) and extract the "release" folder (the one which contains the index.html file) of the downloaded archive somewhere on your openHAB server (make sure that openHAB can access that folder). 
+*   Install the CometVisu addon (optionally you can also install the CometVisu-PHP addon, but it is not required to run the CometVisu)
+*   Enable the auto-download feature via configuration setting *OR*
+*   Download the CometVisu release <https://github.com/CometVisu/CometVisu/releases> and extract the "release" folder (the one which contains the index.html file) of the downloaded archive somewhere on your openHAB server (make sure that openHAB can access that folder).
 
 Note: You have to set the path to this folder in your configuration (webFolder).
 
@@ -21,8 +24,8 @@ Note: You have to set the path to this folder in your configuration (webFolder).
 
 ### Server configuration via Paper UI
 
-You can customize some settings of the CometVisu backend in the services configuration section
-of the PaperUI. You can find the CometVisu configuration in the "ui" category.
+You can customize some settings of the CometVisu backend in the services configuration section of the PaperUI.
+You can find the CometVisu configuration in the "ui" category.
 
 ### Via Config file
 
@@ -48,11 +51,11 @@ Activate the automatic download if the CometVisu client.
 autoDownload=true (default is false)
 ```
 
-> Please note that, when you activate this feature, the latest release of the CometVisu client is downloaded
-> to your openHAb server. The CometVisu is licensed under the GNU General Public License v3.0.
-> If you do not agree with this behavior you must not activate this feature.
+Please note that, when you activate this feature, the latest release of the CometVisu client is downloaded to your openHAb server.
+The CometVisu is licensed under the GNU General Public License v3.0.
+If you do not agree to this license, you must not activate this feature.
 
-Enable icon mapping from openHAB-items to CometVisu-items (Note this is only needed if you use the automatic sitemap->config generation feature)
+Enable icon mapping from openHAB-items to CometVisu-items (Note this is only needed if you use the automatic sitemap->config generation feature).
 
 ```
 icons>enableMapping=true
@@ -74,9 +77,11 @@ http://<openhab-server>:8080/<webAlias>/icon/knx-uf-iconset/showicons.php
 
 ### Override CometVisu files
 
-You can create a folder called 'cometvisu' in openHAB's 'conf/' folder and create files there which should be used instead of CometVisu's own. For example you can put all your customizations there (e.g. you config, custom.css, etc.). So the CometVisu itself stays untouched and can easily be replaced with a new release.
+You can create a folder called 'cometvisu' in openHAB's 'conf/' folder and create files there which should be used instead of CometVisu's own. For example, you can put all your customizations there (e.g. you config, custom.css, etc.).
+So the CometVisu itself stays untouched and can easily be replaced with a new release.
 
-Please use the same folder structure and file names as they are used in the CometVisu package. For example if you want to replace the original config with your own copy the file to the following path:
+Please use the same folder structure and file names as they are used in the CometVisu package.
+For example if you want to replace the original config with your own copy the file to the following path:
 
 ```
 'conf/cometvisu/config/visu_config.xml'
@@ -90,7 +95,7 @@ Or for design customizations use:
 
 ### Client configuration
 
-If you don´t use the given example below, please make sure that you correctly configure openHAB as backend in the CometVisu-Config by adding `backend="oh2"` to the root pages-element, like `<pages...backend="oh2"...>`
+If you don´t use the given example below, please make sure that you correctly configure openHAB as backend in the CometVisu-Config by adding `backend="oh2"` to the root pages-element (e.g. `<pages...backend="oh2"...>`)
 
 It is a good start to use the new sitemap support, to get a working example config, which you can store an customize for your needs.
 Open a sitemap in the CometVisu client like this:
@@ -99,22 +104,23 @@ Open a sitemap in the CometVisu client like this:
 http://<openhab-server>:8080/<webAlias>/?config=<sitemap-name>
 ```
 
-You can use the editor to change and store this config. You can start with the demo-sitemap to get a quick overview about how the CometVisu looks like.
+You can use the editor to change and store this config.
+You can start with the demo-sitemap to get a quick overview about how the CometVisu looks like.
 
 ## New features (compared to the 1.x version)
 
-* PHP support: Editor is working, rsslog-plugin can be used (see examples)
-* Persistence support: Any persisted item can be used to create a chart
-* GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts
+*   PHP support: Editor is working, rsslog-plugin can be used (see examples)
+*   Persistence support: Any persisted item can be used to create a chart
+*   GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts
 can be shown in the visu
 
 
 ## Examples
 
-### Show how many lights are switched on 
+### Show how many lights are switched on
 
-* Items: uses the demo.items provided by openHAB
-* Config (please add the infoaction-plugin in pages->meta->plugins in your config in order to use this):
+*   Items: uses the demo.items provided by openHAB
+*   Config (please add the infoaction-plugin in pages->meta->plugins in your config in order to use this):
 
 ```
 <infoaction>
@@ -132,7 +138,7 @@ can be shown in the visu
 </infoaction>
 ```
 
-  * use it in navbar:
+*   use it in navbar:
 
 ```
 <pagejump target="Lights">
@@ -151,8 +157,8 @@ can be shown in the visu
 
 ### Charts:
 
-* Items: see demo.items
-* Config:
+*   Items: see demo.items
+*   Config:
 
 ```
 <diagram height="300px" series="day" refresh="600">
@@ -164,22 +170,22 @@ can be shown in the visu
 
 some notes:
 
-  * consolidationFunction is only obeyed, when the item is persisted by the rrd4f persistence service
-  * altough you have to define <rrd...>Item_name</rrd> for every line in the config, the used items doe not have to be persisted by the rrd4j persistence service, any other service will work too
+*   `consolidationFunction` is only obeyed, when the item is persisted by the rrd4f persistence service
+*   Altough you have to define <rrd...>Item_name</rrd> for every line in the config, the used items doe not have to be persisted by the rrd4j persistence service, any other service will work too
 
 ###RSS-Log:
 
-* Items: no special item needed
-* Config:
+*   Items: no special item needed
+*   Config:
 
 ```
 <rsslog src="plugins/rsslog/rsslog_pdo.php" refresh="60" mode="last">
 	<label>Events</label>
 	<layout colspan="12" rowspan="9"/>
 </rsslog>
-``` 
+```
 
-* Fill the log from a rule:
+*   Fill the log from a rule:
 
 ```
 var content = "Call recevied from 123456",encode("UTF-8")
@@ -189,22 +195,22 @@ sendHttpGetRequest("http://<openhab-server>:8080/<webAlias>/plugins/rsslog_pdo.p
 
 ###RSS-Log from persisted item:
 
-* Items:
+*   Items:
 
 ```
 String Logger
 ```
 
-* Config:
+*   Config:
 
 ```
 <rsslog src="plugins/rsslog/rsslog_oh.php" refresh="60" filter="Logger">
 	<label>Events</label>
 	<layout colspan="12" rowspan="9"/>
 </rsslog>
-``` 
+```
 
-* Fill the log from a rule:
+*   Fill the log from a rule:
 
 ```
 # Message structure is <title>|<content>|<state>|<tags>
@@ -213,7 +219,7 @@ sendCommand(Logger,"Call received|Received call from 123456789|0|Call,Incoming")
 sendCommand(Logger,"Received call from 123456789")
 ```
 
-### ColorItem (supported since CometVisu-Release 0.8.2) => 
+### ColorItem (supported since CometVisu-Release 0.8.2) =>
 
 ```
 <colorchooser>
@@ -228,9 +234,9 @@ Please note: You have to add the colorchooser plugin in the meta>plugins section
 
 Not all of the PHP-based functions in the CometVisu client have been tested so far. The untested features are:
 
-* Automatic configuration upgrade, when the library version has changed
-* calendarlist plugin
-* upnpcontroller plugin
+*   Automatic configuration upgrade, when the library version has changed
+*   calendarlist plugin
+*   upnpcontroller plugin
 
 The sitemap support can only be used as a starting point for own customizations, e.g. you open an automatic generated config and store it in by CometVisu by using the editor. Then you start to customize it to your own needs. New items must by added by hand from the moment you stored and changed the generated config.
 
@@ -238,7 +244,7 @@ The sitemap support can only be used as a starting point for own customizations,
 
 Please make sure that openHAB has the rights to read the configured \<webFolder\> folder.
 
-### 403 error 
+### 403 error
 
 If you get an 403 - Access Denied error, when you try to open the CometVisu in your browser you have not copied the correct release folder into the \<webFolder\> folder. Please check if there is a subfolder with the exact name "release/", which contains an index.html file and copy the content to the folder defined in the \<webFolder\>-property.
 
@@ -246,8 +252,8 @@ If you get an 403 - Access Denied error, when you try to open the CometVisu in y
 
 For every change in the CometVisu XSD-schema the JAXB auto-generation job must be executed:
 
-* copy the new visu_config.xsd to src/main/resources/
-* and call `mvn jaxb2:xjc`
+*   Copy the new visu_config.xsd to src/main/resources/
+*   and call `mvn jaxb2:xjc`
 
 ## TODO
 
@@ -256,9 +262,9 @@ Maybe it is possible to define a general structure (in addition to a sitemap), t
 ```
 <floor>
 	<room navbar="top">
-		<all-lights-items colspan="12"> 
-		<all-rollershutter-items colspan="6"> 
-		<all-contact-items colspan="6"> 
+		<all-lights-items colspan="12">
+		<all-rollershutter-items colspan="6">
+		<all-contact-items colspan="6">
 		<all-other-items colspan="12">
 	</room>
 </floor>
@@ -270,10 +276,10 @@ Something like that could help to improve the sitemap->config generation.
 
 some screenshots can be found here:
 
-- http://knx-user-forum.de/forum/supportforen/cometvisu/26809-allgemeine-frage-wie-sieht-eure-cv-startseite-aus
+-   <http://knx-user-forum.de/forum/supportforen/cometvisu/26809-allgemeine-frage-wie-sieht-eure-cv-startseite-aus>
 
 ## Links
 
-* German CometVisu Support Forum: http://knx-user-forum.de/forum/supportforen/cometvisu
-* User documentation for the CometVisu: http://www.cometvisu.org/
-* GitHub project page of the CometVisu: https://github.com/CometVisu/CometVisu
+*   German CometVisu Support Forum: <http://knx-user-forum.de/forum/supportforen/cometvisu>
+*   User documentation for the CometVisu: <http://www.cometvisu.org/>
+*   GitHub project page of the CometVisu: <https://github.com/CometVisu/CometVisu>
