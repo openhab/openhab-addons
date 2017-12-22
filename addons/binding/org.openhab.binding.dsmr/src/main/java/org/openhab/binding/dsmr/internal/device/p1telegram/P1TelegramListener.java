@@ -15,8 +15,7 @@ import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 /**
  * Interface for receiving CosemObjects that come from a P1 Telegram
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public interface P1TelegramListener {
     /**
@@ -35,7 +34,9 @@ public interface P1TelegramListener {
         CRC_ERROR("CRC checksum failed for received P1 telegram"),
         DATA_CORRUPTION("Received P1 telegram is corrupted");
 
-        // public accessible state details
+        /**
+         * public accessible state details
+         */
         public final String stateDetails;
 
         /**

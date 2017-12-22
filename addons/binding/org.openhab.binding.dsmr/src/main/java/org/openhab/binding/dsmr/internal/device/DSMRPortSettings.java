@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import gnu.io.SerialPort;
 
 /**
@@ -21,25 +18,39 @@ import gnu.io.SerialPort;
  * This class can also convert a string setting (<speed> <databits><parity><stopbits>)
  * to a DSMRPortSettings object (e.g. 115200 8N1)
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRPortSettings {
-    /* Regular expression for validating port settings parameter */
-    private static final String PORT_SETTING_REGEX = "(\\d+)\\s+(\\d)([neoNEO])(1\\.5|1|2)";
-
-    /* Fixed settings for high speed communication (DSMR V4 and up) */
+    /**
+     * Fixed settings for high speed communication (DSMR V4 and up)
+     */
     public static final DSMRPortSettings HIGH_SPEED_SETTINGS = new DSMRPortSettings(115200, SerialPort.DATABITS_8,
             SerialPort.PARITY_NONE, SerialPort.STOPBITS_1);
 
-    /* Fixed settings for low speed communication (DSMR V3 and down) */
+    /**
+     * Fixed settings for low speed communication (DSMR V3 and down)
+     */
     public static final DSMRPortSettings LOW_SPEED_SETTINGS = new DSMRPortSettings(9600, SerialPort.DATABITS_7,
             SerialPort.PARITY_EVEN, SerialPort.STOPBITS_1);
 
-    /* Serial port parameters */
+    /**
+     * Serial port baudrate
+     */
     private final int baudrate;
+
+    /**
+     * Serial port databits
+     */
     private final int databits;
+
+    /**
+     * Serial port parity
+     */
     private final int parity;
+
+    /**
+     * Serial port stop bits
+     */
     private final int stopbits;
 
     /**
@@ -143,46 +154,36 @@ public class DSMRPortSettings {
      * @param portSettings
      * @return
      */
-    public static DSMRPortSettings getPortSettingsFromString(String portSettings) {
-        if (portSettings == null) {
+    public static DSMRPortSettings getPortSettingsFromConfiguration(DSMRDeviceConfiguration deviceConfiguration) {
+        if (deviceConfiguration == null || deviceConfiguration.serialPortBaudrate == null
+                || deviceConfiguration.serialPortDatabits == null || deviceConfiguration.serialPortParity == null
+                || deviceConfiguration.serialPortStopbits == null) {
             return null;
         }
-        Matcher m = Pattern.compile(PORT_SETTING_REGEX).matcher(portSettings);
+        int baudrate = deviceConfiguration.serialPortBaudrate;
+        int databits = deviceConfiguration.serialPortDatabits;
+        int parity;
+        int stopbits;
 
-        if (m.find()) {
-            int baudrate = Integer.parseInt(m.group(1));
-            int databits = Integer.parseInt(m.group(2));
-            int parity;
-            int stopbits;
-
-            char parityChar = m.group(3).toUpperCase().charAt(0);
-            switch (parityChar) {
-                case 'E':
-                    parity = SerialPort.PARITY_EVEN;
-                    break;
-                case 'O':
-                    parity = SerialPort.PARITY_ODD;
-                    break;
-                case 'N':
-                    parity = SerialPort.PARITY_NONE;
-                    break;
-                default:
-                    return null;
-            }
-            String stopbitsString = m.group(4);
-
-            if (stopbitsString.equals("1")) {
-                stopbits = SerialPort.STOPBITS_1;
-            } else if (stopbitsString.equals("1.5")) {
-                stopbits = SerialPort.STOPBITS_1_5;
-            } else if (stopbitsString.equals("2")) {
-                stopbits = SerialPort.STOPBITS_2;
-            } else {
-                return null;
-            }
-            return new DSMRPortSettings(baudrate, databits, parity, stopbits);
+        if (deviceConfiguration.serialPortParity.equals("E")) {
+            parity = SerialPort.PARITY_EVEN;
+        } else if (deviceConfiguration.serialPortParity.equals("O")) {
+            parity = SerialPort.PARITY_ODD;
+        } else if (deviceConfiguration.serialPortParity.equals("N")) {
+            parity = SerialPort.PARITY_NONE;
         } else {
             return null;
         }
+
+        if (deviceConfiguration.serialPortStopbits.equals("1")) {
+            stopbits = SerialPort.STOPBITS_1;
+        } else if (deviceConfiguration.serialPortStopbits.equals("1.5")) {
+            stopbits = SerialPort.STOPBITS_1_5;
+        } else if (deviceConfiguration.serialPortStopbits.equals("2")) {
+            stopbits = SerialPort.STOPBITS_2;
+        } else {
+            return null;
+        }
+        return new DSMRPortSettings(baudrate, databits, parity, stopbits);
     }
 }

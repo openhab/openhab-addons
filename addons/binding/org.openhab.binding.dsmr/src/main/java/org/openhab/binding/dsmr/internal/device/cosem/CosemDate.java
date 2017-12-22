@@ -9,8 +9,10 @@
 package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,11 +24,9 @@ import org.slf4j.LoggerFactory;
 /**
  * CosemDate represents a datetime value and will try to autodetect the format
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
-public class CosemDate extends CosemValue<Date> {
-    // logger
+public class CosemDate extends CosemValue<ZonedDateTime> {
     private final Logger logger = LoggerFactory.getLogger(CosemDate.class);
 
     /**
@@ -40,11 +40,15 @@ public class CosemDate extends CosemValue<Date> {
         COSEM_DATE_GENERAL("(\\d{12})([S,W]?)", "yyMMddHHmmss"),
         COSEM_DATE_DSMR_V2("(\\d{2}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})", "yy-MM-dd HH:mm:ss");
 
-        /* Cached compiled pattern */
+        /**
+         * Cached compiled pattern
+         */
         private final Pattern pattern;
 
-        /* Cached java date formatter */
-        private final SimpleDateFormat formatter;
+        /**
+         * Cached java date formatter
+         */
+        private final DateTimeFormatter formatter;
 
         /**
          * Constructs a new CosemDateFormat
@@ -58,7 +62,7 @@ public class CosemDate extends CosemValue<Date> {
          */
         private CosemDateFormat(String regex, String javaDateFormat) {
             pattern = Pattern.compile(regex);
-            formatter = new SimpleDateFormat(javaDateFormat);
+            formatter = DateTimeFormatter.ofPattern(javaDateFormat);
         }
     }
 
@@ -92,7 +96,7 @@ public class CosemDate extends CosemValue<Date> {
      *             if parsing failed
      */
     @Override
-    protected Date parse(String cosemValue) throws ParseException {
+    protected ZonedDateTime parse(String cosemValue) throws ParseException {
         for (CosemDateFormat cosemDateFormat : CosemDateFormat.values()) {
             logger.debug("Trying pattern: {}", cosemDateFormat.pattern);
 
@@ -101,12 +105,8 @@ public class CosemDate extends CosemValue<Date> {
             if (m.matches()) {
                 logger.debug("{} matches pattern: {}", cosemValue, cosemDateFormat.pattern);
 
-                Date date = cosemDateFormat.formatter.parse(m.group(1));
-
-                Calendar c = Calendar.getInstance();
-                c.setTime(date);
-
-                return date;
+                LocalDateTime localDateTime = LocalDateTime.parse(m.group(1), cosemDateFormat.formatter);
+                return ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
             }
             logger.debug("{} does not match pattern: {}", cosemValue, cosemDateFormat.pattern);
         }
@@ -120,9 +120,6 @@ public class CosemDate extends CosemValue<Date> {
      */
     @Override
     public DateTimeType getOpenHABValue() {
-        Calendar c = Calendar.getInstance();
-        c.setTime(value);
-
-        return new DateTimeType(c);
+        return new DateTimeType(value);
     }
 }

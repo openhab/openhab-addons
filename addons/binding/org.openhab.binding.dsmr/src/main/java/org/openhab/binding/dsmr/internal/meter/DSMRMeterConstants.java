@@ -13,14 +13,21 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class containing constants that are applicable to the DSMRMeter
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRMeterConstants {
-    // Timeout for receiving meter values (in seconds)
+    /**
+     * Timeout for receiving meter values (in seconds)
+     */
     public static final int METER_VALUES_RECEIVED_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(60);
-    // period between evaluations of meter values are received
+
+    /**
+     * period between evaluations of meter values are received
+     */
     public static final int METER_VALUES_TIMER_PERIOD = (int) TimeUnit.SECONDS.toMillis(10);
-    // unknown M-Bus channel
+
+    /**
+     * unknown M-Bus channel
+     */
     public static final int UNKNOWN_CHANNEL = -1;
 }

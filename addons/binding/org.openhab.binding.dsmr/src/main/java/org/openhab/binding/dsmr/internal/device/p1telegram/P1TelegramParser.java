@@ -27,16 +27,19 @@ import org.slf4j.LoggerFactory;
  *
  * Data can be parsed in chunks. If a full P1 telegram is received, listeners are notified
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class P1TelegramParser {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(P1TelegramParser.class);
 
+    /**
+     * Pattern for the CRC-code
+     */
     private static final String CRC_PATTERN = "[0-9A-Z]{4}";
 
-    // State of the parser
+    /**
+     * State of the parser
+     */
     private static enum State {
         // Wait for the '/' character
         WAIT_FOR_START,
@@ -55,22 +58,56 @@ public class P1TelegramParser {
     };
 
     /* internal state variables */
+
+    /**
+     * current obisId buffer
+     */
     private StringBuffer obisId = new StringBuffer();
+
+    /**
+     * Current cosem object values buffer
+     */
     private StringBuffer cosemObjectValuesString = new StringBuffer();
+
+    /**
+     * Current crc value read
+     */
     private StringBuffer crcValue = new StringBuffer();
+
+    /**
+     * CRC calculation helper
+     */
     private CRC16 crc;
+
+    /**
+     * Current state of the P1 telegram parser
+     */
     private State state = State.WAIT_FOR_START;
+
+    /**
+     * Work in lenient mode (more fault tolerant)
+     */
     private boolean lenientMode = false;
+
+    /**
+     * Current telegram state
+     */
     private TelegramState telegramState;
 
-    // Helper classes
+    /**
+     * CosemObjectFactory helper class
+     */
     private CosemObjectFactory factory;
 
-    // Received Cosem Objects in the received P1Telegram
-    private List<CosemObject> cosemObjects = new LinkedList<CosemObject>();
+    /**
+     * Received Cosem Objects in the P1Telegram that is currently received
+     */
+    private List<CosemObject> cosemObjects = new LinkedList<>();
 
-    // Listener
-    private P1TelegramListener telegramListener = null;
+    /**
+     * Listener for new P1 telegrams
+     */
+    private P1TelegramListener telegramListener;
 
     /**
      * Creates a new P1TelegramParser
@@ -214,7 +251,7 @@ public class P1TelegramParser {
                              * known that there are no messages and if the parsing was successful
                              * This enables the listener to reinitialize the Serial Port for example
                              */
-                            FutureTask<Void> task = new FutureTask<Void>(
+                            FutureTask<Void> task = new FutureTask<>(
                                     new P1TelegramCallable(cosemObjects, telegramState));
                             task.run();
                         }

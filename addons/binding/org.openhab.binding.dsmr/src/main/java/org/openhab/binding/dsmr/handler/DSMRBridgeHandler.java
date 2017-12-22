@@ -11,9 +11,11 @@ package org.openhab.binding.dsmr.handler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,7 +31,6 @@ import org.openhab.binding.dsmr.internal.device.DSMRDeviceConstants;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceConstants.DeviceState;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceStateListener;
 import org.openhab.binding.dsmr.internal.discovery.DSMRMeterDiscoveryListener;
-import org.openhab.binding.dsmr.internal.discovery.DSMRMeterDiscoveryService;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,22 +40,28 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author M. Volaart - Initial contribution
- * @since 2.1.0
  */
 public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMRDeviceStateListener {
-    // logger
     private final Logger logger = LoggerFactory.getLogger(DSMRBridgeHandler.class);
 
-    // DSMRDevice that belongs to this DSMRBridgeHandler
-    private DSMRDevice dsmrDevice = null;
+    /**
+     * DSMRDevice that belongs to this DSMRBridgeHandler
+     */
+    private DSMRDevice dsmrDevice;
 
-    // The Discovery service for this bridge
-    private DSMRMeterDiscoveryListener discoveryService;
+    /**
+     * The Discovery service for this bridge
+     */
+    private List<DSMRMeterDiscoveryListener> meterDiscoveryListeners = new CopyOnWriteArrayList<>();
 
-    // The available meters for this bridge
-    private final List<DSMRMeter> availableMeters = new ArrayList<DSMRMeter>();
+    /**
+     * The available meters for this bridge
+     */
+    private final List<DSMRMeter> availableMeters = new ArrayList<>();
 
-    // Watchdog
+    /**
+     * Watchdog
+     */
     private ScheduledFuture<?> watchdog;
 
     /**
@@ -63,10 +70,8 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMRDeviceSt
      * @param bridge the Bridge ThingType
      * @param discoveryService the DSMRMeterDiscoveryService to use for new DSMR meters
      */
-    public DSMRBridgeHandler(Bridge bridge, DSMRMeterDiscoveryService discoveryService) {
+    public DSMRBridgeHandler(Bridge bridge) {
         super(bridge);
-
-        this.discoveryService = discoveryService;
     }
 
     /**
@@ -81,6 +86,28 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMRDeviceSt
     }
 
     /**
+     * Adds a meter discovery listener
+     *
+     * @param meterDiscoveryListener the meter discovery listener to add
+     *
+     * @return true if listener is added, false otherwise
+     */
+    public boolean registerMeterDiscoveryListener(DSMRMeterDiscoveryListener meterDiscoveryListener) {
+        return meterDiscoveryListeners.add(meterDiscoveryListener);
+    }
+
+    /**
+     * Removes a meter discovery listener
+     *
+     * @param meterDiscoveryListener the metere discovery listener to remove
+     *
+     * @return true is listener is removed, false otherwise
+     */
+    public boolean unregisterMeterDiscoveryListener(DSMRMeterDiscoveryListener meterDiscoveryListener) {
+        return meterDiscoveryListeners.remove(meterDiscoveryListener);
+    }
+
+    /**
      * Initializes this DSMRBridgeHandler
      *
      * This method will get the corresponding configuration and initialize and start the corresponding DSMRDevice
@@ -91,26 +118,21 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMRDeviceSt
         DSMRDeviceConfiguration deviceConfig = config.as(DSMRDeviceConfiguration.class);
 
         logger.debug("Using configuration {}", deviceConfig);
-        if (deviceConfig == null || deviceConfig.serialPort == null || deviceConfig.serialPort.length() == 0) {
-            logger.warn("portName is not configured, not starting device");
+        if (deviceConfig == null || StringUtils.isBlank(deviceConfig.serialPort)) {
+            logger.debug("portName is not configured, not starting device");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Serial Port name is not set");
         } else {
             logger.debug("Starting DSMR device");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Starting bridge");
 
             // Create a new DSMR Device and give it a read only list of available DSMR Meters
-            dsmrDevice = new DSMRDevice(deviceConfig, this, discoveryService,
+            dsmrDevice = new DSMRDevice(deviceConfig, this, meterDiscoveryListeners,
                     Collections.unmodifiableList(availableMeters));
             dsmrDevice.startDevice();
 
             // Initialize meter watchdog
-            watchdog = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    dsmrDevice.alive();
-                }
+            watchdog = scheduler.scheduleWithFixedDelay(() -> {
+                dsmrDevice.alive();
             }, DSMRDeviceConstants.RECOVERY_TIMEOUT, DSMRDeviceConstants.RECOVERY_TIMEOUT, TimeUnit.MILLISECONDS);
-
         }
     }
 
@@ -131,58 +153,37 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMRDeviceSt
     }
 
     @Override
-    public void handleRemoval() {
-        if (watchdog != null && !watchdog.isCancelled()) {
-            watchdog.cancel(true);
-            watchdog = null;
-        }
-        if (dsmrDevice != null) {
-            dsmrDevice.stopDevice();
-            dsmrDevice = null;
-        }
-        updateStatus(ThingStatus.REMOVED);
-    }
-
-    @Override
     public void stateUpdated(DeviceState oldState, DeviceState newState, String stateDetail) {
         // No implementation
     }
 
     @Override
     public void stateChanged(DeviceState oldState, DeviceState newState, String stateDetail) {
-        /*
-         * Only if the Thing is initialized the State may be updated (otherwise an IllegalStateException is thrown)
-         * See also BaseThingHandler.updateStatus
-         */
-        if (isInitialized()) {
-            logger.debug("Notifying Thing handler of change from {} to {}", oldState, newState);
-            switch (newState) {
-                case INITIALIZING:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, stateDetail);
-                    break;
-                case OFFLINE:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, stateDetail);
-                    break;
-                case ONLINE:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.DUTY_CYCLE, stateDetail);
-                    break;
-                case SHUTDOWN:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, stateDetail);
-                    break;
-                case STARTING:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, stateDetail);
-                    break;
-                case SWITCH_PORT_SPEED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, stateDetail);
-                    break;
-                case CONFIGURATION_PROBLEM:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, stateDetail);
-                default:
-                    logger.warn("Received unknown state {}", newState);
-                    updateStatus(ThingStatus.UNKNOWN);
-            }
-        } else {
-            logger.debug("Ignore state change to {} since DSMRBridgeHandler is not initialized yet", newState);
+        logger.debug("Notifying Thing handler of change from {} to {}", oldState, newState);
+        switch (newState) {
+            case INITIALIZING:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, stateDetail);
+                break;
+            case OFFLINE:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, stateDetail);
+                break;
+            case ONLINE:
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, stateDetail);
+                break;
+            case SHUTDOWN:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, stateDetail);
+                break;
+            case STARTING:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, stateDetail);
+                break;
+            case SWITCH_PORT_SPEED:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, stateDetail);
+                break;
+            case CONFIGURATION_PROBLEM:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, stateDetail);
+            default:
+                logger.warn("Received unknown state {} due to a BUG in DSMRBridgeHandler", newState);
+                updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

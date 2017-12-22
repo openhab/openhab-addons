@@ -26,11 +26,9 @@ import gnu.io.CommPortIdentifier;
 /**
  * This implements the discovery service for detecting new DSMR Meters
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRBridgeDiscoveryService extends AbstractDiscoveryService implements DSMRBridgeDiscoveryListener {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(DSMRBridgeDiscoveryService.class);
 
     /**
@@ -38,7 +36,7 @@ public class DSMRBridgeDiscoveryService extends AbstractDiscoveryService impleme
      */
     public DSMRBridgeDiscoveryService() {
         super(Collections.singleton(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE),
-                DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT, false);
+                DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT_SECONDS, false);
     }
 
     /**
@@ -82,7 +80,7 @@ public class DSMRBridgeDiscoveryService extends AbstractDiscoveryService impleme
                 Integer.toHexString(serialPort.hashCode()));
 
         // Construct the configuration for this meter
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("serialPort", serialPort);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)

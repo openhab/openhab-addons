@@ -11,16 +11,19 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 /**
  * This CosemValueDescriptor provides meta data for a CosemValue
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class CosemValueDescriptor {
     public static final String DEFAULT_CHANNEL = "default";
 
-    /* Class describing the type */
+    /**
+     * Class describing the type
+     */
     private final Class<? extends CosemValue<? extends Object>> cosemValueClass;
 
-    /* String describing the unit */
+    /**
+     * String describing the unit
+     */
     private final String unit;
 
     /* String describing the channel on which this value descriptor is available */

@@ -15,8 +15,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 /**
  * CosemString represents a string value
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class CosemString extends CosemValue<String> {
     /**

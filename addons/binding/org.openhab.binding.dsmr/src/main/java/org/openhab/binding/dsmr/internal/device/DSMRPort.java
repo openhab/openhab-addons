@@ -65,43 +65,92 @@ import gnu.io.UnsupportedCommOperationException;
  * !<br>
  * </code>
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
-    /* logger */
     private final Logger logger = LoggerFactory.getLogger(DSMRPort.class);
 
-    /* private object variables */
+    /**
+     * private object variables
+     */
     private final String portName;
 
-    /* serial port resources */
+    /**
+     * serial port instance
+     */
     private SerialPort serialPort;
-    private BufferedInputStream bis;
+
+    /**
+     * Input stream reading the Serial port
+     */
+    private BufferedInputStream serialInputStream;
+
+    /**
+     * 1Kbyte buffer for storing data
+     */
     private byte[] buffer = new byte[1024]; // 1K
 
-    /* state variables */
+    /**
+     * Current Serial Port settings
+     */
     private DSMRPortSettings portSettings;
+
+    /**
+     * Serial Port settings to use for static port configuration
+     */
     private DSMRPortSettings fixedPortSettings; // Used if DSMR binding has a static port configuration
+
+    /**
+     * Whether or not the lenientMode is activated (less strict checking on valid data)
+     */
     private boolean lenientMode = false;
 
-    private class DSMRPortStatus {
+    /**
+     * DSMR PortStatus
+     */
+    private static class DSMRPortStatus {
+        /**
+         * Port is open
+         */
         private boolean isOpen = false;
+
+        /**
+         * Break Interrupt
+         */
         private boolean bi = false;
+
+        /**
+         * Overrun
+         */
         private boolean oe = false;
+
+        /**
+         * Frame error
+         */
         private boolean fe = false;
+
+        /**
+         * Parity error
+         */
         private boolean pe = false;
     }
 
+    /**
+     * Current DSMR Port status
+     */
     private DSMRPortStatus portStatus;
 
-    /* helpers */
+    /**
+     * P1 Telegram Parser helper
+     */
     private P1TelegramParser p1Parser;
 
-    /* listeners */
+    /**
+     * DSMR Port listener
+     */
     private DSMRPortEventListener dsmrPortListener;
 
-    /*
+    /**
      * The portLock is used for the shared data used when opening and closing
      * the port. The following shared data must be guarded by the lock:
      * SerialPort, BufferedReader
@@ -180,7 +229,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                 // Opening Operating System Serial Port
                 CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
                 CommPort commPort = portIdentifier.open("org.openhab.binding.dsmr",
-                        DSMRDeviceConstants.SERIAL_PORT_READ_TIMEOUT);
+                        (int) DSMRDeviceConstants.SERIAL_PORT_READ_TIMEOUT);
                 serialPort = (SerialPort) commPort;
 
                 // Configure Serial Port based on specified port speed
@@ -191,11 +240,11 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                             portSettings.getStopbits(), portSettings.getParity());
 
                     // SerialPort is ready, open the reader
-                    logger.debug("SerialPort opened successful");
+                    logger.debug("SerialPort opened successful on {}", portName);
                     try {
-                        bis = new BufferedInputStream(serialPort.getInputStream());
+                        serialInputStream = new BufferedInputStream(serialPort.getInputStream());
                     } catch (IOException ioe) {
-                        logger.error("Failed to get inputstream for serialPort. Closing port", ioe);
+                        logger.warn("Failed to get inputstream for serialPort. Closing port", ioe);
 
                         dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.ERROR);
                     }
@@ -205,7 +254,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                     try {
                         serialPort.addEventListener(this);
                     } catch (TooManyListenersException tmle) {
-                        logger.error("DSMR binding will not be operational.", tmle);
+                        logger.warn("DSMR binding will not be operational.", tmle);
                     }
 
                     /*
@@ -226,21 +275,20 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                     // The binding is ready, let the meter know we want to receive values
                     serialPort.setRTS(true);
                 } else {
-                    logger.error("Invalid port parameters, closing port:{}", portSettings);
+                    logger.warn("Invalid port parameters, closing port:{}", portSettings);
 
                     dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.CONFIGURATION_ERROR);
                 }
             } catch (NoSuchPortException nspe) {
-                logger.error("Port {} does not exists", portName, nspe);
+                logger.warn("Port {} does not exists", portName, nspe);
 
                 dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.DONT_EXISTS);
             } catch (PortInUseException piue) {
-                logger.error("Port already in use: {}", portName, piue);
+                logger.warn("Port already in use: {}", portName, piue);
 
                 dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.IN_USE);
             } catch (UnsupportedCommOperationException ucoe) {
-                logger.error(
-                        "Port does not support requested port settings " + "(invalid dsmr:portsettings parameter?): {}",
+                logger.warn("Port does not support requested port settings (invalid dsmr:portsettings parameter?): {}",
                         portName, ucoe);
 
                 dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.NOT_COMPATIBLE);
@@ -256,7 +304,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
      */
     public void close() {
         synchronized (portLock) {
-            logger.info("Closing DSMR port");
+            logger.debug("Closing DSMR port");
 
             // Stop listening for serial port events
             if (serialPort != null) {
@@ -266,9 +314,9 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
             }
 
             // Close resources
-            if (bis != null) {
+            if (serialInputStream != null) {
                 try {
-                    bis.close();
+                    serialInputStream.close();
                 } catch (IOException ioe) {
                     logger.debug("Failed to close reader", ioe);
                 }
@@ -278,7 +326,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
             }
 
             // Release resources
-            bis = null;
+            serialInputStream = null;
             serialPort = null;
 
             portStatus.isOpen = false;
@@ -308,16 +356,16 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
              * Read without lock on purpose to permit fast closure
              * This could lead to a NPE on variable bis so we will catch the NPE
              */
-            int bytesAvailable = bis.available();
+            int bytesAvailable = serialInputStream.available();
             while (bytesAvailable > 0) {
-                int bytesRead = bis.read(buffer, 0, Math.min(bytesAvailable, buffer.length));
+                int bytesRead = serialInputStream.read(buffer, 0, Math.min(bytesAvailable, buffer.length));
 
                 if (bytesRead > 0) {
                     p1Parser.parseData(buffer, 0, bytesRead);
                 } else {
                     logger.debug("Expected bytes {} to read, but {} bytes were read", bytesAvailable, bytesRead);
                 }
-                bytesAvailable = bis.available();
+                bytesAvailable = serialInputStream.available();
             }
             return DSMRPortEvent.READ_OK;
         } catch (IOException ioe) {
@@ -339,6 +387,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                 return DSMRPortEvent.READ_ERROR;
             }
         } catch (NullPointerException npe) {
+            // NPE can occur when the port is closed from different thread
             if (!portStatus.isOpen) {
                 // Port was closed
                 logger.debug("Read aborted: DSMRPort is closed");
@@ -368,7 +417,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
             logger.debug("Switched port settings to: {}", portSettings);
         } else {
             portSettings = fixedPortSettings;
-            logger.info("Fixed port settings configured (autodetect DISABLED): {}", portSettings);
+            logger.info("Fixed port settings configured (autodetect DISABLED) for {}: {}", this.portName, portSettings);
         }
     }
 
@@ -381,83 +430,118 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
         this.lenientMode = lenientMode;
     }
 
+    /**
+     * Handle data available on serial port
+     */
+    private void handleDataAvailable() {
+        /* data is available, clear error flags */
+        portStatus.bi = false;
+        portStatus.oe = false;
+        portStatus.fe = false;
+        portStatus.pe = false;
+
+        DSMRPortEvent portEvent = read();
+        logger.trace("Port event after read: {}", portEvent);
+
+        // Notify listener only of read problems
+        if (portEvent != DSMRPortEvent.READ_OK) {
+            dsmrPortListener.handleDSMRPortEvent(portEvent);
+        }
+    }
+
+    /**
+     * Handle break interrupt
+     */
+    private void handleBI() {
+        logger.debug("Serial Communication is broken");
+
+        p1Parser.abortTelegram();
+        dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.LINE_BROKEN);
+    }
+
+    /**
+     * Handle Frame error
+     */
+    private void handleFE() {
+        if (portStatus.pe) {
+            // Both a frame and parity error --> possible wrong baud rate
+            logger.debug("Experienced both parity and frame error caused possibly by a wrong baudrate");
+
+            p1Parser.abortTelegram();
+            dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.WRONG_BAUDRATE);
+        } else {
+            // Handle frame error
+            if (!lenientMode) {
+                p1Parser.abortTelegram();
+                dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
+            }
+        }
+    }
+
+    /**
+     * Handle Overrun error
+     */
+    private void handleOE() {
+        logger.debug("Experienced overrun error");
+
+        if (!lenientMode) {
+            p1Parser.abortTelegram();
+            dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
+        }
+    }
+
+    /**
+     * Handle Parity error
+     */
+    private void handlePE() {
+        if (portStatus.fe) {
+            // Both a frame and parity error --> possible wrong baud rate
+            logger.debug("Experienced both parity and frame error caused possibly by a wrong baudrate");
+
+            p1Parser.abortTelegram();
+            dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.WRONG_BAUDRATE);
+        } else {
+            // Handle parity error
+            if (!lenientMode) {
+                p1Parser.abortTelegram();
+                dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
+            }
+        }
+    }
+
     @Override
     public void serialEvent(SerialPortEvent seEvent) {
         switch (seEvent.getEventType()) {
             case SerialPortEvent.DATA_AVAILABLE:
                 if (seEvent.getNewValue()) {
-                    /* data is available, clear error flags */
-                    portStatus.bi = false;
-                    portStatus.oe = false;
-                    portStatus.fe = false;
-                    portStatus.pe = false;
-
-                    DSMRPortEvent portEvent = read();
-                    logger.trace("Port event after read: {}", portEvent);
-
-                    // Notify listener only of read problems
-                    if (portEvent != DSMRPortEvent.READ_OK) {
-                        dsmrPortListener.handleDSMRPortEvent(portEvent);
-                    }
+                    handleDataAvailable();
                 }
                 break;
             case SerialPortEvent.BI:
                 logger.debug("Break Interrupt: {}", seEvent.getNewValue());
                 if (seEvent.getNewValue() && !portStatus.bi) {
-                    logger.debug("Serial Communication is broken");
-
-                    p1Parser.abortTelegram();
-                    dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.LINE_BROKEN);
+                    handleBI();
                 }
                 portStatus.bi = seEvent.getNewValue();
                 break;
             case SerialPortEvent.FE:
                 logger.debug("Frame error: {}", seEvent.getNewValue());
                 if (seEvent.getNewValue() && !portStatus.fe) {
-                    if (portStatus.pe) {
-                        // Both a frame and parity error --> possible wrong baud rate
-                        logger.debug("Experienced both parity and frame error caused possibly by a wrong baudrate");
-
-                        p1Parser.abortTelegram();
-                        dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.WRONG_BAUDRATE);
-                    } else {
-                        // Handle frame error
-                        if (!lenientMode) {
-                            p1Parser.abortTelegram();
-                            dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
-                        }
-                    }
+                    handleFE();
                 }
                 portStatus.fe = seEvent.getNewValue();
                 break;
             case SerialPortEvent.OE:
                 logger.debug("Overrun Error: {}", seEvent.getNewValue());
                 if (seEvent.getNewValue() && !portStatus.oe) {
-                    logger.debug("Experienced overrun error");
-
-                    if (!lenientMode) {
-                        p1Parser.abortTelegram();
-                        dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
-                    }
+                    handleOE();
                 }
                 portStatus.oe = seEvent.getNewValue();
                 break;
             case SerialPortEvent.PE:
                 logger.debug("Parity error: {}", seEvent.getNewValue());
                 if (seEvent.getNewValue() && !portStatus.pe) {
-                    if (portStatus.fe) {
-                        // Both a frame and parity error --> possible wrong baud rate
-                        logger.debug("Experienced both parity and frame error caused possibly by a wrong baudrate");
-
-                        p1Parser.abortTelegram();
-                        dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.WRONG_BAUDRATE);
-                    } else {
-                        // Handle parity error
-                        if (!lenientMode) {
-                            p1Parser.abortTelegram();
-                            dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
-                        }
-                    }
+                    handlePE();
                 }
                 portStatus.pe = seEvent.getNewValue();
                 break;
@@ -476,7 +560,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
         logger.debug("Received {} Cosem Objects, telegramState: {}", cosemObjects.size(), telegramState);
 
         if (telegramState == TelegramState.OK) {
-            dsmrPortListener.P1TelegramReceived(cosemObjects, telegramState.stateDetails);
+            dsmrPortListener.p1TelegramReceived(cosemObjects, telegramState.stateDetails);
         } else {
             if (lenientMode) {
                 // In lenient mode, still send Cosem Objects
@@ -486,7 +570,7 @@ public class DSMRPort implements SerialPortEventListener, P1TelegramListener {
                     dsmrPortListener.handleDSMRPortEvent(DSMRPortEvent.READ_ERROR);
                 } else {
                     logger.debug("Still handling CosemObjects in lenient mode");
-                    dsmrPortListener.P1TelegramReceived(cosemObjects, telegramState.stateDetails);
+                    dsmrPortListener.p1TelegramReceived(cosemObjects, telegramState.stateDetails);
                 }
             } else {
                 // Parsing was incomplete, don't send CosemObjects

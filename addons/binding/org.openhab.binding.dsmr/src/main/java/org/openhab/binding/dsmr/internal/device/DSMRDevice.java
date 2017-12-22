@@ -10,7 +10,7 @@ package org.openhab.binding.dsmr.internal.device;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The DSMRDevice class represents the physical Thing within OpenHAB2 context
+ * The DSMRDevice class represents the physical Thing.
  *
  * The DSMRDevice will start in the state INITIALIZING where the serial port is opened.
  *
@@ -38,53 +38,81 @@ import org.slf4j.LoggerFactory;
  * If there are communication problems or no P1 telegrams are received (anymore), the device will enter the state
  * OFFLINE.
  *
- * If the OpenHAB2 system wants the binding to shutdown, the DSMRDevice enters the SHUTDOWN state and will close
+ * If the binding shuts down, the DSMRDevice enters the SHUTDOWN state and will close
  * and release the OS resources.
  *
  * In case of configuration errors the DSMRDevice will enter the state CONFIGURATION_PROBLEM
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRDevice implements DSMRPortEventListener {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(DSMRDevice.class);
 
-    // DSMR Device configuration
-    private DSMRDeviceConfiguration deviceConfiguration = null;
+    /**
+     * DSMR Device configuration
+     */
+    private DSMRDeviceConfiguration deviceConfiguration;
 
-    // Device status class
-    private class DeviceStatus {
-        // State
+    /**
+     * Device status class
+     */
+    private static class DeviceStatus {
+        /**
+         * State
+         */
         private DeviceState deviceState;
 
-        // Timestamp when the device entered the deviceState
-        private long stateEnteredTS;
+        /**
+         * Timestamp when the device entered the deviceState
+         */
+        private long deviceStateEnteredTS;
 
-        // Timestamp of last P1 telegram received
+        /**
+         * Timestamp of last P1 telegram received
+         */
         private long lastTelegramReceivedTS;
 
-        // CosemObject from received P1 telegram
+        /**
+         * CosemObject from received P1 telegram
+         */
         private List<CosemObject> receivedCosemObjects;
     }
 
-    // Current device status
+    /**
+     * Current device status
+     */
     private final DeviceStatus deviceStatus;
 
-    // DSMR Port
-    private DSMRPort dsmrPort = null;
+    /**
+     * DSMR Port
+     */
+    private DSMRPort dsmrPort;
 
-    // List of available logical meters (DSMRMeter)
-    private List<DSMRMeter> availableMeters = null;
+    /**
+     * List of available logical meters (DSMRMeter)
+     */
+    private List<DSMRMeter> availableMeters;
 
-    // listener for discovery of new DSMRMeter
-    private DSMRMeterDiscoveryListener discoveryListener;
+    /**
+     * listener for discovery of new DSMRMeter
+     */
+    private List<DSMRMeterDiscoveryListener> discoveryListeners;
 
-    // listener for state changes of this DSMR Device
+    /**
+     * listener for state changes of this DSMR Device
+     */
     private DSMRDeviceStateListener deviceStateListener;
 
-    // Executor for delayed tasks
-    private ExecutorService executor;
+    /**
+     * Executor for delayed tasks
+     */
+    private ScheduledExecutorService executor = ThreadPoolManager
+            .getScheduledPool(DSMRBindingConstants.DSMR_SCHEDULED_THREAD_POOL_NAME);
+
+    /**
+     * DSMRMeterDetector instance
+     */
+    private DSMRMeterDetector meterDetector;
 
     /**
      * Creates a new DSMRDevice.
@@ -98,14 +126,15 @@ public class DSMRDevice implements DSMRPortEventListener {
      * @param availableMeters list of {@link DSMRMeter} objects that handle P1 Telegrams
      */
     public DSMRDevice(DSMRDeviceConfiguration deviceConfiguration, DSMRDeviceStateListener deviceStateListener,
-            DSMRMeterDiscoveryListener discoveryListener, List<DSMRMeter> availableMeters) {
+            List<DSMRMeterDiscoveryListener> discoveryListeners, List<DSMRMeter> availableMeters) {
         this.deviceConfiguration = deviceConfiguration;
-        this.discoveryListener = discoveryListener;
+        this.discoveryListeners = discoveryListeners;
         this.deviceStateListener = deviceStateListener;
         this.availableMeters = availableMeters;
 
+        meterDetector = new DSMRMeterDetector();
         deviceStatus = new DeviceStatus();
-        deviceStatus.receivedCosemObjects = new ArrayList<CosemObject>();
+        deviceStatus.receivedCosemObjects = new ArrayList<>();
     }
 
     /**
@@ -187,35 +216,35 @@ public class DSMRDevice implements DSMRPortEventListener {
                         break;
                     default:
                         logger.warn("Unknown event {}", event);
-
-                        break;
                 }
-
-                // Update device status
-                deviceStatus.deviceState = newDeviceState;
-                deviceStatus.stateEnteredTS = System.currentTimeMillis();
-
-                // Handle the new state asynchronous
-                executor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        handleDeviceState();
-                    }
-                });
-
-                // Notify listeners
-                if (deviceStateListener != null) {
-                    deviceStateListener.stateUpdated(currentDeviceState, newDeviceState, eventDetails);
-                    if (currentDeviceState != newDeviceState) {
-                        deviceStateListener.stateChanged(currentDeviceState, newDeviceState, eventDetails);
-                    }
-                } else {
-                    logger.error("No device state listener available, binding will not work properly!");
-                }
+                processNewDeviceState(currentDeviceState, newDeviceState, eventDetails);
             } else {
-                logger.debug("Event won't be processed dueo to state {}", deviceStatus.deviceState);
+                logger.debug("Event won't be processed due to state {}", deviceStatus.deviceState);
             }
         }
+    }
+
+    private void processNewDeviceState(DeviceState currentDeviceState, DeviceState newDeviceState,
+            String eventDetails) {
+        // Update device status
+        deviceStatus.deviceState = newDeviceState;
+        deviceStatus.deviceStateEnteredTS = System.currentTimeMillis();
+
+        // Handle the new state asynchronous
+        executor.submit(() -> {
+            handleDeviceState();
+        });
+
+        // Notify listeners
+        if (deviceStateListener != null) {
+            deviceStateListener.stateUpdated(currentDeviceState, newDeviceState, eventDetails);
+            if (currentDeviceState != newDeviceState) {
+                deviceStateListener.stateChanged(currentDeviceState, newDeviceState, eventDetails);
+            }
+        } else {
+            logger.warn("No device state listener available, binding will not work properly!");
+        }
+
     }
 
     /**
@@ -238,7 +267,7 @@ public class DSMRDevice implements DSMRPortEventListener {
                     break;
                 case OFFLINE:
                     if (System.currentTimeMillis()
-                            - deviceStatus.stateEnteredTS > DSMRDeviceConstants.RECOVERY_TIMEOUT) {
+                            - deviceStatus.deviceStateEnteredTS > DSMRDeviceConstants.RECOVERY_TIMEOUT) {
                         /* Device is still in OFFLINE, try to recover by entering INITIALIZING */
                         logger.info("In offline mode for at least {} ms, reinitialize device",
                                 DSMRDeviceConstants.RECOVERY_TIMEOUT);
@@ -248,23 +277,20 @@ public class DSMRDevice implements DSMRPortEventListener {
 
                     break;
                 case ONLINE:
-                    if (deviceStatus.receivedCosemObjects.size() > 0) {
-                        List<CosemObject> cosemObjects = new ArrayList<CosemObject>();
+                    if (!deviceStatus.receivedCosemObjects.isEmpty()) {
+                        List<CosemObject> cosemObjects = new ArrayList<>();
                         cosemObjects.addAll(deviceStatus.receivedCosemObjects);
 
                         // Handle cosem objects asynchronous
-                        executor.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                logger.debug("Processing {} cosem objects", cosemObjects);
-                                sendCosemObjects(cosemObjects);
-                            }
+                        executor.submit(() -> {
+                            logger.debug("Processing {} cosem objects", cosemObjects);
+                            sendCosemObjects(cosemObjects);
                         });
 
                         deviceStatus.receivedCosemObjects.clear();
                     } else if (System.currentTimeMillis()
                             - deviceStatus.lastTelegramReceivedTS > DSMRDeviceConstants.RECOVERY_TIMEOUT) {
-                        logger.info("No messages received for at least {} ms, reinitialize device",
+                        logger.debug("No messages received for at least {} ms, reinitialize device",
                                 DSMRDeviceConstants.RECOVERY_TIMEOUT);
                         /* Device did not receive telegrams for too long, to to recover by entering INITIALIZING */
                         handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, "No telegrams received for too long");
@@ -278,7 +304,7 @@ public class DSMRDevice implements DSMRPortEventListener {
                     break;
                 case STARTING:
                     if (System.currentTimeMillis()
-                            - deviceStatus.stateEnteredTS > DSMRDeviceConstants.SERIAL_PORT_AUTO_DETECT_TIMEOUT) {
+                            - deviceStatus.deviceStateEnteredTS > DSMRDeviceConstants.SERIAL_PORT_AUTO_DETECT_TIMEOUT) {
                         /* Device did not receive telegrams for too long, switch port speed */
                         handleDSMRDeviceEvent(DSMRDeviceEvent.SWITCH_BAUDRATE,
                                 DSMRDeviceEvent.SWITCH_BAUDRATE.eventDetails);
@@ -299,7 +325,7 @@ public class DSMRDevice implements DSMRPortEventListener {
 
                     break;
             }
-            if (deviceStatus.receivedCosemObjects.size() > 0) {
+            if (!deviceStatus.receivedCosemObjects.isEmpty()) {
                 logger.debug("Dropping {} Cosem objects due to state {}", deviceStatus.receivedCosemObjects.size(),
                         deviceStatus.deviceState);
             }
@@ -326,23 +352,22 @@ public class DSMRDevice implements DSMRPortEventListener {
         /*
          * There are still unhandled cosemObjects. Start discovery of DSMR meters
          */
-        if (cosemObjects.size() > 0) {
-            logger.info("There are unhandled CosemObjects, start autodetecting meters");
+        if (!cosemObjects.isEmpty()) {
+            logger.debug("There are unhandled CosemObjects, start autodetecting meters");
 
-            DSMRMeterDetector meterDetector = new DSMRMeterDetector();
             List<DSMRMeterDescriptor> detectedMeters = meterDetector.detectMeters(cosemObjects);
-            logger.info("Detected the following new meters: {}", detectedMeters.toString());
+            logger.debug("Detected the following new meters: {}", detectedMeters);
 
-            if (discoveryListener != null) {
+            if (discoveryListeners.isEmpty()) {
+                logger.warn("There is no listener for new meters!");
+            }
+            for (DSMRMeterDiscoveryListener discoveryListener : discoveryListeners) {
                 for (DSMRMeterDescriptor meterDescriptor : detectedMeters) {
-                    if (discoveryListener.meterDiscovered(meterDescriptor)) {
-                    } else {
-                        logger.info("DiscoveryListener {} rejected meter descriptor {}", discoveryListener,
+                    if (!discoveryListener.meterDiscovered(meterDescriptor)) {
+                        logger.debug("DiscoveryListener {} rejected meter descriptor {}", discoveryListener,
                                 meterDescriptor);
                     }
                 }
-            } else {
-                logger.warn("There is no listener for new meters!");
             }
         }
     }
@@ -356,9 +381,14 @@ public class DSMRDevice implements DSMRPortEventListener {
             dsmrPort = null;
         }
 
-        // Start parser in lenient mode to prevent flooding logs during initialization
-        dsmrPort = new DSMRPort(deviceConfiguration.serialPort, this,
-                DSMRPortSettings.getPortSettingsFromString(deviceConfiguration.serialPortSettings), true);
+        if (deviceConfiguration.serialPortDisableAutoDetection) {
+            // Start parser in lenient mode to prevent flooding logs during initialization
+            dsmrPort = new DSMRPort(deviceConfiguration.serialPort, this,
+                    DSMRPortSettings.getPortSettingsFromConfiguration(deviceConfiguration), true);
+        } else {
+            // Start parser in lenient mode to prevent flooding logs during initialization
+            dsmrPort = new DSMRPort(deviceConfiguration.serialPort, this, null, true);
+        }
 
         // Open the DSMR Port
         dsmrPort.open();
@@ -378,7 +408,7 @@ public class DSMRDevice implements DSMRPortEventListener {
      * Starts the DSMR device
      */
     public void startDevice() {
-        executor = ThreadPoolManager.getPool(DSMRBindingConstants.DSMR_THREAD_POOL_NAME);
+        executor = ThreadPoolManager.getScheduledPool(DSMRBindingConstants.DSMR_SCHEDULED_THREAD_POOL_NAME);
 
         logger.debug("Starting device and entering INITIALIZING state");
         handleDSMRDeviceEvent(DSMRDeviceEvent.INITIALIZE, DSMRDeviceEvent.INITIALIZE.eventDetails);
@@ -402,34 +432,34 @@ public class DSMRDevice implements DSMRPortEventListener {
 
         switch (portEvent) {
             case CLOSED:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.DSMR_PORT_CLOSED, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.DSMR_PORT_CLOSED, portEvent.getEventDetails());
                 break;
             case CONFIGURATION_ERROR:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.CONFIGURATION_ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.CONFIGURATION_ERROR, portEvent.getEventDetails());
                 break;
             case DONT_EXISTS:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.CONFIGURATION_ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.CONFIGURATION_ERROR, portEvent.getEventDetails());
                 break;
             case ERROR:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.getEventDetails());
                 break;
             case LINE_BROKEN:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.READ_ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.READ_ERROR, portEvent.getEventDetails());
                 break;
             case IN_USE:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.getEventDetails());
                 break;
             case NOT_COMPATIBLE:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.ERROR, portEvent.getEventDetails());
                 break;
             case OPENED:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.DSMR_PORT_OPENED, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.DSMR_PORT_OPENED, portEvent.getEventDetails());
                 break;
             case WRONG_BAUDRATE:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.SWITCH_BAUDRATE, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.SWITCH_BAUDRATE, portEvent.getEventDetails());
                 break;
             case READ_ERROR:
-                handleDSMRDeviceEvent(DSMRDeviceEvent.READ_ERROR, portEvent.eventDetails);
+                handleDSMRDeviceEvent(DSMRDeviceEvent.READ_ERROR, portEvent.getEventDetails());
                 break;
             case READ_OK:
                 /* Ignore this event */
@@ -450,7 +480,7 @@ public class DSMRDevice implements DSMRPortEventListener {
      */
     public void alive() {
         logger.debug("Alive");
-        if (System.currentTimeMillis() - deviceStatus.stateEnteredTS > DSMRDeviceConstants.RECOVERY_TIMEOUT
+        if (System.currentTimeMillis() - deviceStatus.deviceStateEnteredTS > DSMRDeviceConstants.RECOVERY_TIMEOUT
                 && System.currentTimeMillis()
                         - deviceStatus.lastTelegramReceivedTS > DSMRDeviceConstants.RECOVERY_TIMEOUT) {
             logger.debug("Calling handle device state");
@@ -458,23 +488,20 @@ public class DSMRDevice implements DSMRPortEventListener {
              * No update of state of received telegrams for a period of RECOVERY_TIMEOUT
              * Evaluate current state
              */
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    handleDeviceState();
-                }
+            executor.submit(() -> {
+                handleDeviceState();
             });
         }
     }
 
     @Override
-    public void P1TelegramReceived(List<CosemObject> cosemObjects, String telegramDetails) {
-        if (cosemObjects.size() > 0) {
+    public void p1TelegramReceived(List<CosemObject> cosemObjects, String telegramDetails) {
+        if (!cosemObjects.isEmpty()) {
             // Telegram received, update timestamp
             deviceStatus.lastTelegramReceivedTS = System.currentTimeMillis();
             deviceStatus.receivedCosemObjects.addAll(cosemObjects);
         } else {
-            logger.debug("Parsing was succesful, however there were no CosemObjects");
+            logger.debug("Parsing was successful, however there were no CosemObjects");
         }
         handleDSMRDeviceEvent(DSMRDeviceEvent.TELEGRAM_RECEIVED, telegramDetails);
     }

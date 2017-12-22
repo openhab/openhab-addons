@@ -16,8 +16,7 @@ package org.openhab.binding.dsmr.internal.device.p1telegram;
  * The second variant the instance stores the actual CRC16 value giving the possibility to add bytes in subsequent
  * calls to {@link #processByte(byte)}
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class CRC16 {
     public enum Polynom {
@@ -28,7 +27,9 @@ public class CRC16 {
         CRC16_CCIT_REVERSE(0x8810), // CCITT reverse X16+X11+X4+1 (CRC-16-CCITT)
         CRC16_LRCC(0x8000); // LRCC-16 X16+1
 
-        // the polynom to use
+        /**
+         * the polynom to use
+         */
         public final int polynom;
 
         /**
@@ -41,10 +42,14 @@ public class CRC16 {
         }
     }
 
-    // The cached CRC16 table based on the requested CRC16 variant
+    /**
+     * The cached CRC16 table based on the requested CRC16 variant
+     */
     private short[] crcTable;
 
-    // The current crcValue
+    /**
+     * The current crcValue
+     */
     private int crcValue;
 
     /**

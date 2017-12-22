@@ -8,7 +8,7 @@
         <item-type>Number</item-type>
         <label>Delivery (GJ)</label>
         <description>The total amount delivered in the past period.</description>
-        <state readOnly="true"></state>
+        <state pattern="%.3f GJ" readOnly="true"></state>
     </channel-type>
     <channel-type id="gjValvePositionType">
         <item-type>Number</item-type>

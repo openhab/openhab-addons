@@ -15,8 +15,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 /**
  * CosemInteger represents an integer value
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class CosemInteger extends CosemValue<Integer> {
 

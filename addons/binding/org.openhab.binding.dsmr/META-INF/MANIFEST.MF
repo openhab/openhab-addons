@@ -1,13 +1,18 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: DSMR Binding
 Bundle-SymbolicName: org.openhab.binding.dsmr;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.openhab.binding.dsmr,
+ org.openhab.binding.dsmr.handler
 Import-Package: 
  gnu.io,
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,
@@ -22,5 +27,3 @@ Import-Package:
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.dsmr,
- org.openhab.binding.dsmr.handler
