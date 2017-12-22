@@ -82,7 +82,7 @@ The account Thing Type does not have any channels.
 
 | Channel Type ID              | Item Type | Description                                                                                            | Read Write |
 |------------------------------|-----------|--------------------------------------------------------------------------------------------------------|:----------:|
-| away                         | String    | Away state of the structure (HOME, AWAY, AUTO_AWAY)                                                    |     R/W    |
+| away                         | String    | Away state of the structure (HOME, AWAY)                                                               |     R/W    |
 | country_code                 | String    | Country code of the structure ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)) |      R     |
 | co_alarm_state               | String    | Carbon Monoxide alarm state (OK, EMERGENCY, WARNING)                                                   |      R     |
 | eta_begin                    | DateTime  | Estimated time of arrival at home, will setup the heat to turn on and be warm                          |      R     |

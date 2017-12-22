@@ -198,8 +198,6 @@ public class Structure implements NestIdentifiable {
         HOME,
         @SerializedName("away")
         AWAY,
-        @SerializedName("autoaway")
-        AUTO_AWAY,
         @SerializedName("unknown")
         UNKNOWN
     }
