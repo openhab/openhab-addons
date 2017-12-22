@@ -10,7 +10,6 @@
 			<options>
 				<option value="AWAY">Away</option>
 				<option value="HOME">Home</option>
-				<option value="AUTO_AWAY">Auto Away</option>
 			</options>
 		</state>
 	</channel-type>
