@@ -18,15 +18,16 @@ import org.eclipse.smarthome.core.types.State;
  * CosemValue represents the mapping between COSEM formatted values and openHAB
  * type values
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  * @param <S> the native type this CosemValue represent
  */
 public abstract class CosemValue<S extends Object> {
     /** native value */
     protected S value;
 
-    /* unit of this cosemValue */
+    /**
+     * unit of this cosemValue
+     */
     private final String unit;
 
     /**

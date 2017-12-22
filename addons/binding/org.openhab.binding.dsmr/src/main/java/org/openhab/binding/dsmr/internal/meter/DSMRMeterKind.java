@@ -11,8 +11,7 @@ package org.openhab.binding.dsmr.internal.meter;
 /**
  * This class describes the kind of meters the binding supports
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public enum DSMRMeterKind {
     INVALID("Invalid meter"),
@@ -28,15 +27,17 @@ public enum DSMRMeterKind {
     SLAVE_ELECTRICITY1("Slave electricity meter"),
     SLAVE_ELECTRICITY2("Slave electricity meter 2");
 
-    // name of the meterkind
-    private String name;
+    /**
+     * name of the meterkind
+     */
+    private final String name;
 
     /**
      * Constructs the meter kind
-     * 
+     *
      * @param name readable name for this DSMR Meter Kind
      */
-    private DSMRMeterKind(String name) {
+    DSMRMeterKind(String name) {
         this.name = name;
     }
 

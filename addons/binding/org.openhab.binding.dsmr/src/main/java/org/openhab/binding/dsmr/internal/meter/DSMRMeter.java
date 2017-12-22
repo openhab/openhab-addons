@@ -10,6 +10,8 @@ package org.openhab.binding.dsmr.internal.meter;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
@@ -40,20 +42,24 @@ import org.slf4j.LoggerFactory;
  * If both 3 members are equal both meters are the referring the same physical meter part of the DSMR
  * physical device
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRMeter {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(DSMRMeter.class);
 
-    // Meter identification
+    /**
+     * Meter identification
+     */
     private final DSMRMeterDescriptor meterDescriptor;
 
-    // List of supported message identifiers for this meter
+    /**
+     * List of supported message identifiers for this meter
+     */
     private List<OBISIdentifier> supportedIdentifiers;
 
-    // Listener of new meter values
+    /**
+     * Listener of new meter values
+     */
     private DSMRMeterListener meterListener;
 
     /**
@@ -89,15 +95,13 @@ public class DSMRMeter {
      * @return List of CosemObject that this meter can process
      */
     private List<CosemObject> filterMeterValues(List<CosemObject> cosemObjects) {
-        List<CosemObject> filteredList = new LinkedList<>();
+        List<CosemObject> filteredList;
 
         logger.trace("supported identifiers: {}, searching for objects {}", supportedIdentifiers, cosemObjects);
-        for (CosemObject cosemObject : cosemObjects) {
-            if (supportedIdentifiers.contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier())) {
-                logger.trace("Added supported cosemObject {}", cosemObject);
-                filteredList.add(cosemObject);
-            }
-        }
+        filteredList = cosemObjects.stream()
+                .filter(cosemObject -> supportedIdentifiers
+                        .contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
+                .collect(Collectors.toList());
         return filteredList;
     }
 
@@ -142,6 +146,11 @@ public class DSMRMeter {
         DSMRMeter o = (DSMRMeter) other;
 
         return meterDescriptor.equals(o.meterDescriptor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(meterDescriptor);
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
@@ -26,24 +27,46 @@ import org.slf4j.LoggerFactory;
 /**
  * This implements the discovery service for new DSMR Meters
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRMeterDiscoveryService extends AbstractDiscoveryService implements DSMRMeterDiscoveryListener {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterDiscoveryService.class);
 
-    // The Bridge ThingUID
-    private ThingUID dsmrBridgeUID = null;
+    /**
+     * The Bridge ThingUID
+     */
+    private final ThingUID dsmrBridgeUID;
+
+    /**
+     * The DSMRBridgeHandler instance
+     */
+    private final DSMRBridgeHandler dsmrBridgeHandler;
 
     /**
      * Constructs a new DSMRMeterDiscoveryService with the specified DSMR Bridge ThingUID
      *
      * @param dsmrBridgeUID ThingUID for the DSMR Bridges
      */
-    public DSMRMeterDiscoveryService(ThingUID dsmrBridgeUID) {
-        super(DSMRMeterType.METER_THING_TYPES, DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT, false);
+    public DSMRMeterDiscoveryService(ThingUID dsmrBridgeUID, DSMRBridgeHandler dsmrBridgeHandler) {
+        super(DSMRMeterType.METER_THING_TYPES, DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT_SECONDS, false);
+
         this.dsmrBridgeUID = dsmrBridgeUID;
+        this.dsmrBridgeHandler = dsmrBridgeHandler;
+    }
+
+    /**
+     * Activates the DSMRDiscoveryService
+     */
+    public void activate() {
+        dsmrBridgeHandler.registerMeterDiscoveryListener(this);
+    }
+
+    /**
+     * Deactivates the DSMRDiscoveryService
+     */
+    @Override
+    public void deactivate() {
+        dsmrBridgeHandler.unregisterMeterDiscoveryListener(this);
     }
 
     /**
@@ -79,7 +102,7 @@ public class DSMRMeterDiscoveryService extends AbstractDiscoveryService implemen
         ThingUID thingUID = new ThingUID(thingId);
 
         // Construct the configuration for this meter
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("meterType", meterType.name());
         properties.put("channel", meterDescriptor.getChannel());
 

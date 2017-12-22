@@ -14,22 +14,26 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link DSMRBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRBindingConstants {
-    // Binding constant
+    /**
+     * Binding constant
+     */
     public static final String BINDING_ID = "dsmr";
 
-    // Binding global thread pool names
-    public static final String DSMR_THREAD_POOL_NAME = "DSMR Thread Pool";
+    /**
+     * Binding global thread pool names
+     */
     public static final String DSMR_SCHEDULED_THREAD_POOL_NAME = "DSMR Scheduled Thread Pool";
 
-    // Bridge device thing
+    /**
+     * Bridge device thing
+     */
     public final static ThingTypeUID THING_TYPE_DSMR_BRIDGE = new ThingTypeUID(BINDING_ID, "dsmrBridge");
 
-    // The other Thing Types are defined in DSMRMeterTypes
-
-    // Discovery timeout
-    public final static int DSMR_DISCOVERY_TIMEOUT = 60;
+    /**
+     * Discovery timeout
+     */
+    public final static int DSMR_DISCOVERY_TIMEOUT_SECONDS = 60;
 }

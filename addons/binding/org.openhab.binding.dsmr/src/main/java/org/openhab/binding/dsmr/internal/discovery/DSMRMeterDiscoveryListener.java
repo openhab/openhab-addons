@@ -13,8 +13,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 /**
  * This interface is notified of new meter discoveries
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public interface DSMRMeterDiscoveryListener {
     /**

@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Supported meters
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public enum DSMRMeterType {
     // Don't auto format the enum list. For readability the format for the enum is:
@@ -267,7 +266,7 @@ public enum DSMRMeterType {
 
     public static final Set<ThingTypeUID> METER_THING_TYPES;
     static {
-        METER_THING_TYPES = new HashSet<ThingTypeUID>();
+        METER_THING_TYPES = new HashSet<>();
         for (DSMRMeterType meterType : DSMRMeterType.values()) {
             METER_THING_TYPES.add(meterType.getThingTypeUID());
         }
@@ -275,19 +274,29 @@ public enum DSMRMeterType {
 
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterType.class);
 
-    /** Meter kind */
+    /**
+     * Meter kind
+     */
     public final DSMRMeterKind meterKind;
 
-    /** Required objects for this meter type */
+    /**
+     * Required objects for this meter type
+     */
     public final CosemObjectType[] requiredCosemObjects;
 
-    /** Additional object this meter type can receive */
+    /**
+     * Additional object this meter type can receive
+     */
     public final CosemObjectType[] optionalCosemObjects;
 
-    /** All objects this meter type can receive (convenience for {requiredCosemObjects, optionalCosemObjects}) */
+    /**
+     * All objects this meter type can receive (convenience for {requiredCosemObjects, optionalCosemObjects})
+     */
     public final CosemObjectType[] supportedCosemObjects;
 
-    /** Which CosemObjectType is used to identify this meter */
+    /**
+     * Which CosemObjectType is used to identify this meter
+     */
     public final CosemObjectType cosemObjectTypeMeterId;
 
     /**
@@ -296,7 +305,7 @@ public enum DSMRMeterType {
      * @param channelKey
      *            String containing the channel configuration for this meter
      */
-    private DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
+    DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType... requiredCosemObjects) {
         this(meterKind, cosemObjectTypeMeterId, requiredCosemObjects, new CosemObjectType[0]);
     }
@@ -307,7 +316,7 @@ public enum DSMRMeterType {
      * @param channelKey
      *            String containing the channel configuration for this meter
      */
-    private DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
+    DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
         this.meterKind = meterKind;
         this.requiredCosemObjects = requiredCosemObjects;

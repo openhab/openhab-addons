@@ -29,23 +29,29 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for Cosem Object implementation
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class CosemObject {
-    // logger
     private final Logger logger = LoggerFactory.getLogger(CosemObject.class);
 
-    // Regular expression for finding CosemValues
+    /**
+     * Regular expression for finding CosemValues
+     */
     private static final Pattern cosemValuesPattern = Pattern.compile("(\\(([^\\(\\)]*)\\))");
 
-    // CosemObject yype
+    /**
+     * CosemObject yype
+     */
     private final CosemObjectType type;
 
-    // The actual OBISIdentifier for this CosemObject
+    /**
+     * The actual OBISIdentifier for this CosemObject
+     */
     private final OBISIdentifier obisIdentifier;
 
-    // List of COSEM value in this message
+    /**
+     * List of COSEM value in this message
+     */
     private Map<String, CosemValue<? extends Object>> cosemValues;
 
     /**
@@ -58,7 +64,7 @@ public class CosemObject {
         this.type = msgType;
         this.obisIdentifier = obisIdentifier;
 
-        cosemValues = new HashMap<String, CosemValue<? extends Object>>();
+        cosemValues = new HashMap<>();
     }
 
     /**
@@ -94,22 +100,6 @@ public class CosemObject {
      */
     public Map<String, ? extends CosemValue<? extends Object>> getCosemValues() {
         return cosemValues;
-    }
-
-    /**
-     * Returns the specified Cosem value from the available Cosem values
-     *
-     * Returns null if the requested index is not available
-     *
-     * @param index the index of the CosemValue to get
-     *
-     * @return {@link CosemValue} or null if not exist
-     */
-    public CosemValue<? extends Object> getCosemValue(int index) {
-        if (index >= 0 && index < cosemValues.size()) {
-            return cosemValues.get(index);
-        }
-        return null;
     }
 
     /**
@@ -186,7 +176,7 @@ public class CosemObject {
 
             return cosemValue;
         } catch (ReflectiveOperationException roe) {
-            logger.error("Failed to create {} message", type.obisId, roe);
+            logger.warn("Failed to create {} message", type.obisId, roe);
         }
         return null;
     }

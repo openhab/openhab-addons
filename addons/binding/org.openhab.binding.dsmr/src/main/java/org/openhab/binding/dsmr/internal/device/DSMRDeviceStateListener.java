@@ -13,8 +13,7 @@ import org.openhab.binding.dsmr.internal.device.DSMRDeviceConstants.DeviceState;
 /**
  * This interface listens for change in the DSMR Device state
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public interface DSMRDeviceStateListener {
     /**

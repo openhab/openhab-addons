@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.dsmr.internal;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
@@ -29,15 +32,15 @@ import org.slf4j.LoggerFactory;
  * The {@link DSMRHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRHandlerFactory extends BaseThingHandlerFactory {
-    // Logger
     private final Logger logger = LoggerFactory.getLogger(DSMRHandlerFactory.class);
 
-    // The registration handler
-    private ServiceRegistration<?> serviceReg;
+    /**
+     * The registration handler
+     */
+    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     /**
      * Returns if the specified ThingTypeUID is supported by this handler.
@@ -57,9 +60,9 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
             boolean thingTypeUIDIsMeter = DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID);
             if (logger.isDebugEnabled()) {
                 if (thingTypeUIDIsMeter) {
-                    logger.debug("{} is a supported DSMR Meter thing", thingTypeUID);
+                    logger.trace("{} is a supported DSMR Meter thing", thingTypeUID);
                 } else {
-                    logger.debug("{} is not a DSMR Meter thing or not a supported DSMR Meter thing", thingTypeUID);
+                    logger.trace("{} is not a DSMR Meter thing or not a supported DSMR Meter thing", thingTypeUID);
                 }
             }
             return thingTypeUIDIsMeter;
@@ -83,11 +86,13 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
         if (thingTypeUID.equals(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE)) {
             Bridge dsmrBridge = (Bridge) thing;
-            DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(dsmrBridge.getUID());
-            DSMRBridgeHandler bridgeHandler = new DSMRBridgeHandler((Bridge) thing, discoveryService);
+            DSMRBridgeHandler bridgeHandler = new DSMRBridgeHandler((Bridge) thing);
+            DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(dsmrBridge.getUID(),
+                    bridgeHandler);
+            discoveryService.activate();
 
-            serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                    new Hashtable<String, Object>());
+            serviceRegs.put(thing.getUID(), bundleContext.registerService(DiscoveryService.class.getName(),
+                    discoveryService, new Hashtable<String, Object>()));
             return bridgeHandler;
         } else if (DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID)) {
             return new DSMRMeterHandler(thing);
@@ -106,10 +111,18 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof DSMRBridgeHandler) {
+            ServiceRegistration<?> serviceReg = serviceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
+                DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                if (service != null) {
+                    service.deactivate();
+                }
                 serviceReg.unregister();
+                serviceRegs.remove(thingHandler.getThing().getUID());
             }
+
         }
     }
 }

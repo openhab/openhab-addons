@@ -10,6 +10,7 @@ package org.openhab.binding.dsmr.internal.discovery;
 
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -34,14 +35,14 @@ import org.slf4j.LoggerFactory;
  *
  * If there are commmunication problems the baud rate is switched
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
-    // logger
     private final Logger logger = LoggerFactory.getLogger(DSMRBridgeDiscoveryHelper.class);
 
-    // List of available DiscoveryEvents
+    /**
+     * List of available DiscoveryEvents
+     */
     private enum DiscoveryEvent {
         DISCOVERY_START,
         DISCOVERY_FAILED,
@@ -49,32 +50,56 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
         BRIDGE_DISCOVERED;
     }
 
-    // Discovery state
+    /**
+     * Discovery state
+     */
     private enum DiscoveryState {
         DISCOVERY_RUNNING,
         DISCOVERY_FINISHED
     }
 
-    // Discovery status (also used for locking the state object)
-    private class DiscoveryStatus {
+    /**
+     * Discovery status (also used for locking the state object)
+     */
+    private static class DiscoveryStatus {
         DiscoveryState state;
     }
 
-    // The port name
+    /**
+     * The port name
+     */
     private final String portName;
 
-    // DSMR Port instance
+    /**
+     * DSMR Port instance
+     */
     private DSMRPort dsmrPort;
 
-    // current status
+    /**
+     * current discovery status
+     */
     private final DiscoveryStatus status;
 
-    // Listener for discovered devices
+    /**
+     * Listener for discovered devices
+     */
     private final DSMRBridgeDiscoveryListener discoveryListener;
 
-    // Service for handling timers
+    /**
+     * Service for handling timers
+     */
     private ScheduledExecutorService discoveryTimers = ThreadPoolManager
             .getScheduledPool(DSMRBindingConstants.DSMR_SCHEDULED_THREAD_POOL_NAME);
+
+    /**
+     * Timer for handling discovery half time
+     */
+    private ScheduledFuture<?> halfTimeTimer;
+
+    /**
+     * Timer for handling end of discovery
+     */
+    private ScheduledFuture<?> endTimeTimer;
 
     /**
      * Creates a new DSMRBridgeDiscoveryHelper
@@ -93,7 +118,7 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
      * Start the discovery
      */
     public void startDiscovery() {
-        logger.debug("Start discovery for port {}", portName);
+        logger.debug("[{}] Start discovery", portName);
         handleDiscoveryEvent(DiscoveryEvent.DISCOVERY_START);
     }
 
@@ -103,31 +128,30 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
      * @param event {@link DiscoveryEvent}
      */
     private void handleDiscoveryEvent(DiscoveryEvent event) {
-        logger.debug("Handle discovery event {} in state {}", event, status.state);
+        logger.debug("[{}] Handle discovery event {} in state {}", portName, event, status.state);
         synchronized (status) {
             if (status.state == DiscoveryState.DISCOVERY_RUNNING) {
                 switch (event) {
                     case DISCOVERY_START:
-                        discoveryTimers.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                logger.debug(
-                                        "Discovery is running for half time now and still nothing discovered, try to switch baudrate");
-                                handleDiscoveryEvent(DiscoveryEvent.DISCOVERY_SWITCHBAUDRATE);
-                            }
+                        halfTimeTimer = discoveryTimers.schedule(() -> {
+                            logger.debug(
+                                    "[{}] Discovery is running for half time now and still nothing discovered, try to switch baudrate",
+                                    portName);
+                            handleDiscoveryEvent(DiscoveryEvent.DISCOVERY_SWITCHBAUDRATE);
                         }, DSMRDeviceConstants.SERIAL_PORT_AUTO_DETECT_TIMEOUT, TimeUnit.MILLISECONDS);
-                        discoveryTimers.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                logger.debug("Discovery time is over and still nothing discovered, stop discovery");
-                                handleDiscoveryEvent(DiscoveryEvent.DISCOVERY_FAILED);
-                            }
-                        }, DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT, TimeUnit.SECONDS);
+                        endTimeTimer = discoveryTimers.schedule(() -> {
+                            logger.debug("[{}] Discovery time is over and still nothing discovered, stop discovery",
+                                    portName);
+                            handleDiscoveryEvent(DiscoveryEvent.DISCOVERY_FAILED);
+                        }, DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
                         dsmrPort = new DSMRPort(portName, this, null, true);
                         dsmrPort.open();
                         break;
                     case BRIDGE_DISCOVERED:
+                        halfTimeTimer.cancel(true);
+                        endTimeTimer.cancel(true);
+
                         dsmrPort.close();
                         dsmrPort = null;
                         status.state = DiscoveryState.DISCOVERY_FINISHED;
@@ -135,6 +159,9 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
 
                         break;
                     case DISCOVERY_FAILED:
+                        halfTimeTimer.cancel(true);
+                        endTimeTimer.cancel(true);
+
                         dsmrPort.close();
                         dsmrPort = null;
                         status.state = DiscoveryState.DISCOVERY_FINISHED;
@@ -160,7 +187,7 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
      */
     @Override
     public void handleDSMRPortEvent(DSMRPortEvent portEvent) {
-        logger.debug("Received portEvent {}", portEvent);
+        logger.debug("[{}] Received portEvent {}", portName, portEvent);
         switch (portEvent) {
             case CLOSED: // Port closed is an expected event when switch baudaate, ignore
                 break;
@@ -219,9 +246,9 @@ public class DSMRBridgeDiscoveryHelper implements DSMRPortEventListener {
      * @param stateDetails the details of the received telegram (this parameter is ignored)
      */
     @Override
-    public void P1TelegramReceived(List<CosemObject> cosemObjects, String stateDetails) {
-        logger.debug("Received {} cosemObjects", cosemObjects.size());
-        if (cosemObjects.size() > 0) {
+    public void p1TelegramReceived(List<CosemObject> cosemObjects, String stateDetails) {
+        logger.debug("[{}] Received {} cosemObjects", portName, cosemObjects.size());
+        if (!cosemObjects.isEmpty()) {
             handleDiscoveryEvent(DiscoveryEvent.BRIDGE_DISCOVERED);
         }
     }

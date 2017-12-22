@@ -9,20 +9,24 @@
 package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.text.ParseException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Class representing an OBISIdentifier
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class OBISIdentifier {
-    /* String representing a.b.c.d.e.f OBIS ID */
+    /**
+     * String representing a.b.c.d.e.f OBIS ID
+     */
     private static final String OBISID_REGEX = "((\\d+)\\-)?((\\d+):)?((\\d+)\\.)(\\d+)(\\.(\\d+))?(\\*(\\d+))?";
 
-    /* OBIS ID pattern */
+    /**
+     * OBIS ID pattern
+     */
     private static final Pattern obisIdPattern = Pattern.compile(OBISID_REGEX);
 
     /* the six individual group values of the OBIS ID */
@@ -214,9 +218,8 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return ((groupA != null) ? groupA.hashCode() : 0) + ((groupB != null) ? groupB.hashCode() : 0)
-                + groupC.hashCode() + groupD.hashCode() + ((groupE != null) ? groupE.hashCode() : 0)
-                + ((groupF != null) ? groupF.hashCode() : 0);
+        return Objects.hash(((groupA != null) ? groupA : 0), ((groupB != null) ? groupB : 0), groupC, groupD,
+                ((groupE != null) ? groupE : 0), ((groupF != null) ? groupF : 0));
     }
 
     /**

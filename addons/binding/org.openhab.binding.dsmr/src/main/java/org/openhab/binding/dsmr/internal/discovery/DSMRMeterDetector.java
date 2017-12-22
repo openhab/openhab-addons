@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
  * The DSMRMeterDetector class contains the logic to auto discover DSMR Meters
  * from a list of CosemObjects
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public class DSMRMeterDetector {
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterDetector.class);
@@ -59,8 +58,7 @@ public class DSMRMeterDetector {
                 DSMRMeterDescriptor prevDetectedMeter = detectedMeters.get(meterType.meterKind);
 
                 if (prevDetectedMeter == null // First meter of this kind, add it
-                        || (prevDetectedMeter != null
-                                && prevDetectedMeter.getChannel().equals(meterDescriptor.getChannel())
+                        || (prevDetectedMeter.getChannel().equals(meterDescriptor.getChannel())
                                 && meterType.requiredCosemObjects.length > prevDetectedMeter
                                         .getMeterType().requiredCosemObjects.length)) {
                     logger.debug("New compatible meter descriptor {}", meterDescriptor);

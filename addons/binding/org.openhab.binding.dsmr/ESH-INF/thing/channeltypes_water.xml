@@ -8,7 +8,7 @@
         <item-type>Number</item-type>
         <label>Water delivery (m3)</label>
         <description>The total amount of water used in the past period.</description>
-        <state readOnly="true"></state>
+        <state pattern="%.3f m3" readOnly="true"></state>
     </channel-type>
     <channel-type id="waterValvePositionType">
         <item-type>Number</item-type>

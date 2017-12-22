@@ -26,8 +26,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
  * be the last descriptors.
  * </ul>
  *
- * @author M. Volaart
- * @since 2.1.0
+ * @author M. Volaart - Initial contribution
  */
 public enum CosemObjectType {
     UNKNOWN(new OBISIdentifier(null, DSMRMeterConstants.UNKNOWN_CHANNEL, -1, -1, null, null),
@@ -191,7 +190,7 @@ public enum CosemObjectType {
      * @param obisId {@link OBISIdentifier} containing the obisIdentifier for CosemObjectType
      * @param descriptors variable parameter list of {@link CosemValueDescriptor}
      */
-    private CosemObjectType(OBISIdentifier obisId, CosemValueDescriptor... descriptors) {
+    CosemObjectType(OBISIdentifier obisId, CosemValueDescriptor... descriptors) {
         this(obisId, 0, descriptors);
     }
 
@@ -203,7 +202,7 @@ public enum CosemObjectType {
      *            descriptors)
      * @param descriptors variable parameter list of {@link CosemValueDescriptor}
      */
-    private CosemObjectType(OBISIdentifier obisId, int nrOfRepeatingDescriptors, CosemValueDescriptor... descriptors) {
+    CosemObjectType(OBISIdentifier obisId, int nrOfRepeatingDescriptors, CosemValueDescriptor... descriptors) {
         this.obisId = obisId;
         if (nrOfRepeatingDescriptors == 0) {
             this.descriptors = Arrays.asList(descriptors);
@@ -233,7 +232,7 @@ public enum CosemObjectType {
      * @return the CosemValueDescriptor or null if not found.
      */
     public CosemValueDescriptor getDescriptor(int idx) {
-        if (idx >= descriptors.size() && repeatingDescriptors.size() > 0) {
+        if (idx >= descriptors.size() && !repeatingDescriptors.isEmpty()) {
             /* We have a repeating list, find the correct repeating descriptor */
             int repeatingIdx = (idx - descriptors.size()) % repeatingDescriptors.size();
 
