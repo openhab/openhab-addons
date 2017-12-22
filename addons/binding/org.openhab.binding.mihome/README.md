@@ -175,16 +175,16 @@ when
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
-        case "SHORT_PRESSED": {
+        case "CLICK": {
             <ACTION>
         }
-        case "DOUBLE_PRESSED": {
+        case "DOUBLE_CLICK": {
             <ACTION>
         }
-        case "LONG_PRESSED": {
+        case "LONG_CLICK_PRESS": {
             <ACTION>
         }
-        case "LONG_RELEASED": {
+        case "LONG_CLICK_RELEASE": {
             <ACTION>
         }
     }
