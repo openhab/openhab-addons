@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pentair" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+    <bridge-type id="pentair_serial_bridge">
+        <label>Serial Bridge</label>
+        <description>This bridge is used when using a USB->RS485 interface.</description>
+        <config-description>
+            <parameter name="serialPort" type="text" required="true">
+                <label>Serial port</label>
+                <description>The serial port name. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+            </parameter>
+
+            <parameter name="id" type="integer" required="false">
+                <label>Pentair ID</label>
+                <description>The ID to use to send commands on the Pentair bus (default: 34)</description>
+                <default>34</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+</thing:thing-descriptions>

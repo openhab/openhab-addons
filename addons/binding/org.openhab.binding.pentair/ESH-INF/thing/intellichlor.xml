@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pentair"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+        
+    <thing-type id="intellichlor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ip_bridge" />
+            <bridge-type-ref id="pentair_serial_bridge" />
+        </supported-bridge-type-refs>
+        
+        <label>Intellichlor IC40</label>
+        <description>Pentair Intellichlor IC40</description>
+        
+        <channels>
+            <channel id="saltoutput" typeId="saltoutput"/>
+            <channel id="salinity" typeId="salinity"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="id" type="integer" required="false">
+                <label>ID</label>
+                <description>The ID of the device (in decimal, not hex)</description>
+                <default>96</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="saltoutput">
+        <item-type>Number</item-type>
+        <label>Salt Output (%)</label>
+        <description>Current salt output setting for the chlorinator (%).</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="salinity">
+        <item-type>Number</item-type>
+        <label>Salinity (PPM)</label>
+        <description>Current salt content reading of the water (PPM).</description>
+        <state readOnly="true"/>
+    </channel-type>
+</thing:thing-descriptions>
+
+
+
