@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: KNX Binding
 Bundle-SymbolicName: org.openhab.binding.knx;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.collect,
  gnu.io;resolution:=optional,
