@@ -17,14 +17,16 @@
 			<channel id="co_alarm_state" typeId="CoAlarmState" />
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState" />
 			<channel id="manual_test_active" typeId="ManualTestActive" />
+			<channel id="last_manual_test_time" typeId="LastManualTestTime" />
+			<channel id="last_connection" typeId="LastConnection" />
 		</channels>
 
 		<properties>
 			<property name="vendor">Nest</property>
 		</properties>
 
-        <representation-property>deviceId</representation-property>
+		<representation-property>deviceId</representation-property>
 
-        <config-description-ref uri="thing-type:nest:device" />
+		<config-description-ref uri="thing-type:nest:device" />
 	</thing-type>
 </thing:thing-descriptions>

@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.nest.handler;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -101,7 +103,8 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
     }
 
     protected NestBridgeHandler getNestBridgeHandler() {
-        return getBridge() != null ? (NestBridgeHandler) getBridge().getHandler() : null;
+        Bridge bridge = getBridge();
+        return bridge != null ? (NestBridgeHandler) bridge.getHandler() : null;
     }
 
     protected abstract State getChannelState(ChannelUID channelUID, T data);
@@ -110,9 +113,10 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         if (date == null) {
             return UnDefType.NULL;
         }
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.setTime(date);
-        return new DateTimeType(cal);
+
+        long offsetMillis = TimeZone.getDefault().getOffset(date.getTime());
+        Instant instant = date.toInstant().plusMillis(offsetMillis);
+        return new DateTimeType(ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()));
     }
 
     protected OnOffType getAsOnOffType(boolean value) {
