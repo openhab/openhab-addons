@@ -1,16 +1,11 @@
 package org.openhab.binding.knx.internal.client;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -18,12 +13,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.knx.KNXBusListener;
-import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.handler.GroupAddressListener;
-import org.openhab.binding.knx.handler.IndividualAddressListener;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
 import org.openhab.binding.knx.handler.TelegramListener;
+import org.openhab.binding.knx.handler.TypeHelper;
+import org.openhab.binding.knx.internal.channel.CommandSpec;
 import org.openhab.binding.knx.internal.handler.RetryDatapoint;
 import org.openhab.binding.knx.internal.logging.LogAdapter;
 import org.slf4j.Logger;
@@ -58,42 +52,40 @@ public abstract class KNXClient implements NetworkLinkListener {
     private final Logger logger = LoggerFactory.getLogger(KNXClient.class);
     private final LogAdapter logAdapter = new LogAdapter();
 
-    private boolean shutdown = false;
     private final int autoReconnectPeriod;
-    private final Lock connectLock = new ReentrantLock();
-    private final Condition connectedCondition = connectLock.newCondition();
+    private boolean shutdown = false; // FIXME
+
     private final int readRetriesLimit;
-    private volatile boolean connected = false;
 
     @Nullable
     private ScheduledFuture<?> busJob;
 
     @Nullable
     private ProcessCommunicator processCommunicator;
-
     @Nullable
     private ManagementProcedures managementProcedures;
-
     @Nullable
     private ManagementClient managementClient;
+    @Nullable
+    private KNXNetworkLink link;
 
     @Nullable
     private DeviceInfoClient deviceInfoClient;
 
-    @Nullable
-    private KNXNetworkLink link;
-
     private final ScheduledExecutorService knxScheduler;
 
-    @Nullable
-    private ScheduledFuture<?> connectJob;
+    private final LinkedBlockingQueue<@Nullable RetryDatapoint> readDatapoints = new LinkedBlockingQueue<>();
+
+    private final ThingUID thingUID;
+
+    private final int responseTimeout;
+
+    private final int readingPause;
+
+    private final StatusUpdateCallback statusUpdateCallback;
 
     private final Set<GroupAddressListener> groupAddressListeners = new ConcurrentHashMap<GroupAddressListener, Boolean>()
             .keySet(Boolean.TRUE);
-    private final Set<IndividualAddressListener> individualAddressListeners = new ConcurrentHashMap<IndividualAddressListener, Boolean>()
-            .keySet(Boolean.TRUE);
-    private final Set<KNXBusListener> knxBusListeners = new CopyOnWriteArraySet<>();
-    private final Collection<KNXTypeMapper> typeMappers = new CopyOnWriteArraySet<>();
 
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
 
@@ -132,18 +124,14 @@ public abstract class KNXClient implements NetworkLinkListener {
         }
     };
 
-    private final LinkedBlockingQueue<@Nullable RetryDatapoint> readDatapoints = new LinkedBlockingQueue<>();
+    @Nullable
+    private ScheduledFuture<?> connectJob;
 
-    private final ThingUID thingUID;
-
-    private final int responseTimeout;
-
-    private final int readingPause;
-
-    private final StatusUpdateCallback statusUpdateCallback;
+    private final TypeHelper typeHelper;
 
     public KNXClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
-            int readRetriesLimit, ScheduledExecutorService knxScheduler, StatusUpdateCallback statusUpdateCallback) {
+            int readRetriesLimit, ScheduledExecutorService knxScheduler, StatusUpdateCallback statusUpdateCallback,
+            TypeHelper typeHelper) {
         this.autoReconnectPeriod = autoReconnectPeriod;
         this.thingUID = thingUID;
         this.responseTimeout = responseTimeout;
@@ -151,13 +139,16 @@ public abstract class KNXClient implements NetworkLinkListener {
         this.readRetriesLimit = readRetriesLimit;
         this.knxScheduler = knxScheduler;
         this.statusUpdateCallback = statusUpdateCallback;
+        this.typeHelper = typeHelper;
 
         shutdown = false;
     }
 
     public void initialize() {
         registerLogAdapter();
-        scheduleConnectJob();
+        connectJob = knxScheduler.scheduleWithFixedDelay(() -> {
+            connect();
+        }, 0, autoReconnectPeriod, TimeUnit.SECONDS);
     }
 
     private void registerLogAdapter() {
@@ -168,9 +159,12 @@ public abstract class KNXClient implements NetworkLinkListener {
         LogManager.getManager().removeWriter(null, logAdapter);
     }
 
-    public void connect() throws KNXException, InterruptedException {
+    private synchronized boolean connect() {
+        if (isConnected() || shutdown) {
+            return true;
+        }
         try {
-            closeConnection();
+            closeConnection(null);
 
             logger.debug("Bridge {} is connecting to the KNX bus", thingUID);
 
@@ -195,22 +189,16 @@ public abstract class KNXClient implements NetworkLinkListener {
             busJob = knxScheduler.scheduleWithFixedDelay(() -> readNextQueuedDatapoint(), 0, readingPause,
                     TimeUnit.MILLISECONDS);
 
-            connected = true;
             statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
+            return true;
         } catch (KNXException | InterruptedException e) {
-            closeConnection();
-            throw e;
-        }
-
-        connectLock.lock();
-        try {
-            connectedCondition.signalAll();
-        } finally {
-            connectLock.unlock();
+            logger.debug("Error connecting to the bus: {}", e.getMessage(), e);
+            closeConnection(e);
+            return false;
         }
     }
 
-    private void closeConnection() {
+    private void closeConnection(@Nullable Exception e) {
         logger.debug("Bridge {} is disconnecting from the KNX bus", thingUID);
         readDatapoints.clear();
         if (busJob != null) {
@@ -238,7 +226,12 @@ public abstract class KNXClient implements NetworkLinkListener {
             link = null;
         }
 
-        statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);
+        if (e != null) {
+            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getLocalizedMessage());
+        } else {
+            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     private void processEvent(String task, ProcessEvent event, ListenerNotification action) {
@@ -250,18 +243,10 @@ public abstract class KNXClient implements NetworkLinkListener {
                 return;
             }
             logger.trace("Received a {} telegram from '{}' for destination '{}'", task, source, destination);
-            for (IndividualAddressListener listener : individualAddressListeners) {
-                if (listener.listensTo(source)) {
-                    knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
-                }
-            }
             for (GroupAddressListener listener : groupAddressListeners) {
                 if (listener.listensTo(destination)) {
                     knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
                 }
-            }
-            for (KNXBusListener listener : knxBusListeners) {
-                listener.onActivity(source, destination, asdu);
             }
         } catch (RuntimeException e) {
             logger.error("Error handling {} event from KNX bus: {}", task, e.getMessage());
@@ -271,11 +256,10 @@ public abstract class KNXClient implements NetworkLinkListener {
         }
     }
 
-    public void writeToKNX(GroupAddress address, @Nullable String dpt, Type value) throws KNXException {
-        if (dpt == null /* || address == null || value == null */) {
+    public void writeToKNX(CommandSpec commandSpec) throws KNXException {
+        if (!connect()) {
             return;
         }
-        scheduleAndWaitForConnection();
 
         KNXNetworkLink link = this.link;
         ProcessCommunicator processCommunicator = this.processCommunicator;
@@ -286,67 +270,30 @@ public abstract class KNXClient implements NetworkLinkListener {
                     link == null ? "Not OK" : (link.isOpen() ? "Open" : "Closed"));
             return;
         }
-        Datapoint datapoint = new CommandDP(address, thingUID.toString(), 0, dpt);
-        String mappedValue = toDPTValue(value, datapoint.getDPT());
+        Datapoint datapoint = new CommandDP(commandSpec.getGroupAddress(), thingUID.toString(), 0,
+                commandSpec.getDpt());
+        String mappedValue = toDPTValue(commandSpec.getCommand(), datapoint.getDPT());
         if (mappedValue == null) {
-            logger.debug("Value '{}' cannot be mapped to datapoint '{}'", value, datapoint);
+            logger.debug("Value '{}' cannot be mapped to datapoint '{}'", commandSpec.getCommand(), datapoint);
             return;
         }
         for (int i = 0; i < MAX_SEND_ATTEMPTS; i++) {
             try {
                 processCommunicator.write(datapoint, mappedValue);
-                logger.debug("Wrote value '{}' to datapoint '{}' ({}. attempt).", value, datapoint, i);
+                logger.debug("Wrote value '{}' to datapoint '{}' ({}. attempt).", commandSpec.getCommand(), datapoint,
+                        i);
                 break;
             } catch (KNXException e) {
                 if (i < MAX_SEND_ATTEMPTS - 1) {
                     logger.debug("Value '{}' could not be sent to the KNX bus using datapoint '{}': {}. Will retry.",
-                            value, datapoint, e.getMessage());
+                            commandSpec.getCommand(), datapoint, e.getMessage());
                 } else {
                     logger.debug("Value '{}' could not be sent to the KNX bus using datapoint '{}': {}. Giving up now.",
-                            value, datapoint, e.getMessage());
-                    closeConnection();
+                            commandSpec.getCommand(), datapoint, e.getMessage());
+                    closeConnection(e);
                     throw e;
                 }
             }
-        }
-    }
-
-    public void scheduleConnectJob() {
-        if (connectJob != null && !connectJob.isDone()) {
-            return;
-        }
-        logger.trace("Scheduling the connection attempt to the KNX bus");
-        connectJob = knxScheduler.schedule(() -> {
-            if (!shutdown) {
-                try {
-                    connect();
-                } catch (KNXException | InterruptedException e) {
-                    logger.debug("Error connecting to the bus: {}", e.getMessage(), e);
-                }
-            }
-        }, autoReconnectPeriod, TimeUnit.SECONDS);
-    }
-
-    private void scheduleAndWaitForConnection() {
-        connectLock.lock();
-        try {
-            while (!(connected)) {
-                scheduleConnectJob();
-                try {
-                    connectedCondition.await();
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-        } finally {
-            connectLock.unlock();
-        }
-    }
-
-    private void cancelConnectJob() {
-        if (connectJob != null) {
-            connectJob.cancel(true);
-            connectJob = null;
         }
     }
 
@@ -364,19 +311,15 @@ public abstract class KNXClient implements NetworkLinkListener {
      */
     @Nullable
     private String toDPTValue(Type type, String dpt) {
-        for (KNXTypeMapper typeMapper : typeMappers) {
-            String value = typeMapper.toDPTValue(type, dpt);
-            if (value != null) {
-                return value;
-            }
-        }
-        return null;
+        return typeHelper.toDPTValue(type, dpt);
     }
 
     private void readNextQueuedDatapoint() {
-        scheduleAndWaitForConnection();
+        if (!connect()) {
+            return;
+        }
         ProcessCommunicator processCommunicator = this.processCommunicator;
-        if (!connected || processCommunicator == null) {
+        if (processCommunicator == null) {
             return;
         }
         RetryDatapoint datapoint = readDatapoints.poll();
@@ -402,26 +345,27 @@ public abstract class KNXClient implements NetworkLinkListener {
     }
 
     public void dispose() {
+        if (connectJob != null) {
+            connectJob.cancel(true);
+            connectJob = null;
+        }
         shutdown = true;
-        cancelConnectJob();
-        closeConnection();
+        closeConnection(null);
         unregisterLogAdapter();
     }
 
     @Override
-    public void linkClosed(@Nullable CloseEvent e) {
+    public void linkClosed(@Nullable CloseEvent closeEvent) {
         KNXNetworkLink link = this.link;
-        if (link == null || e == null) {
+        if (link == null || closeEvent == null) {
             return;
         }
-        if (!link.isOpen() && !(CloseEvent.USER_REQUEST == e.getInitiator()) && !shutdown) {
+        if (!link.isOpen() && CloseEvent.USER_REQUEST != closeEvent.getInitiator() && !shutdown) {
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getReason());
-            logger.warn("KNX link has been lost (reason: {} on object {})", e.getReason(), e.getSource().toString());
-            if (autoReconnectPeriod > 0) {
-                logger.info("KNX link will be retried in '{}' seconds", autoReconnectPeriod);
-                scheduleConnectJob();
-            }
+                    closeEvent.getReason());
+            logger.debug("KNX link has been lost (reason: {} on object {})", closeEvent.getReason(),
+                    closeEvent.getSource().toString());
+            connect();
         }
     }
 
@@ -489,24 +433,8 @@ public abstract class KNXClient implements NetworkLinkListener {
         return groupAddressListeners.remove(listener);
     }
 
-    public final boolean registerIndividualAddressListener(IndividualAddressListener listener) {
-        return individualAddressListeners.contains(listener) ? true : individualAddressListeners.add(listener);
-    }
-
-    public final boolean unregisterIndividualAddressListener(IndividualAddressListener listener) {
-        return individualAddressListeners.remove(listener);
-    }
-
-    public final void registerKNXBusListener(KNXBusListener knxBusListener) {
-        knxBusListeners.add(knxBusListener);
-    }
-
-    public final void unregisterKNXBusListener(KNXBusListener knxBusListener) {
-        knxBusListeners.remove(knxBusListener);
-    }
-
     public boolean isConnected() {
-        return connected;
+        return link != null && link.isOpen();
     }
 
     public DeviceInfoClient getDeviceInfoClient() {

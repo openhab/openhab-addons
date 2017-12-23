@@ -8,15 +8,19 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.KNXBindingConstants.CHANNEL_WALLBUTTON;
 
+import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.Command;
 
-import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.exception.KNXFormatException;
 
+@NonNullByDefault
 class TypeWallButton extends KNXChannelType {
 
     TypeWallButton() {
@@ -24,18 +28,21 @@ class TypeWallButton extends KNXChannelType {
     }
 
     @Override
-    public String getDPT(GroupAddress groupAddress, Configuration configuration) {
-        return "1.001";
+    protected Set<String> getAllGAKeys() {
+        // TODO Auto-generated method stub
+        return Collections.emptySet();
     }
 
     @Override
-    protected Set<String> getReadAddressKeys() {
-        return asSet(SWITCH_GA);
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
+            throws KNXFormatException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    protected Set<String> getWriteAddressKeys(Type type) {
-        return asSet(STATUS_GA);
+    protected String getDefaultDPT(String gaConfigKey) {
+        return "";
     }
 
 }

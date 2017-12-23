@@ -10,13 +10,18 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
+import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.Command;
 
-import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
+import tuwien.auto.calimero.exception.KNXFormatException;
 
+@NonNullByDefault
 class TypeSetpoint extends KNXChannelType {
 
     TypeSetpoint() {
@@ -24,18 +29,19 @@ class TypeSetpoint extends KNXChannelType {
     }
 
     @Override
-    public String getDPT(GroupAddress groupAddress, Configuration configuration) {
-        return "9.001";
+    protected Set<String> getAllGAKeys() {
+        return Collections.singleton(SETPOINT_GA);
     }
 
     @Override
-    protected Set<String> getReadAddressKeys() {
-        return asSet(STATUS_GA);
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
+            throws KNXFormatException {
+        return getDefaultCommandSpec(configuration, SETPOINT_GA, command);
     }
 
     @Override
-    protected Set<String> getWriteAddressKeys(Type type) {
-        return asSet(SETPOINT_GA);
+    protected String getDefaultDPT(String gaConfigKey) {
+        return DPTXlator2ByteFloat.DPT_TEMPERATURE.getID();
     }
 
 }

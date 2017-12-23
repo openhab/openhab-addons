@@ -24,4 +24,17 @@ public interface TypeHelper {
     @Nullable
     Class<? extends Type> toTypeClass(String dpt);
 
+    /**
+     * Transforms a {@link Type} into a datapoint type value for the KNX bus.
+     *
+     * @param type
+     *            the {@link Type} to transform
+     * @param dpt
+     *            the datapoint type to which should be converted
+     *
+     * @return the corresponding KNX datapoint type value as a string
+     */
+    @Nullable
+    String toDPTValue(Type type, String dpt);
+
 }

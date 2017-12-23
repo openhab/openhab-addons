@@ -83,9 +83,9 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
-            return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
+            return new IPBridgeThingHandler((Bridge) thing, networkAddressService, this);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing);
+            return new SerialBridgeThingHandler((Bridge) thing, this);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
             return new KNXBasicThingHandler(thing, this);
         }
@@ -143,8 +143,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
     }
 
     @Override
-    @Nullable
-    public Type getType(Datapoint datapoint, byte[] asdu) {
+    public @Nullable Type getType(Datapoint datapoint, byte[] asdu) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             Type type = typeMapper.toType(datapoint, asdu);
             if (type != null) {
@@ -165,12 +164,22 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
     }
 
     @Override
-    @Nullable
-    public final Class<? extends Type> toTypeClass(String dpt) {
+    public final @Nullable Class<? extends Type> toTypeClass(String dpt) {
         for (KNXTypeMapper typeMapper : typeMappers) {
             Class<? extends Type> typeClass = typeMapper.toTypeClass(dpt);
             if (typeClass != null) {
                 return typeClass;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public final @Nullable String toDPTValue(Type type, String dpt) {
+        for (KNXTypeMapper typeMapper : typeMappers) {
+            String value = typeMapper.toDPTValue(type, dpt);
+            if (value != null) {
+                return value;
             }
         }
         return null;

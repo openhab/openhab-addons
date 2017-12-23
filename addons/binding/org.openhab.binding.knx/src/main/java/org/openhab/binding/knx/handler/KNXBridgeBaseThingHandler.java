@@ -15,15 +15,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.knx.internal.client.KNXClient;
-import org.openhab.binding.knx.internal.factory.KNXThreadPoolFactory;
 
 import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.exception.KNXException;
@@ -38,12 +35,7 @@ import tuwien.auto.calimero.mgmt.Destination;
 @NonNullByDefault
 public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implements StatusUpdateCallback {
 
-    private static final int CORE_POOL_SIZE = 5;
-
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
-
-    @Nullable
-    private ScheduledExecutorService knxScheduler;
 
     @FunctionalInterface
     private interface ReadFunction<T, R> {
@@ -57,18 +49,6 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     protected abstract KNXClient getClient();
 
     @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
-                CORE_POOL_SIZE + getThing().getThings().size() / 10);
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
-                CORE_POOL_SIZE + getThing().getThings().size() / 10);
-    }
-
-    @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
         // Nothing to do here
     }
@@ -79,12 +59,6 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     public ScheduledExecutorService getScheduler() {
-        ScheduledExecutorService scheduler = knxScheduler;
-        if (scheduler == null) {
-            scheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
-                    CORE_POOL_SIZE);
-            knxScheduler = scheduler;
-        }
         return scheduler;
     }
 

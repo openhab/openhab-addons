@@ -22,15 +22,15 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 public final class KNXChannelSelector {
 
     private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
-            new TypeContact(), //
-            new TypeDimmer(), //
+            // new TypeContact(), //
+            // new TypeDimmer(), //
             new TypeRollershutter(), //
-            new TypeSetpoint(), //
+            // new TypeSetpoint(), //
             new TypeSwitch(), //
-            new TypeWallButton(), //
-            new TypeDateTime(), //
-            new TypeNumber(), //
-            new TypeString()).collect(toSet()));
+            // new TypeWallButton(), //
+            // new TypeDateTime(), //
+            // new TypeString(), //
+            new TypeNumber()).collect(toSet()));
 
     private KNXChannelSelector() {
         // prevent instantiation

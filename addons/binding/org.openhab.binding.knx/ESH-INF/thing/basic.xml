@@ -44,31 +44,15 @@
 				<description>The group address in x/y/z notation to toggle the dimmer on or off</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="statusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read the actual status of the dimmer</description>
-				<required>false</required>
-			</parameter>
 			<parameter name="positionGA" type="text">
 				<label>Address</label>
 				<description>The group address in x/y/z notation to set the absolute position of the dimmer</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="positionStatusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read the actual position of the dimmer</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="increaseDecreaseGA" type="text">
 				<label>Address</label>
 				<description>The group address in x/y/z notation to increase or decrease the dimmer</description>
 				<required>false</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group addresses should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
 			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
@@ -86,39 +70,18 @@
 		<config-description>
 			<parameter name="upDownGA" type="text">
 				<label>Address</label>
-				<description>The group address in x/y/z notation to move the shutter in the DOWN or UP direction</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="upDownStatusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read actual direction the shutter is moving</description>
+				<description>The group address(es) in FANCY notation to move the shutter in the DOWN or UP direction</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="stopMoveGA" type="text">
 				<label>Address</label>
-				<description>The group address in x/y/z notation to start (MOVE) or STOP shutter movement</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="stopMoveStatusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read the motion status of the shutters</description>
+				<description>The group address(es) in FANCY notation to start (MOVE) or STOP shutter movement</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="positionGA" type="text">
 				<label>Address</label>
-				<description>The group address in x/y/z notation to set the absolute position of the shutter, in %</description>
+				<description>The group address(es) in FANCY notation to set the absolute position of the shutter, in %</description>
 				<required>false</required>
-			</parameter>
-			<parameter name="positionStatusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read the absolute position of the shutter</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group addresses should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
 			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
@@ -139,17 +102,6 @@
 				<description>The group address in x/y/z notation to set the thermostat setpoint</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="statusGA" type="text">
-				<label>Address</label>
-				<description>The group address in x/y/z notation to read the current thermostat setpoint</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
-			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
 				<description>Interval between attempts to read the status group address on the bus, in seconds</description>
@@ -168,17 +120,6 @@
 				<label>Address</label>
 				<description>The group address in x/y/z notation</description>
 				<required>true</required>
-			</parameter>
-			<parameter name="dpt" type="text">
-				<label>DPT</label>
-				<description>The DPT in "x.y" notation</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
 			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
@@ -199,17 +140,6 @@
 				<description>The group address in x/y/z notation</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="dpt" type="text">
-				<label>DPT</label>
-				<description>The DPT in "x.y" notation</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
-			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
 				<description>Interval between attempts to read the status group address on the bus, in seconds</description>
@@ -228,17 +158,6 @@
 				<label>Address</label>
 				<description>The group address in x/y/z notation</description>
 				<required>true</required>
-			</parameter>
-			<parameter name="dpt" type="text">
-				<label>DPT</label>
-				<description>The DPT in "x.y" notation</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
 			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
@@ -259,17 +178,6 @@
 				<description>The group address in x/y/z notation</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="dpt" type="text">
-				<label>DPT</label>
-				<description>The DPT in "x.y" notation</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
-			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
 				<description>Interval between attempts to read the status group address on the bus, in seconds</description>
@@ -284,21 +192,10 @@
 		<label>Switch</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Switch Items</description>
 		<config-description>
-			<parameter name="groupaddress" type="text">
+			<parameter name="switchGA" type="text">
 				<label>Address</label>
-				<description>The group address in x/y/z notation</description>
+				<description>The group address(es) in FANCY notation</description>
 				<required>true</required>
-			</parameter>
-			<parameter name="dpt" type="text">
-				<label>DPT</label>
-				<description>The DPT in "x.y" notation</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="read" type="boolean">
-				<label>Read</label>
-				<description>Flag to indicate if the status group address should be read at startup</description>
-				<required>true</required>
-				<default>false</default>
 			</parameter>
 			<parameter name="interval" type="integer">
 				<label>Interval</label>
@@ -318,17 +215,6 @@
                 <label>Address</label>
                 <description>The group address in x/y/z where the button sends its commands</description>
                 <required>true</required>
-            </parameter>
-            <parameter name="dpt" type="text">
-                <label>DPT</label>
-                <description>The DPT in "x.y" notation</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="read" type="boolean">
-                <label>Read</label>
-                <description>Flag to indicate if the status group address should be read at startup</description>
-                <required>true</required>
-                <default>false</default>
             </parameter>
             <parameter name="interval" type="integer">
                 <label>Interval</label>

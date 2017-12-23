@@ -13,6 +13,7 @@ import static org.openhab.binding.knx.KNXBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -33,9 +34,13 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.openhab.binding.knx.internal.channel.CommandSpec;
 import org.openhab.binding.knx.internal.channel.KNXChannelSelector;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
+import org.openhab.binding.knx.internal.channel.ListenSpec;
+import org.openhab.binding.knx.internal.channel.ReadSpec;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.BasicConfig;
 import org.openhab.binding.knx.internal.handler.DeviceInspector;
@@ -57,7 +62,7 @@ import tuwien.auto.calimero.exception.KNXFormatException;
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-public class KNXBasicThingHandler extends BaseThingHandler implements IndividualAddressListener, GroupAddressListener {
+public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddressListener {
 
     private final Random random = new Random();
 
@@ -125,9 +130,8 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     private void initializeGroupAddresses() {
         forAllChannels((selector, channelConfiguration) -> {
             groupAddresses.addAll(selector.getReadAddresses(channelConfiguration));
-            groupAddresses.addAll(selector.getWriteAddresses(channelConfiguration, null));
-            groupAddresses.addAll(selector.getTransmitAddresses(channelConfiguration, null));
-            groupAddresses.addAll(selector.getUpdateAddresses(channelConfiguration, null));
+            groupAddresses.addAll(selector.getWriteAddresses(channelConfiguration));
+            groupAddresses.addAll(selector.getListenAddresses(channelConfiguration));
         });
     }
 
@@ -211,13 +215,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     @Override
     public void channelLinked(ChannelUID channelUID) {
         withKNXType(channelUID, (selector, configuration) -> {
-            Boolean mustRead = (Boolean) configuration.get(READ);
-            BigDecimal readInterval = (BigDecimal) configuration.get(INTERVAL);
-            for (GroupAddress address : selector.getReadAddresses(configuration)) {
-                if (mustRead || readInterval.intValue() > 0) {
-                    scheduleReadJob(address, selector.getDPT(address, configuration), true, BigDecimal.ZERO);
-                }
-            }
+            scheduleRead(selector, configuration);
         });
     }
 
@@ -226,20 +224,24 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
         for (Channel channel : getThing().getChannels()) {
             if (isLinked(channel.getUID().getId())) {
-                withKNXType(channel, (selector, channelConfiguration) -> {
-                    Boolean mustRead = (Boolean) channelConfiguration.get(READ);
-                    BigDecimal readInterval = (BigDecimal) channelConfiguration.get(INTERVAL);
-                    for (GroupAddress address : selector.getReadAddresses(channelConfiguration)) {
-                        scheduleReadJob(address, selector.getDPT(address, channelConfiguration), mustRead,
-                                readInterval);
-                    }
+                withKNXType(channel, (selector, configuration) -> {
+                    scheduleRead(selector, configuration);
                 });
             }
         }
     }
 
-    private void scheduleReadJob(GroupAddress groupAddress, @Nullable String dpt, boolean immediate,
-            @Nullable BigDecimal readInterval) {
+    private void scheduleRead(KNXChannelType selector, Configuration configuration) throws KNXFormatException {
+        BigDecimal readInterval = (BigDecimal) configuration.get(INTERVAL);
+        List<ReadSpec> readSpecs = selector.getReadSpec(configuration);
+        for (ReadSpec readSpec : readSpecs) {
+            for (GroupAddress groupAddress : readSpec.getReadAddresses()) {
+                scheduleReadJob(groupAddress, readSpec.getDPT(), readInterval);
+            }
+        }
+    }
+
+    private void scheduleReadJob(GroupAddress groupAddress, String dpt, @Nullable BigDecimal readInterval) {
         boolean recurring = readInterval != null && readInterval.intValue() > 0;
 
         Runnable readRunnable = () -> {
@@ -252,17 +254,15 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                 getClient().readDatapoint(datapoint);
             }
         };
-        if (immediate) {
-            getBridgeHandler().getScheduler().schedule(readRunnable, 0, TimeUnit.SECONDS);
-        }
-        if (recurring && readInterval != null) {
+        if (recurring) {
             ScheduledFuture<?> future = readFutures.get(groupAddress);
             if (future == null || future.isDone() || future.isCancelled()) {
-                int initialDelay = immediate ? 0 : readInterval.intValue();
-                future = getBridgeHandler().getScheduler().scheduleWithFixedDelay(readRunnable, initialDelay,
+                future = getBridgeHandler().getScheduler().scheduleWithFixedDelay(readRunnable, 0,
                         readInterval.intValue(), TimeUnit.SECONDS);
                 readFutures.put(groupAddress, future);
             }
+        } else {
+            getBridgeHandler().getScheduler().submit(readRunnable);
         }
     }
 
@@ -282,11 +282,6 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
     }
 
     @Override
-    public boolean listensTo(IndividualAddress source) {
-        return address != null && address.equals(source);
-    }
-
-    @Override
     public boolean listensTo(GroupAddress destination) {
         return groupAddresses.contains(destination) || foundGroupAddresses.contains(destination);
     }
@@ -296,10 +291,8 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
         logger.trace("Handling a Command ({})  for Channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {}", channelUID);
-            withKNXType(channelUID, (selector, channelConfiguration) -> {
-                for (GroupAddress address : selector.getReadAddresses(channelConfiguration)) {
-                    scheduleReadJob(address, selector.getDPT(address, channelConfiguration), true, BigDecimal.ZERO);
-                }
+            withKNXType(channelUID, (selector, configuration) -> {
+                scheduleRead(selector, configuration);
             });
         } else {
             switch (channelUID.getId()) {
@@ -316,22 +309,11 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
     }
 
-    private void sendToKNX(ChannelUID channelUID, Type type) {
+    private void sendToKNX(ChannelUID channelUID, Command command) {
         withKNXType(channelUID, (selector, channelConfiguration) -> {
-            Type convertedType = selector.convertType(channelConfiguration, type);
-            if (logger.isTraceEnabled()) {
-                Channel channel = getThing().getChannel(channelUID.getId());
-                if (channel != null) {
-                    logger.trace("Sending to channel {} {} {} {}/{} : {} -> {}", channelUID.getId(),
-                            channel.getConfiguration().get(DPT), channel.getAcceptedItemType(),
-                            channel.getConfiguration().get(READ), channel.getConfiguration().get(WRITE), type,
-                            convertedType);
-                }
-            }
-            if (convertedType != null) {
-                for (GroupAddress address : selector.getWriteAddresses(channelConfiguration, convertedType)) {
-                    getClient().writeToKNX(address, selector.getDPT(address, channelConfiguration), convertedType);
-                }
+            CommandSpec commandSpec = selector.getCommandSpec(channelConfiguration, command);
+            if (commandSpec != null) {
+                getClient().writeToKNX(commandSpec);
             }
         });
     }
@@ -350,53 +332,50 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
 
     @Override
     public void onGroupWrite(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
-
         logger.trace("Thing {} received a Group Write telegram from '{}' for destination '{}'", getThing().getUID(),
                 source, destination);
 
         for (Channel channel : getThing().getChannels()) {
-            withKNXType(channel, (selector, channelConfiguration) -> {
-                Set<GroupAddress> addresses = selector.getReadAddresses(channelConfiguration);
-                addresses.addAll(selector.getTransmitAddresses(channelConfiguration, null));
-
-                if (addresses.contains(destination)) {
+            withKNXType(channel, (selector, configuration) -> {
+                ListenSpec listenSpec = selector.getListenSpec(configuration, destination);
+                if (listenSpec != null) {
                     logger.trace("Thing {} processes a Group Write telegram for destination '{}' for channel '{}'",
                             getThing().getUID(), destination, channel.getUID());
-                    processDataReceived(destination, asdu, selector.getDPT(destination, channelConfiguration),
-                            channel.getUID());
+                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
                 }
             });
         }
     }
 
-    private void processDataReceived(GroupAddress destination, byte[] asdu, @Nullable String dpt,
+    private void processDataReceived(GroupAddress destination, byte[] asdu, ListenSpec listenSpec,
             ChannelUID channelUID) {
-        if (dpt != null) {
-            if (!typeHelper.isDPTSupported(dpt)) {
-                logger.warn("DPT {} is not supported by the KNX binding.", dpt);
-                return;
-            }
-
-            Datapoint datapoint = new CommandDP(destination, getThing().getUID().toString(), 0, dpt);
-            Type type = typeHelper.getType(datapoint, asdu);
-
-            if (type != null) {
-                postCommand(channelUID, (Command) type);
-            } else {
-                final char[] hexCode = "0123456789ABCDEF".toCharArray();
-                StringBuilder sb = new StringBuilder(2 + asdu.length * 2);
-                sb.append("0x");
-                for (byte b : asdu) {
-                    sb.append(hexCode[(b >> 4) & 0xF]);
-                    sb.append(hexCode[(b & 0xF)]);
-                }
-
-                logger.warn(
-                        "Ignoring KNX bus data: couldn't transform to Type (not supported). Destination='{}', datapoint='{}', data='{}'",
-                        destination, datapoint, sb);
-                return;
-            }
+        if (!typeHelper.isDPTSupported(listenSpec.getDPT())) {
+            logger.warn("DPT {} is not supported by the KNX binding.", listenSpec.getDPT());
+            return;
         }
+
+        Datapoint datapoint = new CommandDP(destination, getThing().getUID().toString(), 0, listenSpec.getDPT());
+        Type type = typeHelper.getType(datapoint, asdu);
+
+        if (type != null) {
+            updateState(channelUID, (State) type);
+        } else {
+            String s = asduToHex(asdu);
+            logger.warn(
+                    "Ignoring KNX bus data: couldn't transform to Type (not supported). Destination='{}', datapoint='{}', data='{}'",
+                    destination, datapoint, s);
+        }
+    }
+
+    private String asduToHex(byte[] asdu) {
+        final char[] hexCode = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder(2 + asdu.length * 2);
+        sb.append("0x");
+        for (byte b : asdu) {
+            sb.append(hexCode[(b >> 4) & 0xF]);
+            sb.append(hexCode[(b & 0xF)]);
+        }
+        return sb.toString();
     }
 
     public void restart() {

@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
+import org.openhab.binding.knx.handler.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,9 @@ public class IPClient extends KNXClient {
     public IPClient(int ipConnectionType, String ip, String localSource, int port,
             @Nullable InetSocketAddress localEndPoint, boolean useNAT, int autoReconnectPeriod, ThingUID thingUID,
             int responseTimeout, int readingPause, int readRetriesLimit, ScheduledExecutorService knxScheduler,
-            StatusUpdateCallback statusUpdateCallback) {
+            StatusUpdateCallback statusUpdateCallback, TypeHelper typeHelper) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                statusUpdateCallback);
+                statusUpdateCallback, typeHelper);
         this.ipConnectionType = ipConnectionType;
         this.ip = ip;
         this.localSource = localSource;

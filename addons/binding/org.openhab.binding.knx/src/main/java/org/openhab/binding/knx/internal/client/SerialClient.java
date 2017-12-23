@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
+import org.openhab.binding.knx.handler.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +25,9 @@ public class SerialClient extends KNXClient {
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort,
-            StatusUpdateCallback statusUpdateCallback) {
+            StatusUpdateCallback statusUpdateCallback, TypeHelper typeHelper) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                statusUpdateCallback);
+                statusUpdateCallback, typeHelper);
         this.serialPort = serialPort;
     }
 

@@ -10,13 +10,18 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
+import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.Command;
 
-import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
+import tuwien.auto.calimero.exception.KNXFormatException;
 
+@NonNullByDefault
 class TypeContact extends KNXChannelType {
 
     TypeContact() {
@@ -24,18 +29,19 @@ class TypeContact extends KNXChannelType {
     }
 
     @Override
-    public String getDPT(GroupAddress groupAddress, Configuration configuration) {
-        return (String) configuration.get(DPT);
+    protected Set<String> getAllGAKeys() {
+        return Collections.singleton(GROUPADDRESS);
     }
 
     @Override
-    public Set<String> getReadAddressKeys() {
-        return asSet(GROUPADDRESS);
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
+            throws KNXFormatException {
+        return getDefaultCommandSpec(configuration, GROUPADDRESS, command);
     }
 
     @Override
-    protected Set<String> getWriteAddressKeys(Type type) {
-        return asSet(GROUPADDRESS);
+    protected String getDefaultDPT(String gaConfigKey) {
+        return DPTXlatorBoolean.DPT_OPENCLOSE.getID();
     }
 
 }

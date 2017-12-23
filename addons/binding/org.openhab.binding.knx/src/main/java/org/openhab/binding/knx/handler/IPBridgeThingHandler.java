@@ -43,10 +43,12 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private IPClient client;
 
     private final NetworkAddressService networkAddressService;
+    private final TypeHelper typeHelper;
 
-    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
+    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService, TypeHelper typeHelper) {
         super(bridge);
         this.networkAddressService = networkAddressService;
+        this.typeHelper = typeHelper;
     }
 
     @Override
@@ -54,29 +56,25 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         String localSource = config.getLocalSourceAddr();
         String connectionTypeString = config.getIpConnectionType();
-        String ip = "";
-        int port = 0;
+        int port = config.getPortNumber().intValue();
+        String ip = config.getIpAddress();
         InetSocketAddress localEndPoint = null;
         boolean useNAT = false;
-        int ipConnectionType = MODE_ROUTER.equalsIgnoreCase(connectionTypeString) ? KNXNetworkLinkIP.ROUTING
-                : KNXNetworkLinkIP.TUNNELING;
-        if (StringUtils.isNotBlank(connectionTypeString)) {
-            if (MODE_TUNNEL.equalsIgnoreCase(connectionTypeString)) {
-                ip = config.getIpAddress();
-                port = config.getPortNumber().intValue();
-                useNAT = config.getUseNAT() != null ? config.getUseNAT() : false;
-            } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
-                useNAT = false;
-                if (StringUtils.isBlank(ip)) {
-                    ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        MessageFormat.format(
-                                "Unknown IP connection type {0}. Known types are either 'TUNNEL' or 'ROUTER'",
-                                connectionTypeString));
-                return;
+        int ipConnectionType;
+        if (MODE_TUNNEL.equalsIgnoreCase(connectionTypeString)) {
+            useNAT = config.getUseNAT() != null ? config.getUseNAT() : false;
+            ipConnectionType = KNXNetworkLinkIP.TUNNELING;
+        } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
+            useNAT = false;
+            if (StringUtils.isBlank(ip)) {
+                ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
+            ipConnectionType = KNXNetworkLinkIP.ROUTING;
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    MessageFormat.format("Unknown IP connection type {0}. Known types are either 'TUNNEL' or 'ROUTER'",
+                            connectionTypeString));
+            return;
         }
 
         if (StringUtils.isNotBlank(config.getLocalIp())) {
@@ -85,12 +83,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT,
                 config.getAutoReconnectPeriod().intValue(), thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
+                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this,
+                typeHelper);
 
         client.initialize();
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -98,6 +97,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         super.dispose();
         if (client != null) {
             client.dispose();
+            client = null;
         }
     }
 
@@ -105,7 +105,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     protected KNXClient getClient() {
         KNXClient ret = client;
         if (ret == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Thing handler is not initialized");
         }
         return ret;
     }
