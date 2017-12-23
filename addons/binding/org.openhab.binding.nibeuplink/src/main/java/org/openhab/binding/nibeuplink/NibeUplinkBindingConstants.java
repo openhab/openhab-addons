@@ -10,6 +10,7 @@ package org.openhab.binding.nibeuplink;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -23,29 +24,29 @@ import com.google.common.collect.ImmutableSet;
  */
 public final class NibeUplinkBindingConstants {
 
-    private static final String BINDING_ID = "nibeuplink";
+    private static final @NonNull String BINDING_ID = "nibeuplink";
 
     // List of main device types
-    public static final String DEVICE_VVM320 = "vvm320";
-    public static final String DEVICE_VVM320_SENSORS = "vvm320-sensors";
-    public static final String DEVICE_VVM320_SETTINGS = "vvm320-settings";
-    public static final String DEVICE_VVM320_SPECIAL = "vvm320-special";
-    public static final String DEVICE_VVM310 = "vvm310";
-    public static final String DEVICE_VVM310_SENSORS = "vvm310-sensors";
-    public static final String DEVICE_VVM310_SETTINGS = "vvm310-settings";
-    public static final String DEVICE_VVM310_SPECIAL = "vvm310-special";
-    public static final String DEVICE_F750 = "f750";
-    public static final String DEVICE_F750_SENSORS = "f750-sensors";
-    public static final String DEVICE_F750_SETTINGS = "f750-settings";
-    public static final String DEVICE_F750_SPECIAL = "f750-special";
-    public static final String DEVICE_F1145 = "f1145";
-    public static final String DEVICE_F1145_SENSORS = "f1145-sensors";
-    public static final String DEVICE_F1145_SETTINGS = "f1145-settings";
-    public static final String DEVICE_F1145_SPECIAL = "f1145-special";
-    public static final String DEVICE_F1155 = "f1155";
-    public static final String DEVICE_F1155_SENSORS = "f1155-sensors";
-    public static final String DEVICE_F1155_SETTINGS = "f1155-settings";
-    public static final String DEVICE_F1155_SPECIAL = "f1155-special";
+    public static final @NonNull String DEVICE_VVM320 = "vvm320";
+    public static final @NonNull String DEVICE_VVM320_SENSORS = "vvm320-sensors";
+    public static final @NonNull String DEVICE_VVM320_SETTINGS = "vvm320-settings";
+    public static final @NonNull String DEVICE_VVM320_SPECIAL = "vvm320-special";
+    public static final @NonNull String DEVICE_VVM310 = "vvm310";
+    public static final @NonNull String DEVICE_VVM310_SENSORS = "vvm310-sensors";
+    public static final @NonNull String DEVICE_VVM310_SETTINGS = "vvm310-settings";
+    public static final @NonNull String DEVICE_VVM310_SPECIAL = "vvm310-special";
+    public static final @NonNull String DEVICE_F750 = "f750";
+    public static final @NonNull String DEVICE_F750_SENSORS = "f750-sensors";
+    public static final @NonNull String DEVICE_F750_SETTINGS = "f750-settings";
+    public static final @NonNull String DEVICE_F750_SPECIAL = "f750-special";
+    public static final @NonNull String DEVICE_F1145 = "f1145";
+    public static final @NonNull String DEVICE_F1145_SENSORS = "f1145-sensors";
+    public static final @NonNull String DEVICE_F1145_SETTINGS = "f1145-settings";
+    public static final @NonNull String DEVICE_F1145_SPECIAL = "f1145-special";
+    public static final @NonNull String DEVICE_F1155 = "f1155";
+    public static final @NonNull String DEVICE_F1155_SENSORS = "f1155-sensors";
+    public static final @NonNull String DEVICE_F1155_SETTINGS = "f1155-settings";
+    public static final @NonNull String DEVICE_F1155_SPECIAL = "f1155-special";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VVM320 = new ThingTypeUID(BINDING_ID, DEVICE_VVM320);

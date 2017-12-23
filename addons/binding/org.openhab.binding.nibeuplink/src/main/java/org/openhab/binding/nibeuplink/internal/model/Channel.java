@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * interface to be implemented by all Channel Enumerations
  *
@@ -26,6 +28,7 @@ public interface Channel {
 
     Class<?> getJavaType();
 
+    @NonNull
     String getFQName();
 
 }

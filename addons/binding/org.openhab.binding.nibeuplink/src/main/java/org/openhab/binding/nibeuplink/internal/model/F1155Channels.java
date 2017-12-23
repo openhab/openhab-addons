@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * list of all available channels
  *
@@ -934,7 +936,7 @@ public enum F1155Channels implements Channel {
     }
 
     @Override
-    public String getFQName() {
+    public @NonNull String getFQName() {
         String fQName = getChannelGroup().toString().toLowerCase() + "#" + getId();
         return fQName;
     }
