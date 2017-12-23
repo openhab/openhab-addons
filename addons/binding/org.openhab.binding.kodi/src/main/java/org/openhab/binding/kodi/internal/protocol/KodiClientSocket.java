@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -172,12 +173,12 @@ public class KodiClientSocket {
         }
     }
 
-    private void sendMessage(String str) throws Exception {
+    private void sendMessage(String str) throws IOException {
         if (isConnected()) {
             logger.debug("send message: {}", str);
             session.getRemote().sendString(str);
         } else {
-            throw new Exception("socket not initialized");
+            throw new IOException("socket not initialized");
         }
     }
 
