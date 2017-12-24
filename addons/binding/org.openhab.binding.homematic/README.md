@@ -143,11 +143,18 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 Things are all discovered automatically, you can handle them in PaperUI.  
 
-If you really like to manually configure a thing:
+If you really like to manually configure a thing.
+
+**New:** You can give the thing a name (thingid) and add an address property.
+
+**Important:** you have to change your items too and replace the address with the thing name
 
 ```
 Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 {
+  // OLD
+  Thing HM-LC-Dim1T-Pl-2 JEQ0999999
+  // NEW
   Thing HM-LC-Dim1T-Pl-2 MyDevice [address="JEQ0999999"]
 }
 ```

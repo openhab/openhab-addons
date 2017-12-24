@@ -59,7 +59,7 @@ public interface HomematicGatewayAdapter {
     public void onConnectionResumed();
 
     /**
-     * Returns all id's with the config's that must be updated after a event from the gateway has been received.
+     * Returns all ids with the config's that must be updated after an event from the gateway has been received.
      */
     public void getIdsForUpdate(HmDatapoint dp, IdForUpdateCallback callback);
 
