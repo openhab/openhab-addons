@@ -94,7 +94,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
      * Starts a thread which loads all Homematic devices connected to the gateway.
      */
     public void loadDevices() {
-        if (scanFuture == null) {
+        if (scanFuture == null && bridgeHandler.getGateway() != null) {
             scanFuture = scheduler.submit(new Runnable() {
 
                 @Override
