@@ -16,5 +16,5 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
  * @author Gerhard Riegler - Initial contribution
  */
 public interface IdForUpdateCallback {
-    public void doUpdate(String id, HmDatapointConfig config);
+    void doUpdate(String id, HmDatapointConfig config);
 }
