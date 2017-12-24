@@ -34,15 +34,15 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 @Component(immediate = true, service = DiscoveryService.class)
-public class CcuDiscoveryParticipant extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(CcuDiscoveryParticipant.class);
+public class CcuDiscoveryService extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(CcuDiscoveryService.class);
 
     private static final int RECEIVE_TIMEOUT = 3000;
     private InetAddress broadcastAddress;
     private MulticastSocket socket;
     private Future<?> scanFuture;
 
-    public CcuDiscoveryParticipant() {
+    public CcuDiscoveryService() {
         super(Collections.singleton(THING_TYPE_BRIDGE), 5, true);
     }
 
