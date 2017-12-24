@@ -85,7 +85,6 @@ public class HomematicThingHandler extends BaseThingHandler {
                             VIRTUAL_DATAPOINT_NAME_FIRMWARE);
                     setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
                     setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
-                    properties.put(PROPERTY_ADDRESS, device.getAddress());
                     updateProperties(properties);
 
                     // update configurations
