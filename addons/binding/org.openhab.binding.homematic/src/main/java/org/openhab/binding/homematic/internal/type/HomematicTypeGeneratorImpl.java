@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(immediate = true)
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
