@@ -16,4 +16,12 @@
 			<default>0.0</default>
 		</parameter>
 	</config-description>
+
+    <config-description uri="thing-type:homematic:config">
+        <parameter name="address" type="text">
+            <label>Address</label>
+            <description>The address of the Homematic device</description>
+        </parameter>
+    </config-description>
+	
 </config-description:config-descriptions>
