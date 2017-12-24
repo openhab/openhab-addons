@@ -86,7 +86,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
         } catch (Exception ex) {
-            logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
+            logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not available!",
                     CONFIG_DESCRIPTION_URI_CHANNEL);
         }
     }
