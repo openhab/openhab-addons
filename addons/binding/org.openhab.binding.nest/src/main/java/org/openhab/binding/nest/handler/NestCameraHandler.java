@@ -44,6 +44,8 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
                 return getAsStringTypeOrNull(camera.getAppUrl());
             case CHANNEL_AUDIO_INPUT_ENABLED:
                 return getAsOnOffType(camera.isAudioInputEnabled());
+            case CHANNEL_LAST_ONLINE_CHANGE:
+                return getAsDateTimeTypeOrNull(camera.getLastIsOnlineChange());
             case CHANNEL_PUBLIC_SHARE_ENABLED:
                 return getAsOnOffType(camera.isPublicShareEnabled());
             case CHANNEL_PUBLIC_SHARE_URL:

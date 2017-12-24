@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest.internal.data;
 
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,6 +22,8 @@ public class SmokeDetector extends BaseNestDevice {
     private BatteryHealth batteryHealth;
     @SerializedName("co_alarm_state")
     private AlarmState coAlarmState;
+    @SerializedName("last_manual_test_time")
+    private Date lastManualTestTime;
     @SerializedName("smoke_alarm_state")
     private AlarmState smokeAlarmState;
     @SerializedName("is_manual_test_active")
@@ -37,6 +41,10 @@ public class SmokeDetector extends BaseNestDevice {
 
     public AlarmState getCoAlarmState() {
         return coAlarmState;
+    }
+
+    public Date getLastManualTestTime() {
+        return lastManualTestTime;
     }
 
     public AlarmState getSmokeAlarmState() {
@@ -78,14 +86,14 @@ public class SmokeDetector extends BaseNestDevice {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("SmokeDetector [batteryHealth=").append(batteryHealth).append(", coAlarmState=")
-                .append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
-                .append(", isManualTestActive=").append(isManualTestActive).append(", uiColorState=")
-                .append(uiColorState).append(", getId()=").append(getId()).append(", getName()=").append(getName())
-                .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
-                .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
-                .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
-                .append(", getStructureId()=").append(getStructureId()).append(", getWhereId()=").append(getWhereId())
-                .append("]");
+                .append(coAlarmState).append(", lastManualTestTime=").append(lastManualTestTime)
+                .append(", smokeAlarmState=").append(smokeAlarmState).append(", isManualTestActive=")
+                .append(isManualTestActive).append(", uiColorState=").append(uiColorState).append(", getId()=")
+                .append(getId()).append(", getName()=").append(getName()).append(", getDeviceId()=")
+                .append(getDeviceId()).append(", getLastConnection()=").append(getLastConnection())
+                .append(", isOnline()=").append(isOnline()).append(", getNameLong()=").append(getNameLong())
+                .append(", getSoftwareVersion()=").append(getSoftwareVersion()).append(", getStructureId()=")
+                .append(getStructureId()).append(", getWhereId()=").append(getWhereId()).append("]");
         return builder.toString();
     }
 

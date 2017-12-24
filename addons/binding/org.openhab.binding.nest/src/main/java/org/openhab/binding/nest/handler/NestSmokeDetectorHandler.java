@@ -42,6 +42,10 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
         switch (channelUID.getId()) {
             case CHANNEL_CO_ALARM_STATE:
                 return new StringType(smokeDetector.getCoAlarmState().toString());
+            case CHANNEL_LAST_CONNECTION:
+                return getAsDateTimeTypeOrNull(smokeDetector.getLastConnection());
+            case CHANNEL_LAST_MANUAL_TEST_TIME:
+                return getAsDateTimeTypeOrNull(smokeDetector.getLastManualTestTime());
             case CHANNEL_LOW_BATTERY:
                 return getAsOnOffType(smokeDetector.getBatteryHealth() == BatteryHealth.REPLACE);
             case CHANNEL_MANUAL_TEST_ACTIVE:

@@ -59,6 +59,8 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
                 return getAsOnOffType(thermostat.isHasLeaf());
             case CHANNEL_HUMIDITY:
                 return new DecimalType(thermostat.getHumidity());
+            case CHANNEL_LAST_CONNECTION:
+                return getAsDateTimeTypeOrNull(thermostat.getLastConnection());
             case CHANNEL_LOCKED:
                 return getAsOnOffType(thermostat.isLocked());
             case CHANNEL_LOCKED_MAX_SET_POINT:

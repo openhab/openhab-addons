@@ -61,6 +61,7 @@ The account Thing Type does not have any channels.
 |-----------------------|-----------|---------------------------------------------------|:----------:|
 | app_url               | String    | The app URL to see the camera                     |      R     |
 | audio_input_enabled   | Switch    | If the audio input is currently enabled           |      R     |
+| last_online_change    | DateTime  | Timestamp of the last online status change        |      R     |
 | public_share_enabled  | Switch    | If public sharing is currently enabled            |      R     |
 | public_share_url      | String    | The URL to see the public share of the camera     |      R     |
 | snapshot_url          | String    | The URL to use for a snapshot of the video stream |      R     |
@@ -70,13 +71,15 @@ The account Thing Type does not have any channels.
 
 ### Smoke Detector Channels
 
-| Channel Type ID    | Item Type | Description                                                                       | Read Write |
-|--------------------|-----------|-----------------------------------------------------------------------------------|:----------:|
-| co_alarm_state     | String    | The carbon monoxide alarm state of the Nest Protect (OK, EMERGENCY, WARNING)      |      R     |
-| low_battery        | Switch    | Reports whether the battery of the Nest protect is low (if it is battery powered) |      R     |
-| manual_test_active | Switch    | Manual test active at the moment                                                  |      R     |
-| smoke_alarm_state  | String    | The smoke alarm state of the Nest Protect (OK, EMERGENCY, WARNING)                |      R     |
-| ui_color_state     | String    | The current color of the ring on the smoke detector (GRAY, GREEN, YELLOW, RED)    |      R     |
+| Channel Type ID       | Item Type | Description                                                                       | Read Write |
+|-----------------------|-----------|-----------------------------------------------------------------------------------|:----------:|
+| co_alarm_state        | String    | The carbon monoxide alarm state of the Nest Protect (OK, EMERGENCY, WARNING)      |      R     |
+| last_connection       | DateTime  | Timestamp of the last successful interaction with Nest                            |      R     |
+| last_manual_test_time | DateTime  | Timestamp of the last successful manual test                                      |      R     |
+| low_battery           | Switch    | Reports whether the battery of the Nest protect is low (if it is battery powered) |      R     |
+| manual_test_active    | Switch    | Manual test active at the moment                                                  |      R     |
+| smoke_alarm_state     | String    | The smoke alarm state of the Nest Protect (OK, EMERGENCY, WARNING)                |      R     |
+| ui_color_state        | String    | The current color of the ring on the smoke detector (GRAY, GREEN, YELLOW, RED)    |      R     |
 
 ### Structure Channels
 
@@ -105,6 +108,7 @@ The account Thing Type does not have any channels.
 | has_fan                     | Switch    | If the thermostat can control the fan                                                       |      R     |
 | has_leaf                    | Switch    | If the thermostat is currently in a leaf mode                                               |      R     |
 | humidity                    | Number    | Indicates the current relative humidity                                                     |      R     |
+| last_connection             | DateTime  | Timestamp of the last successful interaction with Nest                                      |      R     |
 | locked                      | Switch    | If the thermostat has the temperature locked to only be within a set range                  |      R     |
 | locked_max_set_point        | Number    | The locked range max set point in degrees Celsius                                           |     R/W    |
 | locked_min_set_point        | Number    | The locked range min set point in degrees Celsius                                           |     R/W    |
@@ -150,57 +154,61 @@ Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589
 
 ```
 /* Camera */
-String Cam_App_URL               "App URL [%s]"          { channel="nest:camera:demo_account:fish_cam:app_url" }
-Switch Cam_Audio_Input_Enabled   "Audio Input Enabled"   { channel="nest:camera:demo_account:fish_cam:audio_input_enabled" }
-String Cam_Snapshot_URL          "Snapshot URL [%s]"     { channel="nest:camera:demo_account:fish_cam:snapshot_url" }
-Switch Cam_Streaming             "Streaming"             { channel="nest:camera:demo_account:fish_cam:streaming" }
-Switch Cam_Public_Share_Enabled  "Public Share Enabled"  { channel="nest:camera:demo_account:fish_cam:public_share_enabled" }
-String Cam_Public_Share_URL      "Public Share URL [%s]" { channel="nest:camera:demo_account:fish_cam:public_share_url" }
-Switch Cam_Video_History_Enabled "Video History Enabled" { channel="nest:camera:demo_account:fish_cam:video_history_enabled" }
-String Cam_Web_URL               "Web URL [%s]"          { channel="nest:camera:demo_account:fish_cam:web_url" }
+String   Cam_App_URL               "App URL [%s]"                                             { channel="nest:camera:demo_account:fish_cam:app_url" }
+Switch   Cam_Audio_Input_Enabled   "Audio Input Enabled"                                      { channel="nest:camera:demo_account:fish_cam:audio_input_enabled" }
+DateTime Cam_Last_Online_Change    "Last Online Change [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" { channel="nest:camera:demo_account:fish_cam:last_online_change" }
+String   Cam_Snapshot_URL          "Snapshot URL [%s]"                                        { channel="nest:camera:demo_account:fish_cam:snapshot_url" }
+Switch   Cam_Streaming             "Streaming"                                                { channel="nest:camera:demo_account:fish_cam:streaming" }
+Switch   Cam_Public_Share_Enabled  "Public Share Enabled"                                     { channel="nest:camera:demo_account:fish_cam:public_share_enabled" }
+String   Cam_Public_Share_URL      "Public Share URL [%s]"                                    { channel="nest:camera:demo_account:fish_cam:public_share_url" }
+Switch   Cam_Video_History_Enabled "Video History Enabled"                                    { channel="nest:camera:demo_account:fish_cam:video_history_enabled" }
+String   Cam_Web_URL               "Web URL [%s]"                                             { channel="nest:camera:demo_account:fish_cam:web_url" }
 
 /* Smoke Detector */
-String Smoke_CO_Alarm    "CO Alarm [%s]"    { channel="nest:smoke_detector:demo_account:hallway_smoke:co_alarm_state" }
-Switch Smoke_Battery_Low "Battery Low"      { channel="nest:smoke_detector:demo_account:hallway_smoke:low_battery" }
-Switch Smoke_Manual_Test "Manual Test"      { channel="nest:smoke_detector:demo_account:hallway_smoke:manual_test_active" }
-String Smoke_Smoke_Alarm "Smoke Alarm [%s]" { channel="nest:smoke_detector:demo_account:hallway_smoke:smoke_alarm_state" }
-String Smoke_UI_Color    "UI Color [%s]"    { channel="nest:smoke_detector:demo_account:hallway_smoke:ui_color_state" }
+String   Smoke_CO_Alarm            "CO Alarm [%s]"                                            { channel="nest:smoke_detector:demo_account:hallway_smoke:co_alarm_state" }
+Switch   Smoke_Battery_Low         "Battery Low"                                              { channel="nest:smoke_detector:demo_account:hallway_smoke:low_battery" }
+Switch   Smoke_Manual_Test         "Manual Test"                                              { channel="nest:smoke_detector:demo_account:hallway_smoke:manual_test_active" }
+DateTime Smoke_Last_Connection     "Last Connection [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"    { channel="nest:smoke_detector:demo_account:hallway_smoke:last_connection" }
+DateTime Smoke_Last_Manual_Test    "Last Manual Test [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"   { channel="nest:smoke_detector:demo_account:hallway_smoke:last_manual_test_time" }
+String   Smoke_Smoke_Alarm         "Smoke Alarm [%s]"                                         { channel="nest:smoke_detector:demo_account:hallway_smoke:smoke_alarm_state" }
+String   Smoke_UI_Color            "UI Color [%s]"                                            { channel="nest:smoke_detector:demo_account:hallway_smoke:ui_color_state" }
 
 /* Thermostat */
-Switch Thermostat_Can_Cool     "Can Cool"                       { channel="nest:thermostat:demo_account:living_thermostat:can_cool" }
-Switch Thermostat_Can_Heat     "Can Heat"                       { channel="nest:thermostat:demo_account:living_thermostat:can_heat" }
-Switch Thermostat_FT_Active    "Fan Timer Active"               { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_active" }
-Number Thermostat_FT_Duration  "Fan Timer Duration"             { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_duration" }
-DateTime Thermostat_FT_Timeout "Fan Timer Timeout [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_timeout" }
-Switch Thermostat_Has_Fan      "Has Fan"                        { channel="nest:thermostat:demo_account:living_thermostat:has_fan" }
-Switch Thermostat_Has_Leaf     "Has Leaf"                       { channel="nest:thermostat:demo_account:living_thermostat:has_leaf" }
-Number Thermostat_Humidity     "Humidity [%.1f %%]"             { channel="nest:thermostat:demo_account:living_thermostat:humidity" }
-Switch Thermostat_Locked       "Locked"                         { channel="nest:thermostat:demo_account:living_thermostat:locked" }
-Number Thermostat_LMaxSP       "Locked Max Set Point [%.1f °C]" { channel="nest:thermostat:demo_account:living_thermostat:locked_max_set_point" }
-Number Thermostat_LMinSP       "Locked Min Set Point [%.1f °C]" { channel="nest:thermostat:demo_account:living_thermostat:locked_min_set_point" }
-Number Thermostat_Max_SP       "Max Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:max_set_point" }
-Number Thermostat_Min_SP       "Min Set Point [%.1f °C]"        { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
-String Thermostat_Mode         "Mode [%s]"                      { channel="nest:thermostat:demo_account:living_thermostat:mode" }
-String Thermostat_PreviousMode "Previous Mode [%s]"             { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
-String Thermostat_State        "State [%s]"                     { channel="nest:thermostat:demo_account:living_thermostat:state" }
-Number Thermostat_Set_Point    "Set Point [%.1f °C]"            { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
-Switch Thermostat_SunlightCA   "Sunlight Correction Active"     { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
-Switch Thermostat_SunlightCE   "Sunlight Correction Enabled"    { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
-Number Thermostat_Temperature  "Temperature [%.1f °C]"          { channel="nest:thermostat:demo_account:living_thermostat:temperature" }
-Number Thermostat_TimeToTarget "Time To Target [%s]"            { channel="nest:thermostat:demo_account:living_thermostat:time_to_target_mins" }
-Switch Thermostat_UsingEmHeat  "Using Emergency Heat"           { channel="nest:thermostat:demo_account:living_thermostat:using_emergency_heat" }
+Switch   Thermostat_Can_Cool       "Can Cool"                                                 { channel="nest:thermostat:demo_account:living_thermostat:can_cool" }
+Switch   Thermostat_Can_Heat       "Can Heat"                                                 { channel="nest:thermostat:demo_account:living_thermostat:can_heat" }
+Switch   Thermostat_FT_Active      "Fan Timer Active"                                         { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_active" }
+Number   Thermostat_FT_Duration    "Fan Timer Duration"                                       { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_duration" }
+DateTime Thermostat_FT_Timeout     "Fan Timer Timeout [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"  { channel="nest:thermostat:demo_account:living_thermostat:fan_timer_timeout" }
+Switch   Thermostat_Has_Fan        "Has Fan"                                                  { channel="nest:thermostat:demo_account:living_thermostat:has_fan" }
+Switch   Thermostat_Has_Leaf       "Has Leaf"                                                 { channel="nest:thermostat:demo_account:living_thermostat:has_leaf" }
+Number   Thermostat_Humidity       "Humidity [%.1f %%]"                                       { channel="nest:thermostat:demo_account:living_thermostat:humidity" }
+DateTime Thermostat_Last_Conn      "Last Connection [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"    { channel="nest:thermostat:demo_account:living_thermostat:last_connection" }
+Switch   Thermostat_Locked         "Locked"                                                   { channel="nest:thermostat:demo_account:living_thermostat:locked" }
+Number   Thermostat_LMaxSP         "Locked Max Set Point [%.1f °C]"                           { channel="nest:thermostat:demo_account:living_thermostat:locked_max_set_point" }
+Number   Thermostat_LMinSP         "Locked Min Set Point [%.1f °C]"                           { channel="nest:thermostat:demo_account:living_thermostat:locked_min_set_point" }
+Number   Thermostat_Max_SP         "Max Set Point [%.1f °C]"                                  { channel="nest:thermostat:demo_account:living_thermostat:max_set_point" }
+Number   Thermostat_Min_SP         "Min Set Point [%.1f °C]"                                  { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
+String   Thermostat_Mode           "Mode [%s]"                                                { channel="nest:thermostat:demo_account:living_thermostat:mode" }
+String   Thermostat_Previous_Mode  "Previous Mode [%s]"                                       { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
+String   Thermostat_State          "State [%s]"                                               { channel="nest:thermostat:demo_account:living_thermostat:state" }
+Number   Thermostat_Set_Point      "Set Point [%.1f °C]"                                      { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
+Switch   Thermostat_Sunlight_CA    "Sunlight Correction Active"                               { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
+Switch   Thermostat_Sunlight_CE    "Sunlight Correction Enabled"                              { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
+Number   Thermostat_Temperature    "Temperature [%.1f °C]"                                    { channel="nest:thermostat:demo_account:living_thermostat:temperature" }
+Number   Thermostat_Time_To_Target "Time To Target [%s]"                                      { channel="nest:thermostat:demo_account:living_thermostat:time_to_target_mins" }
+Switch   Thermostat_Using_Em_Heat  "Using Emergency Heat"                                     { channel="nest:thermostat:demo_account:living_thermostat:using_emergency_heat" }
 
 /* Structure */
-String   Home_Away "Away [%s]"                                                      { channel="nest:structure:demo_account:home:away" }
-String   Home_CC   "Country Code [%s]"                                              { channel="nest:structure:demo_account:home:country_code" }
-String   Home_COAS "CO Alarm State [%s]"                                            { channel="nest:structure:demo_account:home:co_alarm_state" }
-DateTime Home_ETA  "ETA [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"                      { channel="nest:structure:demo_account:home:eta_begin" }
-DateTime Home_PPET "Peak Period End Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"     { channel="nest:structure:demo_account:home:peak_period_end_time" }
-DateTime Home_PPST "Peak Period Start Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"   { channel="nest:structure:demo_account:home:peak_period_start_time" }
-String   Home_PC   "Postal Code [%s]"                                               { channel="nest:structure:demo_account:home:postal_code" }
-Switch   Home_RHR  "Rush Hour Rewards"                                              { channel="nest:structure:demo_account:home:rush_hour_rewards_enrollment" }
-String   Home_SAS  "Smoke Alarm State [%s]"                                         { channel="nest:structure:demo_account:home:smoke_alarm_state" }
-String   Home_TZ   "Time Zone [%s]"                                                 { channel="nest:structure:demo_account:home:time_zone" }
+String   Home_Away                 "Away [%s]"                                                { channel="nest:structure:demo_account:home:away" }
+String   Home_Country_Code         "Country Code [%s]"                                        { channel="nest:structure:demo_account:home:country_code" }
+String   Home_CO_Alarm_State       "CO Alarm State [%s]"                                      { channel="nest:structure:demo_account:home:co_alarm_state" }
+DateTime Home_ETA                  "ETA [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"                { channel="nest:structure:demo_account:home:eta_begin" }
+DateTime Home_PP_End_Time          "PP End Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"        { channel="nest:structure:demo_account:home:peak_period_end_time" }
+DateTime Home_PP_Start_Time        "PP Start Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"      { channel="nest:structure:demo_account:home:peak_period_start_time" }
+String   Home_Postal_Code          "Postal Code [%s]"                                         { channel="nest:structure:demo_account:home:postal_code" }
+Switch   Home_Rush_Hour_Rewards    "Rush Hour Rewards"                                        { channel="nest:structure:demo_account:home:rush_hour_rewards_enrollment" }
+String   Home_Smoke_Alarm_State    "Smoke Alarm State [%s]"                                   { channel="nest:structure:demo_account:home:smoke_alarm_state" }
+String   Home_Time_Zone            "Time Zone [%s]"                                           { channel="nest:structure:demo_account:home:time_zone" }
 ```
 
 ## Known Issues
