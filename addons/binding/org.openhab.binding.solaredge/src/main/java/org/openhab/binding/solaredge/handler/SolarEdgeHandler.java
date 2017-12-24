@@ -11,6 +11,7 @@ package org.openhab.binding.solaredge.handler;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -33,7 +34,7 @@ public interface SolarEdgeHandler extends ThingHandler {
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void setStatusInfo(@NonNull ThingStatus status, @NonNull ThingStatusDetail statusDetail, String description);
 
     /**
      * Provides the web interface object.

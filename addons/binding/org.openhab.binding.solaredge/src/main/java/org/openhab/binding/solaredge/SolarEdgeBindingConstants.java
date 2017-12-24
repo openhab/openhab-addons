@@ -10,6 +10,7 @@ package org.openhab.binding.solaredge;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -22,10 +23,10 @@ import com.google.common.collect.ImmutableSet;
  */
 public class SolarEdgeBindingConstants {
 
-    private static final String BINDING_ID = "solaredge";
+    private static final @NonNull String BINDING_ID = "solaredge";
 
     // List of main device types
-    public static final String DEVICE_GENERIC = "generic";
+    public static final @NonNull String DEVICE_GENERIC = "generic";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GENERIC = new ThingTypeUID(BINDING_ID, DEVICE_GENERIC);

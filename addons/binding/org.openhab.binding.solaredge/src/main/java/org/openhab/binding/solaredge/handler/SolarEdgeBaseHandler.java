@@ -183,7 +183,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * @param number as String
      * @return converted value to DecimalType
      */
-    private DecimalType convertToDecimal(String number) {
+    private @NonNull DecimalType convertToDecimal(String number) {
         return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
     }
 
