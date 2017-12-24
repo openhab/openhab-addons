@@ -467,9 +467,7 @@ class LxWsClient {
     private void startResponseTimeout() {
         synchronized (state) {
             stopResponseTimeout();
-            timeout = SCHEDULER.schedule(() -> {
-                responseTimeout();
-            }, connectTimeout, TimeUnit.SECONDS);
+            timeout = SCHEDULER.schedule(this::responseTimeout, connectTimeout, TimeUnit.SECONDS);
         }
     }
 
@@ -742,20 +740,26 @@ class LxWsClient {
          *         response received
          */
         String httpGet(String request) {
+            HttpURLConnection con = null;
             try {
                 URL url = new URL("http", host.getHostAddress(), port,
                         request.startsWith("/") ? request : "/" + request);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 StringBuilder result = new StringBuilder();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String l;
-                while ((l = reader.readLine()) != null) {
-                    result.append(l);
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String l;
+                    while ((l = reader.readLine()) != null) {
+                        result.append(l);
+                    }
+                    return result.toString();
                 }
-                return result.toString();
             } catch (IOException e) {
                 return null;
+            } finally {
+                if (con != null) {
+                    con.disconnect();
+                }
             }
         }
 

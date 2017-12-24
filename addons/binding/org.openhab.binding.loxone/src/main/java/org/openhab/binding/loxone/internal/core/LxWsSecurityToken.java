@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -113,9 +115,10 @@ class LxWsSecurityToken extends LxWsSecurity {
     private boolean encryptionReady = false;
     private String token;
     private int tokenRefreshRetryCount;
+    private ScheduledFuture<?> tokenRefreshTimer;
+    private Lock tokenRefreshLock = new ReentrantLock();
 
     private final byte[] initVector = new byte[IV_LENGTH_BYTES];
-    private final TokenRefresh tokenExpiry = new TokenRefresh();
     private final Logger logger = LoggerFactory.getLogger(LxWsSecurityToken.class);
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(LxWsSecurityToken.class.getName());
@@ -246,7 +249,15 @@ class LxWsSecurityToken extends LxWsSecurity {
     @Override
     void cancel() {
         super.cancel();
-        tokenExpiry.cancel();
+        tokenRefreshLock.lock();
+        try {
+            if (tokenRefreshTimer != null) {
+                logger.debug("[{}] Cancelling token refresh.", debugId);
+                tokenRefreshTimer.cancel(true);
+            }
+        } finally {
+            tokenRefreshLock.unlock();
+        }
     }
 
     private boolean initialize() {
@@ -465,55 +476,41 @@ class LxWsSecurityToken extends LxWsSecurity {
                 secondsToExpiry -= correction;
             }
         }
-        tokenExpiry.schedule(secondsToExpiry);
+        scheduleTokenRefresh(secondsToExpiry);
         return tokenResponse;
     }
 
-    /**
-     * A helper class used to schedule token refreshes.
-     *
-     * @author Pawel Pieczul - initial contribution
-     *
-     */
-    private class TokenRefresh implements Runnable {
-        private ScheduledFuture<?> tokenRefreshTimer;
-
-        @Override
-        public void run() {
-            synchronized (tokenExpiry) {
-                tokenRefreshTimer = null;
-                String hash = hashToken();
-                if (hash != null) {
-                    LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_REFRESH_TOKEN + hash + "/" + user, true, true);
-                    if (checkResponse(resp)) {
-                        logger.debug("[{}] Successful token refresh.", debugId);
-                        parseTokenResponse(resp.value);
-                        return;
-                    }
-                }
-                logger.debug("[{}] Token refresh failed, retrying (retry={}).", debugId, tokenRefreshRetryCount);
-                if (tokenRefreshRetryCount-- > 0) {
-                    schedule(TOKEN_REFRESH_RETRY_DELAY_SECONDS);
-                } else {
-                    logger.warn("[{}] All token refresh attempts failed.", debugId);
+    private void refreshToken() {
+        tokenRefreshLock.lock();
+        try {
+            tokenRefreshTimer = null;
+            String hash = hashToken();
+            if (hash != null) {
+                LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_REFRESH_TOKEN + hash + "/" + user, true, true);
+                if (checkResponse(resp)) {
+                    logger.debug("[{}] Successful token refresh.", debugId);
+                    parseTokenResponse(resp.value);
+                    return;
                 }
             }
+            logger.debug("[{}] Token refresh failed, retrying (retry={}).", debugId, tokenRefreshRetryCount);
+            if (tokenRefreshRetryCount-- > 0) {
+                scheduleTokenRefresh(TOKEN_REFRESH_RETRY_DELAY_SECONDS);
+            } else {
+                logger.warn("[{}] All token refresh attempts failed.", debugId);
+            }
+        } finally {
+            tokenRefreshLock.unlock();
         }
+    }
 
-        void schedule(long delay) {
-            logger.debug("[{}] Setting token refresh in {} days.", debugId, TimeUnit.SECONDS.toDays(delay));
-            synchronized (tokenExpiry) {
-                tokenRefreshTimer = SCHEDULER.schedule(this, delay, TimeUnit.SECONDS);
-            }
-        }
-
-        void cancel() {
-            synchronized (tokenExpiry) {
-                if (tokenRefreshTimer != null) {
-                    logger.debug("[{}] Cancelling token refresh.", debugId);
-                    tokenRefreshTimer.cancel(true);
-                }
-            }
+    private void scheduleTokenRefresh(long delay) {
+        logger.debug("[{}] Setting token refresh in {} days.", debugId, TimeUnit.SECONDS.toDays(delay));
+        tokenRefreshLock.lock();
+        try {
+            tokenRefreshTimer = SCHEDULER.schedule(this::refreshToken, delay, TimeUnit.SECONDS);
+        } finally {
+            tokenRefreshLock.unlock();
         }
     }
 
