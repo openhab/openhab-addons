@@ -17,8 +17,6 @@ import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -43,7 +41,6 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private InetAddress broadcastAddress;
     private MulticastSocket socket;
     private Future<?> scanFuture;
-    private ScheduledFuture<?> backgroundFuture;
 
     public CcuDiscoveryService() {
         super(Collections.singleton(THING_TYPE_BRIDGE), 5, true);
@@ -68,15 +65,13 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        backgroundFuture = scheduler.scheduleWithFixedDelay(this::startDiscovery, 0, 1, TimeUnit.MINUTES);
+        // only start once at startup
+        startScan();
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (backgroundFuture != null) {
-            backgroundFuture.cancel(false);
-            backgroundFuture = null;
-        }
+        stopScan();
     }
 
     private synchronized void startDiscovery() {
