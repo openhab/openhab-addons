@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
  * @author David Graeff - Initial contribution
  */
 public class MilightBindingConstants {
-
     public static final String BINDING_ID = "milight";
 
     // List of all Thing Type UIDs
