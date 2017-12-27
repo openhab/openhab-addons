@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.lametrictime.discovery.LaMetricTimeAppDiscoveryService;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.lametrictime.handler.ClockAppHandler;
 import org.openhab.binding.lametrictime.handler.CountdownAppHandler;
 import org.openhab.binding.lametrictime.handler.GenericAppHandler;
@@ -30,7 +30,9 @@ import org.openhab.binding.lametrictime.handler.LaMetricTimeHandler;
 import org.openhab.binding.lametrictime.handler.RadioAppHandler;
 import org.openhab.binding.lametrictime.handler.StopwatchAppHandler;
 import org.openhab.binding.lametrictime.handler.WeatherAppHandler;
+import org.openhab.binding.lametrictime.internal.discovery.LaMetricTimeAppDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,7 @@ import com.google.common.collect.Sets;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@Component(immediate = true, service = ThingHandlerFactory.class)
 public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets.newHashSet(THING_TYPE_DEVICE,
