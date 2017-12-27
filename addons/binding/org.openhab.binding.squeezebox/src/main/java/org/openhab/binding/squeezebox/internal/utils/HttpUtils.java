@@ -8,11 +8,8 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -75,18 +72,6 @@ public class HttpUtils {
         }
 
         return response.getContentAsString();
-    }
-
-    /**
-     * Returns a byte array from a URL string
-     *
-     * @param urlString
-     * @return byte array of data
-     */
-    public static byte[] getData(String urlString) throws Exception {
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
-        return IOUtils.toByteArray(connection.getInputStream());
     }
 
     /**

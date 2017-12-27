@@ -15,6 +15,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
@@ -39,8 +41,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link SqueezeBoxHandlerFactory} is responsible for creating things and
  * thing handlers.
@@ -53,8 +53,10 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
-            SqueezeBoxServerHandler.SUPPORTED_THING_TYPES_UIDS, SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SqueezeBoxServerHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
+                    SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
