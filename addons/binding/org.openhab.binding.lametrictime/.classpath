@@ -5,6 +5,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="lib" path="lib/provider-gson.jar"/>
 	<classpathentry kind="lib" path="lib/lametrictime-api.jar"/>
-	<classpathentry kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
