@@ -18,6 +18,7 @@ Import-Package:
  javax.ws.rs.core,
  javax.ws.rs.ext,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
