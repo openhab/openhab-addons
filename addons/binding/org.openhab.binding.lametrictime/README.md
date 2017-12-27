@@ -35,13 +35,12 @@ The binding requires no special configuration.
 
 ### Bridge (Thing ID: "device")
 
-The bridge requires a host and an API key. The key can be found by visiting <a href="https://developer.lametric.com/user/devices">the LaMetric dev portal</a>. Optionally, you can also enable logging.
+The bridge requires a host and an API key. The key can be found by visiting <a href="https://developer.lametric.com/user/devices">the LaMetric dev portal</a>.
 
 | Configuration Parameter | Type    | Description                                            | Default |
 |-------------------------|---------|--------------------------------------------------------|---------|
 | host                    | text    | Host name or network address of the LaMetric Time      |         |
 | apiKey                  | text    | API key to access LaMetric Time                        |         |
-| logging                 | boolean | Enables or disables logging in the LaMetric Time API   | false   |
 
 ### Core (Built-in) Apps (Thing ID: "clockApp", "countdownApp", "radioApp", "stopwatchApp", "weatherApp")
 
@@ -54,7 +53,7 @@ The core app things can be defined with no configuration at all. The package nam
 
 ### Generic (Custom) Apps (Thing ID: "genericApp")
 
-Generic apps are similar to the core apps, but you must suppy the package name. If you want to be able to send updates to the app, you must also supply an access token. You can find the access token in the LaMetric dev portal.
+Generic apps are similar to the core apps, but you must supply the package name. If you want to be able to send updates to the app, you must also supply an access token. You can find the access token in the LaMetric dev portal.
 
 | Configuration Parameter | Type    | Description                                                     | Default                   |
 |-------------------------|---------|-----------------------------------------------------------------|---------------------------|
@@ -65,7 +64,7 @@ Generic apps are similar to the core apps, but you must suppy the package name. 
 ### Sample Thing Configuration
 
 ```
-Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs", logging=true ]
+Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 {
     Thing clockApp     clock       [ widgetId="generatedcorewidgetid1" ]
     Thing countdownApp countdown
@@ -85,7 +84,7 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs", logg
 |------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
 | display#brightness     | Dimmer                                           | The brightness of the display. Please note that changing the brightness will automatically set the 'brightnessMode' to 'manual' |
 | display#brightnessMode | String (possible values are 'auto' and 'manual') | The mode for the display brightness. If set to 'auto' the brightness is set by the device automatically based on environment illumination. If set to 'manual' the brightness can be changed via 'brightness' channel. |
-| audio#volum            | Dimmer                                           | The volume of the device speaker.                                                         |
+| audio#volume           | Dimmer                                           | The volume of the device speaker.                                                         |
 | bluetooth#active       | Switch                                           | Allows to enable or disable the bluetooth interface of the device.                        |
 | bluetooth#name         | String                                           | Name of the bluetooth connection. This channel allows to read and also change the name.   |
 | bluetooth#discoverable | Switch                                           | indicates if the bluetooth is discoverable.                                               |
