@@ -44,6 +44,5 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.lametrictime,
  org.openhab.binding.lametrictime.config;x-internal:=true,
  org.openhab.binding.lametrictime.handler,
- org.openhab.binding.lametrictime.handler.model,
- org.openhab.binding.lametrictime.internal.discovery
+ org.openhab.binding.lametrictime.handler.model
 Bundle-ActivationPolicy: lazy
