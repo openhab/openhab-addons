@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lametrictime.discovery;
+package org.openhab.binding.lametrictime.internal.discovery;
 
 import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration.HOST;
@@ -18,10 +18,11 @@ import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@Component(immediate = true)
 public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(LaMetricTimeDiscoveryParticipant.class);
@@ -62,10 +64,6 @@ public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device == null) {
-            return null;
-        }
-
         try {
             String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
             String modelName = device.getDetails().getModelDetails().getModelName();
