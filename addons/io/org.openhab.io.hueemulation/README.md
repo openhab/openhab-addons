@@ -24,6 +24,7 @@ org.openhab.hueemulation:discoveryIp=192.168.1.100
 ```
 
 ## Device Tagging
+
 To expose an item on the service, apply a supported tag (which are "Lighting", "Switchable", "TargetTemperature") to it.
 The item label will be used as the Hue device name.
 
