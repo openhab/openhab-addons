@@ -43,7 +43,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
-import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -307,9 +306,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void volumeChangeEvent(String mac, int volume) {
-        volume = Math.min(100, volume);
-        volume = Math.max(0, volume);
-        updateChannel(mac, CHANNEL_VOLUME, new PercentType(volume));
+        int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
     }
 
     @Override

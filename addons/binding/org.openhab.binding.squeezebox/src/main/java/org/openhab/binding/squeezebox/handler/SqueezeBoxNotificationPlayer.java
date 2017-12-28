@@ -103,6 +103,9 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         }
 
         int notificationVolume = squeezeBoxPlayerHandler.getNotificationSoundVolume().intValue();
+        if (notificationVolume == 0) {
+            logger.warn("Player volume is 0.");
+        }
         setVolume(notificationVolume);
     }
 

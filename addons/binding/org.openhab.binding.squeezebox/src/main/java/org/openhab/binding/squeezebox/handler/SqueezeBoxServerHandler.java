@@ -227,12 +227,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void setVolume(String mac, int volume) {
-        if (0 > volume) {
-            volume = 0;
-        } else if (volume > 100) {
-            volume = 100;
-        }
-        sendCommand(mac + " mixer volume " + String.valueOf(volume));
+        int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        sendCommand(mac + " mixer volume " + String.valueOf(newVolume));
     }
 
     public void showString(String mac, String line) {
