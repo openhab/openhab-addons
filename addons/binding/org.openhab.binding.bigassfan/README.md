@@ -5,7 +5,7 @@ The [BigAssFan](http://www.bigassfans.com/) binding is used to enable communicat
 ## Overview
 
 Fans are discovered dynamically. There is a single thing created for each fan connected to the network.  Each thing has channels that allow control of the fan and the optional LED light, as well as to monitor the status of the fan. When the fan is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the fan's channels will be updated to reflect the fan's status.
-     
+
 
 ## Device Discovery
 
@@ -112,7 +112,7 @@ Frame label="Control My BigAssFan" {
     Switch item=PorchFanPower label="Fan Power [%s]"
     Slider item=PorchFanSpeed label="Fan Speed [%s %%]"
     Switch item=PorchFanLightPower label="Light Power [%s]"
-    Slider item=PorchFanLightSpeed label="Light Brightness [%s %%]"
+    Slider item=PorchFanLightLevel label="Light Brightness [%s %%]"
 }
 ```
 
@@ -127,4 +127,3 @@ bigassfan:fan:20F85EDAA56A [ label="Porch Fan", ipAddress="192.168.12.62", macAd
 #### Unsupported Features
 
 Standalone lights are not supported.
-
