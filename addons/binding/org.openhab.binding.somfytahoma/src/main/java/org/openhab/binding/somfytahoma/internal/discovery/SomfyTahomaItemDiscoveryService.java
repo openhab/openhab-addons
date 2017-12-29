@@ -8,6 +8,14 @@
  */
 package org.openhab.binding.somfytahoma.internal.discovery;
 
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
@@ -22,10 +30,6 @@ import org.openhab.binding.somfytahoma.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
  * The {@link SomfyTahomaItemDiscoveryService} discovers rollershutters and
  * action groups associated with your TahomaLink cloud account.
@@ -38,7 +42,6 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     private SomfyTahomaBridgeHandler bridge = null;
     private DiscoveryServiceCallback discoveryServiceCallback;
 
-
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
 
     public SomfyTahomaItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
@@ -50,26 +53,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return new HashSet<>(Arrays.asList(
-                THING_TYPE_GATEWAY,
-                THING_TYPE_ROLLERSHUTTER,
-                THING_TYPE_ROLLERSHUTTER_SILENT,
-                THING_TYPE_SCREEN,
-                THING_TYPE_VENETIANBLIND,
-                THING_TYPE_EXTERIORSCREEN,
-                THING_TYPE_EXTERIORVENETIANBLIND,
-                THING_TYPE_GARAGEDOOR,
-                THING_TYPE_ACTIONGROUP,
-                THING_TYPE_AWNING,
-                THING_TYPE_ONOFF,
-                THING_TYPE_LIGHT,
-                THING_TYPE_LIGHTSENSOR,
-                THING_TYPE_SMOKESENSOR,
-                THING_TYPE_CONTACTSENSOR,
-                THING_TYPE_OCCUPANCYSENSOR,
-                THING_TYPE_WINDOW,
-                THING_TYPE_ALARM
-        ));
+        return new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_ROLLERSHUTTER,
+                THING_TYPE_ROLLERSHUTTER_SILENT, THING_TYPE_SCREEN, THING_TYPE_VENETIANBLIND, THING_TYPE_EXTERIORSCREEN,
+                THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING,
+                THING_TYPE_ONOFF, THING_TYPE_LIGHT, THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR,
+                THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_EXTERNAL_ALARM,
+                THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD));
     }
 
     @Override
@@ -85,6 +74,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     public void discoverDevice(SomfyTahomaDevice device) {
+        logger.debug("url: {}", device.getDeviceURL());
         switch (device.getUiClass()) {
             case AWNING:
                 deviceDiscovered(device, THING_TYPE_AWNING);
@@ -133,11 +123,15 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_WINDOW);
                 break;
             case ALARM:
-                if(device.getDeviceURL().startsWith("internal:")) {
-                    deviceDiscovered(device, THING_TYPE_ALARM);
+                if (device.getDeviceURL().startsWith("internal:")) {
+                    deviceDiscovered(device, THING_TYPE_INTERNAL_ALARM);
+                } else {
+                    deviceDiscovered(device, THING_TYPE_EXTERNAL_ALARM);
                 }
                 break;
             case POD:
+                deviceDiscovered(device, THING_TYPE_POD);
+                break;
             case PROTOCOLGATEWAY:
                 break;
             default:
@@ -174,10 +168,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
         if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
             logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
-                            .withRepresentationProperty("url").withLabel(label)
-                            .withBridge(bridge.getThing().getUID()).build());
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                    .withProperties(properties).withRepresentationProperty("url").withLabel(label)
+                    .withBridge(bridge.getThing().getUID()).build());
         }
     }
 
@@ -193,10 +186,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
         if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
             logger.debug("Detected a gateway with id: {}", id);
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY).withProperties(properties)
-                            .withRepresentationProperty("id").withLabel("Somfy Tahoma Gateway")
-                            .withBridge(bridge.getThing().getUID()).build());
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY)
+                    .withProperties(properties).withRepresentationProperty("id").withLabel("Somfy Tahoma Gateway")
+                    .withBridge(bridge.getThing().getUID()).build());
         }
     }
 

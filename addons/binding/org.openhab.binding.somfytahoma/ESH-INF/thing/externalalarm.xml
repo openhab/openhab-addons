@@ -3,17 +3,13 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="alarm">
+	<thing-type id="externalalarm">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Somfy Alarm</label>
+		<label>Somfy External Alarm</label>
 		<channels>
-			<channel id="alarm_command" typeId="alarm_command"></channel>
-			<channel id="intrusion_control" typeId="intrusion_control"></channel>
-			<channel id="alarm_state" typeId="alarm_state"></channel>
-			<channel id="target_alarm_state" typeId="alarm_state"></channel>
-			<channel id="intrusion_state" typeId="intrusion_state"></channel>
+			<channel id="active_zones_state" typeId="active_zones_state"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

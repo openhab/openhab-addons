@@ -64,7 +64,6 @@
 				<option value="alarmPartial2">ARM_PARTIAL_2</option>
 			</options>
 		</state>
-
 	</channel-type>
 
 	<channel-type id="intrusion_control">
@@ -88,10 +87,38 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="active_zones_state">
+		<item-type>String</item-type>
+		<label>Somfy Active Zones State</label>
+		<description>Active Zones State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="intrusion_state">
 		<item-type>String</item-type>
 		<label>Somfy Alarm Intrusion State</label>
 		<description>An intrusion state of the Somfy Alarm</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cyclic_button_state">
+		<item-type>String</item-type>
+		<label>Somfy Cyclic Button State</label>
+		<description>Cyclic Button State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery_status_state">
+		<item-type>String</item-type>
+		<label>Somfy Battery Status State</label>
+		<description>Battery Status State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lighting_led_pod_mod_state">
+		<item-type>Number</item-type>
+		<label>Somfy Lighting Led Pod Mod State</label>
+		<description>Lighting Led Pod Mod State</description>
+		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

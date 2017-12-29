@@ -8,11 +8,8 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 import java.util.Hashtable;
 
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -21,38 +18,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
- * which are sent to one of the channels of the gateway thing.
+ * The {@link SomfyTahomaPodHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the pod thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGatewayHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaPodHandler.class);
 
-    public SomfyTahomaGatewayHandler(Thing thing) {
+    public SomfyTahomaPodHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public Hashtable<String, String> getStateNames() {
-        return null;
+        return new Hashtable<String, String>() {
+            {
+                put("cyclic_button_state", "core:CyclicButtonState");
+                put("battery_status_state", "internal:BatteryStatusState");
+                put("lighting_led_pod_mod_state", "internal:LightingLedPodModeState");
+            }
+        };
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String url = getURL();
+
         if (command.equals(RefreshType.REFRESH)) {
             // sometimes refresh is sent sooner than bridge initialized...
             if (getBridgeHandler() != null) {
-                String id = getThing().getConfiguration().get("id").toString();
-                if (channelUID.getId().equals(VERSION)) {
-                    updateState(channelUID, new StringType(getBridgeHandler().getTahomaVersion(id)));
-                } else if (channelUID.getId().equals(STATUS)) {
-                    updateState(channelUID, new StringType(getBridgeHandler().getTahomaStatus(id)));
-                }
-
+                getBridgeHandler().updateChannelState(this, channelUID, url);
             }
         }
     }
-
 }

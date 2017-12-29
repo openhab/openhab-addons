@@ -10,6 +10,7 @@
 		<label>Somfy Tahoma Gateway</label>
 		<channels>
 			<channel id="version" typeId="version"></channel>
+			<channel id="status" typeId="status"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:gateway"/>
 	</thing-type>
@@ -19,6 +20,12 @@
 		<item-type>String</item-type>
 		<label>Somfy Tahoma Firmware Version</label>
 		<description>Version channel for SomfyTahoma Binding</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Somfy Tahoma Status</label>
+		<description>Status for SomfyTahoma</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

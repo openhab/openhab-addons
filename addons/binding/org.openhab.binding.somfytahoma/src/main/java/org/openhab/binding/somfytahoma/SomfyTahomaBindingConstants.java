@@ -32,7 +32,8 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
     // Silent Roller Shutter
-    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SILENT = new ThingTypeUID(BINDING_ID, "rollershutter_silent");
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SILENT = new ThingTypeUID(BINDING_ID,
+            "rollershutter_silent");
 
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
@@ -44,14 +45,15 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_EXTERIORSCREEN = new ThingTypeUID(BINDING_ID, "exteriorscreen");
 
     // Exterior Venetian Blind
-    public static final ThingTypeUID THING_TYPE_EXTERIORVENETIANBLIND = new ThingTypeUID(BINDING_ID, "exteriorvenetianblind");
+    public static final ThingTypeUID THING_TYPE_EXTERIORVENETIANBLIND = new ThingTypeUID(BINDING_ID,
+            "exteriorvenetianblind");
 
     // Garage Door
     public static final ThingTypeUID THING_TYPE_GARAGEDOOR = new ThingTypeUID(BINDING_ID, "garagedoor");
 
     // Awning
     public static final ThingTypeUID THING_TYPE_AWNING = new ThingTypeUID(BINDING_ID, "awning");
-    
+
     // Actiongroup
     public static final ThingTypeUID THING_TYPE_ACTIONGROUP = new ThingTypeUID(BINDING_ID, "actiongroup");
 
@@ -77,11 +79,16 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW = new ThingTypeUID(BINDING_ID, "window");
 
     // Alarm
-    public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
+    public static final ThingTypeUID THING_TYPE_INTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "internalalarm");
+    public static final ThingTypeUID THING_TYPE_EXTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "externalalarm");
+
+    // Pod
+    public static final ThingTypeUID THING_TYPE_POD = new ThingTypeUID(BINDING_ID, "pod");
 
     // List of all Channel ids
     // Gateway
     public static final String VERSION = "version";
+    public static final String STATUS = "status";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window
     public static final String POSITION = "position";
@@ -151,8 +158,8 @@ public class SomfyTahomaBindingConstants {
     final public static String CONTACTSENSOR = "ContactSensor";
     final public static String OCCUPANCYSENSOR = "OccupancySensor";
     final public static String WINDOW = "Window";
-    // unsupported uiClasses
     final public static String ALARM = "Alarm";
     final public static String POD = "Pod";
+    // unsupported uiClasses
     final public static String PROTOCOLGATEWAY = "ProtocolGateway";
 }

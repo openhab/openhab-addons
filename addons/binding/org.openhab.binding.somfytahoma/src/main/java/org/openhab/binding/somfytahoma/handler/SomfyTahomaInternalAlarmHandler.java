@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
+
+import java.util.Hashtable;
+
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -16,31 +20,29 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaAlarmHandler} is responsible for handling commands,
+ * The {@link SomfyTahomaInternalAlarmHandler} is responsible for handling commands,
  * which are sent to one of the channels of the alarm thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaAlarmHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaInternalAlarmHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaAlarmHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaInternalAlarmHandler.class);
 
-    public SomfyTahomaAlarmHandler(Thing thing) {
+    public SomfyTahomaInternalAlarmHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
-            put(ALARM_STATE, "internal:CurrentAlarmModeState");
-            put(TARGET_ALARM_STATE, "internal:TargetAlarmModeState");
-            put(INTRUSION_STATE, "internal:IntrusionDetectedState");
-        }};
+        return new Hashtable<String, String>() {
+            {
+                put(ALARM_STATE, "internal:CurrentAlarmModeState");
+                put(TARGET_ALARM_STATE, "internal:TargetAlarmModeState");
+                put(INTRUSION_STATE, "internal:IntrusionDetectedState");
+            }
+        };
     }
 
     @Override
@@ -54,7 +56,7 @@ public class SomfyTahomaAlarmHandler extends SomfyTahomaBaseThingHandler {
             getBridgeHandler().sendCommand(url, "setIntrusionDetected", "[\"" + command.toString() + "\"]");
         }
         if (command.equals(RefreshType.REFRESH)) {
-            //sometimes refresh is sent sooner than bridge initialized...
+            // sometimes refresh is sent sooner than bridge initialized...
             if (getBridgeHandler() != null) {
                 getBridgeHandler().updateChannelState(this, channelUID, url);
             }

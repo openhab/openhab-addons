@@ -8,13 +8,13 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.UNAVAILABLE;
+
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.UNAVAILABLE;
 
 /**
  * The {@link SomfyTahomaBaseThingHandler} is base thing handler for all things.
@@ -54,5 +54,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
 
     public boolean isChannelLinked(Channel channel) {
         return isLinked(channel.getUID().getId());
+    }
+
+    public boolean needRefreshCommand() {
+        return false;
     }
 }
