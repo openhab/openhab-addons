@@ -45,8 +45,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
-    // possible are: int speeds[] = new int[] { -32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32 };
-    // we don't want speeds 0 = STOP or -1 = PLAY BACKWARDS
+    // 0 = STOP or -1 = PLAY BACKWARDS are valid as well, but we don't want use them for FAST FORWARD or REWIND speeds
     private static final List<Integer> SPEEDS = Arrays
             .asList(new Integer[] { -32, -16, -8, -4, -2, 1, 2, 4, 8, 16, 32 });
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
@@ -119,24 +118,36 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playerNext() {
-        internalGoTo("next");
+        goToInternal("next");
 
         updatePlayerStatus();
     }
 
     public synchronized void playerPrevious() {
-        internalGoTo("previous");
+        goToInternal("previous");
 
         updatePlayerStatus();
     }
 
-    private void internalGoTo(@NonNull String to) {
+    private void goToInternal(@NonNull String to) {
         int activePlayer = getActivePlayer();
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
         params.addProperty("to", to);
         socket.callMethod("Player.GoTo", params);
+    }
+
+    public synchronized void playerRewind() {
+        setSpeedInternal(calcNextSpeed(-1));
+
+        updatePlayerStatus();
+    }
+
+    public synchronized void playerFastForward() {
+        setSpeedInternal(calcNextSpeed(1));
+
+        updatePlayerStatus();
     }
 
     private int calcNextSpeed(int modifier) {
@@ -155,19 +166,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    public synchronized void playerRewind() {
-        internalSetSpeed(calcNextSpeed(-1));
-
-        updatePlayerStatus();
-    }
-
-    public synchronized void playerFastForward() {
-        internalSetSpeed(calcNextSpeed(1));
-
-        updatePlayerStatus();
-    }
-
-    private void internalSetSpeed(int speed) {
+    private void setSpeedInternal(int speed) {
         int activePlayer = getActivePlayer();
 
         JsonObject params = new JsonObject();
@@ -177,21 +176,20 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void increaseVolume() {
-        this.volume += VOLUMESTEP;
-        internalSetVolume();
+        setVolumeInternal(this.volume + VOLUMESTEP);
     }
 
     public synchronized void decreaseVolume() {
-        this.volume -= VOLUMESTEP;
-        internalSetVolume();
+        setVolumeInternal(this.volume - VOLUMESTEP);
     }
 
     public synchronized void setVolume(int volume) {
-        this.volume = volume;
-        internalSetVolume();
+        setVolumeInternal(volume);
     }
 
-    private void internalSetVolume() {
+    private void setVolumeInternal(int volume) {
+        this.volume = volume;
+
         JsonObject params = new JsonObject();
         params.addProperty("volume", this.volume);
         socket.callMethod("Application.SetVolume", params);
