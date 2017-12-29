@@ -8,14 +8,12 @@ Daikin air conditioning units with a BRP072A42 installed. This may work with the
 
 ## Discovery
 
-This addon does not currently support discovery. You'll need to know the IP address of your air conditioner to add it as a thing.
-
+A discovery scan will find all Daikin air conditioning units with a WiFi adapter on your local network. If your air conditioning unit is not auto discovered you'll need to know the appropriate IP address and a new thing manually.
 
 ## Thing Configuration
 
 * host - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
 * refresh - The frequency with which to refresh information from the Daikin air conditioner specified in milliseconds. Defaults to 60 seconds.
-
 
 ## Channels
 
