@@ -28,7 +28,7 @@
 		<parameter name="thermostatHeatMode" type="text" required="true">
 			<label>Thermostat Heat Mode</label>
 			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate HEAT mode.</description>
-			<default>HeatlOn</default>
+			<default>HeatOn</default>
 		</parameter>
 		<parameter name="thermostatAutoMode" type="text" required="true">
 			<label>Thermostat Auto Mode</label>
