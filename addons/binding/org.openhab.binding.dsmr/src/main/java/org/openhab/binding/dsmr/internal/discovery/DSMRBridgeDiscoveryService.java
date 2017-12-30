@@ -16,8 +16,10 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import gnu.io.CommPortIdentifier;
  *
  * @author M. Volaart - Initial contribution
  */
+@Component(service = DiscoveryService.class)
 public class DSMRBridgeDiscoveryService extends AbstractDiscoveryService implements DSMRBridgeDiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(DSMRBridgeDiscoveryService.class);
 

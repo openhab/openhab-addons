@@ -13,44 +13,44 @@ import java.text.ParseException;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 
 /**
- * CosemFloat represents a float value
+ * {@link CosemDouble} represents a double value.
  *
  * @author M. Volaart - Initial contribution
  */
-public class CosemFloat extends CosemValue<Float> {
+public class CosemDouble extends CosemValue<Double> {
 
     /**
-     * Creates a new CosemFloat
+     * Creates a new {@link CosemDouble}.
      *
      * @param unit
      *            the unit of the value
      */
-    public CosemFloat(String unit) {
+    public CosemDouble(String unit) {
         super(unit);
     }
 
     /**
-     * Parses a String value (that represents a float) to a Float object
+     * Parses a String value (that represents a double) to a Double object
      *
      * @param cosemValue
      *            the value to parse
-     * @return {@link Float} on success
+     * @return {@link Double} on success
      * @throws ParseException
      *             if parsing failed
      */
     @Override
-    protected Float parse(String cosemValue) throws ParseException {
+    protected Double parse(String cosemValue) throws ParseException {
         try {
-            return Float.parseFloat(cosemValue);
+            return Double.parseDouble(cosemValue);
         } catch (NumberFormatException nfe) {
-            throw new ParseException("Failed to parse value " + value + " as float", 0);
+            throw new ParseException("Failed to parse value " + value + " as double", 0);
         }
     }
 
     /**
-     * Returns an openHAB representation of this CosemFloat
+     * Returns a smart home representation of this {@link CosemDouble}
      *
-     * @return {@link DecimalType} representing the value of this CosemFloat
+     * @return {@link DecimalType} representing the value of this {@link CosemDouble}
      */
     @Override
     public DecimalType getOpenHABValue() {
