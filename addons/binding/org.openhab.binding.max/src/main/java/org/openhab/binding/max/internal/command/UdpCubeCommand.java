@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,41 +179,28 @@ public class UdpCubeCommand {
 
             byte[] sendData = commandString.getBytes();
 
-            // Broadcast the message over all the network interfaces
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-
-                    InetAddress[] broadcast = new InetAddress[3];
-                    if (ipAddress != null && !ipAddress.isEmpty()) {
-                        broadcast[0] = InetAddress.getByName(ipAddress);
-                    } else {
-                        broadcast[0] = InetAddress.getByName("224.0.0.1");
-                        broadcast[1] = InetAddress.getByName("255.255.255.255");
-                        broadcast[2] = interfaceAddress.getBroadcast();
-                    }
-                    for (InetAddress bc : broadcast) {
-                        // Send the broadcast package!
-                        if (bc != null) {
-                            try {
-                                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc, 23272);
-                                bcSend.send(sendPacket);
-                            } catch (IOException e) {
-                                logger.debug("IO error during MAX! Cube UDP command sending: {}", e.getMessage());
-                            } catch (Exception e) {
-                                logger.info("{}", e.getMessage(), e);
-                            }
-                            logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
-                                    networkInterface.getDisplayName());
-                        }
-                    }
+            List<InetAddress> broadcast = new ArrayList<>();
+            if (ipAddress != null && !ipAddress.isEmpty()) {
+                broadcast.add(InetAddress.getByName(ipAddress));
+            } else {
+                for (String broadcastAddress : NetUtil.getAllBroadcastAddresses()) {
+                    broadcast.add(InetAddress.getByName(broadcastAddress));
                 }
             }
-            logger.trace("Done looping over all network interfaces. Now waiting for a reply!");
+            for (InetAddress bc : broadcast) {
+                // Send the broadcast package!
+                if (bc != null) {
+                    try {
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc, 23272);
+                        bcSend.send(sendPacket);
+                    } catch (IOException e) {
+                        logger.debug("IO error during MAX! Cube UDP command sending: {}", e.getMessage());
+                    } catch (Exception e) {
+                        logger.info("{}", e.getMessage(), e);
+                    }
+                    logger.trace("Request packet sent to: {}", bc.getHostAddress());
+                }
+            }
 
         } catch (IOException e) {
             logger.debug("IO error during MAX! Cube UDP command sending: {}", e.getMessage());

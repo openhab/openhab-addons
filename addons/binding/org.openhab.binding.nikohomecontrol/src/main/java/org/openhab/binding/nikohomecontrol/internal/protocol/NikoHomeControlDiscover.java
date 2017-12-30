@@ -13,6 +13,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public final class NikoHomeControlDiscover {
 
     public NikoHomeControlDiscover() throws IOException {
         final byte[] discoverBuffer = { (byte) 0x44 };
-        final InetAddress broadcastAddr = InetAddress.getByName("255.255.255.255");
+        final InetAddress broadcastAddr = InetAddress.getByName(NetUtil.getBroadcastAddress());
         final int broadcastPort = 10000;
 
         DatagramPacket discoveryPacket = new DatagramPacket(discoverBuffer, discoverBuffer.length, broadcastAddr,
