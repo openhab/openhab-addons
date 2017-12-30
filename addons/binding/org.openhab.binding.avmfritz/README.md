@@ -2,7 +2,6 @@
 
 The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/smart-home/) ) system.  
 
-
 ## Supported Things
 
 ### FRITZ!Box
@@ -43,34 +42,32 @@ The credentials given in the settings must have HomeAuto permissions.
 
 If correct credentials are set in the bridge configuration, connected AHA devices are discovered automatically (may last up to 3 minutes).
 
-
 ## Thing Configuration
 
 ### FRITZ!Box
 
-*   ipAddress (mandatory), default "fritz.box"
-*   protocol (optional, http or https), default "http"
-*   port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-*   password (optional), no default (depends on FRITZ!Box security configuration)
-*   user (optional), no default (depends on FRITZ!Box security configuration)
-*   pollingInterval (optional, 5 to 60), default 15 (in seconds)
-*   asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-*   syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+- ipAddress (mandatory), default "fritz.box"
+- protocol (optional, http or https), default "http"
+- port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- password (optional), no default (depends on FRITZ!Box security configuration)
+- user (optional), no default (depends on FRITZ!Box security configuration)
+- pollingInterval (optional, 5 to 60), default 15 (in seconds)
+- asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
+- syncTimeout (optional, 500 to 15000), default 2000 (in millis)
 
 ### FRITZ!Powerline 546E
 
-*   ipAddress (mandatory), default "fritz.powerline"
-*   protocol (optional, http or https), default "http"
-*   port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-*   password (optional), no default (depends on FRITZ!Powerline security configuration)
-*   pollingInterval (optional, 5 to 60), default 15 (in seconds)
-*   asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-*   syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+- ipAddress (mandatory), default "fritz.powerline"
+- protocol (optional, http or https), default "http"
+- port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- password (optional), no default (depends on FRITZ!Powerline security configuration)
+- pollingInterval (optional, 5 to 60), default 15 (in seconds)
+- asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
+- syncTimeout (optional, 500 to 15000), default 2000 (in millis)
 
 ### AHA things connected to FRITZ!Box bridge
 
-*   AIN (mandatory), no default (AIN number of device)
-
+- AIN (mandatory), no default (AIN number of device)
 
 ## Supported Channels
 
@@ -92,12 +89,11 @@ If correct credentials are set in the bridge configuration, connected AHA device
 | next_temp       | Number    | Next Set Temperature if scheduler is activated in the FRITZ!Box settings (in °C) - FRITZ!OS 6.80       | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | battery_low     | Switch    | Battery Level Low (ON/OFF) - FRITZ!OS 6.80                                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 
-
 ## Full Example
 
 demo.things:
 
-```
+```text
 Bridge avmfritz:fritzbox:1 @ "Office" [ ipAddress="192.168.x.x", password="xxx", user="xxx" ] {
     Thing FRITZ_DECT_200 xxxxxxxxxxxx "FRITZ!DECT 200 #1" @ "Living Room" [ ain="xxxxxxxxxxxx" ]
     Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" @ "Office" [ ain="yy:yy:yy:yy:yy:yy" ]
@@ -107,7 +103,7 @@ Bridge avmfritz:fritzbox:1 @ "Office" [ ipAddress="192.168.x.x", password="xxx",
 
 demo.items:
 
-```
+```java
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
 Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
@@ -125,23 +121,23 @@ Switch COMETDECTBattery "Battery low" (gCOMETDECT) { channel="avmfritz:Comet_DEC
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
-	Frame label="FRITZ!DECT 200 switchable outlet" {
-		Switch item=Outlet1 icon="poweroutlet"
-		Text item=Temperature1 icon="temperature"
-		Text item=Energy1 icon="energy"
-		Text item=Power1 icon="energy"
-	}
-	Frame label="FRITZ!Powerline 546E switchable outlet" {
-		Switch item=Outlet2
-	}
-	Frame "Comet DECT heating thermostat" {
-		Text item=COMETDECTActualTemp icon="temperature"
-		Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
-		Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"]
-		Switch item=COMETDECTBattery icon="battery"
-	}
+  Frame label="FRITZ!DECT 200 switchable outlet" {
+    Switch item=Outlet1 icon="poweroutlet"
+    Text item=Temperature1 icon="temperature"
+    Text item=Energy1 icon="energy"
+    Text item=Power1 icon="energy"
+  }
+  Frame label="FRITZ!Powerline 546E switchable outlet" {
+    Switch item=Outlet2
+  }
+  Frame "Comet DECT heating thermostat" {
+    Text item=COMETDECTActualTemp icon="temperature"
+    Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
+    Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"]
+    Switch item=COMETDECTBattery icon="battery"
+  }
 }
 ```
