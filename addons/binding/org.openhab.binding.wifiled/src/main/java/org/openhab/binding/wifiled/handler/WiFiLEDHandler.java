@@ -58,7 +58,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
 
         switch (driverName) {
             case CLASSIC:
-                driver = new ClassicWiFiLEDDriver(config.getIp(), port, protocol);
+                driver = new ClassicWiFiLEDDriver(this, config.getIp(), port, protocol);
                 break;
 
             case FADING:
@@ -220,4 +220,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
         }
     }
 
+    public void reportCommunicationError(IOException e) {
+        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+    }
 }

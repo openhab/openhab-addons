@@ -27,17 +27,19 @@ import java.util.concurrent.Future;
  *
  * @author Osman Basha - Initial contribution
  * @author Stefan Endrullis
- * @author Ries van Twisk
+ * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
 public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
     private static final int WAIT_UPDATE_LED_FOR_MS = 25;
-    private ExecutorService updateScheduler = Executors.newSingleThreadExecutor();
+    private final WiFiLEDHandler wifiLedHandler;
+    private final ExecutorService updateScheduler = Executors.newSingleThreadExecutor();
     private Future<Boolean> ledUpdateFuture = CompletableFuture.completedFuture(null);
     private LEDStateDTO cachedLedStatus = null;
 
-    public ClassicWiFiLEDDriver(String host, int port, Protocol protocol) {
+    public ClassicWiFiLEDDriver(WiFiLEDHandler wifiLedHandler, String host, int port, Protocol protocol) {
         super(host, port, protocol);
+        this.wifiLedHandler = wifiLedHandler;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
             try {
                 Thread.sleep(100);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
                 throw new IOException(e);
             }
 
@@ -152,7 +154,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         sendLEDData(ledState);
     }
 
-    private synchronized void sendLEDData(final LEDStateDTO ledState) throws IOException {
+    private synchronized void sendLEDData(final LEDStateDTO ledState) {
         cachedLedStatus = ledState;
         if (!ledUpdateFuture.isDone()) {
             ledUpdateFuture.cancel(true);
@@ -184,7 +186,8 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
                 sendRaw(bytes);
                 return true;
             } catch (IOException e) {
-                logger.warn("Exception occurred while sending command to LED", e);
+                logger.debug("Exception occurred while sending command to LED", e);
+                wifiLedHandler.reportCommunicationError(e);
             } catch (InterruptedException e) {
                 // Ignore, this is expected
             }
@@ -192,10 +195,10 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         });
     }
 
-    public static final String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            builder.append(String.format("%02x ", bytes[i]));
+        for (byte aByte : bytes) {
+            builder.append(String.format("%02x ", aByte));
         }
         String string = builder.toString();
         return string.substring(0, string.length() - 1);

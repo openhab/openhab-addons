@@ -26,12 +26,9 @@ import org.eclipse.smarthome.core.library.types.StringType;
  *
  * @author Osman Basha - Initial contribution
  * @author Stefan Endrullis
- * @author Ries van Twisk
+ * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
 public class LEDStateDTO {
-
-    private static final long serialVersionUID = 1L;
-
     private HSBType hsbType;
     private OnOffType  power;
     private PercentType white;
