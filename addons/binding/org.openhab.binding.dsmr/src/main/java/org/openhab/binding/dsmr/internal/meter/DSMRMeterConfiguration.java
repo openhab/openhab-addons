@@ -37,7 +37,7 @@ public class DSMRMeterConfiguration {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof DSMRMeterConfiguration)) {
+        if (!(other instanceof DSMRMeterConfiguration)) {
             return false;
         }
         DSMRMeterConfiguration o = (DSMRMeterConfiguration) other;

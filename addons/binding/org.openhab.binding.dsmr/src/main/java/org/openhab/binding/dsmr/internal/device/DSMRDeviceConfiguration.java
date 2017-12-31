@@ -73,7 +73,7 @@ public class DSMRDeviceConfiguration {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof DSMRDeviceConfiguration)) {
+        if (!(other instanceof DSMRDeviceConfiguration)) {
             return false;
         }
         DSMRDeviceConfiguration o = (DSMRDeviceConfiguration) other;
