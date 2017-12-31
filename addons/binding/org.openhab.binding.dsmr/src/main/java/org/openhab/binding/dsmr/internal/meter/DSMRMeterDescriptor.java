@@ -68,7 +68,7 @@ public class DSMRMeterDescriptor {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof DSMRMeterDescriptor)) {
+        if (!(other instanceof DSMRMeterDescriptor)) {
             return false;
         }
         DSMRMeterDescriptor o = (DSMRMeterDescriptor) other;

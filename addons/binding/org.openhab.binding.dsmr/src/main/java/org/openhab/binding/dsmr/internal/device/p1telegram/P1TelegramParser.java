@@ -13,8 +13,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectFactory;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener.TelegramState;
@@ -108,6 +111,12 @@ public class P1TelegramParser {
      * Listener for new P1 telegrams
      */
     private P1TelegramListener telegramListener;
+
+    /**
+     * Service for sending P1 telegrams asynchronous
+     */
+    private ScheduledExecutorService p1TelegramService = ThreadPoolManager
+            .getScheduledPool(DSMRBindingConstants.DSMR_SCHEDULED_THREAD_POOL_NAME);
 
     /**
      * Creates a new P1TelegramParser
@@ -253,7 +262,7 @@ public class P1TelegramParser {
                              */
                             FutureTask<Void> task = new FutureTask<>(
                                     new P1TelegramCallable(cosemObjects, telegramState));
-                            task.run();
+                            p1TelegramService.execute(task);
                         }
 
                         setState(State.WAIT_FOR_START);

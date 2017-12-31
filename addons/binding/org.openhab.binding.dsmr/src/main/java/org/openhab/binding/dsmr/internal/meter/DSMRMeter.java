@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * DSMR Meter represents a meter for this binding.
  *
  * Since the DSMR specification has evolved over time in combination we would
- * help the OH2 user to easily add things the DSMR meter are auto discovered
+ * help the user to easily add things by auto discovery DSMR meters
  * {@link DSMRMeterDetector}.
  * To be able to discover meters and handle a correct administration of detected meters
  * the DSMRMeter class has the following helper classes:
@@ -32,15 +32,14 @@ import org.slf4j.LoggerFactory;
  * and provides the information which of the {@link CosemObject} that are part of the P1 telegram
  * are supported for this meter
  * - {@link DSMRMeterKind} describing what kind of meter (electricity, gas, etc.) this is. This information
- * is mainly needed for the autodiscovery proces since a set of {@link CosemObject} could fit multiple meter types
+ * is mainly needed for the auto discovery process since a set of {@link CosemObject} could fit multiple meter types
  * (i.e. Electricity for DSMR can have meter type ELECTRICITY_V4 and ELECTRICITY_V404. The meter kind for both types
- * is ELECTRICITY. The auto discovery proces knows know both types describe the same kind and can find the most
+ * is ELECTRICITY. The auto discovery process knows know both types describe the same kind and can find the most
  * appropriate one.
  * - {@link DSMRMeterIdentification} describing the identification of this meter.
  *
- * {@link DSMRMeterType} and {@link DSMRMeterIdentification} are private members of the DSMRMeter
- * If both 3 members are equal both meters are the referring the same physical meter part of the DSMR
- * physical device
+ * A physical meter is a certain {@link DSMRMeterType} on a M-Bus channel. This is the {@link DSMRMeterDescriptor}
+ * and is a private member of the DSMRMeter
  *
  * @author M. Volaart - Initial contribution
  */
@@ -95,14 +94,11 @@ public class DSMRMeter {
      * @return List of CosemObject that this meter can process
      */
     private List<CosemObject> filterMeterValues(List<CosemObject> cosemObjects) {
-        List<CosemObject> filteredList;
-
         logger.trace("supported identifiers: {}, searching for objects {}", supportedIdentifiers, cosemObjects);
-        filteredList = cosemObjects.stream()
+        return cosemObjects.stream()
                 .filter(cosemObject -> supportedIdentifiers
                         .contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
                 .collect(Collectors.toList());
-        return filteredList;
     }
 
     /**
@@ -140,7 +136,7 @@ public class DSMRMeter {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof DSMRMeter)) {
+        if (!(other instanceof DSMRMeter)) {
             return false;
         }
         DSMRMeter o = (DSMRMeter) other;
