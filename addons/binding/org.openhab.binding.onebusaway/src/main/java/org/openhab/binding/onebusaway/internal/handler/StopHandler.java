@@ -231,6 +231,7 @@ public class StopHandler extends BaseBridgeHandler {
             return true;
         } catch (Exception e) {
             logger.warn("Exception refreshing route data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.valueOf("Internal error"));
             return false;
         } finally {
             fetchInProgress.set(false);
