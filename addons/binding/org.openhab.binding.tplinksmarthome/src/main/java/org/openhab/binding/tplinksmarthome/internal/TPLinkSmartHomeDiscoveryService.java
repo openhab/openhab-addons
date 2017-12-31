@@ -26,7 +26,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.tplinksmarthome.internal.model.Sysinfo;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true)
 public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService {
 
+    private static final String BROADCAST_IP = "255.255.255.255";
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     private static final int UDP_PACKET_TIMEOUT = 1000;
     private static final long REFRESH_INTERVAL_MINUTES = 10;
@@ -58,7 +58,7 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService {
 
     public TPLinkSmartHomeDiscoveryService() throws UnknownHostException {
         super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS, false);
-        InetAddress broadcast = InetAddress.getByName(NetUtil.getBroadcastAddress());
+        InetAddress broadcast = InetAddress.getByName(BROADCAST_IP);
         byte[] discoverbuffer = CryptUtil.encrypt(Commands.getSysinfo());
         discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast,
                 Connection.SMART_PLUG_PORT);

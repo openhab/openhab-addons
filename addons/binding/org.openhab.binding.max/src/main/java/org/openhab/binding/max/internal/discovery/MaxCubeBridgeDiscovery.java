@@ -14,8 +14,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.max.MaxBinding;
@@ -195,19 +197,35 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             byte[] sendData = discoverString.getBytes();
 
             // Broadcast the message over all the network interfaces
-            for (String broadcastAddress : NetUtil.getAllBroadcastAddresses()) {
-                // Send the broadcast package!
-                try {
-                    InetAddress bc = InetAddress.getByName(broadcastAddress);
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc, 23272);
-                    bcSend.send(sendPacket);
-                } catch (IOException e) {
-                    logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
-                } catch (Exception e) {
-                    logger.info("{}", e.getMessage(), e);
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
                 }
-                logger.trace("Request packet sent to: {}", broadcastAddress);
+                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                    InetAddress[] broadcast = new InetAddress[3];
+                    broadcast[0] = InetAddress.getByName("224.0.0.1");
+                    broadcast[1] = InetAddress.getByName("255.255.255.255");
+                    broadcast[2] = interfaceAddress.getBroadcast();
+                    for (InetAddress bc : broadcast) {
+                        // Send the broadcast package!
+                        if (bc != null) {
+                            try {
+                                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc, 23272);
+                                bcSend.send(sendPacket);
+                            } catch (IOException e) {
+                                logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
+                            } catch (Exception e) {
+                                logger.info("{}", e.getMessage(), e);
+                            }
+                            logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
+                                    networkInterface.getDisplayName());
+                        }
+                    }
+                }
             }
+            logger.trace("Done looping over all network interfaces. Now waiting for a reply!");
 
         } catch (IOException e) {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
