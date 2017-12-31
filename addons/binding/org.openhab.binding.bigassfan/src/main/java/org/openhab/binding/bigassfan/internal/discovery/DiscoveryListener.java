@@ -19,6 +19,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public class DiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(DiscoveryListener.class);
 
-    private final String BCAST_ADDRESS = "255.255.255.255";
     private final int SOCKET_RECEIVE_TIMEOUT = 500;
 
     private final String POLL_MESSAGE = "<ALL;DEVICE;ID;GET>";
@@ -55,7 +55,7 @@ public class DiscoveryListener {
             dSocket.setBroadcast(true);
             rcvBuffer = new byte[256];
             rcvPacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
-            bcastAddress = InetAddress.getByName(BCAST_ADDRESS);
+            bcastAddress = InetAddress.getByName(NetUtil.getBroadcastAddress());
             bcastBuffer = POLL_MESSAGE.getBytes(CHARSET);
             bcastPacket = new DatagramPacket(bcastBuffer, bcastBuffer.length, bcastAddress, BAF_PORT);
         } catch (UnknownHostException uhe) {

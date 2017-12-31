@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -113,7 +114,7 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
         discoverSocket = new DatagramSocket(new InetSocketAddress(Connection.FEICAN_RECEIVE_PORT));
         discoverSocket.setBroadcast(true);
         discoverSocket.setSoTimeout(UDP_PACKET_TIMEOUT);
-        final InetAddress broadcast = InetAddress.getByName("255.255.255.255");
+        final InetAddress broadcast = InetAddress.getByName(NetUtil.getBroadcastAddress());
         final DatagramPacket discoverPacket = new DatagramPacket(Commands.discover(), Commands.discover().length,
                 broadcast, Connection.FEICAN_SEND_PORT);
         discoverSocket.send(discoverPacket);
