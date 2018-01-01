@@ -120,6 +120,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                     properties.put(TYPE, GROUP);
                     properties.put(NAME_HASH, group.getNameHash());
                     properties.put(GROUP_MEMBER_HASH, group.getGroupMemberHash());
+                    properties.put(GROUP_MEMBER_PID_LIST, group.getGroupMemberPidList());
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.getName())
                             .withProperties(properties).withBridge(bridgeUID).build();
                     thingDiscovered(result);
