@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.handler.HeosGroupHandler;
 import org.openhab.binding.heos.handler.HeosPlayerHandler;
-import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosGroupAudioSink;
 import org.openhab.binding.heos.internal.api.HeosPlayerAudioSink;
 import org.openhab.binding.heos.internal.api.HeosSystem;
@@ -49,7 +49,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(HeosHandlerFactory.class);
     private HeosSystem heos = new HeosSystem();
-    private HeosAPI api = heos.getAPI();
+    private HeosFacade api = heos.getAPI();
 
     private AudioHTTPServer audioHTTPServer;
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
@@ -87,7 +87,6 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
             HeosPlayerHandler playerHandler = new HeosPlayerHandler(thing, heos, api);
-
             // register the speaker as an audio sink
             HeosPlayerAudioSink audioSink = new HeosPlayerAudioSink(playerHandler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
