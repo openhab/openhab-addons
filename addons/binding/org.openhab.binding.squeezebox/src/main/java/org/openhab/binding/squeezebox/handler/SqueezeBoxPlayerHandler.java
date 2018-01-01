@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
+ * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -757,7 +758,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Monitor the status of the notification so that we know when it has finished playing
      */
     private boolean waitForNotification() {
-        final int timeoutMaxCount = 300;
+        final int timeoutMaxCount = 900;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
