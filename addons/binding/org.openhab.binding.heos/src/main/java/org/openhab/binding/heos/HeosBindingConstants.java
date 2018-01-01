@@ -54,7 +54,7 @@ public class HeosBindingConstants {
     public static final String CH_ID_BUILDGROUP = "BuildGroup";
     public static final String CH_ID_DYNGROUPSHAND = "DynamicGroupHandling";
     public static final String CH_ID_REBOOT = "Reboot";
-    public static final String CH_ID_IMAGE_URL = "Image_URL";
+    public static final String CH_ID_IMAGE_URL = "ImageUrl";
     public static final String CH_ID_PLAYLISTS = "Playlists";
     public static final String CH_ID_INPUTS = "Inputs";
     public static final String CH_ID_STATUS = "OnlineStatus";
@@ -63,14 +63,14 @@ public class HeosBindingConstants {
     public static final String CH_ID_STATION = "Station";
     public static final String CH_ID_RAW_COMMAND = "RawCommand";
     public static final String CH_ID_TYPE = "Type";
-    public static final String CH_ID_PLAY_URL = "PlayURL";
+    public static final String CH_ID_PLAY_URL = "PlayUrl";
 
     public static final String HOST = "ipAddress";
     public static final String PLAYER_TYPE = "model";
     public static final String NAME = "name";
-    public static final String USER_NAME = "userName";
+    public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    public static final String HEART_BEAT = "heartBeat";
+    public static final String HEARTBEAT = "heartbeat";
 
     public static final String LEADER = "leader";
 
@@ -101,6 +101,7 @@ public class HeosBindingConstants {
 
     public static final String NAME_HASH = "nameHash";
     public static final String GROUP_MEMBER_HASH = "groupMemberHash";
+    public static final String GROUP_MEMBER_PID_LIST = "groupMemberPidList";
 
     public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_BRIDGE, THING_TYPE_GROUP, THING_TYPE_PLAYER).collect(Collectors.toSet()));
