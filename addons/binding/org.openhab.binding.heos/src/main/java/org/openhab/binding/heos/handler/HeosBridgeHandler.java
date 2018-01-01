@@ -11,6 +11,8 @@ package org.openhab.binding.heos.handler;
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +42,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.discovery.HeosPlayerDiscovery;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
@@ -70,7 +72,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private HeosPlayerDiscovery playerDiscovery;
     private HeosSystem heos;
-    private HeosAPI api;
+    private HeosFacade api;
 
     private int heartBeatPulse = 0;
 
@@ -83,7 +85,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private Logger logger = LoggerFactory.getLogger(HeosBridgeHandler.class);
 
-    public HeosBridgeHandler(Bridge thing, HeosSystem heos, HeosAPI api) {
+    public HeosBridgeHandler(Bridge thing, HeosSystem heos, HeosFacade api) {
         super(thing);
         this.heos = heos;
         this.api = api;
@@ -178,8 +180,13 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             if (!selectedPlayerList.isEmpty()) {
                 for (int i = 0; i < selectedPlayerList.size(); i++) {
                     String pid = selectedPlayerList.get(i)[0];
-                    String url = command.toString();
-                    api.playURL(pid, url);
+                    try {
+                        URL url = new URL(command.toString());
+                        api.playURL(pid, url);
+                    } catch (MalformedURLException e) {
+                        logger.debug("Command '{}' is not a propper URL. Error: {}", command.toString(),
+                                e.getMessage());
+                    }
                 }
             }
             resetPlayerList(CH_ID_PLAY_URL);
@@ -204,7 +211,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         logger.info("Initit Brige '{}' with IP '{}'", thing.getConfiguration().get(NAME),
                 thing.getConfiguration().get(HOST));
 
-        heartBeatPulse = Integer.valueOf(thing.getConfiguration().get(HEART_BEAT).toString());
+        heartBeatPulse = Integer.valueOf(thing.getConfiguration().get(HEARTBEAT).toString());
         heos.setConnectionIP(thing.getConfiguration().get(HOST).toString());
         heos.setConnectionPort(1255);
         bridgeIsConnected = heos.establishConnection(connectionDelay); // the connectionDelay gives the HEOS time to
@@ -585,9 +592,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             logger.info("HEOS System heart beat startet. Pulse time is {}s", heartBeatPulse);
             updateState(CH_ID_DYNGROUPSHAND, OnOffType.ON); // activates dynamic group handling by default
 
-            if (thing.getConfiguration().containsKey(USER_NAME) && thing.getConfiguration().containsKey(PASSWORD)) {
+            if (thing.getConfiguration().containsKey(USERNAME) && thing.getConfiguration().containsKey(PASSWORD)) {
                 logger.info("Logging in to HEOS account.");
-                String name = thing.getConfiguration().get(USER_NAME).toString();
+                String name = thing.getConfiguration().get(USERNAME).toString();
                 String password = thing.getConfiguration().get(PASSWORD).toString();
                 api.logIn(name, password);
             } else {
