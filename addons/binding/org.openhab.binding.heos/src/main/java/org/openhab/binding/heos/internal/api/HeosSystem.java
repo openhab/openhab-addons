@@ -58,7 +58,7 @@ public class HeosSystem {
     private HashMap<String, HeosGroup> groupMapOld;
     private HashMap<String, HeosPlayer> removedPlayerMap;
     private HashMap<String, HeosGroup> removedGroupMap;
-    private HeosAPI heosApi = new HeosAPI(this, eventController);
+    private HeosFacade heosApi = new HeosFacade(this, eventController);
 
     private Logger logger = LoggerFactory.getLogger(HeosSystem.class);
 
@@ -461,8 +461,9 @@ public class HeosSystem {
      *
      */
 
-    public synchronized HeosGroup getGroupState(String gid) {
-        HeosGroup heosGroup = new HeosGroup();
+    public synchronized HeosGroup getGroupState(HeosGroup heosGroup) {
+        // HeosGroup heosGroup = new HeosGroup();
+        String gid = heosGroup.getGid();
         send(command().getGroupInfo(gid));
 
         // During start up sometimes the system has not collected all information
@@ -482,6 +483,7 @@ public class HeosSystem {
             }
         }
 
+        heosGroup.setOnline(true);
         heosGroup.updateGroupInfo(response.getPayload().getPayloadList().get(0));
         heosGroup.updateGroupPlayers((response.getPayload().getPlayerList().get(0)));
         send(command().getPlayState(gid));
@@ -545,7 +547,7 @@ public class HeosSystem {
         return playlistsList;
     }
 
-    public HeosAPI getAPI() {
+    public HeosFacade getAPI() {
         return heosApi;
     }
 
