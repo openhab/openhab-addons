@@ -11,7 +11,11 @@ package org.openhab.binding.heos.handler;
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +31,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
@@ -43,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 public class HeosGroupHandler extends BaseThingHandler implements HeosEventListener {
 
-    private HeosAPI api;
+    private HeosFacade api;
     private HeosSystem heos;
     private String gid;
     private HeosGroup heosGroup;
@@ -51,16 +56,20 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
 
     private Logger logger = LoggerFactory.getLogger(HeosGroupHandler.class);
 
-    public HeosGroupHandler(Thing thing, HeosSystem heos, HeosAPI api) {
+    public HeosGroupHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing);
         this.heos = heos;
         this.api = api;
         gid = thing.getConfiguration().get(GID).toString();
+        this.heosGroup = new HeosGroup();
+        this.heosGroup.setGid(gid);
+        this.heosGroup.setGroupMemberHash(thing.getConfiguration().get(GROUP_MEMBER_HASH).toString());
+        setGroupMemberPidList();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, @NonNull Command command) {
-        if (command.toString().equals("REFRESH")) {
+        if (command instanceof RefreshType) {
             return;
         }
 
@@ -78,7 +87,7 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
                     api.next(gid);
                     break;
                 case "PREVIOUS":
-                    api.prevoious(gid);
+                    api.previous(gid);
                     break;
                 case "ON":
                     api.play(gid);
@@ -104,7 +113,7 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
             }
         } else if (channelUID.getId().equals(CH_ID_INPUTS)) { // See player handler for description
             if (bridge.getSelectedPlayer().isEmpty()) {
-                api.playInputSource(gid, null, command.toString());
+                api.playInputSource(gid, command.toString());
             } else if (bridge.getSelectedPlayer().size() > 1) {
                 logger.warn("Only one source can be selected for HEOS Input. Selected amount of sources: {} ",
                         bridge.getSelectedPlayer().size());
@@ -116,7 +125,12 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
                 }
             }
         } else if (channelUID.getId().equals(CH_ID_PLAY_URL)) {
-            api.playURL(gid, command.toString());
+            try {
+                URL url = new URL(command.toString());
+                api.playURL(gid, url);
+            } catch (MalformedURLException e) {
+                logger.debug("Command '{}' is not a propper URL. Error: {}", command.toString(), e.getMessage());
+            }
         }
     }
 
@@ -147,8 +161,13 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
      *
      * @param url The external URL where the file is located
      */
-    public void playURL(String url) {
-        api.playURL(gid, url);
+    public void playURL(String urlStr) {
+        try {
+            URL url = new URL(urlStr);
+            api.playURL(gid, url);
+        } catch (MalformedURLException e) {
+            logger.debug("Command '{}' is not a propper URL. Error: {}", urlStr, e.getMessage());
+        }
     }
 
     public PercentType getNotificationSoundVolume() {
@@ -156,7 +175,7 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
     }
 
     public void setNotificationSoundVolume(PercentType volume) {
-        api.volume(volume.toString(), gid);
+        api.setVolume(volume.toString(), gid);
     }
 
     @SuppressWarnings("null")
@@ -247,10 +266,21 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
         // Do nothing
     }
 
+    // Generates the groupMember from the properties. Is needed to generate group after restart of OpenHab.
+
+    private void setGroupMemberPidList() {
+        String memberListString = thing.getProperties().get(GROUP_MEMBER_PID_LIST);
+        memberListString = memberListString.substring(1, memberListString.length() - 1);
+        String array[] = memberListString.split(", "); // important: Keep the white space.
+        List<String> memberPidList = Arrays.asList(array);
+        heosGroup.setGroupMemberPidList(memberPidList);
+    }
+
     public void setStatusOffline() {
         api.unregisterforChangeEvents(this);
         updateState(CH_ID_STATUS, StringType.valueOf(OFFLINE));
         updateState(CH_ID_UNGROUP, OnOffType.OFF);
+        updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
         updateStatus(ThingStatus.OFFLINE);
     }
 
@@ -259,22 +289,18 @@ public class HeosGroupHandler extends BaseThingHandler implements HeosEventListe
         @Override
         public void run() {
             bridge = (HeosBridgeHandler) getBridge().getHandler();
+            heosGroup = heos.getGroupState(heosGroup);
 
-            heosGroup = heos.getGroupState(gid);
-
-            if (heosGroup.isOnline()
+            if (!heosGroup.isOnline()
                     || !thing.getConfiguration().get(GROUP_MEMBER_HASH).equals(heosGroup.getGroupMemberHash())) {
                 setStatusOffline();
                 bridge.thingStatusOffline(thing.getUID());
                 return;
             }
-
             bridge.thingStatusOnline(thing.getUID()); // informs the System about the existing group
-
             HashMap<String, HeosGroup> usedToFillOldGroupMap = new HashMap<>();
             usedToFillOldGroupMap.put(heosGroup.getNameHash(), heosGroup);
             heos.addHeosGroupToOldGroupMap(usedToFillOldGroupMap);
-
             updateState(CH_ID_UNGROUP, OnOffType.ON);
             updateState(CH_ID_VOLUME, PercentType.valueOf(heosGroup.getLevel()));
 
