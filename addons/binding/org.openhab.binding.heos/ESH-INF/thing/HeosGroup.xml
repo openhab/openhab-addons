@@ -17,16 +17,16 @@
 		        <channel id="Mute"            typeId="mute" />		        
 		        <channel id="Inputs"          typeId="input" />
 		        <channel id="OnlineStatus"    typeId="onlineStatus"/>
-		        <channel typeId="title"       id="Title"></channel> 
-		        <channel typeId="interpret"   id="Interpret"></channel>   
-		        <channel typeId="album"       id="Album"></channel> 
-		        <channel typeId="image_url"   id="Image_URL"></channel>		         
-		        <channel id="CurrentPosition" typeId = "currentPosition" />
-		        <channel id="Duration"        typeId = "duration" />
-		        <channel id="Type"            typeId ="type" />
-		        <channel id="Station"         typeId ="station"/>
-		        <channel typeId="play_URL"      id="PlayURL"></channel>
-		        <channel id="Ungroup"         typeId = "ungroup" />  		             
+		        <channel id="Title"           typeId="title"/> 
+		        <channel id="Interpret"       typeId="interpret"/>   
+		        <channel id="Album"           typeId="album"/> 
+		        <channel id="ImageUrl"        typeId="imageUrl"/>		         
+		        <channel id="CurrentPosition" typeId="currentPosition"/>
+		        <channel id="Duration"        typeId="duration"/>
+		        <channel id="Type"            typeId="type"/>
+		        <channel id="Station"         typeId="station"/>
+		        <channel id="PlayUrl"         typeId="playUrl"/>
+		        <channel id="Ungroup"         typeId="ungroup" />  		             
             </channels>
             
             <config-description>

@@ -36,7 +36,7 @@
         <item-type>String</item-type>
         <label>Album</label>
      </channel-type>
-      <channel-type id="image_url" advanced="true">
+      <channel-type id="imageUrl" advanced="true">
         <item-type>String</item-type>
         <label>Cover</label>
      </channel-type>   
@@ -92,7 +92,7 @@
         <item-type>String</item-type>
         <label>The station name</label>
      </channel-type>
-        <channel-type id="play_URL" advanced="true">
+        <channel-type id="playUrl" advanced="true">
         <item-type>String</item-type>
         <label>Play a media file from URL</label>
      </channel-type>    
