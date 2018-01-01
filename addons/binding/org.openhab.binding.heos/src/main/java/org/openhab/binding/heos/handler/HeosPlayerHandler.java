@@ -11,11 +11,14 @@ package org.openhab.binding.heos.handler;
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -25,7 +28,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.heos.internal.api.HeosAPI;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
@@ -40,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class HeosPlayerHandler extends BaseThingHandler implements HeosEventListener {
-    private HeosAPI api;
+    private HeosFacade api;
     private HeosSystem heos;
     private String pid;
     private HashMap<String, HeosPlayer> playerMap;
@@ -49,7 +53,7 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
 
     private Logger logger = LoggerFactory.getLogger(HeosPlayerHandler.class);
 
-    public HeosPlayerHandler(Thing thing, HeosSystem heos, HeosAPI api) {
+    public HeosPlayerHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing);
         this.heos = heos;
         this.api = api;
@@ -58,7 +62,7 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString().equals("REFRESH")) {
+        if (command instanceof RefreshType) {
             return;
         }
         if (channelUID.getId().equals(CH_ID_CONTROL)) {
@@ -75,7 +79,7 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                     api.next(pid);
                     break;
                 case "PREVIOUS":
-                    api.prevoious(pid);
+                    api.previous(pid);
                     break;
                 case "ON":
                     api.play(pid);
@@ -85,7 +89,15 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                     break;
             }
         } else if (channelUID.getId().equals(CH_ID_VOLUME)) {
-            api.volume(command.toString(), pid);
+            if (command instanceof IncreaseDecreaseType) {
+                if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    api.increaseVolume(pid);
+                } else {
+                    api.decreaseVolume(pid);
+                }
+            } else {
+                api.setVolume(command.toString(), pid);
+            }
         } else if (channelUID.getId().equals(CH_ID_MUTE)) {
             if (command.toString().equals("ON")) {
                 api.muteON(pid);
@@ -97,7 +109,7 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
             // Only one source can be selected
         } else if (channelUID.getId().equals(CH_ID_INPUTS)) {
             if (bridge.getSelectedPlayer().isEmpty()) {
-                api.playInputSource(pid, null, command.toString());
+                api.playInputSource(pid, command.toString());
             } else if (bridge.getSelectedPlayer().size() > 1) {
                 logger.warn("Only one source can be selected for HEOS Input. Selected amount of sources: {} ",
                         bridge.getSelectedPlayer().size());
@@ -109,7 +121,13 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
                 }
             }
         } else if (channelUID.getId().equals(CH_ID_PLAY_URL)) {
-            api.playURL(pid, command.toString());
+            try {
+                URL url = new URL(command.toString());
+                api.playURL(pid, url);
+            } catch (MalformedURLException e) {
+                logger.debug("Command '{}' is not a propper URL. Error: {}", command.toString(), e.getMessage());
+            }
+
         }
     }
 
@@ -133,8 +151,13 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
      *
      * @param url The external URL where the file is located
      */
-    public void playURL(String url) {
-        api.playURL(pid, url);
+    public void playURL(String urlStr) {
+        try {
+            URL url = new URL(urlStr);
+            api.playURL(pid, url);
+        } catch (MalformedURLException e) {
+            logger.debug("Command '{}' is not a propper URL. Error: {}", urlStr, e.getMessage());
+        }
     }
 
     public PercentType getNotificationSoundVolume() {
@@ -142,7 +165,7 @@ public class HeosPlayerHandler extends BaseThingHandler implements HeosEventList
     }
 
     public void setNotificationSoundVolume(PercentType volume) {
-        api.volume(volume.toString(), pid);
+        api.setVolume(volume.toString(), pid);
     }
 
     @SuppressWarnings("null")
