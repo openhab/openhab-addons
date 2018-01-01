@@ -224,8 +224,16 @@ public class HeosGroup extends HeosMediaObject {
         return nameHash;
     }
 
+    public void setNameHash(String nameHash) {
+        this.nameHash = nameHash;
+    }
+
     public String getGroupMemberHash() {
         return groupMembersHash;
+    }
+
+    public void setGroupMemberHash(String groupMemberHash) {
+        this.groupMembersHash = groupMemberHash;
     }
 
     public boolean isOnline() {
@@ -242,5 +250,9 @@ public class HeosGroup extends HeosMediaObject {
 
     public List<String> getGroupMemberPidList() {
         return groupMemberPidList;
+    }
+
+    public void setGroupMemberPidList(List<String> groupMemberPidList) {
+        this.groupMemberPidList = groupMemberPidList;
     }
 }
