@@ -303,6 +303,14 @@ public class HeosCommands {
         return setGroupVolume + gid + "&level=" + volume;
     }
 
+    public String setGroupVolumeUp(String gid) {
+        return groupVolumeUp + gid + "&step=1";
+    }
+
+    public String setGroupVolumeDown(String gid) {
+        return groupVolumeDown + gid + "&step=1";
+    }
+
     public String getGroupMute(String gid) {
         return getGroupMute + gid;
     }
@@ -317,13 +325,5 @@ public class HeosCommands {
 
     public String getToggleGroupMute(String gid) {
         return toggleGroupMute + gid;
-    }
-
-    public String getGroupVolumeUp(String gid) {
-        return groupVolumeUp;
-    }
-
-    public String getGroupVolumeDown(String gid) {
-        return groupVolumeDown;
     }
 }
