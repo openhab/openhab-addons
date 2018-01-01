@@ -12,7 +12,12 @@ This can be configured on the binding level:
 
 ## Supported Things
 
-The binding currently supports the "classic" Chromecast that is an HDMI dongle as well as the Chromecast Audio, which only does audio streaming and offers a headphone jack.
+| Things             | Description                                                                          | Thing Type |
+|--------------------|--------------------------------------------------------------------------------------|------------|
+| Chromecast         | Classic HDMI video Chromecasts and Google Homes                                      | chromecast |
+| Chromecast Audio   | The Chromecast whichonly does audio streaming and offers a headphone jack            | audio      |
+| Audio Group        | A Chromecast audio group for multi-room audio defined via the Chromecast app         | audiogroup |
+
 
 ## Discovery
 
@@ -26,12 +31,38 @@ The only configuration parameter is the `ipAddress`.
 
 ## Channels
 
-| Channel Type ID | Item Type | Description                                                                                                                 |
-|-----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------|
-| control         | Player    | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself |
-| volume          | Dimmer    | Control the volume, this is also updated if the volume is changed by another app                                            |
-| playuri         | String    | Can be used to tell the Chromecast to play media from a given url                                                           |
-
+| Channel Type ID | Item Type | Description                                                                                                                                                                           |
+|-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| control         | Player    | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself                                                           |
+| volume          | Dimmer    | Control the volume, this is also updated if the volume is changed by another app                                                                                                      |
+| mute            | Switch    | Mute the audio                                                                                                                                                                        |
+| playuri         | String    | Can be used to tell the Chromecast to play media from a given url                                                                                                                     |
+| appName         | String    | Name of currently running application                                                                                                                                                 |
+| appId           | String    | ID of currently running application                                                                                                                                                   |
+| idling          | Switch    | Read-only indication on weather Chromecast is on idle screen                                                                                                                          |
+| statustext      | String    |                                                                                                                                                                                       |
+| currentTime     | Number    |                                                                                                                                                                                       |
+| duration        | Number    | Duration of current track (null if between tracks)                                                                                                                                    |
+| metadataType    | String    | Type of metadata, this indicates what metadata may be available.  One of: GenericMediaMetadata, MovieMediaMetadata, TvShowMediaMetadata, MusicTrackMediaMetadata, PhotoMediaMetadata. |
+| subtitle        | String    | (GenericMediaMetadata) Descriptive subtitle of the content                                                                                                                            |
+| title           | String    | (GenericMediaMetadata) Descriptive title of the content                                                                                                                               |
+| image           | Image     | (GenericMediaMetadata) Image for current media                                                                                                                                        |
+| imageSrc        | String    | (GenericMediaMetadata) URL of image for current media                                                                                                                                 |
+| releaseDate     | DateTime  | (GenericMediaMetadata) ISO 8601 date and time this content was released                                                                                                               |
+| albumArtist     | String    | (MusicTrackMediaMetadata) Name of the artist associated with the album featuring this track                                                                                           |
+| albumName       | String    | (MusicTrackMediaMetadata) Album or collection from which this track is drawn                                                                                                          |
+| artist          | String    | (MusicTrackMediaMetadata) Name of the artist associated with the media track                                                                                                          |
+| composer        | String    | (MusicTrackMediaMetadata) Name of the composer associated with the media track                                                                                                        |
+| discNumber      | Number    | (MusicTrackMediaMetadata) Number of the volume (for example, a disc) of the album                                                                                                     |
+| trackNumber     | Number    | (MusicTrackMediaMetadata) Number of the track on the album                                                                                                                            |
+| creationDate    | DateTime  | (PhotoMediaMetadata) ISO 8601 date and time this photograph was taken                                                                                                                 |
+| locationName    | String    | (PhotoMediaMetadata) Verbal location where the photograph was taken; for example, "Madrid, Spain."                                                                                    |
+| location        | Point     | (PhotoMediaMetadata) Geographical location of where the photograph was taken                                                                                                          |
+| broadcastDate   | DateTime  | (TvShowMediaMetadata) ISO 8601 date and time this episode was released                                                                                                                |
+| episodeNumber   | Number    | (TvShowMediaMetadata) Episode number (in the season) of the t.v. show                                                                                                                 |
+| seasonNumber    | Number    | (TvShowMediaMetadata) Season number of the t.v. show                                                                                                                                  |
+| seriesTitle     | String    | (TvShowMediaMetadata) Descriptive title of the t.v. series                                                                                                                            |
+| studio          | String    | (TvShowMediaMetadata) Studio which released the content                                                                                                                               |
 
 ## Full Example
 
