@@ -188,7 +188,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 break;
             case 2:
                 if (p.getLength() != 29) {
-                    logger.debug("Expected length of 29: ", p);
+                    logger.debug("Expected length of 29: {}", p);
                     return;
                 }
 
@@ -240,7 +240,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 break;
             case 8: // A5 01 0F 10 08 0D 4B 4B 4D 55 5E 07 00 00 58 00 00 00 
                 if (p.getLength() != 0x0D) {
-                    logger.debug("Expected length of 13: ", p);
+                    logger.debug("Expected length of 13: {}", p);
                     return;
                 }
 

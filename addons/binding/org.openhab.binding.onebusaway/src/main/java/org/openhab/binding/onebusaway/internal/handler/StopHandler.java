@@ -190,7 +190,7 @@ public class StopHandler extends BaseBridgeHandler {
         try {
             uri = new URI(url);
         } catch (URISyntaxException e) {
-            logger.error("Unable to parse '%s' as a URI.", url);
+            logger.error("Unable to parse {} as a URI.", url);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "stopId or apiKey is set to a bogus value");
             return false;

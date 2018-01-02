@@ -546,8 +546,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         this.messageProcessor.reset();
                     }
                 } catch (Exception e) {
-                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
-                            ipAddress, e.getMessage(), e);
+                    logger.info(
+                            "Error while handling message block: '{}' from MAX! Cube lan gateway: {}, Error message: {}: ",
+                            raw, ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
                 if (terminator == null || raw.startsWith(terminator)) {

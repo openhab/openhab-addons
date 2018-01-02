@@ -154,7 +154,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         try {
             logger.info("{}: Bridge '{}' disconnected", getLogIdentifier(), bridge.getThing().getUID().getAsString());
 
-            logger.info("{}: Unsubscribing from Monitor Events", getLogIdentifier(),
+            logger.info("{}: Unsubscribing from Monitor Events: {}", getLogIdentifier(),
                     bridge.getThing().getUID().getAsString());
             ZoneMinderFactory.UnsubscribeMonitorEvents(config.getZoneMinderId(), this);
 

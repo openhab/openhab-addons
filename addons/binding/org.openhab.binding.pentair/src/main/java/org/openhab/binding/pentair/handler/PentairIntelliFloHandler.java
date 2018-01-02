@@ -81,7 +81,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
                 break;
             case 7: // Pump status (after a request)
                 if (p.getLength() != 15) {
-                    logger.debug("Expected length of 15: ", p);
+                    logger.debug("Expected length of 15: {}", p);
                     return;
                 }
 

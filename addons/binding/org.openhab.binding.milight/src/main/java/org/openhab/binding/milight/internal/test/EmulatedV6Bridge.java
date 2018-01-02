@@ -332,7 +332,7 @@ public class EmulatedV6Bridge {
         try {
             datagramSocket.send(packet);
         } catch (IOException e) {
-            logger.error("Failed to send Message to '{}': ",
+            logger.error("Failed to send Message to '{}', Error message: {}",
                     new Object[] { packet.getAddress().getHostAddress(), e.getMessage() });
         }
     }

@@ -122,7 +122,7 @@ public class OnkyoConnection {
         try {
             sendCommand(new EiscpMessage.MessageBuilder().command(cmd).value(value).build());
         } catch (Exception e) {
-            logger.error("Could not send command to device on {}: {}", ip + ":" + port, e);
+            logger.error("Could not send command to device on {}:{}: ", ip, port, e);
         }
 
     }
