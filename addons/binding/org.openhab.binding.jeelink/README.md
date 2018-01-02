@@ -4,7 +4,7 @@ This binding integrates JeeLink USB RF receivers.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers and connected LaCrosse temperature sensors as well as EC3000 sensors.
+Binding should be compatible with JeeLink USB receivers. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
 
 ## Supported Things
 
@@ -14,6 +14,7 @@ This binding supports:
 *   JeeLink USB RF receivers connected over TCP (as bridge)
 *   LaCrosse Temperature Sensors connected to the bridge
 *   EC3000 Power Monitors connected to the bridge
+*   PCA301 power monitoring wireless sockets connected to the bridge
 
 ## Binding configuration
 
@@ -68,6 +69,15 @@ It then creates a thing for every sensor for which currently no other thing with
 | Update Interval | Number    | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value |
 | Buffer Size     | Number    | The number of readings used for computing the rolling average                                                           |
 
+#### PCA301 power monitoring wireless sockets
+
+| Parameter         | Item Type    | Description
+|-------------------|--------------|------------
+| Sensor ID         | Number       | The ID of the connected sensor
+| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have 
+been received from the sensor
+| Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up
+
 ## Channels
 
 #### LaCrosse temperature sensors
@@ -90,16 +100,35 @@ It then creates a thing for every sensor for which currently no other thing with
 | sensorTime       | Number    | Total turn on time of power monitor in hours       |
 | resets           | Number    | Number of resets                                   |
 
+#### PCA301 power monitoring wireless sockets
+
+| Channel Type ID         | Item Type    | Description
+|-------------------------|--------------|------------
+| switchingState          | Switch       | Whether the sockets are currently switched on or off
+| currentWatt             | Number       | Instantaneous power in Watt
+| consumptionTotal        | Number       | Total energy consumption 
+
 ## Commands
 
-The binding does not handle commands.
+#### PCA301 power monitoring wireless sockets
+
+| Channel Type ID         | Item Type    | Description
+|-------------------------|--------------|------------
+| switchingState          | Switch       | Supports ON and OFF commands to switch the socket.
 
 ## Full Example
 
-A typical Thing configuration for ec3k looks like this:
+A typical thing configuration for PCA301 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4", sketchName="ec3kSerial" ]
+Thing jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
+Thing jeelink:pca301:1-160-236 "ec3k 1" (jeelink:jeelinkUsb:pca301)  @ "home" [ sensorId="1-160-236"]
+```
+
+A typical thing configuration for EC3000 looks like this:
+
+```
+Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
 Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
 Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
 ```
@@ -107,7 +136,7 @@ Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 A typical Thing configuration for lacrosse looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6", sketchName="LaCrosseITPlusReader" ]
+Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
 Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
 Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
 ```
@@ -119,4 +148,12 @@ Number Humidty_LR "Living Room" <humidity> {channel="jeelink:lacrosse:42:humidit
 Number Temperature_LR "Living Room" <temperature> {channel="jeelink:lacrosse:42:temperature"}
 Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
+```
+
+A typical item configuration for a PCA301 power monitoring wireless sockets looks like this:
+
+```
+Switch SocketSwitch {channel="jeelink:pca301:1-160-236:switchingState"}
+Number SocketWattage {channel="jeelink:pca301:1-160-236:currentWatt"}
+Number SocketConsumption {channel="jeelink:pca301:1-160-236:consumptionTotal"}
 ```

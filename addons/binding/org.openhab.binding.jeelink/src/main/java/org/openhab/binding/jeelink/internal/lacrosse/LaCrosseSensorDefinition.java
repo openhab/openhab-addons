@@ -22,8 +22,7 @@ import org.openhab.binding.jeelink.internal.SensorDefinition;
 public class LaCrosseSensorDefinition extends SensorDefinition<LaCrosseTemperatureReading> {
 
     public LaCrosseSensorDefinition() {
-        super(JeeLinkBindingConstants.LACROSSE_SENSOR_THING_TYPE, "LaCrosseITPlusReader",
-                "LaCrosse Temperature Sensor");
+        super(JeeLinkBindingConstants.LACROSSE_SENSOR_THING_TYPE, "LaCrosse Temperature Sensor", "9");
     }
 
     @Override

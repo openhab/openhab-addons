@@ -9,10 +9,14 @@
 package org.openhab.binding.jeelink.internal;
 
 /**
- * Interface for converting input read from a JeeLinkConnection to a Reading.
+ * Converter that simply ignores input.
  *
  * @author Volker Bier - Initial contribution
  */
-public interface JeeLinkReadingConverter<R extends Reading> {
-    public R createReading(String inputLine);
+public class IgnoringConverter implements JeeLinkReadingConverter<Reading> {
+
+    @Override
+    public Reading createReading(String inputLine) {
+        return null;
+    }
 }

@@ -30,7 +30,7 @@ public interface JeeLinkConnection {
     String getPort();
 
     /**
-     * sends the specified init commands to the receiver.
+     * sends the specified commands to the receiver (commands are semicolon separated)
      */
-    void sendInitCommands(String initCommands);
+    void sendCommands(String initCommands);
 }

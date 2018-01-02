@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jeelink.internal.ec3k;
+package org.openhab.binding.jeelink.internal.pca301;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.jeelink.JeeLinkBindingConstants;
@@ -15,29 +15,29 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
- * Sensor Defintion of a EC3000 Power Monitor.
+ * Sensor Defintion of a PCA301 power switchable outlet.
  *
  * @author Volker Bier - Initial contribution
  */
-public class Ec3kSensorDefinition extends SensorDefinition<Ec3kReading> {
+public class Pca301SensorDefinition extends SensorDefinition<Pca301Reading> {
 
-    public Ec3kSensorDefinition() {
-        super(JeeLinkBindingConstants.EC3000_SENSOR_THING_TYPE, "EnergyCount 3000 Power Monitor", "22");
+    public Pca301SensorDefinition() {
+        super(JeeLinkBindingConstants.PCA301_SENSOR_THING_TYPE, "PCA301 power monitoring wireless socket", "24");
     }
 
     @Override
-    public JeeLinkReadingConverter<Ec3kReading> createConverter() {
-        return new Ec3kReadingConverter();
+    public JeeLinkReadingConverter<Pca301Reading> createConverter() {
+        return new Pca301ReadingConverter();
     }
 
     @Override
-    public Class<Ec3kReading> getReadingClass() {
-        return Ec3kReading.class;
+    public Class<Pca301Reading> getReadingClass() {
+        return Pca301Reading.class;
     }
 
     @Override
-    public JeeLinkSensorHandler<Ec3kReading> createHandler(Thing thing) {
-        return new Ec3kSensorHandler(thing);
+    public JeeLinkSensorHandler<Pca301Reading> createHandler(Thing thing) {
+        return new Pca301SensorHandler(thing);
     }
 
 }

@@ -38,8 +38,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
     }
 
     @Override
-    public String getSketchName() {
-        return "LaCrosseITPlusReader";
+    public Class<LaCrosseTemperatureReading> getReadingClass() {
+        return LaCrosseTemperatureReading.class;
     }
 
     @Override
