@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.enigma2.internal;
 
+import static org.openhab.binding.enigma2.Enigma2BindingConstants.*;
+
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -289,6 +291,27 @@ public class Enigma2CommandExecutor {
             return new StringType(content);
         } catch (IOException e) {
             return UnDefType.NULL;
+        }
+    }
+
+    public State getState(String channelID) {
+        switch (channelID) {
+            case CHANNEL_POWER:
+                return getPowerState();
+            case CHANNEL_VOLUME:
+                return this.getVolumeState();
+            case CHANNEL_MUTE:
+                return this.getMutedState();
+            case CHANNEL_CHANNEL:
+                return this.getChannelState();
+            case CHANNEL_NOW_PLAYING_TITLE:
+                return this.getNowPlayingTitle();
+            case CHANNEL_NOW_PLAYING_DESCRIPTION:
+                return this.getNowPlayingDescription();
+            case CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED:
+                return this.getNowPlayingDescriptionExtended();
+            default:
+                return new StringType("");
         }
     }
 

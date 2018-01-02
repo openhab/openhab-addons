@@ -12,7 +12,10 @@ import static org.openhab.binding.enigma2.Enigma2BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -28,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutorListener;
 import org.slf4j.Logger;
@@ -45,6 +49,10 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private Enigma2CommandExecutor commandExecutor;
     private Enigma2Refresher refresher;
 
+    private ScheduledFuture<?> refreshJob;
+
+    private Map<String, State> curState;
+
     public Enigma2Handler(Thing thing) {
         super(thing);
     }
@@ -53,10 +61,13 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     public void initialize() {
         commandExecutor = new Enigma2CommandExecutor(this);
 
-        refresher = new Enigma2Refresher();
-        refresher.addListener(this);
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            refresher = new Enigma2Refresher();
+            refresher.addListener(this);
 
-        scheduler.scheduleWithFixedDelay(refresher, 60, getRefreshInterval(), TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(refresher, 10, getRefreshInterval(), TimeUnit.SECONDS);
+            curState = new HashMap<>();
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -99,6 +110,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                     commandExecutor.setChannel((StringType) command);
                 } else if (command instanceof RefreshType) {
                     updateState(CHANNEL_CHANNEL, commandExecutor.getChannelState());
+                    curState.put(CHANNEL_CHANNEL, commandExecutor.getChannelState());
                 } else {
                     logger.warn("Invalid command type: {}: {}", command.getClass(), command);
                 }
@@ -162,6 +174,26 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     @Override
     public void dispose() {
         refresher.removeListener(this);
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
+    }
+
+    @Override
+    public void updateState(String channelID, State state) {
+        String curStateString = "";
+        if (curState.get(channelID) != null) {
+            curStateString = curState.get(channelID).toString();
+        }
+        String newStateString = "";
+        if (commandExecutor.getState(channelID) != null) {
+            newStateString = commandExecutor.getState(channelID).toString();
+        }
+        if (!newStateString.equalsIgnoreCase(curStateString)) {
+            curState.put(channelID, state);
+            super.updateState(channelID, state);
+        }
     }
 
     @Override
