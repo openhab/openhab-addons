@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
@@ -32,12 +32,11 @@ import tuwien.auto.calimero.exception.KNXFormatException;
 class TypeDimmer extends KNXChannelType {
 
     TypeDimmer() {
-        super(CHANNEL_DIMMER);
+        super(CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
     }
 
     @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
-            throws KNXFormatException {
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Type command) throws KNXFormatException {
         ChannelConfiguration confSwitch = parse((String) configuration.get(SWITCH_GA));
         ChannelConfiguration confPosition = parse((String) configuration.get(POSITION_GA));
 
@@ -46,7 +45,7 @@ class TypeDimmer extends KNXChannelType {
                 return new CommandSpec(confSwitch, getDefaultDPT(SWITCH_GA), command);
             } else if (confPosition != null) {
                 return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA),
-                        (PercentType) ((OnOffType) command).as(PercentType.class));
+                        ((OnOffType) command).as(PercentType.class));
             }
         }
 
@@ -55,7 +54,7 @@ class TypeDimmer extends KNXChannelType {
                 return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA), command);
             } else if (confSwitch != null) {
                 return new CommandSpec(confSwitch, getDefaultDPT(SWITCH_GA),
-                        (OnOffType) ((PercentType) command).as(OnOffType.class));
+                        ((PercentType) command).as(OnOffType.class));
             }
         }
 

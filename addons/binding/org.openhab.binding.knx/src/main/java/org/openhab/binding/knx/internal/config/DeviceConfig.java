@@ -13,11 +13,12 @@ import java.math.BigDecimal;
 /**
  * @author Karel Goderis - Initial contribution
  */
-public class BasicConfig {
+public class DeviceConfig {
 
     private String address;
     private boolean fetch;
-    private BigDecimal interval;
+    private BigDecimal pingInterval;
+    private BigDecimal readInterval;
 
     public String getAddress() {
         return address;
@@ -27,8 +28,12 @@ public class BasicConfig {
         return fetch;
     }
 
-    public BigDecimal getInterval() {
-        return interval;
+    public BigDecimal getPingInterval() {
+        return pingInterval;
+    }
+
+    public BigDecimal getReadInterval() {
+        return readInterval;
     }
 
 }

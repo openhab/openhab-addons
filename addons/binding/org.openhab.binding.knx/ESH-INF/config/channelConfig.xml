@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<!-- Switch -->
+	<config-description uri="channel-type:knx:switch">
+		<parameter name="switch" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<!-- Dimmer -->
+	<config-description uri="channel-type:knx:dimmer">
+		<parameter name="switch" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to toggle the dimmer on or off</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="position" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to set the absolute position of the dimmer</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="increaseDecrease" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to increase or decrease the dimmer</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
+	<config-description uri="channel-type:knx:dimmer-control">
+		<parameter name="switch" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to toggle the dimmer on or off</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="position" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to set the absolute position of the dimmer</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="increaseDecrease" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation to increase or decrease the dimmer</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="frequency" type="integer">
+			<label></label>
+			<description></description>
+			<required>true</required>
+			<default>500</default>
+		</parameter>
+	</config-description>
+
+	<!-- Rollershutter -->
+	<config-description uri="channel-type:knx:rollershutter">
+            <parameter name="upDown" type="text">
+                <label>Address</label>
+                <description>The group address(es) in FANCY notation to move the shutter in the DOWN or UP direction</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="stopMove" type="text">
+                <label>Address</label>
+                <description>The group address(es) in FANCY notation to start (MOVE) or STOP shutter movement</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="position" type="text">
+                <label>Address</label>
+                <description>The group address(es) in FANCY notation to set the absolute position of the shutter, in %</description>
+                <required>false</required>
+            </parameter>
+	</config-description>
+
+	<!-- Generic single-GA -->
+	<config-description uri="channel-type:knx:single">
+		<parameter name="ga" type="text">
+			<label>Address</label>
+			<description>The group address(es) in FANCY notation</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+
+</config-description:config-descriptions>

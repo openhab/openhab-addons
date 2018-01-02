@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -24,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,17 +34,20 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.internal.channel.CommandSpec;
 import org.openhab.binding.knx.internal.channel.KNXChannelSelector;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
 import org.openhab.binding.knx.internal.channel.ListenSpec;
 import org.openhab.binding.knx.internal.channel.ReadSpec;
+import org.openhab.binding.knx.internal.channel.ResponseSpec;
 import org.openhab.binding.knx.internal.client.KNXClient;
-import org.openhab.binding.knx.internal.config.BasicConfig;
+import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.openhab.binding.knx.internal.handler.DeviceInspector;
 import org.openhab.binding.knx.internal.handler.DeviceInspector.Result;
 import org.slf4j.Logger;
@@ -56,21 +61,20 @@ import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
- * The {@link KNXBasicThingHandler} is responsible for handling commands, which are
+ * The {@link DeviceThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddressListener {
+public class DeviceThingHandler extends BaseThingHandler implements GroupAddressListener {
 
     private final Random random = new Random();
 
-    private final Logger logger = LoggerFactory.getLogger(KNXBasicThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
 
     // the physical address of the KNX actor represented by this Thing
-    @Nullable
-    protected IndividualAddress address;
+    protected @Nullable IndividualAddress address;
 
     // group addresses the handler is monitoring
     protected Set<GroupAddress> groupAddresses = new HashSet<>();
@@ -80,24 +84,24 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
 
     private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
 
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    @Nullable
-    private ScheduledFuture<?> descriptionJob;
+    private @Nullable ScheduledFuture<?> descriptionJob;
 
     private boolean filledDescription = false;
 
     private final TypeHelper typeHelper;
 
-    public KNXBasicThingHandler(Thing thing, TypeHelper typeHelper) {
+    private @Nullable BigDecimal readInterval;
+
+    public DeviceThingHandler(Thing thing, TypeHelper typeHelper) {
         super(thing);
         this.typeHelper = typeHelper;
     }
 
     @Override
     public void initialize() {
-        BasicConfig config = getConfigAs(BasicConfig.class);
+        DeviceConfig config = getConfigAs(DeviceConfig.class);
 
         initializeGroupAddresses();
 
@@ -105,7 +109,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
             if (StringUtils.isNotBlank(config.getAddress())) {
                 address = new IndividualAddress(config.getAddress());
 
-                long pollingInterval = config.getInterval().longValue();
+                long pollingInterval = config.getPingInterval().longValue();
                 long initialDelay = Math.round(pollingInterval * random.nextFloat());
 
                 ScheduledFuture<?> pollingJob = this.pollingJob;
@@ -114,6 +118,8 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
                     this.pollingJob = getBridgeHandler().getScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(),
                             initialDelay, pollingInterval, TimeUnit.SECONDS);
                 }
+
+                readInterval = config.getReadInterval();
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -214,16 +220,18 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        withKNXType(channelUID, (selector, configuration) -> {
-            scheduleRead(selector, configuration);
-        });
+        if (!isControl(channelUID)) {
+            withKNXType(channelUID, (selector, configuration) -> {
+                scheduleRead(selector, configuration);
+            });
+        }
     }
 
     private void scheduleReadJobs() {
         cancelReadFutures();
 
         for (Channel channel : getThing().getChannels()) {
-            if (isLinked(channel.getUID().getId())) {
+            if (isLinked(channel.getUID().getId()) && !isControl(channel.getUID())) {
                 withKNXType(channel, (selector, configuration) -> {
                     scheduleRead(selector, configuration);
                 });
@@ -232,16 +240,15 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
     }
 
     private void scheduleRead(KNXChannelType selector, Configuration configuration) throws KNXFormatException {
-        BigDecimal readInterval = (BigDecimal) configuration.get(INTERVAL);
         List<ReadSpec> readSpecs = selector.getReadSpec(configuration);
         for (ReadSpec readSpec : readSpecs) {
             for (GroupAddress groupAddress : readSpec.getReadAddresses()) {
-                scheduleReadJob(groupAddress, readSpec.getDPT(), readInterval);
+                scheduleReadJob(groupAddress, readSpec.getDPT());
             }
         }
     }
 
-    private void scheduleReadJob(GroupAddress groupAddress, String dpt, @Nullable BigDecimal readInterval) {
+    private void scheduleReadJob(GroupAddress groupAddress, String dpt) {
         boolean recurring = readInterval != null && readInterval.intValue() > 0;
 
         Runnable readRunnable = () -> {
@@ -289,7 +296,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling a Command ({})  for Channel {}", command, channelUID);
-        if (command instanceof RefreshType) {
+        if (command instanceof RefreshType && !isControl(channelUID)) {
             logger.debug("Refreshing channel {}", channelUID);
             withKNXType(channelUID, (selector, configuration) -> {
                 scheduleRead(selector, configuration);
@@ -302,26 +309,45 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
                     }
                     break;
                 default:
-                    sendToKNX(channelUID, command);
+                    withKNXType(channelUID, (selector, channelConfiguration) -> {
+                        CommandSpec commandSpec = selector.getCommandSpec(channelConfiguration, command);
+                        if (commandSpec != null) {
+                            getClient().writeToKNX(commandSpec);
+                        }
+                    });
                     break;
             }
         }
-
     }
 
-    private void sendToKNX(ChannelUID channelUID, Command command) {
-        withKNXType(channelUID, (selector, channelConfiguration) -> {
-            CommandSpec commandSpec = selector.getCommandSpec(channelConfiguration, command);
-            if (commandSpec != null) {
-                getClient().writeToKNX(commandSpec);
-            }
-        });
+    private boolean isControl(ChannelUID channelUID) {
+        ChannelTypeUID channelTypeUID = getChannelTypeUID(channelUID);
+        return CONTROL_CHANNEL_TYPES.contains(channelTypeUID.getId());
+    }
+
+    private ChannelTypeUID getChannelTypeUID(ChannelUID channelUID) {
+        Channel channel = getThing().getChannel(channelUID.getId());
+        Objects.requireNonNull(channel);
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        Objects.requireNonNull(channelTypeUID);
+        return channelTypeUID;
     }
 
     @Override
     public void onGroupRead(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
-        // Nothing to do here - Software representations of physical actors should not respond to GroupRead requests, as
-        // the physical device will be responding to these instead
+        logger.trace("Thing {} received a Group Read Request telegram from '{}' for destination '{}'",
+                getThing().getUID(), source, destination);
+
+        for (Channel channel : getThing().getChannels()) {
+            if (isControl(channel.getUID())) {
+                withKNXType(channel, (selector, configuration) -> {
+                    ResponseSpec responseSpec = selector.getResponseSpec(configuration, destination);
+                    if (responseSpec != null) {
+                        postCommand(channel.getUID().getId(), RefreshType.REFRESH);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -332,7 +358,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
 
     @Override
     public void onGroupWrite(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
-        logger.trace("Thing {} received a Group Write telegram from '{}' for destination '{}'", getThing().getUID(),
+        logger.debug("Thing {} received a Group Write telegram from '{}' for destination '{}'", getThing().getUID(),
                 source, destination);
 
         for (Channel channel : getThing().getChannels()) {
@@ -347,6 +373,8 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
         }
     }
 
+    private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
+
     private void processDataReceived(GroupAddress destination, byte[] asdu, ListenSpec listenSpec,
             ChannelUID channelUID) {
         if (!typeHelper.isDPTSupported(listenSpec.getDPT())) {
@@ -357,8 +385,33 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
         Datapoint datapoint = new CommandDP(destination, getThing().getUID().toString(), 0, listenSpec.getDPT());
         Type type = typeHelper.getType(datapoint, asdu);
 
+        System.out.println("turned " + asdu[0] + " into " + type);
+
         if (type != null) {
-            updateState(channelUID, (State) type);
+            if (KNXBindingConstants.CHANNEL_DIMMER_CONTROL.equals(getChannelTypeUID(channelUID).getId())
+                    && (type instanceof UnDefType || type instanceof IncreaseDecreaseType)) {
+                // special handling for dimmer-control
+                if (UnDefType.UNDEF.equals(type)) {
+                    ScheduledFuture<?> future = channelFutures.remove(channelUID);
+                    if (future != null) {
+                        future.cancel(false);
+                    }
+                } else if (type instanceof IncreaseDecreaseType) {
+                    ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(() -> {
+                        postCommand(channelUID, (Command) type);
+                    }, 0, 500, TimeUnit.MILLISECONDS);
+                    ScheduledFuture<?> previousFuture = channelFutures.put(channelUID, future);
+                    if (previousFuture != null) {
+                        previousFuture.cancel(true);
+                    }
+                }
+            } else {
+                if (type instanceof Command) {
+                    postCommand(channelUID, (Command) type);
+                } else {
+                    // drop
+                }
+            }
         } else {
             String s = asduToHex(asdu);
             logger.warn(
@@ -387,9 +440,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
     class ReadRunnable implements Runnable {
 
         private final GroupAddress address;
-
-        @Nullable
-        private final String dpt;
+        private final @Nullable String dpt;
 
         ReadRunnable(GroupAddress address, @Nullable String dpt) {
             this.address = address;
@@ -416,12 +467,12 @@ public class KNXBasicThingHandler extends BaseThingHandler implements GroupAddre
                 boolean isReachable = getClient().isReachable(address);
                 if (isReachable) {
                     updateStatus(ThingStatus.ONLINE);
-                    BasicConfig config = getConfigAs(BasicConfig.class);
+                    DeviceConfig config = getConfigAs(DeviceConfig.class);
                     if (!filledDescription && config.getFetch()) {
                         ScheduledFuture<?> descriptionJob = this.descriptionJob;
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
                             this.descriptionJob = getBridgeHandler().getScheduler().schedule(() -> {
-                                IndividualAddress address = KNXBasicThingHandler.this.address;
+                                IndividualAddress address = DeviceThingHandler.this.address;
                                 if (address != null) {
                                     DeviceInspector inspector = new DeviceInspector(getClient().getDeviceInfoClient(),
                                             address);

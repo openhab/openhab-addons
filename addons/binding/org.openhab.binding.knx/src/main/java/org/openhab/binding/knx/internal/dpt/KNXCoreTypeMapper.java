@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017, openHAB.org and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -69,7 +68,9 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
  *
  * @author Kai Kreuzer
  * @author Volker Daube
- * @author Helmut Lehmeyer - generic DPT Mapper
+ * @author Jan N. Klug
+ * @author Helmut Lehmeyer - Java8, generic DPT Mapper
+ * @since 0.3.0
  */
 @Component
 public class KNXCoreTypeMapper implements KNXTypeMapper {
@@ -83,15 +84,15 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * stores the openHAB type class for (supported) KNX datapoint types in a generic way.
      * dptTypeMap stores more specific type class and exceptions.
      */
-    private static Map<Integer, Class<? extends Type>> dptMainTypeMap;
+    private final Map<Integer, Class<? extends Type>> dptMainTypeMap;
 
     /** stores the openHAB type class for all (supported) KNX datapoint types */
-    private static Map<String, Class<? extends Type>> dptTypeMap;
+    private final Map<String, Class<? extends Type>> dptTypeMap;
 
     /** stores the default KNX DPT to use for each openHAB type */
-    private static Map<Class<? extends Type>, String> defaultDptMap;
+    private final Map<Class<? extends Type>, String> defaultDptMap;
 
-    static {
+    public KNXCoreTypeMapper() {
 
         @SuppressWarnings("unused")
         final List<Class<?>> xlators = Arrays.<Class<?>> asList(DPTXlator1BitControlled.class,
@@ -107,29 +108,29 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 1
-         * 1.005: Alarm, values no alarm alarm
-         * 1.016: Acknowledge, values no action acknowledge
-         * 1.006: Binary value, values low high
-         * 1.017: Trigger, values trigger trigger
-         * 1.007: Step, values decrease increase
-         * 1.018: Occupancy, values not occupied occupied
-         * 1.008: Up/Down, values up down
-         * 1.019: Window/Door, values closed open
-         * 1.009: Open/Close, values open close
-         * 1.010: Start, values stop start
-         * 1.021: Logical function, values OR AND
-         * 1.011: State, values inactive active
-         * 1.022: Scene A/B, values scene A scene B
-         * 1.001: Switch, values off on
-         * 1.012: Invert, values not inverted inverted
-         * 1.023: Shutter/Blinds mode, values only move up/down move up/down + step-stop
-         * 1.100: Heat/Cool, values cooling heating
-         * 1.002: Boolean, values false true
-         * 1.013: Dim send-style, values start/stop cyclic
-         * 1.003: Enable, values disable enable
-         * 1.014: Input source, values fixed calculated
-         * 1.004: Ramp, values no ramp ramp
-         * 1.015: Reset, values no action reset
+         * 1.005: Alarm, values: 0 = no alarm, 1 = alarm
+         * 1.016: Acknowledge, values: 0 = no action, 1 = acknowledge
+         * 1.006: Binary value, values: 0 = low, 1 = high
+         * 1.017: Trigger, values: 0 = trigger, 1 = trigger
+         * 1.007: Step, values: 0 = decrease, 1 = increase
+         * 1.018: Occupancy, values: 0 = not occupied, 1 = occupied
+         * 1.008: Up/Down, values: 0 = up, 1 = down
+         * 1.019: Window/Door, values: 0 = closed, 1 = open
+         * 1.009: Open/Close, values: 0 = open, 1 = close
+         * 1.010: Start, values: 0 = stop, 1 = start
+         * 1.021: Logical function, values: 0 = OR, 1 = AND
+         * 1.011: State, values: 0 = inactive, 1 = active
+         * 1.022: Scene A/B, values: 0 = scene A, 1 = scene B
+         * 1.001: Switch, values: 0 = off, 1 = on
+         * 1.012: Invert, values: 0 = not inverted, 1 = inverted
+         * 1.023: Shutter/Blinds mode, values: 0 = only move up/down, 1 = move up/down + step-stop
+         * 1.100: Heat/Cool, values: 0 = cooling, 1 = heating
+         * 1.002: Boolean, values: 0 = false, 1 = true
+         * 1.013: Dim send-style, values: 0 = start/stop, 1 = cyclic
+         * 1.003: Enable, values: 0 = disable, 1 = enable
+         * 1.014: Input source, values: 0 = fixed, 1 = calculated
+         * 1.004: Ramp, values: 0 = no ramp, 1 = ramp
+         * 1.015: Reset, values: 0 = no action, 1 = reset
          */
         dptMainTypeMap.put(1, OnOffType.class);
         /** Exceptions Datapoint Types "B1", Main number 1 */
@@ -141,18 +142,18 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 2
-         * 2.002: Boolean Controlled, values 0 false 1 true
-         * 2.003: Enable Controlled, values 0 disable 1 enable
-         * 2.011: State Controlled, values 0 inactive 1 active
-         * 2.001: Switch Controlled, values 0 off 1 on
-         * 2.012: Invert Controlled, values 0 not inverted 1 inverted
-         * 2.010: Start Controlled, values 0 stop 1 start
-         * 2.008: Up/Down Controlled, values 0 up 1 down
-         * 2.009: Open/Close Controlled, values 0 open 1 close
-         * 2.006: Binary Controlled, values 0 low 1 high
-         * 2.007: Step Controlled, values 0 decrease 1 increase
-         * 2.004: Ramp Controlled, values 0 no ramp 1 ramp
-         * 2.005: Alarm Controlled, values 0 no alarm 1 alarm
+         * 2.002: Boolean Controlled, values: 0 = false, 1 = true
+         * 2.003: Enable Controlled, values: 0 = disable, 1 = enable
+         * 2.011: State Controlled, values: 0 = inactive, 1 = active
+         * 2.001: Switch Controlled, values: 0 = off, 1 = on
+         * 2.012: Invert Controlled, values: 0 = not inverted, 1 = inverted
+         * 2.010: Start Controlled, values: 0 = stop, 1 = start
+         * 2.008: Up/Down Controlled, values: 0 = up, 1 = down
+         * 2.009: Open/Close Controlled, values: 0 = open, 1 = close
+         * 2.006: Binary Controlled, values: 0 = low, 1 = high
+         * 2.007: Step Controlled, values: 0 = decrease, 1 = increase
+         * 2.004: Ramp Controlled, values: 0 = no ramp, 1 = ramp
+         * 2.005: Alarm Controlled, values: 0 = no alarm, 1 = alarm
          */
         dptMainTypeMap.put(2, DecimalType.class);
         /** Exceptions Datapoint Types "B2", Main number 2 */
@@ -160,8 +161,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 3
-         * 3.007: Dimming, values decrease 7 increase 7
-         * 3.008: Blinds, values up 7 down 7
+         * 3.007: Dimming, values: 0 = decrease, 1 = increase
+         * 3.008: Blinds, values: 0 = up, 1 = down
          */
         dptMainTypeMap.put(3, IncreaseDecreaseType.class);
         /** Exceptions Datapoint Types "B1U3", Main number 3 */
@@ -169,12 +170,12 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 5
-         * 5.010: Unsigned count, values 0 255 counter pulses
-         * 5.001: Scaling, values 0 100 %
-         * 5.003: Angle, values 0 360 °
-         * 5.004: Percent (8 Bit), values 0 255 %
-         * 5.005: Decimal factor, values 0 255 ratio
-         * 5.006: Tariff information, values 0 254
+         * 5.010: Unsigned count, values: 0...255 counter pulses
+         * 5.001: Scaling, values: 0...100 %
+         * 5.003: Angle, values: 0...360 °
+         * 5.004: Percent (8 Bit), values: 0...255 %
+         * 5.005: Decimal factor, values: 0...255 ratio
+         * 5.006: Tariff information, values: 0...254
          */
         dptMainTypeMap.put(5, DecimalType.class);
         /** Exceptions Types "8-Bit Unsigned Value", Main number 5 */
@@ -182,9 +183,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 6
-         * 6.001: Percent (8 Bit), values -128 127 %
-         * 6.020: status with mode, values 0/0/0/0/0 0 1/1/1/1/1 2
-         * 6.010: signed count, values -128 127 counter pulses
+         * 6.001: Percent (8 Bit), values: -128...127 %
+         * 6.020: status with mode, values: 0/0/0/0/0 0...1/1/1/1/1 2
+         * 6.010: signed count, values: -128...127 counter pulses
          */
         dptMainTypeMap.put(6, DecimalType.class);
         /** Exceptions Datapoint Types "8-Bit Signed Value", Main number 6 */
@@ -192,17 +193,17 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 7
-         * 7.003: Time period (resolution 10 ms), values 0 655350 ms
-         * 7.004: Time period (resolution 100 ms), values 0 6553500 ms
-         * 7.005: Time period in seconds, values 0 65535 s
-         * 7.006: Time period in minutes, values 0 65535 min
-         * 7.010: Interface object property ID, values 0 65535
-         * 7.011: Length in mm, values 0 65535 mm
-         * 7.001: Unsigned count, values 0 65535 pulses
-         * 7.012: Electrical current, values 0 65535 mA
-         * 7.002: Time period in ms, values 0 65535 ms
-         * 7.013: Brightness, values 0 65535 lx
-         * 7.007: Time period in hours, values 0 65535 h
+         * 7.003: Time period (resolution 10 ms), values: 0...655350 ms
+         * 7.004: Time period (resolution 100 ms), values: 0...6553500 ms
+         * 7.005: Time period in seconds, values: 0...65535 s
+         * 7.006: Time period in minutes, values: 0...65535 min
+         * 7.010: Interface object property ID, values: 0...65535
+         * 7.011: Length in mm, values: 0...65535 mm
+         * 7.001: Unsigned count, values: 0...65535 pulses
+         * 7.012: Electrical current, values: 0...65535 mA
+         * 7.002: Time period in ms, values: 0...65535 ms
+         * 7.013: Brightness, values: 0...65535 lx
+         * 7.007: Time period in hours, values: 0...65535 h
          */
         dptMainTypeMap.put(7, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Unsigned Value", Main number 7 */
@@ -210,25 +211,25 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 9
-         * 9.020: Voltage, values -670760 +670760 mV
-         * 9.010: Time difference 1, values -670760 +670760 s
-         * 9.021: Electrical current, values -670760 +670760 mA
-         * 9.011: Time difference 2, values -670760 +670760 ms
-         * 9.022: Power density, values -670760 +670760 W/m²
-         * 9.001: Temperature, values -273 +670760 °C
-         * 9.023: Kelvin/percent, values -670760 +670760 K/%
-         * 9.002: Temperature difference, values -670760 +670760 K
-         * 9.024: Power, values -670760 +670760 kW
-         * 9.003: Temperature gradient, values -670760 +670760 K/h
-         * 9.025: Volume flow, values -670760 +670760 l/h
-         * 9.004: Light intensity, values 0 +670760 lx
-         * 9.026: Rain amount, values -671088.64 670760.96 l/m²
-         * 9.005: Wind speed, values 0 +670760 m/s
-         * 9.027: Temperature, values -459.6 670760.96 °F
-         * 9.006: Air pressure, values 0 +670760 Pa
-         * 9.028: Wind speed, values 0 670760.96 km/h
-         * 9.007: Humidity, values 0 +670760 %
-         * 9.008: Air quality, values 0 +670760 ppm
+         * 9.020: Voltage, values: -670760...+670760 mV
+         * 9.010: Time difference 1, values: -670760...+670760 s
+         * 9.021: Electrical current, values: -670760...+670760 mA
+         * 9.011: Time difference 2, values: -670760...+670760 ms
+         * 9.022: Power density, values: -670760...+670760 W/m²
+         * 9.001: Temperature, values: -273...+670760 °C
+         * 9.023: Kelvin/percent, values: -670760...+670760 K/%
+         * 9.002: Temperature difference, values: -670760...+670760 K
+         * 9.024: Power, values: -670760...+670760 kW
+         * 9.003: Temperature gradient, values: -670760...+670760 K/h
+         * 9.025: Volume flow, values: -670760...+670760 l/h
+         * 9.004: Light intensity, values: 0...+670760 lx
+         * 9.026: Rain amount, values: -671088.64...670760.96 l/m²
+         * 9.005: Wind speed, values: 0...+670760 m/s
+         * 9.027: Temperature, values: -459.6...670760.96 °F
+         * 9.006: Air pressure, values: 0...+670760 Pa
+         * 9.028: Wind speed, values: 0...670760.96 km/h
+         * 9.007: Humidity, values: 0...+670760 %
+         * 9.008: Air quality, values: 0...+670760 ppm
          */
         dptMainTypeMap.put(9, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Float Value", Main number 9 */
@@ -236,7 +237,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 10
-         * 10.001: Time of day, values no-day, 00:00:00 Sun, 23:59:59 dow, hh:mm:ss
+         * 10.001: Time of day, values: 1 = Monday...7 = Sunday, 0 = no-day, 00:00:00 Sun, 23:59:59 dow, hh:mm:ss
          */
         dptMainTypeMap.put(10, DateTimeType.class);
         /** Exceptions Datapoint Types "Time", Main number 10 */
@@ -244,7 +245,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 11
-         * 11.001: Date, values 1990-01-01 2089-12-31 yyyy-mm-dd
+         * 11.001: Date, values: 1990-01-01...2089-12-31, yyyy-mm-dd
          */
         dptMainTypeMap.put(11, DateTimeType.class);
         /** Exceptions Datapoint Types “Date”", Main number 11 */
@@ -252,7 +253,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 12
-         * 12.001: Unsigned count, values 0 4294967295 counter pulses
+         * 12.001: Unsigned count, values: 0...4294967295 counter pulses
          */
         dptMainTypeMap.put(12, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Unsigned Value", Main number 12 */
@@ -260,102 +261,102 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 13
-         * 13.010: Active Energy, values -2147483648 2147483647 Wh
-         * 13.001: Counter pulses, values -2147483648 2147483647 counter pulses
-         * 13.012: Reactive energy, values -2147483648 2147483647 VARh
-         * 13.100: Delta time in seconds, values -2147483648 2147483647 s
-         * 13.011: Apparent energy, values -2147483648 2147483647 VAh
-         * 13.014: Apparent energy in kVAh, values -2147483648 2147483647 kVAh
-         * 13.002: Flow rate, values -2147483648 2147483647 m3/h
-         * 13.013: Active energy in kWh, values -2147483648 2147483647 kWh
-         * 13.015: Reactive energy in kVARh, values -2147483648 2147483647 kVARh
+         * 13.010: Active Energy, values: -2147483648...2147483647 Wh
+         * 13.001: Counter pulses, values: -2147483648...2147483647 counter pulses
+         * 13.012: Reactive energy, values: -2147483648...2147483647 VARh
+         * 13.100: Delta time in seconds, values: -2147483648...2147483647 s
+         * 13.011: Apparent energy, values: -2147483648...2147483647 VAh
+         * 13.014: Apparent energy in kVAh, values: -2147483648...2147483647 kVAh
+         * 13.002: Flow rate, values: -2147483648...2147483647 m3/h
+         * 13.013: Active energy in kWh, values: -2147483648...2147483647 kWh
+         * 13.015: Reactive energy in kVARh, values: -2147483648...2147483647 kVARh
          */
         dptMainTypeMap.put(13, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 13 */
         // Example: dptTypeMap.put(DPTXlator4ByteSigned.DPT_COUNT.getID(), DecimalType.class);
 
         /**
-         * MainType: 14
-         * 14.019: Electric current, values -3.40282347e+38f..3.40282347e+38f A
-         * 14.018: Electric charge, values -3.40282347e+38f..3.40282347e+38f C
-         * 14.017: Density, values -3.40282347e+38f..3.40282347e+38f kg m⁻³
-         * 14.016: Conductivity, electrical, values -3.40282347e+38f..3.40282347e+38f Ω⁻¹m⁻¹
-         * 14.015: Conductance, values -3.40282347e+38f..3.40282347e+38f Ω⁻¹
-         * 14.059: Reactance, values -3.40282347e+38f..3.40282347e+38f Ω
-         * 14.014: Compressibility, values -3.40282347e+38f..3.40282347e+38f m²/N
-         * 14.058: Pressure, values -3.40282347e+38f..3.40282347e+38f Pa
-         * 14.013: Charge density (volume), values -3.40282347e+38f..3.40282347e+38f C m⁻³
-         * 14.057: Power factor, values -3.40282347e+38f..3.40282347e+38f
-         * 14.012: Charge density (surface), values -3.40282347e+38f..3.40282347e+38f C m⁻²
-         * 14.056: Power, values -3.40282347e+38f..3.40282347e+38f W
-         * 14.011: Capacitance, values -3.40282347e+38f..3.40282347e+38f F
-         * 14.055: Phase angle, degree, values -3.40282347e+38f..3.40282347e+38f °
-         * 14.010: Area, values -3.40282347e+38f..3.40282347e+38f m²
-         * 14.054: Phase angle, radiant, values -3.40282347e+38f..3.40282347e+38f rad
-         * 14.053: Momentum, values -3.40282347e+38f..3.40282347e+38f N/s
-         * 14.052: Mass flux, values -3.40282347e+38f..3.40282347e+38f kg/s
-         * 14.051: Mass, values -3.40282347e+38f..3.40282347e+38f kg
-         * 14.050: Magneto motive force, values -3.40282347e+38f..3.40282347e+38f A
-         * 14.060: Resistance, values -3.40282347e+38f..3.40282347e+38f Ω
-         * 14.029: Electromagnetic moment, values -3.40282347e+38f..3.40282347e+38f A m²
-         * 14.028: Electric potential difference, values -3.40282347e+38f..3.40282347e+38f V
-         * 14.027: Electric potential, values -3.40282347e+38f..3.40282347e+38f V
-         * 14.026: Electric polarization, values -3.40282347e+38f..3.40282347e+38f C m⁻²
-         * 14.025: Electric flux density, values -3.40282347e+38f..3.40282347e+38f C m⁻²
-         * 14.069: Temperature, absolute, values -3.40282347e+38f..3.40282347e+38f K
-         * 14.024: Electric flux, values -3.40282347e+38f..3.40282347e+38f Vm
-         * 14.068: Temperature in Celsius Degree, values -3.40282347e+38f..3.40282347e+38f °C
-         * 14.023: Electric field strength, values -3.40282347e+38f..3.40282347e+38f V/m
-         * 14.067: Surface tension, values -3.40282347e+38f..3.40282347e+38f N/m
-         * 14.022: Electric displacement, values -3.40282347e+38f..3.40282347e+38f C m⁻²
-         * 14.066: Stress, values -3.40282347e+38f..3.40282347e+38f Pa
-         * 14.021: Electric dipole moment, values -3.40282347e+38f..3.40282347e+38f Cm
-         * 14.065: Speed, values -3.40282347e+38f..3.40282347e+38f m/s
-         * 14.020: Electric current density, values -3.40282347e+38f..3.40282347e+38f A m⁻²
-         * 14.064: Sound intensity, values -3.40282347e+38f..3.40282347e+38f W m⁻²
-         * 14.063: Solid angle, values -3.40282347e+38f..3.40282347e+38f sr
-         * 14.062: Self inductance, values -3.40282347e+38f..3.40282347e+38f H
-         * 14.061: Resistivity, values -3.40282347e+38f..3.40282347e+38f Ωm
-         * 14.071: Thermal capacity, values -3.40282347e+38f..3.40282347e+38f J/K
-         * 14.070: Temperature difference, values -3.40282347e+38f..3.40282347e+38f K
-         * 14.039: Length, values -3.40282347e+38f..3.40282347e+38f m
-         * 14.038: Impedance, values -3.40282347e+38f..3.40282347e+38f Ω
-         * 14.037: Heat quantity, values -3.40282347e+38f..3.40282347e+38f J
-         * 14.036: Heat flow rate, values -3.40282347e+38f..3.40282347e+38f W
-         * 14.035: Heat capacity, values -3.40282347e+38f..3.40282347e+38f J/K
-         * 14.079: Work, values -3.40282347e+38f..3.40282347e+38f J
-         * 14.034: Frequency, angular, values -3.40282347e+38f..3.40282347e+38f rad/s
-         * 14.078: Weight, values -3.40282347e+38f..3.40282347e+38f N
-         * 14.033: Frequency, values -3.40282347e+38f..3.40282347e+38f Hz
-         * 14.077: Volume flux, values -3.40282347e+38f..3.40282347e+38f m³/s
-         * 14.032: Force, values -3.40282347e+38f..3.40282347e+38f N
-         * 14.076: Volume, values -3.40282347e+38f..3.40282347e+38f m³
-         * 14.031: Energy, values -3.40282347e+38f..3.40282347e+38f J
-         * 14.075: Torque, values -3.40282347e+38f..3.40282347e+38f Nm
-         * 14.030: Electromotive force, values -3.40282347e+38f..3.40282347e+38f V
-         * 14.074: Time, values -3.40282347e+38f..3.40282347e+38f s
-         * 14.073: Thermoelectric power, values -3.40282347e+38f..3.40282347e+38f V/K
-         * 14.072: Thermal conductivity, values -3.40282347e+38f..3.40282347e+38f W/m K⁻¹
-         * 14.009: Angular velocity, values -3.40282347e+38f..3.40282347e+38f rad/s
-         * 14.008: Momentum, values -3.40282347e+38f..3.40282347e+38f Js
-         * 14.007: Angle, values -3.40282347e+38f..3.40282347e+38f °
-         * 14.006: Angle, values -3.40282347e+38f..3.40282347e+38f rad
-         * 14.005: Amplitude, values -3.40282347e+38f..3.40282347e+38f
-         * 14.049: Magnetization, values -3.40282347e+38f..3.40282347e+38f A/m
-         * 14.004: Mol, values -3.40282347e+38f..3.40282347e+38f mol
-         * 14.048: Magnetic polarization, values -3.40282347e+38f..3.40282347e+38f T
-         * 14.003: Activity, values -3.40282347e+38f..3.40282347e+38f s⁻¹
-         * 14.047: Magnetic moment, values -3.40282347e+38f..3.40282347e+38f A m²
-         * 14.002: Activation energy, values -3.40282347e+38f..3.40282347e+38f J/mol
-         * 14.046: Magnetic flux density, values -3.40282347e+38f..3.40282347e+38f T
-         * 14.001: Acceleration, angular, values -3.40282347e+38f..3.40282347e+38f rad s⁻²
-         * 14.045: Magnetic flux, values -3.40282347e+38f..3.40282347e+38f Wb
-         * 14.000: Acceleration, values -3.40282347e+38f..3.40282347e+38f ms⁻²
-         * 14.044: Magnetic field strength, values -3.40282347e+38f..3.40282347e+38f A/m
-         * 14.043: Luminous intensity, values -3.40282347e+38f..3.40282347e+38f cd
-         * 14.042: Luminous flux, values -3.40282347e+38f..3.40282347e+38f lm
-         * 14.041: Luminance, values -3.40282347e+38f..3.40282347e+38f cd m⁻²
-         * 14.040: Quantity of Light, values -3.40282347e+38f..3.40282347e+38f J
+         * MainType: 14, Range: [-3.40282347e+38f...3.40282347e+38f]
+         * 14.019: Electric current, values: A
+         * 14.018: Electric charge, values: C
+         * 14.017: Density, values: kg m⁻³
+         * 14.016: Conductivity, electrical, values: Ω⁻¹m⁻¹
+         * 14.015: Conductance, values: Ω⁻¹
+         * 14.059: Reactance, values: Ω
+         * 14.014: Compressibility, values: m²/N
+         * 14.058: Pressure, values: Pa
+         * 14.013: Charge density (volume), values: C m⁻³
+         * 14.057: Power factor, values:
+         * 14.012: Charge density (surface), values: C m⁻²
+         * 14.056: Power, values: W
+         * 14.011: Capacitance, values: F
+         * 14.055: Phase angle, degree, values: °
+         * 14.010: Area, values: m²
+         * 14.054: Phase angle, radiant, values: rad
+         * 14.053: Momentum, values: N/s
+         * 14.052: Mass flux, values: kg/s
+         * 14.051: Mass, values: kg
+         * 14.050: Magneto motive force, values: A
+         * 14.060: Resistance, values: Ω
+         * 14.029: Electromagnetic moment, values: A m²
+         * 14.028: Electric potential difference, values: V
+         * 14.027: Electric potential, values: V
+         * 14.026: Electric polarization, values: C m⁻²
+         * 14.025: Electric flux density, values: C m⁻²
+         * 14.069: Temperature, absolute, values: K
+         * 14.024: Electric flux, values: Vm
+         * 14.068: Temperature in Celsius Degree, values: °C
+         * 14.023: Electric field strength, values: V/m
+         * 14.067: Surface tension, values: N/m
+         * 14.022: Electric displacement, values: C m⁻²
+         * 14.066: Stress, values: Pa
+         * 14.021: Electric dipole moment, values: Cm
+         * 14.065: Speed, values: m/s
+         * 14.020: Electric current density, values: A m⁻²
+         * 14.064: Sound intensity, values: W m⁻²
+         * 14.063: Solid angle, values: sr
+         * 14.062: Self inductance, values: H
+         * 14.061: Resistivity, values: Ωm
+         * 14.071: Thermal capacity, values: J/K
+         * 14.070: Temperature difference, values: K
+         * 14.039: Length, values: m
+         * 14.038: Impedance, values: Ω
+         * 14.037: Heat quantity, values: J
+         * 14.036: Heat flow rate, values: W
+         * 14.035: Heat capacity, values: J/K
+         * 14.079: Work, values: J
+         * 14.034: Frequency, angular, values: rad/s
+         * 14.078: Weight, values: N
+         * 14.033: Frequency, values: Hz
+         * 14.077: Volume flux, values: m³/s
+         * 14.032: Force, values: N
+         * 14.076: Volume, values: m³
+         * 14.031: Energy, values: J
+         * 14.075: Torque, values: Nm
+         * 14.030: Electromotive force, values: V
+         * 14.074: Time, values: s
+         * 14.073: Thermoelectric power, values: V/K
+         * 14.072: Thermal conductivity, values: W/m K⁻¹
+         * 14.009: Angular velocity, values: rad/s
+         * 14.008: Momentum, values: Js
+         * 14.007: Angle, values: °
+         * 14.006: Angle, values: rad
+         * 14.005: Amplitude, values:
+         * 14.049: Magnetization, values: A/m
+         * 14.004: Mol, values: mol
+         * 14.048: Magnetic polarization, values: T
+         * 14.003: Activity, values: s⁻¹
+         * 14.047: Magnetic moment, values: A m²
+         * 14.002: Activation energy, values: J/mol
+         * 14.046: Magnetic flux density, values: T
+         * 14.001: Acceleration, angular, values: rad s⁻²
+         * 14.045: Magnetic flux, values: Wb
+         * 14.000: Acceleration, values: ms⁻²
+         * 14.044: Magnetic field strength, values: A/m
+         * 14.043: Luminous intensity, values: cd
+         * 14.042: Luminous flux, values: lm
+         * 14.041: Luminance, values: cd m⁻²
+         * 14.040: Quantity of Light, values: J
          */
         dptMainTypeMap.put(14, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Float Value", Main number 14 */
@@ -363,16 +364,17 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 16
-         * 16.000: ASCII string, values
-         * 16.001: ISO-8859-1 string (Latin 1), values
+         * 16.000: ASCII string
+         * 16.001: ISO-8859-1 string (Latin 1)
          */
         dptMainTypeMap.put(16, StringType.class);
         /** Exceptions Datapoint Types "String", Main number 16 */
-        // Example: dptTypeMap.put(DPTXlatorString.DPT_STRING_ASCII.getID(), StringType.class);
+        dptTypeMap.put(DPTXlatorString.DPT_STRING_8859_1.getID(), StringType.class);
+        dptTypeMap.put(DPTXlatorString.DPT_STRING_ASCII.getID(), StringType.class);
 
         /**
          * MainType: 17
-         * 17.001: Scene Number, values 0 63
+         * 17.001: Scene Number, values: 0...63
          */
         dptMainTypeMap.put(17, DecimalType.class);
         /** Exceptions Datapoint Types "Scene Number", Main number 17 */
@@ -380,7 +382,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 18
-         * 18.001: Scene Control, values activate 0 learn 63
+         * 18.001: Scene Control, values: 0...63, 0 = activate, 1 = learn
          */
         dptMainTypeMap.put(18, DecimalType.class);
         /** Exceptions Datapoint Types "Scene Control", Main number 18 */
@@ -388,7 +390,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 19
-         * 19.001: Date with time, values 1900, 01/01 00:00:00 2155, 12/31 24:00:00 yr/mth/day hr:min:sec
+         * 19.001: Date with time, values: 0 = 1900, 255 = 2155, 01/01 00:00:00, 12/31 24:00:00 yr/mth/day hr:min:sec
          */
         dptMainTypeMap.put(19, DateTimeType.class);
         /** Exceptions Datapoint Types "DateTime", Main number 19 */
@@ -456,19 +458,19 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 21
-         * 21.106: Ventilation Controller Status, values 0..15
-         * 21.601: Light Actuator Error Info, values 0..127
-         * 21.001: General Status, values 0..31
-         * 21.100: Forcing Signal, values 0..255
-         * 21.002: Device Control, values 0..7
-         * 21.101: Forcing Signal Cool, values 0..1
-         * 21.1010: Channel Activation State, values 0..255
-         * 21.1000: R F Comm Mode Info, values 0..7
-         * 21.1001: R F Filter Modes, values 0..7
-         * 21.104: Fuel Type Set, values 0..7
-         * 21.105: Room Cooling Controller Status, values 0..1
-         * 21.102: Room Heating Controller Status, values 0..255
-         * 21.103: Solar Dhw Controller Status, values 0..7
+         * 21.106: Ventilation Controller Status, values: 0...15
+         * 21.601: Light Actuator Error Info, values: 0...127
+         * 21.001: General Status, values: 0...31
+         * 21.100: Forcing Signal, values: 0...255
+         * 21.002: Device Control, values: 0...7
+         * 21.101: Forcing Signal Cool, values: 0...1
+         * 21.1010: Channel Activation State, values: 0...255
+         * 21.1000: R F Comm Mode Info, values: 0...7
+         * 21.1001: R F Filter Modes, values: 0...7
+         * 21.104: Fuel Type Set, values: 0...7
+         * 21.105: Room Cooling Controller Status, values: 0...1
+         * 21.102: Room Heating Controller Status, values: 0...255
+         * 21.103: Solar Dhw Controller Status, values: 0...7
          */
         dptMainTypeMap.put(21, StringType.class);
         /** Exceptions Datapoint Types, Main number 21 */
@@ -476,7 +478,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 28
-         * 28.001: UTF-8, values
+         * 28.001: UTF-8
          */
         dptMainTypeMap.put(28, StringType.class);
         /** Exceptions Datapoint Types "String" UTF-8, Main number 28 */
@@ -484,9 +486,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 29
-         * 29.012: Reactive energy, values -9223372036854775808 9223372036854775807 VARh
-         * 29.011: Apparent energy, values -9223372036854775808 9223372036854775807 VAh
-         * 29.010: Active Energy, values -9223372036854775808 9223372036854775807 Wh
+         * 29.012: Reactive energy, values: -9223372036854775808...9223372036854775807 VARh
+         * 29.011: Apparent energy, values: -9223372036854775808...9223372036854775807 VAh
+         * 29.010: Active Energy, values: -9223372036854775808...9223372036854775807 Wh
          */
         dptMainTypeMap.put(29, DecimalType.class);
         /** Exceptions Datapoint Types "64-Bit Signed Value", Main number 29 */
@@ -494,7 +496,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 229
-         * 229.001: Metering Value, values -2147483648..2147483647
+         * 229.001: Metering Value, values: -2147483648...2147483647
          */
         dptMainTypeMap.put(229, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 229 */
@@ -502,7 +504,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         /**
          * MainType: 232
-         * 232.600: RGB, values 0 0 0 255 255 255 r g b
+         * 232.600: RGB, values: 0 0 0...255 255 255, r g b
          */
         dptMainTypeMap.put(232, HSBType.class);
         /** Exceptions Datapoint Types "RGB Color", Main number 232 */
@@ -521,11 +523,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         defaultDptMap.put(HSBType.class, DPTXlatorRGB.DPT_RGB.getID());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.knx1.config.KNXTypeMapper#toDPTValue(org.openhab.core.types.Type, java.lang.String)
-     */
     @Override
     public String toDPTValue(Type type, String dptID) {
 
@@ -547,9 +544,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             // check for HSBType first, because it extends PercentType as well
             if (type instanceof HSBType) {
                 HSBType hc = ((HSBType) type);
-                return "r:" + Integer.toString(hc.getRed().intValue()) + " g:"
-                        + Integer.toString(hc.getGreen().intValue()) + " b:"
-                        + Integer.toString(hc.getBlue().intValue());
+                return "r:" + hc.getRed().intValue() + " g:" + hc.getGreen().intValue() + " b:"
+                        + hc.getBlue().intValue();
             } else if (type instanceof OnOffType) {
                 return type.equals(OnOffType.OFF) ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (type instanceof UpDownType) {
@@ -578,8 +574,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                             default:
                                 return "1 " + valueDPT.getUpperValue();
                         }
-                    case 3:
-                        break;
                     case 18:
                         int intVal = ((DecimalType) type).intValue();
                         if (intVal > 63) {
@@ -596,8 +590,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return formatDateTime((DateTimeType) type, dptID);
             }
         } catch (Exception e) {
-            logger.error("An exception occurred converting type {} to dpt id {} : {}",
-                    new Object[] { type, dptID, e.getMessage() });
+            logger.warn("An exception occurred converting type {} to dpt id {}: error message={}", type, dptID,
+                    e.getMessage());
             return null;
         }
 
@@ -606,13 +600,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.knx1.config.KNXTypeMapper#toType(tuwien.auto.calimero.datapoint.Datapoint, byte[])
-     */
     @Override
-    @Nullable
     public Type toType(Datapoint datapoint, byte[] data) {
         try {
             DPTXlator translator = TranslatorTypes.createTranslator(datapoint.getMainNumber(), datapoint.getDPT());
@@ -620,6 +608,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             String value = translator.getValue();
 
             String id = translator.getType().getID();
+            logger.trace("toType datapoint DPT = " + datapoint.getDPT());
 
             int mainNumber = getMainNumber(id);
             if (mainNumber == -1) {
@@ -628,7 +617,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
             int subNumber = getSubNumber(id);
             if (subNumber == -1) {
-                logger.debug("toType: couldn't identify su number in dptID: {}.", id);
+                logger.debug("toType: couldn't identify sub number in dptID: {}.", id);
                 return null;
             }
             /*
@@ -660,9 +649,13 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 case 3:
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
-                        // Not supported: break
-                        logger.debug("toType: KNX DPT_Control_Dimming: break ignored.");
-                        return null;
+                        /*
+                         * there is no STOP for a IncreaseDecreaseType, so we are just using an INCREASE.
+                         * It is up to the binding to recognize that a start/stop-dimming is in progress and
+                         * stop the dimming accordingly.
+                         */
+                        logger.debug("toType: KNX DPT_Control_Dimming: break received.");
+                        return IncreaseDecreaseType.INCREASE;
                     }
                     switch (subNumber) {
                         case 7:
@@ -787,14 +780,15 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
                 return HSBType.fromRGB(r, g, b);
             }
+
         } catch (KNXFormatException kfe) {
-            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXFormatException).",
+            logger.info("Translator couldn't parse data for datapoint type '{}' (KNXFormatException).",
                     datapoint.getDPT());
         } catch (KNXIllegalArgumentException kiae) {
-            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXIllegalArgumentException).",
+            logger.info("Translator couldn't parse data for datapoint type '{}' (KNXIllegalArgumentException).",
                     datapoint.getDPT());
         } catch (KNXException e) {
-            logger.warn("Failed creating a translator for datapoint type ‘{}‘.", datapoint.getDPT(), e);
+            logger.warn("Failed creating a translator for datapoint type '{}'.", datapoint.getDPT(), e);
         }
 
         return null;
@@ -812,7 +806,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         if (ohClass == null) {
             int mainNumber = getMainNumber(dptId);
             if (mainNumber == -1) {
-                logger.debug("toType: couldn't convert dptID toTypeClass: {}.", dptId);
+                logger.debug("Couldn't convert KNX datapoint type id into openHAB type class for dptId: {}.", dptId);
                 return null;
             }
             ohClass = dptMainTypeMap.get(mainNumber);
@@ -826,7 +820,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param typeClass the openHAB type class
      * @return the datapoint type id
      */
-    public static String toDPTid(Class<? extends Type> typeClass) {
+    public String toDPTid(Class<? extends Type> typeClass) {
         return defaultDptMap.get(typeClass);
     }
 
@@ -847,21 +841,20 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
                 date = new SimpleDateFormat(DATE_FORMAT).parse(value);
             } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {
-                String convertedValue = value;
-                if (convertedValue.contains("no-day")) {
+                if (value.contains("no-day")) {
                     /*
-                     * KNX "no-day" needs special treatment since the DateTimeType doesn't support "no-day".
+                     * KNX "no-day" needs special treatment since openHAB's DateTimeType doesn't support "no-day".
                      * Workaround: remove the "no-day" String, parse the remaining time string, which will result in a
                      * date of "1970-01-01".
                      * Replace "no-day" with the current day name
                      */
-                    StringBuffer stb = new StringBuffer(convertedValue);
+                    StringBuffer stb = new StringBuffer(value);
                     int start = stb.indexOf("no-day");
                     int end = start + "no-day".length();
                     stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
-                    convertedValue = stb.toString();
+                    value = stb.toString();
                 }
-                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(convertedValue);
+                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
             }
         } catch (ParseException pe) {
             // do nothing but logging
@@ -885,7 +878,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @throws IllegalArgumentException if none of the datapoint types DPT_DATE or
      *             DPT_TIMEOFDAY has been used.
      */
-    private static String formatDateTime(DateTimeType dateType, String dpt) {
+    static private String formatDateTime(DateTimeType dateType, String dpt) {
         if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
             return dateType.format("%tF");
         } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {

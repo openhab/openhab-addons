@@ -11,6 +11,7 @@ package org.openhab.binding.knx.internal.channel;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -22,15 +23,14 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 public final class KNXChannelSelector {
 
     private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
-            // new TypeContact(), //
-            // new TypeDimmer(), //
+            new TypeContact(), //
+            new TypeDateTime(), //
+            new TypeDimmer(), //
+            new TypeNumber(), //
             new TypeRollershutter(), //
-            // new TypeSetpoint(), //
-            new TypeSwitch(), //
-            // new TypeWallButton(), //
-            // new TypeDateTime(), //
-            // new TypeString(), //
-            new TypeNumber()).collect(toSet()));
+            new TypeString(), //
+            new TypeSwitch() //
+    ).collect(toSet()));
 
     private KNXChannelSelector() {
         // prevent instantiation
@@ -38,12 +38,9 @@ public final class KNXChannelSelector {
 
     public static KNXChannelType getValueSelectorFromChannelTypeId(@Nullable ChannelTypeUID channelTypeUID)
             throws IllegalArgumentException {
-        if (channelTypeUID == null) {
-            throw new IllegalArgumentException("channel type UID was null");
-        }
-
+        Objects.requireNonNull(channelTypeUID);
         for (KNXChannelType c : TYPES) {
-            if (c.getChannelID().equals(channelTypeUID.getId())) {
+            if (c.getChannelIDs().contains(channelTypeUID.getId())) {
                 return c;
             }
         }

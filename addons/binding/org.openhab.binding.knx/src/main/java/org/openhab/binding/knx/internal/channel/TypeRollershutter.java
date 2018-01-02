@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -31,7 +31,7 @@ import tuwien.auto.calimero.exception.KNXFormatException;
 class TypeRollershutter extends KNXChannelType {
 
     TypeRollershutter() {
-        super(CHANNEL_ROLLERSHUTTER);
+        super(CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL);
     }
 
     @Override
@@ -49,8 +49,7 @@ class TypeRollershutter extends KNXChannelType {
     }
 
     @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
-            throws KNXFormatException {
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Type command) throws KNXFormatException {
         ChannelConfiguration confUpDown = parse((String) configuration.get(UP_DOWN_GA));
         ChannelConfiguration confPosition = parse((String) configuration.get(POSITION_GA));
 
@@ -59,7 +58,7 @@ class TypeRollershutter extends KNXChannelType {
                 return new CommandSpec(confUpDown, getDefaultDPT(UP_DOWN_GA), command);
             } else if (confPosition != null) {
                 return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA),
-                        (PercentType) ((UpDownType) command).as(PercentType.class));
+                        ((UpDownType) command).as(PercentType.class));
             }
         }
 
@@ -68,7 +67,7 @@ class TypeRollershutter extends KNXChannelType {
                 return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA), command);
             } else if (confUpDown != null) {
                 return new CommandSpec(confUpDown, getDefaultDPT(UP_DOWN_GA),
-                        (UpDownType) ((PercentType) command).as(UpDownType.class));
+                        ((PercentType) command).as(UpDownType.class));
             }
         }
 

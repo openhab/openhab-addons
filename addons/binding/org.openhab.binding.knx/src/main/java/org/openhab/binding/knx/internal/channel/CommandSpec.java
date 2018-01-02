@@ -1,30 +1,32 @@
 package org.openhab.binding.knx.internal.channel;
 
-import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
 public class CommandSpec {
 
-    private final Command command;
+    private final Type command;
     private final String dpt;
-    private final GroupAddress groupAddress;
+    private final @Nullable GroupAddress groupAddress;
 
-    private CommandSpec(String dpt, GroupAddress groupAddress, Command command) {
-        super();
+    private CommandSpec(String dpt, GroupAddress groupAddress, Type command) {
         this.dpt = dpt;
         this.groupAddress = groupAddress;
         this.command = command;
     }
 
-    public CommandSpec(ChannelConfiguration channelConfiguration, String defaultDPT, Command command)
+    public CommandSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type command)
             throws KNXFormatException {
-        this(channelConfiguration.getDPT() != null ? channelConfiguration.getDPT() : defaultDPT,
-                new GroupAddress(channelConfiguration.getMainGA().getGA()), command);
+        this(channelConfiguration != null && channelConfiguration.getDPT() != null ? channelConfiguration.getDPT()
+                : defaultDPT,
+                channelConfiguration != null ? new GroupAddress(channelConfiguration.getMainGA().getGA()) : null,
+                command);
     }
 
-    public Command getCommand() {
+    public Type getCommand() {
         return command;
     }
 
@@ -32,7 +34,7 @@ public class CommandSpec {
         return dpt;
     }
 
-    public GroupAddress getGroupAddress() {
+    public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
     }
 

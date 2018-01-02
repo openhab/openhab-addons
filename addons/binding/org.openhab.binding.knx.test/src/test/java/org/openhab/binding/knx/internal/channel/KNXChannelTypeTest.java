@@ -6,13 +6,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Command;
 import org.junit.Before;
 import org.junit.Test;
-
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 public class KNXChannelTypeTest {
 
@@ -75,12 +70,6 @@ public class KNXChannelTypeTest {
         @Override
         protected @NonNull Set<@NonNull String> getAllGAKeys() {
             return Collections.emptySet();
-        }
-
-        @Override
-        public @Nullable CommandSpec getCommandSpec(@NonNull Configuration configuration, @NonNull Command command)
-                throws KNXFormatException {
-            return null;
         }
 
         @Override

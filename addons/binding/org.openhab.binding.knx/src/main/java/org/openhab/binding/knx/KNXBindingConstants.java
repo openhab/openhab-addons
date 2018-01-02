@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.knx;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,33 +26,12 @@ public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
 
-    // List of all Thing Type UIDs
+    // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");
-    public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
-    // List of all Channel ids
-    public static final String CHANNEL_DIMMER = "dimmer";
-    public static final String CHANNEL_NUMBER = "number";
-    public static final String CHANNEL_STRING = "string";
-    public static final String CHANNEL_CONTACT = "contact";
-    public static final String CHANNEL_DATETIME = "datetime";
-    public static final String CHANNEL_RESET = "reset";
-    public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
-    public static final String CHANNEL_SETPOINT = "setpoint";
-    public static final String CHANNEL_SWITCH = "switch";
-    public static final String CHANNEL_GENERIC = "generic";
-
-    public static final String CHANNEL_WALLBUTTON = "wallbutton";
-
-    public static final String CHANNEL_OPERATING_HOURS = "operatinghours";
-    public static final String CHANNEL_CURRENT = "current";
-    public static final String CHANNEL_ENERGY = "energy";
-
-    public static final String ERRORS_INTERVAL = "errors5min";
-    public static final String ERRORS_STARTUP = "errorsall";
-
-    // List of Property ids
+    // Property IDs
     public static final String FIRMWARE_TYPE = "firmwaretype";
     public static final String FIRMWARE_VERSION = "firmwareversion";
     public static final String FIRMWARE_SUBVERSION = "firmwaresubversion";
@@ -55,27 +40,52 @@ public class KNXBindingConstants {
     public static final String MANUFACTURER_HARDWARE_TYPE = "manfacturerhardwaretype";
     public static final String MANUFACTURER_FIRMWARE_REVISION = "manfacturerfirmwarerevision";
 
-    // List of all Configuration parameters
-    public static final String ADDRESS = "address";
-    public static final String CURRENT_GA = "currentGA";
-    public static final String ENERGY_GA = "energyGA";
-    public static final String GROUPADDRESS = "groupaddress";
-    public static final String INCREASE_DECREASE_GA = "increaseDecreaseGA";
-    public static final String INTERVAL = "interval";
+    // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";
-    public static final String IP_CONNECTION_TYPE = "ipConnectionType";
+    public static final String IP_CONNECTION_TYPE = "type";
     public static final String LOCAL_IP = "localIp";
     public static final String LOCAL_SOURCE_ADDRESS = "localSourceAddr";
     public static final String PORT_NUMBER = "portNumber";
-    public static final String POSITION_GA = "positionGA";
     public static final String SERIAL_PORT = "serialPort";
-    public static final String SETPOINT_GA = "setpointGA";
-    public static final String STOP_MOVE_GA = "stopMoveGA";
-    public static final String SWITCH_GA = "switchGA";
-    public static final String UP_DOWN_GA = "upDownGA";
 
     // The default multicast ip address (see <a
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP
     public static final String DEFAULT_MULTICAST_IP = "224.0.23.12";
+
+    // Channel Type IDs
+    public static final String CHANNEL_CONTACT = "contact";
+    public static final String CHANNEL_CONTACT_CONTROL = "contact-control";
+    public static final String CHANNEL_DATETIME = "datetime";
+    public static final String CHANNEL_DATETIME_CONTROL = "datetime-control";
+    public static final String CHANNEL_DIMMER = "dimmer";
+    public static final String CHANNEL_DIMMER_CONTROL = "dimmer-control";
+    public static final String CHANNEL_NUMBER = "number";
+    public static final String CHANNEL_NUMBER_CONTROL = "number-control";
+    public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
+    public static final String CHANNEL_ROLLERSHUTTER_CONTROL = "rollershutter-control";
+    public static final String CHANNEL_STRING = "string";
+    public static final String CHANNEL_STRING_CONTROL = "string-control";
+    public static final String CHANNEL_SWITCH = "switch";
+    public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
+
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections
+            .unmodifiableSet(Stream.of(CHANNEL_CONTACT_CONTROL, //
+                    CHANNEL_DATETIME_CONTROL, //
+                    CHANNEL_DIMMER_CONTROL, //
+                    CHANNEL_NUMBER_CONTROL, //
+                    CHANNEL_ROLLERSHUTTER_CONTROL, //
+                    CHANNEL_STRING_CONTROL, //
+                    CHANNEL_SWITCH_CONTROL //
+    ).collect(toSet()));
+
+    public static final String CHANNEL_RESET = "reset";
+
+    // Channel Configuration parameters
+    public static final String GA = "ga";
+    public static final String INCREASE_DECREASE_GA = "increaseDecrease";
+    public static final String POSITION_GA = "position";
+    public static final String STOP_MOVE_GA = "stopMove";
+    public static final String SWITCH_GA = "switch";
+    public static final String UP_DOWN_GA = "upDown";
 
 }

@@ -2,7 +2,10 @@ package org.openhab.binding.knx.internal.channel;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.Collections;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -12,12 +15,15 @@ public class ReadSpec {
     private final String dpt;
     private final List<GroupAddress> readAddresses;
 
-    public ReadSpec(ChannelConfiguration channelConfiguration, String defaultDPT) {
-        this(channelConfiguration.getDPT() != null ? channelConfiguration.getDPT() : defaultDPT,
-                channelConfiguration.getReadGAs().stream().map(ReadSpec::toGroupAddress).collect(toList()));
+    public ReadSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+        this(channelConfiguration != null && channelConfiguration.getDPT() != null ? channelConfiguration.getDPT()
+                : defaultDPT,
+                channelConfiguration != null
+                        ? channelConfiguration.getReadGAs().stream().map(ReadSpec::toGroupAddress).collect(toList())
+                        : Collections.emptyList());
     }
 
-    public ReadSpec(String dpt, List<GroupAddress> readAddresses) {
+    private ReadSpec(String dpt, List<GroupAddress> readAddresses) {
         this.dpt = dpt;
         this.readAddresses = readAddresses;
     }

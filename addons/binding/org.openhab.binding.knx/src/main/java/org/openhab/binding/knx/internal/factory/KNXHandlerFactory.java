@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.handler.IPBridgeThingHandler;
-import org.openhab.binding.knx.handler.KNXBasicThingHandler;
+import org.openhab.binding.knx.handler.DeviceThingHandler;
 import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.handler.SerialBridgeThingHandler;
 import org.openhab.binding.knx.handler.TypeHelper;
@@ -49,7 +49,7 @@ import tuwien.auto.calimero.datapoint.Datapoint;
 @Component(service = ThingHandlerFactory.class)
 public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHelper {
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_BASIC,
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     private final Collection<KNXTypeMapper> typeMappers = new HashSet<KNXTypeMapper>();
@@ -73,7 +73,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
             ThingUID serialBridgeUID = getSerialBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, serialBridgeUID, null);
         }
-        if (THING_TYPE_BASIC.equals(thingTypeUID)) {
+        if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             ThingUID gaUID = getGenericThingUID(thingTypeUID, thingUID, configuration, bridgeUID);
             return super.createThing(thingTypeUID, configuration, gaUID, bridgeUID);
         }
@@ -86,8 +86,8 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
             return new IPBridgeThingHandler((Bridge) thing, networkAddressService, this);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
             return new SerialBridgeThingHandler((Bridge) thing, this);
-        } else if (thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
-            return new KNXBasicThingHandler(thing, this);
+        } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
+            return new DeviceThingHandler(thing, this);
         }
         return null;
     }
@@ -114,7 +114,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory implements TypeHe
         if (thingUID != null) {
             return thingUID;
         }
-        String address = ((String) configuration.get(ADDRESS));
+        String address = ((String) configuration.get(GA));
         if (address != null) {
             return new ThingUID(thingTypeUID, address.replace(".", "_"), bridgeUID.getId());
         } else {

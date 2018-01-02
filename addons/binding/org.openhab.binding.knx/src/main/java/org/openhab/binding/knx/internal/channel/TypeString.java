@@ -14,29 +14,19 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Command;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorString;
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 @NonNullByDefault
 class TypeString extends KNXChannelType {
 
     TypeString() {
-        super(CHANNEL_STRING);
+        super(CHANNEL_STRING, CHANNEL_STRING_CONTROL);
     }
 
     @Override
     protected Set<String> getAllGAKeys() {
-        return Collections.singleton(GROUPADDRESS);
-    }
-
-    @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
-            throws KNXFormatException {
-        return getDefaultCommandSpec(configuration, GROUPADDRESS, command);
+        return Collections.singleton(GA);
     }
 
     @Override

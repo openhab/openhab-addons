@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -37,8 +37,21 @@ public abstract class KNXChannelType {
     private static final Pattern PATTERN_LISTEN = Pattern
             .compile("\\+((?<read>\\<)?(?<GA>[0-9]{1,3}/[0-9]{1,3}/[0-9]{1,3}))");
 
+    private final Set<String> channelTypeIDs;
+
+    KNXChannelType(String... channelTypeIDs) {
+        this.channelTypeIDs = new HashSet<>(Arrays.asList(channelTypeIDs));
+    }
+
+    final Set<String> getChannelIDs() {
+        return channelTypeIDs;
+    }
+
     @Nullable
-    protected ChannelConfiguration parse(String fancy) {
+    protected ChannelConfiguration parse(@Nullable String fancy) {
+        if (fancy == null) {
+            return null;
+        }
         Matcher matcher = PATTERN.matcher(fancy);
 
         if (matcher.matches()) {
@@ -65,8 +78,10 @@ public abstract class KNXChannelType {
     public Set<GroupAddress> getListenAddresses(Configuration channelConfiguration) {
         Set<GroupAddress> ret = new HashSet<>();
         for (String key : getAllGAKeys()) {
-            ret.addAll(parse((String) channelConfiguration.get(key)).getListenGAs().stream()
-                    .map(KNXChannelType::toGroupAddress).collect(toSet()));
+            ChannelConfiguration conf = parse((String) channelConfiguration.get(key));
+            if (conf != null) {
+                ret.addAll(conf.getListenGAs().stream().map(KNXChannelType::toGroupAddress).collect(toSet()));
+            }
         }
         return ret;
     }
@@ -74,8 +89,10 @@ public abstract class KNXChannelType {
     public Set<GroupAddress> getReadAddresses(Configuration channelConfiguration) {
         Set<GroupAddress> ret = new HashSet<>();
         for (String key : getAllGAKeys()) {
-            ret.addAll(parse((String) channelConfiguration.get(key)).getReadGAs().stream()
-                    .map(KNXChannelType::toGroupAddress).collect(toSet()));
+            ChannelConfiguration conf = parse((String) channelConfiguration.get(key));
+            if (conf != null) {
+                ret.addAll(conf.getReadGAs().stream().map(KNXChannelType::toGroupAddress).collect(toSet()));
+            }
         }
         return ret;
     }
@@ -83,9 +100,12 @@ public abstract class KNXChannelType {
     public Set<GroupAddress> getWriteAddresses(Configuration channelConfiguration) {
         Set<GroupAddress> ret = new HashSet<>();
         for (String key : getAllGAKeys()) {
-            GroupAddress ga = toGroupAddress(parse((String) channelConfiguration.get(key)).getMainGA());
-            if (ga != null) {
-                ret.add(ga);
+            ChannelConfiguration conf = parse((String) channelConfiguration.get(key));
+            if (conf != null) {
+                GroupAddress ga = toGroupAddress(conf.getMainGA());
+                if (ga != null) {
+                    ret.add(ga);
+                }
             }
         }
         return ret;
@@ -98,16 +118,6 @@ public abstract class KNXChannelType {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private final String channelTypeID;
-
-    KNXChannelType(String channelTypeID) {
-        this.channelTypeID = channelTypeID;
-    }
-
-    final String getChannelID() {
-        return channelTypeID;
     }
 
     protected final Set<GroupAddress> getAddresses(@Nullable Configuration configuration, Iterable<String> addresses)
@@ -133,12 +143,14 @@ public abstract class KNXChannelType {
         return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(values)));
     }
 
-    public abstract @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
-            throws KNXFormatException;
-
-    protected final CommandSpec getDefaultCommandSpec(Configuration configuration, String key, Command command)
-            throws KNXFormatException {
-        return new CommandSpec(parse((String) configuration.get(key)), getDefaultDPT(key), command);
+    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Type command) throws KNXFormatException {
+        if (getAllGAKeys().size() == 1) {
+            String key = getAllGAKeys().iterator().next();
+            return new CommandSpec(parse((String) configuration.get(key)), getDefaultDPT(key), command);
+        } else {
+            throw new IllegalArgumentException(
+                    "More than one GA can be configured - this type needs a custom implementation!");
+        }
     }
 
     public final List<ReadSpec> getReadSpec(Configuration configuration) throws KNXFormatException {
@@ -156,9 +168,16 @@ public abstract class KNXChannelType {
 
     protected abstract String getDefaultDPT(String gaConfigKey);
 
+    public @Nullable ResponseSpec getResponseSpec(Configuration configuration, GroupAddress groupAddress)
+            throws KNXFormatException {
+        return getAllGAKeys().stream()
+                .map(key -> new ResponseSpec(parse((String) configuration.get(key)), getDefaultDPT(key)))
+                .filter(spec -> spec.getGroupAddress().equals(groupAddress)).findFirst().orElse(null);
+    }
+
     @Override
     public String toString() {
-        return channelTypeID;
+        return channelTypeIDs.toString();
     }
 
 }

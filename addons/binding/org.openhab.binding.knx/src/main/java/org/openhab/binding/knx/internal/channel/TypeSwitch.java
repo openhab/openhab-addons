@@ -14,29 +14,19 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.types.Command;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 @NonNullByDefault
 class TypeSwitch extends KNXChannelType {
 
     TypeSwitch() {
-        super(CHANNEL_SWITCH);
+        super(CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL);
     }
 
     @Override
     protected Set<String> getAllGAKeys() {
         return Collections.singleton(SWITCH_GA);
-    }
-
-    @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Command command)
-            throws KNXFormatException {
-        return getDefaultCommandSpec(configuration, SWITCH_GA, command);
     }
 
     @Override
