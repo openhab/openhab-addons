@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Properties;
 
-import javax.net.ssl.HttpsURLConnection;
-
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 import org.slf4j.Logger;
@@ -34,6 +33,7 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class ICloudConnection {
+    private final int socketTimeout = 2500;
     private final Logger logger = LoggerFactory.getLogger(ICloudConnection.class);
     private final String iCloudURL = "https://www.icloud.com";
     private final String iCloudApiURL = "https://fmipmobile.icloud.com/fmipservice/device/";
@@ -45,19 +45,35 @@ public class ICloudConnection {
     private final byte[] authorization;
     private URL iCloudDataRequestURL;
     private URL iCloudFindMyDeviceURL;
+    private Properties httpHeader;
 
     public ICloudConnection(String appleId, String password) throws MalformedURLException {
         authorization = Base64.getEncoder().encode((appleId + ":" + password).getBytes());
         iCloudDataRequestURL = new URL(iCloudApiURL + appleId + iCloudAPIRequestDataCommand);
         iCloudFindMyDeviceURL = new URL(iCloudApiURL + appleId + iCloudAPIPingDeviceCommand);
+        httpHeader = createHttpHeader();
     }
 
     public String requestDeviceStatusJSON() throws IOException {
-        HttpsURLConnection connection = connect(iCloudDataRequestURL);
-        String response = postRequest(connection, iCloudDataRequest);
-        connection.disconnect();
+        return HttpUtil.executeUrl("POST", iCloudDataRequestURL.toString(), httpHeader,
+                new ByteArrayInputStream(iCloudDataRequest.getBytes("UTF-8")), "application/json", socketTimeout);
+    }
 
-        return response;
+    private Properties createHttpHeader() {
+        Properties httpHeader = new Properties();
+
+        httpHeader.setProperty("Authorization", this.getBasicAuthorization());
+        httpHeader.setProperty("User-Agent", "Find iPhone/1.3 MeKit (iPad: iPhone OS/4.2.1)");
+        httpHeader.setProperty("Origin", iCloudURL);
+        httpHeader.setProperty("charset", "utf-8");
+        httpHeader.setProperty("Accept-language", "en-us");
+        httpHeader.setProperty("Connection", "keep-alive");
+        httpHeader.setProperty("X-Apple-Find-Api-Ver", "2.0");
+        httpHeader.setProperty("X-Apple-Authscheme", "UserIdGuest");
+        httpHeader.setProperty("X-Apple-Realm-Support", "1.0");
+        httpHeader.setProperty("X-Client-Name", "iPad");
+
+        return httpHeader;
     }
 
     /***
@@ -67,55 +83,9 @@ public class ICloudConnection {
      */
     public void findMyDevice(String id) throws IOException {
         String iCloudFindMyDeviceRequest = gson.toJson(new ICloudFindMyDeviceRequest(id));
-        HttpsURLConnection connection = connect(iCloudFindMyDeviceURL);
-        postRequest(connection, iCloudFindMyDeviceRequest);
-        connection.disconnect();
-    }
-
-    private void setRequestProperties(HttpsURLConnection connection, String payload)
-            throws UnsupportedEncodingException {
-        connection.setRequestProperty("Authorization", this.getBasicAuthorization());
-        connection.setRequestProperty("User-Agent", "Find iPhone/1.3 MeKit (iPad: iPhone OS/4.2.1)");
-        connection.setRequestProperty("Origin", iCloudURL);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("charset", "utf-8");
-        connection.setRequestProperty("Accept-language", "en-us");
-        connection.setRequestProperty("Connection", "keep-alive");
-        connection.setRequestProperty("X-Apple-Find-Api-Ver", "2.0");
-        connection.setRequestProperty("X-Apple-Authscheme", "UserIdGuest");
-        connection.setRequestProperty("X-Apple-Realm-Support", "1.0");
-        connection.setRequestProperty("X-Client-Name", "iPad");
-        connection.setRequestProperty("Content-Length", Integer.toString(payload.getBytes("UTF-8").length));
-    }
-
-    private String postRequest(HttpsURLConnection connection, String payload) throws IOException {
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setRequestMethod("POST");
-        setRequestProperties(connection, payload);
-
-        connection.getOutputStream().write(payload.getBytes("UTF-8"));
-
-        return getResponse(connection);
-    }
-
-    private HttpsURLConnection connect(URL url) throws IOException {
-        HttpsURLConnection connection;
-        connection = (HttpsURLConnection) url.openConnection();
-        return connection;
-    }
-
-    private String getResponse(HttpsURLConnection connection) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-
-            String inputLine;
-            StringBuffer stringBuffer = new StringBuffer();
-            while ((inputLine = reader.readLine()) != null) {
-                stringBuffer.append(inputLine);
-            }
-
-            return stringBuffer.toString();
-        }
+        HttpUtil.executeUrl("POST", iCloudFindMyDeviceURL.toString(), httpHeader,
+                new ByteArrayInputStream(iCloudFindMyDeviceRequest.getBytes("UTF-8")), "application/json",
+                socketTimeout);
     }
 
     private String getBasicAuthorization() {
