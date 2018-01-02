@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.russound.internal.rio.controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.AbstractRioProtocol;
@@ -28,20 +29,21 @@ import org.slf4j.LoggerFactory;
  */
 class RioControllerProtocol extends AbstractRioProtocol {
     // logger
-    private Logger logger = LoggerFactory.getLogger(RioControllerProtocol.class);
+    private final Logger logger = LoggerFactory.getLogger(RioControllerProtocol.class);
 
     /**
      * The controller identifier
      */
-    private final int _controller;
+    private final int controller;
 
     // Protocol constants
-    private final static String CTL_TYPE = "type";
-    private final static String CTL_IPADDRESS = "ipAddress";
-    private final static String CTL_MACADDRESS = "macAddress";
+    private static final String CTL_TYPE = "type";
+    private static final String CTL_IPADDRESS = "ipaddress";
+    private static final String CTL_MACADDRESS = "macaddress";
 
-    // Response pattners
-    private final Pattern RSP_CONTROLLERNOTIFICATION = Pattern.compile("^[SN] C\\[(\\d+)\\]\\.(\\w+)=\"(.*)\"$");
+    // Response patterns
+    private static final Pattern RSP_CONTROLLERNOTIFICATION = Pattern
+            .compile("(?i)^[SN] C\\[(\\d+)\\]\\.(\\w+)=\"(.*)\"$");
 
     /**
      * Constructs the protocol handler from given parameters
@@ -52,7 +54,16 @@ class RioControllerProtocol extends AbstractRioProtocol {
      */
     RioControllerProtocol(int controller, SocketSession session, RioHandlerCallback callback) {
         super(session, callback);
-        _controller = controller;
+        this.controller = controller;
+    }
+
+    /**
+     * Helper method to issue post online commands
+     */
+    void postOnline() {
+        refreshControllerType();
+        refreshControllerIpAddress();
+        refreshControllerMacAddress();
     }
 
     /**
@@ -65,7 +76,7 @@ class RioControllerProtocol extends AbstractRioProtocol {
         if (keyName == null || keyName.trim().length() == 0) {
             throw new IllegalArgumentException("keyName cannot be null or empty");
         }
-        sendCommand("GET C[" + _controller + "]." + keyName);
+        sendCommand("GET C[" + controller + "]." + keyName);
     }
 
     /**
@@ -101,12 +112,12 @@ class RioControllerProtocol extends AbstractRioProtocol {
         }
         if (m.groupCount() == 3) {
             try {
-                final int controller = Integer.parseInt(m.group(1));
-                if (controller != _controller) {
+                final int notifyController = Integer.parseInt(m.group(1));
+                if (notifyController != controller) {
                     return;
                 }
 
-                final String key = m.group(2);
+                final String key = m.group(2).toLowerCase();
                 final String value = m.group(3);
 
                 switch (key) {
@@ -143,7 +154,7 @@ class RioControllerProtocol extends AbstractRioProtocol {
      */
     @Override
     public void responseReceived(String response) {
-        if (response == null || response == "") {
+        if (StringUtils.isEmpty(response)) {
             return;
         }
 

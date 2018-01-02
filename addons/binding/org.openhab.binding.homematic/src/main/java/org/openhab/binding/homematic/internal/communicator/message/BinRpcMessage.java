@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BinRpcMessage implements RpcRequest, RpcResponse {
-    private final static Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
+public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
+    private final Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
 
     public enum TYPE {
         REQUEST,
@@ -165,9 +165,6 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
         return methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] createMessage() {
         trimBinRpcData();
@@ -180,9 +177,6 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
         binRpcData = trimmed;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object[] getResponseData() {
         return messageData;
@@ -238,7 +232,7 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
 
             default:
                 for (int i = 0; i < binRpcData.length; i++) {
-                    logger.info(Integer.toHexString(binRpcData[i]) + " " + (char) binRpcData[i]);
+                    logger.info("{} {}", Integer.toHexString(binRpcData[i]), (char) binRpcData[i]);
                 }
                 throw new IOException("Unknown data type " + type);
         }
@@ -346,9 +340,11 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
             addInt(map.size());
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 String key = (String) entry.getKey();
-                addInt(key.length());
-                addString(key);
-                addList(Collections.singleton(entry.getValue()));
+                if (key != null) {
+                    addInt(key.length());
+                    addString(key);
+                    addList(Collections.singleton(entry.getValue()));
+                }
             }
         }
     }

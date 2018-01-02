@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,26 @@ package org.openhab.binding.russound.internal.rio.system;
 public class RioSystemConfig {
 
     /**
+     * Constant defined for the "ipAddress" configuration field
+     */
+    public static final String IpAddress = "ipAddress";
+
+    /**
+     * Constant defined for the "ping" configuration field
+     */
+    public static final String Ping = "ping";
+
+    /**
+     * Constant defined for the "retryPolling" configuration field
+     */
+    public static final String RetryPolling = "retryPolling";
+
+    /**
+     * Constant defined for the "scanDevice" configuration field
+     */
+    public static final String ScanDevice = "scanDevice";
+
+    /**
      * IP Address (or host name) of system
      */
     private String ipAddress;
@@ -29,6 +49,11 @@ public class RioSystemConfig {
      * Polling time (in seconds) to attempt a reconnect if the socket session has failed
      */
     private int retryPolling;
+
+    /**
+     * Whether to scan the device at startup (and create zones, source, etc dynamically)
+     */
+    private boolean scanDevice;
 
     /**
      * Returns the IP address or host name
@@ -82,5 +107,65 @@ public class RioSystemConfig {
      */
     public void setPing(int ping) {
         this.ping = ping;
+    }
+
+    /**
+     * Whether the device should be scanned at startup
+     *
+     * @return true to scan, false otherwise
+     */
+    public boolean isScanDevice() {
+        return scanDevice;
+    }
+
+    /**
+     * Sets whether the device should be scanned at startup
+     *
+     * @param scanDevice true to scan, false otherwise
+     */
+    public void setScanDevice(boolean scanDevice) {
+        this.scanDevice = scanDevice;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ping;
+        result = prime * result + retryPolling;
+        result = prime * result + (scanDevice ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RioSystemConfig other = (RioSystemConfig) obj;
+        if (ipAddress == null) {
+            if (other.ipAddress != null) {
+                return false;
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (ping != other.ping) {
+            return false;
+        }
+        if (retryPolling != other.retryPolling) {
+            return false;
+        }
+        if (scanDevice != other.scanDevice) {
+            return false;
+        }
+        return true;
     }
 }

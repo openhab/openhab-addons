@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,7 +21,13 @@ public enum TagType {
     MAPPING("mapping", false),
     LINK("link", true),
     UNIT("unit", false),
-    INVERT("invert", false);
+    INVERT("invert", false),
+    ICON("icon", false),
+
+    STEP("step", false),
+    MIN_VAL("minVal", false),
+    MAX_VAL("maxVal", false),
+    MODES("modes", false);
 
     private final String prefix;
     private final boolean multiValue;

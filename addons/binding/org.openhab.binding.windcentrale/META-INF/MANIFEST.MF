@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Windcentrale Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.windcentrale;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.windcentrale,
+ org.openhab.binding.windcentrale.handler
+Import-Package: 
+ com.google.common.collect,
+ com.google.gson,
+ org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.cache,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
+ org.openhab.binding.windcentrale,
+ org.openhab.binding.windcentrale.handler,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

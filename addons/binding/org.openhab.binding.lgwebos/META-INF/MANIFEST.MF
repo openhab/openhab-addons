@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: .,
+ lib/java-websocket-1.3.2.jar,
+ lib/json-20140107.jar,
+ lib/xpp3-1.1.4c.jar,
+ lib/Connect-SDK-Java-Core-1.0.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: LG webOS Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.lgwebos;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.lgwebos,
+ org.openhab.binding.lgwebos.handler
+Import-Package: 
+ javax.jmdns,
+ org.apache.commons.lang,
+ org.apache.http.client.methods,
+ org.apache.http.conn.util,
+ org.apache.http.message,
+ org.apache.http.protocol,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.net,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.model.script.engine.action,
+ org.openhab.binding.lgwebos,
+ org.openhab.binding.lgwebos.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

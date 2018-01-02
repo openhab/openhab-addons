@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,68 +23,68 @@ public class FeedBindingConstants {
     public static final String BINDING_ID = "feed";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID("feed", "feed");
+    public static final ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID("feed", "feed");
 
     // List of all Channel IDs
     /**
      * Contains the published date of the last feed entry.
      */
-    public final static String CHANNEL_LATEST_PUBLISHED_DATE = "latest-date";
+    public static final String CHANNEL_LATEST_PUBLISHED_DATE = "latest-date";
 
     /**
      * Contains the title of the last feed entry.
      */
-    public final static String CHANNEL_LATEST_TITLE = "latest-title";
+    public static final String CHANNEL_LATEST_TITLE = "latest-title";
 
     /**
      * Contains the description of last feed entry.
      */
-    public final static String CHANNEL_LATEST_DESCRIPTION = "latest-description";
+    public static final String CHANNEL_LATEST_DESCRIPTION = "latest-description";
 
     /**
      * Description of the feed.
      */
-    public final static String CHANNEL_DESCRIPTION = "description";
+    public static final String CHANNEL_DESCRIPTION = "description";
 
     /**
      * The last update date of the feed.
      */
-    public final static String CHANNEL_LAST_UPDATE = "last-update";
+    public static final String CHANNEL_LAST_UPDATE = "last-update";
 
     /**
      * The name of the feed author, if author is present.
      */
-    public final static String CHANNEL_AUTHOR = "author";
+    public static final String CHANNEL_AUTHOR = "author";
 
     /**
      * The title of the feed.
      */
-    public final static String CHANNEL_TITLE = "title";
+    public static final String CHANNEL_TITLE = "title";
 
     /**
      * Number of entries in the feed
      */
-    public final static String CHANNEL_NUMBER_OF_ENTRIES = "number-of-entries";
+    public static final String CHANNEL_NUMBER_OF_ENTRIES = "number-of-entries";
 
     // Configuration parameters
     /**
      * * The URL of the feed document.
      */
-    public final static String URL = "URL";
+    public static final String URL = "URL";
 
     /**
      * The refresh time in minutes.
      */
-    public final static String REFRESH_TIME = "refresh";
+    public static final String REFRESH_TIME = "refresh";
 
     /**
      * The default auto refresh time in minutes.
      */
-    public final static BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
+    public static final BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
 
     /**
      * The minimum refresh time in milliseconds. Any REFRESH command send to a Thing, before this time has expired, will
      * not trigger an attempt to dowload new data form the server.
      **/
-    public final static int MINIMUM_REFRESH_TIME = 3000;
+    public static final int MINIMUM_REFRESH_TIME = 3000;
 }

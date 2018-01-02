@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -109,11 +109,9 @@ public class HomekitTaggedItem {
         }
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.error("Could not create homekit accessory " + item.getName() + " "
-                        + "because its hash conflicts with " + CREATED_ACCESSORY_IDS.get(id) + ". "
-                        + "This is a 1:1,000,000 chance occurrence. Change one of the names and "
-                        + "consider playing the lottery. See "
-                        + "https://github.com/openhab/openhab2/issues/257#issuecomment-125886562");
+                logger.error(
+                        "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab2/issues/257#issuecomment-125886562",
+                        item.getName(), CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }
         } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,24 +14,24 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents the display status message send by the Pioneer AV receiver
  * (response to "?FL" request)
- * 
+ *
  * @author Rainer Ostendorf
- * 
+ *
  */
 
 public class DisplayInformation {
 
     Boolean volumeDisplay; // 1-light, 0-OFF
     Boolean guidIcon; // 1-light, 0-OFF
-    String infoText = new String(""); // the actual display text
+    String infoText = ""; // the actual display text
 
-    private static final Logger logger = LoggerFactory.getLogger(DisplayInformation.class);
+    private final Logger logger = LoggerFactory.getLogger(DisplayInformation.class);
 
     /**
      * parse the display status text send from the receiver
-     * 
+     *
      * @param responsePayload the responses payload, that is without the leading "FL"
-     * 
+     *
      * @return
      */
     public DisplayInformation(String responsePayload) {
@@ -46,10 +46,12 @@ public class DisplayInformation {
         // first byte holds the two special flags
         byte firstByte = (byte) Integer.parseInt(responsePayload.substring(0, 1), 16);
 
-        if ((firstByte & (1 << 0)) == (1 << 0)) //
+        if ((firstByte & (1 << 0)) == (1 << 0)) {
             guidIcon = true;
-        if ((firstByte & (1 << 1)) == (1 << 1))
+        }
+        if ((firstByte & (1 << 1)) == (1 << 1)) {
             volumeDisplay = true;
+        }
 
         // convert the ascii values back to string
         StringBuilder sb = new StringBuilder();
@@ -58,7 +60,7 @@ public class DisplayInformation {
             try {
                 sb.append((char) Integer.parseInt(hexAsciiValue, 16));
             } catch (Exception e) {
-                logger.error("parsing string failed" + responsePayload + "'", e);
+                logger.error("parsing string failed '{}'", responsePayload, e);
             }
         }
         infoText = sb.toString();

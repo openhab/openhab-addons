@@ -11,6 +11,11 @@
 				<label>Serial number</label>
 				<description>Serial number of the RFXCOM (FTDI) device</description>
 			</parameter>
+			<parameter name="disableDiscovery" type="boolean" required="true">
+				<label>Disable discovery of unknown devices</label>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
@@ -22,6 +27,11 @@
 				<label>RFXCOM transceiver mode</label>
 				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
 					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+			</parameter>
+			<parameter name="transmitPower" type="integer" min="-18" max="10">
+				<label>Transmit power</label>
+				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
+				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>Undecoded messages</label>
@@ -71,6 +81,11 @@
 			<parameter name="enableBlindsT0" type="boolean">
 				<label>BlindsT0 messages</label>
 				<description>Enable BlindsT0 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableFS20" type="boolean">
+				<label>FS20/Legrand CAD messages</label>
+				<description>Enable FS20/Legrand CAD messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableLaCrosse" type="boolean">
@@ -126,6 +141,16 @@
 			<parameter name="enableX10" type="boolean">
 				<label>X10 messages</label>
 				<description>Enable X10 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableHomeConfort" type="boolean">
+				<label>HomeConfort messages</label>
+				<description>Enable HomeConfort messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableKEELOQ" type="boolean">
+				<label>KEELOQ messages</label>
+				<description>Enable KEELOQ messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
 

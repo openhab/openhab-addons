@@ -1,0 +1,72 @@
+{
+	"system": {
+		"get_sysinfo": {
+			"active_mode": "none",
+			"alias": "Living Room Side Table",
+			"ctrl_protocols": {
+				"name": "Linkie",
+				"version": "1.0"
+			},
+			"description": "Smart Wi-Fi LED Bulb with Color Changing",
+			"dev_state": "normal",
+			"deviceId": "80123C4640E9FC33A9019A0F3FD8BF5C17B7D9A8",
+			"disco_ver": "1.0",
+			"heapsize": 347000,
+			"hwId": "111E35908497A05512E259BB76801E10",
+			"hw_ver": "1.0",
+			"is_color": 1,
+			"is_dimmable": 1,
+			"is_factory": false,
+			"is_variable_color_temp": 1,
+			"light_state": {
+				"brightness": 92,
+				"color_temp": 2700,
+				"hue": 7,
+				"mode": "normal",
+				"on_off": 1,
+				"saturation": 44
+			},
+			"mic_mac": "50C7BF104865",
+			"mic_type": "IOT.SMARTBULB",
+			"model": "LB130(US)",
+			"oemId": "05BF7B3BE1675C5A6867B7A7E4C9F6F7",
+			"preferred_state": [
+				{
+					"brightness": 50,
+					"color_temp": 2700,
+					"hue": 0,
+					"index": 0,
+					"saturation": 0
+				},
+				{
+					"brightness": 100,
+					"color_temp": 0,
+					"hue": 0,
+					"index": 1,
+					"saturation": 75
+				},
+				{
+					"brightness": 100,
+					"color_temp": 0,
+					"hue": 120,
+					"index": 2,
+					"saturation": 75
+				},
+				{
+					"brightness": 100,
+					"color_temp": 0,
+					"hue": 240,
+					"index": 3,
+					"saturation": 75
+				}
+			],
+			"rssi": -55,
+			"sw_ver": "1.1.2 Build 160927 Rel.111100"
+		}
+	},
+	"smartlife.iot.common.emeter": {
+		"get_realtime": {
+			"power_mw": 10800
+		}
+	}
+}

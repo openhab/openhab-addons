@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    static public void sendNotification(String userId, String message) {
+    public static void sendNotification(String userId, String message) {
         sendNotification(userId, message, null, null);
     }
 
@@ -50,7 +50,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    static public void sendNotification(String userId, String message, String icon, String severity) {
+    public static void sendNotification(String userId, String message, String icon, String severity) {
         logger.debug("sending notification '{}' to user {}", message, userId);
         if (cloudService != null) {
             cloudService.sendNotification(userId, message, icon, severity);
@@ -65,7 +65,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
-    static public void sendLogNotification(String message) {
+    public static void sendLogNotification(String message) {
         sendLogNotification(message, null, null);
     }
 
@@ -79,7 +79,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
-    static public void sendLogNotification(String message, String icon, String severity) {
+    public static void sendLogNotification(String message, String icon, String severity) {
         logger.debug("sending log notification '{}'", message);
         if (cloudService != null) {
             cloudService.sendLogNotification(message, icon, severity);
@@ -94,7 +94,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
-    static public void sendBroadcastNotification(String message) {
+    public static void sendBroadcastNotification(String message) {
         sendBroadcastNotification(message, null, null);
     }
 
@@ -108,7 +108,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    static public void sendBroadcastNotification(String message, String icon, String severity) {
+    public static void sendBroadcastNotification(String message, String icon, String severity) {
         logger.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
             cloudService.sendBroadcastNotification(message, icon, severity);

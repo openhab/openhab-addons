@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
-    private static final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
+    private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] onOff = new String[] { "ON", "OFF" };
 
     private HmChannel channel;
@@ -44,9 +44,6 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
         this.channel = channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(Object value) throws IOException {
         String optionsString = StringUtils.remove(toString(value), ' ');

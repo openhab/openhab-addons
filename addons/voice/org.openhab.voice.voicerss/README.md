@@ -2,10 +2,11 @@
 
 ## Overview
 
-VoiceRSS is an Internet based TTS service hosted at http://api.voicerss.org.
-It requires an API Key to get access to this service. The free version allows to make up to 350 requests/day, for more you may need a commercial subscription.
+VoiceRSS is an Internet based TTS service hosted at <http://api.voicerss.org>.
+You must obtain an API Key to get access to this service.
+The free version allows you to make up to 350 requests per day; for more you may need a commercial subscription.
 
-For more information, see http://www.voicerss.org/
+For more information, see <http://www.voicerss.org/>.
 
 ## Samples
 
@@ -24,7 +25,7 @@ https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20We
 
 ## Configuration
 
-You have to add your API_KEY to your configuration, e.g. by adding a file "voicerss.cfg" to the services folder, with this entry:
+You must add your API_KEY to your configuration by adding a file "voicerss.cfg" to the services folder, with this entry:
 
 ```
 apiKey=1234567890
@@ -36,7 +37,8 @@ It actually supports only one voice: "voicerss:default", which is configured to 
 
 The VoiceRSS extension does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide same time offline capability.
 
-For convenience, there is a tool where the audio cache can be generated in advance, to have a prefilled cache when starting this extension. You have to copy the generated data to your userdata/voicerss/cache folder.
+For convenience, there is a tool where the audio cache can be generated in advance, to have a prefilled cache when starting this extension.
+You have to copy the generated data to your userdata/voicerss/cache folder.
 
 Synopsis of this tool:
 
@@ -55,6 +57,6 @@ Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890
 
 ## Open Issues
 
-* add all media formats
-* add all supported languages
-* do not log API-Key in plain text
+*   add all media formats
+*   add all supported languages
+*   do not log API-Key in plain text

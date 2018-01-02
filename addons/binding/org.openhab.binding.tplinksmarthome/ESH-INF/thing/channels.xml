@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Primary Channel types -->
+    <channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch the Smart Home device on or off.</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="led" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Switch Led</label>
+        <description>Switch the Smart Home device led on or off.</description>
+        <category>Switch</category>
+    </channel-type>
+
+    <!-- Energy Channel types -->
+    <channel-type id="power">
+        <item-type>Number</item-type>
+        <label>Power</label>
+        <description>Actual power usage.</description>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f W"></state>
+    </channel-type>
+    <channel-type id="energyUsage">
+        <item-type>Number</item-type>
+        <label>Energy Usage</label>
+        <description>Actual energy usage.</description>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    <channel-type id="current" advanced="true">
+        <item-type>Number</item-type>
+        <label>Current</label>
+        <description>Actual current usage.</description>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    <channel-type id="voltage" advanced="true">
+        <item-type>Number</item-type>
+        <label>Voltage</label>
+        <description>Actual voltage usage.</description>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f V"></state>
+    </channel-type>
+
+    <!-- Bulb Channel types -->
+    <channel-type id="color">
+        <item-type>Color</item-type>
+        <label>Color</label>
+        <description>This channel supports adjusting the color of a light. </description>
+        <category>ColorLight</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+
+    <channel-type id="colorTemperature">
+        <item-type>Dimmer</item-type>
+        <label>Color Temperature</label>
+        <description>This channel supports adjusting the color temperature from cold (0%) to warm (100%).</description>
+        <category>ColorLight</category>
+    </channel-type>
+
+    <channel-type id="brightness">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <description>This channel supports adjusting the brightness.</description>
+        <category>ColorLight</category>
+    </channel-type>
+
+    <!-- Misc Channel types -->
+    <channel-type id="rssi" advanced="true">
+        <item-type>Number</item-type>
+        <label>Signal</label>
+        <description>Wi-Fi signal strength indicator.</description>
+        <category>QualityOfService</category>
+        <state readOnly="true" pattern="%d dBm"></state>
+    </channel-type>
+
+</thing:thing-descriptions>

@@ -47,6 +47,7 @@
 			<channel id="playerHealth" typeId="playerHealth" />
 			<channel id="playerWalkSpeed" typeId="playerWalkSpeed" />
 			<channel id="playerLocation" typeId="location" />
+			<channel id="playerGameMode" typeId="playerGameMode" />
 
 		</channels>
 
@@ -109,24 +110,22 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>The location of the player.</description>
-		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playerLevel">
 		<item-type>Number</item-type>
 		<label>Level</label>
 		<description>The players current level.</description>
-		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="playerTotalExperience">
+	<channel-type id="playerTotalExperience" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Experience</label>
 		<description>The total experience of the player.</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="playerExperiencePercentage">
+	<channel-type id="playerExperiencePercentage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Experience</label>
 		<description>Percentage of the experience bar filled for the next level.</description>
@@ -137,22 +136,34 @@
 		<item-type>Number</item-type>
 		<label>Health</label>
 		<description>The health of player.</description>
-		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="playerWalkSpeed">
+	<channel-type id="playerWalkSpeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed</label>
 		<description>The speed of player.</description>
-		<state readOnly="true" />
+		<state min="0" max="1" step="0.05" pattern="%.2f" />
 	</channel-type>
+	
+	<channel-type id="playerGameMode" advanced="true">
+        <item-type>String</item-type>
+        <label>Game Mode</label>
+        <description>The players current game mode.</description>
+        <state readOnly="false">
+            <options>
+                <option value="CREATIVE">creative</option>
+                <option value="SURVIVAL">survival</option>
+                <option value="ADVENTURE">adventure</option>
+                <option value="SPECTATOR">spectator</option>
+            </options>
+        </state>
+    </channel-type>
 
 	<channel-type id="signActive">
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Shows if the sign has powered redstone below it.</description>
 		<category>Switch</category>
-		<state readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
