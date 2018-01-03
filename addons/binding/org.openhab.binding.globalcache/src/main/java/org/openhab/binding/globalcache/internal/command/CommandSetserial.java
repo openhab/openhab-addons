@@ -82,7 +82,7 @@ public class CommandSetserial extends AbstractCommand {
 
     @Override
     public void logFailure() {
-        logger.error("Execute '{}' failed on thing {} at: errorCode={}, errorMessage={}", commandName,
+        logger.error("Execute '{}' failed on thing {} at: ipAdress={}, errorCode={}, errorMessage={}", commandName,
                 thing.getUID().getId(), ipAddress, errorCode, errorMessage);
     }
 }

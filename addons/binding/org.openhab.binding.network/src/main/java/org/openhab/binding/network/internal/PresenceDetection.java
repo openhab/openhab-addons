@@ -381,7 +381,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     protected void performServicePing(int tcpPort) {
-        logger.trace("Perform TCP presence detection for {} on port", hostname, tcpPorts);
+        logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPorts);
         try {
             double pingTime = System.nanoTime();
             if (networkUtils.servicePing(destination.getHostAddress(), tcpPort, timeoutInMS)) {
@@ -406,7 +406,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     protected void performARPping(String interfaceName) {
         try {
-            logger.trace("Perform ARP ping presence detection for {} on interface", hostname, interfaceName);
+            logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
             if (iosDevice) {
                 networkUtils.wakeUpIOS(destination);
                 Thread.sleep(50);

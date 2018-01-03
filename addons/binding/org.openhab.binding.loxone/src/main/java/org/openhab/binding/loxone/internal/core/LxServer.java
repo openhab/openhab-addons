@@ -508,7 +508,7 @@ public class LxServer {
                 try {
                     addOrUpdateControl(ctrl);
                 } catch (Exception e) {
-                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
+                    logger.error("[{}] exception creating control {}: ", debugId, ctrl.name, e);
                 }
             }
         }
