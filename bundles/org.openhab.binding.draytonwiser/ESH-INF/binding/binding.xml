@@ -5,7 +5,7 @@
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>DraytonWiser Binding</name>
-	<description>This is the binding for DraytonWiser.</description>
+	<description>This is the binding for Drayton Wiser smart heating system.</description>
 	<author>Andrew Schofield</author>
 
 </binding:binding>

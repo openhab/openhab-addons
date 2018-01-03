@@ -1,24 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="draytonwiser"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>DraytonWiser Binding Thing</label>
-		<description>Sample thing for DraytonWiser Binding</description>
+    <!-- Bridge Thing Type -->
+    <bridge-type id="heathub">
+        <label>HeatHub</label>
+        <description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
+ 
+        <properties>
+            <property name="vendor">Drayton</property>
+        </properties>
+        <representation-property>serialNumber</representation-property>
+        
+        <config-description>
+            <parameter name="ADDR" type="text">
+                <label>Network Address</label>
+                <description>Network address of the HeatHub</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="AUTHTOKEN" type="text">
+                <label>Authorisation Token</label>
+                <description>
+                    Auth token required to access the API.
+                </description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <!-- Room Thing Type -->
+    <thing-type id="room">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="heathub" />
+        </supported-bridge-type-refs>
+        
+        <label>Room</label>
+        <description>A Room that contains a thermostat or TRV</description>
 
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
-	</thing-type>
+        <channels>
+            <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
+            <channel id="currentHumidity" typeId="currentHumidity-channel"/>
+            <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+        </channels>
+    </thing-type>
+    
+    <thing-type id="roomstat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="heathub" />
+        </supported-bridge-type-refs>
+        
+       <label>Thermostat or TRV</label>
+       <description>Thermostat device including TRVs</description>
+       
+       <channels>
+           <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
+            <channel id="currentHumidity" typeId="currentHumidity-channel"/>
+            <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+            <channel id="batteryLevel" typeId="batteryLevel-channel"/>
+       </channels>
+    </thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>draytonwiserItem</item-type>
-		<label>DraytonWiser Binding Channel</label>
-		<description>Sample channel for DraytonWiser Binding</description>
-	</channel-type>
+    <!-- Sample Channel Type -->
+    <channel-type id="currentTemperature-channel">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current temperature channel</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="currentHumidity-channel">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Current Humidity channel</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="currentSetPoint-channel">
+        <item-type>Number</item-type>
+        <label>Set Point</label>
+        <description>Set Point Control channel</description>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="batteryLevel-channel">
+        <item-type>Number</item-type>
+        <label>Battery Level</label>
+        <description>Current Battery Level for the Room Stat</description>
+        <state readOnly="true" />
+    </channel-type>
+    
 
 </thing:thing-descriptions>
