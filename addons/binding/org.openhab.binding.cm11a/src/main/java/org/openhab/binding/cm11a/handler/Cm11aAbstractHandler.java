@@ -100,7 +100,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            logger.debug("CM11A is not online.", bridgeStatusInfo.getStatus());
+            logger.debug("CM11A is not online. Bridge status: {}", bridgeStatusInfo.getStatus());
             return;
         }
 

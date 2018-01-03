@@ -352,7 +352,7 @@ public class SocketChannelSession implements SocketSession {
                                     listener.responseReceived((String) response);
                                 }
                             } catch (Exception e) {
-                                logger.warn("Exception occurred processing the response '{}': {}", response, e);
+                                logger.warn("Exception occurred processing the response '{}': ", response, e);
                             }
                         } else if (response instanceof Exception) {
                             logger.debug("Dispatching exception: {}", response);

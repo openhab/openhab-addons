@@ -423,7 +423,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
                         fireUpdate(sourceId);
                     }
                 } else {
-                    logger.debug("Source is not between 1 and 8", resp);
+                    logger.debug("Source is not between 1 and 8, Response: {}", resp);
                 }
             } catch (NumberFormatException e) {
                 logger.warn("Invalid Preset Notification (source/bank/preset not a parsable integer): '{}')", resp);

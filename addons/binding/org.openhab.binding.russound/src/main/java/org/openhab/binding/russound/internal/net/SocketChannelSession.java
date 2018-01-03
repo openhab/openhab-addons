@@ -307,7 +307,7 @@ public class SocketChannelSession implements SocketSession {
                     // Ending thread execution
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.debug("Uncaught exception {}: {}", e.getMessage(), e);
+                    logger.debug("Uncaught exception {}: ", e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             }

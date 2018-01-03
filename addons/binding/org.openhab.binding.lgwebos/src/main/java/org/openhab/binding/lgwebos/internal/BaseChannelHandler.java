@@ -93,7 +93,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
 
             @Override
             public void onError(ServiceCommandError error) {
-                logger.warn("{}: received error response: {}.", BaseChannelHandler.this.getClass().getName(), error);
+                logger.warn("{}: received error response: ", BaseChannelHandler.this.getClass().getName(), error);
             }
 
             @Override
