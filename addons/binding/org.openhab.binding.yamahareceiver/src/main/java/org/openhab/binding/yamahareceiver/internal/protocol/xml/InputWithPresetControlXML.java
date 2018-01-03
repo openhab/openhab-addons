@@ -9,7 +9,6 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
@@ -19,6 +18,8 @@ import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
 
 /**
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
@@ -37,10 +38,7 @@ import org.w3c.dom.Node;
  *
  * @author David Graeff
  */
-public class InputWithPresetControlXML implements InputWithPresetControl {
-    protected final WeakReference<AbstractConnection> comReference;
-
-    protected final String inputID;
+public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {
 
     public static final int PRESET_CHANNELS = 40;
 
@@ -54,20 +52,8 @@ public class InputWithPresetControlXML implements InputWithPresetControl {
      * @param com The Yamaha communication object to send http requests.
      */
     public InputWithPresetControlXML(String inputID, AbstractConnection com, PresetInfoStateListener observer) {
-        this.inputID = inputID;
-        this.comReference = new WeakReference<>(com);
+        super(inputID, com);
         this.observer = observer;
-    }
-
-    /**
-     * Wraps the XML message with the inputID tags. Example with inputID=NET_RADIO:
-     * <NETRADIO>message</NETRADIO>.
-     *
-     * @param message XML message
-     * @return
-     */
-    protected String wrInput(String message) {
-        return "<" + inputID + ">" + message + "</" + inputID + ">";
     }
 
     /**
@@ -80,24 +66,19 @@ public class InputWithPresetControlXML implements InputWithPresetControl {
             return;
         }
 
-        AbstractConnection com = comReference.get();
-        String response = com.sendReceive(wrInput("<Play_Control>GetParam</Play_Control>"));
-        Document doc = XMLUtils.xml(response);
-        if (doc.getFirstChild() == null) {
-            throw new ReceivedMessageParseException("<Play_Control>GetParam failed: " + response);
-        }
+        Node responseNode = XMLProtocolService.getResponse(comReference.get(), wrInput("<Play_Control>GetParam</Play_Control>"), getInputElement());
 
         PresetInfoState msg = new PresetInfoState();
 
-        Node playbackInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Control/Preset/Preset_Sel");
+        Node playbackInfoNode = getNode(responseNode, "Play_Control/Preset/Preset_Sel");
         msg.presetChannel = playbackInfoNode != null ? Integer.valueOf(playbackInfoNode.getTextContent()) : -1;
 
         // Set preset channel names, obtained from this xpath:
         // NET_RADIO/Play_Control/Preset/Preset_Sel_Item/Item_1/Title
-        playbackInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Control/Preset/Preset_Sel_Item");
+        playbackInfoNode = getNode(responseNode, "Play_Control/Preset/Preset_Sel_Item");
         if (playbackInfoNode != null) {
             for (int i = 1; i <= PRESET_CHANNELS; ++i) {
-                Node itemNode = XMLUtils.getNode(playbackInfoNode, "Item_" + String.valueOf(i) + "/Title");
+                Node itemNode = getNode(playbackInfoNode, "Item_" + String.valueOf(i) + "/Title");
                 String v = itemNode != null ? itemNode.getTextContent() : "Item_" + String.valueOf(i);
                 if (!v.equals(msg.presetChannelNames[i - 1])) {
                     msg.presetChannelNamesChanged = true;
@@ -112,7 +93,7 @@ public class InputWithPresetControlXML implements InputWithPresetControl {
     /**
      * Select a preset channel.
      *
-     * @param number The preset position [1,40]
+     * @param presetChannel The preset position [1,40]
      * @throws Exception
      */
     public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException {

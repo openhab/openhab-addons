@@ -27,10 +27,13 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+
 /**
  * Provide a custom channel type for available inputs
  *
  * @author David Graeff
+ * @author Tomasz Maruszak - Refactoring the input source names.
  */
 public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider {
 
@@ -78,11 +81,12 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider 
 
     private StateDescription getDefaultStateDescription() {
         List<StateOption> options = new ArrayList<StateOption>();
-        options.add(new StateOption("NET_RADIO", "Net Radio"));
-        options.add(new StateOption("PC", "PC"));
-        options.add(new StateOption("USB", "USB"));
-        options.add(new StateOption("TUNER", "Tuner"));
+        options.add(new StateOption(INPUT_NET_RADIO, "Net Radio"));
+        options.add(new StateOption(INPUT_PC, "PC"));
+        options.add(new StateOption(INPUT_USB, "USB"));
+        options.add(new StateOption(INPUT_TUNER, "Tuner"));
         options.add(new StateOption("MULTI_CH", "Multi Channel"));
+        // Note: this might need review in the future, it should be 'HDMI 1', the 'HDMI_1' are XML node names, not source names.
         options.add(new StateOption("HDMI_1", "HDMI 1"));
         options.add(new StateOption("HDMI_2", "HDMI 2"));
         options.add(new StateOption("HDMI_3", "HDMI 3"));
@@ -103,18 +107,18 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider 
         options.add(new StateOption("AUDIO_2", "Audio 2"));
         options.add(new StateOption("AUDIO_3", "Audio 3"));
         options.add(new StateOption("AUDIO_4", "Audio 4"));
-        options.add(new StateOption("DOCK", "DOCK"));
-        options.add(new StateOption("iPod", "iPod"));
-        options.add(new StateOption("Bluetooth", "Bluetooth"));
+        options.add(new StateOption(INPUT_DOCK, "DOCK"));
+        options.add(new StateOption(INPUT_IPOD, "iPod"));
+        options.add(new StateOption(INPUT_IPOD_USB, "iPod/USB"));
+        options.add(new StateOption(INPUT_BLUETOOTH, "Bluetooth"));
         options.add(new StateOption("UAW", "UAW"));
         options.add(new StateOption("NET", "NET"));
-        options.add(new StateOption("SIRIUS", "Sirius"));
-        options.add(new StateOption("Rhapsody", "Rhapsody"));
+        options.add(new StateOption(INPUT_SIRIUS, "Sirius"));
+        options.add(new StateOption(INPUT_RHAPSODY, "Rhapsody"));
         options.add(new StateOption("SIRIUS_IR", "SIRIUS IR"));
-        options.add(new StateOption("Pandora", "Pandora"));
-        options.add(new StateOption("Napster", "Napster"));
-        options.add(new StateOption("iPod_USB", "iPod/USB"));
-        options.add(new StateOption("Spotify", "Spotify"));
+        options.add(new StateOption(INPUT_PANDORA, "Pandora"));
+        options.add(new StateOption(INPUT_NAPSTER, "Napster"));
+        options.add(new StateOption(INPUT_SPOTIFY, "Spotify"));
         StateDescription state = new StateDescription(null, null, null, "%s", false, options);
         return state;
     }
