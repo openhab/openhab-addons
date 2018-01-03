@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *       <state>0</state>
  *       <mode>manuell</mode>
  *       <lock>0</lock>
+ *       <devicelock>1</devicelock>
  *     </switch>
  *     <powermeter>
  *       <power>0</power>
