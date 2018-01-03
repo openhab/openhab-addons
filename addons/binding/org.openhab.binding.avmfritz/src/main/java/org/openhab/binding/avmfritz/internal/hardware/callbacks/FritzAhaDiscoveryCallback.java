@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
+
+import javax.xml.bind.JAXBException;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
@@ -49,13 +51,17 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         super.execute(status, response);
         logger.trace("Received discovery callback response: {}", response);
         if (isValidRequest()) {
-            DevicelistModel model = JAXBUtils.buildResult(response);
-            if (model != null) {
-                for (final DeviceModel device : model.getDevicelist()) {
-                    service.onDeviceAddedInternal(device);
+            try {
+                DevicelistModel model = JAXBUtils.buildResult(response);
+                if (model != null) {
+                    for (final DeviceModel device : model.getDevicelist()) {
+                        service.onDeviceAddedInternal(device);
+                    }
+                } else {
+                    logger.warn("no model in response");
                 }
-            } else {
-                logger.warn("no model in response");
+            } catch (JAXBException e) {
+                logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {
             logger.info("request is invalid: {}", status);

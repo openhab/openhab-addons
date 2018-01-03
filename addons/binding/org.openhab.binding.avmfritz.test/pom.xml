@@ -16,12 +16,6 @@
   <name>AVM FRITZ! Binding Tests</name>
   <packaging>eclipse-test-plugin</packaging>
 
-  <properties>
-    <bundle.symbolicName>org.openhab.binding.avmfritz.test</bundle.symbolicName>
-    <bundle.namespace>org.openhab.binding.avmfritz</bundle.namespace>
-  </properties>
-
-
   <build>
     <plugins>
       <plugin>
