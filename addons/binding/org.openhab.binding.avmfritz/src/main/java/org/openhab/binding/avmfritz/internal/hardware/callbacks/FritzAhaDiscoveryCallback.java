@@ -54,7 +54,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
             try {
                 DevicelistModel model = JAXBUtils.buildResult(response);
                 if (model != null) {
-                    for (final DeviceModel device : model.getDevicelist()) {
+                    for (DeviceModel device : model.getDevicelist()) {
                         service.onDeviceAddedInternal(device);
                     }
                 } else {

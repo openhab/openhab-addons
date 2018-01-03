@@ -35,8 +35,6 @@ import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link AVMFritzDiscoveryService}.
@@ -45,8 +43,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AVMFritzDiscoveryServiceTest {
-
-    private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryServiceTest.class);
 
     private static final ThingUID BRIGE_THING_ID = new ThingUID("avmfritz:fritzbox:1");
 

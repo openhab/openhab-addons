@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
@@ -64,9 +65,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECTRepeater100Model() {
-        DeviceModel device = getDevice("FRITZ!DECT Repeater 100");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT Repeater 100");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("FRITZ!DECT Repeater 100", device.getProductName());
         assertEquals("087610954669", device.getIdentifier());
         assertEquals("40", device.getDeviceId());
@@ -93,9 +95,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECT200Model() {
-        DeviceModel device = getDevice("FRITZ!DECT 200");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 200");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("FRITZ!DECT 200", device.getProductName());
         assertEquals("087610000434", device.getIdentifier());
         assertEquals("17", device.getDeviceId());
@@ -130,9 +133,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECT300Model() {
-        DeviceModel device = getDevice("FRITZ!DECT 300");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 300");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("FRITZ!DECT 300", device.getProductName());
         assertEquals("087610000437", device.getIdentifier());
         assertEquals("20", device.getDeviceId());
@@ -174,9 +178,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECT301Model() {
-        DeviceModel device = getDevice("FRITZ!DECT 301");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 301");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("FRITZ!DECT 301", device.getProductName());
         assertEquals("087610000436", device.getIdentifier());
         assertEquals("21", device.getDeviceId());
@@ -218,9 +223,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateCometDECTModel() {
-        DeviceModel device = getDevice("Comet DECT");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("Comet DECT");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("Comet DECT", device.getProductName());
         assertEquals("087610000435", device.getIdentifier());
         assertEquals("22", device.getDeviceId());
@@ -262,9 +268,10 @@ public class AVMFritzModelTest {
 
     @Test
     public void validatePowerline546EModel() {
-        DeviceModel device = getDevice("FRITZ!Powerline 546E");
-        assertNotNull(device);
+        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!Powerline 546E");
+        assertTrue(optionalDevice.isPresent());
 
+        DeviceModel device = optionalDevice.get();
         assertEquals("FRITZ!Powerline 546E", device.getProductName());
         assertEquals("5C:49:79:F0:A3:84", device.getIdentifier());
         assertEquals("30", device.getDeviceId());
@@ -294,7 +301,7 @@ public class AVMFritzModelTest {
         assertEquals(new BigDecimal("2.087"), device.getPowermeter().getEnergy());
     }
 
-    private DeviceModel getDevice(@NonNull String name) {
-        return devices.getDevicelist().stream().filter(it -> name.equals(it.getProductName())).findFirst().orElse(null);
+    private Optional<DeviceModel> findDevice(@NonNull String name) {
+        return devices.getDevicelist().stream().filter(it -> name.equals(it.getProductName())).findFirst();
     }
 }

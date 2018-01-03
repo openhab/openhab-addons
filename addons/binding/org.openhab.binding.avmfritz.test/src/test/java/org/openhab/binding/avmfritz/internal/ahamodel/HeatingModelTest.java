@@ -13,8 +13,6 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link HeatingModel} methods.
@@ -23,8 +21,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class HeatingModelTest {
-
-    private final Logger logger = LoggerFactory.getLogger(HeatingModelTest.class);
 
     @Test
     public void validateTemperatureConversion() {
