@@ -67,7 +67,8 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {
-            logger.info("request is invalid: {}", status);
+            logger.debug("request is invalid: {}", status);
+            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Request is invalid");
         }
     }
 }
