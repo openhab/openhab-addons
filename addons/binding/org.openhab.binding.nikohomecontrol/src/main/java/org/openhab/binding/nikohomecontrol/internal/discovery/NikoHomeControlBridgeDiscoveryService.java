@@ -56,7 +56,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
      */
     private void discoverBridge() {
         try {
-            String broadcastAddr = networkAddressService.getPrimaryBroadcastAddress();
+            String broadcastAddr = networkAddressService.getConfiguredBroadcastAddress();
             if (broadcastAddr == null) {
                 logger.warn("Niko Home Control: discovery not possible, no broadcast address found");
                 return;
