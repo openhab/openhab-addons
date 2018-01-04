@@ -10,7 +10,7 @@ package org.openhab.binding.netatmo.internal;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +36,7 @@ public class ChannelTypeUtils {
 
     public static ZonedDateTime toZonedDateTime(Integer netatmoTS) {
         Instant i = Instant.ofEpochSecond(netatmoTS);
-        return ZonedDateTime.ofInstant(i, ZoneOffset.UTC);
+        return ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
     }
 
     public static State toDateTimeType(@Nullable Integer netatmoTS) {
