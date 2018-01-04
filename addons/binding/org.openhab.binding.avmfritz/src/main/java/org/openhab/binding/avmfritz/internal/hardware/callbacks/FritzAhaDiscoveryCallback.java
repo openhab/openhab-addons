@@ -64,7 +64,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {
-            logger.info("request is invalid: {}", status);
+            logger.debug("request is invalid: {}", status);
         }
     }
 }
