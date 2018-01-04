@@ -11,8 +11,7 @@ Export-Package:
  org.openhab.binding.draytonwiser,
  org.openhab.binding.draytonwiser.handler
 Import-Package: 
- org.openhab.binding.draytonwiser,
- org.openhab.binding.draytonwiser.handler,
+ com.google.common.collect;version="15.0.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
@@ -21,5 +20,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.draytonwiser,
+ org.openhab.binding.draytonwiser.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
