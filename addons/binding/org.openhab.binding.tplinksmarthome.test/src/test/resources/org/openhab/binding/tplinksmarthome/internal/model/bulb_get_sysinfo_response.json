@@ -66,5 +66,11 @@
 			"rssi": -61,
 			"sw_ver": "1.5.5 Build 170623 Rel.090105"
 		}
-	}
+	},
+    "smartlife.iot.common.emeter": {
+        "get_realtime": {
+            "power_mw": 10800
+        }
+    }
+
 }

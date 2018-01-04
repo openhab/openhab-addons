@@ -13,10 +13,10 @@ import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstant
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
@@ -27,11 +27,11 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  */
 public class EnergySwitchDeviceTest {
 
-    private EnergySwitchDevice device = new EnergySwitchDevice();
-    private DeviceState deviceState;
+    private final EnergySwitchDevice device = new EnergySwitchDevice();
+    @NonNull
+    private final DeviceState deviceState;
 
-    @Before
-    public void setUp() throws IOException {
+    public EnergySwitchDeviceTest() throws IOException {
         deviceState = new DeviceState(ModelTestUtil.readJson("plug_get_realtime_response"));
     }
 

@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -39,7 +41,7 @@ public class BulbDeviceTest extends DeviceTestBase {
     private static final List<Object[]> TESTS = Arrays
             .asList(new Object[][] { { "bulb_get_sysinfo_response" }, { "bulb_get_sysinfo_response_lb130" } });
 
-    public BulbDeviceTest(String responseFilename) throws IOException {
+    public BulbDeviceTest(@NonNull String responseFilename) throws IOException {
         super(responseFilename);
     }
 
@@ -127,4 +129,11 @@ public class BulbDeviceTest extends DeviceTestBase {
     public void testUpdateChannelOther() {
         assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF, device.updateChannel("OTHER", deviceState));
     }
+
+    @Test
+    public void testUpdateChannelPower() {
+        assertEquals("Power values should be set", new DecimalType(10.8),
+                device.updateChannel(CHANNEL_ENERGY_POWER, deviceState));
+    }
+
 }
