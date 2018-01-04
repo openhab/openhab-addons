@@ -24,7 +24,7 @@ import com.google.common.collect.Sets;
 @NonNullByDefault
 public class DraytonWiserBindingConstants {
 
-    private static final String BINDING_ID = "draytonwiser";
+    public static final String BINDING_ID = "draytonwiser";
 
     public static final String ADDRESS = "ADDR";
 

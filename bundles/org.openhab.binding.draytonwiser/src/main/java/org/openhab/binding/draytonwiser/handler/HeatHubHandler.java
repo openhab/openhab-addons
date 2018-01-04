@@ -8,13 +8,18 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
@@ -67,22 +72,32 @@ public class HeatHubHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Drayton Wiser Heat Hub handler");
 
-        String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
-        String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
-
         try {
-            ContentResponse response = httpClient.newRequest("http://" + address + "/data/network/Station")
-                    .method(HttpMethod.GET).header("SECRET", authtoken).send();
+            ContentResponse response = sendMessageToHeatHub("data/network/Station", HttpMethod.GET, "");
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
+            } else if (response.getStatus() == 401) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid authorization token");
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect Heat Hub address");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
 
             updateStatus(ThingStatus.OFFLINE);
         }
+    }
+
+    private ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
+        String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
+        StringContentProvider contentProvider = new StringContentProvider(content);
+        ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(HttpMethod.GET)
+                .header("SECRET", authtoken).content(contentProvider).send();
+        return response;
     }
 }
