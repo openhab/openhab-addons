@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.draytonwiser;
 
-import com.google.common.collect.Sets;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link DraytonWiserBindingConstants} class defines common constants, which are
@@ -24,6 +25,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class DraytonWiserBindingConstants {
 
     private static final String BINDING_ID = "draytonwiser";
+
+    public static final String ADDRESS = "ADDR";
+
+    public static final String AUTH_TOKEN = "AUTHTOKEN";
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");

@@ -25,6 +25,7 @@
                 <description>
                     Auth token required to access the API.
                 </description>
+                <required>true</required>
             </parameter>
         </config-description>
     </bridge-type>
