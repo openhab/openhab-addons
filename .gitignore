@@ -8,6 +8,9 @@ bundles/io/org.openhab.io.multimedia.tts.marytts/lib/
 */plugin.xml_gen
 targetplatform/*.launch
 
+.idea
+**/*.iml
+
 distribution/openhabhome/logs/*.log
 distribution/openhabhome/*.zip
 distribution/openhabhome/etc/rrd4j/*.rrd

@@ -30,6 +30,10 @@ public class HueState {
     public String colormode = "ct";
     public boolean reachable = true;
 
+    public static short convertBrightness(int percentBrightness) {
+      return (short) Math.floor((double)(percentBrightness  * 255) / 100d);
+    }
+
     public HueState() {
         super();
     }
@@ -52,7 +56,7 @@ public class HueState {
         this.on = hsb.getBrightness().intValue() > 0;
         this.hue = hsb.getHue().intValue();
         this.sat = hsb.getSaturation().shortValue();
-        this.bri = hsb.intValue() > 0 ? (short) ((hsb.intValue() * 255) / 100) : -1;
+        this.bri = hsb.intValue() > 0 ? convertBrightness(hsb.intValue()) : -1;
     }
 
     /**
@@ -65,7 +69,7 @@ public class HueState {
         int brightness = 0;
         if (this.on || this.bri > 0) {
             // if on but brightness is less then 1, set HSB brightness to 100, otherwise convert Hue brightness
-            brightness = this.bri < 1 ? 100 : (int) (this.bri / 255.0 * 100);
+            brightness = getBrightness();
         }
         return new HSBType(new DecimalType(this.hue), new PercentType(this.sat), new PercentType(brightness));
     }
@@ -79,5 +83,14 @@ public class HueState {
         xyString += "}";
         return "[on: " + on + " bri: " + bri + " hue: " + hue + " sat: " + sat + " xy: " + xyString + " ct: " + ct
                 + " alert: " + alert + " effect: " + effect + " colormode: " + colormode + " reachable: " + reachable;
+    }
+
+    public boolean isOn() {
+      // The Light is on if Boolean variable received is true or we have a brightness
+      return this.on || this.bri > 0;
+    }
+
+    public int getBrightness() {
+      return this.bri < 1 ? 100 : (int) Math.ceil((double)this.bri / 255.0 * 100);
     }
 }

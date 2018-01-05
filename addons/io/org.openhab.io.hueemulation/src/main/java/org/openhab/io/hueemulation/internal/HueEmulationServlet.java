@@ -322,28 +322,37 @@ public class HueEmulationServlet extends HttpServlet {
             // will throw exception if not found
             Item item = itemRegistry.getItem(deviceMap.get(new Integer(id)));
             HueState state = gson.fromJson(req.getReader(), HueState.class);
-            HSBType hsb = state.toHSBType();
             logger.debug("HuState {}", state);
-            logger.debug("HSBType {}", hsb);
             Command command = null;
-            if (hsb.getBrightness().intValue() > 0) {
-                // if state is on then send HSB, Brightness or ON
-                if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
-                    command = hsb;
-                } else {
-                    // try and set the brightness level first
-                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), hsb.getBrightness().toString());
-                    if (command == null) {
-                        // if the item does not accept a number or String type, try ON
-                        command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
-                    }
-                }
+
+            // if we received off, we can safely send OFF command
+            if (!state.isOn()) {
+              // if state is off, then send OFF - avoid sending 0 to not modify the brightnes value
+              command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "OFF");
             } else {
-                // if state is off, then send 0 or 0FF
-                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "0");
-                if (command == null) {
-                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "OFF");
+              // only use hsb if we have a hsb type - cause brightness will be always set to something (ON command will loose pre existing brightness)
+              if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
+                // if we only received on without brightness just send ON command
+                if (state.on && state.bri <= 0) {
+                  command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
+                } else {
+                  HSBType hsb = state.toHSBType();
+                  logger.debug("HSBType {}", hsb);
+                  command = hsb;
                 }
+              } else {
+                // try and set the brightness level first
+                if (state.bri > 0) { // did we receive a brightness
+                  command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), String.valueOf(state.getBrightness()));
+                  if (command == null) {
+                    // if the item does not accept a number or String type, try ON
+                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
+                  }
+                } else {
+                  // send on if we have no brightness but light should be on - will reset to previous state
+                  command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
+                }
+              }
             }
 
             if (command != null) {
@@ -475,7 +484,7 @@ public class HueEmulationServlet extends HttpServlet {
             HSBType color = (HSBType) itemState;
             hueState = new HueState(color);
         } else if (itemState instanceof DecimalType) {
-            short bri = (short) ((((DecimalType) itemState).intValue() * 255) / 100);
+            short bri = HueState.convertBrightness(((DecimalType) itemState).intValue());
             hueState = new HueState(bri);
         } else if (itemState instanceof OnOffType) {
             short bri = (short) (((OnOffType) itemState) == OnOffType.ON ? 255 : 0);
