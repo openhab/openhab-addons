@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -512,7 +515,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
 
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNK");
+                    // The c tag must be always in last position for coverart work properly
+                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKc");
                 }
             }
         }
@@ -556,23 +560,65 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
+        /**
+         * Returns a hexadecimal encoded MD5 hash for the input String.
+         *
+         * @param data
+         * @return
+         */
+        private String getMD5Hash(String data) {
+            String result = null;
+            try {
+                MessageDigest digest = MessageDigest.getInstance("MD5");
+                byte[] hash = digest.digest(data.getBytes("UTF-8"));
+                return bytesToHex(hash); // make it printable
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return result;
+        }
+
+        /**
+         * Use javax.xml.bind.DatatypeConverter class in JDK to convert byte array
+         * to a hexadecimal string. Note that this generates hexadecimal in upper case.
+         *
+         * @param hash
+         * @return
+         */
+        private String bytesToHex(byte[] hash) {
+            return DatatypeConverter.printHexBinary(hash);
+        }
+
         private String fetchUrl(String messagePart, final String mac) {
             // default url for cover art. Works all the time except for some particular case
             String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            // return default url when no artwork_url and no coderid
+            if (messagePart == null) {
+                return url;
+            }
             // if messagePart start with "artwork_url:http://", default url works
-            if (messagePart != null && messagePart.startsWith("artwork_url%3A")
-                    && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
-                url = messagePart.substring("artwork_url%3A".length());
-                // example of particular case.
-                // this web radio : http://broadcast.infomaniak.net/tsfjazz-high.mp3
-                // default url return error 404
-                // messagePart = artwork_url%3Ahtml%2Fimages%2Fradio.png (artwork_url:html/images/radio.png)
-                // working url : "http://" + host + ":" + webport + "/" + "html/images/radio.png";
-                if (url.startsWith("%2F")) {
-                    url = "http://" + host + ":" + webport + decode(url);
+            if (messagePart.startsWith("artwork_url%3A")) {
+                if (messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")
+                        || messagePart.startsWith("artwork_url%3Ahttps%3A%2F%2F")) {
+                    // add hash parameter to prevent problem with image caching
+                    url = url + "&hash=" + getMD5Hash(messagePart);
                 } else {
-                    url = "http://" + host + ":" + webport + "/" + decode(url);
+                    url = messagePart.substring("artwork_url%3A".length());
+                    // example of particular case.
+                    // this web radio : http://broadcast.infomaniak.net/tsfjazz-high.mp3
+                    // default url return error 404
+                    // messagePart = artwork_url%3Ahtml%2Fimages%2Fradio.png (artwork_url:html/images/radio.png)
+                    // working url : "http://" + host + ":" + webport + "/" + "html/images/radio.png";
+                    if (url.startsWith("%2F")) {
+                        url = "http://" + host + ":" + webport + decode(url);
+                    } else {
+                        url = "http://" + host + ":" + webport + "/" + decode(url);
+                    }
                 }
+            }
+            if (messagePart.startsWith("coverid%3A")) {
+                url = "http://" + host + ":" + webport + "/music/"
+                        + decode(messagePart.substring("coverid%3A".length())) + "/cover.jpg";
             }
             return url;
         }
