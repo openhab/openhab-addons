@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -23,8 +25,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
+import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link HeatHubHandler} is responsible for handling commands, which are
@@ -37,10 +42,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HeatHubHandler.class);
     private HttpClient httpClient;
+    private Gson gson;
 
     public HeatHubHandler(Bridge thing) {
         super(thing);
         httpClient = new HttpClient();
+        gson = new Gson();
 
         try {
             httpClient.start();
@@ -73,8 +80,15 @@ public class HeatHubHandler extends BaseBridgeHandler {
         logger.debug("Initializing Drayton Wiser Heat Hub handler");
 
         try {
-            ContentResponse response = sendMessageToHeatHub("data/network/Station", HttpMethod.GET, "");
+            ContentResponse response = sendMessageToHeatHub("data/domain/Device/0", HttpMethod.GET, "");
             if (response.getStatus() == 200) {
+                Map<String, String> properties = new HashMap<>();
+                Device device = gson.fromJson(response.getContentAsString(), Device.class);
+                properties.put("Device Type", device.getProductIdentifier());
+                properties.put("Firmware Version", device.getActiveFirmwareVersion());
+                properties.put("Manufacturer", device.getManufacturer());
+                properties.put("Model", device.getModelIdentifier());
+                getThing().setProperties(properties);
                 updateStatus(ThingStatus.ONLINE);
             } else if (response.getStatus() == 401) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid authorization token");
