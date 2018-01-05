@@ -494,31 +494,31 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40339">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S8</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40340">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S7</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40341">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S6</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40342">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S5</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40365">
@@ -795,10 +795,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40942">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External ERS accessory block status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40943">
@@ -1082,10 +1082,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-41191">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>AA20 PV Panel State</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-41265">
@@ -1255,10 +1255,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-41446">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Smart energy source prioritze OPT10 in hot water</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-41705">
@@ -1451,31 +1451,31 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43158">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S4</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43159">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S3</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43160">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S2</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43161">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43171">
@@ -1568,17 +1568,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43536">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Ext. Addition Blocked</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43561">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Pool 1 blocked</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43564">
@@ -1680,10 +1680,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44256">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Ext. Cooling Blocked</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44266">
@@ -1792,10 +1792,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44379">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Ext. Addition Pump</label>
 		<description>On/Off</description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44396">
@@ -1852,10 +1852,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44702">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>EB101-EP14 Protection Status Register Outdoor Unit</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44703">
@@ -2005,10 +2005,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44908">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>State smart price adaption</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44977">
@@ -3282,10 +3282,10 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vvm310-type-48189">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Cooling use mix. valve S1</label>
 		<description>Sets if the valve should be used or not in cooling mode. Only applies if cooling is available in the system</description>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
+		<state pattern="%s" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48207">
