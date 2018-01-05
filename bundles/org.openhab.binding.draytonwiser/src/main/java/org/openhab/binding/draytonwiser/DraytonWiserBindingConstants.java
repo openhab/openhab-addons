@@ -45,6 +45,7 @@ public class DraytonWiserBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public static final ThingTypeUID THING_TYPE_ROOMSTAT = new ThingTypeUID(BINDING_ID, "roomstat");
+    public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature-channel";
@@ -53,6 +54,6 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel-channel";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ROOM,
-            THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE);
+            THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV);
 
 }

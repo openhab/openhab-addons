@@ -24,6 +24,7 @@ import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
+import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,10 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         for (RoomStat r : roomStats) {
             onRoomStatAdded(r);
         }
-        // List<TRV> iTRVs = bridgeHandler.getTRVs();
+        List<SmartValve> smartValves = bridgeHandler.getSmartValves();
+        for (SmartValve v : smartValves) {
+            onSmartValveAdded(v);
+        }
     }
 
     private void onRoomStatAdded(RoomStat r) {
@@ -82,6 +86,24 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID, r.getId().toString()))
                 .withProperties(properties).withBridge(bridgeUID).withLabel("Room Thermostat - " + r.getId().toString())
+                .withRepresentationProperty(device.getSerialNumber()).build();
+
+        thingDiscovered(discoveryResult);
+    }
+
+    private void onSmartValveAdded(SmartValve r) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Map<String, Object> properties = new HashMap<>();
+        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
+        properties.put("Device Type", device.getModelIdentifier());
+        properties.put("Firmware Version", device.getActiveFirmwareVersion());
+        properties.put("Manufacturer", device.getManufacturer());
+        properties.put("Model", device.getProductModel());
+        properties.put("Serial Number", device.getSerialNumber());
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID, r.getId().toString()))
+                .withProperties(properties).withBridge(bridgeUID).withLabel("Smart Valve - " + r.getId().toString())
                 .withRepresentationProperty(device.getSerialNumber()).build();
 
         thingDiscovered(discoveryResult);

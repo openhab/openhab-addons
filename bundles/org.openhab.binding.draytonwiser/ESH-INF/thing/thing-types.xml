@@ -51,12 +51,27 @@
             <bridge-type-ref id="heathub" />
         </supported-bridge-type-refs>
         
-       <label>Thermostat or TRV</label>
-       <description>Thermostat device including TRVs</description>
+       <label>Thermostat</label>
+       <description>Wireless Thermostat device</description>
        
        <channels>
            <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
+            <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+            <channel id="batteryLevel" typeId="batteryLevel-channel"/>
+       </channels>
+    </thing-type>
+    
+    <thing-type id="itrv">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="heathub" />
+        </supported-bridge-type-refs>
+        
+       <label>iTRV</label>
+       <description>Thermostatic Radiator Valve</description>
+       
+       <channels>
+           <channel id="currentTemperature" typeId="currentTemperature-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="batteryLevel" typeId="batteryLevel-channel"/>
        </channels>
