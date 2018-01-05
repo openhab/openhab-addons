@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.draytonwiser.internal.discovery;
 
-import static org.openhab.binding.draytonwiser.DraytonWiserBindingConstants.BINDING_ID;
+import static org.openhab.binding.draytonwiser.DraytonWiserBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+
+import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link DraytonWiserDiscoveryService} is used to discover devices that are connected to a Heat Hub.
@@ -29,8 +29,13 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
     private HeatHubHandler bridgeHandler;
 
     public DraytonWiserDiscoveryService(HeatHubHandler bridgeHandler) {
-        super(ImmutableSet.of(new ThingTypeUID(BINDING_ID, "-")), 30, false);
+        super(SUPPORTED_THING_TYPES_UIDS, 30, false);
         this.bridgeHandler = bridgeHandler;
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     /**
