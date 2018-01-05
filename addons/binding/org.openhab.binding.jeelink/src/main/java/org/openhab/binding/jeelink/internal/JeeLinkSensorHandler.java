@@ -43,7 +43,9 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
             secsSinceLastReading = 0;
             updateStatus(ThingStatus.ONLINE);
 
-            publisher.publish(r);
+            if (publisher != null) {
+                publisher.publish(r);
+            }
         }
     }
 
@@ -76,6 +78,11 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
         if (statusUpdateJob != null) {
             statusUpdateJob.cancel(true);
             statusUpdateJob = null;
+        }
+
+        if (publisher != null) {
+            publisher.dispose();
+            publisher = null;
         }
 
         super.dispose();
