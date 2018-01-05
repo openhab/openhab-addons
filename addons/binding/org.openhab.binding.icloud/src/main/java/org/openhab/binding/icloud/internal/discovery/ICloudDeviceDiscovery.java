@@ -11,7 +11,6 @@ package org.openhab.binding.icloud.internal.discovery;
 import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -22,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.utilities.ICloudTextTranslator;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +38,15 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
     private ICloudAccountBridgeHandler handler;
-    private Bundle bundle;
+    private ICloudTextTranslator translatorService;
 
     public ICloudDeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler, Bundle bundle,
-            TranslationProvider i18nProvider, LocaleProvider localProvider) {
+            TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
 
         this.handler = bridgeHandler;
         this.bridgeUID = bridgeHandler.getThing().getUID();
-        this.bundle = bundle;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localProvider;
+        this.translatorService = new ICloudTextTranslator(bundle, i18nProvider, localeProvider);
     }
 
     @Override
@@ -67,8 +65,8 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
 
                 ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                        .withProperty(getText(DEVICE_PROPERTY_NAME), deviceOwnerName)
-                        .withProperty(getText(DEVICE_PROPERTY_ID), deviceId)
+                        .withProperty(translatorService.getText(DEVICE_PROPERTY_NAME), deviceOwnerName)
+                        .withProperty(translatorService.getText(DEVICE_PROPERTY_ID), deviceId)
                         .withRepresentationProperty(DEVICE_PROPERTY_ID).withLabel(thingLabel).build();
 
                 logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
@@ -91,14 +89,5 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
     public void deactivate() {
         super.deactivate();
         handler.unregisterListener(this);
-    }
-
-    private String getText(String key, Object... arguments) {
-        Locale locale = localeProvider != null ? localeProvider.getLocale() : Locale.ENGLISH;
-        return i18nProvider != null ? i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments) : key;
-    }
-
-    private String getDefaultText(String key) {
-        return i18nProvider.getText(bundle, key, key, Locale.ENGLISH);
     }
 }
