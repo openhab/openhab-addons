@@ -305,8 +305,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
         int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
+        int newVolume = currentVolume() + volumeChange;
         newVolume = Math.min(100, newVolume);
         newVolume = Math.max(0, newVolume);
         updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));

@@ -584,11 +584,26 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             switch (action) {
                 case "volume":
-                    String value = messageParts[3];
+                    String volumeStringValue = decode(messageParts[3]);
+
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.volumeChangeEvent(mac, Integer.parseInt(value));
+                            try {
+                                int volume = Integer.parseInt(volumeStringValue);
+
+                                // Check if we received a relative volume change, or an absolute
+                                // volume value.
+                                if (volumeStringValue.contains("+") || (volumeStringValue.contains("-"))) {
+                                    listener.relativeVolumeChangeEvent(mac, volume);
+                                } else {
+                                    listener.absoluteVolumeChangeEvent(mac, volume);
+                                }
+
+                            } catch (NumberFormatException e) {
+                                logger.warn("Unable to parse volume [{}] received from mixer message. {}",
+                                        volumeStringValue, e);
+                            }
                         }
                     });
                     break;
@@ -622,7 +637,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.volumeChangeEvent(mac, volume);
+                            listener.absoluteVolumeChangeEvent(mac, volume);
                         }
                     });
                 }
@@ -815,7 +830,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.volumeChangeEvent(mac, volume);
+                            listener.absoluteVolumeChangeEvent(mac, volume);
                         }
                     });
                 }
