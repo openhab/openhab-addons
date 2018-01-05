@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.slf4j.Logger;
@@ -120,6 +121,20 @@ public class HeatHubHandler extends BaseBridgeHandler {
         }.getType();
         List<SmartValve> smartValves = gson.fromJson(response.getContentAsString(), listType);
         return smartValves;
+    }
+
+    public List<Room> getRooms() {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT, HttpMethod.GET,
+                "");
+
+        if (response == null) {
+            return new ArrayList<Room>();
+        }
+
+        Type listType = new TypeToken<ArrayList<Room>>() {
+        }.getType();
+        List<Room> rooms = gson.fromJson(response.getContentAsString(), listType);
+        return rooms;
     }
 
     public @Nullable Device getExtendedDeviceProperties(int id) {

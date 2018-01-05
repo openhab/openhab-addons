@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.slf4j.Logger;
@@ -62,7 +63,10 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        // List<Room> rooms = bridgeHandler.getRooms();
+        List<Room> rooms = bridgeHandler.getRooms();
+        for (Room r : rooms) {
+            onRoomAdded(r);
+        }
         List<RoomStat> roomStats = bridgeHandler.getRoomStats();
         for (RoomStat r : roomStats) {
             onRoomStatAdded(r);
@@ -87,6 +91,17 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
                 .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID, r.getId().toString()))
                 .withProperties(properties).withBridge(bridgeUID).withLabel("Room Thermostat - " + r.getId().toString())
                 .withRepresentationProperty(device.getSerialNumber()).build();
+
+        thingDiscovered(discoveryResult);
+    }
+
+    private void onRoomAdded(Room r) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOM, bridgeUID,
+                        r.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
+                .withBridge(bridgeUID).withLabel(r.getName()).build();
 
         thingDiscovered(discoveryResult);
     }
