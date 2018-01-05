@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -649,13 +650,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 case 3:
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
-                        /*
-                         * there is no STOP for a IncreaseDecreaseType, so we are just using an INCREASE.
-                         * It is up to the binding to recognize that a start/stop-dimming is in progress and
-                         * stop the dimming accordingly.
-                         */
                         logger.debug("toType: KNX DPT_Control_Dimming: break received.");
-                        return IncreaseDecreaseType.INCREASE;
+                        return UnDefType.UNDEF;
                     }
                     switch (subNumber) {
                         case 7:
