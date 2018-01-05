@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -26,10 +29,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link HeatHubHandler} is responsible for handling commands, which are
@@ -78,18 +83,54 @@ public class HeatHubHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Drayton Wiser Heat Hub handler");
+        Device device = getExtendedDeviceProperties(0);
+        if (device != null) {
+            Map<String, String> properties = new HashMap<>();
+            properties.put("Device Type", device.getProductIdentifier());
+            properties.put("Firmware Version", device.getActiveFirmwareVersion());
+            properties.put("Manufacturer", device.getManufacturer());
+            properties.put("Model", device.getModelIdentifier());
+            getThing().setProperties(properties);
+        }
+    }
 
+    public List<RoomStat> getRoomStats() {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMSTATS_ENDPOINT, HttpMethod.GET,
+                "");
+
+        if (response == null) {
+            return new ArrayList<RoomStat>();
+        }
+
+        Type listType = new TypeToken<ArrayList<RoomStat>>() {
+        }.getType();
+        List<RoomStat> roomStats = gson.fromJson(response.getContentAsString(), listType);
+        return roomStats;
+    }
+
+    public @Nullable Device getExtendedDeviceProperties(int id) {
+        Device device = null;
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DEVICE_ENDPOINT + id,
+                HttpMethod.GET, "");
+
+        if (response == null) {
+            return null;
+        }
+
+        device = gson.fromJson(response.getContentAsString(), Device.class);
+        return device;
+    }
+
+    private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
         try {
-            ContentResponse response = sendMessageToHeatHub("data/domain/Device/0", HttpMethod.GET, "");
+            String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
+            String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
+            StringContentProvider contentProvider = new StringContentProvider(content);
+            ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(HttpMethod.GET)
+                    .header("SECRET", authtoken).content(contentProvider).send();
             if (response.getStatus() == 200) {
-                Map<String, String> properties = new HashMap<>();
-                Device device = gson.fromJson(response.getContentAsString(), Device.class);
-                properties.put("Device Type", device.getProductIdentifier());
-                properties.put("Firmware Version", device.getActiveFirmwareVersion());
-                properties.put("Manufacturer", device.getManufacturer());
-                properties.put("Model", device.getModelIdentifier());
-                getThing().setProperties(properties);
                 updateStatus(ThingStatus.ONLINE);
+                return response;
             } else if (response.getStatus() == 401) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid authorization token");
             } else {
@@ -100,18 +141,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
             updateStatus(ThingStatus.OFFLINE);
         }
-    }
-
-    private ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
-        String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
-        StringContentProvider contentProvider = new StringContentProvider(content);
-        ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(HttpMethod.GET)
-                .header("SECRET", authtoken).content(contentProvider).send();
-        return response;
+        return null;
     }
 }

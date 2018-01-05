@@ -30,6 +30,15 @@ public class DraytonWiserBindingConstants {
 
     public static final String AUTH_TOKEN = "AUTHTOKEN";
 
+    // Web Service Endpoints
+    public static final String DEVICE_ENDPOINT = "data/domain/Device/";
+    public static final String ROOMSTATS_ENDPOINT = "data/domain/RoomStat/";
+    public static final String TRVS_ENDPOINT = "data/domain/SmartValve/";
+    public static final String ROOMS_ENDPOINT = "data/domain/Room/";
+    public static final String SCHEDULES_ENDPOINT = "data/domain/Schedule/";
+    public static final String HEATCHANNELS_ENDPOINT = "data/domain/HeatingChannel/";
+    public static final String SYSTEM_ENDPOINT = "data/domain/System/";
+
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");
 

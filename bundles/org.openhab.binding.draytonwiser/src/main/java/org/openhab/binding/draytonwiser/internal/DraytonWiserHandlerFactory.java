@@ -27,6 +27,7 @@ import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.handler.RoomHandler;
 import org.openhab.binding.draytonwiser.handler.RoomStatHandler;
+import org.openhab.binding.draytonwiser.handler.TRVHandler;
 import org.openhab.binding.draytonwiser.internal.discovery.DraytonWiserDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -62,6 +63,8 @@ public class DraytonWiserHandlerFactory extends BaseThingHandlerFactory {
             return new RoomHandler(thing);
         } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT)) {
             return new RoomStatHandler(thing);
+        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ITRV)) {
+            return new TRVHandler(thing);
         }
 
         return null;

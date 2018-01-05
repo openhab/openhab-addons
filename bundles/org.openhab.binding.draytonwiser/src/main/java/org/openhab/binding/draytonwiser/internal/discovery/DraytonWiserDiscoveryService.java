@@ -10,11 +10,20 @@ package org.openhab.binding.draytonwiser.internal.discovery;
 
 import static org.openhab.binding.draytonwiser.DraytonWiserBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
+import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +61,35 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        // List<Room> rooms = bridgeHandler.getRooms();
+        List<RoomStat> roomStats = bridgeHandler.getRoomStats();
+        for (RoomStat r : roomStats) {
+            onRoomStatAdded(r);
+        }
+        // List<TRV> iTRVs = bridgeHandler.getTRVs();
+    }
+
+    private void onRoomStatAdded(RoomStat r) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Map<String, Object> properties = new HashMap<>();
+        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
+        properties.put("Device Type", device.getModelIdentifier());
+        properties.put("Firmware Version", device.getActiveFirmwareVersion());
+        properties.put("Manufacturer", device.getManufacturer());
+        properties.put("Model", device.getProductModel());
+        properties.put("Serial Number", device.getSerialNumber());
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID, r.getId().toString()))
+                .withProperties(properties).withBridge(bridgeUID).withLabel("Room Thermostat - " + r.getId().toString())
+                .withRepresentationProperty(device.getSerialNumber()).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     @Override
     public synchronized void stopScan() {
         super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
     }
 }
