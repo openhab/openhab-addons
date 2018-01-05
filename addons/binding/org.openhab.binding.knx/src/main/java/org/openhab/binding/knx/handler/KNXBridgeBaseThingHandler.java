@@ -30,7 +30,7 @@ import tuwien.auto.calimero.mgmt.Destination;
  * The {@link KNXBridgeBaseThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Karel Goderis - Initial contribution
+ * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
 public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implements StatusUpdateCallback {

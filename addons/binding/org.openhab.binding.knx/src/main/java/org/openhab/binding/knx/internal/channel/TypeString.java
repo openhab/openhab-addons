@@ -17,6 +17,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 
+/**
+ * string channel type description
+ * 
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 class TypeString extends KNXChannelType {
 

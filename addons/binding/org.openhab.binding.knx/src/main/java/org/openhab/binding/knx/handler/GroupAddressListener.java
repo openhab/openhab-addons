@@ -9,6 +9,7 @@
 package org.openhab.binding.knx.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.knx.internal.client.BusMessageListener;
 
 import tuwien.auto.calimero.GroupAddress;
 
@@ -20,7 +21,7 @@ import tuwien.auto.calimero.GroupAddress;
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-public interface GroupAddressListener extends TelegramListener {
+public interface GroupAddressListener extends BusMessageListener {
 
     /**
      * Called to verify if the GroupAddressListener has an interest in the given GroupAddress

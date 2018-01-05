@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.client;
 
 import java.util.Enumeration;
@@ -6,7 +14,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
-import org.openhab.binding.knx.handler.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +24,12 @@ import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
 import tuwien.auto.calimero.link.medium.TPSettings;
 
+/**
+ * Serial specific {@link KNXClient} implementation.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 public class SerialClient extends KNXClient {
 
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
@@ -25,9 +38,9 @@ public class SerialClient extends KNXClient {
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort,
-            StatusUpdateCallback statusUpdateCallback, TypeHelper typeHelper) {
+            StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                statusUpdateCallback, typeHelper);
+                statusUpdateCallback);
         this.serialPort = serialPort;
     }
 

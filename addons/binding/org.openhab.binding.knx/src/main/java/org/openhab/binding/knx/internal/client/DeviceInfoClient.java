@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.client;
 
 import java.nio.ByteBuffer;
@@ -14,13 +22,19 @@ import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.mgmt.ManagementClient;
 
+/**
+ * Client for retrieving additional device descriptions.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 public class DeviceInfoClient {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceInfoClient.class);
     private final ManagementClient managementClient;
 
-    public DeviceInfoClient(ManagementClient managementClient) {
+    DeviceInfoClient(ManagementClient managementClient) {
         this.managementClient = managementClient;
     }
 

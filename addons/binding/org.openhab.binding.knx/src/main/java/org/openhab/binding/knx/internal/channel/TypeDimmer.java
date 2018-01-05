@@ -28,6 +28,12 @@ import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
+/**
+ * dimmer channel type description
+ * 
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 class TypeDimmer extends KNXChannelType {
 

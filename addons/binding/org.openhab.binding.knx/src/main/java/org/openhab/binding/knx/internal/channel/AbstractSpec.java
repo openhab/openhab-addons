@@ -8,51 +8,43 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.toList;
-
-import java.util.Collections;
-import java.util.List;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
- * Read meta-data.
+ * Base class for telegram meta-data
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
-public class ReadSpec {
+@NonNullByDefault
+public abstract class AbstractSpec {
 
-    private final String dpt;
-    private final List<GroupAddress> readAddresses;
+    private String dpt;
 
-    public ReadSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+    protected AbstractSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
         if (channelConfiguration != null) {
-            this.dpt = channelConfiguration.getDPT() != null ? channelConfiguration.getDPT() : defaultDPT;
-            this.readAddresses = channelConfiguration.getReadGAs().stream().map(this::toGroupAddress).collect(toList());
+            String configuredDPT = channelConfiguration.getDPT();
+            this.dpt = configuredDPT != null ? configuredDPT : defaultDPT;
         } else {
             this.dpt = defaultDPT;
-            this.readAddresses = Collections.emptyList();
         }
+
     }
 
-    public String getDPT() {
-        return dpt;
-    }
-
-    public List<GroupAddress> getReadAddresses() {
-        return readAddresses;
-    }
-
-    private GroupAddress toGroupAddress(GroupAddressConfiguration ga) {
+    protected final @Nullable GroupAddress toGroupAddress(GroupAddressConfiguration ga) {
         try {
             return new GroupAddress(ga.getGA());
         } catch (KNXFormatException e) {
             return null;
         }
+    }
+
+    public final String getDPT() {
+        return dpt;
     }
 
 }

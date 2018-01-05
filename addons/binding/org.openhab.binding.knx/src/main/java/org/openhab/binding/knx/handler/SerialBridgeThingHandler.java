@@ -22,18 +22,19 @@ import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
+ * @author Simon Kaufmann - Refactoring & cleanup
  */
 @NonNullByDefault
 public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     private final SerialClient client;
 
-    public SerialBridgeThingHandler(Bridge bridge, TypeHelper typeHelper) {
+    public SerialBridgeThingHandler(Bridge bridge) {
         super(bridge);
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         client = new SerialClient(config.getAutoReconnectPeriod().intValue(), thing.getUID(),
                 config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
-                config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), this, typeHelper);
+                config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), this);
     }
 
     @Override

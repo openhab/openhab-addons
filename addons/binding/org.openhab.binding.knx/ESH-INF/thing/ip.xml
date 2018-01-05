@@ -8,11 +8,6 @@
 		<label>KNX/IP gateway</label>
 		<description>This Bridge is for IP based KNX gateways</description>
 
-		<channels>
-			<channel id="errorsall" typeId="errors" />
-			<channel id="errors5min" typeId="errors" />
-		</channels>
-
 		<config-description>
 			<parameter name="type" type="text">
 				<label>IP Connection Type</label>
@@ -72,11 +67,5 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
-	<channel-type id="errors">
-		<item-type>Number</item-type>
-		<label>Number of errors</label>
-		<description>The number of errors that occurred on the KNX bus</description>
-	</channel-type>
 
 </thing:thing-descriptions>

@@ -32,6 +32,7 @@ import tuwien.auto.calimero.link.KNXNetworkLinkIP;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
+ * @author Simon Kaufmann - Refactoring & cleanup
  */
 @NonNullByDefault
 public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
@@ -43,19 +44,17 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private IPClient client;
 
     private final NetworkAddressService networkAddressService;
-    private final TypeHelper typeHelper;
 
-    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService, TypeHelper typeHelper) {
+    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
         super(bridge);
         this.networkAddressService = networkAddressService;
-        this.typeHelper = typeHelper;
     }
 
     @Override
     public void initialize() {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         String localSource = config.getLocalSourceAddr();
-        String connectionTypeString = config.getIpConnectionType();
+        String connectionTypeString = config.getType();
         int port = config.getPortNumber().intValue();
         String ip = config.getIpAddress();
         InetSocketAddress localEndPoint = null;
@@ -86,8 +85,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT,
                 config.getAutoReconnectPeriod().intValue(), thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this,
-                typeHelper);
+                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
 
         client.initialize();
     }

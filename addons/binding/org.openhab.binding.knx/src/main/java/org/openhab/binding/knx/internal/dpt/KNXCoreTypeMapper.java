@@ -71,7 +71,6 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
  * @author Volker Daube
  * @author Jan N. Klug
  * @author Helmut Lehmeyer - Java8, generic DPT Mapper
- * @since 0.3.0
  */
 @Component
 public class KNXCoreTypeMapper implements KNXTypeMapper {

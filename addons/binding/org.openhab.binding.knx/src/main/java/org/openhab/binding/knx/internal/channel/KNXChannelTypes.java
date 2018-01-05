@@ -19,8 +19,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
+/**
+ * Helper class to find the matching {@link KNXChannelType} for any given {@link ChannelTypeUID}.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
-public final class KNXChannelSelector {
+public final class KNXChannelTypes {
 
     private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
             new TypeContact(), //
@@ -32,12 +38,11 @@ public final class KNXChannelSelector {
             new TypeSwitch() //
     ).collect(toSet()));
 
-    private KNXChannelSelector() {
+    private KNXChannelTypes() {
         // prevent instantiation
     }
 
-    public static KNXChannelType getValueSelectorFromChannelTypeId(@Nullable ChannelTypeUID channelTypeUID)
-            throws IllegalArgumentException {
+    public static KNXChannelType getType(@Nullable ChannelTypeUID channelTypeUID) throws IllegalArgumentException {
         Objects.requireNonNull(channelTypeUID);
         for (KNXChannelType c : TYPES) {
             if (c.getChannelIDs().contains(channelTypeUID.getId())) {

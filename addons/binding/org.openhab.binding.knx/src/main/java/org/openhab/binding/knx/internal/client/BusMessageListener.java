@@ -6,23 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.knx.handler;
+package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.knx.internal.client.KNXClient;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
 
 /**
- * The {@link TelegramListener} is an interface that needs to be
- * implemented by classes that want to listen to Telegrams
- * on the KNX bus
+ * Callback interface for KNX bus messages
  *
- * @author Karel Goderis - Initial contribution
+ * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
-public interface TelegramListener {
+public interface BusMessageListener {
 
     /**
      *

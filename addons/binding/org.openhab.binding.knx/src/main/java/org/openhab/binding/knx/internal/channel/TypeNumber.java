@@ -15,6 +15,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * number channel type description
+ * 
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 class TypeNumber extends KNXChannelType {
 

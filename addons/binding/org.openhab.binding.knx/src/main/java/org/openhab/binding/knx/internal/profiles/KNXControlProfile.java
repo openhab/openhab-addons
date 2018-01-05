@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.profiles;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -8,6 +16,19 @@ import org.eclipse.smarthome.core.thing.profiles.StateProfile;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
+/**
+ * Profile for KNX devices controlling devices of other bindings.
+ * <p>
+ * As opposed to the {@link KNXDefaultProfile}, {@link Command}s coming from the handler here really are meant to be
+ * {@link Command}s.
+ * <p>
+ * {@link State} updates from items however are forwarded to the handlers as commands.
+ * <p>
+ * All other communication is ignored.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 public class KNXControlProfile implements StateProfile {
 

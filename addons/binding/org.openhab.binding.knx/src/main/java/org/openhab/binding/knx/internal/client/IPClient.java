@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.client;
 
 import java.net.InetSocketAddress;
@@ -7,7 +15,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.knx.handler.StatusUpdateCallback;
-import org.openhab.binding.knx.handler.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +24,12 @@ import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 import tuwien.auto.calimero.link.medium.TPSettings;
 
+/**
+ * IP specific {@link KNXClient} implementation.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 public class IPClient extends KNXClient {
 
@@ -36,9 +49,9 @@ public class IPClient extends KNXClient {
     public IPClient(int ipConnectionType, String ip, String localSource, int port,
             @Nullable InetSocketAddress localEndPoint, boolean useNAT, int autoReconnectPeriod, ThingUID thingUID,
             int responseTimeout, int readingPause, int readRetriesLimit, ScheduledExecutorService knxScheduler,
-            StatusUpdateCallback statusUpdateCallback, TypeHelper typeHelper) {
+            StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                statusUpdateCallback, typeHelper);
+                statusUpdateCallback);
         this.ipConnectionType = ipConnectionType;
         this.ip = ip;
         this.localSource = localSource;

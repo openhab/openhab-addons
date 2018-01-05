@@ -11,7 +11,10 @@ package org.openhab.binding.knx.internal.config;
 import java.math.BigDecimal;
 
 /**
+ * Configuration object for the device thing handler.
+ *
  * @author Karel Goderis - Initial contribution
+ * @author Simon Kaufmann - refactoring & cleanup
  */
 public class DeviceConfig {
 

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.channel;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -6,32 +14,31 @@ import org.eclipse.smarthome.core.types.Type;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
-public class CommandSpec {
+/**
+ * Command meta-data
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
+public class CommandSpec extends AbstractSpec {
 
     private final Type command;
-    private final String dpt;
     private final @Nullable GroupAddress groupAddress;
-
-    private CommandSpec(String dpt, GroupAddress groupAddress, Type command) {
-        this.dpt = dpt;
-        this.groupAddress = groupAddress;
-        this.command = command;
-    }
 
     public CommandSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type command)
             throws KNXFormatException {
-        this(channelConfiguration != null && channelConfiguration.getDPT() != null ? channelConfiguration.getDPT()
-                : defaultDPT,
-                channelConfiguration != null ? new GroupAddress(channelConfiguration.getMainGA().getGA()) : null,
-                command);
+        super(channelConfiguration, defaultDPT);
+        if (channelConfiguration != null) {
+            this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
+
+        } else {
+            this.groupAddress = null;
+        }
+        this.command = command;
     }
 
     public Type getCommand() {
         return command;
-    }
-
-    public String getDpt() {
-        return dpt;
     }
 
     public @Nullable GroupAddress getGroupAddress() {

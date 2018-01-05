@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>KNX Binding</name>
-    <description>This is the binding for KNX</description>
-    <author>Kai Kreuzer / Karel Goderis</author>
+    <description>The KNX Binding</description>
+    <author>Kai Kreuzer / Simon Kaufmann / Karel Goderis</author>
 
 </binding:binding>

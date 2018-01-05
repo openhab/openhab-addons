@@ -10,10 +10,8 @@ package org.openhab.binding.knx.internal.config;
 
 import java.math.BigDecimal;
 
-import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
-
 /**
- * {@link KNXBridgeBaseThingHandler} configuration
+ * IP Bridge handler configuration object.
  *
  * @author Simon Kaufmann - initial contribution and API
  *
@@ -21,7 +19,7 @@ import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 public class IPBridgeConfiguration extends BridgeConfiguration {
 
     private boolean useNAT;
-    private String ipConnectionType;
+    private String type;
     private String ipAddress;
     private BigDecimal portNumber;
     private String localIp;
@@ -31,8 +29,8 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
         return useNAT;
     }
 
-    public String getIpConnectionType() {
-        return ipConnectionType;
+    public String getType() {
+        return type;
     }
 
     public String getIpAddress() {

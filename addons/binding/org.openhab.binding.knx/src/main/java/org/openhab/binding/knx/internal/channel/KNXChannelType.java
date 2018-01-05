@@ -28,6 +28,12 @@ import org.eclipse.smarthome.core.types.Type;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
+/**
+ * Meta-data abstraction for the KNX channel configurations.
+ *
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 public abstract class KNXChannelType {
 
@@ -172,7 +178,7 @@ public abstract class KNXChannelType {
             throws KNXFormatException {
         return getAllGAKeys().stream()
                 .map(key -> new ResponseSpec(parse((String) configuration.get(key)), getDefaultDPT(key)))
-                .filter(spec -> spec.getGroupAddress().equals(groupAddress)).findFirst().orElse(null);
+                .filter(spec -> groupAddress.equals(spec.getGroupAddress())).findFirst().orElse(null);
     }
 
     @Override

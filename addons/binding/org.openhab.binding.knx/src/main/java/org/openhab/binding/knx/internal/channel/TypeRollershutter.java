@@ -27,6 +27,12 @@ import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.exception.KNXFormatException;
 
+/**
+ * rollershutter channel type description
+ * 
+ * @author Simon Kaufmann - initial contribution and API.
+ *
+ */
 @NonNullByDefault
 class TypeRollershutter extends KNXChannelType {
 
