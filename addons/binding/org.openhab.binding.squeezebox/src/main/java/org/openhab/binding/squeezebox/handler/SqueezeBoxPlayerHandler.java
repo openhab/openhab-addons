@@ -318,6 +318,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         newVolume = Math.min(100, newVolume);
         newVolume = Math.max(0, newVolume);
         updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+
+        if (isMe(mac)) {
+            logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, newVolume);
+        }
     }
 
     @Override
