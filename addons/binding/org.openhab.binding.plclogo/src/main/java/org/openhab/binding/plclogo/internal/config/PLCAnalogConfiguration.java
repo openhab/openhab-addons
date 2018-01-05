@@ -1,16 +1,16 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plclogo.config;
+package org.openhab.binding.plclogo.internal.config;
 
-import java.util.Objects;
+import static org.openhab.binding.plclogo.PLCLogoBindingConstants.ANALOG_ITEM;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PLCAnalogConfiguration} is a class for configuration
@@ -18,16 +18,17 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Alexander Falkenstern - Initial contribution
  */
+@NonNullByDefault
 public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
 
-    private @NonNull Integer threshold = 0;
+    private Integer threshold = 0;
 
     /**
      * Get Siemens LOGO! blocks update threshold.
      *
      * @return Configured Siemens LOGO! update threshold
      */
-    public @NonNull Integer getThreshold() {
+    public Integer getThreshold() {
         return threshold;
     }
 
@@ -36,14 +37,13 @@ public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
      *
      * @param force Force update of Siemens LOGO! blocks
      */
-    public void setThreshold(final @NonNull Integer threshold) {
-        Objects.requireNonNull(threshold, "PLCAnalogConfiguration: Threshold may not be null.");
+    public void setThreshold(final Integer threshold) {
         this.threshold = threshold;
     }
 
     @Override
-    public @NonNull String getChannelType() {
-        return "Number";
+    public String getChannelType() {
+        return ANALOG_ITEM;
     }
 
 }

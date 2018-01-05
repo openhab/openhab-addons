@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plclogo.discovery;
+package org.openhab.binding.plclogo.internal.discovery;
 
 import static org.openhab.binding.plclogo.PLCLogoBindingConstants.THING_TYPE_DEVICE;
 
@@ -24,16 +24,20 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.net.util.SubnetUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.model.script.actions.Ping;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,27 +48,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Falkenstern - Initial contribution
  */
+@NonNullByDefault
+@Component(service = DiscoveryService.class)
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
 
     // Bridge config properties
-    private static final @NonNull String LOGO_HOST = "address";
+    private static final String LOGO_HOST = "address";
     private static final int LOGO_PORT = 102;
 
     private static final int DISCOVERY_TIMEOUT = 30;
-    private static final Set<@NonNull ThingTypeUID> THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
 
     private static final int CONNECTION_TIMEOUT = 500;
-    private @NonNull TreeSet<@NonNull String> addresses = new TreeSet<@NonNull String>();
+    private Set<String> addresses = new TreeSet<>();
 
-    private ExecutorService executor;
+    private @Nullable ExecutorService executor;
 
     private class Runner implements Runnable {
         private final ReentrantLock lock = new ReentrantLock();
-        private @NonNull String host;
+        private String host;
 
-        public Runner(final @NonNull String address) {
+        public Runner(final String address) {
             Objects.requireNonNull(address, "IP may not be null");
             this.host = address;
         }
@@ -75,7 +81,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
                 if (Ping.checkVitality(host, LOGO_PORT, CONNECTION_TIMEOUT)) {
                     logger.info("LOGO! device found at: {}.", host);
 
-                    final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
+                    ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
                     DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
                     builder.withProperty(LOGO_HOST, host);
                     builder.withLabel(host);
@@ -107,14 +113,14 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         try {
             Enumeration<NetworkInterface> devices = NetworkInterface.getNetworkInterfaces();
             while (devices.hasMoreElements()) {
-                final NetworkInterface device = devices.nextElement();
+                NetworkInterface device = devices.nextElement();
                 if (device.isLoopback()) {
                     continue;
                 }
                 for (InterfaceAddress iface : device.getInterfaceAddresses()) {
-                    final InetAddress address = iface.getAddress();
+                    InetAddress address = iface.getAddress();
                     if (address instanceof Inet4Address) {
-                        final String prefix = String.valueOf(iface.getNetworkPrefixLength());
+                        String prefix = String.valueOf(iface.getNetworkPrefixLength());
                         SubnetUtils utilities = new SubnetUtils(address.getHostAddress() + "/" + prefix);
                         addresses.addAll(Arrays.asList(utilities.getInfo().getAllAddresses()));
                     }
@@ -125,9 +131,15 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
             logger.warn("LOGO! bridge discovering: {}.", exception.toString());
         }
 
-        executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (final @NonNull String address : addresses) {
-            executor.execute(new Runner(address));
+        if (executor == null) {
+            executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        }
+        for (String address : addresses) {
+            try {
+                executor.execute(new Runner(address));
+            } catch (RejectedExecutionException exception) {
+                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
+            }
         }
         stopScan();
     }

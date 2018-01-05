@@ -4,13 +4,13 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!--Siemens LOGO! Digital -->
-	<thing-type id="datetime">
+	<thing-type id="pulse">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="device" />
 		</supported-bridge-type-refs>
-		<label>LOGO! date/time block</label>
-		<description>Siemens LOGO! date/time block</description>
-		<config-description-ref uri="thing-type:plclogo:datetime" />
+		<label>LOGO! pulse block</label>
+		<description>Siemens LOGO! pulse virtual block</description>
+		<config-description-ref uri="thing-type:plclogo:pulse" />
 	</thing-type>
 </thing:thing-descriptions>
 

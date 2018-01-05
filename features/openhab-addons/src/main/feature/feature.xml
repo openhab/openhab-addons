@@ -466,7 +466,6 @@
 
     <feature name="openhab-binding-plclogo" description="PLCLogo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.plclogo/${project.version}</bundle>
     </feature>
 

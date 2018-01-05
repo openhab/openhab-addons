@@ -1,16 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plclogo.config;
+package org.openhab.binding.plclogo.internal.config;
 
-import java.util.Objects;
-
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PLCCommonConfiguration} is a base class for configuration
@@ -18,16 +16,17 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Alexander Falkenstern - Initial contribution
  */
+@NonNullByDefault
 abstract class PLCCommonConfiguration {
 
-    private @NonNull Boolean force = false;
+    private Boolean force = false;
 
     /**
      * Returns if Siemens LOGO! channels update must be forced.
      *
      * @return True, if channels update to be forced and false otherwise
      */
-    public @NonNull Boolean isUpdateForced() {
+    public Boolean isUpdateForced() {
         return force;
     }
 
@@ -36,10 +35,11 @@ abstract class PLCCommonConfiguration {
      *
      * @param force Force update of Siemens LOGO! block
      */
-    public void setForceUpdate(final @NonNull Boolean force) {
-        Objects.requireNonNull(force, "PLCCommonConfiguration: Force may not be null.");
+    public void setForceUpdate(final Boolean force) {
         this.force = force;
     }
+
+    public abstract String getChannelType();
 
     /**
      * Get configured Siemens LOGO! blocks kind.
@@ -48,8 +48,6 @@ abstract class PLCCommonConfiguration {
      *
      * @return Configured Siemens LOGO! blocks kind
      */
-    public abstract @NonNull String getBlockKind();
-
-    public abstract @NonNull String getChannelType();
+    public abstract String getBlockKind();
 
 }

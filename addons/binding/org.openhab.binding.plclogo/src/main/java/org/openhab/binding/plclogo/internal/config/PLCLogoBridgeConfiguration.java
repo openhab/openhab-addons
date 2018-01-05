@@ -1,16 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plclogo.config;
+package org.openhab.binding.plclogo.internal.config;
 
-import java.util.Objects;
-
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.PLCLogoBindingConstants;
 
@@ -19,20 +17,21 @@ import org.openhab.binding.plclogo.PLCLogoBindingConstants;
  *
  * @author Alexander Falkenstern - Initial contribution
  */
+@NonNullByDefault
 public class PLCLogoBridgeConfiguration {
 
     private String address;
     private String family;
-    private @NonNull String localTSAP = "0x3000";
-    private @NonNull String remoteTSAP = "0x2000";
-    private @NonNull Integer refresh = 100;
+    private String localTSAP = "0x3000";
+    private String remoteTSAP = "0x2000";
+    private Integer refresh = 100;
 
     /**
      * Get configured Siemens LOGO! device IP address.
      *
      * @return Configured Siemens LOGO! IP address
      */
-    public @NonNull String getAddress() {
+    public String getAddress() {
         return address;
     }
 
@@ -41,8 +40,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param address IP address of Siemens LOGO! device
      */
-    public void setAddress(final @NonNull String address) {
-        Objects.requireNonNull(address, "IP may not be null");
+    public void setAddress(final String address) {
         this.address = address.trim();
     }
 
@@ -53,7 +51,7 @@ public class PLCLogoBridgeConfiguration {
      * @see PLCLogoBindingConstants#LOGO_0BA8
      * @return Configured Siemens LOGO! device family
      */
-    public @NonNull String getFamily() {
+    public String getFamily() {
         return family;
     }
 
@@ -64,8 +62,7 @@ public class PLCLogoBridgeConfiguration {
      * @see PLCLogoBindingConstants#LOGO_0BA7
      * @see PLCLogoBindingConstants#LOGO_0BA8
      */
-    public void setFamily(final @NonNull String family) {
-        Objects.requireNonNull(family, "Family may not be null");
+    public void setFamily(final String family) {
         this.family = family.trim();
     }
 
@@ -87,8 +84,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param tsap Local TSAP of Siemens LOGO! device
      */
-    public void setLocalTSAP(final @NonNull String tsap) {
-        Objects.requireNonNull(tsap, "LocalTSAP may not be null");
+    public void setLocalTSAP(final String tsap) {
         this.localTSAP = tsap.trim();
     }
 
@@ -110,8 +106,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param tsap Remote TSAP of Siemens LOGO! device
      */
-    public void setRemoteTSAP(final @NonNull String tsap) {
-        Objects.requireNonNull(tsap, "RemoteTSAP may not be null");
+    public void setRemoteTSAP(final String tsap) {
         this.remoteTSAP = tsap.trim();
     }
 
@@ -120,7 +115,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @return Configured refresh rate of Siemens LOGO! device blocks
      */
-    public @NonNull Integer getRefreshRate() {
+    public Integer getRefreshRate() {
         return refresh;
     }
 
@@ -129,8 +124,7 @@ public class PLCLogoBridgeConfiguration {
      *
      * @param rate Refresh rate of Siemens LOGO! device blocks
      */
-    public void setRefreshRate(final @NonNull Integer rate) {
-        Objects.requireNonNull(rate, "Refresh rate may not be null");
+    public void setRefreshRate(final Integer rate) {
         this.refresh = rate;
     }
 

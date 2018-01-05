@@ -1,16 +1,16 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plclogo.config;
+package org.openhab.binding.plclogo.internal.config;
 
-import java.util.Objects;
+import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PLCMemoryConfiguration} is a class for configuration
@@ -18,17 +18,18 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Alexander Falkenstern - Initial contribution
  */
+@NonNullByDefault
 public class PLCMemoryConfiguration extends PLCCommonConfiguration {
 
     private String block;
-    private @NonNull Integer threshold = 0;
+    private Integer threshold = 0;
 
     /**
      * Get configured Siemens LOGO! memory block name.
      *
      * @return Configured Siemens LOGO! memory block name
      */
-    public @NonNull String getBlockName() {
+    public String getBlockName() {
         return block;
     }
 
@@ -37,8 +38,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
      *
      * @param name Siemens LOGO! memory block name
      */
-    public void setBlockName(final @NonNull String name) {
-        Objects.requireNonNull(name, "PLCMemoryConfiguration: Block name may not be null.");
+    public void setBlockName(final String name) {
         this.block = name.trim();
     }
 
@@ -47,7 +47,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
      *
      * @return Configured Siemens LOGO! update threshold
      */
-    public @NonNull Integer getThreshold() {
+    public Integer getThreshold() {
         return threshold;
     }
 
@@ -56,20 +56,30 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
      *
      * @param force Force update of Siemens LOGO! blocks
      */
-    public void setThreshold(final @NonNull Integer threshold) {
-        Objects.requireNonNull(threshold, "PLCMemoryConfiguration: Threshold may not be null.");
+    public void setThreshold(final Integer threshold) {
         this.threshold = threshold;
     }
 
     @Override
-    public @NonNull String getChannelType() {
+    public String getChannelType() {
         final String kind = getBlockKind();
-        return kind.equalsIgnoreCase("VB") && block.contains(".") ? "Switch" : "Number";
+        return kind.equalsIgnoreCase("VB") && block.contains(".") ? DIGITAL_OUTPUT_ITEM : ANALOG_ITEM;
     }
 
     @Override
-    public @NonNull String getBlockKind() {
-        return block.substring(0, 2);
+    public String getBlockKind() {
+        return getBlockKind(block);
     }
 
+    protected static String getBlockKind(final String name) {
+        String kind = "Unknown";
+        if (Character.isDigit(name.charAt(1))) {
+            kind = name.substring(0, 1);
+        } else if (Character.isDigit(name.charAt(2))) {
+            kind = name.substring(0, 2);
+        } else if (Character.isDigit(name.charAt(3))) {
+            kind = name.substring(0, 3);
+        }
+        return kind;
+    }
 }
