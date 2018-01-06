@@ -85,10 +85,10 @@ There can be following reasons why Miniserver status is `OFFLINE`:
 
 The binding supports the following authentication methods, which are selected automatically based on the firmware version. They can be also chosen manually in the advanced settings.
 
-|Metod|Miniserver Firmware|Authentication|Encryption|Requirements
-|--------|--------|------|------|--------
-|Hash-based|8.x|HMAC-SHA1 hash on user and password|None|None
-|Token-based|9.x|Token acquired on the first connection and used later instead of the password.|AES-256|JRE must have unrestricted security policy configured|
+| Method      | Miniserver Firmware | Authentication                                                                 | Encryption | Requirements                                          |
+|-------------|---------------------|--------------------------------------------------------------------------------|------------|-------------------------------------------------------|
+| Hash-based  | 8.x                 | HMAC-SHA1 hash on user and password                                            | None       | None                                                  |
+| Token-based | 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
 
 For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration. 
 
@@ -117,8 +117,7 @@ Currently supported controls are presented in the table below.
 | Radio                                                     | [Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)                                                                                                                                                                                                                                                  | `Number`                                                  | `Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)                        |
 | Switch                                                    | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/)                                                                                                                                                                     | `Switch`                                                  | `OnOffType.*`                                                                                                                |
 | TextState                                                 | [State](https://www.loxone.com/enen/kb/state/)                                                                                                                                                                                                                                                                            | `String`                                                  | none (read-only value)                                                                                                       |
-| TimedSwitch                                               | [Stairwell light switch](https://www.loxone.com/enen/kb/stairwell-light-switch/) or [Multifunction switch](https://www.loxone.com/enen/kb/multifunction-switch/)                                                                                                                                                          | `Switch` <br> <br> `Number`                               | `OnOffType.*` (ON send pulse to Loxone) <br> <br> Read-only countdown value to off                                           |
-
+| TimedSwitch                                               | [Stairwell light switch](https://www.loxone.com/enen/kb/stairwell-light-switch/) or [Multifunction switch](https://www.loxone.com/enen/kb/multifunction-switch/)                                                                                                                                                          | `Switch` <br> <br> `Number`                               | `OnOffType.*` (ON sends pulse to Loxone) <br> <br> Read-only countdown value to off                                           |
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/) application.
 
@@ -138,13 +137,13 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-        `keepAlivePeriod=120`
+        keepAlivePeriod=120
 
 ### Security
 
-| ID                | Name                                          | Values    | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|-------------------|-----------------------------------------------|----------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `authMethod`   | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver.
+| ID           | Name                  | Values                                          | Default      | Description                                           |
+|--------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
+| `authMethod` | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
 
 ### Timeouts
 
