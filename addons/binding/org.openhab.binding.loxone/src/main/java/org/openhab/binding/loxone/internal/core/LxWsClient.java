@@ -75,6 +75,7 @@ class LxWsClient {
     private WebSocketClient wsClient;
     private BlockingQueue<LxServerEvent> queue;
     private ClientState state = ClientState.IDLE;
+    private final Lock stateLock = new ReentrantLock();
     private Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
@@ -258,7 +259,8 @@ class LxWsClient {
             return false;
         }
 
-        synchronized (state) {
+        stateLock.lock();
+        try {
             socket = new LxWebSocket();
             wsClient = new WebSocketClient();
 
@@ -274,9 +276,11 @@ class LxWsClient {
                         logger.debug("[{}] Error parsing API config response: {}, {}", debugId, response,
                                 e.getMessage());
                     }
+                } else {
+                    logger.debug("[{}] Http get null or error in reponse for API config request.", debugId);
                 }
             } else {
-                logger.debug("[{}] Http get failed for API config request.");
+                logger.debug("[{}] Http get failed for API config request.", debugId);
             }
 
             try {
@@ -297,6 +301,8 @@ class LxWsClient {
                 close("Connection to websocket failed : " + e.getMessage());
                 return false;
             }
+        } finally {
+            stateLock.unlock();
         }
     }
 
@@ -310,7 +316,8 @@ class LxWsClient {
      */
     private void disconnect(String reason) {
         logger.trace("[{}] disconnect() websocket : {}", debugId, reason);
-        synchronized (this) {
+        stateLock.lock();
+        try {
             if (wsClient != null) {
                 try {
                     close(reason);
@@ -322,6 +329,8 @@ class LxWsClient {
             } else {
                 logger.debug("[{}] Attempt to disconnect websocket client, but wsClient == null", debugId);
             }
+        } finally {
+            stateLock.unlock();
         }
     }
 
@@ -342,7 +351,8 @@ class LxWsClient {
      */
     private void close(String reason) {
         logger.trace("[{}] close() websocket", debugId);
-        synchronized (state) {
+        stateLock.lock();
+        try {
             stopResponseTimeout();
             if (socket != null) {
                 if (socket.session != null) {
@@ -360,6 +370,8 @@ class LxWsClient {
             } else {
                 logger.debug("[{}] Closing websocket, but socket = null", debugId);
             }
+        } finally {
+            stateLock.unlock();
         }
     }
 
@@ -448,7 +460,8 @@ class LxWsClient {
     }
 
     /**
-     * Sets a new websocket client state
+     * Sets a new websocket client state.
+     * The caller must take care of thread synchronization.
      *
      * @param state
      *            new state to set
@@ -463,33 +476,37 @@ class LxWsClient {
      * When timer expires, connection is removed and server error is reported. Further connection attempt can be made
      * later by the upper layer.
      * If a previous timer is running, it will be stopped before a new timer is started.
+     * The caller must take care of thread synchronization.
      */
     private void startResponseTimeout() {
-        synchronized (state) {
-            stopResponseTimeout();
-            timeout = SCHEDULER.schedule(this::responseTimeout, connectTimeout, TimeUnit.SECONDS);
-        }
+        stopResponseTimeout();
+        timeout = SCHEDULER.schedule(this::responseTimeout, connectTimeout, TimeUnit.SECONDS);
     }
 
+    /**
+     * Called when response timeout occurred.
+     */
     private void responseTimeout() {
-        synchronized (state) {
+        stateLock.lock();
+        try {
             logger.debug("[{}] Miniserver response timeout", debugId);
             notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.COMMUNICATION_ERROR,
                     "Miniserver response timeout occured");
             disconnect();
+        } finally {
+            stateLock.unlock();
         }
     }
 
     /**
      * Stops scheduled timeout waiting for a Miniserver response
+     * The caller must take care of thread synchronization.
      */
     private void stopResponseTimeout() {
         logger.trace("[{}] stopping response timeout in state {}", debugId, state);
-        synchronized (state) {
-            if (timeout != null) {
-                timeout.cancel(true);
-                timeout = null;
-            }
+        if (timeout != null) {
+            timeout.cancel(true);
+            timeout = null;
         }
     }
 
@@ -537,7 +554,8 @@ class LxWsClient {
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            synchronized (state) {
+            stateLock.lock();
+            try {
                 if (state != ClientState.CONNECTING) {
                     logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state);
                     return;
@@ -560,12 +578,15 @@ class LxWsClient {
                         notifyAndClose(result, details);
                     }
                 });
+            } finally {
+                stateLock.unlock();
             }
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            synchronized (state) {
+            stateLock.lock();
+            try {
                 logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId, state,
                         statusCode, reason);
                 if (security != null) {
@@ -585,6 +606,8 @@ class LxWsClient {
                     notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.getReason(statusCode), reason);
                 }
                 setClientState(ClientState.IDLE);
+            } finally {
+                stateLock.unlock();
             }
         }
 
@@ -601,60 +624,60 @@ class LxWsClient {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);
             }
-            synchronized (state) {
+            stateLock.lock();
+            try {
                 if (state != ClientState.RUNNING) {
                     return;
                 }
-
-                try {
-                    // websocket will receive header and data in turns as two separate binary messages
-                    if (header == null) {
-                        // header expected now
-                        header = new LxWsBinaryHeader(data, offset);
-                        switch (header.type) {
-                            // following header types precede data in next message
-                            case BINARY_FILE:
-                            case EVENT_TABLE_OF_VALUE_STATES:
-                            case EVENT_TABLE_OF_TEXT_STATES:
-                            case EVENT_TABLE_OF_DAYTIMER_STATES:
-                            case EVENT_TABLE_OF_WEATHER_STATES:
-                                break;
-                            // other header types have no data and next message will be header again
-                            default:
-                                header = null;
-                                break;
-                        }
-                    } else {
-                        // data expected now
-                        switch (header.type) {
-                            case EVENT_TABLE_OF_VALUE_STATES:
-                                stopResponseTimeout();
-                                while (length > 0) {
-                                    LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(true, data, offset);
-                                    offset += event.getSize();
-                                    length -= event.getSize();
-                                    notifyMaster(EventType.STATE_UPDATE, null, event);
-                                }
-                                break;
-                            case EVENT_TABLE_OF_TEXT_STATES:
-                                while (length > 0) {
-                                    LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(false, data, offset);
-                                    offset += event.getSize();
-                                    length -= event.getSize();
-                                    notifyMaster(EventType.STATE_UPDATE, null, event);
-                                }
-                                break;
-                            case KEEPALIVE_RESPONSE:
-                            case TEXT_MESSAGE:
-                            default:
-                                break;
-                        }
-                        // header will be next
-                        header = null;
+                // websocket will receive header and data in turns as two separate binary messages
+                if (header == null) {
+                    // header expected now
+                    header = new LxWsBinaryHeader(data, offset);
+                    switch (header.type) {
+                        // following header types precede data in next message
+                        case BINARY_FILE:
+                        case EVENT_TABLE_OF_VALUE_STATES:
+                        case EVENT_TABLE_OF_TEXT_STATES:
+                        case EVENT_TABLE_OF_DAYTIMER_STATES:
+                        case EVENT_TABLE_OF_WEATHER_STATES:
+                            break;
+                        // other header types have no data and next message will be header again
+                        default:
+                            header = null;
+                            break;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    logger.debug("[{}] malformed binary message received, discarded", debugId);
+                } else {
+                    // data expected now
+                    switch (header.type) {
+                        case EVENT_TABLE_OF_VALUE_STATES:
+                            stopResponseTimeout();
+                            while (length > 0) {
+                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(true, data, offset);
+                                offset += event.getSize();
+                                length -= event.getSize();
+                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                            }
+                            break;
+                        case EVENT_TABLE_OF_TEXT_STATES:
+                            while (length > 0) {
+                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(false, data, offset);
+                                offset += event.getSize();
+                                length -= event.getSize();
+                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                            }
+                            break;
+                        case KEEPALIVE_RESPONSE:
+                        case TEXT_MESSAGE:
+                        default:
+                            break;
+                    }
+                    // header will be next
+                    header = null;
                 }
+            } catch (IndexOutOfBoundsException e) {
+                logger.debug("[{}] malformed binary message received, discarded", debugId);
+            } finally {
+                stateLock.unlock();
             }
         }
 
@@ -667,7 +690,8 @@ class LxWsClient {
                 }
                 logger.trace("[{}] received message in state {}: {}", debugId, state, trace);
             }
-            synchronized (state) {
+            stateLock.lock();
+            try {
                 switch (state) {
                     case IDLE:
                     case CONNECTING:
@@ -700,6 +724,8 @@ class LxWsClient {
                     default:
                         break;
                 }
+            } finally {
+                stateLock.unlock();
             }
         }
 
@@ -832,15 +858,19 @@ class LxWsClient {
          *         true if command was sent (no information if it was received)
          */
         private boolean sendCmdNoResp(String command, boolean encrypt) {
-            synchronized (state) {
+            stateLock.lock();
+            try {
                 if (session != null && state != ClientState.IDLE && state != ClientState.CONNECTING
                         && state != ClientState.CLOSING) {
                     String encrypted = encrypt ? security.encrypt(command) : command;
-                    if (logger.isDebugEnabled() && encrypted.equals(command)) {
-                        logger.debug("[{}] Sending string: {}", debugId, command);
-                    } else {
-                        logger.debug("[{}] Sending encrypted string: {}", debugId, command);
-                        logger.debug("[{}] Encrypted: {}", debugId, encrypted);
+                    if (logger.isDebugEnabled()) {
+                        // security.encrypt() may return the original string if it did not encrypt
+                        if (encrypted.equals(command)) {
+                            logger.debug("[{}] Sending string: {}", debugId, command);
+                        } else {
+                            logger.debug("[{}] Sending encrypted string: {}", debugId, command);
+                            logger.debug("[{}] Encrypted: {}", debugId, encrypted);
+                        }
                     }
                     try {
                         session.getRemote().sendString(encrypted);
@@ -853,6 +883,8 @@ class LxWsClient {
                     logger.debug("[{}] NOT sending command, state {}: {}", debugId, state, command);
                     return false;
                 }
+            } finally {
+                stateLock.unlock();
             }
         }
 
@@ -919,12 +951,17 @@ class LxWsClient {
          */
         private void authenticated() {
             logger.debug("[{}] Websocket authentication successfull.", debugId);
-            setClientState(ClientState.UPDATING_CONFIGURATION);
-            if (sendCmdNoResp(CMD_GET_APP_CONFIG, false)) {
-                startResponseTimeout();
-                startKeepAlive();
-            } else {
-                notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error sending get config command.");
+            stateLock.lock();
+            try {
+                setClientState(ClientState.UPDATING_CONFIGURATION);
+                if (sendCmdNoResp(CMD_GET_APP_CONFIG, false)) {
+                    startResponseTimeout();
+                    startKeepAlive();
+                } else {
+                    notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error sending get config command.");
+                }
+            } finally {
+                stateLock.unlock();
             }
         }
 
@@ -934,7 +971,8 @@ class LxWsClient {
          */
         private void startKeepAlive() {
             keepAlive = SCHEDULER.scheduleWithFixedDelay(() -> {
-                synchronized (state) {
+                stateLock.lock();
+                try {
                     if (state == ClientState.CLOSING || state == ClientState.IDLE || state == ClientState.CONNECTING) {
                         stopKeepAlive();
                     } else {
@@ -943,12 +981,15 @@ class LxWsClient {
                             logger.debug("[{}] error sending keepalive message", debugId);
                         }
                     }
+                } finally {
+                    stateLock.unlock();
                 }
             }, keepAlivePeriod, keepAlivePeriod, TimeUnit.SECONDS);
         }
 
         /**
          * Stops keep alive thread and ceases sending keep alive messages to the Miniserver
+         * The caller must take care of thread synchronization.
          */
         private void stopKeepAlive() {
             logger.trace("[{}] stopping keepalives in state {}", debugId, state);
@@ -957,6 +998,5 @@ class LxWsClient {
                 keepAlive = null;
             }
         }
-
     }
 }

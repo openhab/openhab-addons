@@ -18,6 +18,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
@@ -86,25 +88,24 @@ public class LxServer {
     private int comErrorDelay = 30;
 
     // Data structures
-    private Map<LxUuid, LxControl> controls = new HashMap<>();
-    private Map<LxUuid, LxContainer> rooms = new HashMap<>();
-    private Map<LxUuid, LxCategory> categories = new HashMap<>();
+    private final Map<LxUuid, LxControl> controls = new HashMap<>();
+    private final Map<LxUuid, LxContainer> rooms = new HashMap<>();
+    private final Map<LxUuid, LxCategory> categories = new HashMap<>();
     // Map of state UUID to a map of control UUID and state objects
     // State with a unique UUID can be configured in many controls and each control can even have a different name of
     // the state. It must be ensured that updates received for this state UUID are passed to all controls that have this
     // state UUID configured.
-    private Map<LxUuid, Map<LxUuid, LxControlState>> states = new HashMap<>();
-    private List<LxServerListener> listeners = new ArrayList<>();
+    private final Map<LxUuid, Map<LxUuid, LxControlState>> states = new HashMap<>();
+    private final List<LxServerListener> listeners = new ArrayList<>();
 
     // Services
     private LxWsClient socketClient;
     private Thread monitorThread;
-    private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
-
-    private Logger logger = LoggerFactory.getLogger(LxServer.class);
-
-    private int debugId;
-    private static AtomicInteger staticDebugId = new AtomicInteger(1);
+    private final Lock threadLock = new ReentrantLock();
+    private final BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
+    private final Logger logger = LoggerFactory.getLogger(LxServer.class);
+    private final int debugId;
+    private static final AtomicInteger STATIC_DEBUG_ID = new AtomicInteger(1);
 
     /**
      * Creates a new instance of Loxone Miniserver with provided host address and credentials.
@@ -127,7 +128,7 @@ public class LxServer {
         this.user = user;
         this.password = password;
 
-        debugId = staticDebugId.getAndIncrement();
+        debugId = STATIC_DEBUG_ID.getAndIncrement();
         socketClient = new LxWsClient(debugId, queue, configuration, securityType, host, port, user, password);
     }
 
@@ -137,9 +138,14 @@ public class LxServer {
      */
     public void start() {
         logger.debug("[{}] Server start", debugId);
-        if (monitorThread == null) {
-            monitorThread = new LxServerThread(this);
-            monitorThread.start();
+        threadLock.lock();
+        try {
+            if (monitorThread == null) {
+                monitorThread = new LxServerThread(this);
+                monitorThread.start();
+            }
+        } finally {
+            threadLock.unlock();
         }
     }
 
@@ -147,22 +153,21 @@ public class LxServer {
      * Stop server thread, close communication with Miniserver.
      */
     public void stop() {
-        if (monitorThread != null) {
-            logger.debug("[{}] Server stop", debugId);
-            synchronized (monitorThread) {
-                if (queue != null) {
-                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
-                    try {
-                        queue.put(event);
-                    } catch (InterruptedException e) {
-                        monitorThread.interrupt();
-                    }
-                } else {
+        threadLock.lock();
+        try {
+            if (monitorThread != null) {
+                logger.debug("[{}] Server stop", debugId);
+                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
+                try {
+                    queue.put(event);
+                } catch (InterruptedException e) {
                     monitorThread.interrupt();
                 }
+            } else {
+                logger.debug("[{}] Server stop - no thread", debugId);
             }
-        } else {
-            logger.debug("[{}] Server stop - no thread", debugId);
+        } finally {
+            threadLock.unlock();
         }
     }
 
@@ -413,9 +418,14 @@ public class LxServer {
                 logger.debug("[{}] Server thread interrupted, terminating", debugId);
             }
             logger.debug("[{}] Thread ending", debugId);
-            socketClient.disconnect();
-            monitorThread = null;
-            queue = null;
+            threadLock.lock();
+            try {
+                socketClient.disconnect();
+                monitorThread = null;
+                queue.clear();
+            } finally {
+                threadLock.unlock();
+            }
         }
 
         private boolean processMessage(LxServerEvent wsMsg) {

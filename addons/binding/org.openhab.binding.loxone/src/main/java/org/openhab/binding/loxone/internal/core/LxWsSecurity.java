@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 
 import javax.crypto.Mac;
@@ -30,15 +32,17 @@ import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
  *
  */
 abstract class LxWsSecurity {
-    int debugId;
-    String user;
-    String password;
-    Thread executor;
-    LxWebSocket socket;
-    Configuration configuration;
+    final int debugId;
+    final String user;
+    final String password;
+    final LxWebSocket socket;
+    final Configuration configuration;
+
     LxOfflineReason reason;
     String details;
     boolean cancel = false;
+
+    private final Lock authenticationLock = new ReentrantLock();
 
     /**
      * Create an authentication instance.
@@ -74,13 +78,15 @@ abstract class LxWsSecurity {
      */
     void authenticate(BiConsumer<LxOfflineReason, String> doneCallback) {
         Runnable init = () -> {
-            synchronized (executor) {
+            authenticationLock.lock();
+            try {
                 execute();
                 doneCallback.accept(reason, details);
+            } finally {
+                authenticationLock.unlock();
             }
         };
-        executor = new Thread(init);
-        executor.start();
+        new Thread(init).start();
     }
 
     /**
@@ -196,7 +202,7 @@ abstract class LxWsSecurity {
      * @param type
      *            type of security algorithm
      * @param swVersion
-     *            Miniserver's software version
+     *            Miniserver's software version or null if unknown
      * @param debugId
      *            instance of the client used for debugging purposes only
      * @param configuration
@@ -213,7 +219,7 @@ abstract class LxWsSecurity {
     static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId, Configuration configuration,
             LxWebSocket socket, String user, String password) {
         LxWsSecurityType securityType = type;
-        if (securityType == LxWsSecurityType.AUTO) {
+        if (securityType == LxWsSecurityType.AUTO && swVersion != null) {
             String[] versions = swVersion.split("[.]");
             if (versions != null && versions.length > 0 && Integer.parseInt(versions[0]) <= 8) {
                 securityType = LxWsSecurityType.HASH;

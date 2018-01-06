@@ -58,7 +58,7 @@ There can be following reasons why Miniserver status is `OFFLINE`:
 
 *   __Configuration Error__
     *   _Unknown host_
-    *   Miniserver host/ip address can't be resolved. No connection attempt will be made.
+        *   Miniserver host/ip address can't be resolved. No connection attempt will be made.
     *   _User authentication error_
         *   Invalid user name or password or user not authorized to connect to the Miniserver. Binding will make another attempt to connect after some time.
     *   _Too many failed login attempts - stopped trying_

@@ -14,13 +14,11 @@
             <parameter-group name="miniserver">
                 <label>Miniserver settings</label>
                 <description>Connection to Miniserver</description>
-                <advanced>false</advanced>
             </parameter-group>
                
             <parameter-group name="security">
                 <label>Security settings</label>
                 <description>Authentication and encryption parameters</description>
-                <advanced>false</advanced>
             </parameter-group>
 
             <parameter-group name="timeouts">
