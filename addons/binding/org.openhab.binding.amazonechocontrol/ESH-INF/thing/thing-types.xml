@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="amazonechocontrol"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+    <bridge-type id="account">
+        <label>Amazon Account</label>
+        <description>Amazon Account where your amazon echo is registered.</description>
+       
+        <config-description>
+            <parameter name="amazonSite" type="text" required="true">
+                <default></default>
+                <label>Amazon site</label>
+                <default></default>
+                <limitToOptions>false</limitToOptions>
+                <options>
+                    <option value="amazon.de">amazon.de</option>
+                    <option value="amazon.com">amazon.com</option>
+                    <option value="amazon.ca">amazon.ca</option>
+                    <option value="amazon.it">amazon.it</option>
+                    <option value="amazon.fr">amazon.fr</option>
+                    <option value="amazon.co.uk">amazon.co.uk</option>
+                </options>
+                <description>Select the site where your amazon account is created.</description>
+            </parameter>
+           
+           <parameter name="email" type="text" required="true">
+                <default></default>
+                <label>Amazon account email</label>
+                <description>Enter the email address of the amazon account which is used for the amazon echo devices. Note: 2 factor authentication is currently not supported.</description>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <default></default>
+                 <context>password</context>
+                <label>Amazon account password</label>
+                <description>Enter the password of the amazon account which is used for the amazon echo devices.</description>
+            </parameter>
+            <parameter name="pollingIntervalInSeconds" type="integer" min="10" max="65535" required="true" unit="s">
+                <default>60</default>
+                <label>Refresh state interval</label>
+                <description>Refresh state interval in seconds. Lower time causes more network traffic.</description>
+                <unitLabel>Seconds</unitLabel>
+            </parameter>
+            
+       
+        </config-description>
+        
+    </bridge-type>
+    
+  
+	
+	<thing-type id="echo">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+	  
+	
+		<label>Amazon Echo</label>
+		<description>Amazon Echo device (Amazon Echo, Amazon Echo Dot, Amazon Echo Plus...)</description>
+
+ 
+		<channels>
+            <channel id="player" typeId="player"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="shuffle" typeId="shuffle"/>
+            <channel id="imageUrl" typeId="imageUrl"/>
+            <channel id="title" typeId="title"/>
+            <channel id="subtitle1" typeId="subtitle1"/>
+            <channel id="subtitle2" typeId="subtitle2"/>
+            <channel id="providerDisplayName" typeId="providerDisplayName"/>
+            <channel id="bluetoothId" typeId="bluetoothId"/>
+            <channel id="bluetooth" typeId="bluetooth"/>
+            <channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
+            <channel id="radioStationId" typeId="radioStationId"/>
+            <channel id="radio" typeId="radio"/>
+         </channels>
+        
+        
+        <representation-property>serialNumber</representation-property>
+
+        <config-description>
+            <parameter name="serialNumber" type="text" required="true">
+                <label>Serial Number</label>
+                <description>You will find the serial number of your device in the Alexa app</description>
+            </parameter>
+        </config-description>
+     
+	</thing-type>
+
+
+    <channel-type id="bluetoothDeviceName">
+        <item-type>String</item-type>
+        <label>Bluetooth device</label>
+        <description>Connected bluetooth device</description>
+        <state readOnly="true"></state>       
+    </channel-type>
+    
+    <channel-type id="radioStationId">
+        <item-type>String</item-type>
+        <label>Radio station id</label>
+        <description>Id of the radio station</description>   
+    </channel-type>
+    
+    <channel-type id="name">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>Name of Alexa</description>
+        <state readOnly="true"></state>       
+    </channel-type>
+    
+     <channel-type id="providerDisplayName">
+        <item-type>String</item-type>
+        <label>Provider Name</label>
+        <description>Name of music provider</description>
+        <state readOnly="true"></state>
+    </channel-type>
+   
+      
+    <channel-type id="bluetoothId">
+        <item-type>String</item-type>
+        <label>Bluetooth connection</label>
+        <description>Id of the bluethooth connected device</description>
+    </channel-type>
+    
+     <channel-type id="imageUrl">
+        <item-type>String</item-type>
+        <label>Image url</label>
+        <description>Url of the album image or radio station logo</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="title">
+        <item-type>String</item-type>
+        <label>Title</label>
+        <description>Title</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="subtitle1">
+        <item-type>String</item-type>
+        <label>Subtitle 1</label>
+        <description>Subtitle 1</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="subtitle2">
+        <item-type>String</item-type>
+        <label>Subtitle 2</label>
+        <description>Subtitle 2</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="radio">
+        <item-type>Switch</item-type>
+        <label>Radio</label>
+        <description>Alexa plays radio</description>
+    </channel-type>
+
+    <channel-type id="bluetooth">
+        <item-type>Switch</item-type>
+        <label>Bluetooth Connection</label>
+        <description>Connect to last used device</description>
+    </channel-type>
+
+    <channel-type id="loop">
+        <item-type>Switch</item-type>
+        <label>Loop</label>
+        <description>Loop</description>
+    </channel-type>
+    
+    <channel-type id="shuffle">
+        <item-type>Switch</item-type>
+        <label>Shuffle</label>
+        <description>Shuffle play</description>
+    </channel-type>
+    
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>Content Playing</description>
+	</channel-type>
+	
+	
+	<channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Volume of the sound</description>
+    </channel-type>
+
+</thing:thing-descriptions>
