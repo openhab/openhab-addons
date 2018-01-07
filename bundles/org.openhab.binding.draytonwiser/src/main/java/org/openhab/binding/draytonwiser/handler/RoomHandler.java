@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Room;
+import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,12 @@ public class RoomHandler extends BaseThingHandler {
     }
 
     private State getHumidity() {
+        if (room != null) {
+            RoomStat roomStat = getRoomStat(room.getRoomStatId());
+            if (roomStat != null) {
+                return new DecimalType(roomStat.getMeasuredHumidity());
+            }
+        }
         return UnDefType.UNDEF;
     }
 
@@ -127,5 +134,10 @@ public class RoomHandler extends BaseThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    @Nullable
+    private RoomStat getRoomStat(int id) {
+        return ((HeatHubHandler) getBridge().getHandler()).getRoomStat(id);
     }
 }
