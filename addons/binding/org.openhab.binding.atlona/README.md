@@ -21,7 +21,7 @@ If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), y
 
 ## Binding configuration
 
-```text
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -197,19 +197,19 @@ As of firmware 1.6.8 (rev 14),
 
 Here is an example with minimal configuration parameters (using default values with no telnet login):
 
-```text
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30" ]
 ```
 
 Here is another example with minimal configuration parameters (using default values with telnet login):
 
-```text
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345" ]
 ```
 
 Here is a full configuration example:
 
-```text
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -261,8 +261,7 @@ Switch Atlona_VolumeMute6 "Mute 6" { channel = "atlona:pro3-88m:home:volume1#vol
 ### SiteMap
 
 ```perl
-sitemap demo label="Main Menu"
-{
+sitemap demo label="Main Menu" {
     Frame label="Atlona" {
         Text label="Device" {
             Switch item=Atlona_Power

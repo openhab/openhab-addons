@@ -78,7 +78,6 @@ Follow the instructions to set up the Dash Button in their mobile app.
 When you get to the step where it asks you to pick which product you want to map it to, just quit the setup process.
 
 {: #no-phonehome}
-
 ## Preventing Communication with Amazon Servers
 
 Every time a Dash Button is pressed a request will be sent to the Amazon servers.
@@ -100,7 +99,9 @@ There is one supported Thing, the "Amazon Dash Button".
 
 ## Discovery
 
-Background discovery is not supported as it is not possible to distinguish between a Dash Button and other Amazon devices like the Kindle, a Fire TV or an Echo speaker.
+Background discovery is not supported as it is not possible to distinguish
+between a Dash Button and other Amazon devices like the Kindle,
+a Fire TV or an Echo speaker.
 
 You can start the discovery process for Dash Button devices manually.
 While openHAB is in the scanning process, press the button on the Dash to be recognized and added to your Inbox.
@@ -113,9 +114,11 @@ You can ignore these devices in your Inbox.
 
 ### Amazon Dash Button
 
-- `macAddress` - The MAC address of the Amazon Dash Button.
-- `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
-- `packetInterval` - Often a single button press is recognized multiple times.
+-   `macAddress` - The MAC address of the Amazon Dash Button.
+
+-   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
+
+-   `packetInterval` - Often a single button press is recognized multiple times.
 You can specify how long any further detected button pressed should be ignored after one click was processed.
 The parameter is optional and 5000ms by default.
 

@@ -28,7 +28,8 @@ This device does not contain a temperature sensor.
 
 ### FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT
 
-These devices [FRITZ!DECT 301](https://avm.de/produkte/fritzdect/fritzdect-301/), FRITZ!DECT 300 and [Comet DECT](https://www.eurotronic.org/produkte/comet-dect.html) ( [EUROtronic Technology GmbH](https://www.eurotronic.org) ) are used to regulate radiators via DECT protocol.
+These devices [FRITZ!DECT 301](https://avm.de/produkte/fritzdect/fritzdect-301/),
+FRITZ!DECT 300 and [Comet DECT](https://www.eurotronic.org/produkte/comet-dect.html) ( [EUROtronic Technology GmbH](https://www.eurotronic.org) ) are used to regulate radiators via DECT protocol.
 The FRITZ!Box can handle up to twelve heating thermostats.
 The binding provides channels for reading and setting the temperature.
 Additionally you can check the eco temperature, the comfort temperature and the battery level of the device.

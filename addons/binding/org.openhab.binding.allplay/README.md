@@ -104,14 +104,13 @@ String All2CoverUrl  "Cover Art URL [%s]"   {channel="allplay:speaker:9fbe37ca-d
 demo.sitemap:
 
 ```perl
-sitemap demo label="Main Menu"
-{
+sitemap demo label="Main Menu" {
     Frame label="All2" {
-      Default item=All2Control
-      Slider item=All2Volume
-      Text item=All2Title
-      Text item=All2Artist
-      Text item=All2State
+        Default item=All2Control
+        Slider item=All2Volume
+        Text item=All2Title
+        Text item=All2Artist
+        Text item=All2State
     }
 }
 ```
