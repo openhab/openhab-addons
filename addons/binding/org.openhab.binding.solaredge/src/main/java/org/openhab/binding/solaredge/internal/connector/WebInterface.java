@@ -83,7 +83,7 @@ public class WebInterface {
         try {
             asyncclient.start();
         } catch (Exception e) {
-            logger.error("Could not start HTTP Client");
+            logger.warn("Could not start HTTP Client");
         }
         authenticate();
     }
@@ -99,7 +99,6 @@ public class WebInterface {
             try {
                 Thread.sleep(LOGIN_WAIT_TIME);
             } catch (InterruptedException e) {
-                assert true;
             }
         }
 

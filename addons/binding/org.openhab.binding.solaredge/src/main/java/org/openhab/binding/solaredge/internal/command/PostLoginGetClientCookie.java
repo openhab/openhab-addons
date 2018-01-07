@@ -20,7 +20,8 @@ import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 
 /**
- * implements the login to the webinterface - retrieval of client cookie: needed for some requests such as the legacy-live-data retrieval
+ * implements the login to the webinterface - retrieval of client cookie: needed for some requests such as the
+ * legacy-live-data retrieval
  *
  * @author Alexander Friese - initial contribution
  *
@@ -44,11 +45,6 @@ public class PostLoginGetClientCookie extends AbstractCommandCallback implements
         fields.add(POST_LOGIN_CLIENT_CLIENT_FIELD, POST_LOGIN_CLIENT_CLIENT_VALUE);
         FormContentProvider cp = new FormContentProvider(fields);
         requestToPrepare.content(cp);
-
-        // requestToPrepare.param(POST_LOGIN_CLIENT_CMD_FIELD, POST_LOGIN_CLIENT_CMD_VALUE);
-        // requestToPrepare.param(POST_LOGIN_CLIENT_TARGET_FIELD,
-        // POST_LOGIN_CLIENT_TARGET_VALUE + handler.getConfiguration().getSolarId());
-        // requestToPrepare.param(POST_LOGIN_CLIENT_CLIENT_FIELD, POST_LOGIN_CLIENT_CLIENT_VALUE);
 
         requestToPrepare.followRedirects(false);
         requestToPrepare.method(HttpMethod.POST);

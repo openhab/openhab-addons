@@ -74,8 +74,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("command for {}: {}", channelUID, command);
-
-        // TODO: write access is not supported.
+        // write access is not supported.
     }
 
     @Override
