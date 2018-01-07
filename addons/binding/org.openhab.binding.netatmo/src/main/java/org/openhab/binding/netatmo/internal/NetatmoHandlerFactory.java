@@ -98,7 +98,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
         if (bundleContext != null) {
             discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                    new Hashtable<String, Object>());
+                    new Hashtable<>());
         }
     }
 

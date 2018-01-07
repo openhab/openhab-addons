@@ -121,7 +121,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     public boolean matchesId(String searchedId) {
-        return searchedId != null ? searchedId.equalsIgnoreCase(getId()) : false;
+        return searchedId != null && searchedId.equalsIgnoreCase(getId());
     }
 
     protected String getId() {

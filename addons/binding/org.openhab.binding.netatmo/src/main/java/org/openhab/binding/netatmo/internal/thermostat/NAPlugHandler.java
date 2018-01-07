@@ -46,7 +46,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
             userAdministrative = thermostatDataBody.getUser().getAdministrative();
 
             result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
             if (result != null) {
                 result.getModules().forEach(child -> childs.put(child.getId(), child));
             }
