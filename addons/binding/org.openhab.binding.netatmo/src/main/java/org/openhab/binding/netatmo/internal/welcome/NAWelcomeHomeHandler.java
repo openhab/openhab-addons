@@ -61,7 +61,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             // need
             dataTimeStamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
             result = homeDataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
             if (result != null) {
                 result.getCameras().forEach(camera -> childs.put(camera.getId(), camera));
 
