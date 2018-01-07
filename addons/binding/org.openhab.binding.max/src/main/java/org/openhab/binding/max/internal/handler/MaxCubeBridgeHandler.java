@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -546,8 +546,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         this.messageProcessor.reset();
                     }
                 } catch (Exception e) {
-                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
-                            ipAddress, e.getMessage(), e);
+                    logger.info(
+                            "Error while handling message block: '{}' from MAX! Cube lan gateway: {}, Error message: {}: ",
+                            raw, ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
                 if (terminator == null || raw.startsWith(terminator)) {

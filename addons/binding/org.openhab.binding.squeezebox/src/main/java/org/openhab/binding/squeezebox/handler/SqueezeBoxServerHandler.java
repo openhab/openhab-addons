@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Added duration channel
  * @author Mark Hilbush - Added login/password authentication for LMS
  * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
+ * @author Patrik Gfeller - Support for mixer volume message added
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -527,23 +528,31 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // get the message type
             String messageType = messageParts[1];
+            switch (messageType) {
+                case "status":
+                    handleStatusMessage(mac, messageParts);
+                    break;
+                case "playlist":
+                    handlePlaylistMessage(mac, messageParts);
+                    break;
+                case "prefset":
+                    handlePrefsetMessage(mac, messageParts);
+                    break;
+                case "mixer":
+                    handleMixerMessage(mac, messageParts);
+                    break;
+                case "ir":
+                    final String ircode = messageParts[2];
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.irCodeChangeEvent(mac, ircode);
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled player update message type '{}'.", messageType);
 
-            if (messageType.equals("status")) {
-                handleStatusMessage(mac, messageParts);
-            } else if (messageType.equals("playlist")) {
-                handlePlaylistMessage(mac, messageParts);
-            } else if (messageType.equals("prefset")) {
-                handlePrefsetMessage(mac, messageParts);
-            } else if (messageType.equals("ir")) {
-                final String ircode = messageParts[2];
-                updatePlayer(new PlayerUpdateEvent() {
-                    @Override
-                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                        listener.irCodeChangeEvent(mac, ircode);
-                    }
-                });
-            } else {
-                logger.trace("Unhandled player update message type '{}'.", messageType);
             }
         }
 
@@ -570,6 +579,26 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String fetchUrl(final String mac) {
             return fetchUrl(null, mac);
+        }
+
+        private void handleMixerMessage(String mac, String[] messageParts) {
+            String action = messageParts[2];
+
+            switch (action) {
+                case "volume":
+                    String value = messageParts[3];
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.volumeChangeEvent(mac, Integer.parseInt(value));
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
+
+            }
+
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
