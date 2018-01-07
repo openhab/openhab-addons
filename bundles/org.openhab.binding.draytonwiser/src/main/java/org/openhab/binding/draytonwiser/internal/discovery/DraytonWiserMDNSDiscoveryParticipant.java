@@ -59,6 +59,7 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
                 InetAddress[] addresses = service.getInetAddresses();
                 if (addresses.length > 0 && addresses[0] != null) {
                     properties.put(DraytonWiserBindingConstants.ADDRESS, addresses[0].getHostAddress());
+                    properties.put(DraytonWiserBindingConstants.REFRESH_INTERVAL, 60);
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)

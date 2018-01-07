@@ -30,6 +30,8 @@ public class DraytonWiserBindingConstants {
 
     public static final String AUTH_TOKEN = "AUTHTOKEN";
 
+    public static final String REFRESH_INTERVAL = "REFRESH";
+
     // Web Service Endpoints
     public static final String DEVICE_ENDPOINT = "data/domain/Device/";
     public static final String ROOMSTATS_ENDPOINT = "data/domain/RoomStat/";
@@ -48,10 +50,10 @@ public class DraytonWiserBindingConstants {
     public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
 
     // List of all Channel ids
-    public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature-channel";
-    public static final String CHANNEL_CURRENT_HUMIDITY = "currentHumidity-channel";
-    public static final String CHANNEL_CURRENT_SETPOINT = "currentSetPoint-channel";
-    public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel-channel";
+    public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
+    public static final String CHANNEL_CURRENT_HUMIDITY = "currentHumidity";
+    public static final String CHANNEL_CURRENT_SETPOINT = "currentSetPoint";
+    public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ROOM,
             THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV);

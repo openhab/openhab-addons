@@ -8,12 +8,7 @@
     <bridge-type id="heathub">
         <label>HeatHub</label>
         <description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
- 
-        <properties>
-            <property name="vendor">Drayton</property>
-        </properties>
         <representation-property>serialNumber</representation-property>
-        
         <config-description>
             <parameter name="ADDR" type="text">
                 <label>Network Address</label>
@@ -27,6 +22,12 @@
                 </description>
                 <required>true</required>
             </parameter>
+            <parameter name="REFRESH" type="integer">
+                <label>Refresh interval</label>
+                <description>Interval in seconds between automatic refreshes</description>
+                <required>true</required>
+                <default>60</default>
+            </parameter>
         </config-description>
     </bridge-type>
     
@@ -38,12 +39,22 @@
         
         <label>Room</label>
         <description>A Room that contains a thermostat or TRV</description>
-
+        
         <channels>
             <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
         </channels>
+        
+        <config-description>
+            <parameter name="internalID" type="integer">
+                <label>ID</label>
+                <description>
+                    Device ID on the network.
+                </description>
+                <required>true</required>
+            </parameter>
+        </config-description>
     </thing-type>
     
     <thing-type id="roomstat">
@@ -60,6 +71,16 @@
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="batteryLevel" typeId="batteryLevel-channel"/>
        </channels>
+        
+        <config-description>
+            <parameter name="internalID" type="integer">
+                <label>ID</label>
+                <description>
+                    Device ID on the network.
+                </description>
+                <required>true</required>
+            </parameter>
+        </config-description>
     </thing-type>
     
     <thing-type id="itrv">
@@ -67,36 +88,48 @@
             <bridge-type-ref id="heathub" />
         </supported-bridge-type-refs>
         
-       <label>iTRV</label>
-       <description>Thermostatic Radiator Valve</description>
+        <label>iTRV</label>
+        <description>Thermostatic Radiator Valve</description>
        
-       <channels>
-           <channel id="currentTemperature" typeId="currentTemperature-channel"/>
+        <channels>
+            <channel id="currentTemperature" typeId="currentTemperature-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="batteryLevel" typeId="batteryLevel-channel"/>
-       </channels>
+        </channels>
+        
+        <config-description>
+            <parameter name="internalID" type="integer">
+                <label>ID</label>
+                <description>
+                    Device ID on the network.
+                </description>
+                <required>true</required>
+            </parameter>
+        </config-description>
     </thing-type>
 
     <!-- Sample Channel Type -->
     <channel-type id="currentTemperature-channel">
         <item-type>Number</item-type>
         <label>Temperature</label>
-        <description>Current temperature channel</description>
-        <state readOnly="true" />
+        <description>Current temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="currentHumidity-channel">
         <item-type>Number</item-type>
         <label>Humidity</label>
-        <description>Current Humidity channel</description>
-        <state readOnly="true" />
+        <description>Current Humidity in %</description>
+        <state readOnly="true" pattern="%d %%">
+        </state>
     </channel-type>
     
     <channel-type id="currentSetPoint-channel">
         <item-type>Number</item-type>
         <label>Set Point</label>
-        <description>Set Point Control channel</description>
-        <state readOnly="false" />
+        <description>Current set point in degrees celsius</description>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="batteryLevel-channel">

@@ -137,6 +137,42 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return rooms;
     }
 
+    public @Nullable Room getRoom(Integer id) {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + "/" + id,
+                HttpMethod.GET, "");
+
+        if (response == null) {
+            return null;
+        }
+
+        Room room = gson.fromJson(response.getContentAsString(), Room.class);
+        return room;
+    }
+
+    public @Nullable RoomStat getRoomStat(Integer id) {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMSTATS_ENDPOINT + "/" + id,
+                HttpMethod.GET, "");
+
+        if (response == null) {
+            return null;
+        }
+
+        RoomStat roomStat = gson.fromJson(response.getContentAsString(), RoomStat.class);
+        return roomStat;
+    }
+
+    public @Nullable SmartValve getSmartValve(Integer id) {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.TRVS_ENDPOINT + "/" + id,
+                HttpMethod.GET, "");
+
+        if (response == null) {
+            return null;
+        }
+
+        SmartValve smartValve = gson.fromJson(response.getContentAsString(), SmartValve.class);
+        return smartValve;
+    }
+
     public @Nullable Device getExtendedDeviceProperties(int id) {
         Device device = null;
         ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DEVICE_ENDPOINT + id,
