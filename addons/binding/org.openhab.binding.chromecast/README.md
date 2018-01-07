@@ -32,55 +32,51 @@ The only configuration parameter is the `ipAddress`.
 | volume          | Dimmer    | Control the volume, this is also updated if the volume is changed by another app                                            |
 | playuri         | String    | Can be used to tell the Chromecast to play media from a given url                                                           |
 
-
 ## Full Example
 
 services.cfg:
 
-```
+```java
 binding.chromecast:callbackUrl=http://192.168.30.58:8080
 ```
 
 demo.things:
 
-```
+```java
 chromecast:audio:myCC [ ipAddress="192.168.xxx.xxx"]
 ```
 
 demo.items:
 
-```
+```java
 Dimmer Volume { channel="chromecast:audio:myCC:volume" }
 Player Music { channel="chromecast:audio:myCC:control" }
 ```
 
 demo.rules:
 
-```
+```javascript
 rule "Turn on kitchen speakers when Chromecast starts playing music"
 when
     Item chromecast_chromecast_38e621581281c7675a777e7b474811ed_appId changed
 then
-{
-	logInfo("RULE.AUDIO", "Chromecast id changed!")
+    logInfo("RULE.AUDIO", "Chromecast id changed!")
 
-	// 36061251 Pandora
-	// 2872939A Google Play Music
+    // 36061251 Pandora
+    // 2872939A Google Play Music
 
-	if (chromecast_chromecast_38e621581281c7675a777e7b474811ed_appId.state == "36061251"
-	|| chromecast_chromecast_38e621581281c7675a777e7b474811ed_appId.state == "2872939A") {
-		kitchen_audio_power.sendCommand(ON)
-		kitchen_audio_source.sendCommand(1)
-	}
-}
+    if (chromecast_chromecast_38e621581281c7675a777e7b474811ed_appId.state == "36061251"
+    || chromecast_chromecast_38e621581281c7675a777e7b474811ed_appId.state == "2872939A") {
+        kitchen_audio_power.sendCommand(ON)
+        kitchen_audio_source.sendCommand(1)
+    }
 end
 ```
 
 demo.sitemap:
 
-```
-sitemap demo label="Main Menu"
-{
+```perl
+sitemap demo label="Main Menu" {
     Frame {
         Default item=Music
         Slider item=Volume icon=soundvolume
@@ -88,13 +84,13 @@ sitemap demo label="Main Menu"
 }
 ```
 
-```
+```perl
 sitemap chromecast label="Chromecasts" {
-  Frame label="Family Room: What's Playing" {
-    Image item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_image
-    Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_artist label="Artist [%s]"
-    Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_title label="Title [%s]"
-    Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_albumName label="Album [%s]"
-  }
+    Frame label="Family Room: What's Playing" {
+        Image item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_image
+        Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_artist label="Artist [%s]"
+        Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_title label="Title [%s]"
+        Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_albumName label="Album [%s]"
+    }
 }
 ```

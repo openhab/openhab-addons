@@ -18,22 +18,22 @@ It is not advised to run the virtual machine as superuser/root.
 The `command` Thing requires the command to execute on the shell.
 Optionally one can specify:
 
--   a transformation to apply on the execution result,
--   an interval, in seconds, the command will be repeatedly executed,
--   a time-out, in seconds, the execution of the command will time out, and lastly,
--   a boolean parameter to make the command execute immediately every time the state of the input channel has changed.
+- a transformation to apply on the execution result,
+- an interval, in seconds, the command will be repeatedly executed,
+- a time-out, in seconds, the execution of the command will time out, and lastly,
+- a boolean parameter to make the command execute immediately every time the state of the input channel has changed.
 
 For each command a separate Thing has to be defined.
 
-```
+```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5, autorun=false]
 ```
 
 `command` itself can be enhanced using the well known syntax of the **java.util.Formatter** class.
 The following parameters are automatically added:
 
--   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current State of the input channel (see below, example: `%2$s`)
+- the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
+- the current State of the input channel (see below, example: `%2$s`)
 
 ## Channels
 
@@ -47,19 +47,18 @@ All Things support the following channels:
 | run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
 
-
-**Example**
+## Example
 
 **demo.things**
 
-```
+```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5]
 Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2$s", transform="REGEX((.*?))"]
 ```
 
 **demo.items**
 
-```
+```java
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
 Switch APCRunning { channel="exec:command:apc:run"}
 Number APCExitValue {channel="exec:command:apc:exit"}
