@@ -112,14 +112,14 @@ public class RoomHandler extends BaseThingHandler {
 
     private State getSetPoint() {
         if (room != null) {
-            return new DecimalType(room.getCurrentSetPoint() / 10);
+            return new DecimalType((float) room.getCurrentSetPoint() / 10);
         }
 
         return UnDefType.UNDEF;
     }
 
     private State getHumidity() {
-        if (room != null) {
+        if (room != null && room.getRoomStatId() != null) {
             RoomStat roomStat = getRoomStat(room.getRoomStatId());
             if (roomStat != null) {
                 return new DecimalType(roomStat.getMeasuredHumidity());
@@ -130,7 +130,7 @@ public class RoomHandler extends BaseThingHandler {
 
     private State getTemperature() {
         if (room != null) {
-            return new DecimalType(room.getCalculatedTemperature() / 10);
+            return new DecimalType((float) room.getCalculatedTemperature() / 10);
         }
 
         return UnDefType.UNDEF;
