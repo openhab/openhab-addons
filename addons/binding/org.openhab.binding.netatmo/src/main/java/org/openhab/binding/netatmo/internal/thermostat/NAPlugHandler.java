@@ -70,9 +70,11 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     public @Nullable ZonedDateTime getLastBilan() {
         if (device != null) {
             NAYearMonth lastBilan = device.getLastBilan();
-            ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
-                    ZonedDateTime.now().getZone());
-            return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
+            if (lastBilan != null) {
+                ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
+                        ZonedDateTime.now().getZone());
+                return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
+            }
         }
         return null;
     }
