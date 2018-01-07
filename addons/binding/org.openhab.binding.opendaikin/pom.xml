@@ -11,7 +11,6 @@
 	</parent>
 
 	<artifactId>org.openhab.binding.opendaikin</artifactId>
-	<version>2.3.0-SNAPSHOT</version>
 
 	<name>OpenDaikin Binding</name>
 	<packaging>eclipse-plugin</packaging>

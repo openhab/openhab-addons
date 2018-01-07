@@ -39,35 +39,35 @@ public class OpenDaikinWebTargets {
         getSensorInfo = base.path("aircon/get_sensor_info");
     }
 
-    public ControlInfo getControlInfo() {
+    public ControlInfo getControlInfo() throws OpenDaikinCommunicationException {
         String response = invoke(getControlInfo.request().buildGet(), getControlInfo);
         return ControlInfo.parse(response);
     }
 
-    public void setControlInfo(ControlInfo info) {
+    public void setControlInfo(ControlInfo info) throws OpenDaikinCommunicationException {
         WebTarget target = info.getParamString(setControlInfo);
         logger.debug("Calling this url: {}", target.getUri().toString());
         invoke(target.request().buildGet(), target);
     }
 
-    public SensorInfo getSensorInfo() {
+    public SensorInfo getSensorInfo() throws OpenDaikinCommunicationException {
         String response = invoke(getSensorInfo.request().buildGet(), getSensorInfo);
         return SensorInfo.parse(response);
     }
 
-    private String invoke(Invocation invocation, WebTarget target) {
+    private String invoke(Invocation invocation, WebTarget target) throws OpenDaikinCommunicationException {
         Response response;
         synchronized (this) {
             response = invocation.invoke();
         }
 
         if (response.getStatus() != 200) {
-            logger.error("Bridge returned {} while invoking {} : {}", response.getStatus(), target.getUri(),
-                    response.readEntity(String.class));
-            return null;
+            throw new OpenDaikinCommunicationException(
+                    String.format("Daikin controller returned %s while invoking %s : %s", response.getStatus(),
+                            target.getUri(), response.readEntity(String.class)));
         } else if (!response.hasEntity()) {
-            logger.error("Bridge returned null response while invoking {}", target.getUri());
-            return null;
+            throw new OpenDaikinCommunicationException(
+                    String.format("Daikin controller returned null response while invoking %s", target.getUri()));
         }
 
         return response.readEntity(String.class);

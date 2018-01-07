@@ -29,12 +29,9 @@ public class OpenDaikinBindingConstants {
     public static final ThingTypeUID THING_TYPE_AC_UNIT = new ThingTypeUID(BINDING_ID, "ac_unit");
 
     // List of all Channel ids
-    public static final String CHANNEL_AC_TEMPC = "settempc";
-    public static final String CHANNEL_AC_TEMPF = "settempf";
-    public static final String CHANNEL_INDOOR_TEMPC = "indoortempc";
-    public static final String CHANNEL_INDOOR_TEMPF = "indoortempf";
-    public static final String CHANNEL_OUTDOOR_TEMPC = "outdoortempc";
-    public static final String CHANNEL_OUTDOOR_TEMPF = "outdoortempf";
+    public static final String CHANNEL_AC_TEMP = "settemp";
+    public static final String CHANNEL_INDOOR_TEMP = "indoortemp";
+    public static final String CHANNEL_OUTDOOR_TEMP = "outdoortemp";
     public static final String CHANNEL_AC_POWER = "power";
     public static final String CHANNEL_AC_MODE = "mode";
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";

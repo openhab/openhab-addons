@@ -10,10 +10,6 @@ package org.openhab.binding.opendaikin.internal.api;
 
 import javax.ws.rs.client.WebTarget;
 
-import org.openhab.binding.opendaikin.handler.OpenDaikinAcUnitHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Class for holding the set of parameters used by set and get control info.
  *
@@ -71,7 +67,7 @@ public class ControlInfo {
 
         public static FanSpeed fromValue(String value) {
             for (FanSpeed m : FanSpeed.values()) {
-                if (m.getValue() == value) {
+                if (m.getValue().equals(value)) {
                     return m;
                 }
             }
@@ -109,8 +105,6 @@ public class ControlInfo {
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger(OpenDaikinAcUnitHandler.class);
-
     public boolean power;
     public Mode mode;
     /** Degrees in Celsius. */
@@ -124,7 +118,6 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        logger.debug("Parsing {}", response);
         ControlInfo info = new ControlInfo();
 
         for (String keyValuePair : response.split(",")) {

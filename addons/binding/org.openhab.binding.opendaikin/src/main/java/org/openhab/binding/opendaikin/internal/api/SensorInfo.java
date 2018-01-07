@@ -10,10 +10,6 @@ package org.openhab.binding.opendaikin.internal.api;
 
 import java.util.Optional;
 
-import org.openhab.binding.opendaikin.handler.OpenDaikinAcUnitHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Holds information from the get_sensor_info call.
  *
@@ -21,8 +17,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class SensorInfo {
-    private static Logger logger = LoggerFactory.getLogger(OpenDaikinAcUnitHandler.class);
-
     public Optional<Double> indoortemp;
     public Optional<Double> indoorhumidity;
     public Optional<Double> outdoortemp;
@@ -31,8 +25,10 @@ public class SensorInfo {
     }
 
     public static SensorInfo parse(String response) {
-        logger.debug("Parsing {}", response);
         SensorInfo info = new SensorInfo();
+        info.indoortemp = Optional.empty();
+        info.indoorhumidity = Optional.empty();
+        info.outdoortemp = Optional.empty();
 
         for (String keyValuePair : response.split(",")) {
             if (keyValuePair.contains("=")) {
@@ -45,24 +41,18 @@ public class SensorInfo {
                         // "-" indicates no value
                         if (!"-".equals(value)) {
                             info.indoortemp = Optional.of(Double.parseDouble(value));
-                        } else {
-                            info.indoortemp = Optional.empty();
                         }
                         break;
                     case "hhum":
                         // "-" indicates no value
                         if (!"-".equals(value)) {
                             info.indoorhumidity = Optional.of(Double.parseDouble(value));
-                        } else {
-                            info.indoorhumidity = Optional.empty();
                         }
                         break;
                     case "otemp":
                         // "-" indicates no value
                         if (!"-".equals(value)) {
                             info.outdoortemp = Optional.of(Double.parseDouble(value));
-                        } else {
-                            info.outdoortemp = Optional.empty();
                         }
                         break;
                 }

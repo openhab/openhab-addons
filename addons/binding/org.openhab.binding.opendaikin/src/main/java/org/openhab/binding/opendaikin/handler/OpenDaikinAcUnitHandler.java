@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.opendaikin.OpenDaikinBindingConstants;
+import org.openhab.binding.opendaikin.internal.OpenDaikinCommunicationException;
 import org.openhab.binding.opendaikin.internal.OpenDaikinWebTargets;
 import org.openhab.binding.opendaikin.internal.api.ControlInfo;
 import org.openhab.binding.opendaikin.internal.api.SensorInfo;
@@ -55,50 +56,51 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        switch (channelUID.getId()) {
-            case OpenDaikinBindingConstants.CHANNEL_AC_POWER:
-                if (command instanceof OnOffType) {
-                    changePower(((OnOffType) command).equals(OnOffType.ON));
-                } else {
-                    logger.warn("Received command of wrong type");
-                }
-                break;
-            case OpenDaikinBindingConstants.CHANNEL_AC_TEMPC:
-                if (command instanceof DecimalType) {
-                    changeSetPointC(((DecimalType) command).doubleValue());
-                } else {
-                    logger.warn("Received command of wrong type");
-                }
-                break;
-            case OpenDaikinBindingConstants.CHANNEL_AC_TEMPF:
-                if (command instanceof DecimalType) {
-                    changeSetPointF(((DecimalType) command).doubleValue());
-                } else {
-                    logger.warn("Received command of wrong type");
-                }
-                break;
-            case OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
-                if (command instanceof StringType) {
-                    changeFanSpeed(ControlInfo.FanSpeed.valueOf(((StringType) command).toString()));
-                } else {
-                    logger.warn("Received command of wrong type");
-                }
-                break;
-            case OpenDaikinBindingConstants.CHANNEL_AC_MODE:
-                if (command instanceof StringType) {
-                    changeMode(ControlInfo.Mode.valueOf(((StringType) command).toString()));
-                } else {
-                    logger.warn("Received command of wrong type");
-                }
-                break;
-        }
+        try {
+            switch (channelUID.getId()) {
+                case OpenDaikinBindingConstants.CHANNEL_AC_POWER:
+                    if (command instanceof OnOffType) {
+                        changePower(((OnOffType) command).equals(OnOffType.ON));
+                    } else {
+                        logger.warn("Received command of wrong type for thing '{}' on channel {}",
+                                thing.getUID().getAsString(), channelUID.getId());
+                    }
+                    break;
+                case OpenDaikinBindingConstants.CHANNEL_AC_TEMP:
+                    if (command instanceof DecimalType) {
+                        changeSetPoint(((DecimalType) command).doubleValue());
+                    } else {
+                        logger.warn("Received command of wrong type for thing '{}' on channel {}",
+                                thing.getUID().getAsString(), channelUID.getId());
+                    }
+                    break;
+                case OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
+                    if (command instanceof StringType) {
+                        changeFanSpeed(ControlInfo.FanSpeed.valueOf(((StringType) command).toString()));
+                    } else {
+                        logger.warn("Received command of wrong type for thing '{}' on channel {}",
+                                thing.getUID().getAsString(), channelUID.getId());
+                    }
+                    break;
+                case OpenDaikinBindingConstants.CHANNEL_AC_MODE:
+                    if (command instanceof StringType) {
+                        changeMode(ControlInfo.Mode.valueOf(((StringType) command).toString()));
+                    } else {
+                        logger.warn("Received command of wrong type for thing '{}' on channel {}",
+                                thing.getUID().getAsString(), channelUID.getId());
+                    }
+                    break;
+            }
 
-        poll();
+            poll();
+        } catch (OpenDaikinCommunicationException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing HDPowerView HUB");
+        logger.debug("Initializing OpenDaikin AC Unit");
         OpenDaikinConfiguration config = getConfigAs(OpenDaikinConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
@@ -121,18 +123,12 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         stopPoll();
     }
 
-    void pollNow() {
-        if (isInitialized()) {
-            schedulePoll();
-        }
-    }
-
     private void schedulePoll() {
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(pollingRunnable, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private synchronized void stopPoll() {
@@ -147,10 +143,10 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
             logger.debug("Polling for state");
             pollStatus();
         } catch (IOException e) {
-            logger.debug("Could not connect to bridge", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
-        } catch (Exception e) {
-            logger.warn("Unexpected error connecting to bridge", e);
+            logger.debug("Could not connect to Daikin controller", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error connecting to Daikin controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -160,8 +156,7 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         if (controlInfo != null) {
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
-            updateState(OpenDaikinBindingConstants.CHANNEL_AC_TEMPC, new DecimalType(controlInfo.temp));
-            updateState(OpenDaikinBindingConstants.CHANNEL_AC_TEMPF, new DecimalType(cToF(controlInfo.temp)));
+            updateTempState(OpenDaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
@@ -170,23 +165,15 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         SensorInfo sensorInfo = webTargets.getSensorInfo();
         if (sensorInfo != null) {
             if (sensorInfo.indoortemp.isPresent()) {
-                updateState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMPC,
-                        new DecimalType(sensorInfo.indoortemp.get()));
-                updateState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMPF,
-                        new DecimalType(cToF(sensorInfo.indoortemp.get())));
+                updateTempState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp.get());
             } else {
-                updateState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMPC, UnDefType.UNDEF);
-                updateState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMPF, UnDefType.UNDEF);
+                updateState(OpenDaikinBindingConstants.CHANNEL_INDOOR_TEMP, UnDefType.UNDEF);
             }
 
             if (sensorInfo.outdoortemp.isPresent()) {
-                updateState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMPC,
-                        new DecimalType(sensorInfo.outdoortemp.get()));
-                updateState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMPF,
-                        new DecimalType(cToF(sensorInfo.outdoortemp.get())));
+                updateTempState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp.get());
             } else {
-                updateState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMPC, UnDefType.UNDEF);
-                updateState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMPF, UnDefType.UNDEF);
+                updateState(OpenDaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, UnDefType.UNDEF);
             }
 
             if (sensorInfo.indoorhumidity.isPresent()) {
@@ -198,38 +185,48 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         }
     }
 
-    private Runnable pollingRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            poll();
+    private void updateTempState(String channel, double temp) {
+        DecimalType tempToUpdateWith;
+        if (useFahrenheitForChannel(channel)) {
+            tempToUpdateWith = new DecimalType(cToF(temp));
+        } else {
+            tempToUpdateWith = new DecimalType(temp);
         }
 
-    };
+        updateState(channel, tempToUpdateWith);
+    }
 
-    private void changePower(boolean power) {
+    private void changePower(boolean power) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.power = power;
         webTargets.setControlInfo(info);
     }
 
-    private void changeSetPointC(double tempc) {
+    private void changeSetPoint(double temp) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
-        info.temp = tempc;
+
+        if (useFahrenheitForChannel(OpenDaikinBindingConstants.CHANNEL_AC_TEMP)) {
+            info.temp = fToC(temp);
+        } else {
+            info.temp = temp;
+        }
+
         webTargets.setControlInfo(info);
     }
 
-    private void changeSetPointF(double tempf) {
-        changeSetPointC(fToC(tempf));
+    private boolean useFahrenheitForChannel(String channel) {
+        return this.getThing().getChannel(channel) != null
+                && this.getThing().getChannel(channel).getConfiguration().containsKey("useFahrenheit")
+                && this.getThing().getChannel(channel).getConfiguration().get("useFahrenheit").equals(true);
     }
 
-    private void changeMode(ControlInfo.Mode mode) {
+    private void changeMode(ControlInfo.Mode mode) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.mode = mode;
         webTargets.setControlInfo(info);
     }
 
-    private void changeFanSpeed(ControlInfo.FanSpeed fanSpeed) {
+    private void changeFanSpeed(ControlInfo.FanSpeed fanSpeed) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.fanSpeed = fanSpeed;
         webTargets.setControlInfo(info);

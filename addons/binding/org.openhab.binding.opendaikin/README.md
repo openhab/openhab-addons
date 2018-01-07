@@ -1,6 +1,6 @@
 # OpenDaikin Binding
 
-The OpenDaikin binding allows you to control your Daikin air conditioning units with OpenHAB. In order to do so, your Daikin air conditioning unit must have a BRP072A42 WiFi adapter installed.
+The OpenDaikin binding allows you to control your Daikin air conditioning units with openHAB. In order to do so, your Daikin air conditioning unit must have a BRP072A42 WiFi adapter installed.
 
 ## Supported Things
 
@@ -19,16 +19,17 @@ This addon does not currently support discovery. You'll need to know the IP addr
 
 ## Channels
 
-* power - Turns the power on/off for the air conditioning unit.
-* settempc - The temperature set for the air conditioning unit in degrees Celsius. Can only be changed by half degree increments.
-* settempf - The temperature set for the air conditioning unit in degrees Fahrenheit. Can only be changed by full degree increments.
-* indoortempc - The indoor temperature as measured by the unit in degrees Celsius.
-* indoortempf - The indoor temperature as measured by the unit in degrees Fahrenheit.
-* outdoortempc - The outdoor temperature as measured by the external part of the air conditioning system in degrees Celsius. May not be available when unit is off.
-* outdoortempf - The outdoor temperature as measured by the external part of the air conditioning system in degrees Fahrenheit. May not be available when unit is off.
-* humidity - The indoor humidity as measured by the unit. This is not available on all units.
-* mode - The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)
-* fan - The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5)
+For channels that use temperatures, the default is to use Celsius. This can be changed via a configuration on the individual channels. When in Celsius mode, the temperature has a precision of one half degree. When using Fahrenheit, only whole degrees are used. Internally, the Daikin system uses Celsius so all Fahrenheit numbers are converted and rounded.
+
+| Channel Name | Description |
+|--------------|---------------------------------------------------------------------------------------------|
+| power        | Turns the power on/off for the air conditioning unit.                                       |
+| settemp      | The temperature set for the air conditioning unit.                                          |
+| indoortemp   | The indoor temperature as measured by the unit.                                             |
+| outdoortemp  | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
+| humidity     | The indoor humidity as measured by the unit. This is not available on all units.            |
+| mode         | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
+| fan          | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 
 
 ## Full Example
