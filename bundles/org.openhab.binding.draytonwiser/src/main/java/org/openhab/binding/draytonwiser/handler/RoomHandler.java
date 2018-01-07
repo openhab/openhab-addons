@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -97,6 +98,10 @@ public class RoomHandler extends BaseThingHandler {
                         getHumidity());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SETPOINT),
                         getSetPoint());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_DEMAND),
+                        getDemand());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEAT_REQUEST),
+                        getHeatRequest());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -134,6 +139,24 @@ public class RoomHandler extends BaseThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    private State getDemand() {
+        if (room != null) {
+            return new DecimalType(room.getPercentageDemand());
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getHeatRequest() {
+        if (room != null) {
+            if (room.getControlOutputState().toUpperCase() == "ON") {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
     }
 
     @Nullable

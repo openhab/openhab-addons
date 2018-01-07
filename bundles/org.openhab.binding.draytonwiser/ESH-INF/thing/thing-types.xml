@@ -44,6 +44,8 @@
             <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+            <channel id="currentDemand" typeId="demandPercent-channel"/>
+            <channel id="heatRequest" typeId="heatRequest-channel"/>
         </channels>
         
         <config-description>
@@ -137,6 +139,20 @@
         <label>Battery Level</label>
         <description>Current Battery Level for the Room Stat</description>
         <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="demandPercent-channel">
+        <item-type>Number</item-type>
+        <label>Current Heat Demand</label>
+        <description>Current heat demand in %</description>
+        <state readOnly="true" pattern="%d %%"></state>
+    </channel-type>
+    
+    <channel-type id="heatRequest-channel">
+        <item-type>Switch</item-type>
+        <label>Currently Requesting Heat</label>
+        <description>Is this room requesting heat</description>
+        <state readOnly="true" ></state>
     </channel-type>
     
 
