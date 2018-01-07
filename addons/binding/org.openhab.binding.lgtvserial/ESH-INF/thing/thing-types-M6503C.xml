@@ -47,11 +47,13 @@
             <channel id="tile" typeId="tile-M6503C"/>
             <channel id="tile-h-position" typeId="tile-h-position"/>
             <channel id="tile-h-size" typeId="tile-h-size"/>
-            <channel id="tile-id-set" typeId="tile-id-set"/>
+            <channel id="tile-id-set" typeId="tile-id-set-M6503C"/>
             <channel id="tile-v-position" typeId="tile-v-position"/>
             <channel id="tile-v-size" typeId="tile-v-size"/>
             <channel id="tint" typeId="tint"/>
+            <!-- Used to set the time on the TV, but have no clue yet how to handle this...
             <channel id="time" typeId="time"/>
+            -->
             <channel id="v-position" typeId="v-position"/>
             <channel id="v-size" typeId="v-size"/>
             <channel id="volume" typeId="volume"/>
@@ -243,6 +245,13 @@
                 <option value="55">5 x 5 mode</option>
             </options>
         </state>
+    </channel-type>
+    
+    <channel-type id="tile-id-set-M6503C">
+        <item-type>Dimmer</item-type>
+        <label>Tile ID Set</label>
+        <description>To assign the Tile ID for Tiling function</description>
+        <state min="0" max="25" />        
     </channel-type>
 
 </thing:thing-descriptions>
