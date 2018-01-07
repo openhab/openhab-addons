@@ -45,7 +45,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
             userAdministrative = stationDataBody.getUser().getAdministrative();
 
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
             if (result != null) {
                 result.getModules().forEach(child -> childs.put(child.getId(), child));
             }
@@ -94,9 +94,9 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
                     return toDecimalType(
                             WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
                 case CHANNEL_DEWPOINTDEP:
-                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                    Double dewPoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
                             dashboardData.getHumidity());
-                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
+                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint));
                 case CHANNEL_WIND_UNIT:
                     return userAdministrative != null ? new DecimalType(userAdministrative.getWindunit())
                             : UnDefType.UNDEF;

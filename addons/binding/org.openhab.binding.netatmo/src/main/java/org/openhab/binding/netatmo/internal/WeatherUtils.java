@@ -51,7 +51,7 @@ public class WeatherUtils {
      * http://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
      *
      * @param temperature in (°C)
-     * @param hygro relative level (%)
+     * @param humidity relative level (%)
      * @return dewpoint temperature
      */
     public static double getDewPoint(double temperature, double humidity) {

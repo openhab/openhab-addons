@@ -185,8 +185,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             scopes.add("write_camera");
         }
 
-        String result = String.join(" ", scopes);
-        return result;
+        return String.join(" ", scopes);
     }
 
     @Override
@@ -259,7 +258,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
      * @return Url of the picture or UnDefType.UNDEF
      */
     public String getPictureUrl(String id, String key) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         if (id != null && key != null) {
             ret.append(WELCOME_PICTURE_URL).append("?").append(WELCOME_PICTURE_IMAGEID).append("=").append(id)
                     .append("&").append(WELCOME_PICTURE_KEY).append("=").append(key);
@@ -284,14 +283,14 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 String cameraId = event.getCameraId();
                 if (cameraId != null) {
                     Optional<AbstractNetatmoThingHandler> camera = findNAThing(cameraId);
-                    camera.ifPresent(aCamera -> modules.add(aCamera));
+                    camera.ifPresent(modules::add);
                 }
             }
             if (HOME_EVENTS.contains(event.getEventType())) {
                 String homeId = event.getHomeId();
                 if (homeId != null) {
                     Optional<AbstractNetatmoThingHandler> home = findNAThing(homeId);
-                    home.ifPresent(aHome -> modules.add(aHome));
+                    home.ifPresent(modules::add);
                 }
             }
             if (PERSON_EVENTS.contains(event.getEventType())) {
@@ -300,7 +299,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                     String personId = person.getId();
                     if (personId != null) {
                         Optional<AbstractNetatmoThingHandler> personHandler = findNAThing(personId);
-                        personHandler.ifPresent(aPerson -> modules.add(aPerson));
+                        personHandler.ifPresent(modules::add);
                     }
                 });
             }

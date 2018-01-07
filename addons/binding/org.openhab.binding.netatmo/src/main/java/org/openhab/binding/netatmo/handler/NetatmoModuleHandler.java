@@ -65,7 +65,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            logger.error("The module has no method to access {} property ", channelId.toString());
+            logger.error("The module has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 
@@ -85,7 +85,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     protected void requestParentRefresh() {
         Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
-        parent.ifPresent(p -> p.updateChannels());
+        parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
     }
 
 }

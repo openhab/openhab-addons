@@ -155,7 +155,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("The device has no method to access {} property ", channelId.toString());
+            logger.error("The device has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 
