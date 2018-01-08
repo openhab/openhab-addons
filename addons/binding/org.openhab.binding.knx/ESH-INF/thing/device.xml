@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="device" extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, contact, contact-control. number, number-control, string, string-control, datetime, datetime-control">
+	<thing-type id="device" extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip" />
 			<bridge-type-ref id="serial" />
@@ -60,7 +60,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>A channel to control a dimmer</description>
-        <config-description-ref uri="channel-type:knx:dimmer" />
+        <config-description-ref uri="channel-type:knx:dimmer-control" />
 	</channel-type>
 
     <!-- Rollershutter -->
