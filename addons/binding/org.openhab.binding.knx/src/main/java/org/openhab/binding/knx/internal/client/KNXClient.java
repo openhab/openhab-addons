@@ -234,9 +234,6 @@ public abstract class KNXClient implements NetworkLinkListener {
         GroupAddress destination = event.getDestination();
         IndividualAddress source = event.getSourceAddr();
         byte[] asdu = event.getASDU();
-        if (asdu.length == 0) {
-            return;
-        }
         logger.trace("Received a {} telegram from '{}' to '{}'", task, source, destination);
         for (GroupAddressListener listener : groupAddressListeners) {
             if (listener.listensTo(destination)) {
