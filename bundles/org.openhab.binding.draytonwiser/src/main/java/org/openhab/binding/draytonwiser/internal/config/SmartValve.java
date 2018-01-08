@@ -15,9 +15,9 @@ public class SmartValve {
     @SerializedName("MeasuredTemperature")
     @Expose
     private Integer measuredTemperature;
-    @SerializedName("MeasuredDemand")
+    @SerializedName("PercentageDemand")
     @Expose
-    private Integer measuredDemand;
+    private Integer percentageDemand;
     @SerializedName("WindowState")
     @Expose
     private String windowState;
@@ -44,8 +44,8 @@ public class SmartValve {
         return measuredTemperature;
     }
 
-    public Integer getMeasuredDemand() {
-        return measuredDemand;
+    public Integer getPercentageDemand() {
+        return percentageDemand;
     }
 
     public String getWindowState() {
