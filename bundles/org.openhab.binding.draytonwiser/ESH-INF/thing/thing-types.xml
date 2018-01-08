@@ -71,8 +71,8 @@
            <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
-            <channel id="batteryLevel" typeId="batteryLevel-channel"/>
-            <channel id="signalStrength" typeId="signalStrength-channel" />
+            <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentSignalStrength" typeId="signalStrength-channel" />
        </channels>
         
         <config-description>
@@ -98,8 +98,8 @@
             <channel id="currentTemperature" typeId="currentTemperature-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentDemand" typeId="demandPercent-channel"/>
-            <channel id="batteryLevel" typeId="batteryLevel-channel"/>
-            <channel id="signalStrength" typeId="signalStrength-channel" />
+            <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentSignalStrength" typeId="signalStrength-channel" />
         </channels>
         
         <config-description>
@@ -142,7 +142,7 @@
         <item-type>Number</item-type>
         <label>Battery Level</label>
         <description>Current Battery Level for the Room Stat</description>
-        <state readOnly="true" />
+        <state readOnly="true" pattern="%.1f V"/>
     </channel-type>
     
     <channel-type id="demandPercent-channel">
@@ -160,14 +160,14 @@
     </channel-type>
     
     <channel-type id="heatingOverride-channel">
-        <item-type>Switch</item-type>
+        <item-type>Contact</item-type>
         <label>Heating Override</label>
         <description>The heating override button has been pressed</description>
         <state readOnly="true" ></state>
     </channel-type>
     
     <channel-type id="hotWaterOverride-channel">
-        <item-type>Switch</item-type>
+        <item-type>Contact</item-type>
         <label>Hot Water Override</label>
         <description>The hot water override button has been pressed</description>
         <state readOnly="true" ></state>

@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
+import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +97,11 @@ public class RoomStatHandler extends BaseThingHandler {
                         getHumidity());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SETPOINT),
                         getSetPoint());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH),
+                        getSignalStrength());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_LEVEL),
+                        getBatteryVoltage());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -127,6 +133,28 @@ public class RoomStatHandler extends BaseThingHandler {
     private State getTemperature() {
         if (roomStat != null) {
             return new DecimalType((float) roomStat.getMeasuredTemperature() / 10);
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getSignalStrength() {
+        if (roomStat != null) {
+            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                return new DecimalType((float) device.getRssi());
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getBatteryVoltage() {
+        if (roomStat != null) {
+            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                return new DecimalType((float) device.getBatteryVoltage() / 10);
+            }
         }
 
         return UnDefType.UNDEF;
