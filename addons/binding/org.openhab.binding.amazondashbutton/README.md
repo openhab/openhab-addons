@@ -119,8 +119,8 @@ You can ignore these devices in your Inbox.
 -   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
 
 -   `packetInterval` - Often a single button press is recognized multiple times.
-You can specify how long any further detected button pressed should be ignored after one click was processed.
-The parameter is optional and 5000ms by default.
+    You can specify how long any further detected button pressed should be ignored after one click was processed.
+    The parameter is optional and 5000ms by default.
 
 For manual defintion of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with [Wireshark](https://wireshark.org).
 

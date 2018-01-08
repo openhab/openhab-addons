@@ -36,7 +36,7 @@ The thing has a few configuration parameters:
 
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
-```text
+```java
 37.8,-122.4
 37.8255,-122.456
 ```
@@ -87,7 +87,7 @@ HAZARDOUS=Hazardous
 
 airquality.things:
 
-```text
+```java
 airquality:aqi:home "AirQuality" @ "Krakow" [ apikey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
 airquality:aqi:warsaw "AirQuality in Warsaw" [ apikey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
 airquality:aqi:brisbane "AirQuality in Brisbane" [ apikey="XXXXXXXXXXXX", stationId=5115 ]

@@ -94,7 +94,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 demo.things:
 
-```text
+```java
 Bridge avmfritz:fritzbox:1 @ "Office" [ ipAddress="192.168.x.x", password="xxx", user="xxx" ] {
     Thing FRITZ_DECT_200 xxxxxxxxxxxx "FRITZ!DECT 200 #1" @ "Living Room" [ ain="xxxxxxxxxxxx" ]
     Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" @ "Office" [ ain="yy:yy:yy:yy:yy:yy" ]
@@ -123,22 +123,24 @@ Switch COMETDECTBattery "Battery low" (gCOMETDECT) { channel="avmfritz:Comet_DEC
 demo.sitemap:
 
 ```perl
-sitemap demo label="Main Menu"
-{
-  Frame label="FRITZ!DECT 200 switchable outlet" {
-    Switch item=Outlet1 icon="poweroutlet"
-    Text item=Temperature1 icon="temperature"
-    Text item=Energy1 icon="energy"
-    Text item=Power1 icon="energy"
-  }
-  Frame label="FRITZ!Powerline 546E switchable outlet" {
-    Switch item=Outlet2
-  }
-  Frame "Comet DECT heating thermostat" {
-    Text item=COMETDECTActualTemp icon="temperature"
-    Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
-    Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"]
-    Switch item=COMETDECTBattery icon="battery"
-  }
+sitemap demo label="Main Menu"{
+
+    Frame label="FRITZ!DECT 200 switchable outlet" {
+        Switch item=Outlet1 icon="poweroutlet"
+        Text item=Temperature1 icon="temperature"
+        Text item=Energy1 icon="energy"
+        Text item=Power1 icon="energy"
+    }
+
+    Frame label="FRITZ!Powerline 546E switchable outlet" {
+        Switch item=Outlet2
+    }
+
+    Frame "Comet DECT heating thermostat" {
+        Text item=COMETDECTActualTemp icon="temperature"
+        Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
+        Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"]
+        Switch item=COMETDECTBattery icon="battery"
+    }
 }
 ```

@@ -85,7 +85,7 @@ Audio streams are sent to the `stream` channel.
 
 demo.things:
 
-```text
+```java
 Thing allplay:speaker:mySpeaker [ deviceId="9fbe37ca-d015-47a2-b76e-8fce7bc25687"]
 ```
 

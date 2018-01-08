@@ -18,7 +18,6 @@ This can be configured on the binding level:
 | Chromecast Audio   | The Chromecast whichonly does audio streaming and offers a headphone jack            | audio      |
 | Audio Group        | A Chromecast audio group for multi-room audio defined via the Chromecast app         | audiogroup |
 
-
 ## Discovery
 
 Chromecast devices are discovered on the network using UPnP.

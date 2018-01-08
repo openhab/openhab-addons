@@ -25,12 +25,12 @@ If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), y
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
-- ipAddress: Hostname or IP address of the matrix switch
-- userName: (optional) the username to login with (only if Telnet Login is enabled)
-- password: (optional) the password to login with (only if Telnet Login is enabled)
-- polling: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
-- ping: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
-- retryPolling: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
+- `ipAddress`: Hostname or IP address of the matrix switch
+- `userName`: (optional) the username to login with (only if Telnet Login is enabled)
+- `password`: (optional) the password to login with (only if Telnet Login is enabled)
+- `polling`: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
+- `ping`: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
+- `retryPolling`: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
 
 ### username/password
 
