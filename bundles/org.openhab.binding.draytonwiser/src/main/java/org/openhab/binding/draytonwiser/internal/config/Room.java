@@ -130,7 +130,7 @@ public class Room {
     }
 
     public Integer getCurrentSetPoint() {
-        return currentSetPoint;
+        return currentSetPoint < 0 ? 0 : currentSetPoint;
     }
 
     public void setCurrentSetPoint(Integer currentSetPoint) {

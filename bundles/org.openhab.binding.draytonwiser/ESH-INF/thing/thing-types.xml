@@ -72,6 +72,7 @@
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="batteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="signalStrength" typeId="signalStrength-channel" />
        </channels>
         
         <config-description>
@@ -98,6 +99,7 @@
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentDemand" typeId="demandPercent-channel"/>
             <channel id="batteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="signalStrength" typeId="signalStrength-channel" />
         </channels>
         
         <config-description>
@@ -168,6 +170,13 @@
         <item-type>Switch</item-type>
         <label>Hot Water Override</label>
         <description>The hot water override button has been pressed</description>
+        <state readOnly="true" ></state>
+    </channel-type>
+    
+    <channel-type id="signalStrength-channel">
+        <item-type>Number</item-type>
+        <label>Signal Strength</label>
+        <description>The reported network signal strength</description>
         <state readOnly="true" ></state>
     </channel-type>
     

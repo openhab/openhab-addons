@@ -33,7 +33,7 @@ public class SmartValve {
     }
 
     public Integer getSetPoint() {
-        return setPoint;
+        return setPoint < 0 ? 0 : setPoint;
     }
 
     public void setSetPoint(Integer setPoint) {
