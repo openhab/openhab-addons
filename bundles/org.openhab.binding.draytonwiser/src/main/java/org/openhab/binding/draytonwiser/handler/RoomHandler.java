@@ -151,7 +151,7 @@ public class RoomHandler extends BaseThingHandler {
 
     private State getHeatRequest() {
         if (room != null) {
-            if (room.getControlOutputState().toUpperCase() == "ON") {
+            if (room.getControlOutputState().toUpperCase().equals("ON")) {
                 return OnOffType.ON;
             }
         }
