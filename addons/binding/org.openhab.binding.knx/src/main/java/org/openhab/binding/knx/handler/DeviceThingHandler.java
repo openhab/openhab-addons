@@ -38,19 +38,20 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.internal.channel.CommandSpec;
-import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
+import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.channel.ListenSpec;
 import org.openhab.binding.knx.internal.channel.ReadSpec;
 import org.openhab.binding.knx.internal.channel.ResponseSpec;
 import org.openhab.binding.knx.internal.client.DeviceInspector;
-import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.DeviceInspector.Result;
+import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.slf4j.Logger;
@@ -368,28 +369,32 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         Type type = typeHelper.toType(datapoint, asdu);
 
         if (type != null) {
-            if (KNXBindingConstants.CHANNEL_DIMMER_CONTROL.equals(getChannelTypeUID(channelUID).getId())
-                    && (type instanceof UnDefType || type instanceof IncreaseDecreaseType)) {
-                // special handling for dimmer-control
-                if (UnDefType.UNDEF.equals(type)) {
-                    ScheduledFuture<?> future = channelFutures.remove(channelUID);
-                    if (future != null) {
-                        future.cancel(false);
+            if (isControl(channelUID)) {
+                if (KNXBindingConstants.CHANNEL_DIMMER_CONTROL.equals(getChannelTypeUID(channelUID).getId())
+                        && (type instanceof UnDefType || type instanceof IncreaseDecreaseType)) {
+                    // special handling for dimmer-control
+                    if (UnDefType.UNDEF.equals(type)) {
+                        ScheduledFuture<?> future = channelFutures.remove(channelUID);
+                        if (future != null) {
+                            future.cancel(false);
+                        }
+                    } else if (type instanceof IncreaseDecreaseType) {
+                        ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(() -> {
+                            postCommand(channelUID, (Command) type);
+                        }, 0, 500, TimeUnit.MILLISECONDS);
+                        ScheduledFuture<?> previousFuture = channelFutures.put(channelUID, future);
+                        if (previousFuture != null) {
+                            previousFuture.cancel(true);
+                        }
                     }
-                } else if (type instanceof IncreaseDecreaseType) {
-                    ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(() -> {
+                } else {
+                    if (type instanceof Command) {
                         postCommand(channelUID, (Command) type);
-                    }, 0, 500, TimeUnit.MILLISECONDS);
-                    ScheduledFuture<?> previousFuture = channelFutures.put(channelUID, future);
-                    if (previousFuture != null) {
-                        previousFuture.cancel(true);
                     }
                 }
             } else {
-                if (type instanceof Command) {
-                    postCommand(channelUID, (Command) type);
-                } else {
-                    // drop
+                if (type instanceof State) {
+                    updateState(channelUID, (State) type);
                 }
             }
         } else {
