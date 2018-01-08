@@ -559,7 +559,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             } else if (type instanceof StopMoveType) {
                 return type.equals(StopMoveType.STOP) ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (type instanceof PercentType) {
-                return type.toString();
+                return String.valueOf(((DecimalType) type).intValue());
             } else if (type instanceof DecimalType) {
                 switch (mainNumber) {
                     case 2:
