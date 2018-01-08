@@ -15,10 +15,12 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -99,7 +101,8 @@ public class AVMFritzDiscoveryServiceTest {
     public void invalidDiscoveryResult() throws JAXBException {
         String xml = "<devicelist version=\"1\"><group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group></devicelist>";
 
-        DevicelistModel devices = JAXBUtils.buildResult(xml);
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(0));
     }
@@ -108,7 +111,8 @@ public class AVMFritzDiscoveryServiceTest {
     public void validDECTRepeater100Result() throws JAXBException {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0954669\" id=\"20\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device></devicelist>";
 
-        DevicelistModel devices = JAXBUtils.buildResult(xml);
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -134,7 +138,8 @@ public class AVMFritzDiscoveryServiceTest {
     public void validDECT200DiscoveryResult() throws JAXBException {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device></devicelist>";
 
-        DevicelistModel devices = JAXBUtils.buildResult(xml);
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -160,7 +165,8 @@ public class AVMFritzDiscoveryServiceTest {
     public void validCometDECTDiscoveryResult() throws JAXBException {
         String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000435\" id=\"18\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>1</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>0</lock><devicelock>0</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device></devicelist>";
 
-        DevicelistModel devices = JAXBUtils.buildResult(xml);
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
@@ -186,7 +192,8 @@ public class AVMFritzDiscoveryServiceTest {
     public void validPowerline546EDiscoveryResult() throws JAXBException {
         String xml = "<devicelist version=\"1\"><device identifier=\"5C:49:79:F0:A3:84\" id=\"19\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter></device></devicelist>";
 
-        DevicelistModel devices = JAXBUtils.buildResult(xml);
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 

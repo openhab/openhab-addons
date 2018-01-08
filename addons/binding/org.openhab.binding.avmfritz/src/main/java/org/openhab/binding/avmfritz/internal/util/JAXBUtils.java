@@ -8,11 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.util;
 
-import java.io.StringReader;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.slf4j.Logger;
@@ -21,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation for a static use of JAXBContext as singleton instance.
  *
- * @author Christoph Weitkamp
+ * @author Christoph Weitkamp - Initial contribution
  *
  */
 public class JAXBUtils {
@@ -30,8 +27,6 @@ public class JAXBUtils {
 
     public static final JAXBContext JAXBCONTEXT = initJAXBContext();
 
-    public static Unmarshaller JAXBUnmarshaller;
-
     private static JAXBContext initJAXBContext() {
         try {
             return JAXBContext.newInstance(DevicelistModel.class);
@@ -39,12 +34,5 @@ public class JAXBUtils {
             logger.error("Exception creating JAXBContext: {}", e.getLocalizedMessage(), e);
             return null;
         }
-    }
-
-    public static DevicelistModel buildResult(final String xml) throws JAXBException {
-        if (JAXBUnmarshaller == null) {
-            JAXBUnmarshaller = JAXBCONTEXT.createUnmarshaller();
-        }
-        return (DevicelistModel) JAXBUnmarshaller.unmarshal(new StringReader(xml));
     }
 }
