@@ -11,10 +11,12 @@ package org.openhab.binding.avmfritz.internal.ahamodel;
 import static org.junit.Assert.*;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
@@ -50,7 +52,8 @@ public class AVMFritzModelTest {
                 + "</devicelist>";
 
         try {
-            devices = JAXBUtils.buildResult(xml);
+            Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+            devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         } catch (JAXBException e) {
             logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
         }
