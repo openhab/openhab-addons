@@ -20,7 +20,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de). In other words, it simulates a user which is using the web page.
 Unfortunately, the binding can get broken if Amazon change the website.
 
-I have currently only tested the binding with amazon.de If you have an other account, please let me know if it works. Otherwise you will get instruction how you can help me to make it working. 
+The binding is tested with amazon.de and amazon.co.uk accounts, but should also work with all others. 
 
 ## Warning ##
 

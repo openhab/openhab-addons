@@ -35,6 +35,8 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -45,21 +47,35 @@ import com.google.gson.Gson;
  * @author Michael Geramb - Initial contribution
  */
 public class Connection {
+    private final Logger logger = LoggerFactory.getLogger(Connection.class);
+
     private java.net.CookieManager m_cookieManager = new java.net.CookieManager();
     private String m_email;
     private String m_password;
     private String m_amazonSite;
     private String m_sessionId;
     private Date m_loginTime;
-    private String m_apiServer = "layla.amazon.de";
+    private String m_alexaServer;
 
     public Connection(String email, String password, String amazonSite) {
         m_email = email;
         m_password = password;
+
         m_amazonSite = amazonSite;
-        if (m_amazonSite.equalsIgnoreCase("amazon.com")) {
-            m_apiServer = "pitangui.amazon.com";
+        if (m_amazonSite.toLowerCase().startsWith("http://")) {
+            m_amazonSite = m_amazonSite.substring(7);
         }
+        if (m_amazonSite.toLowerCase().startsWith("https://")) {
+            m_amazonSite = m_amazonSite.substring(8);
+        }
+        if (m_amazonSite.toLowerCase().startsWith("www.")) {
+            m_amazonSite = m_amazonSite.substring(4);
+        }
+        if (m_amazonSite.toLowerCase().startsWith("alexa.")) {
+            m_amazonSite = m_amazonSite.substring(6);
+        }
+        m_alexaServer = "https://alexa." + amazonSite;
+
     }
 
     public String getEmail() {
@@ -151,7 +167,7 @@ public class Connection {
             return false;
         }
         m_sessionId = scanner.nextLine();
-        m_loginTime = new Date(Long.parseLong(scanner.nextLine()));
+        Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
 
         CookieStore cookieStore = m_cookieManager.getCookieStore();
 
@@ -188,6 +204,7 @@ public class Connection {
         scanner.close();
         try {
             if (verifyLogin()) {
+                m_loginTime = loginTime;
                 return true;
 
             }
@@ -297,7 +314,7 @@ public class Connection {
     }
 
     public boolean getIsLoggedIn() {
-        return m_sessionId != null;
+        return m_loginTime != null;
     }
 
     public void makeLogin() throws Exception {
@@ -308,7 +325,7 @@ public class Connection {
             m_loginTime = null;
 
             // get login form
-            String loginFormHtml = makeRequestAndReturnString("https://alexa." + m_amazonSite);
+            String loginFormHtml = makeRequestAndReturnString(m_alexaServer);
 
             // get session id from cookies
             for (HttpCookie cookie : m_cookieManager.getCookieStore().getCookies()) {
@@ -338,6 +355,9 @@ public class Connection {
             String queryParameters = postDataBuilder.toString() + "session-id="
                     + URLEncoder.encode(m_sessionId, "UTF-8");
 
+            logger.debug("Login query String:");
+            logger.debug(queryParameters);
+
             postDataBuilder.append("email");
             postDataBuilder.append('=');
             postDataBuilder.append(URLEncoder.encode(m_email, "UTF-8"));
@@ -356,12 +376,13 @@ public class Connection {
             String response = makeRequestAndReturnString("https://www." + m_amazonSite + "/ap/signin", referer,
                     postData, false);
             if (response.contains("<title>Amazon Alexa</title>")) {
-                // login seems to be ok
+                logger.debug("Response seems to be alexa app");
+            } else {
+                logger.debug("Response maybe not valid");
             }
 
             // get CSRF
-            makeRequest("https://" + m_apiServer + "/api/language", "https://alexa." + m_amazonSite + "/spa/index.html",
-                    null, false);
+            makeRequest(m_alexaServer + "/api/language", m_alexaServer + "/spa/index.html", null, false);
 
             // verify login
             if (!verifyLogin()) {
@@ -373,6 +394,7 @@ public class Connection {
             m_cookieManager.getCookieStore().removeAll();
             m_sessionId = null;
             m_loginTime = null;
+            logger.debug("Login failed: " + e.getMessage());
             throw e;
         }
 
@@ -389,7 +411,7 @@ public class Connection {
     }
 
     public boolean verifyLogin() throws Exception {
-        String response = makeRequestAndReturnString("https://" + m_apiServer + "/api/bootstrap?version=0");
+        String response = makeRequestAndReturnString(m_alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
         return result;
     }
@@ -412,14 +434,14 @@ public class Connection {
     }
 
     public Device[] getDeviceList() throws Exception {
-        String json = makeRequestAndReturnString("https://" + m_apiServer + "/api/devices-v2/device?cached=false");
+        String json = makeRequestAndReturnString(m_alexaServer + "/api/devices-v2/device?cached=false");
         Gson gson = new Gson();
         JsonDevices devices = gson.fromJson(json, JsonDevices.class);
         return devices.devices;
     }
 
     public JsonPlayerState getPlayer(Device device) throws Exception {
-        String json = makeRequestAndReturnString("https://" + m_apiServer + "/api/np/player?deviceSerialNumber="
+        String json = makeRequestAndReturnString(m_alexaServer + "/api/np/player?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&screenWidth=1440");
         Gson gson = new Gson();
         JsonPlayerState playerState = gson.fromJson(json, JsonPlayerState.class);
@@ -427,7 +449,7 @@ public class Connection {
     }
 
     public JsonMediaState getMediaState(Device device) throws Exception {
-        String json = makeRequestAndReturnString("https://" + m_apiServer + "/api/media/state?deviceSerialNumber="
+        String json = makeRequestAndReturnString(m_alexaServer + "/api/media/state?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType);
         Gson gson = new Gson();
         JsonMediaState mediaState = gson.fromJson(json, JsonMediaState.class);
@@ -435,15 +457,15 @@ public class Connection {
     }
 
     public JsonBluetoothStates getBluetoothConnectionStates() throws Exception {
-        String json = makeRequestAndReturnString("https://alexa." + m_amazonSite + "/api/bluetooth?cached=true");
+        String json = makeRequestAndReturnString(m_alexaServer + "/api/bluetooth?cached=true");
         Gson gson = new Gson();
         JsonBluetoothStates bluetoothStates = gson.fromJson(json, JsonBluetoothStates.class);
         return bluetoothStates;
     }
 
     public void command(Device device, String command) throws Exception {
-        String url = "https://alexa." + m_amazonSite + "/api/np/command?deviceSerialNumber=" + device.serialNumber
-                + "&deviceType=" + device.deviceType;
+        String url = m_alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
+                + device.deviceType;
         makeRequest(url, null, command, true);
 
     }
@@ -451,11 +473,12 @@ public class Connection {
     public void bluetooth(Device device, String address) throws Exception {
         if (address == null || address.isEmpty()) {
             // disconnect
-            makeRequest("https://" + m_apiServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/"
-                    + device.serialNumber, null, "", true);
+            makeRequest(
+                    m_alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber,
+                    null, "", true);
         } else {
-            makeRequest("https://" + m_apiServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/"
-                    + device.serialNumber, null, "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true);
+            makeRequest(m_alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber,
+                    null, "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true);
 
         }
     }
@@ -465,7 +488,7 @@ public class Connection {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
             makeRequest(
-                    "https://" + m_apiServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
+                    m_alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
                             + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
                     null, "", true);
@@ -474,9 +497,9 @@ public class Connection {
 
     public void playPrimeSong(Device device, String trackId) throws Exception {
         String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
-        makeRequest("https://alexa." + m_amazonSite + "/api/cloudplayer?deviceSerialNumber=" + device.serialNumber
-                + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId
-                + "&shuffle=false", null, command, true);
+        makeRequest(m_alexaServer + "/api/cloudplayer?deviceSerialNumber=" + device.serialNumber + "&deviceType="
+                + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId + "&shuffle=false", null,
+                command, true);
 
     }
 

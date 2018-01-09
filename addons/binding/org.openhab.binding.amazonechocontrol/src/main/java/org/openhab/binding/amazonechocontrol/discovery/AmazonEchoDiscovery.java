@@ -47,7 +47,9 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
         synchronized (discoveryServices) {
-            discoveryServices.add(discoveryService);
+            if (!discoveryServices.contains(discoveryService)) {
+                discoveryServices.add(discoveryService);
+            }
         }
 
     }
