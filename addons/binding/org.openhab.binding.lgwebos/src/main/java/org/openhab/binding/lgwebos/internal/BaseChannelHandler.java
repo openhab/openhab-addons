@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -93,7 +93,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
 
             @Override
             public void onError(ServiceCommandError error) {
-                logger.warn("{}: received error response: {}.", BaseChannelHandler.this.getClass().getName(), error);
+                logger.warn("{}: received error response: ", BaseChannelHandler.this.getClass().getName(), error);
             }
 
             @Override

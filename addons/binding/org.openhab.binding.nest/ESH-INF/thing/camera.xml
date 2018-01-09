@@ -20,6 +20,7 @@
 			<channel id="public_share_enabled" typeId="PublicShareEnabled" />
 			<channel id="public_share_url" typeId="PublicShareUrl" />
 			<channel id="snapshot_url" typeId="SnapshotUrl" />
+			<channel id="last_online_change" typeId="LastOnlineChange" />
 		</channels>
 
 		<properties>

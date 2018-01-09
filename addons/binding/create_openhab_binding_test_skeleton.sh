@@ -10,11 +10,11 @@ id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`
 mvn -s ../archetype-settings.xml archetype:generate -N \
   -DarchetypeGroupId=org.eclipse.smarthome.archetype \
   -DarchetypeArtifactId=org.eclipse.smarthome.archetype.binding.test \
-  -DarchetypeVersion=0.9.0-SNAPSHOT \
+  -DarchetypeVersion=0.10.0-SNAPSHOT \
   -DgroupId=org.openhab.binding \
   -DartifactId=org.openhab.binding.$id.test \
   -Dpackage=org.openhab.binding.$id \
-  -Dversion=2.2.0-SNAPSHOT \
+  -Dversion=2.3.0-SNAPSHOT \
   -DbindingId=$id \
   -DbindingIdCamelCase=$camelcaseId \
   -DvendorName=openHAB \

@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
-	<!-- structure -->
+
+	<!-- Common -->
+	<channel-type id="LastConnection" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Connection</label>
+		<description>Timestamp of the last successful interaction with Nest</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Structure -->
 	<channel-type id="Away">
 		<item-type>String</item-type>
 		<label>Away</label>
@@ -10,7 +19,6 @@
 			<options>
 				<option value="AWAY">Away</option>
 				<option value="HOME">Home</option>
-				<option value="AUTO_AWAY">Auto Away</option>
 			</options>
 		</state>
 	</channel-type>
@@ -112,7 +120,14 @@
 		<description>The app URL for the camera, allows you to see the camera in an app</description>
 	</channel-type>
 
-	<!-- smoke detector -->
+	<channel-type id="LastOnlineChange" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Online Change</label>
+		<description>Timestamp of the last online status change</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Smoke detector -->
 	<channel-type id="UiColorState" advanced="true">
 		<item-type>String</item-type>
 		<label>Mode</label>
@@ -157,6 +172,13 @@
 		<item-type>Switch</item-type>
 		<label>Manual Test Active</label>
 		<description>If the manual test is currently active</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="LastManualTestTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Manual Test Time</label>
+		<description>Timestamp of the last successful manual test</description>
 		<state readOnly="true" />
 	</channel-type>
 

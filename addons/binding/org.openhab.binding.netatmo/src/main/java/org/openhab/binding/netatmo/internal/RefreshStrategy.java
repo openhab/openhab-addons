@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,20 +23,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RefreshStrategy {
-    private static int DEFAULT_DELAY = 30;
+    private static final int DEFAULT_DELAY = 30;
     private int dataValidityPeriod;
     private long dataTimeStamp;
 
     // By default we create dataTimeStamp to be outdated
     public RefreshStrategy(int dataValidityPeriod) {
         this.dataValidityPeriod = dataValidityPeriod;
-        Calendar now = Calendar.getInstance();
-        now.add(Calendar.MILLISECOND, -this.dataValidityPeriod);
-        dataTimeStamp = now.getTimeInMillis();
+        ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
+        dataTimeStamp = now.toInstant().toEpochMilli();
     }
 
     public void setDataTimeStamp(Integer dataTimestamp) {
-        this.dataTimeStamp = ChannelTypeUtils.toCalendar(dataTimestamp).getTimeInMillis();
+        this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp).toInstant().toEpochMilli();
     }
 
     public long dataAge() {

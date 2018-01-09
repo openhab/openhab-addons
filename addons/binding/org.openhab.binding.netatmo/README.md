@@ -38,7 +38,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
     Thing NAPlug    plugtherm  [ id="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
     Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
-    Thing NAWelcomeCamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
     Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
 }
@@ -145,11 +145,11 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 * Humidity
 * RfStatus
 * BatteryVP
-* TimeStamp
 * Humidex
 * HeatIndex
 * Dewpoint
 * DewpointDepression
+* TimeStamp
 * LastMessage
 * LowBattery
 * MinTemp
@@ -174,11 +174,11 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 * Co2
 * RfStatus
 * BatteryVP
-* TimeStamp
 * Humidex
 * HeatIndex
 * Dewpoint
 * DewpointDepression
+* TimeStamp
 * LastMessage
 * LowBattery
 * MinTemp
@@ -200,6 +200,7 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 * Rain
 * Rain1
 * Rain24
+* TimeStamp
 * RfStatus
 * BatteryVP
 * LastMessage
@@ -221,6 +222,7 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 * GustAngle
 * LastMessage
 * LowBattery
+* TimeStamp
 * RfStatus
 * BatteryVP
 

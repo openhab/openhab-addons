@@ -3,7 +3,7 @@
 This binding integrates the possibility to download and interpret Synop messages.
 
 ## Binding Configuration
- 
+
 The binding has no configuration options itself, all configuration is done at 'Things' level.
 
 ## Supported Things
@@ -12,7 +12,8 @@ There is exactly one supported thing, which represents a Synop message. It has t
 
 ## Thing Configuration
 
-Besides the Synop Station Number (as ```synopID``` as a [StationID](http://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes. Synop message are typically updated every hour.
+Besides the Synop Station Number (as ```synopID``` as a [StationID](http://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes.
+Synop message are typically updated every hour.
 
 
 ## Channels
@@ -33,13 +34,13 @@ The weather information that is retrieved is available as these channels:
 | attenuation-factor* | Number    | Cloud layer attenuation factor             |
 | time-utc            | DateTime  | Observation time of the Synop message      |
 
-* ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
+*   ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
 
 ## Example
 
 ### Things
 
-Here is an example of thing definition : 
+Here is an example of thing definition :
 
 ```
 synopanalyzer:synopanalyzer:orly [ stationId="07149"]
@@ -56,4 +57,3 @@ Number Synop_Wind_Speed "Wind Speed [%.2f m/s]" <wind> { channel = "synopanalyze
 Number Synop_Octa "Octa [%d]/8" { channel = "synopanalyzer:synopanalyzer:trappes:octa"}
 DateTime Synop_time  "Observation Time [%1$ta %1$tR]"        <clock>   { channel = "synopanalyzer:synopanalyzer:trappes:time-utc"}
 ```
-

@@ -21,6 +21,7 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.avmfritz.test</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
@@ -68,6 +69,7 @@
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
+    <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.pulseaudio</module>

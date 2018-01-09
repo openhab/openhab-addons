@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.tplinksmarthome.internal;
 
 import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,15 +46,15 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         SmartHomeDevice device;
 
-        if (THING_TYPE_HS110.equals(thingTypeUID)) {
+        if (HS110.is(thingTypeUID)) {
             device = new EnergySwitchDevice();
-        } else if (THING_TYPE_LB130.equals(thingTypeUID)) {
+        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB130_MIN, COLOR_TEMPERATURE_LB130_MAX);
-        } else if (THING_TYPE_LB120.equals(thingTypeUID)) {
+        } else if (LB120.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB120_MIN, COLOR_TEMPERATURE_LB120_MAX);
-        } else if (SWITCH_THING_TYPES.contains(thingTypeUID)) {
+        } else if (TPLinkSmartHomeThingType.isSwitchingDevice(thingTypeUID)) {
             device = new SwitchDevice();
-        } else if (BULB_THING_TYPES.contains(thingTypeUID)) {
+        } else if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID);
         } else {
             return null;

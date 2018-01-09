@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -60,9 +61,10 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     @Override
     public void initialize() {
         super.initialize();
-        if (getBridge() != null) {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
             logger.debug("Initializing {} with id '{}'", getClass(), getId());
-            if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 defineRefreshInterval();
                 updateStatus(ThingStatus.ONLINE);
                 scheduleRefreshJob();
@@ -153,7 +155,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("The device has no method to access {} property ", channelId.toString());
+            logger.error("The device has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 

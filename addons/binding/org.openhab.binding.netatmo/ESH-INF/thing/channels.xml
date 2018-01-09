@@ -142,7 +142,7 @@
 		<item-type>DateTime</item-type>
 		<label>Available Bilan</label>
 		<description>Month of the last available thermostat bilan</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
 	</channel-type>
 
 	<channel-type id="connectedBoiler" advanced="true">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -54,6 +54,9 @@ public class NestBindingConstants {
     public static final ThingTypeUID THING_TYPE_STRUCTURE = new ThingTypeUID(BINDING_ID, "structure");
 
     // List of all Channel IDs
+    // read only channels (common)
+    public static final String CHANNEL_LAST_CONNECTION = "last_connection";
+
     // read/write channels (thermostat)
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_SET_POINT = "set_point";
@@ -91,6 +94,7 @@ public class NestBindingConstants {
     public static final String CHANNEL_PUBLIC_SHARE_ENABLED = "public_share_enabled";
     public static final String CHANNEL_PUBLIC_SHARE_URL = "public_share_url";
     public static final String CHANNEL_SNAPSHOT_URL = "snapshot_url";
+    public static final String CHANNEL_LAST_ONLINE_CHANGE = "last_online_change";
 
     // read/write channels (smoke detector)
 
@@ -100,6 +104,7 @@ public class NestBindingConstants {
     public static final String CHANNEL_CO_ALARM_STATE = "co_alarm_state"; // Also in structure
     public static final String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state"; // Also in structure
     public static final String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
+    public static final String CHANNEL_LAST_MANUAL_TEST_TIME = "last_manual_test_time";
 
     // read/write channel (structure)
     public static final String CHANNEL_AWAY = "away";

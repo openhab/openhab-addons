@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -98,15 +98,15 @@ public class IT100BridgeDiscovery {
 
                 } catch (UnsupportedCommOperationException e) {
                     logger.debug("discoverBridge(): Unsupported Comm Operation Exception - '{}': {}",
-                            portIdentifier.getName(), e.toString());
+                            portIdentifier.getName(), e.getMessage());
                 } catch (PortInUseException e) {
                     logger.debug("discoverBridge(): Port in Use Exception - '{}': {}", portIdentifier.getName(),
-                            e.toString());
+                            e.getMessage());
                 } catch (UnsupportedEncodingException e) {
                     logger.debug("discoverBridge(): Unsupported Encoding Exception - '{}': {}",
-                            portIdentifier.getName(), e.toString());
+                            portIdentifier.getName(), e.getMessage());
                 } catch (IOException e) {
-                    logger.debug("discoverBridge(): IO Exception - '{}': ", portIdentifier.getName(), e.toString());
+                    logger.debug("discoverBridge(): IO Exception - '{}': {}", portIdentifier.getName(), e.getMessage());
                 } finally {
                     if (serialInput != null) {
                         IOUtils.closeQuietly(serialInput);

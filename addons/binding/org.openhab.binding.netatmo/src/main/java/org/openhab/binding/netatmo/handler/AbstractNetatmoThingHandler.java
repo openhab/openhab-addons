@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -43,6 +44,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     protected Optional<RadioHelper> radioHelper;
     protected Optional<BatteryHelper> batteryHelper;
     protected Configuration config;
+    protected NetatmoBridgeHandler bridgeHandler;
 
     AbstractNetatmoThingHandler(@NonNull Thing thing) {
         super(thing);
@@ -109,11 +111,17 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected NetatmoBridgeHandler getBridgeHandler() {
-        return (NetatmoBridgeHandler) getBridge().getHandler();
+        if (bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                bridgeHandler = (NetatmoBridgeHandler) bridge.getHandler();
+            }
+        }
+        return bridgeHandler;
     }
 
     public boolean matchesId(String searchedId) {
-        return searchedId != null ? searchedId.equalsIgnoreCase(getId()) : false;
+        return searchedId != null && searchedId.equalsIgnoreCase(getId());
     }
 
     protected String getId() {

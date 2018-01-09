@@ -316,6 +316,31 @@ A Chime device.
         * ENVIVO - Envivo
 
 
+### current - RFXCOM Current Sensor
+
+A Current sensing device.
+
+#### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks          |
+|--------------|-------------------------------------|-----------|------------------|
+| channel1Amps | [instantamp](#channels)             | Number    |                  |
+| channel2Amps | [instantamp](#channels)             | Number    |                  |
+| channel3Amps | [instantamp](#channels)             | Number    |                  |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                  |
+| batteryLevel | [system.battery-level](#channels)   | Number    |                  |
+| lowBattery   | [system.low-battery](#channels)     | Switch    |                  |
+
+#### Configuration Options
+
+ * deviceId - Device Id
+    * Sensor Id. Example 5693
+
+ * subType - Sub Type
+    * Specifies device sub type.
+
+        * ELEC1 - OWL - CM113
+
 ### currentenergy - RFXCOM CurrentEnergy Actuator
 
 A CurrentEnergy device.

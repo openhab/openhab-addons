@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -38,9 +39,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
-import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
+ * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -104,6 +107,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private int notificationSoundVolume = -1;
 
     private String callbackUrl;
+
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
 
     /**
      * Creates SqueezeBox Player Handler
@@ -366,11 +372,43 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
-        try {
-            byte[] data = HttpUtils.getData(coverArtUrl);
-            updateChannel(mac, CHANNEL_COVERART_DATA, new RawType(data));
-        } catch (Exception e) {
-            logger.debug("Could not get album art data", e);
+        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(coverArtUrl)));
+    }
+
+    /**
+     * Download and cache the image data from an URL.
+     *
+     * @param url The URL of the image to be downloaded.
+     * @return A RawType object containing the image, null if the content type could not be found or the content type is
+     *         not an image.
+     */
+    private RawType downloadImage(String url) {
+        if (StringUtils.isNotEmpty(url)) {
+            if (!IMAGE_CACHE.containsKey(url)) {
+                IMAGE_CACHE.put(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    return HttpUtil.downloadImage(url);
+                });
+            }
+            RawType image = IMAGE_CACHE.get(url);
+            if (image == null) {
+                logger.debug("Failed to download the content of URL {}", url);
+                return null;
+            } else {
+                return image;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
+     */
+    private State createImage(RawType image) {
+        if (image == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return image;
         }
     }
 
@@ -720,7 +758,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Monitor the status of the notification so that we know when it has finished playing
      */
     private boolean waitForNotification() {
-        final int timeoutMaxCount = 300;
+        final int timeoutMaxCount = 900;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);

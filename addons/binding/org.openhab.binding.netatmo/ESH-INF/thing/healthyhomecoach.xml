@@ -41,6 +41,7 @@
 			<property name="refreshPeriod">600000</property>
 		</properties>
 
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:station" />
 	</thing-type>
 </thing:thing-descriptions>

@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AVM FRITZ! Binding Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.avmfritz.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: org.openhab.binding.avmfritz;uses:="org.eclipse.smarthome.test"
+Fragment-Host: org.openhab.binding.avmfritz
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test.java,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit;version="4.0.0",
+ org.mockito,
+ org.openhab.binding.avmfritz,
+ org.openhab.binding.avmfritz.handler,
+ org.osgi.framework,
+ org.osgi.service.device,
+ org.slf4j
+Require-Bundle: 
+ org.hamcrest,
+ org.junit,
+ org.mockito

@@ -120,7 +120,7 @@ Frame label="Control My BigAssFan" {
     Switch item=PorchFanPower label="Fan Power [%s]"
     Slider item=PorchFanSpeed label="Fan Speed [%s %%]"
     Switch item=PorchFanLightPower label="Light Power [%s]"
-    Slider item=PorchFanLightSpeed label="Light Brightness [%s %%]"
+    Slider item=PorchFanLightLevel label="Light Brightness [%s %%]"
 }
 ```
 

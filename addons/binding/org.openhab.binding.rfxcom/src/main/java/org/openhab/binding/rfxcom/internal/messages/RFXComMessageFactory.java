@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -63,7 +63,7 @@ public class RFXComMessageFactory {
                     put(PacketType.WIND, RFXComWindMessage.class);
                     put(PacketType.UV, RFXComUVMessage.class);
                     put(PacketType.DATE_TIME, RFXComDateTimeMessage.class);
-                    // put(PacketType.CURRENT, RFXComCurrentMessage.class);
+                    put(PacketType.CURRENT, RFXComCurrentMessage.class);
                     put(PacketType.ENERGY, RFXComEnergyMessage.class);
                     put(PacketType.CURRENT_ENERGY, RFXComCurrentEnergyMessage.class);
                     // put(PacketType.POWER, RFXComPowerMessage.class);

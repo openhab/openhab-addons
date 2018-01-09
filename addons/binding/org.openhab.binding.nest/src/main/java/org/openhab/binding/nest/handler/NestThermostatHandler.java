@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -59,6 +59,8 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
                 return getAsOnOffType(thermostat.isHasLeaf());
             case CHANNEL_HUMIDITY:
                 return new DecimalType(thermostat.getHumidity());
+            case CHANNEL_LAST_CONNECTION:
+                return getAsDateTimeTypeOrNull(thermostat.getLastConnection());
             case CHANNEL_LOCKED:
                 return getAsOnOffType(thermostat.isLocked());
             case CHANNEL_LOCKED_MAX_SET_POINT:
