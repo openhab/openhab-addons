@@ -71,7 +71,9 @@
            <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+            <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
        </channels>
         
@@ -98,7 +100,9 @@
             <channel id="currentTemperature" typeId="currentTemperature-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentDemand" typeId="demandPercent-channel"/>
+            <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
         </channels>
         
@@ -138,10 +142,10 @@
         <state readOnly="false" pattern="%.1f °C"></state>
     </channel-type>
     
-    <channel-type id="batteryLevel-channel">
+    <channel-type id="batteryVoltage-channel">
         <item-type>Number</item-type>
-        <label>Battery Level</label>
-        <description>Current Battery Level for the Room Stat</description>
+        <label>Battery Voltage</label>
+        <description>Current Battery Voltage for the device</description>
         <state readOnly="true" pattern="%.1f V"/>
     </channel-type>
     
@@ -173,11 +177,25 @@
         <state readOnly="true" ></state>
     </channel-type>
     
-    <channel-type id="signalStrength-channel">
+    <channel-type id="signalRSSI-channel">
         <item-type>Number</item-type>
+        <label>Signal RSSI</label>
+        <description>The reported network signal RSSI</description>
+        <state readOnly="true" ></state>
+    </channel-type>
+    
+    <channel-type id="signalStrength-channel">
+        <item-type>String</item-type>
         <label>Signal Strength</label>
         <description>The reported network signal strength</description>
         <state readOnly="true" ></state>
+    </channel-type>
+    
+    <channel-type id="batteryLevel-channel">
+        <item-type>String</item-type>
+        <label>Battery Level</label>
+        <description>Current Battery Level for the device</description>
+        <state readOnly="true"/>
     </channel-type>
     
 

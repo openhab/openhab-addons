@@ -53,9 +53,11 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_CURRENT_HUMIDITY = "currentHumidity";
     public static final String CHANNEL_CURRENT_SETPOINT = "currentSetPoint";
+    public static final String CHANNEL_CURRENT_BATTERY_VOLTAGE = "currentBatteryVoltage";
     public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel";
     public static final String CHANNEL_CURRENT_DEMAND = "currentDemand";
     public static final String CHANNEL_HEAT_REQUEST = "heatRequest";
+    public static final String CHANNEL_CURRENT_SIGNAL_RSSI = "currentSignalRSSI";
     public static final String CHANNEL_CURRENT_SIGNAL_STRENGTH = "currentSignalStrength";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ROOM,

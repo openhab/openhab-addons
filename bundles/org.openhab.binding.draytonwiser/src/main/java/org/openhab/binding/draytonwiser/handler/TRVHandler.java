@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -97,11 +98,16 @@ public class TRVHandler extends BaseThingHandler {
                         getDemand());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SETPOINT),
                         getSetPoint());
-                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH),
-                        getSignalStrength());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_RSSI),
+                        getSignalRSSI());
+                updateState(new ChannelUID(getThing().getUID(),
+                        DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_VOLTAGE), getBatteryVoltage());
+                updateState(new ChannelUID(getThing().getUID(),
+                        DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_LEVEL),
-                        getBatteryVoltage());
+                        getBatteryLevel());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -138,11 +144,22 @@ public class TRVHandler extends BaseThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getSignalStrength() {
+    private State getSignalRSSI() {
         if (smartValve != null) {
             Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getRssi());
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getSignalStrength() {
+        if (smartValve != null) {
+            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            if (device != null) {
+                return new StringType(device.getDisplayedSignalStrength());
             }
         }
 
@@ -154,6 +171,17 @@ public class TRVHandler extends BaseThingHandler {
             Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getBatteryVoltage() / 10);
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getBatteryLevel() {
+        if (smartValve != null) {
+            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            if (device != null) {
+                return new StringType(device.getBatteryLevel());
             }
         }
 
