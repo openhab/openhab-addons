@@ -12,6 +12,9 @@ package org.openhab.binding.draytonwiser.internal.config;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * @author Andrew Schofield - Initial contribution
+ */
 public class DhcpStatus {
 
     @SerializedName("Status")

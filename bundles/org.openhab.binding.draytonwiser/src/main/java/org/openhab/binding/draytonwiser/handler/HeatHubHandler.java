@@ -61,7 +61,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            logger.error("{}", ex.getMessage());
         }
     }
 
@@ -247,7 +247,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
         } catch (TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect Heat Hub address");
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             updateStatus(ThingStatus.OFFLINE);
         }

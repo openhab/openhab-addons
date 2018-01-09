@@ -14,6 +14,9 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * @author Andrew Schofield - Initial contribution
+ */
 public class Room {
 
     @SerializedName("id")
