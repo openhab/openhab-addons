@@ -98,11 +98,9 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
                             dashboardData.getHumidity());
                     return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint));
                 case CHANNEL_WIND_UNIT:
-                    return userAdministrative != null ? new DecimalType(userAdministrative.getWindunit())
-                            : UnDefType.UNDEF;
+                    return toDecimalType(userAdministrative.getWindunit());
                 case CHANNEL_PRESSURE_UNIT:
-                    return userAdministrative != null ? new DecimalType(userAdministrative.getPressureunit())
-                            : UnDefType.UNDEF;
+                    return toDecimalType(userAdministrative.getPressureunit());
             }
         }
         return super.getNAThingProperty(channelId);
