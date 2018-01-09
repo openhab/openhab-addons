@@ -143,5 +143,5 @@ The logging messages can be viewed in the Karaf console have a closer look [in t
 
 ## Source
 
-[OpenHAB Community Thread with an detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
+[OpenHAB community thread with a detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
 
