@@ -30,8 +30,7 @@ public class RefreshStrategy {
     // By default we create dataTimeStamp to be outdated
     public RefreshStrategy(int dataValidityPeriod) {
         this.dataValidityPeriod = dataValidityPeriod;
-        ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
-        dataTimeStamp = now.toInstant().toEpochMilli();
+        expireData();
     }
 
     public void setDataTimeStamp(Integer dataTimestamp) {
@@ -49,6 +48,11 @@ public class RefreshStrategy {
 
     public long nextRunDelayInS() {
         return Math.max(0, (dataValidityPeriod - dataAge())) / 1000 + DEFAULT_DELAY;
+    }
+
+    public void expireData() {
+        ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
+        dataTimeStamp = now.toInstant().toEpochMilli();
     }
 
 }

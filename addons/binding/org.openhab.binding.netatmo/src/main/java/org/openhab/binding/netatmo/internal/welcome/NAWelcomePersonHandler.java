@@ -113,7 +113,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                 // Playing to much with it seems to lead to connection refused
                 // getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
             }
-            requestParentRefresh();
+            requestParentRefresh(true);
         }
     }
 

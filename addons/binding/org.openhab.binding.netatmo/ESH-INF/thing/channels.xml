@@ -95,6 +95,13 @@
 			</options>
 		</state>
 	</channel-type>
+	
+    <channel-type id="programName">
+        <item-type>String</item-type>
+        <label>Program Name</label>
+        <description>Name of the program when following weekly schedule</description>
+        <state readOnly="true" />
+    </channel-type>
 
 	<channel-type id="ThermRelayCmd" advanced="false">
 		<item-type>Switch</item-type>
@@ -162,7 +169,7 @@
 		<item-type>DateTime</item-type>
 		<label>Setpoint end</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
 	<channel-type id="lastThermSeen" advanced="true">
