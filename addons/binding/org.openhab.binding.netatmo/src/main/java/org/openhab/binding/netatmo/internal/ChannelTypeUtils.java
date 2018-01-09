@@ -71,6 +71,10 @@ public class ChannelTypeUtils {
         return decimal == null ? UnDefType.NULL : new DecimalType(decimal.setScale(2, BigDecimal.ROUND_HALF_UP));
     }
 
+    public static State toDecimalType(@Nullable String textualDecimal) {
+        return textualDecimal == null ? UnDefType.NULL : new DecimalType(textualDecimal);
+    }
+
     public static State toOnOffType(@Nullable String yesno) {
         return "on".equalsIgnoreCase(yesno) ? OnOffType.ON : OnOffType.OFF;
     }
