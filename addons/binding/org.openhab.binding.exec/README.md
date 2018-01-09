@@ -78,6 +78,8 @@ String APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 Following is an example how to set up an exec Thing, debug it with a rule and set the returned string to an Number Item. 
 
+**For this to work also the openhab-transformation-regex has to be installed**
+
 **demo.things**
 ```
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s"         
@@ -141,5 +143,5 @@ The logging messages can be viewed in the Karaf console have a closer look [in t
 
 ## Source
 
-[OpenHAB Community Thread](https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
+[OpenHAB Community Thread](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
 
