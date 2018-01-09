@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
+import org.openhab.binding.draytonwiser.handler.ControllerHandler;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.handler.RoomHandler;
 import org.openhab.binding.draytonwiser.handler.RoomStatHandler;
@@ -65,6 +66,8 @@ public class DraytonWiserHandlerFactory extends BaseThingHandlerFactory {
             return new RoomStatHandler(thing);
         } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ITRV)) {
             return new TRVHandler(thing);
+        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER)) {
+            return new ControllerHandler(thing);
         }
 
         return null;

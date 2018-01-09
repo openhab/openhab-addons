@@ -40,11 +40,13 @@ public class DraytonWiserBindingConstants {
     public static final String SCHEDULES_ENDPOINT = "data/domain/Schedule/";
     public static final String HEATCHANNELS_ENDPOINT = "data/domain/HeatingChannel/";
     public static final String SYSTEM_ENDPOINT = "data/domain/System/";
+    public static final String STATION_ENDPOINT = "data/network/Station/";
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public static final ThingTypeUID THING_TYPE_ROOMSTAT = new ThingTypeUID(BINDING_ID, "roomstat");
     public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
@@ -59,8 +61,14 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_HEAT_REQUEST = "heatRequest";
     public static final String CHANNEL_CURRENT_SIGNAL_RSSI = "currentSignalRSSI";
     public static final String CHANNEL_CURRENT_SIGNAL_STRENGTH = "currentSignalStrength";
+    public static final String CHANNEL_HEATING_OVERRIDE = "heatingOverride";
+    public static final String CHANNEL_HOT_WATER_OVERRIDE = "hotWaterOverride";
+    public static final String CHANNEL_HEATCHANNEL_1_DEMAND = "heatChannel1Demand";
+    public static final String CHANNEL_HEATCHANNEL_2_DEMAND = "heatChannel2Demand";
+    public static final String CHANNEL_HEATCHANNEL_1_DEMAND_STATE = "heatChannel1DemandState";
+    public static final String CHANNEL_HEATCHANNEL_2_DEMAND_STATE = "heatChannel2DemandState";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ROOM,
-            THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CONTROLLER,
+            THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV);
 
 }

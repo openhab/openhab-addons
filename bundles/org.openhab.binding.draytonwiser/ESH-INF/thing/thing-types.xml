@@ -8,7 +8,8 @@
     <bridge-type id="heathub">
         <label>HeatHub</label>
         <description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
-        <representation-property>serialNumber</representation-property>        
+        <representation-property>serialNumber</representation-property>
+        
         <config-description>
             <parameter name="ADDR" type="text">
                 <label>Network Address</label>
@@ -30,6 +31,37 @@
             </parameter>
         </config-description>
     </bridge-type>
+    
+    <!-- Controller Thing Type -->
+    <thing-type id="controller">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="heathub" />
+        </supported-bridge-type-refs>
+        
+        <label>Controller</label>
+        <description>The controller attached to the boiler</description>
+        
+        <channels>
+            <channel id="heatingOverride" typeId="heatingOverride-channel" />
+            <channel id="hotWaterOverride" typeId="hotWaterOverride-channel" />
+            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
+            <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="heatChannel1Demand" typeId="heatChannel1Demand-channel" />
+            <channel id="heatChannel1DemandState" typeId="heatChannel1DemandState-channel" />
+            <channel id="heatChannel2Demand" typeId="heatChannel2Demand-channel" />
+            <channel id="heatChannel2DemandState" typeId="heatChannel2DemandState-channel" />
+        </channels>
+        
+        <config-description>
+            <parameter name="internalID" type="integer">
+                <label>ID</label>
+                <description>
+                    Device ID on the network.
+                </description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
     
     <!-- Room Thing Type -->
     <thing-type id="room">
@@ -164,14 +196,14 @@
     </channel-type>
     
     <channel-type id="heatingOverride-channel">
-        <item-type>Contact</item-type>
+        <item-type>Switch</item-type>
         <label>Heating Override</label>
         <description>The heating override button has been pressed</description>
         <state readOnly="true" ></state>
     </channel-type>
     
     <channel-type id="hotWaterOverride-channel">
-        <item-type>Contact</item-type>
+        <item-type>Switch</item-type>
         <label>Hot Water Override</label>
         <description>The hot water override button has been pressed</description>
         <state readOnly="true" ></state>
@@ -196,6 +228,34 @@
         <label>Battery Level</label>
         <description>Current Battery Level for the device</description>
         <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="heatChannel1Demand-channel">
+        <item-type>Number</item-type>
+        <label>Channel 1 Heat Demand</label>
+        <description>Current heat demand in %</description>
+        <state readOnly="true" pattern="%d %%"></state>
+    </channel-type>
+    
+    <channel-type id="heatChannel2Demand-channel">
+        <item-type>Number</item-type>
+        <label>Channel 2 Heat Demand</label>
+        <description>Current heat demand in %</description>
+        <state readOnly="true" pattern="%d %%"></state>
+    </channel-type>
+    
+    <channel-type id="heatChannel1DemandState-channel">
+        <item-type>Switch</item-type>
+        <label>Channel 1 Requesting Heat</label>
+        <description>Current channel is requesting heat</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="heatChannel2DemandState-channel">
+        <item-type>Switch</item-type>
+        <label>Channel 2 Requesting Heat</label>
+        <description>Current channel is requesting heat</description>
+        <state readOnly="true"></state>
     </channel-type>
     
 

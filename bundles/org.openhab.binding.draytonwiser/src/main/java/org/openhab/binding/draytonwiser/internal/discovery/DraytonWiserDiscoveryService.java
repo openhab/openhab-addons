@@ -63,6 +63,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        onControllerAdded();
         List<Room> rooms = bridgeHandler.getRooms();
         for (Room r : rooms) {
             onRoomAdded(r);
@@ -75,6 +76,23 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         for (SmartValve v : smartValves) {
             onSmartValveAdded(v);
         }
+    }
+
+    private void onControllerAdded() {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Map<String, Object> properties = new HashMap<>();
+        Device device = bridgeHandler.getExtendedDeviceProperties(0);
+        properties.put("internalID", 0);
+        properties.put("Device Type", device.getProductIdentifier());
+        properties.put("Firmware Version", device.getActiveFirmwareVersion());
+        properties.put("Manufacturer", device.getManufacturer());
+        properties.put("Model", device.getModelIdentifier());
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER, bridgeUID, "0"))
+                .withProperties(properties).withBridge(bridgeUID).withLabel("Controller").build();
+
+        thingDiscovered(discoveryResult);
     }
 
     private void onRoomStatAdded(RoomStat r) {

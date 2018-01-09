@@ -29,9 +29,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
+import org.openhab.binding.draytonwiser.internal.config.Station;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,6 +186,47 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
         device = gson.fromJson(response.getContentAsString(), Device.class);
         return device;
+    }
+
+    public org.openhab.binding.draytonwiser.internal.config.@Nullable System getSystem() {
+        org.openhab.binding.draytonwiser.internal.config.System system = null;
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, HttpMethod.GET,
+                "");
+
+        if (response == null) {
+            return null;
+        }
+
+        system = gson.fromJson(response.getContentAsString(),
+                org.openhab.binding.draytonwiser.internal.config.System.class);
+        return system;
+    }
+
+    public @Nullable Station getStation() {
+        Station station = null;
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.STATION_ENDPOINT, HttpMethod.GET,
+                "");
+
+        if (response == null) {
+            return null;
+        }
+
+        station = gson.fromJson(response.getContentAsString(), Station.class);
+        return station;
+    }
+
+    public List<HeatingChannel> getHeatingChannels() {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.HEATCHANNELS_ENDPOINT,
+                HttpMethod.GET, "");
+
+        if (response == null) {
+            return new ArrayList<HeatingChannel>();
+        }
+
+        Type listType = new TypeToken<ArrayList<HeatingChannel>>() {
+        }.getType();
+        List<HeatingChannel> heatingChannels = gson.fromJson(response.getContentAsString(), listType);
+        return heatingChannels;
     }
 
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
