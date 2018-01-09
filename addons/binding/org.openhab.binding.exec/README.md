@@ -34,7 +34,7 @@ For each command a separate Thing has to be defined.
 Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5, autorun=false]
 ```
 
-```command``` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
+`command` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
 The following parameters are automatically added:
 
 
@@ -53,8 +53,6 @@ All Things support the following channels:
 | exit            | Number    | The exit value of the last execution of the command                                     |
 | run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
-
-
 
 
 ## Minimal Example
@@ -77,6 +75,7 @@ String APCLastExecution {channel="exec:command:apc:lastexecution"}
 ```
 
 ## Full Example
+
 Following is an example how to set up an exec Thing, debug it with a rule and set the returned string to an Number Item. 
 
 **demo.things**
@@ -138,10 +137,9 @@ rule "Your Execution"
 end
 
 ```
-The logging massages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information
+The logging messages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information
 
 ## Source
-[OpenHAB 1 Addons wiki](https://github.com/openhab/openhab1-addons/wiki/Raspberry-Pi-System-Temperature)
 
 [OpenHAB Community Thread](https://community.openhab.org/t/reading-raspberry-pi-cpu-temp-with-exec-binding/4964)
 
