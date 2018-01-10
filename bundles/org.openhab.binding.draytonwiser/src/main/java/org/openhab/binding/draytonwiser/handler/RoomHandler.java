@@ -9,8 +9,6 @@
 package org.openhab.binding.draytonwiser.handler;
 
 import java.math.BigDecimal;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,7 +18,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -38,15 +35,12 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Schofield - Initial contribution
  */
 @NonNullByDefault
-public class RoomHandler extends BaseThingHandler {
+public class RoomHandler extends DraytonWiserThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoomHandler.class);
 
     @Nullable
     private Room room;
-
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
 
     public RoomHandler(Thing thing) {
         super(thing);
@@ -68,26 +62,7 @@ public class RoomHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-
-        startAutomaticRefresh();
-        refresh();
-    }
-
-    @Override
-    public void dispose() {
-        refreshJob.cancel(true);
-    }
-
-    private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refresh();
-        }, 0, ((java.math.BigDecimal) getBridge().getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
-                .intValue(), TimeUnit.SECONDS);
-    }
-
-    private void refresh() {
+    protected void refresh() {
         try {
             boolean roomUpdated = updateRoomData();
             if (roomUpdated) {
@@ -110,8 +85,7 @@ public class RoomHandler extends BaseThingHandler {
     }
 
     private boolean updateRoomData() {
-        room = ((HeatHubHandler) getBridge().getHandler())
-                .getRoom(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
+        room = getBridgeHandler().getRoom(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
         return room != null;
     }
 
@@ -161,6 +135,6 @@ public class RoomHandler extends BaseThingHandler {
 
     @Nullable
     private RoomStat getRoomStat(int id) {
-        return ((HeatHubHandler) getBridge().getHandler()).getRoomStat(id);
+        return getBridgeHandler().getRoomStat(id);
     }
 }

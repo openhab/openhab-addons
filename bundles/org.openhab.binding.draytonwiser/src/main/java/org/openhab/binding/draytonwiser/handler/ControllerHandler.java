@@ -9,8 +9,6 @@
 package org.openhab.binding.draytonwiser.handler;
 
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +19,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -29,7 +26,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
-import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.Station;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Schofield - Initial contribution
  */
 @NonNullByDefault
-public class ControllerHandler extends BaseThingHandler {
+public class ControllerHandler extends DraytonWiserThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
 
@@ -55,9 +51,6 @@ public class ControllerHandler extends BaseThingHandler {
 
     @Nullable
     List<HeatingChannel> heatingChannels;
-
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
 
     public ControllerHandler(Thing thing) {
         super(thing);
@@ -79,26 +72,7 @@ public class ControllerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-
-        startAutomaticRefresh();
-        refresh();
-    }
-
-    @Override
-    public void dispose() {
-        refreshJob.cancel(true);
-    }
-
-    private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refresh();
-        }, 0, ((java.math.BigDecimal) getBridge().getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
-                .intValue(), TimeUnit.SECONDS);
-    }
-
-    private void refresh() {
+    protected void refresh() {
         try {
             boolean updated = updateControllerData();
             if (updated) {
@@ -135,7 +109,7 @@ public class ControllerHandler extends BaseThingHandler {
     }
 
     private boolean updateControllerData() {
-        HeatHubHandler bridgeHandler = ((HeatHubHandler) getBridge().getHandler());
+        HeatHubHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return false;
         }
@@ -145,7 +119,7 @@ public class ControllerHandler extends BaseThingHandler {
         station = bridgeHandler.getStation();
         heatingChannels = bridgeHandler.getHeatingChannels();
 
-        return device != null && system != null && station != null && heatingChannels != null;
+        return device != null && system != null && station != null;
     }
 
     private State getHeatingOverride() {
@@ -222,10 +196,5 @@ public class ControllerHandler extends BaseThingHandler {
         }
 
         return OnOffType.OFF;
-    }
-
-    @Nullable
-    private RoomStat getRoomStat(int id) {
-        return ((HeatHubHandler) getBridge().getHandler()).getRoomStat(id);
     }
 }

@@ -9,8 +9,6 @@
 package org.openhab.binding.draytonwiser.handler;
 
 import java.math.BigDecimal;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,7 +18,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -38,15 +35,12 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Schofield - Initial contribution
  */
 @NonNullByDefault
-public class TRVHandler extends BaseThingHandler {
+public class TRVHandler extends DraytonWiserThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TRVHandler.class);
 
     @Nullable
     private SmartValve smartValve;
-
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
 
     public TRVHandler(Thing thing) {
         super(thing);
@@ -68,26 +62,7 @@ public class TRVHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-
-        startAutomaticRefresh();
-        refresh();
-    }
-
-    @Override
-    public void dispose() {
-        refreshJob.cancel(true);
-    }
-
-    private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refresh();
-        }, 0, ((java.math.BigDecimal) getBridge().getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
-                .intValue(), TimeUnit.SECONDS);
-    }
-
-    private void refresh() {
+    protected void refresh() {
         try {
             boolean smartValveUpdated = updateSmartValveData();
             if (smartValveUpdated) {
@@ -116,7 +91,7 @@ public class TRVHandler extends BaseThingHandler {
     }
 
     private boolean updateSmartValveData() {
-        smartValve = ((HeatHubHandler) getBridge().getHandler())
+        smartValve = getBridgeHandler()
                 .getSmartValve(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
         return smartValve != null;
     }
@@ -146,7 +121,7 @@ public class TRVHandler extends BaseThingHandler {
 
     private State getSignalRSSI() {
         if (smartValve != null) {
-            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getRssi());
             }
@@ -157,7 +132,7 @@ public class TRVHandler extends BaseThingHandler {
 
     private State getSignalStrength() {
         if (smartValve != null) {
-            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new StringType(device.getDisplayedSignalStrength());
             }
@@ -168,7 +143,7 @@ public class TRVHandler extends BaseThingHandler {
 
     private State getBatteryVoltage() {
         if (smartValve != null) {
-            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getBatteryVoltage() / 10);
             }
@@ -179,7 +154,7 @@ public class TRVHandler extends BaseThingHandler {
 
     private State getBatteryLevel() {
         if (smartValve != null) {
-            Device device = ((HeatHubHandler) getBridge().getHandler()).getExtendedDeviceProperties(smartValve.getId());
+            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new StringType(device.getBatteryLevel());
             }
