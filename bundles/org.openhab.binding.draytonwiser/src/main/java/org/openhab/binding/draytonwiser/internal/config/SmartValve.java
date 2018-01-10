@@ -67,8 +67,4 @@ public class SmartValve {
         return externalRoomStatTemperature;
     }
 
-    public String getMountingOrientation() {
-        return mountingOrientation;
-    }
-
 }

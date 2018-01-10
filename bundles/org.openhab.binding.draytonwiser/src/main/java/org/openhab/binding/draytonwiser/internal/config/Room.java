@@ -136,10 +136,6 @@ public class Room {
         return calculatedTemperature;
     }
 
-    public void setCalculatedTemperature(Integer calculatedTemperature) {
-        this.calculatedTemperature = calculatedTemperature;
-    }
-
     public Integer getCurrentSetPoint() {
         return currentSetPoint < 0 ? 0 : currentSetPoint;
     }
@@ -152,24 +148,12 @@ public class Room {
         return percentageDemand;
     }
 
-    public void setPercentageDemand(Integer percentageDemand) {
-        this.percentageDemand = percentageDemand;
-    }
-
     public String getControlOutputState() {
         return controlOutputState;
     }
 
-    public void setControlOutputState(String controlOutputState) {
-        this.controlOutputState = controlOutputState;
-    }
-
     public String getWindowState() {
         return windowState;
-    }
-
-    public void setWindowState(String windowState) {
-        this.windowState = windowState;
     }
 
     public Integer getDisplayedSetPoint() {
@@ -184,16 +168,8 @@ public class Room {
         return overrideType;
     }
 
-    public void setOverrideType(String overrideType) {
-        this.overrideType = overrideType;
-    }
-
     public Boolean getWindowDetectionActive() {
         return windowDetectionActive;
-    }
-
-    public void setWindowDetectionActive(Boolean windowDetectionActive) {
-        this.windowDetectionActive = windowDetectionActive;
     }
 
 }

@@ -34,10 +34,6 @@ public class RoomStat {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getSetPoint() {
         return setPoint < 0 ? 0 : setPoint;
     }
@@ -50,16 +46,8 @@ public class RoomStat {
         return measuredTemperature;
     }
 
-    public void setMeasuredTemperature(Integer measuredTemperature) {
-        this.measuredTemperature = measuredTemperature;
-    }
-
     public Integer getMeasuredHumidity() {
         return measuredHumidity;
-    }
-
-    public void setMeasuredHumidity(Integer measuredHumidity) {
-        this.measuredHumidity = measuredHumidity;
     }
 
 }

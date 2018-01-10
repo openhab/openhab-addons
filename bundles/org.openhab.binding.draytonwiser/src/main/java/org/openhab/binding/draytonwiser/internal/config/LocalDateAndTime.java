@@ -37,40 +37,20 @@ public class LocalDateAndTime {
         return year;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-
     public String getMonth() {
         return month;
-    }
-
-    public void setMonth(String month) {
-        this.month = month;
     }
 
     public Integer getDate() {
         return date;
     }
 
-    public void setDate(Integer date) {
-        this.date = date;
-    }
-
     public String getDay() {
         return day;
     }
 
-    public void setDay(String day) {
-        this.day = day;
-    }
-
     public Integer getTime() {
         return time;
-    }
-
-    public void setTime(Integer time) {
-        this.time = time;
     }
 
 }

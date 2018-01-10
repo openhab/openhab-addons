@@ -45,56 +45,28 @@ public class HeatingChannel {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Integer> getRoomIds() {
         return roomIds;
     }
 
-    public void setRoomIds(List<Integer> roomIds) {
-        this.roomIds = roomIds;
-    }
-
     public Integer getPercentageDemand() {
         return percentageDemand;
-    }
-
-    public void setPercentageDemand(Integer percentageDemand) {
-        this.percentageDemand = percentageDemand;
     }
 
     public String getDemandOnOffOutput() {
         return demandOnOffOutput;
     }
 
-    public void setDemandOnOffOutput(String demandOnOffOutput) {
-        this.demandOnOffOutput = demandOnOffOutput;
-    }
-
     public String getHeatingRelayState() {
         return heatingRelayState;
     }
 
-    public void setHeatingRelayState(String heatingRelayState) {
-        this.heatingRelayState = heatingRelayState;
-    }
-
     public Boolean getIsSmartValvePreventingDemand() {
         return isSmartValvePreventingDemand;
-    }
-
-    public void setIsSmartValvePreventingDemand(Boolean isSmartValvePreventingDemand) {
-        this.isSmartValvePreventingDemand = isSmartValvePreventingDemand;
     }
 
 }

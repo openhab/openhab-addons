@@ -69,128 +69,64 @@ public class Device {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getProductType() {
         return productType;
-    }
-
-    public void setProductType(String productType) {
-        this.productType = productType;
     }
 
     public String getProductIdentifier() {
         return productIdentifier;
     }
 
-    public void setProductIdentifier(String productIdentifier) {
-        this.productIdentifier = productIdentifier;
-    }
-
     public String getActiveFirmwareVersion() {
         return activeFirmwareVersion;
-    }
-
-    public void setActiveFirmwareVersion(String activeFirmwareVersion) {
-        this.activeFirmwareVersion = activeFirmwareVersion;
     }
 
     public String getManufacturer() {
         return manufacturer;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
     public String getModelIdentifier() {
         return modelIdentifier;
-    }
-
-    public void setModelIdentifier(String modelIdentifier) {
-        this.modelIdentifier = modelIdentifier;
     }
 
     public String getHardwareVersion() {
         return hardwareVersion;
     }
 
-    public void setHardwareVersion(String hardwareVersion) {
-        this.hardwareVersion = hardwareVersion;
-    }
-
     public String getSerialNumber() {
         return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
 
     public String getProductRange() {
         return productRange;
     }
 
-    public void setProductRange(String productRange) {
-        this.productRange = productRange;
-    }
-
     public String getProductModel() {
         return productModel;
-    }
-
-    public void setProductModel(String productModel) {
-        this.productModel = productModel;
     }
 
     public String getProductFamily() {
         return productFamily;
     }
 
-    public void setProductFamily(String productFamily) {
-        this.productFamily = productFamily;
-    }
-
     public String getDisplayedSignalStrength() {
         return displayedSignalStrength;
-    }
-
-    public void setDisplayedSignalStrength(String displayedSignalStrength) {
-        this.displayedSignalStrength = displayedSignalStrength;
     }
 
     public Integer getBatteryVoltage() {
         return batteryVoltage;
     }
 
-    public void setBatteryVoltage(Integer batteryVoltage) {
-        this.batteryVoltage = batteryVoltage;
-    }
-
     public String getBatteryLevel() {
         return batteryLevel;
-    }
-
-    public void setBatteryLevel(String batteryLevel) {
-        this.batteryLevel = batteryLevel;
     }
 
     public Integer getRssi() {
         return rssi;
     }
 
-    public void setRssi(Integer rssi) {
-        this.rssi = rssi;
-    }
-
     public Integer getLqi() {
         return lqi;
-    }
-
-    public void setLqi(Integer lqi) {
-        this.lqi = lqi;
     }
 
 }

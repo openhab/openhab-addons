@@ -58,8 +58,4 @@ public class DetectedAccessPoint {
         return rSSI;
     }
 
-    public void setRSSI(Integer rSSI) {
-        this.rSSI = rSSI;
-    }
-
 }
