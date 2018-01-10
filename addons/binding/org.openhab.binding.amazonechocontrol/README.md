@@ -91,12 +91,13 @@ You will find the serial number in the alexa app.
 
 ### amzonechocontrol.things
 
-```php
+```
 Bridge amazonechocontrol:account:account1 [amazonSite="amazon.de", email="myaccountemail@myprovider.com", password="secure", pollingIntervalInSeconds=60]
 {
     Thing echo echo1 "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
 }
 ```
+
 You will find the serial number in the Alexa app.
 
 ### amzonechocontrol.items:
@@ -117,7 +118,6 @@ Switch Echo_Living_Room_Bluetooth            "Bluetooth"        <bluetooth>     
 String Echo_Living_Room_BluetoothDeviceName  "Bluetooth Device" <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
 String Echo_Living_Room_RadioStationId       "Radio Station Id"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radioStationId"}
 Switch Echo_Living_Room_Radio                "Radio"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radio"}
-
 ```
 
 ### amzonechocontrol.sitemap:

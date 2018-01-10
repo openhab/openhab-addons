@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014,2017 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -309,7 +309,7 @@ public class Connection {
                 throw new HttpException(code, connection.getResponseMessage());
             }
         }
-        throw new Exception("To many redirects");
+        throw new ConnectionException("To many redirects");
 
     }
 
@@ -335,7 +335,7 @@ public class Connection {
                 }
             }
             if (m_sessionId == null) {
-                throw new Exception("No session id received");
+                throw new ConnectionException("No session id received");
             }
 
             // read hidden form inputs, the will be used later in the url and for posting
@@ -355,8 +355,7 @@ public class Connection {
             String queryParameters = postDataBuilder.toString() + "session-id="
                     + URLEncoder.encode(m_sessionId, "UTF-8");
 
-            logger.debug("Login query String:");
-            logger.debug(queryParameters);
+            logger.debug("Login query String: {}", queryParameters);
 
             postDataBuilder.append("email");
             postDataBuilder.append('=');
@@ -386,7 +385,7 @@ public class Connection {
 
             // verify login
             if (!verifyLogin()) {
-                throw new Exception("Login fails.");
+                throw new ConnectionException("Login fails.");
             }
             m_loginTime = new Date();
         } catch (Exception e) {
@@ -394,7 +393,7 @@ public class Connection {
             m_cookieManager.getCookieStore().removeAll();
             m_sessionId = null;
             m_loginTime = null;
-            logger.debug("Login failed: " + e.getMessage());
+            logger.debug("Login failed:{} ", e);
             throw e;
         }
 

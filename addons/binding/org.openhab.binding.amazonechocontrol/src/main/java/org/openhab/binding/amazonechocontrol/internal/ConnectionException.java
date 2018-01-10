@@ -13,22 +13,15 @@
 package org.openhab.binding.amazonechocontrol.internal;
 
 /**
- * The {@link HttpException} is used for http error codes
+ * The {@link ConnectionException} is used for errors in the connection to the amazon server
  *
  * @author Michael Geramb - Initial contribution
  */
-public class HttpException extends RuntimeException {
+public class ConnectionException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-    int code;
 
-    public int getCode() {
-        return code;
-    }
-
-    public HttpException(int code, String message) {
+    public ConnectionException(String message) {
         super(message);
-        this.code = code;
-
     }
 }

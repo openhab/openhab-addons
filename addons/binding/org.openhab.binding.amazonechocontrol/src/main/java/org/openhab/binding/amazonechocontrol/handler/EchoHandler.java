@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014,2017 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -250,7 +250,7 @@ public class EchoHandler extends BaseThingHandler {
                         states = temp.getBluetoothConnectionStates();
                         state = states.findStateByDevice(device);
                     } catch (Exception e) {
-                        logger.info(e.getMessage());
+                        logger.info("getBluetoothConnectionStates failes: {}", e);
                     }
 
                 }
@@ -267,7 +267,7 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.info("handleCommand failes: {}", e);
         }
     }
 
@@ -309,7 +309,7 @@ public class EchoHandler extends BaseThingHandler {
             if (e.getCode() == 400) {
                 // Ignore
             } else {
-                logger.info(e.getMessage());
+                logger.info("getPlayer failes: {}", e);
             }
         } catch (Exception e) {
             logger.info(e.getMessage());
@@ -324,10 +324,10 @@ public class EchoHandler extends BaseThingHandler {
                 updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
 
             } else {
-                logger.info(e.getMessage());
+                logger.info("getMediaState failes: {}", e);
             }
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.info("getMediaState failes: {}", e);
         }
 
         // check playing

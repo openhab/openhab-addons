@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,10 +26,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.amazonechocontrol.discovery.AmazonEchoDiscovery;
-import org.openhab.binding.amazonechocontrol.discovery.IAmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
+import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -101,7 +101,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
         } catch (Exception e) {
 
-            logger.info(e.getMessage());
+            logger.info("getBluetoothConnectionStates failed: {}", e);
         }
         if (states != null) {
             state = states.findStateByDevice(device);
@@ -225,7 +225,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                         temp.logout();
                     }
                 } catch (Exception e) {
-                    logger.info(e.getMessage());
+                    logger.info("logout failed: {}", e.getMessage());
                     temp.logout();
                 }
             }
@@ -300,7 +300,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                     try {
                         states = temp.getBluetoothConnectionStates();
                     } catch (Exception e) {
-                        logger.info(e.getMessage());
+                        logger.info("getBluetoothConnectionStates failed: {}", e);
                     }
                 }
 

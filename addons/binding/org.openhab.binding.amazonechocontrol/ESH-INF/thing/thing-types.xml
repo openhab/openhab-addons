@@ -13,7 +13,6 @@
             <parameter name="amazonSite" type="text" required="true">
                 <default></default>
                 <label>Amazon site</label>
-                <default></default>
                 <limitToOptions>false</limitToOptions>
                 <options>
                     <option value="amazon.de">amazon.de</option>
