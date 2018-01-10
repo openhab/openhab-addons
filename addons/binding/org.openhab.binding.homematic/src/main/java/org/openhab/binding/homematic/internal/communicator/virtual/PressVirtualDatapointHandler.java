@@ -40,7 +40,7 @@ public class PressVirtualDatapointHandler extends AbstractVirtualDatapointHandle
             if (channel.hasPressDatapoint()) {
                 HmDatapoint dp = addDatapoint(device, channel.getNumber(), getName(), HmValueType.STRING, null, false);
                 dp.setTrigger(true);
-                dp.setOptions(new String[] { "SHORT", "LONG", "LONG_RELEASE" });
+                dp.setOptions(new String[] { "SHORT", "LONG", "LONG_RELEASE", "CONT" });
             }
         }
     }
