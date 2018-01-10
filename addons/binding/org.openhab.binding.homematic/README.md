@@ -363,7 +363,7 @@ end
 #### PRESS
 
 A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.  
-Available values: SHORT, LONG, LONG_RELEASE
+Available values: SHORT, LONG, LONG_RELEASE, CONT
 
 Example: to capture a key press on the 19 button remote control in a rule
 
