@@ -9,7 +9,6 @@
 package org.openhab.binding.jeelink.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     private JeeLinkConnection connection;
     private Map<String, JeeLinkReadingConverter> sensorTypeConvertersMap = new HashMap<>();
     private Map<Class, List<ReadingHandler>> readingClassHandlerMap = new HashMap<>();
-    private Map<String, Reading> idReadingMap = new HashMap<>();
 
     private final AtomicReference<ReadingHandler> discoveryHandler = new AtomicReference<ReadingHandler>();
 
@@ -164,11 +162,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
             Reading r = converter.createReading(input);
             if (r != null) {
-                // store one reading per sensor for the discovery
-                synchronized (idReadingMap) {
-                    idReadingMap.put(sensorType + ":" + r.getSensorId(), r);
-                }
-
                 ReadingHandler d = discoveryHandler.get();
                 if (d != null) {
                     d.handleReading(r);
@@ -218,12 +211,5 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     public void stopDiscovery() {
         discoveryHandler.set(null);
-    }
-
-    public Reading[] getLastReadings() {
-        synchronized (idReadingMap) {
-            Collection<Reading> readings = idReadingMap.values();
-            return readings.toArray(new Reading[readings.size()]);
-        }
     }
 }

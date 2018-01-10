@@ -56,11 +56,6 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
             // start listening for new sensor values
             bridge.startDiscovery(this);
             capture.set(true);
-
-            // check all sensors that have already reported values
-            for (Reading r : bridge.getLastReadings()) {
-                handleReading(r);
-            }
         }
     }
 
