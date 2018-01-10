@@ -419,8 +419,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             deviceDescriptions.addAll(getRpcClient(hmInterface).listDevices(hmInterface));
         }
-        deviceDescriptions.add(createGatewayDevice());
-        loadDeviceNames(deviceDescriptions);
+        if (!cancelLoadAllMetadata) {
+            deviceDescriptions.add(createGatewayDevice());
+            loadDeviceNames(deviceDescriptions);
+        }
         return deviceDescriptions;
     }
 
