@@ -75,8 +75,8 @@ class LxWsClient {
     private WebSocketClient wsClient;
     private BlockingQueue<LxServerEvent> queue;
     private ClientState state = ClientState.IDLE;
-    private final Lock stateLock = new ReentrantLock();
-    private Logger logger = LoggerFactory.getLogger(LxWsClient.class);
+    private final Lock stateMachineLock = new ReentrantLock();
+    private final Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(LxWsClient.class.getName());
@@ -254,13 +254,13 @@ class LxWsClient {
      */
     boolean connect() {
         logger.trace("[{}] connect() websocket", debugId);
-        if (state != ClientState.IDLE) {
-            close("Attempt to connect a websocket in non-idle state: " + state);
-            return false;
-        }
-
-        stateLock.lock();
+        stateMachineLock.lock();
         try {
+            if (state != ClientState.IDLE) {
+                close("Attempt to connect a websocket in non-idle state: " + state);
+                return false;
+            }
+
             socket = new LxWebSocket();
             wsClient = new WebSocketClient();
 
@@ -302,7 +302,7 @@ class LxWsClient {
                 return false;
             }
         } finally {
-            stateLock.unlock();
+            stateMachineLock.unlock();
         }
     }
 
@@ -316,7 +316,7 @@ class LxWsClient {
      */
     private void disconnect(String reason) {
         logger.trace("[{}] disconnect() websocket : {}", debugId, reason);
-        stateLock.lock();
+        stateMachineLock.lock();
         try {
             if (wsClient != null) {
                 try {
@@ -330,7 +330,7 @@ class LxWsClient {
                 logger.debug("[{}] Attempt to disconnect websocket client, but wsClient == null", debugId);
             }
         } finally {
-            stateLock.unlock();
+            stateMachineLock.unlock();
         }
     }
 
@@ -351,7 +351,7 @@ class LxWsClient {
      */
     private void close(String reason) {
         logger.trace("[{}] close() websocket", debugId);
-        stateLock.lock();
+        stateMachineLock.lock();
         try {
             stopResponseTimeout();
             if (socket != null) {
@@ -371,7 +371,7 @@ class LxWsClient {
                 logger.debug("[{}] Closing websocket, but socket = null", debugId);
             }
         } finally {
-            stateLock.unlock();
+            stateMachineLock.unlock();
         }
     }
 
@@ -487,14 +487,14 @@ class LxWsClient {
      * Called when response timeout occurred.
      */
     private void responseTimeout() {
-        stateLock.lock();
+        stateMachineLock.lock();
         try {
             logger.debug("[{}] Miniserver response timeout", debugId);
             notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.COMMUNICATION_ERROR,
                     "Miniserver response timeout occured");
             disconnect();
         } finally {
-            stateLock.unlock();
+            stateMachineLock.unlock();
         }
     }
 
@@ -554,7 +554,7 @@ class LxWsClient {
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
                 if (state != ClientState.CONNECTING) {
                     logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state);
@@ -579,13 +579,13 @@ class LxWsClient {
                     }
                 });
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
                 logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId, state,
                         statusCode, reason);
@@ -607,7 +607,7 @@ class LxWsClient {
                 }
                 setClientState(ClientState.IDLE);
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
@@ -624,7 +624,7 @@ class LxWsClient {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);
             }
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
                 if (state != ClientState.RUNNING) {
                     return;
@@ -677,21 +677,21 @@ class LxWsClient {
             } catch (IndexOutOfBoundsException e) {
                 logger.debug("[{}] malformed binary message received, discarded", debugId);
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
         @OnWebSocketMessage
         public void onMessage(String msg) {
-            if (logger.isTraceEnabled()) {
-                String trace = msg;
-                if (trace.length() > 100) {
-                    trace = msg.substring(0, 100);
-                }
-                logger.trace("[{}] received message in state {}: {}", debugId, state, trace);
-            }
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
+                if (logger.isTraceEnabled()) {
+                    String trace = msg;
+                    if (trace.length() > 100) {
+                        trace = msg.substring(0, 100);
+                    }
+                    logger.trace("[{}] received message in state {}: {}", debugId, state, trace);
+                }
                 switch (state) {
                     case IDLE:
                     case CONNECTING:
@@ -725,7 +725,7 @@ class LxWsClient {
                         break;
                 }
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
@@ -858,7 +858,7 @@ class LxWsClient {
          *         true if command was sent (no information if it was received)
          */
         private boolean sendCmdNoResp(String command, boolean encrypt) {
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
                 if (session != null && state != ClientState.IDLE && state != ClientState.CONNECTING
                         && state != ClientState.CLOSING) {
@@ -884,7 +884,7 @@ class LxWsClient {
                     return false;
                 }
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
@@ -951,7 +951,7 @@ class LxWsClient {
          */
         private void authenticated() {
             logger.debug("[{}] Websocket authentication successfull.", debugId);
-            stateLock.lock();
+            stateMachineLock.lock();
             try {
                 setClientState(ClientState.UPDATING_CONFIGURATION);
                 if (sendCmdNoResp(CMD_GET_APP_CONFIG, false)) {
@@ -961,7 +961,7 @@ class LxWsClient {
                     notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error sending get config command.");
                 }
             } finally {
-                stateLock.unlock();
+                stateMachineLock.unlock();
             }
         }
 
@@ -971,7 +971,7 @@ class LxWsClient {
          */
         private void startKeepAlive() {
             keepAlive = SCHEDULER.scheduleWithFixedDelay(() -> {
-                stateLock.lock();
+                stateMachineLock.lock();
                 try {
                     if (state == ClientState.CLOSING || state == ClientState.IDLE || state == ClientState.CONNECTING) {
                         stopKeepAlive();
@@ -982,7 +982,7 @@ class LxWsClient {
                         }
                     }
                 } finally {
-                    stateLock.unlock();
+                    stateMachineLock.unlock();
                 }
             }, keepAlivePeriod, keepAlivePeriod, TimeUnit.SECONDS);
         }
