@@ -29,4 +29,4 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: 
  org.openhab.binding.amazonechocontrol,
  org.openhab.binding.amazonechocontrol.handler
-Bundle-ActivationPolicy: lazy
+
