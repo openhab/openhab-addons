@@ -57,16 +57,23 @@ public class MySensorsSensorConfiguration {
      */
     public boolean requestHeartbeatResponse;
 
+    /**
+     * If a pure white rgbw value is selected in openhab the binding will only switch on the white led not the rgb part
+     */
+    public boolean usePureWhiteLightInRGBW;
+
     @Override
     public String toString() {
-        return "MySensorsSensorConfiguration [nodeId=" + nodeId
-                + ", childId=" + childId
-                + ", requestAck=" + requestAck
-                + ", revertState=" + revertState
-                + ", smartSleep=" + smartSleep
-                + ", childUpdateTimeout=" + childUpdateTimeout
-                + ", nodeUpdateTimeout=" + nodeUpdateTimeout
-                + ", requestHeartbeatResponse=" + requestHeartbeatResponse
-                + "]";
+        return "MySensorsSensorConfiguration{" +
+                "nodeId=" + nodeId +
+                ", childId=" + childId +
+                ", requestAck=" + requestAck +
+                ", revertState=" + revertState +
+                ", smartSleep=" + smartSleep +
+                ", childUpdateTimeout=" + childUpdateTimeout +
+                ", nodeUpdateTimeout=" + nodeUpdateTimeout +
+                ", requestHeartbeatResponse=" + requestHeartbeatResponse +
+                ", usePureWhiteLightInRGBW=" + usePureWhiteLightInRGBW +
+                '}';
     }
 }

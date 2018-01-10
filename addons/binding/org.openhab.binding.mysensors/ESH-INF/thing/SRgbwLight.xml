@@ -70,6 +70,12 @@
 				<description>Does this node support Smartsleep? A message to the node is only send in response to a heartbeat!</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="usePureWhiteLightInRGBW" type="boolean" required="false">
+				<label>Pure White</label>
+				<description>If this is enabled and a white color for this item is selected only the white channel will be activated.
+				Otherwise the white channel is set to the lowest of the RGB values and all 4 are send to the item.</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

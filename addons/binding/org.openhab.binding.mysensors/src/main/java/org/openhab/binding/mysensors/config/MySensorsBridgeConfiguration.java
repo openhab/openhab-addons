@@ -49,7 +49,7 @@ public class MySensorsBridgeConfiguration {
                 + ", networkSanCheckInterval=" + networkSanCheckInterval 
                 + ", networkSanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts 
                 + ", networkSanCheckSendHeartbeat=" + networkSanCheckSendHeartbeat
-                + ", networkSanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts 
+                + ", networkSanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts
                 + "]";
     }
 
