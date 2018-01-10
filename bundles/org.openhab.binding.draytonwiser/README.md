@@ -32,6 +32,15 @@ Once discovered, the HeatHub `SECRET` needs to be configured. There are a few wa
 
 TODO List available channels
 
+
+
+#### Known string responses for specific channels:
+
+| Channel               | Known responses                          |
+|-----------------------|------------------------------------------|
+| currentSignalStrength | `{ "VeryGood", "Good", "Medium", Poor }` |
+| currentBatteryLevel   | `{ "Normal", "TwoThirds" }`              |
+
 ## Full Example
 
 TODO
