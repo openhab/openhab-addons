@@ -23,14 +23,14 @@ Once added the configuration must be updated to specify the PIN code located on 
 
 ### DCH-S150
 
-*   **ipAddress** - Hostname or IP of the device
-*   **pin** - PIN code from the back of the device
+- **ipAddress** - Hostname or IP of the device
+- **pin** - PIN code from the back of the device
 
 To manually configure a DCH-S150 Thing you must specify its IP address and PIN code.
 
 In the Thing file, this looks like e.g.
 
-```
+```java
   Thing dlinksmarthome:DCH-S150:mysensor [ ipAddress="192.168.2.132" pin="1234" ]
 ```
 
@@ -38,13 +38,13 @@ In the Thing file, this looks like e.g.
 
 ### DCH-S150
 
-*   **motion** - Triggered when the sensor detects motion.
+- **motion** - Triggered when the sensor detects motion.
 
 ## Example usage
 
 ### DCH-S150
 
-```
+```perl
   rule "Landing motion"
   when
       Channel "dlinksmarthome:DCH-S150:90-8D-78-XX-XX-XX:motion" triggered

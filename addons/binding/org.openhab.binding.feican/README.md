@@ -1,6 +1,6 @@
 # Feican Binding
 
-This binding adds support for the Feican Wi-Fi version of the smart light led Bulb, the WiFi RGBW Bulb. 
+This binding adds support for the Feican Wi-Fi version of the smart light led Bulb, the WiFi RGBW Bulb.
 
 With this binding the light bulb can be switched on or off, set the color or set color based on color temperature.
 Set the brightness. And it contains a set of preset programs, where for some the program speed can be set.
@@ -27,7 +27,6 @@ Feican Android or iPhone DreamColor app.
 
 Devices can be auto discovered within the local network. It's possible to connect to devices in a different network,
 but these must be added manually.
-
 
 ## Thing Configuration
 
@@ -84,15 +83,15 @@ The program channel supports the following values:
 
 ## Full Example
 
-### feican.things:
+**feican.things:**
 
-```
+```java
 feican:bulb:home "Living Room" [ ipAddress="192.168.0.13" ]
 ```
 
-### feican.items:
+**feican.items:**
 
-```
+```java
 Switch   FC_1_Switch  "Switch"                    { channel="feican:bulb:home:color" }
 Color    FC_1_Color   "Color"            <slider> { channel="feican:bulb:home:color" }
 Dimmer   FC_1_Dimmer  "Brightness [%d]"  <slider> { channel="feican:bulb:home:color" }
