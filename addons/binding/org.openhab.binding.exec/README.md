@@ -78,16 +78,14 @@ String APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec thing, debug it with a rule and set the returned string to an Number Item. 
+Following is an example how to set up an exec command thing, debug it with a rule and set the returned string to an Number Item. 
 
-**For this to work also the openhab-transformation-regex has to be installed**
+**For this to work also the the openHAB RegEx Transformation has to be installed**
 
 **demo.things**
 
 ```java
-Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s"
-                                 interval=0,
-                                 autorun=true ]
+Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=true ]
 ```
 
 **demo.items**
@@ -135,6 +133,8 @@ rule "Your Execution"
       while(yourcommand.state != OFF){
          Thread::sleep(500)
       }
+      
+      // Logging of command line result
       logInfo("Your command exec", "Result:" + yourcommand_out.state )
       
       // If the returned string is just a number it can be parsed
@@ -145,9 +145,6 @@ rule "Your Execution"
 end
 ```
 
-The logging messages can be viewed in the Karaf console have a closer look [in the manual](http://docs.openhab.org/administration/console.html) for more information
-
 ## Source
 
 [OpenHAB community thread with a detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
-
