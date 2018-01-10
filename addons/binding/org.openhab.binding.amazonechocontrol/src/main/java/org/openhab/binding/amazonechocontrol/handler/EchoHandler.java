@@ -250,7 +250,7 @@ public class EchoHandler extends BaseThingHandler {
                         states = temp.getBluetoothConnectionStates();
                         state = states.findStateByDevice(device);
                     } catch (Exception e) {
-                        logger.info("getBluetoothConnectionStates failes: {}", e);
+                        logger.info("getBluetoothConnectionStates fails: {}", e);
                     }
 
                 }
@@ -267,7 +267,7 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            logger.info("handleCommand failes: {}", e);
+            logger.info("handleCommand fails: {}", e);
         }
     }
 
@@ -309,10 +309,10 @@ public class EchoHandler extends BaseThingHandler {
             if (e.getCode() == 400) {
                 // Ignore
             } else {
-                logger.info("getPlayer failes: {}", e);
+                logger.info("getPlayer fails: {}", e);
             }
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.info("getPlayer fails: {}", e);
         }
         JsonMediaState mediaState = null;
         try {
@@ -324,10 +324,10 @@ public class EchoHandler extends BaseThingHandler {
                 updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
 
             } else {
-                logger.info("getMediaState failes: {}", e);
+                logger.info("getMediaState fails: {}", e);
             }
         } catch (Exception e) {
-            logger.info("getMediaState failes: {}", e);
+            logger.info("getMediaState fails: {}", e);
         }
 
         // check playing
