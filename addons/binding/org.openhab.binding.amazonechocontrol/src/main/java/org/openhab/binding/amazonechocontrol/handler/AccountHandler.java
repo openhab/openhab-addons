@@ -1,14 +1,10 @@
 /**
- * Copyright (c) 2014-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.amazonechocontrol.handler;
 
@@ -92,7 +88,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
     }
 
-    private void initializeChild(EchoHandler echoHandler, Connection temp) {
+    private void initializeChild(@NonNull EchoHandler echoHandler, @NonNull Connection temp) {
         intializeChildDevice(temp, echoHandler);
 
         Device device = findDeviceJson(echoHandler);
@@ -267,7 +263,11 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                             }
                         }
                         // store session data in property
-                        this.updateProperty("sessionStorage", temp.serializeLoginData());
+                        String serializedStorage = temp.serializeLoginData();
+                        if (serializedStorage == null) {
+                            serializedStorage = "";
+                        }
+                        this.updateProperty("sessionStorage", serializedStorage);
                     }
                     connection = temp;
                 } catch (Exception e) {
@@ -362,12 +362,14 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
         synchronized (childs) {
             for (EchoHandler child : childs) {
-                initializeChild(child, temp);
+                if (child != null) {
+                    initializeChild(child, temp);
+                }
             }
         }
     }
 
-    private void intializeChildDevice(Connection connection, EchoHandler child) {
+    private void intializeChildDevice(@NonNull Connection connection, @NonNull EchoHandler child) {
         Device deviceJson = this.findDeviceJson(child);
         if (deviceJson != null) {
             child.intialize(connection, deviceJson);
