@@ -1,12 +1,16 @@
 # Amazon Echo Control Binding
 
 This binding let control openHAB Amazon Echo devices (Alexa).
-It provide features to control and view the current state of:
+
+The idea for writing this binding come from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German) Thank you Alex!
+
+The binding provide features to control and view the current state of echo dot devices:
 
 - volume
 - pause/continue/next track/previous track
 - connect/disconnect bluetooth devices
 - start playing radio
+- show album art image in sitemap
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 

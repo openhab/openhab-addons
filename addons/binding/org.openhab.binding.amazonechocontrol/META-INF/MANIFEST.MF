@@ -3,18 +3,17 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: AmazonEchoControl Binding
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.amazonechocontrol;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Export-Package: 
- org.openhab.binding.amazonechocontrol,
- org.openhab.binding.amazonechocontrol.handler
-Import-Package: 
- org.apache.commons.lang.time;version="2.6.0",
+Import-Package: com.google.gson;resolution:=optional,
+ com.google.gson.annotations,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.cache,
+ org.eclipse.smarthome.core.i18n,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -23,8 +22,11 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.amazonechocontrol,
  org.openhab.binding.amazonechocontrol.handler,
- org.openhab.core.library.types,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Require-Bundle: com.google.gson
+Export-Package: 
+ org.openhab.binding.amazonechocontrol,
+ org.openhab.binding.amazonechocontrol.handler
+Bundle-ActivationPolicy: lazy
