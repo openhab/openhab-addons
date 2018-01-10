@@ -49,13 +49,13 @@ The following parameters are automatically added:
 All Things support the following channels:
 
 
-| Channel Type ID | Item Type | Description                                                                             |
-|-----------------|-----------|-----------------------------------------------------------------------------------------|
-| input           | String    | Input parameter to provide to the command                                               |
-| output          | String    | Output of the last execution of the command                                             |
-| exit            | Number    | The exit value of the last execution of the command                                     |
-| run             | Switch    | Send ON to execute the command and the current state tells whether it is running or not |
-| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format           |
+| Channel Type ID | Item Type | Description                                                                          |
+|-----------------|-----------|--------------------------------------------------------------------------------------|
+| input           | String    | Input parameter to provide to the command                                            |
+| output          | String    | Output of the last execution of the command                                          |
+| exit            | Number    | The exit value of the last execution of the command                                  |
+| run             | Switch    | Send ON to execute the command, the current state tells whether it is running or not |
+| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format        |
 
 
 ## Minimal Example
@@ -78,7 +78,7 @@ String APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec Thing, debug it with a rule and set the returned string to an Number Item. 
+Following is an example how to set up an exec thing, debug it with a rule and set the returned string to an Number Item. 
 
 **For this to work also the openhab-transformation-regex has to be installed**
 
