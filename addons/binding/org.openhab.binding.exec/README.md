@@ -23,10 +23,10 @@ It is not advised to run the virtual machine as superuser/root.
 
 ## Thing Configuration
 
-The "command" thing requires the command to execute on the shell.
+The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
-- `transform` - A transformation to apply on the execution result,
+- `transform` - A [transformation](https://docs.openhab.org/addons/transformations.html) to apply on the execution result,
 - `interval` - An interval, in seconds, the command will be repeatedly executed,
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
 - `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
@@ -37,13 +37,11 @@ For each command a separate Thing has to be defined.
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
 
-The `command` itself can be enhanced using the well known syntax of the **java.util.Formatter** class. 
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax). 
 The following parameters are automatically added:
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
 -   the current State of the input channel (see below, example: `%2$s`)
-
-**For this to work also the openhab-transformation-regex has to be installed**
 
 ## Channels
 
@@ -81,12 +79,14 @@ String APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 Following is an example how to set up an exec command thing, debug it with a rule and set the returned string to an Number Item. 
 
-**For this to work also the the openHAB RegEx Transformation has to be installed**
+**For this to work also the openHAB RegEx Transformation has to be installed**
 
 **demo.things**
 
 ```java
-Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=true ]
+// "%2$s" will be replace by the input channel, this makes it possible to use one command line with different arguments.
+// e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument set to the input channel in the rule.
+Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
 
 **demo.items**
@@ -124,9 +124,9 @@ rule "Your Execution"
      Item YourTrigger changed
   then
         if(YourTrigger.state == ON){
-                yourcommand_Args.sendCommand("Additional Arguments")
+                yourcommand_Args.sendCommand("Additional Argument to command line for ON")
         }else{
-                yourcommand_Args.sendCommand("Other Additional Arguments")
+                yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
         }
 
       // wait for the command to complete
@@ -134,6 +134,9 @@ rule "Your Execution"
       while(yourcommand.state != OFF){
          Thread::sleep(500)
       }
+      
+      // Trigger execution
+      yourcommand.sendCommand(ON)
       
       // Logging of command line result
       logInfo("Your command exec", "Result:" + yourcommand_out.state )
