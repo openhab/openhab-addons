@@ -83,7 +83,10 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
         ON_5(5, true),
         ON_7(7, true),
         ON_9(9, true),
+        ON_10(10, true),
+        ON_11(11, true),
         ON_12(12, true),
+        OFF_14(14, false),
         UNKNOWN(-1, false);
 
         private final int command;
