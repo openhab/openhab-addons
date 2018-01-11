@@ -15,8 +15,11 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 
-The Homematic IP Access Point does not support this API and can't be used with this binding.
-But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15 or use [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) RF module.
+Recommended for Homematic IP:
+- CCU2 with at least firmware 2.17.15
+- [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) RF module
+
+The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
 
 These ports are used by the binding by default to communicate **TO** the gateway:
 
