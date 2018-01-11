@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -116,8 +117,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 }
             }
         }
-
         logger.warn("Channel '{}' not supported", channelUID);
+        logAvailableServices();
     }
 
     @Override
@@ -153,7 +154,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             discoveryServiceRegistry.addDiscoveryListener(this);
         }
 
-        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 1, 1,
+        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 0, 1,
                 TimeUnit.MINUTES);
     }
 
@@ -184,9 +185,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-        logger.debug("thingDiscovered: {}", result);
-
         if (configuration.hostName.equals(result.getProperties().get(HOST_NAME))) {
+            logger.debug("thingDiscovered: {}", result);
+
             /*
              * SamsungTV discovery services creates thing UID from UPnP UDN.
              * When thing is generated manually, thing UID may not match UPnP UDN, so store it for later use (e.g.
@@ -287,14 +288,20 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
      * devices related to same Samsung TV and create handler for those.
      */
     private void checkAndCreateServices() {
-        logger.debug("Check and create missing UPnP services");
+        try {
+            logger.debug("Check and create missing UPnP services");
 
-        for (Device device : upnpService.getRegistry().getDevices()) {
-            createService((RemoteDevice) device);
-        }
+            for (Device device : upnpService.getRegistry().getDevices()) {
+                createService((RemoteDevice) device);
+            }
 
-        if (upnpService != null) {
-            upnpService.getRegistry().addListener(this);
+            if (upnpService != null) {
+                upnpService.getRegistry().addListener(this);
+            }
+        } catch (RuntimeException e) {
+            logger.warn(
+                    "Catching all exceptions because otherwise the checkAndCreateServices thread would silently fail",
+                    e);
         }
     }
 
@@ -305,7 +312,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 String udn = device.getIdentity().getUdn().getIdentifierString();
                 String type = device.getType().getType();
 
-                logger.debug(" modelName={}, udn={}, type={}", modelName, udn, type);
+                logger.debug("About to create service for modelName={}, udn={}, type={}", modelName, udn, type);
 
                 SamsungTvService existingService = findServiceInstance(type);
 
@@ -313,9 +320,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                     SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
                             configuration.refreshInterval, configuration.hostName, configuration.port);
 
+                    logger.debug("Replacing {} with {}", existingService, newService);
+
                     if (newService != null) {
                         if (existingService != null) {
                             stopService(existingService);
+                            services.remove(existingService);
                         }
 
                         startService(newService);
@@ -326,7 +336,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 }
                 putOnline();
             } else {
-                logger.debug("Ignore device={}", device);
+                logger.debug("Ignore device = {}", device);
             }
         } else {
             logger.debug("Thing not yet initialized");
@@ -357,10 +367,13 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                     stopService(service);
                 }
             } else {
-                logger.trace("One or more services are already registered, not checking for new ones");
+                logger.debug("One or more services are already registered, not checking for manual new ones");
+                logAvailableServices();
             }
         } catch (RuntimeException e) {
-            logger.warn("Catching all exceptions because otherwise the thread would silently fail", e);
+            logger.warn(
+                    "Catching all exceptions because otherwise the checkCreateManualConnection thread would silently fail",
+                    e);
         }
     }
 
@@ -372,19 +385,24 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         }
     }
 
-    private void stopService(SamsungTvService service) {
-        if (service != null) {
-            service.stop();
-            service.removeEventListener(this);
-            services.remove(service);
-        }
-    }
-
     private void stopServices() {
         logger.debug("Shutdown all Samsung services");
         for (SamsungTvService service : services) {
             stopService(service);
         }
         services.clear();
+    }
+
+    private void stopService(SamsungTvService service) {
+        if (service != null) {
+            service.stop();
+            service.removeEventListener(this);
+        }
+    }
+
+    private void logAvailableServices() {
+        List<String> availableServices = services.stream().map(SamsungTvService::getDescription)
+                .collect(Collectors.toList());
+        logger.debug("Available services: {}", availableServices);
     }
 }

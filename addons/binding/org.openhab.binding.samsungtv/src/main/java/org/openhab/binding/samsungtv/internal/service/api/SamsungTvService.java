@@ -20,6 +20,13 @@ import org.eclipse.smarthome.core.types.Command;
 public interface SamsungTvService {
 
     /**
+     * Get a description for this service
+     *
+     * @return a human readable description
+     */
+    String getDescription();
+
+    /**
      * Procedure to get list of supported channel names.
      *
      * @return List of supported

@@ -52,7 +52,7 @@ public class RemoteControllerService implements SamsungTvService {
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     private RemoteControllerService(String host, int port, boolean upnp) {
-        logger.debug("Create a Samsung TV RemoteController service");
+        logger.debug("Creating a Samsung TV RemoteController service");
         this.upnp = upnp;
         this.host = host;
         this.port = port;
@@ -64,6 +64,11 @@ public class RemoteControllerService implements SamsungTvService {
 
     public static RemoteControllerService createNonUpnpService(String host, int port) {
         return new RemoteControllerService(host, port, false);
+    }
+
+    @Override
+    public String getDescription() {
+        return SERVICE_NAME + (upnp ? " with" : " without") + " UPNP support";
     }
 
     @Override

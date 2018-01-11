@@ -151,16 +151,12 @@ public class RemoteController {
 
                 if (Arrays.equals(result, ACCESS_GRANTED_RESP)) {
                     logger.debug("Access granted");
-
                 } else if (Arrays.equals(result, ACCESS_DENIED_RESP)) {
                     throw new RemoteControllerException("Access denied");
-
                 } else if (Arrays.equals(result, ACCESS_TIMEOUT_RESP)) {
                     throw new RemoteControllerException("Registration timed out");
-
                 } else if (Arrays.equals(result, WAITING_USER_GRANT_RESP)) {
                     throw new RemoteControllerException("Waiting for user to grant access");
-
                 } else {
                     throw new RemoteControllerException("Unknown response received for access query");
                 }
@@ -321,9 +317,13 @@ public class RemoteController {
         byte high = (byte) reader.read();
         int len = (high << 8) + low;
 
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return buffer;
+        if (len > 0) {
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return buffer;
+        } else {
+            return new char[] {};
+        }
     }
 
     private void sendKeyData(KeyCode key) throws RemoteControllerException {

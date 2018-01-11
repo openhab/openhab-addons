@@ -62,7 +62,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
-        logger.debug("Create a Samsung TV MainTVServer service");
+        logger.debug("Creating a Samsung TV MainTVServer service");
 
         if (upnpIOService != null) {
             service = upnpIOService;
@@ -74,6 +74,11 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         this.pollingInterval = pollingInterval;
 
         scheduler = Executors.newScheduledThreadPool(1);
+    }
+
+    @Override
+    public String getDescription() {
+        return SERVICE_NAME;
     }
 
     @Override
@@ -213,7 +218,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
 
         for (String variable : result.keySet()) {
@@ -224,7 +228,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private void setSourceName(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "GetSourceList", null);
 
         String source = command.toString();

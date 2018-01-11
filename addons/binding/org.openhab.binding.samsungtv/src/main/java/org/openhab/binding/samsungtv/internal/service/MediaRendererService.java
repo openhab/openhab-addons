@@ -62,7 +62,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     public MediaRendererService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
-        logger.debug("Create a Samsung TV MediaRenderer service");
+        logger.debug("Creating a Samsung TV MediaRenderer service");
 
         if (upnpIOService != null) {
             service = upnpIOService;
@@ -74,6 +74,11 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
         this.pollingInterval = pollingInterval;
 
         scheduler = Executors.newScheduledThreadPool(1);
+    }
+
+    @Override
+    public String getDescription() {
+        return SERVICE_NAME;
     }
 
     @Override

@@ -9,7 +9,7 @@
 package org.openhab.binding.samsungtv.internal.discovery;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
-import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
+import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,11 +45,10 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
+            properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                    .withProperties(properties)
-                    .withLabel(getLabel(device))
-                    .build();
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(getLabel(device)).withRepresentationProperty(UDN).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getModelDetails().getModelName(),
@@ -72,29 +71,26 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
+        String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+        String modelName = device.getDetails().getModelDetails().getModelName();
+        String friendlyName = device.getDetails().getFriendlyName();
 
-            String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-            String modelName = device.getDetails().getModelDetails().getModelName();
-            String friendlyName = device.getDetails().getFriendlyName();
+        if (manufacturer != null && modelName != null) {
 
-            if (manufacturer != null && modelName != null) {
+            if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
 
-                if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
+                // UDN shouldn't contain '-' characters.
+                String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
 
-                    // UDN shouldn't contain '-' characters.
-                    String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
+                // One Samsung TV contains several UPnP devices.
+                // Create unique Samsung TV thing for every MediaRenderer
+                // device and ignore rest of the UPnP devices.
 
-                    // One Samsung TV contains several UPnP devices.
-                    // Create unique Samsung TV thing for every MediaRenderer
-                    // device and ignore rest of the UPnP devices.
+                if (device.getType().getType().equals("MediaRenderer")) {
+                    logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName, modelName,
+                            udn);
 
-                    if (device.getType().getType().equals("MediaRenderer")) {
-                        logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName,
-                                modelName, udn);
-
-                        return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
-                    }
+                    return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
                 }
             }
         }
