@@ -13,6 +13,7 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -214,29 +215,36 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             switch (channelUID.getId()) {
                 case CHANNEL_SETPOINT_MODE: {
                     String target_mode = command.toString();
-                    if (CHANNEL_SETPOINT_MODE_MANUAL.equals(target_mode)) {
-                        logger.info("Update the setpoint temperature in order to switch to manual mode");
+                    if (!CHANNEL_SETPOINT_MODE_MANUAL.equals(target_mode)) {
+                        pushSetpointUpdate(target_mode, null, null);
                     } else {
-                        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), target_mode, null,
-                                null);
+                        logger.info("Update the setpoint temperature in order to switch to manual mode");
                     }
-                    requestParentRefresh(true);
                     break;
                 }
                 case CHANNEL_SETPOINT_TEMP: {
-                    // Switch the thermostat to manual mode on the desired setpoint for given duration
-                    getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(),
-                            CHANNEL_SETPOINT_MODE_MANUAL, getSetpointEndTime(), Float.parseFloat(command.toString()));
-                    requestParentRefresh(true);
+                    pushSetpointUpdate(CHANNEL_SETPOINT_MODE_MANUAL, getSetpointEndTime(),
+                            Float.parseFloat(command.toString()));
                     break;
                 }
             }
         }
     }
 
+    private void pushSetpointUpdate(String target_mode, Integer setpointEndtime, Float setpointTemp) {
+        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), target_mode, setpointEndtime,
+                setpointTemp);
+        // Leave a bit of time to Netatmo Server to get in sync with new values sent
+        scheduler.schedule(() -> {
+            requestParentRefresh(true);
+        }, 1800, TimeUnit.MILLISECONDS);
+    }
+
     private int getSetpointEndTime() {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return (int) (cal.getTimeInMillis() / 1000);
     }
 
