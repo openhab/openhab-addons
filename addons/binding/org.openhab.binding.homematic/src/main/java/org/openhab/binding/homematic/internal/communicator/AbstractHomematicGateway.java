@@ -685,27 +685,14 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Creates a virtual device for handling variables, scripts and other special gateway functions.
      */
     private HmDevice createGatewayDevice() {
-        HmDevice device = new HmDevice();
-        device.setAddress(HmDevice.ADDRESS_GATEWAY_EXTRAS);
-        device.setHmInterface(getDefaultInterface());
-        device.setGatewayId(config.getGatewayInfo().getId());
-        device.setType(String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, StringUtils.upperCase(id)));
+        String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, StringUtils.upperCase(id));
+        HmDevice device = new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, getDefaultInterface(), type,
+                config.getGatewayInfo().getId(), null, null);
         device.setName(HmDevice.TYPE_GATEWAY_EXTRAS);
 
-        HmChannel channel = new HmChannel();
-        channel.setNumber(HmChannel.CHANNEL_NUMBER_EXTRAS);
-        channel.setType(HmChannel.TYPE_GATEWAY_EXTRAS);
-        device.addChannel(channel);
-
-        channel = new HmChannel();
-        channel.setNumber(HmChannel.CHANNEL_NUMBER_VARIABLE);
-        channel.setType(HmChannel.TYPE_GATEWAY_VARIABLE);
-        device.addChannel(channel);
-
-        channel = new HmChannel();
-        channel.setNumber(HmChannel.CHANNEL_NUMBER_SCRIPT);
-        channel.setType(HmChannel.TYPE_GATEWAY_SCRIPT);
-        device.addChannel(channel);
+        device.addChannel(new HmChannel(HmChannel.TYPE_GATEWAY_EXTRAS, HmChannel.CHANNEL_NUMBER_EXTRAS));
+        device.addChannel(new HmChannel(HmChannel.TYPE_GATEWAY_VARIABLE, HmChannel.CHANNEL_NUMBER_VARIABLE));
+        device.addChannel(new HmChannel(HmChannel.TYPE_GATEWAY_SCRIPT, HmChannel.CHANNEL_NUMBER_SCRIPT));
 
         return device;
     }
