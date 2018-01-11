@@ -54,14 +54,4 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
             }
         }
     }
-
-    private void sendCommand(SomfyTahomaAction action) {
-
-        for (SomfyTahomaCommand command : action.getCommands()) {
-            String parameters = command.getType() == TYPE_PERCENT ? gson.toJson(command.getPercentParameters()) : gson.toJson(command.getParameters());
-            logger.debug("Sending to device {} command {} params {}", action.getDeviceURL(), command.getName(), parameters);
-            getBridgeHandler().sendCommand(action.getDeviceURL(), command.getName(), parameters);
-        }
-    }
-
 }
