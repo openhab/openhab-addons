@@ -20,6 +20,12 @@ public class System {
     @SerializedName("PairingStatus")
     @Expose
     private String pairingStatus;
+    @SerializedName("OverrideType")
+    @Expose
+    private String overrideType;
+    @SerializedName("OverrideSetPoint")
+    @Expose
+    private Integer overrideSetPoint;
     @SerializedName("TimeZoneOffset")
     @Expose
     private Integer timeZoneOffset;
@@ -69,6 +75,14 @@ public class System {
 
     public void setPairingStatus(String pairingStatus) {
         this.pairingStatus = pairingStatus;
+    }
+
+    public String getOverrideType() {
+        return overrideType;
+    }
+
+    public Integer getOverrideSetPoint() {
+        return overrideSetPoint;
     }
 
     public Integer getTimeZoneOffset() {

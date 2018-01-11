@@ -100,6 +100,11 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                         new ChannelUID(getThing().getUID(),
                                 DraytonWiserBindingConstants.CHANNEL_HEATCHANNEL_2_DEMAND_STATE),
                         getHeatChannel2DemandState());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE),
+                        getAwayModeState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_SETPOINT),
+                        getAwayModeSetPoint());
             }
 
         } catch (Exception e) {
@@ -196,5 +201,23 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         }
 
         return OnOffType.OFF;
+    }
+
+    private State getAwayModeState() {
+        if (system != null && system.getOverrideType() != null) {
+            if (system.getOverrideType().toUpperCase().equals("AWAY")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private State getAwayModeSetPoint() {
+        if (system != null && system.getOverrideSetPoint() != null) {
+            return new DecimalType((float) system.getOverrideSetPoint() / 10);
+        }
+
+        return UnDefType.UNDEF;
     }
 }

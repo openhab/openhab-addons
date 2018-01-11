@@ -50,6 +50,8 @@
             <channel id="heatChannel1DemandState" typeId="heatChannel1DemandState-channel" />
             <channel id="heatChannel2Demand" typeId="heatChannel2Demand-channel" />
             <channel id="heatChannel2DemandState" typeId="heatChannel2DemandState-channel" />
+            <channel id="awayModeState" typeId="awayModeState-channel" />
+            <channel id="awayModeSetPoint" typeId="awayModeSetPoint-channel" />
         </channels>
         
         <config-description>
@@ -258,5 +260,19 @@
         <state readOnly="true"></state>
     </channel-type>
     
+    <channel-type id="awayModeState-channel">
+        <item-type>Switch</item-type>
+        <label>Away Mode Active</label>
+        <description>Away mode has been activated</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="awayModeSetPoint-channel">
+        <item-type>Number</item-type>
+        <label>Away Mode Set Point</label>
+        <description>Away Mode Set Point in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="false" pattern="%.1f °C"></state>
+    </channel-type> 
 
 </thing:thing-descriptions>
