@@ -19,6 +19,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 
+/**
+ * The {@link DraytonWiserThingHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Andrew Schofield - Initial contribution
+ */
 public abstract class DraytonWiserThingHandler extends BaseThingHandler {
 
     @Nullable

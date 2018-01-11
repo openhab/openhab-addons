@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.Domain;
 import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
@@ -96,6 +97,18 @@ public class HeatHubHandler extends BaseBridgeHandler {
             properties.put("Model", device.getModelIdentifier());
             getThing().setProperties(properties);
         }
+    }
+
+    public @Nullable Domain getDomain() {
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DOMAIN_ENDPOINT, HttpMethod.GET,
+                "");
+
+        if (response == null) {
+            return null;
+        }
+
+        Domain domain = gson.fromJson(response.getContentAsString(), Domain.class);
+        return domain;
     }
 
     public List<RoomStat> getRoomStats() {

@@ -41,6 +41,7 @@ public class DraytonWiserBindingConstants {
     public static final String HEATCHANNELS_ENDPOINT = "data/domain/HeatingChannel/";
     public static final String SYSTEM_ENDPOINT = "data/domain/System/";
     public static final String STATION_ENDPOINT = "data/network/Station/";
+    public static final String DOMAIN_ENDPOINT = "data/domain/";
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");
