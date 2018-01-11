@@ -21,20 +21,21 @@ If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), y
 
 ## Binding configuration
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
--   ipAddress: Hostname or IP address of the matrix switch
--   userName: (optional) the username to login with (only if Telnet Login is enabled)
--   password: (optional) the password to login with (only if Telnet Login is enabled)
--   polling: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
--   ping: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
--   retryPolling: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
+- `ipAddress`: Hostname or IP address of the matrix switch
+- `userName`: (optional) the username to login with (only if Telnet Login is enabled)
+- `password`: (optional) the password to login with (only if Telnet Login is enabled)
+- `polling`: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
+- `ping`: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
+- `retryPolling`: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
 
 ### username/password
 
-The userName/password configuration options are optional and are only required if you have your switch set with "Telnet Login" enabled (on the "Network" tab from the switch configuration UI).  The user must be a valid user listed on the "Users" tab of the switch configuration UI in this case.
+The userName/password configuration options are optional and are only required if you have your switch set with "Telnet Login" enabled (on the "Network" tab from the switch configuration UI).
+The user must be a valid user listed on the "Users" tab of the switch configuration UI in this case.
 
 ### polling
 
@@ -145,7 +146,6 @@ If it is higher than the "IP Timeout" value, the switch will timeout our connect
 | pro3-1616m | volume12#volume                                                 | Number    | RW     | Sets the volume of audio port #12 to the specified decibel level (between -79db to +15db) |
 | pro3-1616m | volume12#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #12                                                              |
 
-
 ### presetcmd
 
 The presetcmd channel will take the following commands:
@@ -155,7 +155,6 @@ The presetcmd channel will take the following commands:
 | saveX   | Saves the current input/output to preset X |
 | recallX | Sets the input/output to preset X          |
 | clearX  | Clears the preset X                        |
-
 
 Note: if X doesn't exist - nothing will occur.
 The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
@@ -170,7 +169,6 @@ The matrixcmd channel will take the following commands:
 | resetports  | Resets the ports back to their default values (outputX=inputX)                                                                        |
 | allportsX   | Sets all the output ports to the input port X                                                                                         |
 
-
 Note: if X doesn't exist - nothing will occur.
 The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
 
@@ -179,16 +177,19 @@ The # of presets allowed depends on the firmware you are using (5 presets up to 
 As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I've notified them on these issues):
 
 -   clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
--   There is no way to query what the current status is of: panellock, and irenable.  This addon simply assumes that panellock is off and irenable is on at startup.  
--   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this addon's connection will be inconsistently closed at different times.  The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
+
+-   There is no way to query what the current status is of: panellock, and irenable.  This addon simply assumes that panellock is off and irenable is on at startup.
+
+-   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this addon's connection will be inconsistently closed at different times.
+The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
+
 -   a bug in the firmware will sometimes cause memory presets to disappear after a reboot
 
 As of firmware 1.6.8 (rev 14),
 
--   The "clearX" command has been fixed and works now.
--   The number of presets have increased to 10
--   If telnet mode is enabled, you must use the admin username/password to issue a matrixreset
-
+- The "clearX" command has been fixed and works now.
+- The number of presets have increased to 10
+- If telnet mode is enabled, you must use the admin username/password to issue a matrixreset
 
 ## Example
 
@@ -196,19 +197,19 @@ As of firmware 1.6.8 (rev 14),
 
 Here is an example with minimal configuration parameters (using default values with no telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30" ]
 ```
 
 Here is another example with minimal configuration parameters (using default values with telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345" ]
 ```
 
 Here is a full configuration example:
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -216,7 +217,7 @@ atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345"
 
 Here is an example of items for the AT-UHD-PRO33-88M:
 
-```
+```java
 Switch Atlona_Power "Power" { channel = "atlona:pro3-88m:home:primary#power" }
 Switch Atlona_PanelLock "Panel Lock" { channel = "atlona:pro3-88m:home:primary#panellock" }
 Switch Atlona_Presets "Preset Command" { channel = "atlona:pro3-88m:home:primary#presetcmd" }
@@ -259,9 +260,8 @@ Switch Atlona_VolumeMute6 "Mute 6" { channel = "atlona:pro3-88m:home:volume1#vol
 
 ### SiteMap
 
-```
-sitemap demo label="Main Menu"
-{
+```perl
+sitemap demo label="Main Menu" {
     Frame label="Atlona" {
         Text label="Device" {
             Switch item=Atlona_Power
@@ -311,14 +311,14 @@ sitemap demo label="Main Menu"
 }
 ```
 
-# Transformation Maps
+## Transformation Maps
 
 The following is some example transformation maps you can create.
 Be sure they are in sync with the mappings above.
 
 ### atlonainputports.map
 
-```
+```text
 1=CableBox
 2=BluRay Player
 3=Roku
@@ -333,7 +333,7 @@ NULL=-
 
 ### atlonaoutputports.map
 
-```
+```text
 1=Living Room
 2=Master Bed
 3=Kitchen

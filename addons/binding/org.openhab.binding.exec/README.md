@@ -22,9 +22,10 @@ sudo -u openhab <YOUR COMMAND>
 It is not advised to run the virtual machine as superuser/root.
 
 ## Thing Configuration
-
+.
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
+
 
 - `transform` - A [transformation](https://docs.openhab.org/addons/transformations.html) to apply on the execution result,
 - `interval` - An interval, in seconds, the command will be repeatedly executed,
@@ -37,16 +38,17 @@ For each command a separate Thing has to be defined.
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax). 
+
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
 -   the current State of the input channel (see below, example: `%2$s`)
 
+
 ## Channels
 
 All Things support the following channels:
-
 
 | Channel Type ID | Item Type | Description                                                                          |
 |-----------------|-----------|--------------------------------------------------------------------------------------|
@@ -93,7 +95,7 @@ Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, auto
 
 ```java
 Switch YourTrigger
-Number YourNumber "Your Number [%.1f Â°C]"
+Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is running or finished
 Switch yourcommand {channel="exec:command:yourcommand:run"}

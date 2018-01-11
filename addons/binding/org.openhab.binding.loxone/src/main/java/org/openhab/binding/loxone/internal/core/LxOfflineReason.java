@@ -46,5 +46,34 @@ public enum LxOfflineReason {
     /**
      * Connection attempt failed (before authentication)
      */
-    CONNECT_FAILED
+    CONNECT_FAILED,
+    /**
+     * Repeat connection immediately (for example to retry with different authorization scheme)
+     */
+    REPEAT_CONNECTION;
+
+    /**
+     * Converts Miniserver status code to offline reason
+     *
+     * @param code
+     *            status code received in message response from the Miniserver
+     * @return
+     *         converted offline reason
+     */
+    static LxOfflineReason getReason(int code) {
+        switch (code) {
+            case 420:
+                return LxOfflineReason.AUTHENTICATION_TIMEOUT;
+            case 401:
+                return LxOfflineReason.UNAUTHORIZED;
+            case 4003:
+                return LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
+            case 1001:
+                return LxOfflineReason.IDLE_TIMEOUT;
+            case 200:
+                return LxOfflineReason.NONE;
+            default:
+                return COMMUNICATION_ERROR;
+        }
+    }
 }
