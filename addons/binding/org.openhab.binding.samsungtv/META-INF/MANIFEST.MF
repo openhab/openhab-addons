@@ -12,6 +12,7 @@ Export-Package:
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.net.util,
+ org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,

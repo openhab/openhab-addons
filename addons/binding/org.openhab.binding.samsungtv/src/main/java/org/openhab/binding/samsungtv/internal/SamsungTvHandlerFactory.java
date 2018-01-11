@@ -49,7 +49,7 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {
-            return new SamsungTvHandler(thing, upnpIOService, discoveryServiceRegistry, upnpService);
+            return new SamsungTvHandler(thing, upnpIOService, upnpService);
         }
 
         return null;

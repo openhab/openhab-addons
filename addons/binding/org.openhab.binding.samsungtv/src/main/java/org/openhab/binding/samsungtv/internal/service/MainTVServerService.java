@@ -233,7 +233,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         String source = command.toString();
         String id = null;
 
-        if (result.get("Result").equals("OK")) {
+        if ("OK".equals(result.get("Result"))) {
             String xml = result.get("SourceList");
 
             Map<String, String> list = parseSourceList(xml);
@@ -241,14 +241,14 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 id = list.get(source);
             }
         } else {
-            logger.error("Source list query failed, result='{}'", result.get("Result"));
+            logger.error("Source list query failed, result='{}'", result);
         }
 
         if (source != null && id != null) {
             result = updateResourceState("MainTVAgent2", "SetMainTVSource",
                     SamsungTvUtils.buildHashMap("Source", source, "ID", id, "UiID", "0"));
 
-            if (result.get("Result").equals("OK")) {
+            if ("OK".equals(result.get("Result"))) {
                 logger.debug("Command successfully executed");
             } else {
                 logger.error("Command execution failed, result='{}'", result.get("Result"));
@@ -263,7 +263,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         Map<String, String> result = updateResourceState("MainTVAgent2", "RunBrowser",
                 SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 
-        if (result.get("Result").equals("OK")) {
+        if ("OK".equals(result.get("Result"))) {
             logger.debug("Command successfully executed");
         } else {
             logger.error("Command execution failed, result='{}'", result.get("Result"));
@@ -274,7 +274,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
         Map<String, String> result = updateResourceState("MainTVAgent2", "StopBrowser", null);
 
-        if (result.get("Result").equals("OK")) {
+        if ("OK".equals(result.get("Result"))) {
             logger.debug("Command successfully executed");
         } else {
             logger.error("Command execution failed, result='{}'", result.get("Result"));
