@@ -53,7 +53,7 @@ The IP address will be found by the auto-discovery feature.
 A manual setup through a `things/kodi.things` file could look like this:
 
 ```
-Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port="9090", httpPort="8080"]
+Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port=9090, httpPort=8080]
 ```
 
 ## Channels
@@ -92,7 +92,7 @@ You can optionally configure an user-defined PVR channel group.
 A manual setup through a `things/kodi.things` file could look like this:
 
 ```
-Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port="9090"] {
+Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port=9090] {
     Channels:
         Type pvr-open-tv : pvr-open-tv [
             group="All channels"
