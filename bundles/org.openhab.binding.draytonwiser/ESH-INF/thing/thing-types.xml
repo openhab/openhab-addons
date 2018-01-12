@@ -27,7 +27,7 @@
                 <label>Refresh interval</label>
                 <description>Interval in seconds between automatic refreshes</description>
                 <required>true</required>
-                <default>60</default>
+                <default>10</default>
             </parameter>
         </config-description>
     </bridge-type>
