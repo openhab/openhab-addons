@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaActionGroupHandler;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaAwningHandler;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
@@ -42,6 +43,8 @@ import org.openhab.binding.somfytahoma.handler.SomfyTahomaVenetianBlindHandler;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaWindowHandler;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.somfytahoma", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHandlerFactory.class);
