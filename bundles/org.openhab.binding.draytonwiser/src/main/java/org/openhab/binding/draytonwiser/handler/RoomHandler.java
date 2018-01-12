@@ -51,6 +51,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
         if (command instanceof RefreshType) {
             refresh();
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_CURRENT_SETPOINT)) {
+            int newSetPoint = Math.round((Float.parseFloat(command.toString()) * 10));
+            setSetPoint(newSetPoint);
+        }
         // if (channelUID.getId().equals(CHANNEL_1)) {
         // TODO: handle command
 
@@ -95,6 +100,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    private void setSetPoint(Integer setPoint) {
+        getBridgeHandler().setRoomSetPoint(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue(),
+                setPoint);
     }
 
     private State getHumidity() {

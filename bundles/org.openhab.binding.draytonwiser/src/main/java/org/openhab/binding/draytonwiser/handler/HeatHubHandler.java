@@ -252,12 +252,21 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return domain.getHeatingChannel();
     }
 
+    public void setRoomSetPoint(Integer roomId, Integer setPoint) {
+        String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+    }
+
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
+        return sendMessageToHeatHub(path, method.asString(), content);
+    }
+
+    private @Nullable ContentResponse sendMessageToHeatHub(String path, String method, String content) {
         try {
             String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
             String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
             StringContentProvider contentProvider = new StringContentProvider(content);
-            ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(HttpMethod.GET)
+            ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(method)
                     .header("SECRET", authtoken).content(contentProvider).send();
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
