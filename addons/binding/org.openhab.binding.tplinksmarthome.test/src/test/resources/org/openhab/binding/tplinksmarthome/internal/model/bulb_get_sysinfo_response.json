@@ -1,0 +1,70 @@
+{
+	"system": {
+		"get_sysinfo": {
+			"active_mode": "schedule",
+			"alias": "Downstairs Light",
+			"ctrl_protocols": {
+				"name": "Linkie",
+				"version": "1.0"
+			},
+			"description": "Smart Wi-Fi LED Bulb with Dimmable Light",
+			"dev_state": "normal",
+			"deviceId": "80120B3D03E0B639CDF33E3CB1466490187FEF32",
+			"disco_ver": "1.0",
+			"err_code": 0,
+			"heapsize": 309908,
+			"hwId": "111E35908497A05512E259BB76801E10",
+			"hw_ver": "1.0",
+			"is_color": 0,
+			"is_dimmable": 1,
+			"is_factory": false,
+			"is_variable_color_temp": 0,
+			"light_state": {
+				"dft_on_state": {
+					"brightness": 92,
+					"color_temp": 2700,
+					"hue": 7,
+					"mode": "normal",
+					"saturation": 44
+				},
+				"on_off": 1
+			},
+			"mic_mac": "50C7BF7BE306",
+			"mic_type": "IOT.SMARTBULB",
+			"model": "LB110(EU)",
+			"oemId": "A68E15472071CB761E5CCFB388A1D8AE",
+			"preferred_state": [
+				{
+					"brightness": 100,
+					"color_temp": 2700,
+					"hue": 0,
+					"index": 0,
+					"saturation": 0
+				},
+				{
+					"brightness": 58,
+					"color_temp": 2700,
+					"hue": 0,
+					"index": 1,
+					"saturation": 0
+				},
+				{
+					"brightness": 25,
+					"color_temp": 2700,
+					"hue": 0,
+					"index": 2,
+					"saturation": 0
+				},
+				{
+					"brightness": 1,
+					"color_temp": 2700,
+					"hue": 0,
+					"index": 3,
+					"saturation": 0
+				}
+			],
+			"rssi": -61,
+			"sw_ver": "1.5.5 Build 170623 Rel.090105"
+		}
+	}
+}

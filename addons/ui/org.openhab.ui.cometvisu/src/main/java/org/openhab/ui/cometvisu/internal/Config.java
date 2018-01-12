@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,11 +11,13 @@ package org.openhab.ui.cometvisu.internal;
 import java.io.File;
 import java.util.Hashtable;
 
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
@@ -37,12 +39,14 @@ public class Config {
     public static final String COMETVISU_ICON_ENABLE_MAPPING_PROPERTY = "enableMapping";
 
     public static final String COMETVISU_WEBFOLDER_PROPERTY = "webFolder";
+    public static final String COMETVISU_AUTODOWNLOAD_PROPERTY = "autoDownload";
 
-    public static String COMETVISU_WEBFOLDER = "runtime/web/";
+    public static String COMETVISU_WEBFOLDER = ConfigConstants.getUserDataFolder() + "/cometvisu";
 
     public static final String COMETVISU_WEBAPP_ALIAS_PROPERTY = "webAlias";
 
     public static String COMETVISU_WEBAPP_ALIAS = "/cometvisu";
+    public static boolean COMETVISU_AUTO_DOWNLOAD = false;
 
     public static String COMETVISU_WEBAPP_USERFILE_FOLDER = File.separator + "cometvisu";
 
@@ -55,6 +59,7 @@ public class Config {
     public static final String COMETVISU_BACKEND_READ_ALIAS = "r";
     public static final String COMETVISU_BACKEND_WRITE_ALIAS = "w";
     public static final String COMETVISU_BACKEND_CHART_ALIAS = "rrdfetch";
+    public static final String COMETVISU_BACKEND_CONFIG_ALIAS = "config";
 
     public static Hashtable<String, Object> iconConfig = new Hashtable<String, Object>();
     public static Hashtable<String, Object> iconMappings = new Hashtable<String, Object>();
@@ -79,6 +84,7 @@ public class Config {
         itemTypeMapper.put("datetime", DateTimeType.class);
         itemTypeMapper.put("time", DateTimeType.class);
         itemTypeMapper.put("color", HSBType.class);
+        itemTypeMapper.put("location", PointType.class);
     }
 
 }

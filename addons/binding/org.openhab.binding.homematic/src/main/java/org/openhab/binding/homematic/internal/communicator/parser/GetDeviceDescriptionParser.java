@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,21 +16,21 @@ import java.util.Map;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], Void> {
+public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDeviceDescriptionParser> {
     private String type;
     private String firmware;
     private String deviceInterface;
 
     @SuppressWarnings("unchecked")
     @Override
-    public Void parse(Object[] message) throws IOException {
+    public GetDeviceDescriptionParser parse(Object[] message) throws IOException {
         if (message != null && message.length > 0 && message[0] instanceof Map) {
             Map<String, ?> mapMessage = (Map<String, ?>) message[0];
             type = toString(mapMessage.get("TYPE"));
             firmware = toString(mapMessage.get("FIRMWARE"));
             deviceInterface = toString(mapMessage.get("INTERFACE"));
         }
-        return null;
+        return this;
     }
 
     /**

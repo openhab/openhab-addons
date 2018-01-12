@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:device:bulb">
+        <parameter name="ipAddress" type="text" required="true">
+            <context>network-address</context>
+            <label>IP Address</label>
+            <description>IP Address of the device.</description>
+        </parameter>
+        <parameter name="transitionPeriod" type="integer" min="0">
+            <label>Transition period</label>
+            <description>Time the transition to the new state takes in milliseconds.</description>
+            <unitLabel>milliseconds</unitLabel>
+            <default>0</default>
+        </parameter>
+        <parameter name="refresh" type="integer" min="0">
+            <label>Refresh rate</label>
+            <description>Refresh of device state in seconds.</description>
+            <unitLabel>seconds</unitLabel>
+            <default>30</default>
+        </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:device:plug">
+	    <parameter name="ipAddress" type="text" required="true">
+	        <context>network-address</context>
+	        <label>IP Address</label>
+	        <description>IP Address of the device.</description>
+	    </parameter>
+	    <parameter name="refresh" type="integer">
+	        <label>Refresh rate</label>
+	        <description>Refresh of device state in seconds.</description>
+	        <unitLabel>seconds</unitLabel>
+	        <default>30</default>
+	    </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:device:switch">
+	    <parameter name="ipAddress" type="text" required="true">
+	        <context>network-address</context>
+	        <label>IP Address</label>
+	        <description>IP Address of the device.</description>
+	    </parameter>
+	    <parameter name="refresh" type="integer">
+	        <label>Refresh rate</label>
+	        <description>Refresh of device state in seconds.</description>
+	        <unitLabel>seconds</unitLabel>
+	        <default>1</default>
+	    </parameter>
+    </config-description>
+</config-description:config-descriptions>

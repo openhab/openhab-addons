@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,8 +13,12 @@ import static org.openhab.binding.gardena.internal.GardenaSmartCommandName.*;
 
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,12 +35,14 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartCommandName;
+import org.openhab.binding.gardena.internal.GardenaSmartImpl;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Ability;
 import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.Setting;
 import org.openhab.binding.gardena.internal.util.DateUtils;
-import org.openhab.binding.gardena.util.UidUtils;
+import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,19 +59,31 @@ public class GardenaThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         try {
             Device device = getDevice();
             updateProperties(device);
+            updateSettings(device);
             updateStatus(device);
         } catch (GardenaException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
+        }
+    }
+
+    /**
+     * Updates the thing configuration from the Gardena device.
+     */
+    protected void updateSettings(Device device) throws GardenaException {
+        if (GardenaSmartImpl.DEVICE_CATEGORY_PUMP.equals(device.getCategory())) {
+            Configuration config = editConfiguration();
+            config.put(SETTING_LEAKAGE_DETECTION, device.getSetting(SETTING_LEAKAGE_DETECTION).getValue());
+            config.put(SETTING_OPERATION_MODE, device.getSetting(SETTING_OPERATION_MODE).getValue());
+            config.put(SETTING_TURN_ON_PRESSURE,
+                    ObjectUtils.toString(device.getSetting(SETTING_TURN_ON_PRESSURE).getValue()));
+            updateConfiguration(config);
         }
     }
 
@@ -84,14 +102,13 @@ public class GardenaThingHandler extends BaseThingHandler {
         updateProperties(properties);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
             updateChannel(channelUID);
-        } catch (Exception ex) {
+        } catch (GardenaDeviceNotFoundException | AccountHandlerNotAvailableException ex) {
+            logger.debug("{}", ex.getMessage(), ex);
+        } catch (GardenaException ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
     }
@@ -101,7 +118,10 @@ public class GardenaThingHandler extends BaseThingHandler {
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
         Device device = getDevice();
-        updateState(channelUID, convertToState(device, channelUID));
+        State state = convertToState(device, channelUID);
+        if (state != null) {
+            updateState(channelUID, state);
+        }
     }
 
     /**
@@ -110,39 +130,45 @@ public class GardenaThingHandler extends BaseThingHandler {
     private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         String abilityName = channelUID.getGroupId();
         String propertyName = channelUID.getIdWithoutGroup();
-        String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-        if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
-                || StringUtils.startsWith(value, "1970-01-01")) {
-            return UnDefType.NULL;
-        }
+        try {
+            String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-        switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
-            case "String":
-                return new StringType(value);
-            case "Number":
-                if (ABILITY_RADIO.equals(abilityName) && PROPERTY_STATE.equals(propertyName)) {
-                    switch (value) {
-                        case "poor":
-                            return new DecimalType(1);
-                        case "good":
-                            return new DecimalType(2);
-                        case "excellent":
-                            return new DecimalType(4);
-                        default:
-                            return UnDefType.NULL;
+            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
+                    || StringUtils.startsWith(value, "1970-01-01")) {
+                return null;
+            }
+
+            switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
+                case "String":
+                    return new StringType(value);
+                case "Number":
+                    if (ABILITY_RADIO.equals(abilityName) && PROPERTY_STATE.equals(propertyName)) {
+                        switch (value) {
+                            case "poor":
+                                return new DecimalType(1);
+                            case "good":
+                                return new DecimalType(2);
+                            case "excellent":
+                                return new DecimalType(4);
+                            default:
+                                return UnDefType.NULL;
+                        }
                     }
-                }
-                return new DecimalType(value);
-            case "Switch":
-                return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
-            case "DateTime":
-                Calendar cal = DateUtils.parseToCalendar(value);
-                if (cal != null) {
-                    return new DateTimeType(cal);
-                }
+                    return new DecimalType(value);
+                case "Switch":
+                    return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
+                case "DateTime":
+                    Calendar cal = DateUtils.parseToCalendar(value);
+                    if (cal != null) {
+                        return new DateTimeType(cal);
+                    }
+            }
+        } catch (GardenaException e) {
+            logger.warn("Channel '{}' cannot be updated as device does not contain property '{}:{}'", channelUID,
+                    abilityName, propertyName);
         }
-        return UnDefType.NULL;
+        return null;
     }
 
     /**
@@ -157,9 +183,6 @@ public class GardenaThingHandler extends BaseThingHandler {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -179,7 +202,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            logger.warn("{}", ex.getMessage(), ex);
         }
     }
 
@@ -244,6 +267,34 @@ public class GardenaThingHandler extends BaseThingHandler {
 
         if (oldStatus != newStatus || thing.getStatusInfo().getStatusDetail() != newDetail) {
             updateStatus(newStatus, newDetail);
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
+            throws ConfigValidationException {
+        validateConfigurationParameters(configurationParameters);
+
+        try {
+            GardenaSmart gardena = getGardenaSmart();
+            Device device = gardena.getDevice(UidUtils.getGardenaDeviceId(getThing()));
+
+            for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
+                String key = configurationParmeter.getKey();
+                Object newValue = configurationParmeter.getValue();
+                if (newValue != null && SETTING_TURN_ON_PRESSURE.equals(key)) {
+                    newValue = new Double((String) newValue);
+                }
+
+                Setting setting = device.getSetting(key);
+                if (ObjectUtils.notEqual(setting.getValue(), newValue)) {
+                    gardena.sendSetting(setting, newValue);
+                    setting.setValue(newValue);
+                }
+            }
+            updateSettings(device);
+        } catch (GardenaException | AccountHandlerNotAvailableException ex) {
+            logger.warn("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
 

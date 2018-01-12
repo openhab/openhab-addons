@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="hs110">
+        <label>HS110</label>
+        <description>TP-Link HS110 Smart Wi-Fi Plug with Energy Monitoring</description>
+
+        <channels>
+            <channel id="switch" typeId="switch" />
+            <channel id="led" typeId="led" />
+            <channel id="rssi" typeId="rssi" />
+            <channel id="power" typeId="power" />
+            <channel id="energyUsage" typeId="energyUsage" />
+            <channel id="current" typeId="current" />
+            <channel id="voltage" typeId="voltage" />
+        </channels>
+
+        <config-description-ref uri="thing-type:device:plug" />
+    </thing-type>
+</thing:thing-descriptions>

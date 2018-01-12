@@ -1,120 +1,414 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="yamahareceiver"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="yamahareceiver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="yamahaAV">
-        <label>Yamaha Receiver</label>
-        <description>Yamaha Receiver of product line CX-A5000, RX-A30xx, RX-A20xx, RX-A10xx, RX-Vxxx, RX-Z7, DSP-Z7, RX-S600, HTR-xxxx</description>
+	<bridge-type id="yamahaAV">
+		<label>Yamaha Receiver</label>
+		<description>Yamaha Receiver of product line CX-A5000, RX-A30xx, RX-A20xx, RX-A10xx, RX-Vxxx, RX-Z7, DSP-Z7, RX-S600, HTR-xxxx</description>
 
-        <channels>
-            <channel id="power" typeId="power"/>
-            <channel id="netradiotune" typeId="netradiotune"/>
-            <channel id="input" typeId="input"/>
-            <channel id="surroundProgram" typeId="surroundProgram"/>
-            <channel id="volume" typeId="volume"/>
-            <channel id="volumeDB" typeId="volumeDB"/>
-            <channel id="mute" typeId="mute"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="HOST" type="text" required="true">
-                <context>network-address</context>
-                <label>Address</label>
-                <description>The address of the AVR to control.</description>
-            </parameter>
-            <parameter name="REFRESH_IN_SEC" type="integer" required="false">
-                <label>Refresh interval</label>
-                <description>Refresh interval in seconds.</description>
-                <default>60</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="RELVOLUMECHANGE" type="decimal" required="false">
-                <label>Relative volume change</label>
-                <description>Relative volume change in percent.</description>
-                <default>2.0</default>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
-        
-    </thing-type>
+		<channels>
+			<channel id="power" typeId="power" />
+		</channels>
 
-    <channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power</label>
-        <description>Power ON/OFF the AVR</description>
-    </channel-type>
-    
-    <channel-type id="input">
-        <item-type>String</item-type>
-        <label>Input source</label>
-        <description>Select the input source of the AVR</description>
-    </channel-type>
-    
-    <channel-type id="netradiotune">
-        <item-type>Number</item-type>
-        <label>NetRadio Channel</label>
-        <description>Select the net radio channel of the AVR</description>
-    </channel-type>
-    
-    <channel-type id="surroundProgram">
-        <item-type>String</item-type>
-        <label>Surround program</label>
-        <description>Select the surround program of the AVR</description>
-        <state>
-            <options>
-                <option value="Music Video">Music Video</option>
-                <option value="The Roxy Theater">The Roxy Theater</option>
-                <option value="Cellar Club">Cellar Club</option>
-                <option value="Hall in Vienna">Hall in Vienna</option>
-                <option value="Hall in Munich">Hall in Munich</option>
-                <option value="Roleplaying Game">Roleplaying Game</option>
-                <option value="Action Game">Action Game</option>
-                <option value="Sports">Sports</option>
-                <option value="Mono Movie">Mono Movie</option>
-                <option value="Drama">Drama</option>
-                <option value="Adventure">Adventure</option>
-                <option value="Sci-Fi">Sci-Fi</option>
-                <option value="Spectacle">Spectacle</option>
-                <option value="Standard">Standard</option>
-                
-                <option value="Pro Logic">Pro Logic</option>
-                <option value="Neo:6 Music">Neo:6 Music</option>
-                <option value="Neo:6 Cinema">Neo:6 Cinema</option>
-                <option value="PLII[x] Game">PLII[x] Game</option>
-                <option value="PLII[x] Music">PLII[x] Music</option>
-                <option value="PLII[x] Movie">PLII[x] Movie</option>
-                <option value="7ch Enhancer">7ch Enhancer</option>
+		<properties>
+			<property name="version" />
+			<property name="assigned_name" />
+		</properties>
 
-                <option value="2ch Stereo">2ch Stereo</option>
-                <option value="7ch Stereo">7ch Stereo</option>
-                <option value="STRAIGHT">STRAIGHT</option>
-                <option value="Straight Enhancer">Straight Enhancer</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="volume">
-        <item-type>Dimmer</item-type>
-        <label>Volume</label>
-        <description>Set the volume level</description>
-        <category>SoundVolume</category>
-    </channel-type>
-    
-    <channel-type id="volumeDB" advanced="true">
-        <item-type>Number</item-type>
-        <label>Volume in dB</label>
-        <description>Set the volume level (dB)</description>
-        <category>SoundVolume</category>
-        <state min="-80" max="12" step="0.5" pattern="%.1f dB" />
-    </channel-type>
-    
-    <channel-type id="mute">
-        <item-type>Switch</item-type>
-        <label>Mute</label>
-        <description>Enable/Disable Mute on the AVR</description>
-    </channel-type>
-    
+		<config-description>
+			<parameter name="HOST" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The address of the AVR to control.</description>
+			</parameter>
+			<parameter name="PORT" type="integer" required="false">
+				<label>Port</label>
+				<description>The API port of the AVR to control. Usually 80</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="REFRESH_IN_SEC" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval in seconds.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="yamahaAV" />
+		</supported-bridge-type-refs>
+		<label>Yamaha Receiver Zone</label>
+		<description>Yamaha Receiver Zone</description>
+
+		<channel-groups>
+			<channel-group typeId="zone_channels" id="zone_channels" />
+			<channel-group typeId="playback_channels" id="playback_channels" />
+			<channel-group typeId="navigation_channels" id="navigation_channels" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ZONE" type="text" required="true">
+				<label>Zone</label>
+				<description>The zone can be Main_Zone, ZONE_2, ZONE_3, ZONE_4 depending on your device.</description>
+			</parameter>
+			<parameter name="RELVOLUMECHANGE" type="decimal" required="false">
+				<label>Relative volume change</label>
+				<description>Relative volume change in percent.</description>
+				<default>2.0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="zone_channels">
+		<label>Zone control</label>
+		<description>Control the zone</description>
+		<channels>
+			<channel id="power" typeId="power" />
+			<!--
+            We will provide an input channel dynamically. 
+			<channel id="input" typeId="availableinput" />
+			 -->
+			<channel id="surroundProgram" typeId="surroundProgram" />
+			<channel id="volume" typeId="volume" />
+			<channel id="volumeDB" typeId="volumeDB" />
+			<channel id="mute" typeId="mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power the AVR or zone ON/OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+    <!--  input is not directly used. It is the template for 'availableinput' which
+            is provided by the AvailableInputChannelTypeProvider -->
+	<channel-type id="defaultinput">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state pattern="%s">
+			<options>
+				<option value="NET_RADIO">Net Radio</option>
+				<option value="PC">PC</option>
+				<option value="USB">USB</option>
+				<option value="TUNER">Tuner</option>
+				<option value="MULTI_CH">Multi Channel</option>
+				<option value="HDMI_1">HDMI 1</option>
+				<option value="HDMI_2">HDMI 2</option>
+				<option value="HDMI_3">HDMI 3</option>
+				<option value="HDMI_4">HDMI 4</option>
+				<option value="HDMI_5">HDMI 5</option>
+				<option value="HDMI_6">HDMI 6</option>
+				<option value="HDMI_7">HDMI 7</option>
+				<option value="AV_1">AV 1</option>
+				<option value="AV_2">AV 2</option>
+				<option value="AV_3">AV 3</option>
+				<option value="AV_4">AV 4</option>
+				<option value="AV_5">AV 5</option>
+				<option value="AV_6">AV 6</option>
+				<option value="AV_7">AV 7</option>
+				<option value="PHONO">Phono</option>
+				<option value="V_AUX">Aux</option>
+				<option value="AUDIO_1">Audio 1</option>
+				<option value="AUDIO_2">Audio 2</option>
+				<option value="AUDIO_3">Audio 3</option>
+				<option value="AUDIO_4">Audio 4</option>
+				<option value="DOCK">DOCK</option>
+				<option value="iPod">iPod</option>
+				<option value="Bluetooth">Bluetooth</option>
+				<option value="UAW">UAW</option>
+				<option value="NET">NET</option>
+				<option value="SIRIUS">Sirius</option>
+				<option value="Rhapsody">Rhapsody</option>
+				<option value="SIRIUS_IR">SIRIUS IR</option>
+				<option value="Pandora">Pandora</option>
+				<option value="Napster">Napster</option>
+				<option value="iPod_USB">iPod/USB</option>
+				<option value="Spotify">Spotify</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="surroundProgram">
+		<item-type>String</item-type>
+		<label>Surround program</label>
+		<description>Select the surround program of the AVR</description>
+		<state pattern="%s">
+			<options>
+				<option value="Music Video">Music Video</option>
+				<option value="The Roxy Theater">The Roxy Theater</option>
+				<option value="Cellar Club">Cellar Club</option>
+				<option value="Hall in Vienna">Hall in Vienna</option>
+				<option value="Hall in Munich">Hall in Munich</option>
+				<option value="Roleplaying Game">Roleplaying Game</option>
+				<option value="Action Game">Action Game</option>
+				<option value="Sports">Sports</option>
+				<option value="Mono Movie">Mono Movie</option>
+				<option value="Drama">Drama</option>
+				<option value="Adventure">Adventure</option>
+				<option value="Sci-Fi">Sci-Fi</option>
+				<option value="Spectacle">Spectacle</option>
+				<option value="Standard">Standard</option>
+
+				<option value="Pro Logic">Pro Logic</option>
+				<option value="Neo:6 Music">Neo:6 Music</option>
+				<option value="Neo:6 Cinema">Neo:6 Cinema</option>
+				<option value="PLII[x] Game">PLII[x] Game</option>
+				<option value="PLII[x] Music">PLII[x] Music</option>
+				<option value="PLII[x] Movie">PLII[x] Movie</option>
+				<option value="7ch Enhancer">7ch Enhancer</option>
+
+				<option value="2ch Stereo">2ch Stereo</option>
+				<option value="5ch Stereo">5ch Stereo</option>
+				<option value="7ch Stereo">7ch Stereo</option>
+				<option value="STRAIGHT">STRAIGHT</option>
+				<option value="Straight Enhancer">Straight Enhancer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set the volume level</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="volumeDB" advanced="true">
+		<item-type>Number</item-type>
+		<label>Volume in dB</label>
+		<description>Set the volume level (dB)</description>
+		<category>SoundVolume</category>
+		<state min="-80" max="12" step="0.5" pattern="%.1f dB" />
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Enable/Disable Mute on the AVR</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-group-type id="playback_channels">
+		<label>Playback control</label>
+		<description>Control the playback for the current zone and allow to select preset channels</description>
+		<channels>
+			<channel id="preset" typeId="defaultpreset" />
+			<channel id="playback" typeId="playback" />
+			<channel id="playback_station" typeId="playback_station" />
+			<channel id="playback_artist" typeId="playback_artist" />
+			<channel id="playback_album" typeId="playback_album" />
+			<channel id="playback_song" typeId="playback_song" />
+			<channel id="playback_song_image_url" typeId="playback_song_image_url" />
+			<channel id="tuner_band" typeId="tuner_band" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="playback_station">
+		<item-type>String</item-type>
+		<label>Station</label>
+		<description>Current station name</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_artist">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Artist</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Album</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_song">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Track title</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playback_song_image_url">
+		<item-type>String</item-type>
+		<label>Track picture URL</label>
+		<description>Track picture URL</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="defaultpreset">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Select a saved channel by its preset number</description>
+		<state pattern="%s">
+			<!-- There is a maximum of 40 preset channels in the xml API. The names of the stations can be requested via NET_RADIO/Play_Control/Preset/Preset_Sel_Item/Item_1/Title -->
+			<options>
+				<option value="1">Item_1</option>
+				<option value="2">Item_2</option>
+				<option value="3">Item_3</option>
+				<option value="4">Item_4</option>
+				<option value="5">Item_5</option>
+				<option value="6">Item_6</option>
+				<option value="7">Item_7</option>
+				<option value="8">Item_8</option>
+				<option value="9">Item_9</option>
+				<option value="10">Item_10</option>
+				<option value="11">Item_11</option>
+				<option value="12">Item_12</option>
+				<option value="13">Item_13</option>
+				<option value="14">Item_14</option>
+				<option value="15">Item_15</option>
+				<option value="16">Item_16</option>
+				<option value="17">Item_17</option>
+				<option value="18">Item_18</option>
+				<option value="19">Item_19</option>
+				<option value="20">Item_20</option>
+				<option value="21">Item_21</option>
+				<option value="22">Item_22</option>
+				<option value="23">Item_23</option>
+				<option value="24">Item_24</option>
+				<option value="25">Item_25</option>
+				<option value="26">Item_26</option>
+				<option value="27">Item_27</option>
+				<option value="28">Item_28</option>
+				<option value="29">Item_29</option>
+				<option value="30">Item_30</option>
+				<option value="31">Item_31</option>
+				<option value="32">Item_32</option>
+				<option value="33">Item_33</option>
+				<option value="34">Item_34</option>
+				<option value="35">Item_35</option>
+				<option value="36">Item_36</option>
+				<option value="37">Item_37</option>
+				<option value="38">Item_38</option>
+				<option value="39">Item_39</option>
+				<option value="40">Item_40</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tuner_band">
+		<item-type>String</item-type>
+		<label>Tuner Band</label>
+		<description>Select a DAB Tuner band</description>
+		<state pattern="%s">
+			<options>
+				<option value="FM">FM</option>
+				<option value="DAB">DAB+</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="playback">
+		<item-type>String</item-type>
+		<label>Playback control</label>
+		<description>Control the playback of the current input. Can also be used as Play/Pause and Next/Previous Type</description>
+		<state pattern="%s">
+			<options>
+				<option value="Play">Play</option>
+				<option value="Pause">Pause</option>
+				<option value="Stop">Stop</option>
+				<option value="FastForward">Fast Forward</option>
+				<option value="Rewind">Rewind</option>
+				<option value="Next">Next</option>
+				<option value="Previous">Previous</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="navigation_channels">
+		<label>Navigation control</label>
+		<description>Allow to navigate for inputs like USB, iPOD, NET_RADIO</description>
+		<channels>
+			<channel id="navigation_menu" typeId="navigation_menu" />
+			<channel id="navigation_current_item" typeId="navigation_current_item" />
+			<channel id="navigation_total_items" typeId="navigation_total_items" />
+			<channel id="navigation_level" typeId="navigation_level" />
+			<channel id="navigation_updown" typeId="navigation_updown" />
+			<channel id="navigation_leftright" typeId="navigation_leftright" />
+			<channel id="navigation_select" typeId="navigation_select" />
+			<channel id="navigation_back" typeId="navigation_back" />
+			<channel id="navigation_backtoroot" typeId="navigation_backtoroot" />
+		</channels>
+	</channel-group-type>
+
+
+	<channel-type id="navigation_menu">
+		<item-type>String</item-type>
+		<label>Menu</label>
+		<description>Shows the current navigation menu and allows to change to a channel by a full path.
+        For example for net radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
+        without a full path if the AVR is in that navigation menu already.</description>
+		<category>Navigation</category>
+	</channel-type>
+
+	<channel-type id="navigation_current_item">
+		<item-type>Number</item-type>
+		<label>Item</label>
+		<description>Shows the current item number</description>
+		<category>Navigation</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="navigation_total_items">
+		<item-type>Number</item-type>
+		<label>Items</label>
+		<description>Shows the maximum item number</description>
+		<category>Navigation</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="navigation_level">
+		<item-type>Number</item-type>
+		<label>Menu depth</label>
+		<description>Hierarchical level</description>
+		<category>Navigation</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="navigation_updown">
+		<kind>trigger</kind>
+		<label>Up/Down</label>
+		<description>Allows to move the cursor up/down</description>
+		<category>Navigation</category>
+	</channel-type>
+
+	<channel-type id="navigation_leftright">
+		<kind>trigger</kind>
+		<label>Left/Right</label>
+		<description>Allows to move the cursor left/right</description>
+		<category>Navigation</category>
+	</channel-type>
+
+	<channel-type id="navigation_select">
+		<kind>trigger</kind>
+		<label>Select</label>
+		<description>Select the current cursor item</description>
+		<category>Navigation</category>
+	</channel-type>
+
+	<channel-type id="navigation_back">
+		<kind>trigger</kind>
+		<label>Back</label>
+		<description>Go one level back</description>
+		<category>Navigation</category>
+	</channel-type>
+
+	<channel-type id="navigation_backtoroot">
+		<kind>trigger</kind>
+		<label>Back to root</label>
+		<description>Go back to the root menu</description>
+		<category>Navigation</category>
+	</channel-type>
 </thing:thing-descriptions>

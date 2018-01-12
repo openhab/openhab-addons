@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,7 +43,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.MaxBinding;
-import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.command.A_Command;
 import org.openhab.binding.max.internal.command.C_Command;
 import org.openhab.binding.max.internal.command.CubeCommand;
@@ -55,6 +54,7 @@ import org.openhab.binding.max.internal.command.Q_Command;
 import org.openhab.binding.max.internal.command.S_Command;
 import org.openhab.binding.max.internal.command.T_Command;
 import org.openhab.binding.max.internal.command.UdpCubeCommand;
+import org.openhab.binding.max.internal.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.openhab.binding.max.internal.device.DeviceInformation;
@@ -546,8 +546,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         this.messageProcessor.reset();
                     }
                 } catch (Exception e) {
-                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
-                            ipAddress, e.getMessage(), e);
+                    logger.info(
+                            "Error while handling message block: '{}' from MAX! Cube lan gateway: {}, Error message: {}: ",
+                            raw, ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
                 if (terminator == null || raw.startsWith(terminator)) {

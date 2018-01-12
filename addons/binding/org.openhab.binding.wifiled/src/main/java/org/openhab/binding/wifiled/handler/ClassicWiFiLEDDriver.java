@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,11 +21,17 @@ import org.eclipse.smarthome.core.library.types.StringType;
  *
  * @author Osman Basha - Initial contribution
  * @author Stefan Endrullis
+ * @author Ries van Twisk
  */
 public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
     public ClassicWiFiLEDDriver(String host, int port, Protocol protocol) {
         super(host, port, protocol);
+    }
+
+    @Override
+    public void shutdown() {
+
     }
 
     @Override

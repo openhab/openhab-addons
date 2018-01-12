@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +40,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.squeezebox.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,9 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Improve reconnect logic. Improve player status updates.
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
+ * @author Mark Hilbush - Added login/password authentication for LMS
+ * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
+ * @author Patrik Gfeller - Support for mixer volume message added
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -61,6 +66,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     // time in seconds to try to reconnect
     private int RECONNECT_TIME = 60;
+
+    // utf8 charset name
+    private static final String UTF8_NAME = StandardCharsets.UTF_8.name();
 
     // the value by which the volume is changed by each INCREASE or
     // DECREASE-Event
@@ -81,6 +89,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private int cliport;
 
     private int webport;
+
+    private String userId;
+
+    private String password;
 
     public SqueezeBoxServerHandler(Bridge bridge) {
         super(bridge);
@@ -265,6 +277,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Login to server
+     */
+    public void login() {
+        if (StringUtils.isEmpty(userId)) {
+            return;
+        }
+        logger.debug("Logging into Squeeze Server using userId={}", userId);
+        sendCommand("login " + userId + " " + password);
+    }
+
+    /**
      * Send a command to the Squeeze Server.
      */
     private synchronized void sendCommand(String command) {
@@ -298,6 +321,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.host = config.ipAddress;
         this.cliport = config.cliport;
         this.webport = config.webport;
+        this.userId = config.userId;
+        this.password = config.password;
 
         if (StringUtils.isEmpty(this.host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
@@ -366,6 +391,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             try {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                login();
                 updateStatus(ThingStatus.ONLINE);
                 requestPlayers();
                 sendCommand("listen 1");
@@ -406,7 +432,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
 
             // check for end of stream from readLine
-            if (endOfStream == true && !terminate) {
+            if (endOfStream && !terminate) {
                 logger.info("end of stream received from socket during readLine");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "end of stream on socket read");
@@ -418,9 +444,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String decode(String raw) {
             try {
-                return URLDecoder.decode(raw, "UTF-8");
+                return URLDecoder.decode(raw, UTF8_NAME);
             } catch (UnsupportedEncodingException e) {
                 logger.debug("Failed to decode '{}' ", raw, e);
+                return null;
+            }
+        }
+
+        private String encode(String raw) {
+            try {
+                return URLEncoder.encode(raw, UTF8_NAME);
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("Failed to encode '{}' ", raw, e);
                 return null;
             }
         }
@@ -477,7 +512,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
 
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlN");
+                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNK");
                 }
             }
         }
@@ -493,36 +528,83 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // get the message type
             String messageType = messageParts[1];
+            switch (messageType) {
+                case "status":
+                    handleStatusMessage(mac, messageParts);
+                    break;
+                case "playlist":
+                    handlePlaylistMessage(mac, messageParts);
+                    break;
+                case "prefset":
+                    handlePrefsetMessage(mac, messageParts);
+                    break;
+                case "mixer":
+                    handleMixerMessage(mac, messageParts);
+                    break;
+                case "ir":
+                    final String ircode = messageParts[2];
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.irCodeChangeEvent(mac, ircode);
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled player update message type '{}'.", messageType);
 
-            if (messageType.equals("status")) {
-                handleStatusMessage(mac, messageParts);
-            } else if (messageType.equals("playlist")) {
-                handlePlaylistMessage(mac, messageParts);
-            } else if (messageType.equals("prefset")) {
-                handlePrefsetMessage(mac, messageParts);
-            } else if (messageType.equals("ir")) {
-                final String ircode = messageParts[2];
-                updatePlayer(new PlayerUpdateEvent() {
-                    @Override
-                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                        listener.irCodeChangeEvent(mac, ircode);
-                    }
-                });
-            } else if (messageType.equals("power")) {
-                // ignore these for now
-                // player.setPowered(messageParts[1].equals("1"));
-            } else if (messageType.equals("play") || messageType.equals("pause") || messageType.equals("stop")) {
-                // ignore these for now
-                // player.setMode(Mode.valueOf(messageType));
-            } else if (messageType.equals("mixer") || messageType.equals("menustatus")
-                    || messageType.equals("button")) {
-                // ignore these for now
-            } else {
-                logger.trace("Unhandled player update message type '{}'.", messageType);
             }
         }
 
+        private String fetchUrl(String messagePart, final String mac) {
+            // default url for cover art. Works all the time except for some particular case
+            String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
+            // if messagePart start with "artwork_url:http://", default url works
+            if (messagePart != null && messagePart.startsWith("artwork_url%3A")
+                    && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
+                url = messagePart.substring("artwork_url%3A".length());
+                // example of particular case.
+                // this web radio : http://broadcast.infomaniak.net/tsfjazz-high.mp3
+                // default url return error 404
+                // messagePart = artwork_url%3Ahtml%2Fimages%2Fradio.png (artwork_url:html/images/radio.png)
+                // working url : "http://" + host + ":" + webport + "/" + "html/images/radio.png";
+                if (url.startsWith("%2F")) {
+                    url = "http://" + host + ":" + webport + decode(url);
+                } else {
+                    url = "http://" + host + ":" + webport + "/" + decode(url);
+                }
+            }
+            return url;
+        }
+
+        private String fetchUrl(final String mac) {
+            return fetchUrl(null, mac);
+        }
+
+        private void handleMixerMessage(String mac, String[] messageParts) {
+            String action = messageParts[2];
+
+            switch (action) {
+                case "volume":
+                    String value = messageParts[3];
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.volumeChangeEvent(mac, Integer.parseInt(value));
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
+
+            }
+
+        }
+
         private void handleStatusMessage(final String mac, String[] messageParts) {
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            String url = fetchUrl(mac);
+
             for (String messagePart : messageParts) {
                 // Parameter Power
                 if (messagePart.startsWith("power%3A")) {
@@ -581,8 +663,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Parameter Playing Playlist Index
                 else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
-                    // player.setCurrentPlaylistIndex((int)
-                    // Integer.parseInt(value));
                     final int index = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -637,74 +717,51 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
                 // Parameter Remote Title (radio)
                 else if (messagePart.startsWith("remote_title%3A")) {
-                    final String value = messagePart.substring("remote_title%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.remoteTitleChangeEvent(mac, decode(value));
-                        }
-                    });
+                    remoteTitle = messagePart.substring("remote_title%3A".length());
                 }
                 // Parameter Artist
                 else if (messagePart.startsWith("artist%3A")) {
-                    final String value = messagePart.substring("artist%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.artistChangeEvent(mac, decode(value));
-                        }
-                    });
+                    artist = messagePart.substring("artist%3A".length());
                 }
                 // Parameter Album
                 else if (messagePart.startsWith("album%3A")) {
-                    final String value = messagePart.substring("album%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.albumChangeEvent(mac, decode(value));
-                        }
-                    });
+                    album = messagePart.substring("album%3A".length());
                 }
                 // Parameter Genre
                 else if (messagePart.startsWith("genre%3A")) {
-                    final String value = messagePart.substring("genre%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.genreChangeEvent(mac, decode(value));
-                        }
-                    });
+                    genre = messagePart.substring("genre%3A".length());
                 }
                 // Parameter Year
                 else if (messagePart.startsWith("year%3A")) {
-                    final String value = messagePart.substring("year%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.yearChangeEvent(mac, decode(value));
-                        }
-                    });
+                    year = messagePart.substring("year%3A".length());
                 }
-                // Parameter Artwork
-                else if (messagePart.startsWith("artwork_track_id%3A")) {
-                    String url = messagePart.substring("artwork_track_id%3A".length());
-                    // NOTE: what is returned if not an artwork id? i.e. if a
-                    // space?
-                    if (!url.startsWith(" ")) {
-                        url = "http://" + host + ":" + webport + "/music/" + url + "/cover.jpg";
-                    }
-                    final String value = url;
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.coverArtChangeEvent(mac, decode(value));
-                        }
-                    });
+                // Parameter Artwork_url
+                else if (messagePart.startsWith("artwork_url%3A")) {
+                    url = fetchUrl(messagePart, mac);
                 } else {
                     // Added to be able to see additional status message types
                     logger.trace("Unhandled status message type '{}'", messagePart);
                 }
             }
+
+            final String finalUrl = url;
+            final String finalRemoteTitle = remoteTitle;
+            final String finalArtist = artist;
+            final String finalAlbum = album;
+            final String finalGenre = genre;
+            final String finalYear = year;
+
+            updatePlayer(new PlayerUpdateEvent() {
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.coverArtChangeEvent(mac, finalUrl);
+                    listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
+                    listener.artistChangeEvent(mac, decode(finalArtist));
+                    listener.albumChangeEvent(mac, decode(finalAlbum));
+                    listener.genreChangeEvent(mac, decode(finalGenre));
+                    listener.yearChangeEvent(mac, decode(finalYear));
+                }
+            });
         }
 
         private void handlePlaylistMessage(final String mac, String[] messageParts) {

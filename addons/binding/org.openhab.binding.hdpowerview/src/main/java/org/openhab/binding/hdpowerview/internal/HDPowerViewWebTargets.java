@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,7 +61,7 @@ public class HDPowerViewWebTargets {
         }
     }
 
-    public Response moveShade(int shadeId, ShadePosition position) throws IOException {
+    public Response moveShade(String shadeId, ShadePosition position) throws IOException {
         WebTarget target = shadeMove.resolveTemplate("id", shadeId);
         String body = gson.toJson(new ShadeMove(shadeId, position));
         return invoke(target.request().buildPut(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)), shadeMove);

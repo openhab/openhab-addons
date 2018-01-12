@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,18 +22,11 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_RSSI;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
@@ -45,18 +38,12 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
         return isWirelessDevice(dp.getChannel().getDevice())
                 && (DATAPOINT_NAME_RSSI_DEVICE.equals(dp.getName()) || DATAPOINT_NAME_RSSI_PEER.equals(dp.getName()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();

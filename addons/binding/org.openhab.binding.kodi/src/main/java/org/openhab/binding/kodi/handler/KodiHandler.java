@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,14 +10,19 @@ package org.openhab.binding.kodi.handler;
 
 import static org.openhab.binding.kodi.KodiBindingConstants.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,10 +32,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
-import org.openhab.binding.kodi.internal.jobs.KodiStatusUpdaterRunnable;
+import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +47,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * 
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ *
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
@@ -53,7 +60,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private ScheduledFuture<?> statusUpdaterFuture;
 
-    public KodiHandler(Thing thing) {
+    public KodiHandler(@NonNull Thing thing) {
         super(thing);
         connection = new KodiConnection(this);
     }
@@ -205,6 +212,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_SHOWTITLE:
             case CHANNEL_MEDIATYPE:
             case CHANNEL_PVR_CHANNEL:
+            case CHANNEL_THUMBNAIL:
+            case CHANNEL_FANART:
                 if (command.equals(RefreshType.REFRESH)) {
                     connection.updatePlayerStatus();
                 }
@@ -213,7 +222,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
         }
+    }
 
+    private URI getImageBaseUrl() throws URISyntaxException {
+        KodiConfig config = getConfigAs(KodiConfig.class);
+        String host = config.getIpAddress();
+        int httpPort = config.getHttpPort();
+        String httpUser = config.getHttpUser();
+        String httpPassword = config.getHttpPassword();
+        String userInfo = (StringUtils.isEmpty(httpUser) || StringUtils.isEmpty(httpPassword)) ? null
+                : String.format("%s:%s", httpUser, httpPassword);
+        return new URI("http", userInfo, host, httpPort, "/image/", null, null);
     }
 
     public void playURI(Command command) {
@@ -230,7 +249,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (channelID > 0) {
             connection.playPVRChannel(channelID);
         } else {
-            logger.error("Received unknown PVR channel {}", command.toString());
+            logger.debug("Received unknown PVR channel {}", command.toString());
         }
     }
 
@@ -249,38 +268,28 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void initialize() {
         try {
-            String host = this.getConfig().get(HOST_PARAMETER).toString();
+            String host = getConfig().get(HOST_PARAMETER).toString();
             if (host == null || host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "No network address specified");
             } else {
-                connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090), scheduler);
+                connection.connect(host, getIntConfigParameter(WS_PORT_PARAMETER, 9090), scheduler, getImageBaseUrl());
 
-                // Start the connection checker
-                Runnable connectionChecker = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!connection.checkConnection()) {
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
-                        } catch (Exception ex) {
-                            logger.warn("Exception in check connection to @{}. Cause: {}",
-                                    connection.getConnectionName(), ex.getMessage());
-
-                        }
+                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (!connection.checkConnection()) {
+                        updateStatus(ThingStatus.OFFLINE);
                     }
-                };
-                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+                }, 1, 10, TimeUnit.SECONDS);
 
-                // Start the status updater
-                Runnable statusUpdater = new KodiStatusUpdaterRunnable(connection);
-                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
-
+                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (KodiState.Play.equals(connection.getState())) {
+                        connection.updatePlayerStatus();
+                    }
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
             }
         } catch (Exception e) {
-            logger.debug("error during opening connection: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("error during opening connection: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -292,7 +301,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
             } catch (Exception e) {
-                logger.error("error during reading version: {}", e.getMessage());
+                logger.debug("error during reading version: {}", e.getMessage(), e);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -301,7 +310,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateScreenSaverState(boolean screenSaveActive) {
-
     }
 
     @Override
@@ -347,32 +355,64 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateTitle(String title) {
-        updateState(CHANNEL_TITLE, new StringType(title));
+        updateState(CHANNEL_TITLE, createState(title));
     }
 
     @Override
     public void updateShowTitle(String title) {
-        updateState(CHANNEL_SHOWTITLE, new StringType(title));
+        updateState(CHANNEL_SHOWTITLE, createState(title));
     }
 
     @Override
     public void updateAlbum(String album) {
-        updateState(CHANNEL_ALBUM, new StringType(album));
+        updateState(CHANNEL_ALBUM, createState(album));
     }
 
     @Override
     public void updateArtist(String artist) {
-        updateState(CHANNEL_ARTIST, new StringType(artist));
+        updateState(CHANNEL_ARTIST, createState(artist));
     }
 
     @Override
     public void updateMediaType(String mediaType) {
-        updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
+        updateState(CHANNEL_MEDIATYPE, createState(mediaType));
     }
 
     @Override
     public void updatePVRChannel(final String channel) {
-        updateState(CHANNEL_PVR_CHANNEL, new StringType(channel));
+        updateState(CHANNEL_PVR_CHANNEL, createState(channel));
+    }
+
+    @Override
+    public void updateThumbnail(RawType thumbnail) {
+        updateState(CHANNEL_THUMBNAIL, createImage(thumbnail));
+    }
+
+    @Override
+    public void updateFanart(RawType fanart) {
+        updateState(CHANNEL_FANART, createImage(fanart));
+    }
+
+    /**
+     * Wrap the given String in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the String is empty.
+     */
+    private State createState(String string) {
+        if (string == null || string.isEmpty()) {
+            return UnDefType.UNDEF;
+        } else {
+            return new StringType(string);
+        }
+    }
+
+    /**
+     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
+     */
+    private State createImage(RawType image) {
+        if (image == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return image;
+        }
     }
 
 }

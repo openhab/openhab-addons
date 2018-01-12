@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="lb130">
+        <label>LB130</label>
+        <description>TP-Link LB130 Smart Wi-Fi LED Bulb with Color Changing Hue</description>
+
+        <channels>
+            <channel id="color" typeId="color" />
+            <channel id="colorTemperature" typeId="colorTemperature" /> 
+            <channel id="rssi" typeId="rssi" />
+        </channels>
+
+        <config-description-ref uri="thing-type:device:bulb" />
+    </thing-type>
+</thing:thing-descriptions>

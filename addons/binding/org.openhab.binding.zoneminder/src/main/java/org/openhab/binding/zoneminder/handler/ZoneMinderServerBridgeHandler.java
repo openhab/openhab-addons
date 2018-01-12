@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,9 +41,9 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.ZoneMinderProperties;
-import org.openhab.binding.zoneminder.discovery.ZoneMinderDiscoveryService;
 import org.openhab.binding.zoneminder.internal.DataRefreshPriorityEnum;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderBridgeServerConfig;
+import org.openhab.binding.zoneminder.internal.discovery.ZoneMinderDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +181,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 }
 
             } catch (Exception exception) {
-                logger.error("{}: monitorRunnable::run(): Exception: {}", getLogIdentifier(), exception);
+                logger.error("{}: monitorRunnable::run(): Exception: ", getLogIdentifier(), exception);
             }
         }
     };
@@ -220,11 +220,11 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                         // pointer exception is coming every now and then.
                         // HAve to find the reason for that. Until thenm, don't Spamm
                         logger.error(
-                                "[MONITOR]: Method 'refreshThing()' for Bridge failed for thing='{}' - Exception='{}'",
+                                "[MONITOR]: Method 'refreshThing()' for Bridge failed for thing='{}' - Exception: ",
                                 thing.getUID(), ex);
                     } catch (Exception ex) {
                         logger.error(
-                                "[MONITOR]: Method 'refreshThing()' for Bridge failed for thing='{}' - Exception='{}'",
+                                "[MONITOR]: Method 'refreshThing()' for Bridge failed for thing='{}' - Exception: ",
                                 thing.getUID(), ex);
                     }
                 }
@@ -255,7 +255,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void initialize() {
         logger.debug("[BRIDGE]: About to initialize bridge " + ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
-        super.initialize();
         try {
             updateStatus(ThingStatus.OFFLINE);
             logger.info("BRIDGE: ZoneMinder Server Bridge Handler Initialized");
@@ -440,7 +439,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                         zoneMinderServerProxy.getHttpResponseMessage());
 
             } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException ex) {
-                logger.error("{}: Exception thrown in call to ZoneMinderHostLoad ('{}')", getLogIdentifier(), ex);
+                logger.error("{}: Exception thrown in call to ZoneMinderHostLoad: ", getLogIdentifier(), ex);
             }
 
             if (hostLoad == null) {
@@ -463,7 +462,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                             zoneMinderServerProxy.getHttpUrl(), zoneMinderServerProxy.getHttpResponseCode(),
                             zoneMinderServerProxy.getHttpResponseMessage());
                 } catch (Exception ex) {
-                    logger.error("{}: Exception thrown in call to ZoneMinderDiskUsage ('{}')", getLogIdentifier(), ex);
+                    logger.error("{}: Exception thrown in call to ZoneMinderDiskUsage: ", getLogIdentifier(), ex);
                 }
 
                 if (diskUsage == null) {
@@ -1119,7 +1118,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     protected void stopTask(ScheduledFuture<?> task) {
         try {
             if (task != null && !task.isCancelled()) {
-                logger.debug("{}: Stopping ZoneMinder Bridge Monitor Task. Task='{}'", getLogIdentifier(), task.toString());
+                logger.debug("{}: Stopping ZoneMinder Bridge Monitor Task. Task='{}'", getLogIdentifier(),
+                        task.toString());
                 task.cancel(true);
             }
         } catch (Exception ex) {
@@ -1188,7 +1188,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         }
 
         if (update) {
-            logger.info("{}: Properties synchronised", getLogIdentifier(), getThingId());
+            logger.info("{}: Properties synchronised, Thing id: {}", getLogIdentifier(), getThingId());
             updateProperties(properties);
         }
     }

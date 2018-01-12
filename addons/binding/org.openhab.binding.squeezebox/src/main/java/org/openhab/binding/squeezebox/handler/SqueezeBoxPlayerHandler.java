@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -27,8 +29,6 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.net.HttpServiceUtil;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -39,9 +39,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
-import org.openhab.binding.squeezebox.config.SqueezeBoxPlayerConfig;
-import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
+import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
+ * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -104,13 +106,19 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      */
     private int notificationSoundVolume = -1;
 
+    private String callbackUrl;
+
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
+
     /**
      * Creates SqueezeBox Player Handler
      *
      * @param thing
      */
-    public SqueezeBoxPlayerHandler(Thing thing) {
+    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl) {
         super(thing);
+        this.callbackUrl = callbackUrl;
     }
 
     @Override
@@ -364,11 +372,43 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
-        try {
-            byte[] data = HttpUtils.getData(coverArtUrl);
-            updateChannel(mac, CHANNEL_COVERART_DATA, new RawType(data));
-        } catch (Exception e) {
-            logger.debug("Could not get album art data", e);
+        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(coverArtUrl)));
+    }
+
+    /**
+     * Download and cache the image data from an URL.
+     *
+     * @param url The URL of the image to be downloaded.
+     * @return A RawType object containing the image, null if the content type could not be found or the content type is
+     *         not an image.
+     */
+    private RawType downloadImage(String url) {
+        if (StringUtils.isNotEmpty(url)) {
+            if (!IMAGE_CACHE.containsKey(url)) {
+                IMAGE_CACHE.put(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    return HttpUtil.downloadImage(url);
+                });
+            }
+            RawType image = IMAGE_CACHE.get(url);
+            if (image == null) {
+                logger.debug("Failed to download the content of URL {}", url);
+                return null;
+            } else {
+                return image;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
+     */
+    private State createImage(RawType image) {
+        if (image == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return image;
         }
     }
 
@@ -522,7 +562,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             }
         };
 
-        timeCounterJob = scheduler.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.SECONDS);
+        timeCounterJob = scheduler.scheduleWithFixedDelay(runnable, 0, 1, TimeUnit.SECONDS);
     }
 
     private boolean isMe(String mac) {
@@ -647,20 +687,20 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             // Nothing to do; should already be playing due to call to playPlaylistItem above
         } else {
             logger.debug("Pausing the player");
-            // FIXME Sometimes the first couple pauses don't work (really!)
+            // Sometimes the first couple pauses don't work (really!)
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
             }
             int count;
-            final int MAX_PAUSE_ATTEMPTS = 4;
-            for (count = 0; count < MAX_PAUSE_ATTEMPTS; count++) {
+            final int maxPauseAttempts = 4;
+            for (count = 0; count < maxPauseAttempts; count++) {
                 squeezeBoxServerHandler.pause(mac);
                 if (waitForPause()) {
                     break;
                 }
             }
-            if (count == MAX_PAUSE_ATTEMPTS) {
+            if (count == maxPauseAttempts) {
                 // Unable to pause, try to stop
                 squeezeBoxServerHandler.stop(mac);
             }
@@ -693,15 +733,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * someone is updating the playlist at the same time, but that should be rare.
      */
     private boolean waitForPlaylistUpdate() {
-        final int TIMEOUT_COUNT = 50;
+        final int timeoutMaxCount = 50;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
 
-        logger.trace("Waiting up to {} ms for playlist to be updated...", TIMEOUT_COUNT * 100);
+        logger.trace("Waiting up to {} ms for playlist to be updated...", timeoutMaxCount * 100);
         listener.resetPlaylistUpdated();
         int timeoutCount = 0;
-        while (!listener.isPlaylistUpdated() && timeoutCount < TIMEOUT_COUNT) {
+        while (!listener.isPlaylistUpdated() && timeoutCount < timeoutMaxCount) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -711,22 +751,22 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
         squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         listener = null;
-        return checkForTimeout(timeoutCount, TIMEOUT_COUNT, "playlist to update");
+        return checkForTimeout(timeoutCount, timeoutMaxCount, "playlist to update");
     }
 
     /*
      * Monitor the status of the notification so that we know when it has finished playing
      */
     private boolean waitForNotification() {
-        final int TIMEOUT_COUNT = 300;
+        final int timeoutMaxCount = 900;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
 
-        logger.trace("Waiting up to {} ms for stop...", TIMEOUT_COUNT * 100);
+        logger.trace("Waiting up to {} ms for stop...", timeoutMaxCount * 100);
         listener.resetStopped();
         int timeoutCount = 0;
-        while (!listener.isStopped() && timeoutCount < TIMEOUT_COUNT) {
+        while (!listener.isStopped() && timeoutCount < timeoutMaxCount) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -736,22 +776,22 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
         squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         listener = null;
-        return checkForTimeout(timeoutCount, TIMEOUT_COUNT, "stop");
+        return checkForTimeout(timeoutCount, timeoutMaxCount, "stop");
     }
 
     /*
      * Wait for the volume status to equal the targetVolume
      */
     private boolean waitForVolume(int targetVolume) {
-        final int TIMEOUT_COUNT = 40;
+        final int timeoutMaxCount = 40;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
 
-        logger.trace("Waiting up to {} ms for volume to update...", TIMEOUT_COUNT * 100);
+        logger.trace("Waiting up to {} ms for volume to update...", timeoutMaxCount * 100);
         listener.resetVolumeUpdated();
         int timeoutCount = 0;
-        while (!listener.isVolumeUpdated(targetVolume) && timeoutCount < TIMEOUT_COUNT) {
+        while (!listener.isVolumeUpdated(targetVolume) && timeoutCount < timeoutMaxCount) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -761,22 +801,22 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
         squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         listener = null;
-        return checkForTimeout(timeoutCount, TIMEOUT_COUNT, "volume to update");
+        return checkForTimeout(timeoutCount, timeoutMaxCount, "volume to update");
     }
 
     /*
      * Wait for the mode to reflect that the player is paused
      */
     private boolean waitForPause() {
-        final int TIMEOUT_COUNT = 25;
+        final int timeoutMaxCount = 25;
 
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
 
-        logger.trace("Waiting up to {} ms for player to pause...", TIMEOUT_COUNT * 100);
+        logger.trace("Waiting up to {} ms for player to pause...", timeoutMaxCount * 100);
         listener.resetPaused();
         int timeoutCount = 0;
-        while (!listener.isPaused() && timeoutCount < TIMEOUT_COUNT) {
+        while (!listener.isPaused() && timeoutCount < timeoutMaxCount) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -786,7 +826,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
         squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         listener = null;
-        return checkForTimeout(timeoutCount, TIMEOUT_COUNT, "player to pause");
+        return checkForTimeout(timeoutCount, timeoutMaxCount, "player to pause");
     }
 
     private boolean checkForTimeout(int timeoutCount, int timeoutLimit, String message) {
@@ -799,22 +839,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     /*
-     * Return the IP and port of the OH2 web server (assumes the primary ipv4 interface
-     * is where the web server is listening)
+     * Return the IP and port of the OH2 web server
      */
     public String getHostAndPort() {
-        final String ipAddress = NetUtil.getLocalIpv4HostAddress();
-        if (ipAddress == null) {
-            logger.warn("No network interface could be found");
-            return null;
-        }
-        // Get the HTTP (non-SSL) port
-        final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-        if (port == -1) {
-            logger.warn("Cannot find port of the http service");
-            return null;
-        }
-        return new String("http://" + ipAddress + ":" + port);
+        return callbackUrl;
     }
 
     /**

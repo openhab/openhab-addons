@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,23 +8,22 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.types.State;
+import java.io.UnsupportedEncodingException;
+
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for interface message.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Ivan Martinez - Older firmware support (OH1)
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         UNKNOWN_COMMAND(-1),
         RESPONSE(0),
         UNKNOWN_RTS_REMOTE(1),
@@ -39,26 +38,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (SubType subType : SubType.values()) {
-                if (subType.subType == input) {
-                    return subType;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(SubType.class, input);
-        }
     }
 
-    public enum Commands {
+    public enum Commands implements ByteEnumWrapper {
         RESET(0), // Reset the receiver/transceiver. No answer is transmitted!
         GET_STATUS(2), // Get Status, return firmware versions and configuration of the interface
         SET_MODE(3), // Set mode msg1-msg5, return firmware versions and configuration of the interface
@@ -77,22 +63,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.command = command;
         }
 
+        @Override
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
-            for (Commands command : Commands.values()) {
-                if (command.command == input) {
-                    return command;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
-        }
     }
 
-    public enum TransceiverType {
+    public enum TransceiverType implements ByteEnumWrapper {
         _310MHZ(80),
         _315MHZ(81),
         _433_92MHZ_RECEIVER_ONLY(82),
@@ -111,22 +88,28 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             this.type = type;
         }
 
-        TransceiverType(byte type) {
-            this.type = type;
-        }
-
+        @Override
         public byte toByte() {
             return (byte) type;
         }
+    }
 
-        public static TransceiverType fromByte(int input) throws RFXComUnsupportedValueException {
-            for (TransceiverType type : TransceiverType.values()) {
-                if (type.type == input) {
-                    return type;
-                }
-            }
+    public enum FirmwareType implements ByteEnumWrapper {
+        TYPE1_RX_ONLY(0),
+        TYPE1(1),
+        TYPE2(2),
+        EXT(3),
+        EXT2(4);
 
-            throw new RFXComUnsupportedValueException(TransceiverType.class, input);
+        private final int type;
+
+        FirmwareType(int type) {
+            this.type = type;
+        }
+
+        @Override
+        public byte toByte() {
+            return (byte) type;
         }
     }
 
@@ -164,8 +147,15 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     public boolean enableARCPackets; // 0x02 - ARC (433.92)
     public boolean enableX10Packets; // 0x01 - X10 (310/433.92)
 
+    public boolean enableHomeConfortPackets; // 0x02 - HomeConfort (433.92)
+    public boolean enableKEELOQPackets; // 0x01 - KEELOQ (433.92)
+
     public byte hardwareVersion1;
     public byte hardwareVersion2;
+
+    public int outputPower; // -18dBm to +13dBm. N.B. maximum allowed is +10dBm
+
+    public FirmwareType firmwareType;
 
     public RFXComInterfaceMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
@@ -182,8 +172,10 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         if (subType == SubType.RESPONSE) {
 
             str += ", Transceiver type = " + transceiverType;
-            str += ", Firmware version = " + firmwareVersion;
             str += ", Hardware version = " + hardwareVersion1 + "." + hardwareVersion2;
+            str += ", Firmware type = " + (firmwareType != null ? firmwareType : "unknown");
+            str += ", Firmware version = " + firmwareVersion;
+            str += ", Output power = " + outputPower + "dBm";
             str += ", Undecoded packets = " + enableUndecodedPackets;
             str += ", RFU6 packets = " + enableImagintronixOpusPackets;
             str += ", Byron SX packets packets (433.92) = " + enableByronSXPackets;
@@ -196,7 +188,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             str += ", BlindsT1/T2/T3 (433.92) packets = " + enableBlindsT1T2T3T4Packets;
             str += ", BlindsT0 (433.92) packets = " + enableBlindsT0Packets;
             str += ", ProGuard (868.35 FSK) packets = " + enableProGuardPackets;
-            str += ", FS20 (868.35) packets = " + enableFS20Packets;
+            str += ", FS20/Legrand CAD (868.35/433.92) packets = " + enableFS20Packets;
             str += ", La Crosse (433.92/868.30) packets = " + enableLaCrossePackets;
             str += ", Hideki/UPM (433.92) packets = " + enableHidekiUPMPackets;
             str += ", AD LightwaveRF (433.92) packets = " + enableADPackets;
@@ -210,6 +202,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             str += ", AC (433.92) packets = " + enableACPackets;
             str += ", ARC (433.92) packets = " + enableARCPackets;
             str += ", X10 (310/433.92) packets = " + enableX10Packets;
+
+            str += ", HomeConfort (433.92) packets = " + enableHomeConfortPackets;
+            str += ", KEELOQ (433.92/868.95) packets = " + enableKEELOQPackets;
         } else if (subType == SubType.START_RECEIVER) {
             str += ", Text = " + text;
         }
@@ -222,11 +217,11 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
-        command = Commands.fromByte(data[4]);
+        subType = fromByte(SubType.class, super.subType);
 
         if (subType == SubType.RESPONSE) {
-            transceiverType = TransceiverType.fromByte(data[5]);
+            command = fromByte(Commands.class, data[4]);
+            transceiverType = fromByte(TransceiverType.class, data[5]);
 
             firmwareVersion = data[6] & 0xFF;
 
@@ -257,12 +252,34 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             enableARCPackets = (data[9] & 0x02) != 0;
             enableX10Packets = (data[9] & 0x01) != 0;
 
-            hardwareVersion1 = data[10];
-            hardwareVersion2 = data[11];
+            /*
+             * Different firmware versions have slightly different message formats.
+             * The firmware version numbering is unique to each hardware version
+             * but the location of the hardware version in the message is one of
+             * those things whose position varies. So we have to just look at the
+             * firmware version and pray. This condition below is taken from the
+             * openhab1-addons binding.
+             */
+            if ((firmwareVersion >= 95 && firmwareVersion <= 100) || (firmwareVersion >= 195 && firmwareVersion <= 200)
+                    || (firmwareVersion >= 251)) {
+                enableHomeConfortPackets = (data[10] & 0x02) != 0;
+                enableKEELOQPackets = (data[10] & 0x01) != 0;
+
+                hardwareVersion1 = data[11];
+                hardwareVersion2 = data[12];
+
+                outputPower = data[13] - 18;
+                firmwareType = fromByte(FirmwareType.class, data[14]);
+            } else {
+                hardwareVersion1 = data[10];
+                hardwareVersion2 = data[11];
+            }
 
             text = "";
 
         } else if (subType == SubType.START_RECEIVER) {
+            command = fromByte(Commands.class, data[4]);
+
             final int len = 16;
             final int dataOffset = 5;
 
@@ -277,59 +294,21 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             } catch (UnsupportedEncodingException e) {
                 // ignore
             }
+        } else {
+            // We don't handle the other subTypes but to avoid null pointer
+            // exceptions we set command to something. It doesn't really
+            // matter what but it may b printed in log messages so...
+            command = Commands.UNSUPPORTED_COMMAND;
         }
     }
 
     @Override
     public byte[] decodeMessage() throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        try {
-            return SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComUnsupportedValueException(SubType.class, subType);
-        }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return null;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return null;
-    }
-
 }

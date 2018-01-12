@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="NACamera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Welcome Camera</label>
+		<description>This represents a welcome camera at home</description>
+
+		<channels>
+			<channel id="welcomeCameraStatus" typeId="status"></channel>
+			<channel id="welcomeCameraSdStatus" typeId="sd_status"></channel>
+			<channel id="welcomeCameraAlimStatus" typeId="alim_status"></channel>
+			<channel id="welcomeCameraIsLocal" typeId="is_locale"></channel>
+			<channel id="welcomeCameraLivePicture" typeId="live_picture"></channel>
+			<channel id="welcomeCameraLivePictureUrl" typeId="live_picture_url"></channel>
+			<channel id="welcomeCameraLiveStreamUrl" typeId="live_stream_url"></channel>
+			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
+		</channels>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:nawelcomecamera" />
+	</thing-type>
+
+
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of the camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="sd_status">
+		<item-type>Switch</item-type>
+		<label>SD State</label>
+		<description>State of the SD card</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="alim_status">
+		<item-type>Switch</item-type>
+		<label>Alim State</label>
+		<description>State of the power connector</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="is_locale" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Is local</label>
+		<description>Only for scope access_camera. If Camera and application requesting the information are on the same network (true/false)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="live_picture_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live snapshot URL</label>
+		<description>Url of the live snapshot for this camera (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="live_picture" >
+		<item-type>Image</item-type>
+		<label>Live Snapshot</label>
+		<description>Camera Live Snapshot</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="live_stream_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live stream URL</label>
+		<description>Url of the live stream for this camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

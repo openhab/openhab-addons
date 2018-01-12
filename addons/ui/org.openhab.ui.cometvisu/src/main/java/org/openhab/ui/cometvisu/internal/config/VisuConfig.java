@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,6 +35,7 @@ import org.eclipse.smarthome.model.sitemap.Setpoint;
 import org.eclipse.smarthome.model.sitemap.Sitemap;
 import org.eclipse.smarthome.model.sitemap.Webview;
 import org.eclipse.smarthome.model.sitemap.Widget;
+import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.config.ConfigHelper.Transform;
 import org.openhab.ui.cometvisu.internal.config.beans.Address;
 import org.openhab.ui.cometvisu.internal.config.beans.Colorchooser;
@@ -58,7 +59,7 @@ import org.openhab.ui.cometvisu.internal.config.beans.Text;
 import org.openhab.ui.cometvisu.internal.config.beans.Trigger;
 import org.openhab.ui.cometvisu.internal.config.beans.Video;
 import org.openhab.ui.cometvisu.internal.config.beans.Web;
-import org.openhab.ui.cometvisu.servlet.CometVisuApp;
+import org.openhab.ui.cometvisu.internal.servlet.CometVisuApp;
 import org.rrd4j.ConsolFun;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,11 +115,15 @@ public class VisuConfig {
         pagesBean.setScrollSpeed(new BigDecimal(0));
 
         // set relative path to XSD file
-        int requestFolders = req.getPathInfo().substring(1).split("/").length;
-        logger.debug("requestPath '{}' has '{}' parts", req.getPathInfo(), requestFolders);
+        File rootFolder = new File(Config.COMETVISU_WEBFOLDER);
+        File sitemap = new File(rootFolder, req.getPathInfo());
         String relXsd = "";
-        for (int i = 1; i < requestFolders; i++) {
+        File parent = sitemap.getParentFile();
+        File schema = new File(parent, "visu_config.xsd");
+        while (parent != rootFolder && !schema.exists()) {
+            parent = parent.getParentFile();
             relXsd += "../";
+            schema = new File(parent, "visu_config.xsd");
         }
         pagesBean.setNoNamespaceSchemaLocation(relXsd + schemaFile);
 
@@ -128,7 +133,7 @@ public class VisuConfig {
         configHelper = new ConfigHelper(pagesBean, app, sitemap.getName());
         createPages(pagesBean);
 
-        return marshal(pagesBean, rootFolder.getAbsolutePath() + File.separator + schemaFile);
+        return marshal(pagesBean, schema.getPath());
     }
 
     private String marshal(Pages bean, String xsdSchema) {

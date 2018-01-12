@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -265,17 +265,17 @@ public enum KeyCode {
     KEY_ZOOM_MOVE,
     KEY_ZOOM_OUT;
 
-    private String value;
+    private final String value;
 
-    private KeyCode() {
+    KeyCode() {
         value = null;
     }
 
-    private KeyCode(String value) {
+    KeyCode(String value) {
         this.value = value;
     }
 
-    private KeyCode(KeyCode otherKey) {
+    KeyCode(KeyCode otherKey) {
         this(otherKey.getValue());
     }
 

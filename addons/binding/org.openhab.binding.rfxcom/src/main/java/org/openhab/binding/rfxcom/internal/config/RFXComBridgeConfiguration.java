@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.config;
 
+import org.openhab.binding.rfxcom.internal.connector.RFXComBaseConnector;
+
 /**
- * Configuration class for {@link RfxcomBinding} device.
+ * Configuration class for {@link RFXComBaseConnector} device.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -53,6 +55,7 @@ public class RFXComBridgeConfiguration {
     public boolean enableBlindsT1T2T3T4;
     public boolean enableBlindsT0;
     public boolean enableProGuard;
+    public boolean enableFS20;
     public boolean enableLaCrosse;
     public boolean enableHidekiUPM;
     public boolean enableADLightwaveRF;
@@ -65,4 +68,6 @@ public class RFXComBridgeConfiguration {
     public boolean enableAC;
     public boolean enableARC;
     public boolean enableX10;
+    public boolean enableHomeConfort;
+    public boolean enableKEELOQ;
 }

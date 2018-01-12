@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,8 +24,8 @@ import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 public class ServiceFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<String, Class<?>> serviceMap = Collections
-            .unmodifiableMap(new HashMap<String, Class<?>>() {
+    private static final Map<String, Class<? extends SamsungTvService>> serviceMap = Collections
+            .unmodifiableMap(new HashMap<String, Class<? extends SamsungTvService>>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
                     put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);
@@ -57,7 +57,7 @@ public class ServiceFactory {
                 service = new MediaRendererService(upnpIOService, udn, pollingInterval);
                 break;
             case RemoteControllerService.SERVICE_NAME:
-                service = new RemoteControllerService(host, port);
+                service = RemoteControllerService.createUpnpService(host, port);
                 break;
         }
 
@@ -79,7 +79,7 @@ public class ServiceFactory {
      * @param serviceName Name of the service
      * @return Class of the service
      */
-    public static Class<?> getClassByServiceName(String serviceName) {
+    public static Class<? extends SamsungTvService> getClassByServiceName(String serviceName) {
         return serviceMap.get(serviceName);
     }
 }

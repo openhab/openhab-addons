@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="current">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Current Sensor</label>
+		<description>A Current sensing device.</description>
+
+		<channels>
+			<channel id="channel1Amps" typeId="instantamp" />
+			<channel id="channel2Amps" typeId="instantamp" />
+			<channel id="channel3Amps" typeId="instantamp" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Sensor Id. Example 5693</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="ELEC1">CM113</option>
+				</options>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,17 +15,18 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.config.ServerConfig;
-import org.openhab.binding.minecraft.handler.server.ServerConnection;
-import org.openhab.binding.minecraft.message.OHMessage;
-import org.openhab.binding.minecraft.message.data.PlayerData;
-import org.openhab.binding.minecraft.message.data.ServerData;
-import org.openhab.binding.minecraft.message.data.SignData;
-import org.openhab.binding.minecraft.util.RetryWithDelay;
+import org.openhab.binding.minecraft.internal.config.ServerConfig;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
+import org.openhab.binding.minecraft.internal.message.data.PlayerData;
+import org.openhab.binding.minecraft.internal.message.data.ServerData;
+import org.openhab.binding.minecraft.internal.message.data.SignData;
+import org.openhab.binding.minecraft.internal.server.ServerConnection;
+import org.openhab.binding.minecraft.internal.util.RetryWithDelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class MinecraftServerHandler extends BaseBridgeHandler {
         config = getConfigAs(ServerConfig.class);
         logger.info("Initializing MinecraftHandler");
         connectToServer();
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**

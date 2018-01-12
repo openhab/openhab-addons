@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -91,6 +91,7 @@ public class TeslaHandler extends BaseThingHandler {
     private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
     private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
     private static final int EVENT_TIMESTAMP_AGE_LIMIT = 3000;
+    private static final int EVENT_TIMESTAMP_MAX_DELTA = 10000;
     private static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
     private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int CONNECT_RETRY_INTERVAL = 15000;
@@ -787,7 +788,12 @@ public class TeslaHandler extends BaseThingHandler {
                 return ThingStatusDetail.NONE;
 
             } else if (response.getStatus() == 401) {
-                return ThingStatusDetail.CONFIGURATION_ERROR;
+                if (!StringUtils.isEmpty(username)) {
+                    String password = (String) getConfig().get(PASSWORD);
+                    return authenticate(username, password);
+                } else {
+                    return ThingStatusDetail.CONFIGURATION_ERROR;
+                }
             } else if (response.getStatus() == 503 || response.getStatus() == 502) {
                 return ThingStatusDetail.COMMUNICATION_ERROR;
             }
@@ -1040,6 +1046,12 @@ public class TeslaHandler extends BaseThingHandler {
                                                     dateFormatter.format(currentTimeStamp),
                                                     dateFormatter.format(systemTimeStamp));
                                         }
+                                        if (systemTimeStamp - currentTimeStamp > EVENT_TIMESTAMP_MAX_DELTA) {
+                                            if (logger.isTraceEnabled()) {
+                                                logger.trace("Event Stream : The event stream will be reset");
+                                            }
+                                            isEstablished = false;
+                                        }
                                     }
 
                                     line = eventBufferedReader.readLine();
@@ -1066,7 +1078,7 @@ public class TeslaHandler extends BaseThingHandler {
                     } else {
                         Thread.sleep(250);
                     }
-                } catch (IOException e) {
+                } catch (IOException | NumberFormatException e) {
                     if (logger.isErrorEnabled()) {
                         logger.error("Event Stream : An exception occurred while reading events : '{}'",
                                 e.getMessage());

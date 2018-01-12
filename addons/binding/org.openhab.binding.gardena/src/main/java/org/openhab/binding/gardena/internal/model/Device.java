@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,10 +30,11 @@ public class Device {
     private String category;
     @SerializedName("configuration_synchronized")
     private boolean configurationSynchronized;
-    private List<Ability> abilities = new ArrayList<Ability>();
+    private List<Ability> abilities = new ArrayList<>();
     @SerializedName("scheduled_events")
-    private List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
+    private List<ScheduledEvent> scheduledEvents = new ArrayList<>();
     private transient Location location;
+    private List<Setting> settings = new ArrayList<>();
 
     /**
      * Returns the id of the device.
@@ -110,17 +111,27 @@ public class Device {
         throw new GardenaException("Ability '" + name + "' not found in device '" + this.name + "'");
     }
 
+    public List<Setting> getSettings() {
+        return settings;
+    }
+
     /**
-     * {@inheritDoc}
+     * Returns the setting with the specified name.
      */
+    public Setting getSetting(String name) throws GardenaException {
+        for (Setting setting : settings) {
+            if (setting.getName().equals(name)) {
+                return setting;
+            }
+        }
+        throw new GardenaException("Setting '" + name + "' not found in device '" + this.name + "'");
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).toHashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Device)) {

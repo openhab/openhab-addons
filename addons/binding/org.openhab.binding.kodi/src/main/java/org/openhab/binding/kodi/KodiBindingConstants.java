@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.kodi;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link KodiBinding} class defines common constants, which are used across
@@ -20,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  * 
  */
 public class KodiBindingConstants {
@@ -28,11 +28,15 @@ public class KodiBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KODI = new ThingTypeUID(BINDING_ID, "kodi");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_KODI);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KODI);
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
-    public static final String PORT_PARAMETER = "port";
+    public static final String WS_PORT_PARAMETER = "port";
+    public static final String HTTP_PORT_PARAMETER = "httpPort";
+    public static final String HTTP_USER_PARAMETER = "httpUser";
+    public static final String HTTP_PASSWORD_PARAMETER = "httpPassword";
+    public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";
@@ -54,6 +58,8 @@ public class KodiBindingConstants {
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_MEDIATYPE = "mediatype";
     public static final String CHANNEL_PVR_CHANNEL = "pvr-channel";
+    public static final String CHANNEL_THUMBNAIL = "thumbnail";
+    public static final String CHANNEL_FANART = "fanart";
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";

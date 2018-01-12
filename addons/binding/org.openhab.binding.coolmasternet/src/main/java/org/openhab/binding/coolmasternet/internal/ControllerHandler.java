@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
+import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +36,8 @@ import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/* Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
+/**
+ * Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
  *
  * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
  * These are individual Things inside the bridge.
@@ -59,7 +60,6 @@ public class ControllerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialising CoolMasterNet Controller handler...");
-        super.initialize();
 
         Configuration config = this.getConfig();
         host = (String) config.get(HOST);

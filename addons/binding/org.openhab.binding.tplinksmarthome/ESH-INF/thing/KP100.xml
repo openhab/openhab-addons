@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="kp100">
+        <label>KP100</label>
+        <description>TP-Link KP100 Kasa Wi-Fi Smart Plug - Slim Edition</description>
+
+        <channels>
+            <channel id="switch" typeId="switch" />
+            <channel id="led" typeId="led" />
+            <channel id="rssi" typeId="rssi" />
+        </channels>
+
+        <config-description-ref uri="thing-type:device:plug" />
+    </thing-type>
+</thing:thing-descriptions>

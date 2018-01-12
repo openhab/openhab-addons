@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tellstick.TellstickBindingConstants;
-import org.openhab.binding.tellstick.handler.live.xml.DataTypeValue;
-import org.openhab.binding.tellstick.handler.live.xml.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
+import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.device.TellstickException;
@@ -127,9 +127,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
 

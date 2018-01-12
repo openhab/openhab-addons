@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,17 +27,11 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
     private static final int RSSI_STEP = 25;
     private static final int RSSI_UNITS = 4;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
@@ -45,9 +39,6 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public class RemoteController {
 
-    private Logger logger = LoggerFactory.getLogger(RemoteController.class);
+    private static final int CONNECTION_TIMEOUT = 500;
+
+    private final Logger logger = LoggerFactory.getLogger(RemoteController.class);
 
     // Access granted response
     private final char[] ACCESS_GRANTED_RESP = new char[] { 0x64, 0x00, 0x01, 0x00 };
@@ -53,8 +55,6 @@ public class RemoteController {
     private final char[] ACCESS_TIMEOUT_RESP = new char[] { 0x65, 0x00 };
 
     private final String APP_STRING = "iphone.iapp.samsung";
-
-    private final int TIMEOUT = 5000;
 
     private String host;
     private int port;
@@ -90,7 +90,7 @@ public class RemoteController {
 
         socket = new Socket();
         try {
-            socket.connect(new InetSocketAddress(host, port), TIMEOUT);
+            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
         } catch (Exception e) {
             throw new RemoteControllerException("Connection failed", e);
         }
@@ -271,11 +271,7 @@ public class RemoteController {
     }
 
     private boolean isConnected() {
-        if (socket == null || socket.isClosed() || !socket.isConnected()) {
-            return false;
-        } else {
-            return true;
-        }
+        return socket != null && !socket.isClosed() && socket.isConnected();
     }
 
     private String createRegistrationPayload(String ip) throws IOException {

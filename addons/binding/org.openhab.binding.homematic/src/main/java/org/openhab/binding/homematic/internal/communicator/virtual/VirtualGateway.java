@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 import java.io.IOException;
 
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
-import org.openhab.binding.homematic.internal.communicator.HomematicGatewayListener;
+import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -44,5 +44,5 @@ public interface VirtualGateway extends HomematicGateway {
     /**
      * Returns the event listener.
      */
-    public HomematicGatewayListener getEventListener();
+    public HomematicGatewayAdapter getGatewayAdapter();
 }

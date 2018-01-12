@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name:  TPLinkSmartHome.test Binding Tests
+Bundle-SymbolicName: org.openhab.binding.tplinksmarthome.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Fragment-Host: org.openhab.binding.tplinksmarthome
+Import-Package: org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.java,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit,
+ org.mockito,
+ org.openhab.binding.tplinksmarthome,
+ org.openhab.binding.tplinksmarthome.handler,
+ org.osgi.framework,
+ org.osgi.service.device,
+ org.slf4j
+Require-Bundle: org.junit,
+ org.mockito,
+ org.hamcrest
+Export-Package: 
+ org.openhab.binding.tplinksmarthome;uses:="org.eclipse.smarthome.test"

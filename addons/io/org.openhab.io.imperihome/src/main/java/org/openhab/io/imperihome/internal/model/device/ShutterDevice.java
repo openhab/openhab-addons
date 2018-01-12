@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,8 +36,8 @@ public class ShutterDevice extends AbstractEnergyLinkDevice {
             level = percentState.intValue();
         }
 
-        addParam(new DeviceParam(ParamType.STOPPABLE, "0"));
         addParam(new DeviceParam(ParamType.PULSEABLE, "0"));
+        addParam(new DeviceParam(ParamType.STOPPABLE, getLinks().containsKey("stopper") ? "1" : "0"));
         addParam(new DeviceParam(ParamType.LEVEL, String.valueOf(level)));
     }
 

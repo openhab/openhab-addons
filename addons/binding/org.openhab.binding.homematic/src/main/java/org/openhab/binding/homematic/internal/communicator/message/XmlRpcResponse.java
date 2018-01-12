@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -48,25 +48,16 @@ public class XmlRpcResponse implements RpcResponse {
         saxParser.parse(inputSource, new XmlRpcHandler());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object[] getResponseData() {
         return responseData;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMethodName() {
         return methodName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return RpcUtils.dumpRpcMessage(methodName, responseData);
@@ -84,26 +75,17 @@ public class XmlRpcResponse implements RpcResponse {
         private StringBuilder tagValue;
         private boolean isValueTag;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void startDocument() throws SAXException {
             currentDataObject.addLast(new ArrayList<Object>());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void endDocument() throws SAXException {
             result.addAll(currentDataObject.removeLast());
             responseData = result.toArray();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
@@ -115,9 +97,6 @@ public class XmlRpcResponse implements RpcResponse {
             tagValue = new StringBuilder();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             String currentTag = qName.toLowerCase();
@@ -184,9 +163,6 @@ public class XmlRpcResponse implements RpcResponse {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             tagValue.append(new String(ch, start, length));

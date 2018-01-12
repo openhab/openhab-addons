@@ -53,7 +53,8 @@
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
-				<description>Serial Port of the openHAB host the Oceanic Water Softener is connected to</description>
+				<context>serial-port</context>
+				<description>Serial Port the Oceanic Water Softener is connected to</description>
 			</parameter>
 			<parameter name="interval" type="decimal" required="true">
 				<label>Polling Interval</label>

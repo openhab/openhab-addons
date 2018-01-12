@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,6 +37,7 @@ public class HmDatapoint implements Cloneable {
     private String info;
     private String unit;
     private boolean virtual;
+    private boolean trigger;
 
     public HmDatapoint() {
     }
@@ -394,8 +395,19 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the trigger flag.
      */
+    public void setTrigger(boolean trigger) {
+        this.trigger = trigger;
+    }
+
+    /**
+     * Returns true, if the datapoint should be handled as a trigger.
+     */
+    public boolean isTrigger() {
+        return trigger;
+    }
+
     @Override
     public HmDatapoint clone() {
         HmDatapoint dp = new HmDatapoint(name, description, type, value, readOnly, paramsetType);
@@ -408,13 +420,11 @@ public class HmDatapoint implements Cloneable {
         dp.setUnit(unit);
         dp.setVirtual(virtual);
         dp.setReadable(readable);
+        dp.setTrigger(trigger);
         dp.setDefaultValue(defaultValue);
         return dp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", name).append("value", value)
@@ -422,7 +432,7 @@ public class HmDatapoint implements Cloneable {
                 .append("maxValue", maxValue).append("step", step).append("options", StringUtils.join(options, ";"))
                 .append("readOnly", readOnly).append("readable", readable).append("unit", unit)
                 .append("description", description).append("info", info).append("paramsetType", paramsetType)
-                .append("virtual", virtual).toString();
+                .append("virtual", virtual).append("trigger", trigger).toString();
     }
 
 }
