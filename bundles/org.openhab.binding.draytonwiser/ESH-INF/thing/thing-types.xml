@@ -44,14 +44,15 @@
         <channels>
             <channel id="heatingOverride" typeId="heatingOverride-channel" />
             <channel id="hotWaterOverride" typeId="hotWaterOverride-channel" />
-            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
-            <channel id="currentSignalStrength" typeId="signalStrength-channel" />
             <channel id="heatChannel1Demand" typeId="heatChannel1Demand-channel" />
             <channel id="heatChannel1DemandState" typeId="heatChannel1DemandState-channel" />
             <channel id="heatChannel2Demand" typeId="heatChannel2Demand-channel" />
             <channel id="heatChannel2DemandState" typeId="heatChannel2DemandState-channel" />
             <channel id="awayModeState" typeId="awayModeState-channel" />
             <channel id="awayModeSetPoint" typeId="awayModeSetPoint-channel" />
+            <channel id="ecoModeState" typeId="ecoModeState-channel" />
+            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
+            <channel id="currentSignalStrength" typeId="signalStrength-channel" />
         </channels>
         
         <config-description>
@@ -274,5 +275,11 @@
         <category>Temperature</category>
         <state readOnly="false" pattern="%.1f °C"></state>
     </channel-type> 
+    
+    <channel-type id="ecoModeState-channel">
+        <item-type>Switch</item-type>
+        <label>Eco Mode Enabled</label>
+        <description>Eco Mode activation state (EcoIQ)</description>
+    </channel-type>
 
 </thing:thing-descriptions>
