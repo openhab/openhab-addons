@@ -257,6 +257,13 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
     }
 
+    public void setRoomManualMode(Integer roomId, Boolean manualMode) {
+        String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+    }
+
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
         return sendMessageToHeatHub(path, method.asString(), content);
     }

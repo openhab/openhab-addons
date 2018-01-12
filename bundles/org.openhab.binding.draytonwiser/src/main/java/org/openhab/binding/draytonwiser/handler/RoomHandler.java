@@ -56,6 +56,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
             int newSetPoint = Math.round((Float.parseFloat(command.toString()) * 10));
             setSetPoint(newSetPoint);
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE)) {
+            boolean manualMode = command.toString().toUpperCase().equals("ON");
+            setManualMode(manualMode);
+        }
         // if (channelUID.getId().equals(CHANNEL_1)) {
         // TODO: handle command
 
@@ -82,6 +87,8 @@ public class RoomHandler extends DraytonWiserThingHandler {
                         getDemand());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEAT_REQUEST),
                         getHeatRequest());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE),
+                        getManualModeState());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -146,5 +153,20 @@ public class RoomHandler extends DraytonWiserThingHandler {
     @Nullable
     private RoomStat getRoomStat(int id) {
         return getBridgeHandler().getRoomStat(id);
+    }
+
+    private State getManualModeState() {
+        if (room != null) {
+            if (room.getMode().toUpperCase().equals("MANUAL")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private void setManualMode(Boolean manualMode) {
+        getBridgeHandler().setRoomManualMode(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue(),
+                manualMode);
     }
 }

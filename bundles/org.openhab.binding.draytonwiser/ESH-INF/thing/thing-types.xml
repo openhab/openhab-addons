@@ -81,6 +81,7 @@
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentDemand" typeId="demandPercent-channel"/>
             <channel id="heatRequest" typeId="heatRequest-channel"/>
+            <channel id="manualModeState" typeId="manualModeState-channel"/>
         </channels>
         
         <config-description>
@@ -280,6 +281,12 @@
         <item-type>Switch</item-type>
         <label>Eco Mode Enabled</label>
         <description>Eco Mode activation state (EcoIQ)</description>
+    </channel-type>
+    
+    <channel-type id="manualModeState-channel">
+        <item-type>Switch</item-type>
+        <label>Manual Mode Enabled</label>
+        <description>Manual Mode activation state</description>
     </channel-type>
 
 </thing:thing-descriptions>
