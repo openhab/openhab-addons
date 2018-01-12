@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link HeatHubHandler} is responsible for handling commands, which are
@@ -50,9 +50,15 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class HeatHubHandler extends BaseBridgeHandler {
 
+    @Nullable
+    protected ScheduledFuture<?> refreshJob;
+
     private final Logger logger = LoggerFactory.getLogger(HeatHubHandler.class);
     private HttpClient httpClient;
     private Gson gson;
+
+    @Nullable
+    private Domain domain;
 
     public HeatHubHandler(Bridge thing) {
         super(thing);
@@ -70,6 +76,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
     public void dispose() {
         if (httpClient != null) {
             httpClient.destroy();
+        }
+
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
         }
     }
 
@@ -97,6 +107,28 @@ public class HeatHubHandler extends BaseBridgeHandler {
             properties.put("Model", device.getModelIdentifier());
             getThing().setProperties(properties);
         }
+
+        startAutomaticRefresh();
+        refresh();
+    }
+
+    private void startAutomaticRefresh() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                refresh();
+            }, 0, ((java.math.BigDecimal) bridge.getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
+                    .intValue(), TimeUnit.SECONDS);
+        }
+    }
+
+    private void refresh() {
+        try {
+            domain = getDomain();
+        } catch (Exception e) {
+            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     public @Nullable Domain getDomain() {
@@ -112,107 +144,91 @@ public class HeatHubHandler extends BaseBridgeHandler {
     }
 
     public List<RoomStat> getRoomStats() {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMSTATS_ENDPOINT, HttpMethod.GET,
-                "");
-
-        if (response == null) {
+        if (domain == null) {
             return new ArrayList<RoomStat>();
         }
 
-        Type listType = new TypeToken<ArrayList<RoomStat>>() {
-        }.getType();
-        List<RoomStat> roomStats = gson.fromJson(response.getContentAsString(), listType);
-        return roomStats;
+        return domain.getRoomStat();
     }
 
     public List<SmartValve> getSmartValves() {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.TRVS_ENDPOINT, HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return new ArrayList<SmartValve>();
         }
 
-        Type listType = new TypeToken<ArrayList<SmartValve>>() {
-        }.getType();
-        List<SmartValve> smartValves = gson.fromJson(response.getContentAsString(), listType);
-        return smartValves;
+        return domain.getSmartValve();
     }
 
     public List<Room> getRooms() {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT, HttpMethod.GET,
-                "");
-
-        if (response == null) {
+        if (domain == null) {
             return new ArrayList<Room>();
         }
 
-        Type listType = new TypeToken<ArrayList<Room>>() {
-        }.getType();
-        List<Room> rooms = gson.fromJson(response.getContentAsString(), listType);
-        return rooms;
+        return domain.getRoom();
     }
 
     public @Nullable Room getRoom(Integer id) {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + "/" + id,
-                HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return null;
         }
 
-        Room room = gson.fromJson(response.getContentAsString(), Room.class);
-        return room;
+        for (Room room : domain.getRoom()) {
+            if (room.getId().equals(id)) {
+                return room;
+            }
+        }
+
+        return null;
     }
 
     public @Nullable RoomStat getRoomStat(Integer id) {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMSTATS_ENDPOINT + "/" + id,
-                HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return null;
         }
 
-        RoomStat roomStat = gson.fromJson(response.getContentAsString(), RoomStat.class);
-        return roomStat;
+        for (RoomStat roomStat : domain.getRoomStat()) {
+            if (roomStat.getId().equals(id)) {
+                return roomStat;
+            }
+        }
+
+        return null;
     }
 
     public @Nullable SmartValve getSmartValve(Integer id) {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.TRVS_ENDPOINT + "/" + id,
-                HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return null;
         }
 
-        SmartValve smartValve = gson.fromJson(response.getContentAsString(), SmartValve.class);
-        return smartValve;
+        for (SmartValve smartValve : domain.getSmartValve()) {
+            if (smartValve.getId().equals(id)) {
+                return smartValve;
+            }
+        }
+
+        return null;
     }
 
     public @Nullable Device getExtendedDeviceProperties(int id) {
-        Device device = null;
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DEVICE_ENDPOINT + id,
-                HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return null;
         }
 
-        device = gson.fromJson(response.getContentAsString(), Device.class);
-        return device;
+        for (Device device : domain.getDevice()) {
+            if (device.getId().equals(id)) {
+                return device;
+            }
+        }
+
+        return null;
     }
 
     public org.openhab.binding.draytonwiser.internal.config.@Nullable System getSystem() {
-        org.openhab.binding.draytonwiser.internal.config.System system = null;
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, HttpMethod.GET,
-                "");
-
-        if (response == null) {
+        if (domain == null) {
             return null;
         }
 
-        system = gson.fromJson(response.getContentAsString(),
-                org.openhab.binding.draytonwiser.internal.config.System.class);
-        return system;
+        return domain.getSystem();
     }
 
     public @Nullable Station getStation() {
@@ -229,17 +245,11 @@ public class HeatHubHandler extends BaseBridgeHandler {
     }
 
     public List<HeatingChannel> getHeatingChannels() {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.HEATCHANNELS_ENDPOINT,
-                HttpMethod.GET, "");
-
-        if (response == null) {
+        if (domain == null) {
             return new ArrayList<HeatingChannel>();
         }
 
-        Type listType = new TypeToken<ArrayList<HeatingChannel>>() {
-        }.getType();
-        List<HeatingChannel> heatingChannels = gson.fromJson(response.getContentAsString(), listType);
-        return heatingChannels;
+        return domain.getHeatingChannel();
     }
 
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
