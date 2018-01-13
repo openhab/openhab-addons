@@ -314,7 +314,7 @@ public class DailyTimerHandler extends BaseThingHandler {
         long withTime = cal.getTimeInMillis();
 
         if (now > withTime) {
-            cal.roll(Calendar.DAY_OF_YEAR, true);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
         long toSchedule = cal.getTimeInMillis();
