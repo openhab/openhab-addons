@@ -275,6 +275,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
         getDomain();
     }
 
+    public void setEcoMode(Boolean ecoMode) {
+        String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, "PATCH", payload);
+        getDomain();
+    }
+
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
         return sendMessageToHeatHub(path, method.asString(), content);
     }

@@ -66,6 +66,11 @@ public class ControllerHandler extends DraytonWiserThingHandler {
             boolean awayMode = command.toString().toUpperCase().equals("ON");
             setAwayMode(awayMode);
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_ECO_MODE_STATE)) {
+            boolean ecoMode = command.toString().toUpperCase().equals("ON");
+            setEcoMode(ecoMode);
+        }
     }
 
     @Override
@@ -232,6 +237,11 @@ public class ControllerHandler extends DraytonWiserThingHandler {
 
     private void setAwayMode(Boolean awayMode) {
         getBridgeHandler().setAwayMode(awayMode);
+        updateControllerData();
+    }
+
+    private void setEcoMode(Boolean ecoMode) {
+        getBridgeHandler().setEcoMode(ecoMode);
         updateControllerData();
     }
 }
