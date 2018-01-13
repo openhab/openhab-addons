@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -113,11 +114,11 @@ public class HeatHubHandler extends BaseBridgeHandler {
     }
 
     private void startAutomaticRefresh() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
+        Thing thing = getThing();
+        if (thing != null) {
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 refresh();
-            }, 0, ((java.math.BigDecimal) bridge.getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
+            }, 0, ((java.math.BigDecimal) thing.getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
                     .intValue(), TimeUnit.SECONDS);
         }
     }
@@ -255,6 +256,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
     public void setRoomSetPoint(Integer roomId, Integer setPoint) {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        getDomain();
     }
 
     public void setRoomManualMode(Integer roomId, Boolean manualMode) {
@@ -262,6 +264,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        getDomain();
     }
 
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
