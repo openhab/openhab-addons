@@ -104,7 +104,7 @@
        <description>Wireless Thermostat device</description>
        
        <channels>
-           <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
+            <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
             <channel id="currentHumidity" typeId="currentHumidity-channel"/>
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>

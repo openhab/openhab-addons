@@ -30,16 +30,81 @@ Once discovered, the HeatHub `SECRET` needs to be configured. There are a few wa
 
 ## Channels
 
-TODO List available channels
+### Readonly Channels
 
+#### Controller
 
+| Channel                   | Description                                              | Implemented |
+|---------------------------|----------------------------------------------------------|-------------|
+| `heatingOverride`         | State of the heating override button on the controller   | Yes         |
+| `hotWaterOverride`        | State of the hot water override button on the controller | Yes         |
+| `heatChannel1Demand`      | Current demand level of heating channel 1                | Yes         |
+| `heatChannel1DemandState` | Is channel 1 calling the boiler for heat                 | Yes         |
+| `heatChannel2Demand`      | Current demand level of heating channel 2                | Yes         |
+| `heatChannel2DemandState` | Is channel 2 calling the boiler for heat                 | Yes         |
+| `currentSignalRSSI`       | Relative Signal Strength Indicator                       | Yes         |
+| `currentSignalStrength`   | Human readable signal strength                           | Yes         |
+
+#### Room
+
+| Channel              | Description                                                                  | Implemented |
+|----------------------|------------------------------------------------------------------------------|-------------|
+| `currentTemperature` | Currently reported temperature                                               | Yes         |
+| `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room | Yes         |
+| `currentDemand`      | Current heat demand percentage of the room                                   | Yes         |
+| `heatRequest`        | Is the room actively requesting heat from the controller                     | Yes         |
+| next set point temp  | The next set point temperature to be active                                  | No          |
+| next set point time  | The time of the next set point temperature to be active                      | No          |
+
+#### Room Stat
+
+| Channel                 | Description                        | Implemented |
+|-------------------------|------------------------------------|-------------|
+| `currentTemperature`    | Currently reported temperature     | Yes         |
+| `currentHumidity`       | Currently reported humidity        | Yes         |
+| `currentSetPoint`       | Currently reported set point       | Yes         |
+| `currentBatteryVoltage` | Currently reported battery voltage | Yes         |
+| `currentBatteryLevel`   | Human readable battery level       | Yes         |
+| `currentSignalRSSI`     | Relative Signal Strength Indicator | Yes         |
+| `currentSignalStrength` | Human readable signal strength     | Yes         |
+
+#### Smart TRV
+
+| Channel                 | Description                               | Implemented |
+|-------------------------|-------------------------------------------|-------------|
+| `currentTemperature`    | Currently reported temperature            | Yes         |
+| `currentDemand`         | Current heat demand percentage of the TRV | Yes         |
+| `currentSetPoint`       | Currently reported set point              | Yes         |
+| `currentBatteryVoltage` | Currently reported battery voltage        | Yes         |
+| `currentBatteryLevel`   | Human readable battery level              | Yes         |
+| `currentSignalRSSI`     | Relative Signal Strength Indicator        | Yes         |
+| `currentSignalStrength` | Human readable signal strength            | Yes         |
+
+### Writeable Channels
+
+#### Controller
+
+| Channel            | Description                              | Implemented |
+|--------------------|------------------------------------------|-------------|
+| `awayModeState`    | Has away mode been enabled               | ReadOnly    |
+| `awayModeSetPoint` | Set point of all TRVs/Stats in away mode | ReadOnly    |
+| `ecoModeState`     | Has eco mode been enabled                | ReadOnly    |
+
+#### Room
+
+| Channel           | Description                                    | Implemented |
+|-------------------|------------------------------------------------|-------------|
+| `currentSetPoint` | The current set point temperature for the room | Yes         |
+| `manualModeState` | Has manual mode been enabled                   | Yes         |
+| Room Boosting     | Boost the room temperature for a set interval  | No          |
+| Schedules         | The Time and Set Point schedule                | No          |
 
 #### Known string responses for specific channels:
 
-| Channel               | Known responses                          |
-|-----------------------|------------------------------------------|
-| currentSignalStrength | `{ "VeryGood", "Good", "Medium", Poor }` |
-| currentBatteryLevel   | `{ "Normal", "TwoThirds" }`              |
+| Channel                 | Known responses                          |
+|-------------------------|------------------------------------------|
+| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", Poor }` |
+| `currentBatteryLevel`   | `{ "Normal", "TwoThirds" }`              |
 
 ## Full Example
 
