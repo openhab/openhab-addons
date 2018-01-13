@@ -267,6 +267,14 @@ public class HeatHubHandler extends BaseBridgeHandler {
         getDomain();
     }
 
+    public void setAwayMode(Boolean awayMode) {
+        String payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "50" : "0") + "}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT + "RequestOverride", "PATCH", payload);
+        payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "-200" : "0") + "}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2/RequestOverride", "PATCH", payload);
+        getDomain();
+    }
+
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
         return sendMessageToHeatHub(path, method.asString(), content);
     }

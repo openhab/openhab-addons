@@ -23,9 +23,9 @@ public class System {
     @SerializedName("OverrideType")
     @Expose
     private String overrideType;
-    @SerializedName("OverrideSetPoint")
+    @SerializedName("OverrideSetpoint")
     @Expose
-    private Integer overrideSetPoint;
+    private Integer overrideSetpoint;
     @SerializedName("TimeZoneOffset")
     @Expose
     private Integer timeZoneOffset;
@@ -81,8 +81,8 @@ public class System {
         return overrideType;
     }
 
-    public Integer getOverrideSetPoint() {
-        return overrideSetPoint;
+    public Integer getOverrideSetpoint() {
+        return overrideSetpoint;
     }
 
     public Integer getTimeZoneOffset() {

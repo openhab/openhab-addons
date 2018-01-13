@@ -61,14 +61,11 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         if (command instanceof RefreshType) {
             refresh();
         }
-        // if (channelUID.getId().equals(CHANNEL_1)) {
-        // TODO: handle command
 
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE)) {
+            boolean awayMode = command.toString().toUpperCase().equals("ON");
+            setAwayMode(awayMode);
+        }
     }
 
     @Override
@@ -216,8 +213,8 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     }
 
     private State getAwayModeSetPoint() {
-        if (system != null && system.getOverrideSetPoint() != null) {
-            return new DecimalType((float) system.getOverrideSetPoint() / 10);
+        if (system != null && system.getOverrideSetpoint() != null) {
+            return new DecimalType((float) system.getOverrideSetpoint() / 10);
         }
 
         return UnDefType.UNDEF;
@@ -231,5 +228,10 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         }
 
         return OnOffType.OFF;
+    }
+
+    private void setAwayMode(Boolean awayMode) {
+        getBridgeHandler().setAwayMode(awayMode);
+        updateControllerData();
     }
 }

@@ -86,7 +86,7 @@ Once discovered, the HeatHub `SECRET` needs to be configured. There are a few wa
 
 | Channel            | Description                              | Implemented |
 |--------------------|------------------------------------------|-------------|
-| `awayModeState`    | Has away mode been enabled               | ReadOnly    |
+| `awayModeState`    | Has away mode been enabled               | Yes         |
 | `awayModeSetPoint` | Set point of all TRVs/Stats in away mode | ReadOnly    |
 | `ecoModeState`     | Has eco mode been enabled                | ReadOnly    |
 

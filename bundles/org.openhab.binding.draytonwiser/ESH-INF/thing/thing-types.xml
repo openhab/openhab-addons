@@ -266,7 +266,6 @@
         <item-type>Switch</item-type>
         <label>Away Mode Active</label>
         <description>Away mode has been activated</description>
-        <state readOnly="true"></state>
     </channel-type>
     
     <channel-type id="awayModeSetPoint-channel">
