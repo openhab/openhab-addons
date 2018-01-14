@@ -8,12 +8,21 @@
         <label>LaMetric Time</label>
         <description>Provides control for the LaMetric Time connected clock and its apps</description>
         
-        <channel-groups>
-            <channel-group id="display" typeId="displayType"/>
-            <channel-group id="audio" typeId="audioType"/>
-            <channel-group id="bluetooth" typeId="bluetoothType"/>
-            <channel-group id="notifications" typeId="notificationType"/>
-        </channel-groups>
+        <channels>
+            <channel id="brightness" typeId="brightnessType"/>
+            <channel id="brightnessMode" typeId="brightnessModeType"/>
+            <channel id="volume" typeId="volumeType"/>
+            <channel id="active" typeId="bluetoothActiveType"/>
+            <channel id="name" typeId="bluetoothNameType"/>
+            <channel id="discoverable" typeId="bluetoothDiscoverableType"/>
+            <channel id="available" typeId="bluetoothAvailableType"/>
+            <channel id="pairable" typeId="bluetoothPairableType"/>
+            <channel id="mac" typeId="bluetoothMacType"/>
+            <channel id="info" typeId="simpleNotificationType"/>
+            <channel id="warning" typeId="simpleNotificationType"/>
+            <channel id="alert" typeId="simpleNotificationType"/>
+            <channel id="advanced" typeId="jsonNotificationType"/>
+        </channels>
 
         <config-description>
             <parameter name="host" type="text" required="true">
@@ -240,43 +249,6 @@
             </parameter>
         </config-description>
     </thing-type>
-
-    <channel-group-type id="displayType">
-        <label>Display</label>
-        <channels>
-            <channel id="brightness" typeId="brightnessType"/>
-            <channel id="brightnessMode" typeId="brightnessModeType"/>
-        </channels>
-    </channel-group-type>
-
-    <channel-group-type id="audioType">
-        <label>Audio</label>
-        <channels>
-            <channel id="volume" typeId="volumeType"/>
-        </channels>
-    </channel-group-type>
-
-    <channel-group-type id="bluetoothType">
-        <label>Bluetooth</label>
-        <channels>
-            <channel id="active" typeId="bluetoothActiveType"/>
-            <channel id="name" typeId="bluetoothNameType"/>
-            <channel id="discoverable" typeId="bluetoothDiscoverableType"/>
-            <channel id="available" typeId="bluetoothAvailableType"/>
-            <channel id="pairable" typeId="bluetoothPairableType"/>
-            <channel id="mac" typeId="bluetoothMacType"/>
-        </channels>
-    </channel-group-type>
-
-    <channel-group-type id="notificationType">
-        <label>Notifications</label>
-        <channels>
-            <channel id="info" typeId="simpleNotificationType"/>
-            <channel id="warning" typeId="simpleNotificationType"/>
-            <channel id="alert" typeId="simpleNotificationType"/>
-            <channel id="advanced" typeId="jsonNotificationType"/>
-        </channels>
-    </channel-group-type>
 
     <channel-type id="jsonNotificationType">
         <item-type>String</item-type>

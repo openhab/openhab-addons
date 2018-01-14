@@ -32,22 +32,22 @@ public class LaMetricTimeBindingConstants {
     public static final ThingTypeUID THING_TYPE_GENERIC_APP = new ThingTypeUID(BINDING_ID, "genericApp");
 
     // List of all Channel ids
-    public static final String CHANNEL_NOTIFICATIONS_INFO = "notifications#info";
-    public static final String CHANNEL_NOTIFICATIONS_WARN = "notifications#warning";
-    public static final String CHANNEL_NOTIFICATIONS_ALERT = "notifications#alert";
-    public static final String CHANNEL_NOTIFICATIONS_ADVANCED = "notifications#advanced";
+    public static final String CHANNEL_NOTIFICATIONS_INFO = "info";
+    public static final String CHANNEL_NOTIFICATIONS_WARN = "warning";
+    public static final String CHANNEL_NOTIFICATIONS_ALERT = "alert";
+    public static final String CHANNEL_NOTIFICATIONS_ADVANCED = "advanced";
 
-    public static final String CHANNEL_DISPLAY_BRIGHTNESS = "display#brightness";
-    public static final String CHANNEL_DISPLAY_BRIGHTNESS_MODE = "display#brightnessMode";
+    public static final String CHANNEL_DISPLAY_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_DISPLAY_BRIGHTNESS_MODE = "brightnessMode";
 
-    public static final String CHANNEL_AUDIO_VOLUME = "audio#volume";
+    public static final String CHANNEL_AUDIO_VOLUME = "volume";
 
-    public static final String CHANNEL_BLUETOOTH_ACTIVE = "bluetooth#active";
-    public static final String CHANNEL_BLUETOOTH_NAME = "bluetooth#name";
-    public static final String CHANNEL_BLUETOOTH_DISCOVERABLE = "bluetooth#discoverable";
-    public static final String CHANNEL_BLUETOOTH_AVAILABLE = "bluetooth#available";
-    public static final String CHANNEL_BLUETOOTH_PAIRABLE = "bluetooth#pairable";
-    public static final String CHANNEL_BLUETOOTH_MAC = "bluetooth#mac";
+    public static final String CHANNEL_BLUETOOTH_ACTIVE = "active";
+    public static final String CHANNEL_BLUETOOTH_NAME = "name";
+    public static final String CHANNEL_BLUETOOTH_DISCOVERABLE = "discoverable";
+    public static final String CHANNEL_BLUETOOTH_AVAILABLE = "available";
+    public static final String CHANNEL_BLUETOOTH_PAIRABLE = "pairable";
+    public static final String CHANNEL_BLUETOOTH_MAC = "mac";
 
     public static final String CHANNEL_APP_ACTIVATE = "activate";
     public static final String CHANNEL_APP_SET_ALARM = "setAlarm";
