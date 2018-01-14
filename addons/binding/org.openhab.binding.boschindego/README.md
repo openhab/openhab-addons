@@ -17,9 +17,10 @@ The refresh interval is specified in seconds.
 
 A possible entry in your thing file could be:
 
-```java
+```
 boschindego:indego:lawnmower [username="myname@myhost.tld", password="idontneedtocutthelawnagain", refresh=120]
 ```
+
 
 ## Channels
 
@@ -34,7 +35,7 @@ boschindego:indego:lawnmower [username="myname@myhost.tld", password="idontneedt
 
 For example you can use this sitemap entry to control the mower manually:
 
-```perl
+```
 Switch item=indegostate  mappings=[ 1="Mow", 2="Return",3="Pause" ]
 ```
 
@@ -42,7 +43,7 @@ Switch item=indegostate  mappings=[ 1="Mow", 2="Return",3="Pause" ]
 
 You can use this as .map file
 
-```text
+```
 0=Reading status
 257=Charging
 258=Docked

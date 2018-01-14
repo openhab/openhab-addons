@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,7 +46,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
             userAdministrative = thermostatDataBody.getUser().getAdministrative();
 
             result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().orElse(null);
+                    .findFirst().get();
             if (result != null) {
                 result.getModules().forEach(child -> childs.put(child.getId(), child));
             }
@@ -70,11 +70,9 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     public @Nullable ZonedDateTime getLastBilan() {
         if (device != null) {
             NAYearMonth lastBilan = device.getLastBilan();
-            if (lastBilan != null) {
-                ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
-                        ZonedDateTime.now().getZone());
-                return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
-            }
+            ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
+                    ZonedDateTime.now().getZone());
+            return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
         }
         return null;
     }

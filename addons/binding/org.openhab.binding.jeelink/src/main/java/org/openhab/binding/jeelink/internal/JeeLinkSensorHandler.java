@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,9 +43,7 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
             secsSinceLastReading = 0;
             updateStatus(ThingStatus.ONLINE);
 
-            if (publisher != null) {
-                publisher.publish(r);
-            }
+            publisher.publish(r);
         }
     }
 
@@ -78,11 +76,6 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
         if (statusUpdateJob != null) {
             statusUpdateJob.cancel(true);
             statusUpdateJob = null;
-        }
-
-        if (publisher != null) {
-            publisher.dispose();
-            publisher = null;
         }
 
         super.dispose();

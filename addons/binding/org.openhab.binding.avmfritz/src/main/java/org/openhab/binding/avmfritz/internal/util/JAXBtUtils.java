@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation for a static use of JAXBContext as singleton instance.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Christoph Weitkamp
  *
  */
-public class JAXBUtils {
+public class JAXBtUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(JAXBUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(JAXBtUtils.class);
 
     public static final JAXBContext JAXBCONTEXT = initJAXBContext();
 
@@ -31,7 +31,7 @@ public class JAXBUtils {
         try {
             return JAXBContext.newInstance(DevicelistModel.class);
         } catch (JAXBException e) {
-            logger.error("Exception creating JAXBContext: {}", e.getLocalizedMessage(), e);
+            logger.error("Exception creating JAXBContext: {}", e.getMessage(), e);
             return null;
         }
     }

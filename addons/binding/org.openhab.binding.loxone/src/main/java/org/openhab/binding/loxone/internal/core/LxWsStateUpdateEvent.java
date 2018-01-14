@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,11 +32,10 @@ class LxWsStateUpdateEvent {
      *            true if this event updates double value, false if it updates text message
      * @param data
      *            buffer with binary message received from Miniserver
-     * @param offsetParam
+     * @param offset
      *            offset in buffer where event is expected
      */
-    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offsetParam) throws IndexOutOfBoundsException {
-        int offset = offsetParam;
+    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
         uuid = new LxUuid(data, offset);
         offset += 16;
 

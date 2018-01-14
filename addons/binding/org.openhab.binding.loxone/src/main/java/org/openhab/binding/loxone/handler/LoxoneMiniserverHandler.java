@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -68,7 +67,6 @@ import org.openhab.binding.loxone.internal.core.LxOfflineReason;
 import org.openhab.binding.loxone.internal.core.LxServer;
 import org.openhab.binding.loxone.internal.core.LxServerListener;
 import org.openhab.binding.loxone.internal.core.LxUuid;
-import org.openhab.binding.loxone.internal.core.LxWsSecurityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,7 +264,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         LoxoneMiniserverConfig cfg = getConfig().as(LoxoneMiniserverConfig.class);
         try {
             InetAddress ip = InetAddress.getByName(cfg.host);
-            server = new LxServer(LxWsSecurityType.getType(cfg.authMethod), ip, cfg.port, cfg.user, cfg.password);
+            server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
             server.addListener(this);
             server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
                     cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
@@ -284,9 +282,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         thing.setProperty(MINISERVER_PROPERTY_PROJECT_NAME, server.getProjectName());
         thing.setProperty(MINISERVER_PROPERTY_CLOUD_ADDRESS, server.getCloudAddress());
         thing.setProperty(MINISERVER_PROPERTY_PHYSICAL_LOCATION, server.getLocation());
-        thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, server.getSwVersion());
-        thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, server.getSerial());
-        thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, server.getMacAddress());
 
         ArrayList<Channel> channels = new ArrayList<>();
         ThingBuilder builder = editThing();
@@ -412,8 +407,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text);
                 break;
             case INTERNAL_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        details != null ? "Internal error (" + details + ")" : "Internal error");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Internal error");
                 break;
             case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -421,7 +415,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 break;
             case UNAUTHORIZED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        details != null ? details : "User authentication error (invalid user name or password)");
+                        "User authentication error (invalid user name or password)");
                 break;
             case IDLE_TIMEOUT:
                 logger.warn("Idle timeout from Loxone Miniserver - adjust keepalive settings");
@@ -441,18 +435,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             server.stop();
             server = null;
         }
-    }
-
-    @Override
-    public Object getSetting(String name) {
-        return getConfig().get(name);
-    }
-
-    @Override
-    public void setSettings(Map<String, String> properties) {
-        Configuration config = getConfig();
-        properties.forEach((name, value) -> config.put(name, value));
-        updateConfiguration(config);
     }
 
     /**
