@@ -105,6 +105,8 @@ public class EchoHandler extends BaseThingHandler {
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
             ScheduledFuture<?> updateStateJob = this.updateStateJob;
+            String lastKnownBluetoothId = this.lastKnownBluetoothId;
+
             this.updateStateJob = null;
             if (updateStateJob != null) {
                 updateStateJob.cancel(false);

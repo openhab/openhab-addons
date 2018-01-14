@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +40,11 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazonechocontrol")
 public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
     public static AmazonEchoDiscovery instance;
-    private static List<IAmazonEchoDiscovery> discoveryServices = new ArrayList<>();
+    private final @NonNull static List<IAmazonEchoDiscovery> discoveryServices = new ArrayList<>();
+
+    private final @NonNull Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
+    private final @NonNull Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
 
     public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
         synchronized (discoveryServices) {
@@ -138,42 +139,36 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     @Activate
     public void activate(Map<String, Object> config) {
         super.activate(config);
-        modified(config);
+        if (config != null) {
+            modified(config);
+        }
     };
-
-    @Override
-    @Modified
-    protected void modified(Map<String, Object> config) {
-        super.modified(config);
-
-    }
-
-    Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
 
     public synchronized void setDevices(ThingUID brigdeThingUID, Device[] deviceInformations) {
 
         Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());
         for (Device deviceInformation : deviceInformations) {
             String serialNumber = deviceInformation.serialNumber;
+            if (serialNumber != null) {
+                boolean alreadyfound = toRemove.remove(serialNumber);
+                // new
+                if (!alreadyfound && deviceInformation.deviceFamily != null
+                        && deviceInformation.deviceFamily.equals("ECHO")) {
 
-            boolean alreadyfound = toRemove.remove(serialNumber);
-            // new
-            if (!alreadyfound && deviceInformation.deviceFamily != null
-                    && deviceInformation.deviceFamily.equals("ECHO")) {
+                    ThingUID thingUID = new ThingUID(THING_TYPE_ECHO, brigdeThingUID, serialNumber);
 
-                ThingUID thingUID = new ThingUID(THING_TYPE_ECHO, brigdeThingUID, serialNumber);
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                            .withLabel(deviceInformation.accountName)
+                            .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
+                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
+                            .build();
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                        .withLabel(deviceInformation.accountName)
-                        .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
-                        .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID).build();
+                    logger.debug("Device [{}, {}] found.", serialNumber, deviceInformation.accountName);
 
-                logger.debug("Device [{}, {}] found.", serialNumber, deviceInformation.accountName);
-
-                thingDiscovered(result);
-                lastDeviceInformations.put(serialNumber, thingUID);
+                    thingDiscovered(result);
+                    lastDeviceInformations.put(serialNumber, thingUID);
+                }
             }
-
         }
     }
 
