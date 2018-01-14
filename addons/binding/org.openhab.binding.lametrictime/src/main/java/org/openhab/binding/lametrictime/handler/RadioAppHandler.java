@@ -55,12 +55,12 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
                     stop();
                     break;
                 default:
-                    logger.warn("Channel '{}' not supported", channelUID);
+                    logger.debug("Channel '{}' not supported", channelUID);
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Failed to perform action - taking app offline", e);
+            logger.debug("Failed to perform action - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -75,7 +75,7 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
                     stop();
                     return;
                 default:
-                    logger.info("{} command not supported by LaMetric Time Radio App", command);
+                    logger.debug("{} command not supported by LaMetric Time Radio App", command);
                     return;
             }
         }
@@ -89,7 +89,7 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
                     previous();
                     return;
                 default:
-                    logger.info("{} command not supported by LaMetric Time Radio App", command);
+                    logger.debug("{} command not supported by LaMetric Time Radio App", command);
                     return;
             }
         }

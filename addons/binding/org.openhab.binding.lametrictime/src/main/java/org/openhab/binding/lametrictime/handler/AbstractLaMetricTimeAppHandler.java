@@ -146,7 +146,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
                     break;
             }
         } catch (Exception e) {
-            logger.error("Failed to communicate - taking app offline", e);
+            logger.debug("Failed to communicate - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

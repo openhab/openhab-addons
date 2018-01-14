@@ -52,12 +52,12 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
                     getDevice().doAction(getWidget(), CoreApps.clock().stopAlarm());
                     break;
                 default:
-                    logger.warn("Channel '{}' not supported", channelUID);
+                    logger.debug("Channel '{}' not supported", channelUID);
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Failed to perform action - taking app offline", e);
+            logger.debug("Failed to perform action - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

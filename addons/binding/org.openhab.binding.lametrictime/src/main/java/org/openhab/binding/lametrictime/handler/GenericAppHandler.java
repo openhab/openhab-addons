@@ -50,12 +50,12 @@ public class GenericAppHandler extends AbstractLaMetricTimeAppHandler {
                     break;
                 }
                 default:
-                    logger.warn("Channel '{}' not supported", channelUID);
+                    logger.debug("Channel '{}' not supported", channelUID);
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Failed to send frames - taking app offline", e);
+            logger.debug("Failed to send frames - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

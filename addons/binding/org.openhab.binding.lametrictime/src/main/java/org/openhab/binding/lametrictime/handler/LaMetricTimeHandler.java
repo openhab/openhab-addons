@@ -133,12 +133,12 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     handleAudioCommand(channelUID, command);
                     break;
                 default:
-                    logger.warn("Channel '{}' not supported", channelUID);
+                    logger.debug("Channel '{}' not supported", channelUID);
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (NotificationCreationException e) {
-            logger.error("Failed to create notification - taking clock offline", e);
+            logger.debug("Failed to create notification - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
             logger.debug("Unexpected error while handling command - taking clock offline", e);
@@ -184,7 +184,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 clock.notifyCritical(command.toString());
                 break;
             default:
-                logger.error("Invalid notification channel: {}", channelUID);
+                logger.debug("Invalid notification channel: {}", channelUID);
         }
     }
 
@@ -201,7 +201,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     clock.getLocalApi().updateAudio(audio);
                 }
             } catch (UpdateException e) {
-                logger.error("Failed to update audio volume - taking clock offline", e);
+                logger.debug("Failed to update audio volume - taking clock offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -235,7 +235,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 }
             }
         } catch (UpdateException e) {
-            logger.error("Failed to update bluetooth - taking clock offline", e);
+            logger.debug("Failed to update bluetooth - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -311,7 +311,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 }
             }
         } catch (UpdateException e) {
-            logger.error("Failed to update display - taking clock offline", e);
+            logger.debug("Failed to update display - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
