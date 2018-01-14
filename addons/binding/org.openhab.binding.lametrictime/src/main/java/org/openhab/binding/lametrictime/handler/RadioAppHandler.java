@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lametrictime.handler;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
+import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.CHANNEL_APP_CONTROL;
 
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -41,18 +41,6 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_CONTROL:
                     handleControl(command);
-                    break;
-                case CHANNEL_APP_NEXT:
-                    next();
-                    break;
-                case CHANNEL_APP_PLAY:
-                    play();
-                    break;
-                case CHANNEL_APP_PREVIOUS:
-                    previous();
-                    break;
-                case CHANNEL_APP_STOP:
-                    stop();
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);

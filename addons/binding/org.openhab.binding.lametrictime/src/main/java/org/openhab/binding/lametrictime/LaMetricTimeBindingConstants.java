@@ -49,11 +49,7 @@ public class LaMetricTimeBindingConstants {
     public static final String CHANNEL_APP_PAUSE = "pause";
     public static final String CHANNEL_APP_RESET = "reset";
     public static final String CHANNEL_APP_START = "start";
-    public static final String CHANNEL_APP_NEXT = "next";
-    public static final String CHANNEL_APP_PLAY = "play";
     public static final String CHANNEL_APP_CONTROL = "control";
-    public static final String CHANNEL_APP_PREVIOUS = "previous";
-    public static final String CHANNEL_APP_STOP = "stop";
     public static final String CHANNEL_APP_FORECAST = "forecast";
     public static final String CHANNEL_APP_FRAMES = "frames";
 

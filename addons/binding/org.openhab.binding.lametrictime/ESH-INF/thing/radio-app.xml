@@ -13,22 +13,6 @@
         
         <channels>
             <channel id="activate" typeId="activateType"/>
-            <channel id="next" typeId="triggerActionType">
-                <label>Next</label>
-                <description>Switch to the next station</description>
-            </channel>
-            <channel id="play" typeId="triggerActionType">
-                <label>Play</label>
-                <description>Play the radio</description>
-            </channel>
-            <channel id="previous" typeId="triggerActionType">
-                <label>Previous</label>
-                <description>Switch to the previous station</description>
-            </channel>
-            <channel id="stop" typeId="triggerActionType">
-                <label>Stop</label>
-                <description>Stop the radio</description>
-            </channel>
             <channel id="control" typeId="controlType">
                 <label>Player</label>
                 <description>Control interface for manipulating the radio</description>

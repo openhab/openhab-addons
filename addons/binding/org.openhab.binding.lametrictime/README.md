@@ -121,10 +121,6 @@ All channels have no defined state. They exist as one-way communication to the d
 | Channel ID | Item Type | Description                                           |
 |------------|-----------|-------------------------------------------------------|
 | activate   | Switch    | Activate the defined instance                         |
-| next       | Switch    | Change to the next defined stream                     |
-| play       | Switch    | Play the current stream                               |
-| previous   | Switch    | Change to the previous stream                         |
-| stop       | Switch    | Stop the radio                                        |
 | control    | Player    | Control interface to manipulate the radio             |
 
 ### Stopwatch App
@@ -293,10 +289,6 @@ Switch CountdownStart           "Start Countdown"          { channel="lametricti
 Switch Set2MinCountdown         "Set 2 Min Countdown"
 
 Switch RadioActivate            "Activate Radio"           { channel="lametrictime:radioApp:demo:radio:activate" }
-Switch RadioNext                "Next Station"             { channel="lametrictime:radioApp:demo:radio:next" }
-Switch RadioPlay                "Play Radio"               { channel="lametrictime:radioApp:demo:radio:play" }
-Switch RadioPrevious            "Previous Station"         { channel="lametrictime:radioApp:demo:radio:previous" }
-Switch RadioStop                "Stop Radio"               { channel="lametrictime:radioApp:demo:radio:stop" }
 Player RadioControl             "Player"                   { channel="lametrictime:radioApp:demo:radio:control" }
 
 Switch StopwatchActivate        "Activate Stopwatch"       { channel="lametrictime:stopwatchApp:demo:stopwatch:activate" }
@@ -344,10 +336,6 @@ Sample sitemap configuration:
             }
             Frame label="Radio" {
                 Switch item=RadioActivate
-                Switch item=RadioNext
-                Switch item=RadioPlay
-                Switch item=RadioPrevious
-                Switch item=RadioStop
                 Default item=RadioControl
             }
             Frame label="Stopwatch" {
