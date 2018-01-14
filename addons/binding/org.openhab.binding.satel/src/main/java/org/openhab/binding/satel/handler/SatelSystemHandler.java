@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -33,8 +35,6 @@ import org.openhab.binding.satel.internal.types.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link SatelSystemHandler} is responsible for handling commands, which are
  * sent to one of the system channels.
@@ -45,9 +45,10 @@ public class SatelSystemHandler extends SatelThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SYSTEM);
 
-    private static final Set<String> STATUS_CHANNELS = ImmutableSet.of(CHANNEL_DATE_TIME, CHANNEL_SERVICE_MODE,
-            CHANNEL_TROUBLES, CHANNEL_TROUBLES_MEMORY, CHANNEL_ACU100_PRESENT, CHANNEL_INTRX_PRESENT,
-            CHANNEL_GRADE23_SET);
+    private static final Set<String> STATUS_CHANNELS = Stream
+            .of(CHANNEL_DATE_TIME, CHANNEL_SERVICE_MODE, CHANNEL_TROUBLES, CHANNEL_TROUBLES_MEMORY,
+                    CHANNEL_ACU100_PRESENT, CHANNEL_INTRX_PRESENT, CHANNEL_GRADE23_SET)
+            .collect(Collectors.toSet());
 
     private Logger logger = LoggerFactory.getLogger(SatelSystemHandler.class);
 
@@ -72,14 +73,13 @@ public class SatelSystemHandler extends SatelThingHandler {
             if (thingConfig.isCommandOnly()) {
                 return;
             }
-            updateState(getThing().getChannel(CHANNEL_DATE_TIME).getUID(),
-                    new DateTimeType(statusEvent.getIntegraTime()));
-            updateSwitch(getThing().getChannel(CHANNEL_SERVICE_MODE), statusEvent.inServiceMode());
-            updateSwitch(getThing().getChannel(CHANNEL_TROUBLES), statusEvent.troublesPresent());
-            updateSwitch(getThing().getChannel(CHANNEL_TROUBLES_MEMORY), statusEvent.troublesMemory());
-            updateSwitch(getThing().getChannel(CHANNEL_ACU100_PRESENT), statusEvent.isAcu100Present());
-            updateSwitch(getThing().getChannel(CHANNEL_INTRX_PRESENT), statusEvent.isIntRxPresent());
-            updateSwitch(getThing().getChannel(CHANNEL_GRADE23_SET), statusEvent.isGrade23Set());
+            updateState(CHANNEL_DATE_TIME, new DateTimeType(statusEvent.getIntegraTime()));
+            updateSwitch(CHANNEL_SERVICE_MODE, statusEvent.inServiceMode());
+            updateSwitch(CHANNEL_TROUBLES, statusEvent.troublesPresent());
+            updateSwitch(CHANNEL_TROUBLES_MEMORY, statusEvent.troublesMemory());
+            updateSwitch(CHANNEL_ACU100_PRESENT, statusEvent.isAcu100Present());
+            updateSwitch(CHANNEL_INTRX_PRESENT, statusEvent.isIntRxPresent());
+            updateSwitch(CHANNEL_GRADE23_SET, statusEvent.isGrade23Set());
         } else {
             super.incomingEvent(event);
         }
@@ -110,6 +110,7 @@ public class SatelSystemHandler extends SatelThingHandler {
                 if (dateTime != null) {
                     return new SetClockCommand(dateTime.getCalendar(), bridgeHandler.getUserCode());
                 }
+                break;
             default:
                 // do nothing for other types of status
                 break;

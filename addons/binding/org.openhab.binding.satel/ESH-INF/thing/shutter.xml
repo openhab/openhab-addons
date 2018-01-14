@@ -10,8 +10,8 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>@text/shutter.label</label>
-		<description>@text/shutter.description</description>
+		<label>Roller shutter</label>
+		<description>A roller shutter connected to two subsequent outputs.</description>
 
 		<channels>
 			<channel typeId="shutter_state" id="state" />
@@ -19,16 +19,16 @@
 
 		<config-description>
 			<parameter name="upId" type="integer" min="1" max="256" required="true">
-				<label>@text/shutter.upId.label</label>
-				<description>@text/shutter.upId.description</description>
+				<label>Up output</label>
+				<description>Output number for "up" direction.</description>
 			</parameter>
 			<parameter name="downId" type="integer" min="1" max="256" required="true">
-				<label>@text/shutter.downId.label</label>
-				<description>@text/shutter.downId.description</description>
+				<label>Down output</label>
+				<description>Output number for "down" direction.</description>
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
-				<label>@text/shutter.commandOnly.label</label>
-				<description>@text/shutter.commandOnly.description</description>
+				<label>Command only</label>
+				<description>Accepts commands only, does not update thing's state</description>
 			</parameter>
 		</config-description>
 
@@ -36,8 +36,8 @@
 
 	<channel-type id="shutter_state">
 		<item-type>Rollershutter</item-type>
-		<label>@text/shutter.state.label</label>
-		<description>@text/shutter.state.description</description>
+		<label>State</label>
+		<description></description>
 		<category>Alarm</category>
 	</channel-type>
 

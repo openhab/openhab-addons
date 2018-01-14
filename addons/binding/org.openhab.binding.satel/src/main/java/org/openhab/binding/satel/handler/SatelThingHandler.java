@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -113,11 +113,12 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
                 return;
             }
             for (Channel channel : getThing().getChannels()) {
-                StateType stateType = getStateType(channel.getUID().getId());
+                ChannelUID channelUID = channel.getUID();
+                StateType stateType = getStateType(channelUID.getId());
                 if (stateType != null && stateEvent.hasDataForState(stateType)) {
                     int bitNbr = thingConfig.getId() - 1;
                     boolean invertState = thingConfig.isStateInverted();
-                    updateSwitch(channel, stateEvent.isSet(stateType, bitNbr) ^ invertState);
+                    updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
                 }
             }
         }
@@ -151,9 +152,14 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         return result;
     }
 
-    protected void updateSwitch(Channel channel, boolean switchOn) {
+    protected void updateSwitch(String channelID, boolean switchOn) {
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelID);
+        updateSwitch(channelUID, switchOn);
+    }
+
+    protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
         State state = switchOn ? OnOffType.ON : OnOffType.OFF;
-        updateState(channel.getUID(), state);
+        updateState(channelUID, state);
     }
 
     protected byte[] getObjectBitset(int size, int... ids) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -35,8 +37,6 @@ import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link SatelHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -45,8 +45,9 @@ import com.google.common.collect.ImmutableSet;
  */
 public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.<ThingTypeUID> builder()
-            .addAll(BRIDGE_THING_TYPES_UIDS).addAll(DEVICE_THING_TYPES_UIDS).addAll(VIRTUAL_THING_TYPES_UIDS).build();
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(BRIDGE_THING_TYPES_UIDS, DEVICE_THING_TYPES_UIDS, VIRTUAL_THING_TYPES_UIDS)
+            .flatMap(uids -> uids.stream()).collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
@@ -107,7 +108,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void registerDiscoveryService(SatelBridgeHandler bridgeHandler) {
-        SatelDeviceDiscoveryService discoveryService = new SatelDeviceDiscoveryService(bridgeHandler, bundleContext);
+        SatelDeviceDiscoveryService discoveryService = new SatelDeviceDiscoveryService(bridgeHandler,
+                (thingTypeUID) -> getThingTypeByUID(thingTypeUID));
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceRegistration);
@@ -122,8 +124,7 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
         } else {
             deviceId = String.valueOf(configuration.get(SatelThingConfig.ID));
         }
-        thingUID = new ThingUID(thingTypeUID, deviceId, bridgeUID.getId());
-        return thingUID;
+        return new ThingUID(thingTypeUID, deviceId, bridgeUID.getId());
     }
 
 }

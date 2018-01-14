@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,7 +61,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // The bridge IP address to be used for checks
-        final String host = (String) getThing().getConfiguration().get(HOST);
+        String host = (String) getThing().getConfiguration().get(HOST);
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided

@@ -10,68 +10,68 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>@text/zone.label</label>
-		<description>@text/zone.description</description>
+		<label>Zone</label>
+		<description>Physical device like PIR or reed switch connected to alarm system.</description>
 
 		<channels>
 			<channel typeId="state_ro" id="violation">
-				<label>@text/zone.violation.label</label>
-				<description>@text/zone.violation.description</description>
+				<label>Violation</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="tamper">
-				<label>@text/zone.tamper.label</label>
-				<description>@text/zone.tamper.description</description>
+				<label>Tamper</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="alarm">
-				<label>@text/zone.alarm.label</label>
-				<description>@text/zone.alarm.description</description>
+				<label>Alarm</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="tamper_alarm">
-				<label>@text/zone.tamper_alarm.label</label>
-				<description>@text/zone.tamper_alarm.description</description>
+				<label>Tamper alarm</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="alarm_memory">
-				<label>@text/zone.alarm_memory.label</label>
-				<description>@text/zone.alarm_memory.description</description>
+				<label>Alarm memory</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="tamper_alarm_memory">
-				<label>@text/zone.tamper_alarm_memory.label</label>
-				<description>@text/zone.tamper_alarm_memory.description</description>
+				<label>Tamper alarm memory</label>
+				<description></description>
 			</channel>
 			<channel typeId="state" id="bypass">
-				<label>@text/zone.bypass.label</label>
-				<description>@text/zone.bypass.description</description>
+				<label>Bypass</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_adv_ro" id="no_violation_trouble">
-				<label>@text/zone.no_violation_trouble.label</label>
-				<description>@text/zone.no_violation_trouble.description</description>
+				<label>No violation trouble</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_adv_ro" id="long_violation_trouble">
-				<label>@text/zone.long_violation_trouble.label</label>
-				<description>@text/zone.long_violation_trouble.description</description>
+				<label>Long violation trouble</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_adv" id="isolate">
-				<label>@text/zone.isolate.label</label>
-				<description>@text/zone.isolate.description</description>
+				<label>Isolate</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_adv_ro" id="masked">
-				<label>@text/zone.masked.label</label>
-				<description>@text/zone.masked.description</description>
+				<label>Masked</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_adv_ro" id="masked_memory">
-				<label>@text/zone.masked_memory.label</label>
-				<description>@text/zone.masked_memory.description</description>
+				<label>Masked memory</label>
+				<description></description>
 			</channel>
 		</channels>
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="256" required="true">
-				<label>@text/zone.id.label</label>
-				<description>@text/zone.id.description</description>
+				<label>Zone number</label>
+				<description></description>
 			</parameter>
 			<parameter name="invertState" type="boolean" required="false">
-				<label>@text/zone.invertState.label</label>
-				<description>@text/zone.invertState.description</description>
+				<label>Invert state</label>
+				<description>Changes active (ON) state to 0</description>
 			</parameter>
 		</config-description>
 

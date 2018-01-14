@@ -11,15 +11,15 @@ More details and all documentation about Integra system you can find on their si
 
 This binding supports following thing types:
 
-| Thing type | Description |
-|------------|-------------|
-| ethm-1 | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/pl/product/115/) and [ETHM-1 Plus](https://www.satel.pl/pl/product/698/) modules | 
-| int-rs | RS-232 bridge, supports [INT-RS](https://www.satel.pl/pl/product/123/) and [INT-RS Plus](https://www.satel.pl/pl/product/664/) modules | 
-| partition | Set of zones representing some physical area or logical relation |
-| zone | A physical device: reed switch, motion sensor or a virtual zone |
-| output | An output defined in the system |
-| shutter | Two outputs that control a roller shutter, one for "up" direction, another one for "down" |
-| system | A logical thing describing general status of the alarm system |
+| Thing type | Description                                                                                                                              |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| ethm-1     | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/pl/product/115/) and [ETHM-1 Plus](https://www.satel.pl/pl/product/698/) modules |
+| int-rs     | RS-232 bridge, supports [INT-RS](https://www.satel.pl/pl/product/123/) and [INT-RS Plus](https://www.satel.pl/pl/product/664/) modules   |
+| partition  | Set of zones representing some physical area or logical relation                                                                         |
+| zone       | A physical device: reed switch, motion sensor or a virtual zone                                                                          |
+| output     | An output defined in the system                                                                                                          |
+| shutter    | Two outputs that control a roller shutter, one for "up" direction, another one for "down"                                                |
+| system     | A logical thing describing general status of the alarm system                                                                            |
 
 
 ## Discovery
@@ -32,15 +32,15 @@ The binding discovers all devices (partitions, zones) defined in the system, but
 
 You can configure the following settings for this bridge:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| host | yes | Host name or IP addres of ETHM-1 module |
-| port | no | TCP port for the integration protocol, defaults to 7094 |
-| timeout | no | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs) |
-| refresh | no | Polling interval in milliseconds, defaults to 5000 (5secs). As of version 2.03 ETHM-1 Plus firmware the module disconnects after 25 seconds of inactivity. Setting this parameter to value greater than 25000 will cause inability to correctly communicate with the module. |
-| userCode | no | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed |
-| encryptionKey | no | Encryption key used to encrypt data sent and received, if empty communication is not encrypted |
-| encoding | no | Encoding for all the texts received from the module |
+| Name          | Required | Description                                                                                                                                                                                                                                                                  |
+|---------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host          | yes      | Host name or IP addres of ETHM-1 module                                                                                                                                                                                                                                      |
+| port          | no       | TCP port for the integration protocol, defaults to 7094                                                                                                                                                                                                                      |
+| timeout       | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs)                                                                                                                                                                               |
+| refresh       | no       | Polling interval in milliseconds, defaults to 5000 (5secs). As of version 2.03 ETHM-1 Plus firmware the module disconnects after 25 seconds of inactivity. Setting this parameter to value greater than 25000 will cause inability to correctly communicate with the module. |
+| userCode      | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed                                                                                                                                                           |
+| encryptionKey | no       | Encryption key used to encrypt data sent and received, if empty communication is not encrypted                                                                                                                                                                               |
+| encoding      | no       | Encoding for all the texts received from the module                                                                                                                                                                                                                          |
 
 Example:
 
@@ -52,13 +52,13 @@ Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", en
 
 You can configure the following settings for this bridge:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| port | yes | Serial port connected to the module |
-| timeout | no | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs) |
-| refresh | no | Polling interval in milliseconds, defaults to 5000 (5secs) |
-| userCode | no | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed |
-| encoding | no | Encoding for all the texts received from the module |
+| Name     | Required | Description                                                                                                        |
+|----------|----------|--------------------------------------------------------------------------------------------------------------------|
+| port     | yes      | Serial port connected to the module                                                                                |
+| timeout  | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs)                     |
+| refresh  | no       | Polling interval in milliseconds, defaults to 5000 (5secs)                                                         |
+| userCode | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed |
+| encoding | no       | Encoding for all the texts received from the module                                                                |
 
 Example:
 
@@ -70,10 +70,10 @@ Bridge satel:int-rs:home [ port="/dev/ttyS0", refresh=1000, userCode="1234" ]
 
 You can configure the following settings for a partition:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| id | yes | Partition number |
-| forceArming | no | Arms the partition regardless of ongoing troubles and violations |
+| Name        | Required | Description                                                      |
+|-------------|----------|------------------------------------------------------------------|
+| id          | yes      | Partition number                                                 |
+| forceArming | no       | Arms the partition regardless of ongoing troubles and violations |
 
 Example:
 
@@ -85,10 +85,10 @@ Thing partition partition1 [ id=1, forceArming=true ]
 
 You can configure the following settings for a zone:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| id | yes | Zone number |
-| invertState | no | Changes active (ON) state to 0 |
+| Name        | Required | Description                    |
+|-------------|----------|--------------------------------|
+| id          | yes      | Zone number                    |
+| invertState | no       | Changes active (ON) state to 0 |
 
 Example:
 
@@ -100,11 +100,11 @@ Thing zone zone1 [ id=1 ]
 
 You can configure the following settings for an output:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| id | yes | Output number |
-| invertState | no | Changes active (ON) state to 0 |
-| commandOnly | no | Accepts commands only, does not update thing's state |
+| Name        | Required | Description                                          |
+|-------------|----------|------------------------------------------------------|
+| id          | yes      | Output number                                        |
+| invertState | no       | Changes active (ON) state to 0                       |
+| commandOnly | no       | Accepts commands only, does not update thing's state |
 
 Example:
 
@@ -116,11 +116,11 @@ Thing output output1 [ id=1, invertState=true ]
 
 You can configure the following settings for a shutter:
 
-| Name | Required | Description |
-|------|----------|-------------|
-| upId | yes | Output number for "up" direction |
-| downId | yes | Output number for "down" direction |
-| commandOnly | no | Accepts commands only, does not update thing's state |
+| Name        | Required | Description                                          |
+|-------------|----------|------------------------------------------------------|
+| upId        | yes      | Output number for "up" direction                     |
+| downId      | yes      | Output number for "down" direction                   |
+| commandOnly | no       | Accepts commands only, does not update thing's state |
 
 Example:
 
@@ -136,68 +136,68 @@ This thing type does not have any configuration parameters.
 
 ### partition
 
-| Name | Type | Description |
-|------|------|-------------|
-| armed | Switch | Armed |
-| really_armed | Switch | Really armed |
-| armed_mode_1 | Switch | Armed in mode 1 |
-| armed_mode_2 | Switch | Armed in mode 2 |
-| armed_mode_3 | Switch | Armed in mode 3 |
-| first_code_entered | Switch | First code entered |
-| entry_time | Switch | Entry time |
-| exit_time_gt_10 | Switch | Exit time greater than 10 seconds |
-| exit_time_lt_10 | Switch | Exit time less than 10 seconds |
-| temporary_blocked | Switch | Temporary blocked |
-| blocked_for_guard | Switch | Blocked for guard |
-| alarm | Switch | Alarm |
-| alarm_memory | Switch | Alarm memory |
-| fire_alarm | Switch | Fire alarm |
-| fire_alarm_memory | Switch | Fire alarm memory |
-| verified_alarms | Switch | Verified alarms |
-| warning_alarms | Switch | Warning alarms |
-| violated_zones | Switch | Violated zones |
+| Name               | Type   | Description                       |
+|--------------------|--------|-----------------------------------|
+| armed              | Switch | Armed                             |
+| really_armed       | Switch | Really armed                      |
+| armed_mode_1       | Switch | Armed in mode 1                   |
+| armed_mode_2       | Switch | Armed in mode 2                   |
+| armed_mode_3       | Switch | Armed in mode 3                   |
+| first_code_entered | Switch | First code entered                |
+| entry_time         | Switch | Entry time                        |
+| exit_time_gt_10    | Switch | Exit time greater than 10 seconds |
+| exit_time_lt_10    | Switch | Exit time less than 10 seconds    |
+| temporary_blocked  | Switch | Temporary blocked                 |
+| blocked_for_guard  | Switch | Blocked for guard                 |
+| alarm              | Switch | Alarm                             |
+| alarm_memory       | Switch | Alarm memory                      |
+| fire_alarm         | Switch | Fire alarm                        |
+| fire_alarm_memory  | Switch | Fire alarm memory                 |
+| verified_alarms    | Switch | Verified alarms                   |
+| warning_alarms     | Switch | Warning alarms                    |
+| violated_zones     | Switch | Violated zones                    |
 
 ### zone
 
-| Name | Type | Description |
-|------|------|-------------|
-| violation | Switch | Violation |
-| tamper | Switch | Tamper |
-| alarm | Switch | Alarm |
-| tamper_alarm | Switch | Tamper alarm |
-| alarm_memory | Switch | Alarm memory |
-| tamper_alarm_memory | Switch | Tamper alarm memory |
-| bypass | Switch | Bypass |
-| no_violation_trouble | Switch | No violation trouble |
+| Name                   | Type   | Description            |
+|------------------------|--------|------------------------|
+| violation              | Switch | Violation              |
+| tamper                 | Switch | Tamper                 |
+| alarm                  | Switch | Alarm                  |
+| tamper_alarm           | Switch | Tamper alarm           |
+| alarm_memory           | Switch | Alarm memory           |
+| tamper_alarm_memory    | Switch | Tamper alarm memory    |
+| bypass                 | Switch | Bypass                 |
+| no_violation_trouble   | Switch | No violation trouble   |
 | long_violation_trouble | Switch | Long violation trouble |
-| isolate | Switch | Isolate |
-| masked | Switch | Masked |
-| masked_memory | Switch | Masked memory |
+| isolate                | Switch | Isolate                |
+| masked                 | Switch | Masked                 |
+| masked_memory          | Switch | Masked memory          |
 
 ### output
 
-| Name | Type | Description |
-|------|------|-------------|
+| Name  | Type   | Description         |
+|-------|--------|---------------------|
 | state | Switch | State of the output |
 
 ### shutter
 
-| Name | Type | Description |
-|------|------|-------------|
+| Name  | Type          | Description          |
+|-------|---------------|----------------------|
 | state | Rollershutter | State of the shutter |
 
 ### system
 
-| Name | Type | Description |
-|------|------|-------------|
-| date_time | DateTime | Date and time on the alarm system |
-| troubles | Switch | Active when the system has troubles (trouble led is blinking on a panel) |
-| troubles_memory | Switch | Memorized state of system troubles |
-| service_mode | Switch | Active when the system is in service mode |
-| acu100_present | Switch | Active when there is an ACU-100 module installed in the system |
-| intrx_present | Switch | Active when there is an INT-RX module installed in the system |
-| grade23_set | Switch | Active when Grade2/Grade3 option is set in the system |
-| user_code | String | Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration. |
+| Name            | Type     | Description                                                                                                                        |
+|-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
+| date_time       | DateTime | Date and time on the alarm system                                                                                                  |
+| troubles        | Switch   | Active when the system has troubles (trouble led is blinking on a panel)                                                           |
+| troubles_memory | Switch   | Memorized state of system troubles                                                                                                 |
+| service_mode    | Switch   | Active when the system is in service mode                                                                                          |
+| acu100_present  | Switch   | Active when there is an ACU-100 module installed in the system                                                                     |
+| intrx_present   | Switch   | Active when there is an INT-RX module installed in the system                                                                      |
+| grade23_set     | Switch   | Active when Grade2/Grade3 option is set in the system                                                                              |
+| user_code       | String   | Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration. |
 
 ## Full Example
 

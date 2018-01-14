@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,23 +14,24 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.openhab.binding.satel.handler.SatelBridgeHandler;
-import org.openhab.binding.satel.internal.BundleTextTranslator;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceType;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link SatelDeviceDiscoveryService} searches for available Satel
@@ -41,37 +42,41 @@ import com.google.common.collect.Sets;
  */
 public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
 
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(DEVICE_THING_TYPES_UIDS, VIRTUAL_THING_TYPES_UIDS).flatMap(uids -> uids.stream())
+            .collect(Collectors.toSet());
     private static final int OUTPUT_FUNCTION_SHUTTER = 105;
 
     private final Logger logger = LoggerFactory.getLogger(SatelDeviceDiscoveryService.class);
 
     private SatelBridgeHandler bridgeHandler;
-    private BundleContext bundleContext;
+    private Function<ThingTypeUID, ThingType> thingTypeProvider;
     private volatile boolean scanStopped;
 
-    public SatelDeviceDiscoveryService(SatelBridgeHandler bridgeHandler, BundleContext bundleContext)
-            throws IllegalArgumentException {
-        super(Sets.union(DEVICE_THING_TYPES_UIDS, VIRTUAL_THING_TYPES_UIDS), 60, true);
+    public SatelDeviceDiscoveryService(SatelBridgeHandler bridgeHandler,
+            Function<ThingTypeUID, ThingType> thingTypeProvider) {
+        super(SUPPORTED_THING_TYPES, 60, true);
         this.bridgeHandler = bridgeHandler;
-        this.bundleContext = bundleContext;
+        this.thingTypeProvider = thingTypeProvider;
     }
 
     @Override
     protected void startScan() {
-        try (BundleTextTranslator translator = new BundleTextTranslator(bundleContext)) {
-            scanStopped = false;
-            if (bridgeHandler.isInitialized()) {
-                addThing(THING_TYPE_SYSTEM, null, translator.getText("system.label", "System"), Collections.emptyMap());
-            }
-            if (!scanStopped) {
-                scanForDevices(DeviceType.PARTITION_WITH_OBJECT, bridgeHandler.getIntegraType().getPartitions());
-            }
-            if (!scanStopped) {
-                scanForDevices(DeviceType.ZONE_WITH_PARTITION, bridgeHandler.getIntegraType().getZones());
-            }
-            if (!scanStopped) {
-                scanForDevices(DeviceType.OUTPUT, bridgeHandler.getIntegraType().getZones());
-            }
+        scanStopped = false;
+        if (bridgeHandler.isInitialized()) {
+            // add system thing by default
+            ThingType systemThing = thingTypeProvider.apply(THING_TYPE_SYSTEM);
+            addThing(THING_TYPE_SYSTEM, null, systemThing == null ? "System" : systemThing.getLabel(),
+                    Collections.emptyMap());
+        }
+        if (!scanStopped) {
+            scanForDevices(DeviceType.PARTITION_WITH_OBJECT, bridgeHandler.getIntegraType().getPartitions());
+        }
+        if (!scanStopped) {
+            scanForDevices(DeviceType.ZONE_WITH_PARTITION, bridgeHandler.getIntegraType().getZones());
+        }
+        if (!scanStopped) {
+            scanForDevices(DeviceType.OUTPUT, bridgeHandler.getIntegraType().getZones());
         }
     }
 

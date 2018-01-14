@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +61,7 @@ public class Ethm1Module extends SatelModule {
     }
 
     @Override
-    protected CommunicationChannel connect() {
+    protected CommunicationChannel connect() throws ConnectionFailureException {
         logger.info("Connecting to ETHM-1 module at {}:{}", this.host, this.port);
 
         try {
@@ -73,11 +74,11 @@ public class Ethm1Module extends SatelModule {
             } else {
                 return new EncryptedCommunicationChannel(socket, this.encryptionKey);
             }
+        } catch (SocketTimeoutException e) {
+            throw new ConnectionFailureException("Connection timeout", e);
         } catch (IOException e) {
-            logger.error("IO error occurred during connecting socket", e);
+            throw new ConnectionFailureException("IO error occurred while connecting socket", e);
         }
-
-        return null;
     }
 
     private class TCPCommunicationChannel implements CommunicationChannel {

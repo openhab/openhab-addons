@@ -10,42 +10,42 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>@text/system.label</label>
-		<description>@text/system.description</description>
+		<label>Alarm system</label>
+		<description>A logical thing describing general status of the alarm system.</description>
 
 		<channels>
 			<channel typeId="date_time" id="date_time">
-				<label>@text/system.date_time.label</label>
-				<description>@text/system.date_time.description</description>
+				<label>Date and time</label>
+				<description>Current date and time in the alarm system</description>
 			</channel>
 			<channel typeId="state" id="troubles">
-				<label>@text/system.troubles.label</label>
-				<description>@text/system.troubles.description</description>
+				<label>Troubles</label>
+				<description>Active when the system has troubles (trouble led is blinking on a panel)</description>
 			</channel>
 			<channel typeId="state" id="troubles_memory">
-                <label>@text/system.troubles_memory.label</label>
-                <description>@text/system.troubles_memory.description</description>
+				<label>Troubles memory</label>
+				<description></description>
 			</channel>
 			<channel typeId="state_ro" id="service_mode">
-                <label>@text/system.service_mode.label</label>
-                <description>@text/system.service_mode.description</description>
+				<label>Service mode</label>
+				<description>Active when the system is in service mode</description>
 			</channel>
 			<channel typeId="state_adv_ro" id="acu100_present">
-                <label>@text/system.acu100_present.label</label>
-                <description>@text/system.acu100_present.description</description>
+				<label>ACU-100 present</label>
+				<description>Active when there is an ACU-100 module installed in the system</description>
 			</channel>
 			<channel typeId="state_adv_ro" id="intrx_present">
-                <label>@text/system.intrx_present.label</label>
-                <description>@text/system.intrx_present.description</description>
+				<label>INT-RX present</label>
+				<description>Active when there is an INT-RX module installed in the system</description>
 			</channel>
 			<channel typeId="state_adv_ro" id="grade23_set">
-                <label>@text/system.grade23_set.label</label>
-                <description>@text/system.grade23_set.description</description>
+				<label>Grade2/Grade3 set</label>
+				<description>Active when Grade2/Grade3 option is set in the system</description>
 			</channel>
-            <channel typeId="string" id="user_code">
-                <label>@text/system.user_code.label</label>
-                <description>@text/system.user_code.description</description>
-            </channel>
+			<channel typeId="string" id="user_code">
+				<label>User code</label>
+				<description>Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration.</description>
+			</channel>
 		</channels>
 
 	</thing-type>
@@ -56,10 +56,10 @@
 		<category>Alarm</category>
 	</channel-type>
 
-    <channel-type id="string">
-        <item-type>String</item-type>
-        <label>String</label>
-        <category>Alarm</category>
-    </channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<category>Alarm</category>
+	</channel-type>
 
 </thing:thing-descriptions>

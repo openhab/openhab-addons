@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -80,6 +80,18 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         void stop();
     }
 
+    /*
+     * Thrown on connection failures.
+     */
+    protected static class ConnectionFailureException extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        public ConnectionFailureException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     /**
      * Creates new instance of the class.
      *
@@ -136,7 +148,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         return this.integraType != IntegraType.UNKNOWN;
     }
 
-    protected abstract CommunicationChannel connect();
+    protected abstract CommunicationChannel connect() throws ConnectionFailureException;
 
     /**
      * Starts communication.
@@ -313,7 +325,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         return false;
     }
 
-    private synchronized void disconnect() {
+    private synchronized void disconnect(String reason) {
         // remove all pending commands from the queue
         // notifying about send failure
         while (!this.sendQueue.isEmpty()) {
@@ -325,7 +337,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                 this.channel.disconnect();
                 this.channel = null;
                 // notify about connection status change
-                this.dispatchEvent(new ConnectionStatusEvent(false));
+                this.dispatchEvent(new ConnectionStatusEvent(false, reason));
             }
         }
     }
@@ -334,19 +346,21 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         long reconnectionTime = 10 * 1000;
         boolean receivedResponse = false;
         SatelCommand command = null;
+        String disconnectReason = null;
 
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 // connect, if not connected yet
                 if (this.channel == null) {
                     long connectStartTime = System.currentTimeMillis();
-                    synchronized (this) {
-                        this.channel = connect();
-                    }
-
-                    if (this.channel == null) {
+                    try {
+                        synchronized (this) {
+                            this.channel = connect();
+                        }
+                    } catch (ConnectionFailureException e) {
+                        logger.debug("Connection failed", e);
                         // notify about connection failure
-                        this.dispatchEvent(new ConnectionStatusEvent(false));
+                        this.dispatchEvent(new ConnectionStatusEvent(false, e.getMessage()));
                         // try to reconnect after a while, if connection hasn't
                         // been established
                         Thread.sleep(reconnectionTime - System.currentTimeMillis() + connectStartTime);
@@ -395,6 +409,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         } catch (Exception e) {
             // unexpected error, log and exit thread
             logger.info("Unhandled exception occurred in communication loop, disconnecting.", e);
+            disconnectReason = "Unhandled exception: " + e.toString();
         } finally {
             // stop counting if thread interrupted
             timeoutTimer.stop();
@@ -405,7 +420,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             command.setState(State.FAILED);
         }
 
-        disconnect();
+        disconnect(disconnectReason);
     }
 
     /*
@@ -489,7 +504,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                     } catch (InterruptedException e) {
                         // ignore
                     }
-                    SatelModule.this.disconnect();
+                    SatelModule.this.disconnect("Send/receive timeout");
                 }
             } else {
                 startCommunication();

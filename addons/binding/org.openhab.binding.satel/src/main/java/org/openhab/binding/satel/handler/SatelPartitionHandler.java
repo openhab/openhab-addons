@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -50,6 +50,7 @@ public class SatelPartitionHandler extends SatelThingHandler {
         StateType stateType = getStateType(channel.getId());
         byte[] partitions = getObjectBitset(4, thingConfig.getId());
         boolean forceArm = thingConfig.isForceArmingEnabled();
+        PartitionControl action = null;
         switch ((PartitionState) stateType) {
             // clear alarms on OFF command
             case ALARM:
@@ -58,42 +59,38 @@ public class SatelPartitionHandler extends SatelThingHandler {
             case FIRE_ALARM_MEMORY:
             case VERIFIED_ALARMS:
             case WARNING_ALARMS:
-                if (switchOn) {
-                    return null;
-                } else {
-                    return new ControlObjectCommand(PartitionControl.CLEAR_ALARM, partitions,
-                            bridgeHandler.getUserCode());
-                }
+                action = switchOn ? null : PartitionControl.CLEAR_ALARM;
+                break;
 
-                // arm or disarm, depending on command
+            // arm or disarm, depending on command
             case ARMED:
             case REALLY_ARMED:
-                return new ControlObjectCommand(
-                        switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_0 : PartitionControl.ARM_MODE_0)
-                                : PartitionControl.DISARM,
-                        partitions, bridgeHandler.getUserCode());
+                action = switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_0 : PartitionControl.ARM_MODE_0)
+                        : PartitionControl.DISARM;
+                break;
             case ARMED_MODE_1:
-                return new ControlObjectCommand(
-                        switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_1 : PartitionControl.ARM_MODE_1)
-                                : PartitionControl.DISARM,
-                        partitions, bridgeHandler.getUserCode());
+                action = switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_1 : PartitionControl.ARM_MODE_1)
+                        : PartitionControl.DISARM;
+                break;
             case ARMED_MODE_2:
-                return new ControlObjectCommand(
-                        switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_2 : PartitionControl.ARM_MODE_2)
-                                : PartitionControl.DISARM,
-                        partitions, bridgeHandler.getUserCode());
+                action = switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_2 : PartitionControl.ARM_MODE_2)
+                        : PartitionControl.DISARM;
+                break;
             case ARMED_MODE_3:
-                return new ControlObjectCommand(
-                        switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_3 : PartitionControl.ARM_MODE_3)
-                                : PartitionControl.DISARM,
-                        partitions, bridgeHandler.getUserCode());
+                action = switchOn ? (forceArm ? PartitionControl.FORCE_ARM_MODE_3 : PartitionControl.ARM_MODE_3)
+                        : PartitionControl.DISARM;
+                break;
 
             // do nothing for other types of state
             default:
                 break;
         }
 
-        return null;
+        if (action == null) {
+            return null;
+        } else {
+            return new ControlObjectCommand(action, partitions, bridgeHandler.getUserCode());
+        }
     }
 
 }

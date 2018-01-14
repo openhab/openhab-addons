@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.satel;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link SatelBindingConstants} class defines common constants, which are
@@ -33,14 +34,16 @@ public class SatelBindingConstants {
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ETHM1, THING_TYPE_INTRS);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Stream.of(THING_TYPE_ETHM1, THING_TYPE_INTRS)
+            .collect(Collectors.toSet());
 
     // Physical devices
-    public static final Set<ThingTypeUID> DEVICE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_OUTPUT,
-            THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE);
+    public static final Set<ThingTypeUID> DEVICE_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_OUTPUT, THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE)
+            .collect(Collectors.toSet());
 
     // Virtual devices
-    public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_SYSTEM);
+    public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYSTEM);
 
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";

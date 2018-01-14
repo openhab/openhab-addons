@@ -4,31 +4,35 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="int-rs">
-		<label>@text/intrs.label</label>
-		<description>@text/intrs.description</description>
+		<label>INT-RS</label>
+		<description>RS-232 communication module</description>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
-				<label>@text/intrs.port.label</label>
-				<description>@text/intrs.port.description</description>
+				<label>Serial port</label>
+				<description>Serial port connected to the module.</description>
+				<context>serial-port</context>
 			</parameter>
-			<parameter name="timeout" type="integer">
-				<label>@text/intrs.timeout.label</label>
-				<description>@text/intrs.timeout.description</description>
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>Timeout value in milliseconds for connect, read and write operations.</description>
 				<default>5000</default>
+				<unitLabel>Milliseconds</unitLabel>
 			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>@text/intrs.refresh.label</label>
-				<description>@text/intrs.refresh.description</description>
+			<parameter name="refresh" type="integer" unit="ms">
+				<label>Refresh interval</label>
+				<description>Current state polling interval, in milliseconds.</description>
 				<default>5000</default>
+                <unitLabel>Milliseconds</unitLabel>
 			</parameter>
 			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
-				<label>@text/intrs.userCode.label</label>
-				<description>@text/intrs.userCode.description</description>
+				<label>User code</label>
+				<description>Security code of the user in behalf of all operations will be executed.</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="encoding" type="text">
-				<label>@text/intrs.encoding.label</label>
-				<description>@text/intrs.encoding.description</description>
+				<label>Encoding</label>
+				<description>Encoding for all the texts received from the module.</description>
 				<default>windows-1250</default>
 			</parameter>
 		</config-description>

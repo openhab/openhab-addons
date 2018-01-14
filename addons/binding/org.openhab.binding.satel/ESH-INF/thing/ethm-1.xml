@@ -4,40 +4,45 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="ethm-1">
-		<label>@text/ethm1.label</label>
-		<description>@text/ethm1.description</description>
+		<label>ETHM-1</label>
+		<description>Ethernet communication module</description>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>@text/ethm1.host.label</label>
-				<description>@text/ethm1.host.description</description>
+				<label>Host or IP</label>
+				<description>Host name or IP address of ETHM-1 module.</description>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65335">
-				<label>@text/ethm1.port.label</label>
-				<description>@text/ethm1.port.description</description>
+				<label>Port number</label>
+				<description>TCP port for the integration protocol.</description>
 				<default>7094</default>
 			</parameter>
-			<parameter name="timeout" type="integer">
-				<label>@text/ethm1.timeout.label</label>
-				<description>@text/ethm1.timeout.description</description>
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>Timeout value in milliseconds for connect, read and write operations.</description>
 				<default>5000</default>
+				<unitLabel>Milliseconds</unitLabel>
 			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>@text/ethm1.refresh.label</label>
-				<description>@text/ethm1.refresh.description</description>
+			<parameter name="refresh" type="integer" unit="ms">
+				<label>Refresh interval</label>
+				<description>Polling interval in milliseconds.</description>
 				<default>5000</default>
+                <unitLabel>Milliseconds</unitLabel>
 			</parameter>
 			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
-				<label>@text/ethm1.userCode.label</label>
-				<description>@text/ethm1.userCode.description</description>
+				<label>User code</label>
+				<description>Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed.</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="encryptionKey" type="text">
-				<label>@text/ethm1.encryptionKey.label</label>
-				<description>@text/ethm1.encryptionKey.description</description>
+				<label>Encryption key</label>
+				<description>Encryption key used to encrypt data sent and received, if empty communication is not encrypted.</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="encoding" type="text">
-				<label>@text/ethm1.encoding.label</label>
-				<description>@text/ethm1.encoding.description</description>
+				<label>Encoding</label>
+				<description>Encoding used for all the texts received from the module.</description>
 				<default>windows-1250</default>
 			</parameter>
 		</config-description>

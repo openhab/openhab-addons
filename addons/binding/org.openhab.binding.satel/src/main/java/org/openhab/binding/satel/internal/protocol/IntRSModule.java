@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,7 +58,7 @@ public class IntRSModule extends SatelModule {
     }
 
     @Override
-    protected CommunicationChannel connect() {
+    protected CommunicationChannel connect() throws ConnectionFailureException {
         logger.info("Connecting to INT-RS module at {}", this.port);
 
         try {
@@ -84,16 +84,14 @@ public class IntRSModule extends SatelModule {
             logger.info("INT-RS module connected successfuly");
             return new SerialCommunicationChannel(serialPort);
         } catch (NoSuchPortException e) {
-            logger.error("Port {} does not exist", this.port);
+            throw new ConnectionFailureException(String.format("Port %s does not exist", this.port), e);
         } catch (PortInUseException e) {
-            logger.error("Port {} in use.", this.port);
+            throw new ConnectionFailureException(String.format("Port %s in use", this.port), e);
         } catch (UnsupportedCommOperationException e) {
-            logger.error("Unsupported comm operation on port {}.", this.port);
+            throw new ConnectionFailureException(String.format("Unsupported comm operation on port %s", this.port), e);
         } catch (TooManyListenersException e) {
-            logger.error("Too many listeners on port {}.", this.port);
+            throw new ConnectionFailureException(String.format("Too many listeners on port %s", this.port), e);
         }
-
-        return null;
     }
 
     private class SerialCommunicationChannel implements CommunicationChannel {

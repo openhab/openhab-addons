@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,7 +41,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     private SatelBridgeConfig config;
     private SatelModule satelModule;
     private ScheduledFuture<?> pollingJob;
-    private String userCodeOverride = null;
+    private String userCodeOverride;
 
     public SatelBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -56,7 +56,8 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
                 updateStatus(ThingStatus.ONLINE);
                 satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        statusEvent.getReason());
             }
         }
     }
@@ -77,21 +78,17 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
 
         if (satelModule != null) {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                Runnable pollingCommand = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (!satelModule.isInitialized()) {
-                            logger.debug("Module not initialized yet, skipping refresh");
-                            return;
-                        }
-
-                        // get list of states that have changed
-                        logger.trace("Sending 'get new states' command");
-                        satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
+                Runnable pollingCommand = () -> {
+                    if (!satelModule.isInitialized()) {
+                        logger.debug("Module not initialized yet, skipping refresh");
+                        return;
                     }
+
+                    // get list of states that have changed
+                    logger.trace("Sending 'get new states' command");
+                    satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
                 };
-                pollingJob = scheduler.scheduleAtFixedRate(pollingCommand, 0, config.getRefresh(),
+                pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(),
                         TimeUnit.MILLISECONDS);
             }
         }

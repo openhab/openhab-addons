@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,13 +18,26 @@ public class ConnectionStatusEvent implements SatelEvent {
 
     private boolean connected;
 
+    private String reason;
+
     /**
      * Constructs event class with given connection status.
      *
      * @param connected value describing connection status
      */
     public ConnectionStatusEvent(boolean connected) {
+        this(connected, null);
+    }
+
+    /**
+     * Constructs event class with given connection status and disconnection reason.
+     *
+     * @param connected value describing connection status
+     * @param reason disconnection reason
+     */
+    public ConnectionStatusEvent(boolean connected, String reason) {
         this.connected = connected;
+        this.reason = reason;
     }
 
     /**
@@ -36,8 +49,17 @@ public class ConnectionStatusEvent implements SatelEvent {
         return this.connected;
     }
 
+    /**
+     * Returns disconnection reason.
+     *
+     * @return optional text description in case of disconnection
+     */
+    public String getReason() {
+        return reason;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s: connected = %b", this.getClass().getName(), this.connected);
+        return String.format("%s: connected = %b, reason = %s", this.getClass().getName(), this.connected, this.reason);
     }
 }
