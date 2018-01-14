@@ -85,15 +85,11 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 | brightness     | Dimmer                                           | The brightness of the display. Please note that changing the brightness will automatically set the 'brightnessMode' to 'manual'.                                                                                      |
 | brightnessMode | String (possible values are 'auto' and 'manual') | The mode for the display brightness. If set to 'auto' the brightness is set by the device automatically based on environment illumination. If set to 'manual' the brightness can be changed via 'brightness' channel. |
 | volume         | Dimmer                                           | The volume of the device speaker.                                                                                                                                                                                     |
-| active         | Switch                                           | Allows to enable or disable the bluetooth interface of the device.                                                                                                                                                    |
-| name           | String                                           | Name of the bluetooth connection. This channel allows to read and also change the name.                                                                                                                               |
-| discoverable   | Switch                                           | indicates if the bluetooth is discoverable.                                                                                                                                                                           |
-| available      | Switch (read only)                               | indicates if the bluetooth is available.                                                                                                                                                                              |
-| mac            | String (read only)                               | Allows to read the MAC address of the bluetooth interface.                                                                                                                                                            |
-| info           | String                                           | Allows to send info notifications to the device.                                                                                                                                                                      |
-| warning        | String                                           | Allows to send warning notifications to the device.                                                                                                                                                                   |
-| alert          | String                                           | Allows to send alert notifications to the device.                                                                                                                                                                     |
-| advanced       | String                                           | Allows to send a complete custom notification. See below for details                                                                                                                                                  |
+| bluetooth      | Switch                                           | The status of Bluetooth audio streaming on the device.                                                                                                                                                                |
+| info           | String                                           | Send informational notifications to the device.                                                                                                                                                                       |
+| warning        | String                                           | Send warning notifications to the device.                                                                                                                                                                             |
+| alert          | String                                           | Send alert notifications to the device.                                                                                                                                                                               |
+| advanced       | String                                           | Send a complete custom notification. See below for details.                                                                                                                                                           |
 
 
 ### Clock App
@@ -270,17 +266,10 @@ See below for examples rules sending updates for the frames.
 Sample item configuration:
  
 ```
-Dimmer DeviceDisplayBrightness  "Brightness"               { channel="lametrictime:device:demo:brightness" }
-String DeviceDisplayBrightMode  "Brightness Mode"          { channel="lametrictime:device:demo:brightnessMode" }
-
-Dimmer DeviceAudioVolume        "Volume"                   { channel="lametrictime:device:demo:volume" }
-
-Switch DeviceBTActive           "Active"                   { channel="lametrictime:device:demo:active" }
-String DeviceBTName             "Name [%s]"                { channel="lametrictime:device:demo:name" }
-Switch DeviceBTDiscoverable     "Discoverable [%s]"        { channel="lametrictime:device:demo:discoverable" }
-Switch DeviceBTAvailable        "Available [%s]"           { channel="lametrictime:device:demo:available" }
-Switch DeviceBTPairable         "Pairable [%s]"            { channel="lametrictime:device:demo:pairable" }
-String DeviceBTMac              "MAC [%s]"                 { channel="lametrictime:device:demo:mac" }
+Dimmer DeviceBrightness         "Brightness"               { channel="lametrictime:device:demo:brightness" }
+String DeviceBrightnessMode     "Brightness Mode"          { channel="lametrictime:device:demo:brightnessMode" }
+Dimmer DeviceVolume             "Volume"                   { channel="lametrictime:device:demo:volume" }
+Switch DeviceBluetooth          "Bluetooth"                { channel="lametrictime:device:demo:bluetooth" }
 
 String DeviceNotifyInfo                                    { channel="lametrictime:device:demo:info" }
 String DeviceNotifyWarning                                 { channel="lametrictime:device:demo:warning" }
@@ -329,20 +318,11 @@ Sample sitemap configuration:
 
 ```
         Text label="LaMetric Time Demo" {
-            Frame label="Device Display" {
-                Slider item=DeviceDisplayBrightness
-                Switch item=DeviceDisplayBrightMode mappings=[AUTO="Automatic",MANUAL="Manual"]
-            }
-            Frame label="Device Audio" {
-                Slider item=DeviceAudioVolume
-            }
-            Frame label="Device Bluetooth" {
-                Switch item=DeviceBTActive
-                Text item=DeviceBTName
-                Switch item=DeviceBTDiscoverable
-                Switch item=DeviceBTAvailable
-                Switch item=DeviceBTPairable
-                Text item=DeviceBTMac
+            Frame label="Device Controls" {
+                Slider item=DeviceBrightness
+                Switch item=DeviceBrightnessMode mappings=[AUTO="Automatic",MANUAL="Manual"]
+                Slider item=DeviceVolume
+                Switch item=DeviceBluetooth
             }
             Frame label="Device Notifications" {
                 Switch item=NotifyInfo

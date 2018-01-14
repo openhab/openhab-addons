@@ -39,15 +39,8 @@ public class LaMetricTimeBindingConstants {
 
     public static final String CHANNEL_DISPLAY_BRIGHTNESS = "brightness";
     public static final String CHANNEL_DISPLAY_BRIGHTNESS_MODE = "brightnessMode";
-
     public static final String CHANNEL_AUDIO_VOLUME = "volume";
-
-    public static final String CHANNEL_BLUETOOTH_ACTIVE = "active";
-    public static final String CHANNEL_BLUETOOTH_NAME = "name";
-    public static final String CHANNEL_BLUETOOTH_DISCOVERABLE = "discoverable";
-    public static final String CHANNEL_BLUETOOTH_AVAILABLE = "available";
-    public static final String CHANNEL_BLUETOOTH_PAIRABLE = "pairable";
-    public static final String CHANNEL_BLUETOOTH_MAC = "mac";
+    public static final String CHANNEL_BLUETOOTH_ACTIVE = "bluetooth";
 
     public static final String CHANNEL_APP_ACTIVATE = "activate";
     public static final String CHANNEL_APP_SET_ALARM = "setAlarm";
@@ -67,4 +60,9 @@ public class LaMetricTimeBindingConstants {
     // List of non-standard Properties
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_BT_DISCOVERABLE = "bluetoothDiscoverable";
+    public static final String PROPERTY_BT_AVAILABLE = "bluetoothAvailable";
+    public static final String PROPERTY_BT_PAIRABLE = "bluetoothPairable";
+    public static final String PROPERTY_BT_MAC = "bluetoothMAC";
+    public static final String PROPERTY_BT_NAME = "bluetoothName";
 }

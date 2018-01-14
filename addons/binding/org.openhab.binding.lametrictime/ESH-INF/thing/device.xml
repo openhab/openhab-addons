@@ -11,12 +11,7 @@
             <channel id="brightness" typeId="brightnessType"/>
             <channel id="brightnessMode" typeId="brightnessModeType"/>
             <channel id="volume" typeId="volumeType"/>
-            <channel id="active" typeId="bluetoothActiveType"/>
-            <channel id="name" typeId="bluetoothNameType"/>
-            <channel id="discoverable" typeId="bluetoothDiscoverableType"/>
-            <channel id="available" typeId="bluetoothAvailableType"/>
-            <channel id="pairable" typeId="bluetoothPairableType"/>
-            <channel id="mac" typeId="bluetoothMacType"/>
+            <channel id="bluetooth" typeId="bluetoothActiveType"/>
             <channel id="info" typeId="simpleNotificationType"/>
             <channel id="warning" typeId="simpleNotificationType"/>
             <channel id="alert" typeId="simpleNotificationType"/>

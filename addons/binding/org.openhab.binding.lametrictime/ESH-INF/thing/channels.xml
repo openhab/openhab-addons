@@ -47,40 +47,6 @@
         <description>Switch Bluetooth on/off</description>
     </channel-type>
 
-    <channel-type id="bluetoothDiscoverableType">
-        <item-type>Switch</item-type>
-        <label>Bluetooth Discoverable State Channel</label>
-        <description>If Bluetooth is discoverable</description>
-        <state readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="bluetoothAvailableType">
-        <item-type>Switch</item-type>
-        <label>Bluetooth Available State Channel</label>
-        <description>If bluetooth is available</description>
-        <state readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="bluetoothPairableType">
-        <item-type>Switch</item-type>
-        <label>Bluetooth Pairable State Channel</label>
-        <description>If bluetooth is pairable</description>
-        <state readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="bluetoothNameType">
-        <item-type>String</item-type>
-        <label>Bluetooth Name</label>
-        <description>Name under which the bluetooth connection is visible.</description>
-    </channel-type>
-
-    <channel-type id="bluetoothMacType">
-        <item-type>String</item-type>
-        <label>Bluetooth Mac Adress</label>
-        <description>The mac address of the bluetooth interface.</description>
-        <state readOnly="true"/>
-    </channel-type>
-
     <channel-type id="activateType">
         <item-type>Switch</item-type>
         <label>Activate</label>

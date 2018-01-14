@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.Configuration;
 import org.syphr.lametrictime.api.LaMetricTime;
 import org.syphr.lametrictime.api.common.impl.GsonGenerator;
+import org.syphr.lametrictime.api.local.LaMetricTimeLocal;
 import org.syphr.lametrictime.api.local.NotificationCreationException;
 import org.syphr.lametrictime.api.local.UpdateException;
 import org.syphr.lametrictime.api.local.model.Application;
@@ -78,7 +79,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
         logger.debug("Verifying communication with LaMetric Time");
         try {
-            Device device = clock.getLocalApi().getDevice();
+            LaMetricTimeLocal api = clock.getLocalApi();
+            Device device = api.getDevice();
             if (device == null) {
                 logger.debug("Failed to communicate with LaMetric Time");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -86,7 +88,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 return;
             }
 
-            updateProperties(device);
+            updateProperties(device, api.getBluetooth());
         } catch (Exception e) {
             logger.debug("Failed to communicate with LaMetric Time", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -122,11 +124,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     handleBrightnessChannel(channelUID, command);
                     break;
                 case CHANNEL_BLUETOOTH_ACTIVE:
-                case CHANNEL_BLUETOOTH_AVAILABLE:
-                case CHANNEL_BLUETOOTH_DISCOVERABLE:
-                case CHANNEL_BLUETOOTH_MAC:
-                case CHANNEL_BLUETOOTH_NAME:
-                case CHANNEL_BLUETOOTH_PAIRABLE:
                     handleBluetoothCommand(channelUID, command);
                     break;
                 case CHANNEL_AUDIO_VOLUME:
@@ -227,12 +224,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     bluetooth.setActive(false);
                     clock.getLocalApi().updateBluetooth(bluetooth);
                 }
-            } else if (command instanceof StringType && channelUID.getId().equals(CHANNEL_BLUETOOTH_NAME)) {
-                StringType stringCommand = (StringType) command;
-                if (!bluetooth.getName().equals(stringCommand.toString())) {
-                    bluetooth.setName(stringCommand.toString());
-                    clock.getLocalApi().updateBluetooth(bluetooth);
-                }
             }
         } catch (UpdateException e) {
             logger.debug("Failed to update bluetooth - taking clock offline", e);
@@ -244,33 +235,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         switch (channelUID.getId()) {
             case CHANNEL_BLUETOOTH_ACTIVE:
                 if (bluetooth.isActive()) {
-                    updateState(channelUID, OnOffType.ON);
-                } else {
-                    updateState(channelUID, OnOffType.OFF);
-                }
-                break;
-            case CHANNEL_BLUETOOTH_AVAILABLE:
-                if (bluetooth.isAvailable()) {
-                    updateState(channelUID, OnOffType.ON);
-                } else {
-                    updateState(channelUID, OnOffType.OFF);
-                }
-                break;
-            case CHANNEL_BLUETOOTH_DISCOVERABLE:
-                if (bluetooth.isDiscoverable()) {
-                    updateState(channelUID, OnOffType.ON);
-                } else {
-                    updateState(channelUID, OnOffType.OFF);
-                }
-                break;
-            case CHANNEL_BLUETOOTH_MAC:
-                updateState(channelUID, new StringType(bluetooth.getMac()));
-                break;
-            case CHANNEL_BLUETOOTH_NAME:
-                updateState(channelUID, new StringType(bluetooth.getName()));
-                break;
-            case CHANNEL_BLUETOOTH_PAIRABLE:
-                if (bluetooth.isPairable()) {
                     updateState(channelUID, OnOffType.ON);
                 } else {
                     updateState(channelUID, OnOffType.OFF);
@@ -328,13 +292,19 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void updateProperties(Device device) {
+    private void updateProperties(Device device, Bluetooth bluetooth) {
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getOsVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
         properties.put(LaMetricTimeBindingConstants.PROPERTY_ID, device.getId());
         properties.put(LaMetricTimeBindingConstants.PROPERTY_NAME, device.getName());
+        properties.put(LaMetricTimeBindingConstants.PROPERTY_BT_DISCOVERABLE,
+                String.valueOf(bluetooth.isDiscoverable()));
+        properties.put(LaMetricTimeBindingConstants.PROPERTY_BT_AVAILABLE, String.valueOf(bluetooth.isAvailable()));
+        properties.put(LaMetricTimeBindingConstants.PROPERTY_BT_PAIRABLE, String.valueOf(bluetooth.isPairable()));
+        properties.put(LaMetricTimeBindingConstants.PROPERTY_BT_MAC, bluetooth.getMac());
+        properties.put(LaMetricTimeBindingConstants.PROPERTY_BT_NAME, bluetooth.getName());
         updateProperties(properties);
     }
 
