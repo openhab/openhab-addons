@@ -2,7 +2,7 @@
 
 This binding let control openHAB Amazon Echo devices (Alexa).
 
-The idea for writing this binding come from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German) Thank you Alex!
+The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German) Thank you Alex!
 
 The binding provide features to control and view the current state of echo dot devices:
 

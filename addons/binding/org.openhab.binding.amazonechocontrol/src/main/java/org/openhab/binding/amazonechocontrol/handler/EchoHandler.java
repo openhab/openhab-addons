@@ -71,7 +71,6 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         logger.info("Amazon Echo Control Binding initialized");
         updateStatus(ThingStatus.ONLINE);
     }

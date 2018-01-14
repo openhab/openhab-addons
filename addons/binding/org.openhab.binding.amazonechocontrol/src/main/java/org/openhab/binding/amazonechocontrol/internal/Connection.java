@@ -219,94 +219,116 @@ public class Connection {
 
     private HttpsURLConnection makeRequest(String url, String referer, String postData, Boolean json) throws Exception {
         String currentUrl = url;
-        for (int i = 0; i < 30; i++) {
-            HttpsURLConnection connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
-            connection.setInstanceFollowRedirects(true);
-            connection.setRequestProperty("Accept-Language", "en-US");
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            connection.setRequestProperty("DNT", "1");
-            connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
-            connection.setInstanceFollowRedirects(false);
-            if (referer != null) {
-                connection.setRequestProperty("Referer", referer);
-            }
+        for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
+                                     // all response headers must be catched
+        {
+            int code;
+            HttpsURLConnection connection;
+            try {
 
-            // add cookies
-            URI uri = connection.getURL().toURI();
+                logger.debug("Make request to {}", url);
+                connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
+                connection.setRequestProperty("Accept-Language", "en-US");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+                connection.setRequestProperty("DNT", "1");
+                connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
+                connection.setInstanceFollowRedirects(false);
+                if (referer != null) {
+                    connection.setRequestProperty("Referer", referer);
+                }
 
-            StringBuilder cookieHeaderBuilder = new StringBuilder();
-            for (HttpCookie cookie : m_cookieManager.getCookieStore().get(uri)) {
+                // add cookies
+                URI uri = connection.getURL().toURI();
+
+                StringBuilder cookieHeaderBuilder = new StringBuilder();
+                for (HttpCookie cookie : m_cookieManager.getCookieStore().get(uri)) {
+                    if (cookieHeaderBuilder.length() > 0) {
+                        cookieHeaderBuilder.insert(0, "; ");
+                    }
+                    cookieHeaderBuilder.insert(0, cookie);
+                    if (cookie.getName().equals("csrf")) {
+                        connection.setRequestProperty("csrf", cookie.getValue());
+                    }
+
+                }
                 if (cookieHeaderBuilder.length() > 0) {
-                    cookieHeaderBuilder.insert(0, "; ");
-                }
-                cookieHeaderBuilder.insert(0, cookie);
-                if (cookie.getName().equals("csrf")) {
-                    connection.setRequestProperty("csrf", cookie.getValue());
+                    connection.setRequestProperty("Cookie", cookieHeaderBuilder.toString());
                 }
 
-            }
-            if (cookieHeaderBuilder.length() > 0) {
+                if (postData != null) {
 
-                connection.setRequestProperty("Cookie", cookieHeaderBuilder.toString());
-            }
+                    // post data
+                    byte[] postDataBytes = postData.getBytes(StandardCharsets.UTF_8);
+                    int postDataLength = postDataBytes.length;
 
-            // make the request
-            if (postData != null) {
-                byte[] postDataBytes = postData.getBytes(StandardCharsets.UTF_8);
-                int postDataLength = postDataBytes.length;
-                connection.setFixedLengthStreamingMode(postDataLength);
-                if (json) {
-                    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                } else {
-                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    connection.setFixedLengthStreamingMode(postDataLength);
+
+                    if (json) {
+                        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    } else {
+                        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    }
+                    connection.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Expect", "100-continue");
+
+                    connection.setDoOutput(true);
+                    OutputStream outputStream = connection.getOutputStream();
+                    outputStream.write(postDataBytes);
+                    outputStream.close();
                 }
+                // handle result
+                code = connection.getResponseCode();
+                String location = null;
 
-                connection.setRequestProperty("Content-Length", Integer.toString(postDataLength));
-
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Expect", "100-continue");
-
-                connection.setDoOutput(true);
-                OutputStream outputStream = connection.getOutputStream();
-                outputStream.write(postDataBytes);
-                outputStream.close();
-            }
-
-            int code = connection.getResponseCode();
-            String location = null;
-            Map<String, List<String>> headerFields = connection.getHeaderFields();
-            for (Map.Entry<String, List<String>> header : headerFields.entrySet()) {
-                String key = header.getKey();
-                if (key != null) {
-                    if (key.equalsIgnoreCase("Set-Cookie")) {
-
-                        for (String cookieHeader : header.getValue()) {
-
-                            List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
-                            for (HttpCookie cookie : cookies) {
-                                m_cookieManager.getCookieStore().add(uri, cookie);
-
+                // handle response headers
+                Map<String, List<String>> headerFields = connection.getHeaderFields();
+                for (Map.Entry<String, List<String>> header : headerFields.entrySet()) {
+                    String key = header.getKey();
+                    if (key != null) {
+                        if (key.equalsIgnoreCase("Set-Cookie")) {
+                            // store cookie
+                            for (String cookieHeader : header.getValue()) {
+                                List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
+                                for (HttpCookie cookie : cookies) {
+                                    m_cookieManager.getCookieStore().add(uri, cookie);
+                                }
+                            }
+                        }
+                        if (key.equalsIgnoreCase("Location")) {
+                            // get redirect location
+                            location = header.getValue().get(0);
+                            if (location != null) {
+                                if (code == 302) {
+                                    logger.debug("Redirected to {}", location);
+                                }
+                                // check for https
+                                if (location.toLowerCase().startsWith("http://")) {
+                                    // always use https
+                                    location = "https://" + location.substring(7);
+                                    logger.debug("Redirect corrected to {}", location);
+                                }
                             }
                         }
                     }
-                    if (key.equalsIgnoreCase("Location")) {
-                        location = header.getValue().get(0);
-                    }
                 }
-            }
-            if (code == 200) {
-                return connection;
-            }
-            if (code == 302 && location != null) {
-                currentUrl = location;
-                continue;
+                if (code == 200) {
+                    logger.debug("Call to {} succeeded", url);
+                    return connection;
+                }
+                if (code == 302 && location != null) {
+                    currentUrl = location;
+                    continue;
+                }
+            } catch (Exception e) {
+                logger.warn("Request to url '" + currentUrl + "' fails with unkown error: " + e.getMessage());
+                throw e;
             }
             if (code != 200) {
                 throw new HttpException(code, connection.getResponseMessage());
             }
         }
         throw new ConnectionException("To many redirects");
-
     }
 
     public boolean getIsLoggedIn() {
@@ -320,8 +342,11 @@ public class Connection {
             m_sessionId = null;
             m_loginTime = null;
 
+            logger.debug("Start Login to {}", m_alexaServer);
             // get login form
             String loginFormHtml = makeRequestAndReturnString(m_alexaServer);
+
+            logger.debug("Received login form {}", loginFormHtml);
 
             // get session id from cookies
             for (HttpCookie cookie : m_cookieManager.getCookieStore().getCookies()) {
@@ -373,23 +398,26 @@ public class Connection {
             if (response.contains("<title>Amazon Alexa</title>")) {
                 logger.debug("Response seems to be alexa app");
             } else {
-                logger.debug("Response maybe not valid");
+                logger.info("Response maybe not valid");
             }
 
+            logger.debug("Received content after login {}", response);
+
             // get CSRF
-            makeRequest(m_alexaServer + "/api/language", m_alexaServer + "/spa/index.html", null, false);
+            // makeRequest(m_alexaServer + "/api/language", m_alexaServer + "/spa/index.html", null, false);
 
             // verify login
             if (!verifyLogin()) {
                 throw new ConnectionException("Login fails.");
             }
             m_loginTime = new Date();
+            logger.debug("Login succeeded");
         } catch (Exception e) {
             // clear session data
             m_cookieManager.getCookieStore().removeAll();
             m_sessionId = null;
             m_loginTime = null;
-            logger.debug("Login failed:{} ", e);
+            logger.info("Login failed:{} ", e);
             throw e;
         }
 
@@ -427,6 +455,8 @@ public class Connection {
         m_sessionId = null;
         m_loginTime = null;
     }
+
+    // commands and states
 
     public Device[] getDeviceList() throws Exception {
         String json = makeRequestAndReturnString(m_alexaServer + "/api/devices-v2/device?cached=false");
