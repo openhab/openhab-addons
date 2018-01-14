@@ -19,7 +19,6 @@ import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.common.impl.GsonGenerator;
-import org.syphr.lametrictime.api.local.UpdateException;
 import org.syphr.lametrictime.api.local.model.WidgetUpdates;
 
 import com.google.gson.Gson;
@@ -55,7 +54,7 @@ public class GenericAppHandler extends AbstractLaMetricTimeAppHandler {
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (UpdateException e) {
+        } catch (Exception e) {
             logger.error("Failed to send frames - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

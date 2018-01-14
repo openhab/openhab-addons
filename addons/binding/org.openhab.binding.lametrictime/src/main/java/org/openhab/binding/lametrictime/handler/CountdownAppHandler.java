@@ -19,7 +19,6 @@ import org.openhab.binding.lametrictime.handler.model.ParamsConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.common.impl.GsonGenerator;
-import org.syphr.lametrictime.api.local.ApplicationActionException;
 import org.syphr.lametrictime.api.model.CoreApps;
 
 import com.google.gson.Gson;
@@ -62,7 +61,7 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (ApplicationActionException e) {
+        } catch (Exception e) {
             logger.error("Failed to perform action - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

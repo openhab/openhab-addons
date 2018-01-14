@@ -26,7 +26,6 @@ import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.LaMetricTime;
-import org.syphr.lametrictime.api.local.ApplicationActivationException;
 import org.syphr.lametrictime.api.local.ApplicationNotFoundException;
 import org.syphr.lametrictime.api.local.model.Application;
 import org.syphr.lametrictime.api.local.model.Widget;
@@ -116,6 +115,9 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
     @Override
     public Widget getWidget() {
+        if (widget == null) {
+            getBridge().getHandler().initialize();
+        }
         return widget;
     }
 
@@ -127,24 +129,25 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-        if (command instanceof RefreshType) {
-            logger.debug("Skipping refresh command for app thing");
-            return;
-        }
+        try {
+            if (command instanceof RefreshType) {
+                // verify communication
+                getDevice().getApplication(getWidget().getPackageName());
+                return;
+            }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_APP_ACTIVATE:
-                try {
+            switch (channelUID.getId()) {
+                case CHANNEL_APP_ACTIVATE:
                     getDevice().activateWidget(getWidget());
                     updateStatus(ThingStatus.ONLINE);
-                } catch (ApplicationActivationException e) {
-                    logger.error("Failed to activate application - taking app offline", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-                break;
-            default:
-                handleAppCommand(channelUID, command);
-                break;
+                    break;
+                default:
+                    handleAppCommand(channelUID, command);
+                    break;
+            }
+        } catch (Exception e) {
+            logger.error("Failed to communicate - taking app offline", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

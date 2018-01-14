@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.local.ApplicationActionException;
 import org.syphr.lametrictime.api.model.CoreApps;
 
 /**
@@ -45,7 +44,7 @@ public class WeatherAppHandler extends AbstractLaMetricTimeAppHandler {
                     break;
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (ApplicationActionException e) {
+        } catch (Exception e) {
             logger.error("Failed to perform action - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

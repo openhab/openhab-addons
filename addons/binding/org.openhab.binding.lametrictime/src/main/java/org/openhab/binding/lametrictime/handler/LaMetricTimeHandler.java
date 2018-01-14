@@ -140,14 +140,19 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         } catch (NotificationCreationException e) {
             logger.error("Failed to create notification - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (Exception e) {
+            logger.debug("Unexpected error while handling command - taking clock offline", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     private void handleNotificationsAdvanceCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Skipping refresh command for notifications");
+            // verify communication
+            clock.getLocalApi().getApi();
             return;
         }
+
         String jsonCommand = command.toString();
         try {
             logger.debug("Send advanced notification: {}", jsonCommand);
@@ -163,7 +168,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
     private void handleNotificationsCommand(ChannelUID channelUID, Command command)
             throws NotificationCreationException {
         if (command instanceof RefreshType) {
-            logger.debug("Skipping refresh command for notifications");
+            // verify communication
+            clock.getLocalApi().getApi();
             return;
         }
 
