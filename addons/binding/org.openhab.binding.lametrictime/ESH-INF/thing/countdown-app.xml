@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="countdownApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Countdown App</label>
+        <description>Provides control for the countdown app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="configure" typeId="parameterActionType">
+                <label>Configure</label>
+                <description>Configure the timer</description>
+            </channel>
+            <channel id="pause" typeId="triggerActionType">
+                <label>Pause</label>
+                <description>Pause the countdown</description>
+            </channel>
+            <channel id="reset" typeId="triggerActionType">
+                <label>Reset</label>
+                <description>Reset the countdown</description>
+            </channel>
+            <channel id="start" typeId="triggerActionType">
+                <label>Start</label>
+                <description>Start the countdown</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.countdown</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>

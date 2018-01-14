@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="device" listed="true">
+        <label>LaMetric Time</label>
+        <description>Provides control for the LaMetric Time connected clock and its apps</description>
+        
+        <channels>
+            <channel id="brightness" typeId="brightnessType"/>
+            <channel id="brightnessMode" typeId="brightnessModeType"/>
+            <channel id="volume" typeId="volumeType"/>
+            <channel id="active" typeId="bluetoothActiveType"/>
+            <channel id="name" typeId="bluetoothNameType"/>
+            <channel id="discoverable" typeId="bluetoothDiscoverableType"/>
+            <channel id="available" typeId="bluetoothAvailableType"/>
+            <channel id="pairable" typeId="bluetoothPairableType"/>
+            <channel id="mac" typeId="bluetoothMacType"/>
+            <channel id="info" typeId="simpleNotificationType"/>
+            <channel id="warning" typeId="simpleNotificationType"/>
+            <channel id="alert" typeId="simpleNotificationType"/>
+            <channel id="advanced" typeId="jsonNotificationType"/>
+        </channels>
+
+        <config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>Host name or network address of the LaMetric Time</description>
+            </parameter>
+            <parameter name="apiKey" type="text" required="true">
+                <label>API key</label>
+                <description>API key to access LaMetric Time</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+</thing:thing-descriptions>
