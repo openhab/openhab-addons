@@ -331,7 +331,7 @@ Sample sitemap configuration:
         Text label="LaMetric Time Demo" {
             Frame label="Device Display" {
                 Slider item=DeviceDisplayBrightness
-                Switch item=DeviceDisplayBrightMode mappings=[AUTO="Auto",MANUAL="Manual"]
+                Switch item=DeviceDisplayBrightMode mappings=[AUTO="Automatic",MANUAL="Manual"]
             }
             Frame label="Device Audio" {
                 Slider item=DeviceAudioVolume
