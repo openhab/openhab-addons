@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.mysensors.handler;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_ETH;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_MQTT;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_SER;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,25 +56,24 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     // Configuration from thing file
     private MySensorsBridgeConfiguration myBridgeConfiguration;
-    
+
     // Service discovery registration
     private ServiceRegistration<?> discoveryServiceRegistration;
 
     // Discovery service
     private MySensorsDiscoveryService discoveryService;
-    
+
     private MySensorsCacheFactory cacheFactory;
-    
 
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
         cacheFactory = new MySensorsCacheFactory(ConfigConstants.getUserDataFolder());
     }
-    
+
     @Override
     public void initialize() {
         logger.debug("Initialization of the MySensors bridge");
-        
+
         myBridgeConfiguration = getConfigAs(MySensorsBridgeConfiguration.class);
 
         myGateway = new MySensorsGateway(loadCacheFile());
@@ -85,7 +82,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             myGateway.startup();
 
             myGateway.addEventListener(this);
-            
+
             registerDeviceDiscoveryService();
 
             logger.debug("Initialization of the MySensors bridge DONE!");
@@ -214,7 +211,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         return gatewayConfig;
     }
-    
+
     private void registerDeviceDiscoveryService() {
         if (bundleContext != null) {
             logger.trace("Registering MySensorsDiscoveryService for bridge '{}'", getThing().getUID().getId());
@@ -224,7 +221,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             discoveryService.activate();
         }
     }
-    
+
     private void unregisterDeviceDiscoveryService() {
         if (discoveryServiceRegistration != null && discoveryService != null) {
             logger.trace("Unregistering MySensorsDiscoveryService for bridge '{}'", getThing().getUID().getId());

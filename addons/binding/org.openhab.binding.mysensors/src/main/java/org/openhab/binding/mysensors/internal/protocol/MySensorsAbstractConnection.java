@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,8 +55,8 @@ public abstract class MySensorsAbstractConnection implements Runnable {
     public static final int RESET_TIME_IN_MILLISECONDS = 3000;
 
     // How long should a Smartsleep message be left in the queue?
-    public static final int MYSENSORS_SMARTSLEEP_TIMEOUT_IN_MILLISECONDS = 60 * 60* 6; // 6 hours
-    
+    public static final int MYSENSORS_SMARTSLEEP_TIMEOUT_IN_MILLISECONDS = 60 * 60 * 6; // 6 hours
+
     // Maximum number of attempts to request for an iVersion Message from the gateway
     public static final int MAX_ATTEMPTS_IVERSION_REQUEST = 5;
 
@@ -171,7 +171,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
     }
 
     protected abstract void stopConnection();
-    
+
     /**
      * Stop all threads holding the connection (serial/tcp).
      */
@@ -256,7 +256,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
 
     /**
      * If the gateway is removed or the binding is stopped the connection to the gateway will be disposed
-     * 
+     *
      * @return true if the connection should be disposed.
      */
     public boolean requestingDisconnection() {
@@ -341,7 +341,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                         msg.setDirection(MySensorsMessageDirection.INCOMING);
 
                         // Have we get a I_HEARBEAT_RESPONSE
-                        if (msg.isHeartbeatResponseMessage()) {
+                        if (msg.isPreSleepNotification()) {
                             handleSmartSleepMessage(msg);
                         }
 
@@ -518,7 +518,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                 } catch (InterruptedException e) {
                     logger.warn("Interrupted MySensorsWriter");
                 } catch (Exception e) {
-                    logger.error("({}) on writing to connection, message: {}", e, getClass(), e.getMessage());
+                    logger.error("({}) on writing to connection, message: {}, {}", e, getClass(), e.getMessage());
                     handleReaderWriterException();
                 }
 
@@ -578,7 +578,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
          * Confirm acknowledge for a message from the outbound message queue.
          *
          * @param msg The message that should be acknowledged from the queue.
-         * @throws NoAckException 
+         * @throws NoAckException
          */
         private void confirmAcknowledgeMessage(MySensorsMessage msg) throws NoAckException {
             if (msg == null) {
@@ -604,12 +604,9 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                 Iterator<MySensorsMessage> iterator = acknowledgeMessages.iterator();
                 while (iterator.hasNext()) {
                     MySensorsMessage ackM = iterator.next();
-                    if (    ackM.getNodeId() == msg.getNodeId() && 
-                            ackM.getChildId() == msg.getChildId() && 
-                            ackM.getMsgType() == msg.getMsgType() && 
-                            ackM.getSubType() == msg.getSubType() && 
-                            ackM.getAck() == msg.getAck() && 
-                            ackM.getMsg().equals(msg.getMsg())) {
+                    if (ackM.getNodeId() == msg.getNodeId() && ackM.getChildId() == msg.getChildId()
+                            && ackM.getMsgType() == msg.getMsgType() && ackM.getSubType() == msg.getSubType()
+                            && ackM.getAck() == msg.getAck() && ackM.getMsg().equals(msg.getMsg())) {
                         iterator.remove();
                         acknowledgementReceived = true;
                     }
@@ -712,7 +709,7 @@ public abstract class MySensorsAbstractConnection implements Runnable {
                     while (iterator.hasNext()) {
                         MySensorsMessage msgInQueue = iterator.next();
 
-                        logger.debug("Msg: {}, nodeId: {], childId: {}, nextSend: {}.", i, msgInQueue.getNodeId(),
+                        logger.debug("Msg: {}, nodeId: {}, childId: {}, nextSend: {}.", i, msgInQueue.getNodeId(),
                                 msgInQueue.getChildId(), msgInQueue.getNextSend());
                         i++;
                     }

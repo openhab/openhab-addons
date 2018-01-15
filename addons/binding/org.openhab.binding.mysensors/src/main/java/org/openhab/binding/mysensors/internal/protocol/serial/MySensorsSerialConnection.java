@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,15 +45,16 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection imple
     @Override
     public boolean establishConnection() {
         logger.debug("Connecting to {} [baudRate:{}]", myGatewayConfig.getSerialPort(), myGatewayConfig.getBaudRate());
-        
+
         CommPortIdentifier portIdentifier;
         try {
             portIdentifier = CommPortIdentifier.getPortIdentifier(myGatewayConfig.getSerialPort());
-            
+
             CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
             serialConnection = (SerialPort) commPort;
-            serialConnection.setSerialPortParams(myGatewayConfig.getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            serialConnection.setSerialPortParams(myGatewayConfig.getBaudRate(), SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialConnection.enableReceiveThreshold(1);
             serialConnection.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
@@ -101,9 +102,10 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection imple
             mysConReader = null;
         }
 
-        if(myGatewayConfig.isHardReset())
+        if (myGatewayConfig.isHardReset()) {
             resetAttachedGateway();
-        
+        }
+
         if (serialConnection != null) {
             try {
                 serialConnection.removeEventListener();
@@ -113,7 +115,7 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection imple
             serialConnection = null;
         }
     }
-    
+
     @Override
     public void serialEvent(SerialPortEvent arg0) {
         try {
@@ -127,10 +129,10 @@ public class MySensorsSerialConnection extends MySensorsAbstractConnection imple
             logger.warn("RXTX library CPU load workaround, sleep forever", e);
         }
     }
-    
+
     /**
      * Try to reset the attached gateway by using DTR
-     * 
+     *
      */
     public void resetAttachedGateway() {
         logger.debug("Trying to reset of attached gateway with DTR");

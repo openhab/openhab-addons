@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@ package org.openhab.binding.mysensors.internal.gateway;
 
 /**
  * Holds the configuration and parameters of the MySensors gateway.
- * 
+ *
  * @author Tim Oberföll
  * @author Andrea Cioni
  *
@@ -73,10 +73,10 @@ public class MySensorsGatewayConfig {
      * Baud rate used to connect the serial port
      */
     private Integer baudRate;
-    
+
     /**
-    * try hard reset of serial port using DTR
-    */
+     * try hard reset of serial port using DTR
+     */
     private boolean hardReset;
 
     // Ip
@@ -89,17 +89,17 @@ public class MySensorsGatewayConfig {
      * tcp port the gateway is running at
      */
     private Integer tcpPort;
-    
+
     /**
      * Name of the MQTT broker defined
      */
     private String brokerName;
-    
+
     /**
      * Name of the MQTT topic to subscribe to
      */
     private String topicSubscribe;
-    
+
     /**
      * Name of the MQTT topic to publish to
      */
@@ -208,7 +208,7 @@ public class MySensorsGatewayConfig {
     public void setSanCheckSendHeartbeatFailAttempts(Integer sanCheckSendHeartbeatFailAttempts) {
         this.networkSanCheckSendHeartbeatFailAttempts = sanCheckSendHeartbeatFailAttempts;
     }
-    
+
     public String getBrokerName() {
         return brokerName;
     }
@@ -232,7 +232,7 @@ public class MySensorsGatewayConfig {
     public void setTopicPublish(String topicPublish) {
         this.topicPublish = topicPublish;
     }
-    
+
     public boolean isHardReset() {
         return hardReset;
     }
@@ -243,22 +243,13 @@ public class MySensorsGatewayConfig {
 
     @Override
     public String toString() {
-        return "MySensorsGatewayConfig [gatewayType=" + gatewayType 
-                                        + ", sendDelay=" + sendDelay
-                                        + ", imperial=" + imperial 
-                                        + ", skipStartupCheck=" + startupCheckEnabled 
-                                        + ", enableNetworkSanCheck=" + networkSanCheckEnabled 
-                                        + ", sanityCheckerInterval=" + networkSanCheckInterval
-                                        + ", sanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts 
-                                        + ", sanCheckSendHeartbeat=" + networkSanCheckSendHeartbeat 
-                                        + ", sanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts
-                                        + ", serialPort=" + serialPort 
-                                        + ", baudRate=" + baudRate 
-                                        + ", ipAddress=" + ipAddress 
-                                        + ", tcpPort=" + tcpPort 
-                                        + ", brokerName=" + brokerName
-                                        + ", topicSubscribe=" + topicSubscribe
-                                        + ", topicPublish=" + topicPublish
-                                        + "]";
+        return "MySensorsGatewayConfig [gatewayType=" + gatewayType + ", sendDelay=" + sendDelay + ", imperial="
+                + imperial + ", skipStartupCheck=" + startupCheckEnabled + ", enableNetworkSanCheck="
+                + networkSanCheckEnabled + ", sanityCheckerInterval=" + networkSanCheckInterval
+                + ", sanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts
+                + ", sanCheckSendHeartbeat=" + networkSanCheckSendHeartbeat + ", sanCheckSendHeartbeatFailAttempts="
+                + networkSanCheckSendHeartbeatFailAttempts + ", serialPort=" + serialPort + ", baudRate=" + baudRate
+                + ", ipAddress=" + ipAddress + ", tcpPort=" + tcpPort + ", brokerName=" + brokerName
+                + ", topicSubscribe=" + topicSubscribe + ", topicPublish=" + topicPublish + "]";
     }
 }

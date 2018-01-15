@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,19 +8,7 @@
  */
 package org.openhab.binding.mysensors.handler;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_BATTERY;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_COVER;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_LAST_UPDATE;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_MAP;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_MYSENSORS_MESSAGE;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_PERCENTAGE;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_RGB;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_RGBW;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.CHANNEL_STATUS;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.INVERSE_THING_UID_MAP;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.MYSENSORS_CHILD_ID_ALL_KNOWING;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.MYSENSORS_NODE_ID_ALL_KNOWING;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.TYPE_MAP;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -106,8 +94,7 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("MySensors Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus(),
                 getThing().getUID().toString());
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                || bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE || bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
                 registerListeners();
             } else {
@@ -121,7 +108,8 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        logger.debug("Configuation update for thing {}-{}: {}", configuration.nodeId, configuration.childId, configurationParameters);
+        logger.debug("Configuation update for thing {}-{}: {}", configuration.nodeId, configuration.childId,
+                configurationParameters);
         super.handleConfigurationUpdate(configurationParameters);
     }
 
@@ -134,7 +122,7 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Command {} received for channel uid {}", command, channelUID);
-        
+
         // We don't handle refresh commands yet
         if (command == RefreshType.REFRESH) {
             return;
@@ -155,27 +143,29 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
             }
         } else {
             MySensorsTypeConverter adapter;
-            
+
             // RGB && RGBW only:
-            // if the brightness (Percentage) is changed it must be send via V_PERCENTAGE 
+            // if the brightness (Percentage) is changed it must be send via V_PERCENTAGE
             // and another converter must be used
             boolean rgbPercentageValue = false;
             boolean rgbOnOffValue = false;
-            if ((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW)) && (command instanceof OnOffType)) {
+            if ((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW))
+                    && (command instanceof OnOffType)) {
                 adapter = loadAdapterForChannelType(CHANNEL_STATUS);
                 rgbOnOffValue = true;
-            } else if((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW)) && !(command instanceof HSBType)) {
+            } else if ((channelUID.getId().equals(CHANNEL_RGB) || channelUID.getId().equals(CHANNEL_RGBW))
+                    && !(command instanceof HSBType)) {
                 adapter = loadAdapterForChannelType(CHANNEL_PERCENTAGE);
                 rgbPercentageValue = true;
 
-            // RGBW only
-            // if the config is set to use pure white instead of mixed white use special converter
-            } else if(channelUID.getId().equals(CHANNEL_RGBW) && configuration.usePureWhiteLightInRGBW) {
+                // RGBW only
+                // if the config is set to use pure white instead of mixed white use special converter
+            } else if (channelUID.getId().equals(CHANNEL_RGBW) && configuration.usePureWhiteLightInRGBW) {
                 adapter = new MySensorsRGBWPureTypeConverter();
             } else {
                 adapter = loadAdapterForChannelType(channelUID.getId());
             }
-            
+
             logger.debug("Adapter: {} loaded", adapter.getClass());
 
             if (adapter != null) {
@@ -191,18 +181,18 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
 
                     if (var != null) {
                         MySensorsMessageSubType subType;
-                        if(rgbPercentageValue) {
+                        if (rgbPercentageValue) {
                             subType = MySensorsMessageSubType.V_PERCENTAGE;
-                        } else if(rgbOnOffValue) {
+                        } else if (rgbOnOffValue) {
                             subType = MySensorsMessageSubType.V_STATUS;
                         } else {
                             subType = var.getType();
                         }
-                        
 
                         // Create the real message to send
                         MySensorsMessage newMsg = new MySensorsMessage(configuration.nodeId, configuration.childId,
-                                MySensorsMessageType.SET, MySensorsMessageAck.getById(intRequestAck), configuration.revertState, configuration.smartSleep);
+                                MySensorsMessageType.SET, MySensorsMessageAck.getById(intRequestAck),
+                                configuration.revertState, configuration.smartSleep);
 
                         newMsg.setSubType(subType);
                         newMsg.setMsg(adapter.fromCommand(command));
@@ -280,10 +270,11 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
             lastUpdate = dt;
             updateState(CHANNEL_LAST_UPDATE, dt);
             if (!isRevert) {
-                logger.debug("Setting last update for node/child {}/{} to {}", configuration.nodeId, configuration.childId, dt.toString());
+                logger.debug("Setting last update for node/child {}/{} to {}", configuration.nodeId,
+                        configuration.childId, dt.toString());
             } else {
-                logger.warn("Setting last update for node/child {}/{} BACK (due to revert) to {}", configuration.nodeId, configuration.childId,
-                        dt.toString());
+                logger.warn("Setting last update for node/child {}/{} BACK (due to revert) to {}", configuration.nodeId,
+                        configuration.childId, dt.toString());
             }
         }
     }
@@ -302,17 +293,19 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
 
     /**
      * Update the state of a child based on a MySensorsVariable var.
-     * 
+     *
      * In case a V_PERCENTAGE is received for a Cover the channel CHANNEL_COVER needs to be updated
-     * 
+     *
      * @param var variable that needs to be updated
      */
     private void handleChildUpdateEvent(MySensorsVariable var) {
         String channelName = getChannelNameFromVar(var);
         State newState = loadAdapterForChannelType(channelName).stateFromChannel(var);
         logger.debug("Updating channel: {}({}) value to: {}", channelName, var.getType(), newState);
-        if(myGateway.getNode(configuration.nodeId).getChild(configuration.childId).getPresentationCode() == MySensorsMessageSubType.S_COVER)
+        if (myGateway.getNode(configuration.nodeId).getChild(configuration.childId)
+                .getPresentationCode() == MySensorsMessageSubType.S_COVER) {
             updateState(CHANNEL_COVER, newState);
+        }
         updateState(channelName, newState);
     }
 
@@ -342,7 +335,8 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
      */
     private void handleIncomingMessageEvent(MySensorsMessage msg) {
         // Am I the all knowing node that receives all messages?
-        if (configuration.nodeId == MYSENSORS_NODE_ID_ALL_KNOWING && configuration.childId == MYSENSORS_CHILD_ID_ALL_KNOWING) {
+        if (configuration.nodeId == MYSENSORS_NODE_ID_ALL_KNOWING
+                && configuration.childId == MYSENSORS_CHILD_ID_ALL_KNOWING) {
             updateState(CHANNEL_MYSENSORS_MESSAGE,
                     new StringType(MySensorsMessage.generateAPIString(msg).replaceAll("(\\r|\\n)", "")));
         }
@@ -350,7 +344,8 @@ public class MySensorsThingHandler extends BaseThingHandler implements MySensors
 
     private void registerListeners() {
         if (!myGateway.isEventListenerRegisterd(this)) {
-            logger.debug("Event listener for node {}-{} not registered yet, registering...", configuration.nodeId, configuration.childId);
+            logger.debug("Event listener for node {}-{} not registered yet, registering...", configuration.nodeId,
+                    configuration.childId);
             myGateway.addEventListener(this);
         }
     }

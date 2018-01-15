@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,29 +28,22 @@ public class MySensorsBridgeConfiguration {
     public Boolean startupCheckEnabled; // should the startup check of the bridge at boot skipped?
     public Boolean networkSanCheckEnabled; // network sanity check enabled?
     public Integer networkSanCheckInterval; // determines interval to start NetworkSanityCheck
-    public Integer networkSanCheckConnectionFailAttempts; // connection will wait this number of attempts before disconnecting
+    public Integer networkSanCheckConnectionFailAttempts; // connection will wait this number of attempts before
+                                                          // disconnecting
     public boolean networkSanCheckSendHeartbeat; // network sanity checker will also send heartbeats to all known nodes
-    public Integer networkSanCheckSendHeartbeatFailAttempts; // disconnect nodes that fail to answer to heartbeat request
+    public Integer networkSanCheckSendHeartbeatFailAttempts; // disconnect nodes that fail to answer to heartbeat
+                                                             // request
 
     @Override
     public String toString() {
-        return "MySensorsBridgeConfiguration [serialPort=" + serialPort 
-                + " hardReset=" + hardReset
-                + ", ipAddress=" + ipAddress 
-                + ", tcpPort=" + tcpPort 
-                + ", sendDelay=" + sendDelay 
-                + ", baudRate=" + baudRate
-                + ", brokerName=" + brokerName
-                + ", topicSubscribe=" + topicSubscribe
-                + ", topicPublish=" + topicPublish
-                + ", imperial=" + imperial
-                + ", startupCheckEnabled=" + startupCheckEnabled 
-                + ", networSanCheckEnabled=" + networkSanCheckEnabled
-                + ", networkSanCheckInterval=" + networkSanCheckInterval 
-                + ", networkSanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts 
+        return "MySensorsBridgeConfiguration [serialPort=" + serialPort + " hardReset=" + hardReset + ", ipAddress="
+                + ipAddress + ", tcpPort=" + tcpPort + ", sendDelay=" + sendDelay + ", baudRate=" + baudRate
+                + ", brokerName=" + brokerName + ", topicSubscribe=" + topicSubscribe + ", topicPublish=" + topicPublish
+                + ", imperial=" + imperial + ", startupCheckEnabled=" + startupCheckEnabled + ", networSanCheckEnabled="
+                + networkSanCheckEnabled + ", networkSanCheckInterval=" + networkSanCheckInterval
+                + ", networkSanCheckConnectionFailAttempts=" + networkSanCheckConnectionFailAttempts
                 + ", networkSanCheckSendHeartbeat=" + networkSanCheckSendHeartbeat
-                + ", networkSanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts
-                + "]";
+                + ", networkSanCheckSendHeartbeatFailAttempts=" + networkSanCheckSendHeartbeatFailAttempts + "]";
     }
 
 }

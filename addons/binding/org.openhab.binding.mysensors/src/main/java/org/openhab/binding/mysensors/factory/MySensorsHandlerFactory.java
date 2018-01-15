@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,7 @@
  */
 package org.openhab.binding.mysensors.factory;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_ETH;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_MQTT;
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.THING_TYPE_BRIDGE_SER;
+import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,7 +29,6 @@ import org.slf4j.LoggerFactory;
 public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,8 +43,7 @@ public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             handler = new MySensorsThingHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_BRIDGE_SER) 
-                || thingTypeUID.equals(THING_TYPE_BRIDGE_ETH)
+        } else if (thingTypeUID.equals(THING_TYPE_BRIDGE_SER) || thingTypeUID.equals(THING_TYPE_BRIDGE_ETH)
                 || thingTypeUID.equals(THING_TYPE_BRIDGE_MQTT)) {
             handler = new MySensorsBridgeHandler((Bridge) thing);
         } else {
@@ -58,5 +52,5 @@ public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 
         return handler;
     }
-    
+
 }

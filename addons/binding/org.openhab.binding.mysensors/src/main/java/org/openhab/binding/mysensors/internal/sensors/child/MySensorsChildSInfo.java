@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * MySensors Child definition according to MySensors serial API
  * https://www.mysensors.org/download/serial_api_20
- * 
+ *
  * @author Andrea Cioni
  * @author Tim Oberföll
  *
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class MySensorsChildSInfo extends MySensorsChild {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     public MySensorsChildSInfo(int childId) {
         super(childId);
         setPresentationCode(MySensorsMessageSubType.S_INFO);

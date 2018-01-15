@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,25 +13,25 @@ import java.util.Map;
 
 /**
  * Every message contains a field with which the sender is able to indicate that it requests an
- * Acknowledgement for the message. 
- * 
+ * Acknowledgement for the message.
+ *
  * @author Tim Oberföll
  *
  */
 public enum MySensorsMessageAck {
-    TRUE    (1),
-    FALSE   (0);
-    
+    TRUE(1),
+    FALSE(0);
+
     private final int id;
-    
+
     private MySensorsMessageAck(int id) {
         this.id = id;
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     private static final Map<Integer, MySensorsMessageAck> ID = new HashMap<Integer, MySensorsMessageAck>();
     static {
         for (MySensorsMessageAck e : MySensorsMessageAck.values()) {

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: MySensors.test Binding
 Bundle-SymbolicName: org.openhab.binding.mysensors.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Fragment-Host: org.openhab.binding.mysensors

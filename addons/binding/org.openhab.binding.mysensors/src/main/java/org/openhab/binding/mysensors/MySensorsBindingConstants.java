@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -171,9 +171,7 @@ public class MySensorsBindingConstants {
      * Mapping MySensors message type/subtypes to channels.
      */
     public static final Map<MySensorsMessageSubType, String> CHANNEL_MAP = new HashMap<MySensorsMessageSubType, String>() {
-        /**
-         *
-         */
+
         private static final long serialVersionUID = -7970323220036599380L;
 
         {
@@ -240,7 +238,8 @@ public class MySensorsBindingConstants {
     /**
      * Inverse of the CHANNEL_MAP, duplicate allowed (see also Converters here below)
      */
-    public static final Map<String, MySensorsMessageSubType> INVERSE_CHANNEL_MAP = MySensorsUtility.invertMap(CHANNEL_MAP, true);
+    public static final Map<String, MySensorsMessageSubType> INVERSE_CHANNEL_MAP = MySensorsUtility
+            .invertMap(CHANNEL_MAP, true);
 
     /**
      * Converters will be used to map values from OH to/from MySensors Variables
@@ -383,8 +382,8 @@ public class MySensorsBindingConstants {
     /**
      * Inverse of the THING_UID_MAP, helps on building child for every thing type
      */
-    public static final Map<ThingTypeUID, MySensorsMessageSubType> INVERSE_THING_UID_MAP = MySensorsUtility.invertMap(THING_UID_MAP,
-            true);
+    public static final Map<ThingTypeUID, MySensorsMessageSubType> INVERSE_THING_UID_MAP = MySensorsUtility
+            .invertMap(THING_UID_MAP, true);
 
     /** Supported Things without bridge */
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_HUMIDITY,
@@ -408,7 +407,7 @@ public class MySensorsBindingConstants {
             THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_SOUND,
             THING_TYPE_RGB_LIGHT, THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY, THING_TYPE_MYSENSORS_MESSAGE,
             THING_TYPE_TEXT, THING_TYPE_IR, THING_TYPE_AIR_QUALITY, THING_TYPE_DUST, THING_TYPE_COLOR_SENSOR,
-            THING_TYPE_MOISTURE,THING_TYPE_SPRINKLER, THING_TYPE_HEATER, THING_TYPE_VIBRATION, THING_TYPE_WATER_LEAK,
-            THING_TYPE_GAS, THING_TYPE_GPS, THING_TYPE_SCENE_CONTROLLER, 
-            THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH, THING_TYPE_BRIDGE_MQTT);
+            THING_TYPE_MOISTURE, THING_TYPE_SPRINKLER, THING_TYPE_HEATER, THING_TYPE_VIBRATION, THING_TYPE_WATER_LEAK,
+            THING_TYPE_GAS, THING_TYPE_GPS, THING_TYPE_SCENE_CONTROLLER, THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH,
+            THING_TYPE_BRIDGE_MQTT);
 }

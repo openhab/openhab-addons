@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,13 +19,13 @@ import org.openhab.binding.mysensors.internal.sensors.MySensorsVariable;
 
 /**
  * Used to convert a String from an incoming MySensors message to a UpDownType
- * 
+ *
  * @author Andrea Cioni
  * @author Tim Oberföll
  *
  */
 public class MySensorsUpDownTypeConverter implements MySensorsTypeConverter {
-    
+
     @Override
     public MySensorsMessageSubType typeFromChannelCommand(String channel, Command command) {
         if (channel.equals(MySensorsBindingConstants.CHANNEL_COVER)) {
@@ -34,11 +34,11 @@ public class MySensorsUpDownTypeConverter implements MySensorsTypeConverter {
                     return MySensorsMessageSubType.V_UP;
                 } else if (command == UpDownType.DOWN) {
                     return MySensorsMessageSubType.V_DOWN;
-                } 
+                }
             } else if (command instanceof StopMoveType) {
                 if (command == StopMoveType.STOP) {
                     return MySensorsMessageSubType.V_STOP;
-                } 
+                }
             } else if (command instanceof PercentType) {
                 return MySensorsMessageSubType.V_PERCENTAGE;
             }

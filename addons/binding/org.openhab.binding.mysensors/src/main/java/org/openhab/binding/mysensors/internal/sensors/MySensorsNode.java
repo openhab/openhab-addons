@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -230,7 +230,8 @@ public class MySensorsNode {
      *
      * @throws NotInitializedException if state is null
      */
-    public MySensorsMessage updateVariableState(int childId, MySensorsMessageSubType subType, String state) throws NotInitializedException{
+    public MySensorsMessage updateVariableState(int childId, MySensorsMessageSubType subType, String state)
+            throws NotInitializedException {
         MySensorsMessage msg = null;
 
         if (state == null) {
@@ -241,7 +242,7 @@ public class MySensorsNode {
             MySensorsChild child = getChild(childId);
             MySensorsChildConfig childConfig = (child.getChildConfig().isPresent()) ? child.getChildConfig().get()
                     : new MySensorsChildConfig();
-            
+
             MySensorsVariable var = child.getVariable(subType);
             if (var != null) {
                 msg = new MySensorsMessage();
