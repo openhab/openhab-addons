@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.smappee.service;
+package org.openhab.binding.smappee.internal;
 
 /**
  * Interface for readings updates, what should be implemented to be a smappee handler.
@@ -22,11 +22,4 @@ public interface ReadingsUpdate {
      * @param devicereadings the devicereadings to set as a new state.
      */
     void newState(SmappeeDeviceReading devicereadings);
-
-    /**
-     * signals some invalid config.
-     *
-     * @param reason the reason why the config is invalid.
-     */
-    // public void invalidConfig(String reason);
 }

@@ -8,7 +8,11 @@
  */
 package org.openhab.binding.smappee;
 
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link SmappeeBinding} class defines common constants, which are
@@ -22,18 +26,46 @@ public class SmappeeBindingConstants {
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_SMAPPEE = new ThingTypeUID(BINDING_ID, "smappee");
+    public final static ThingTypeUID THING_TYPE_APPLIANCE = new ThingTypeUID(BINDING_ID, "smappee-appliance");
+    public final static ThingTypeUID THING_TYPE_ACTUATOR = new ThingTypeUID(BINDING_ID, "smappee-actuator");
+    public final static ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "smappee-sensor");
+
+    // All supported Bridge types
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_SMAPPEE);
+
+    // All supported Thing types
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_APPLIANCE,
+            THING_TYPE_ACTUATOR, THING_TYPE_SENSOR);
 
     // List of all Channel ids
+    // Smappee
     public final static String CHANNEL_CONSUMPTION = "channelconsumption";
     public final static String CHANNEL_SOLAR = "channelsolar";
     public final static String CHANNEL_ALWAYSON = "channelalwayson";
+    // Appliance
+    public final static String CHANNEL_APPLIANCE_POWER = "smappee-appliance-power";
+    public final static String CHANNEL_APPLIANCE_LASTUPDATE = "smappee-appliance-lastupdate";
+    // Actuator
+    public final static String CHANNEL_ACTUATOR_SWITCH = "smappee-actuator-switch";
+    // Sensor
+    public final static String CHANNEL_SENSOR_VALUE = "smappee-sensor-value";
+    public final static String PARAMETER_SENSOR_CHANNEL_ID = "smappee-sensor-channelid";
 
     // List of all Parameters
+    // Smappee
     public final static String PARAMETER_CLIENT_ID = "client_id";
     public final static String PARAMETER_CLIENT_SECRET = "client_secret";
     public final static String PARAMETER_USERNAME = "username";
     public final static String PARAMETER_PASSWORD = "password";
     public final static String PARAMETER_SERVICE_LOCATION_NAME = "servicelocationname";
     public final static String PARAMETER_POLLTIME = "polltime";
+    // Appliance
+    public final static String PARAMETER_APPLIANCE_ID = "id";
+    public final static String PARAMETER_APPLIANCE_TYPE = "type";
+    // Actuator
+    public final static String PARAMETER_ACTUATOR_ID = "id";
+    // Sensor
+    public final static String PARAMETER_SENSOR_ID = "id";
+    public final static String PARAMETER_SENSOR_TYPE = "type";
 
 }

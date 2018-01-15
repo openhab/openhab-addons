@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.smappee.service;
+package org.openhab.binding.smappee.internal;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

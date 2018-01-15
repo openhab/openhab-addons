@@ -7,17 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.smappee.service;
+package org.openhab.binding.smappee.internal;
 
 /**
- * Where is the Smappee located ? The response
+ * Where is the Smappee located ?
  *
  * @author Niko Tanghe - Initial contribution
  */
-public class SmappeeServiceLocationResponse {
-    public String appname;
-
-    public SmappeeServiceLocation[] serviceLocations;
+public class SmappeeServiceLocation {
+    public int serviceLocationId;
+    public String name;
 }
 
 // Example JSON received from the Smappee API :
@@ -25,7 +24,7 @@ public class SmappeeServiceLocationResponse {
 // "appName": "MyFirstApp",
 // "serviceLocations": [
 // {
-// "serviceLocationId": 123456,
+// "serviceLocationId": 12345,
 // "name": "Home"
 // }
 // ]

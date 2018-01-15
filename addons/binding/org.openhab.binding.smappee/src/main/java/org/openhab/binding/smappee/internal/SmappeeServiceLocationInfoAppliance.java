@@ -7,25 +7,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.smappee.service;
+package org.openhab.binding.smappee.internal;
 
 /**
- * Where is the Smappee located ?
+ * The result of a smappee service location info reading
+ * This contains info about the appliance that smappee has detected on your net
  *
  * @author Niko Tanghe - Initial contribution
  */
-public class SmappeeServiceLocation {
-    public int serviceLocationId;
-    public String name;
-}
 
-// Example JSON received from the Smappee API :
-// {
-// "appName": "MyFirstApp",
-// "serviceLocations": [
-// {
-// "serviceLocationId": 12345,
-// "name": "Home"
-// }
-// ]
-// }
+public class SmappeeServiceLocationInfoAppliance {
+    public String id;
+    public String name;
+    public String type;
+}

@@ -11,18 +11,24 @@ package org.openhab.binding.smappee.handler;
 
 import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
 
+import java.util.Hashtable;
+
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+//import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.smappee.service.ReadingsUpdate;
-import org.openhab.binding.smappee.service.SmappeeDeviceReading;
-import org.openhab.binding.smappee.service.SmappeeService;
+import org.openhab.binding.smappee.internal.ReadingsUpdate;
+import org.openhab.binding.smappee.internal.SmappeeDeviceReading;
+import org.openhab.binding.smappee.internal.SmappeeService;
+import org.openhab.binding.smappee.internal.discovery.SmappeeDiscoveryService;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +38,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Niko Tanghe - Initial contribution
  */
-public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
+public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeHandler.class);
-    private SmappeeService smappeeService;
+    public SmappeeService smappeeService;
 
-    public SmappeeHandler(Thing thing) {
-        super(thing);
+    private SmappeeDiscoveryService discoveryService;
+    private ServiceRegistration<?> discoveryServiceRegistration;
+
+    public SmappeeHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
@@ -104,9 +113,15 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
             return;
         }
 
-        int pollTimeMSec = Integer.parseInt(pollTime) * 60000;
+        int pollTimeMSec = 300000; // 5 minutes
+        try {
+            pollTimeMSec = Integer.parseInt(pollTime) * 60000;
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid polling time : '{}', taking default of 5 min", pollTime);
+        }
 
         logger.debug("Initialize Network handler.");
+
         smappeeService = new SmappeeService(clientId, clientSecret, username, password, serviceLocationName,
                 pollTimeMSec);
 
@@ -120,13 +135,41 @@ public class SmappeeHandler extends BaseThingHandler implements ReadingsUpdate {
 
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not find a smappee with configured service location name");
+                    "Could not find a smappee with configured service location name '" + serviceLocationName + "'");
         }
+
+        logger.debug("Initialize discovery service.");
+        registerDeviceDiscoveryService();
+        discoveryService.startScan(null);
     }
 
     @Override
     public void dispose() {
         smappeeService.stopAutomaticRefresh();
+
+        if (discoveryService != null) {
+            discoveryService.stopScan();
+            unregisterDeviceDiscoveryService();
+        }
     }
 
+    private void registerDeviceDiscoveryService() {
+        discoveryService = new SmappeeDiscoveryService(this, this.thing.getUID());
+        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<String, Object>());
+        discoveryService.activate();
+    }
+
+    private void unregisterDeviceDiscoveryService() {
+        if (discoveryServiceRegistration != null) {
+            if (bundleContext != null) {
+                SmappeeDiscoveryService service = (SmappeeDiscoveryService) bundleContext
+                        .getService(discoveryServiceRegistration.getReference());
+                service.deactivate();
+            }
+            discoveryServiceRegistration.unregister();
+            discoveryServiceRegistration = null;
+            discoveryService = null;
+        }
+    }
 }
