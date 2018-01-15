@@ -20,6 +20,8 @@ Currently supports these things
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact)
 - contact sensors (OPEN/CLOSE contact)
+- alarms (both interior/external)
+- pods
 - action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
 
 Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
@@ -50,6 +52,7 @@ A bridge does not expose any channel.
 Gateways expose this read only channel:
 
 - version (this is a firmware version of your Tahoma gateway)
+- status (this is a status of your Tahoma gateway)
 
 Roller shutters, screens, blinds, garage doors, awnings & windows expose these channels:
 
@@ -80,6 +83,24 @@ A smoke sensor, occupancy sensor and contact sensor things have this channel:
 A light sensors thing exposes this channel:
 
 - luminance (light luminance value in luxes) 
+
+A pod exposes these channels:
+
+- cyclic_button_state (pod cyclic button state)
+- battery_status_state (pod battery status state)
+- lighting_led_pod_mod_state (lighting led pod mod state)
+
+An interior alarm exposes these channels:
+
+- alarm_command (used for sending commands to Somfy alarm device)
+- intrusion_control (used for alarm external intrusion controlling)
+- alarm_state (a state of the Somfy alarm)
+- target_alarm_state (a target state of the Somfy alarm)
+- intrusion_state (an intrusion state of the Somfy alarm)
+
+An external alarm exposes this channel:
+
+- active_zones_state (a state of external alarm active zones)
 
 ## Full Example
 
