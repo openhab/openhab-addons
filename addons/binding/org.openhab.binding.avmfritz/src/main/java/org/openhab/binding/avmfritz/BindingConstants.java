@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class BindingConstants {
 
     public static final String BINDING_ID = "avmfritz";
-    public static final String IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_USER = "user";
+    public static final String CONFIG_PASSWORD = "password";
     public static final String BRIDGE_FRITZBOX = "fritzbox";
     public static final String BRIDGE_MODEL_NAME = "FRITZ!Box";
     public static final String PL546E_MODEL_NAME = "FRITZ!Powerline";

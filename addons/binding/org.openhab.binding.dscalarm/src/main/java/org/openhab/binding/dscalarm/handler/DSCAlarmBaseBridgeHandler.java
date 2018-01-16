@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -647,7 +647,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (password == null || password.length() < 1 || password.length() > 6) {
-                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars", password);
+                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars!");
                     break;
                 }
                 data = password;

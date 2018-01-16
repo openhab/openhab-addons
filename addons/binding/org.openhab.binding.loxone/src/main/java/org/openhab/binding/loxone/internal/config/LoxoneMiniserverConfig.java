@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,10 @@ public class LoxoneMiniserverConfig {
      */
     public String password;
     /**
+     * Authentication token acquired from the Miniserver
+     */
+    public String authToken;
+    /**
      * Time in seconds between binding initialization and first connection attempt
      */
     public int firstConDelay;
@@ -66,4 +70,5 @@ public class LoxoneMiniserverConfig {
      * Websocket client's max text message size in kB
      */
     public int maxTextMsgSize;
+    public int authMethod;
 }

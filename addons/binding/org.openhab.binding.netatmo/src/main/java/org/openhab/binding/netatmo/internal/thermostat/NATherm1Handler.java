@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -110,7 +110,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         int result = -1;
 
         for (NAThermProgram thermProgram : thermProgramList) {
-            if (thermProgram.getSelected() != null && thermProgram.getSelected().booleanValue()) {
+            if (thermProgram.getSelected() != null && thermProgram.getSelected()) {
                 // By default we'll use the first slot of next week - this case will be true if
                 // we are in the last schedule of the week so below loop will not exit by break
                 int next = thermProgram.getTimetable().get(0).getMOffset() + (7 * 24 * 60);
@@ -145,7 +145,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                     case CHANNEL_SETPOINT_TEMP: {
                         // Switch the thermostat to manual mode on the desired setpoint for given duration
                         Calendar cal = Calendar.getInstance();
-                        cal.add(Calendar.MINUTE, getSetpointDefaultDuration());
+                        cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
                         getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
                                 (int) (cal.getTimeInMillis() / 1000), Float.parseFloat(command.toString()));
                         updateState(channelUID, new DecimalType(command.toString()));
@@ -159,8 +159,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         }
     }
 
-    private Integer getSetpointDefaultDuration() {
-        return (Integer) config.get(SETPOINT_DEFAULT_DURATION);
+    private int getSetPointDefaultDuration() {
+        return ((Number) config.get(SETPOINT_DEFAULT_DURATION)).intValue();
     }
 
 }

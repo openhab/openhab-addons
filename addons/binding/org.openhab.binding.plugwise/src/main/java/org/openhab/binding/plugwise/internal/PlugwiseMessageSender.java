@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.plugwise.internal;
 
 import static org.openhab.binding.plugwise.internal.PlugwiseCommunicationContext.*;
+import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.NETWORK_STATUS_REQUEST;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -104,7 +105,7 @@ public class PlugwiseMessageSender {
                 outputChannel.write(bytebuffer);
                 sequentialWriteErrors = 0;
             } catch (IOException e) {
-                logger.warn("Error writing '{}' to serial port {}: {}", packetString,
+                logger.warn("Error writing '{}' to serial port {}: {}", messageHexString,
                         context.getConfiguration().getSerialPort(), e.getMessage());
                 sequentialWriteErrors++;
                 return;
@@ -115,10 +116,16 @@ public class PlugwiseMessageSender {
             logger.debug("Removing from acknowledgedQueue: {}", ack);
 
             if (ack == null) {
-                logger.warn("Error sending: No ACK received after 1 second: {}", packetString);
+                String logMsg = "Error sending: No ACK received after 1 second: {}";
+                if (NETWORK_STATUS_REQUEST.equals(message.getType())) {
+                    // Log on debug because the Stick will be set offline anyhow
+                    logger.debug(logMsg, messageHexString);
+                } else {
+                    logger.warn(logMsg, messageHexString);
+                }
             } else if (!ack.isSuccess()) {
                 if (ack.isError()) {
-                    logger.warn("Error sending: Negative ACK: {}", packetString);
+                    logger.warn("Error sending: Negative ACK: {}", messageHexString);
                 }
             } else {
                 // Update the sent message with the new sequence number

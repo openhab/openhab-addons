@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -174,59 +174,67 @@ public class StopHandler extends BaseBridgeHandler {
     }
 
     private boolean fetchAndUpdateStopData() {
-        ApiHandler apiHandler = getApiHandler();
-        if (apiHandler == null) {
-            // We must be offline.
-            return false;
-        }
-        boolean alreadyFetching = !fetchInProgress.compareAndSet(false, true);
-        if (alreadyFetching) {
-            return false;
-        }
-        logger.debug("Fetching data for stop ID {}", config.getStopId());
-        String url = String.format("http://%s/api/where/arrivals-and-departures-for-stop/%s.json?key=%s",
-                apiHandler.getApiServer(), config.getStopId(), apiHandler.getApiKey());
-        URI uri;
         try {
-            uri = new URI(url);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to parse '%s' as a URI.", url);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "stopId or apiKey is set to a bogus value");
-            return false;
-        }
-        ContentResponse response;
-        try {
-            response = httpClient.newRequest(uri).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            return false;
-        }
-        if (response.getStatus() != HttpStatus.OK_200) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    String.format("While fetching stop data: %d: %s", response.getStatus(), response.getReason()));
-            return false;
-        }
-        ObaStopArrivalResponse data = gson.fromJson(response.getContentAsString(), ObaStopArrivalResponse.class);
-        routeDataLastUpdateMs = data.currentTime;
-        updateStatus(ThingStatus.ONLINE);
+            ApiHandler apiHandler = getApiHandler();
+            if (apiHandler == null) {
+                // We must be offline.
+                return false;
+            }
+            boolean alreadyFetching = !fetchInProgress.compareAndSet(false, true);
+            if (alreadyFetching) {
+                return false;
+            }
+            logger.debug("Fetching data for stop ID {}", config.getStopId());
+            String url = String.format("http://%s/api/where/arrivals-and-departures-for-stop/%s.json?key=%s",
+                    apiHandler.getApiServer(), config.getStopId(), apiHandler.getApiKey());
+            URI uri;
+            try {
+                uri = new URI(url);
+            } catch (URISyntaxException e) {
+                logger.error("Unable to parse {} as a URI.", url);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "stopId or apiKey is set to a bogus value");
+                return false;
+            }
+            ContentResponse response;
+            try {
+                response = httpClient.newRequest(uri).send();
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                return false;
+            }
+            if (response.getStatus() != HttpStatus.OK_200) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        String.format("While fetching stop data: %d: %s", response.getStatus(), response.getReason()));
+                return false;
+            }
+            ObaStopArrivalResponse data = gson.fromJson(response.getContentAsString(), ObaStopArrivalResponse.class);
+            routeDataLastUpdateMs = data.currentTime;
+            updateStatus(ThingStatus.ONLINE);
 
-        ArrayListMultimap<String, ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData = ArrayListMultimap
-                .create();
-        synchronized (routeData) {
-            routeData = ArrayListMultimap.create();
-            for (ObaStopArrivalResponse.ArrivalAndDeparture d : data.data.entry.arrivalsAndDepartures) {
-                routeData.put(d.routeId, d);
+            ArrayListMultimap<String, ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData = ArrayListMultimap
+                    .create();
+            synchronized (routeData) {
+                routeData = ArrayListMultimap.create();
+                for (ObaStopArrivalResponse.ArrivalAndDeparture d : data.data.entry.arrivalsAndDepartures) {
+                    routeData.put(d.routeId, d);
+                }
+                for (String key : routeData.keySet()) {
+                    List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = Lists.newArrayList(routeData.get(key));
+                    Collections.sort(copy);
+                    copiedRouteData.putAll(key, copy);
+                }
             }
-            for (String key : routeData.keySet()) {
-                List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = Lists.newArrayList(routeData.get(key));
-                Collections.sort(copy);
-                copiedRouteData.putAll(key, copy);
+            for (RouteDataListener listener : routeDataListeners) {
+                listener.onNewRouteData(routeDataLastUpdateMs, copiedRouteData.get(listener.getRouteId()));
             }
+            return true;
+        } catch (Exception e) {
+            logger.debug("Exception refreshing route data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return false;
+        } finally {
+            fetchInProgress.set(false);
         }
-        for (RouteDataListener listener : routeDataListeners) {
-            listener.onNewRouteData(routeDataLastUpdateMs, copiedRouteData.get(listener.getRouteId()));
-        }
-        return true;
     }
 }

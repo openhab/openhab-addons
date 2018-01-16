@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,7 +19,7 @@ import org.openhab.binding.avmfritz.handler.IFritzHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +57,10 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
-                final Unmarshaller jaxbUnmarshaller = JAXBtUtils.JAXBCONTEXT.createUnmarshaller();
-                final DevicelistModel model = (DevicelistModel) jaxbUnmarshaller.unmarshal(new StringReader(response));
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (final DeviceModel device : model.getDevicelist()) {
+                    for (DeviceModel device : model.getDevicelist()) {
                         handler.addDeviceList(device);
                     }
                     handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
@@ -71,7 +71,8 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {
-            logger.info("request is invalid: {}", status);
+            logger.debug("request is invalid: {}", status);
+            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Request is invalid");
         }
     }
 }
