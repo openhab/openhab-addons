@@ -198,6 +198,14 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
                 }
                 break;
+            case CHANNEL_INPUTEXECUTEACTION:
+                if (command instanceof StringType) {
+                    connection.inputExecuteAction(command.toString());
+                    updateState(CHANNEL_INPUTEXECUTEACTION, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_INPUTEXECUTEACTION, UnDefType.UNDEF);
+                }
+                break;
             case CHANNEL_SYSTEMCOMMAND:
                 if (command instanceof StringType) {
                     connection.sendSystemCommand(command.toString());
