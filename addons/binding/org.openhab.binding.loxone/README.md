@@ -13,6 +13,8 @@ The following features are currently supported:
 *   Management of a Websocket connection to the Miniserver and updating Thing status accordingly
 *   Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
 *   Passing channel commands to the Miniserver's controls
+*   Hash-based and token-based authentication methods
+*    Command encryption and response decryption
 
 ## Things
 
@@ -56,11 +58,13 @@ There can be following reasons why Miniserver status is `OFFLINE`:
 
 *   __Configuration Error__
     *   _Unknown host_
-    *   Miniserver host/ip address can't be resolved. No connection attempt will be made.
-    *   _User not authorized_
+        *   Miniserver host/ip address can't be resolved. No connection attempt will be made.
+    *   _User authentication error_
         *   Invalid user name or password or user not authorized to connect to the Miniserver. Binding will make another attempt to connect after some time.
     *   _Too many failed login attempts - stopped trying_
         *   Miniserver locked out user for too many failed login attempts. In this case binding will stop trying to connect to the Miniserver. A new connection will be attempted only when user corrects user name or password in the configuration parameters.
+    *  _Enter password to generate a new token_
+        * Authentication using stored token failed - either token is wrong or it. A password must be reentered in the binding settings to acquire a new token.
     *   _Internal error_
         *   Probably a code defect, collect debug data and submit an issue. Binding will try to reconnect, but with unknown chance for success.
     *   _Other_
@@ -76,6 +80,24 @@ There can be following reasons why Miniserver status is `OFFLINE`:
         *   Miniserver closed connection because there was no activity from binding. It should not occur under normal conditions, as it is prevented by sending keep-alive messages from the binding to the Miniserver. By default Miniserver's timeout is 5 minutes and period between binding's keep-alive messages is 4 minutes. If you see this error, try changing the keep-alive period in binding's configuration to a smaller value.
     *   _Other_
         *   An exception occured and its details will be displayed
+
+### Security
+
+The binding supports the following authentication methods, which are selected automatically based on the firmware version. They can be also chosen manually in the advanced settings.
+
+| Method      | Miniserver Firmware | Authentication                                                                 | Encryption | Requirements                                          |
+|-------------|---------------------|--------------------------------------------------------------------------------|------------|-------------------------------------------------------|
+| Hash-based  | 8.x                 | HMAC-SHA1 hash on user and password                                            | None       | None                                                  |
+| Token-based | 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
+
+For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration. 
+
+The acquired token will remain active for several weeks following the last succesful authentication with this token. If the connection is not established used during that period and the token expires, a user password has to be re-entered in the binding settings to acquire a new token.
+
+In case a websocket connection to the Miniserver remains active for the whole duration of the token's life span, the binding will refresh the token one day before token expiration, without the need of providing the password.
+
+
+A method to enable unrestricted security policy depends on the JRE version and vendor, some examples can be found [here](https://www.petefreitag.com/item/844.cfm) and [here](https://stackoverflow.com/questions/41580489/how-to-install-unlimited-strength-jurisdiction-policy-files).
 
 ## Channels
 
@@ -95,8 +117,7 @@ Currently supported controls are presented in the table below.
 | Radio                                                     | [Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)                                                                                                                                                                                                                                                  | `Number`                                                  | `Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)                        |
 | Switch                                                    | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/)                                                                                                                                                                     | `Switch`                                                  | `OnOffType.*`                                                                                                                |
 | TextState                                                 | [State](https://www.loxone.com/enen/kb/state/)                                                                                                                                                                                                                                                                            | `String`                                                  | none (read-only value)                                                                                                       |
-| TimedSwitch                                               | [Stairwell light switch](https://www.loxone.com/enen/kb/stairwell-light-switch/) or [Multifunction switch](https://www.loxone.com/enen/kb/multifunction-switch/)                                                                                                                                                          | `Switch` <br> <br> `Number`                               | `OnOffType.*` (ON send pulse to Loxone) <br> <br> Read-only countdown value to off                                           |
-
+| TimedSwitch                                               | [Stairwell light switch](https://www.loxone.com/enen/kb/stairwell-light-switch/) or [Multifunction switch](https://www.loxone.com/enen/kb/multifunction-switch/)                                                                                                                                                          | `Switch` <br> <br> `Number`                               | `OnOffType.*` (ON sends pulse to Loxone) <br> <br> Read-only countdown value to off                                           |
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/) application.
 
@@ -116,7 +137,13 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-        `keepAlivePeriod=120`
+        keepAlivePeriod=120
+
+### Security
+
+| ID           | Name                  | Values                                          | Default      | Description                                           |
+|--------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
+| `authMethod` | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
 
 ### Timeouts
 
@@ -140,13 +167,9 @@ They can be tuned, when abnormal behavior of the binding is observed, which can 
 | `maxBinMsgSize`  | Maximum binary message size (kB) | 0-100 MB | 3072 (3 MB) | For Websocket client, a maximum size of a binary message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long binary messages received, you may need to adjust this parameter. |
 | `maxTextMsgSize` | Maximum text message size (kB)   | 0-100 MB | 512 KB      | For Websocket client, a maximum size of a text message that can be received from the Miniserver. If you get communication errors with a message indicating there are too long text messages received, you may need to adjust this parameter.     |
 
-
 ## Limitations
 
-*   As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on.
-If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches.
-To change it to the push button style, you have to create item manually with `autoupdate=false` parameter.
-An example of such item definition is given in the _Items_ section above.
+*   As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
 
 ## Automatic Configuration Example
 
@@ -182,7 +205,7 @@ In this example we will manually configure:
 
 ```
 loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80
-  ```
+```
 
 ### items/loxone.items:
 

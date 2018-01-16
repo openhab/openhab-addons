@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -307,7 +307,7 @@ public class SocketChannelSession implements SocketSession {
                     // Ending thread execution
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.debug("Uncaught exception {}: {}", e.getMessage(), e);
+                    logger.debug("Uncaught exception {}: ", e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             }

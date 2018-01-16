@@ -34,21 +34,18 @@ The thing has a few configuration parameters:
 | stationId | Unique ID of the measuring station.                                     |
 | refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
 
-
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
-```
+```java
 37.8,-122.4
 37.8255,-122.456
 ```
 
 If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
-
 ## Channels
 
 The AirQuality information that is retrieved is available as these channels:
-
 
 | Channel ID      | Item Type | Description                                  |
 |-----------------|-----------|----------------------------------------------|
@@ -67,17 +64,15 @@ The AirQuality information that is retrieved is available as these channels:
 | pressure        | Number    | Pressure level                               |
 | humidity        | Number    | Humidity level                               |
 
-
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 
 *Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
-
 
 ## Full Example
 
 airquality.map:
 
-```
+```text
 -=-
 UNDEF=No data
 NULL=No data
@@ -92,7 +87,7 @@ HAZARDOUS=Hazardous
 
 airquality.things:
 
-```
+```java
 airquality:aqi:home "AirQuality" @ "Krakow" [ apikey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
 airquality:aqi:warsaw "AirQuality in Warsaw" [ apikey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
 airquality:aqi:brisbane "AirQuality in Brisbane" [ apikey="XXXXXXXXXXXX", stationId=5115 ]
@@ -100,7 +95,7 @@ airquality:aqi:brisbane "AirQuality in Brisbane" [ apikey="XXXXXXXXXXXX", statio
 
 airquality.items:
 
-```
+```java
 Group AirQuality <flow>
 
 Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:aqi:home:aqiLevel" }
@@ -124,7 +119,7 @@ Number   Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airqu
 
 airquality.sitemap:
 
-```
+```perl
 sitemap airquality label="Air Quality" {
     Frame {
         Text item=Aqi_Level valuecolor=[
@@ -171,7 +166,7 @@ sitemap airquality label="Air Quality" {
 
 airquality.rules:
 
-```
+```java
 rule "Change lamp color to reflect Air Quality"
 when
     Item Aqi_Description changed

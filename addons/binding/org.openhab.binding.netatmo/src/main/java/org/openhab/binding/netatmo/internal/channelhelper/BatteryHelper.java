@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
 public class BatteryHelper {
     private Logger logger = LoggerFactory.getLogger(BatteryHelper.class);
 
-    private int batteryMin = 0;
-    private int batteryLow = 0;
-    private int batteryMax = 1;
+    private int batteryMin;
+    private int batteryLow;
+    private int batteryMax;
 
-    Object module;
+    private Object module;
 
     public BatteryHelper(String batteryLevels) {
         List<String> thresholds = Arrays.asList(batteryLevels.split(","));
@@ -60,11 +60,11 @@ public class BatteryHelper {
                     switch (channelId) {
                         case CHANNEL_BATTERY_LEVEL:
                             // when batteries are freshly changed, API may return a value superior to batteryMax !
-                            int correctedVp = Math.min(value.intValue(), batteryMax);
+                            int correctedVp = Math.min(value, batteryMax);
                             int batteryPercent = (100 * (correctedVp - batteryMin) / (batteryMax - batteryMin));
                             return Optional.of(ChannelTypeUtils.toDecimalType(batteryPercent));
                         case CHANNEL_LOW_BATTERY:
-                            return Optional.of(value.intValue() < batteryLow ? OnOffType.ON : OnOffType.OFF);
+                            return Optional.of(value < batteryLow ? OnOffType.ON : OnOffType.OFF);
                     }
                 }
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
