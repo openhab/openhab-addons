@@ -214,7 +214,7 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.max/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-mcp23017" description="mcp23017 i2c extention chip binding" version="${project.version}">
+    <feature name="openhab-binding-mcp23017" description="MCP23017 Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mcp23017/${project.version}</bundle>
     </feature>

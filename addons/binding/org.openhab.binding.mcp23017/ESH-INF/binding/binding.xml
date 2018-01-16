@@ -4,8 +4,8 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>mcp23017 Binding</name>
-    <description>This is the binding for handle mcp23017 i2c extention chip.</description>
+    <name>MCP23017 Binding</name>
+    <description>This is the binding for MCP23017 I/O expansion chips.</description>
     <author>Anatol Ogorek</author>
 
 </binding:binding>

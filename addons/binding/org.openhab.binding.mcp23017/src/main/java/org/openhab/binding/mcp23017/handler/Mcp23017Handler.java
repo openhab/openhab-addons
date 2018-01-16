@@ -113,18 +113,18 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     private boolean isChannelGroupValid(ChannelUID channelUID) {
         if (!channelUID.isInGroup()) {
-            logger.info("Defined channel not in group: {}", channelUID.getAsString());
+            logger.debug("Defined channel not in group: {}", channelUID.getAsString());
             return false;
         }
         boolean channelGroupValid = SUPPORTED_CHANNEL_GROUPS.contains(channelUID.getGroupId());
-        logger.info("Defined channel in group: {}. Valid: {}", channelUID.getGroupId(), channelGroupValid);
+        logger.debug("Defined channel in group: {}. Valid: {}", channelUID.getGroupId(), channelGroupValid);
 
         return channelGroupValid;
     }
 
     private boolean isChannelValid(ChannelUID channelUID) {
         boolean channelValid = SUPPORTED_CHANNELS.contains(channelUID.getIdWithoutGroup());
-        logger.info("Is channel {} in supported channels: {}", channelUID.getIdWithoutGroup(), channelValid);
+        logger.debug("Is channel {} in supported channels: {}", channelUID.getIdWithoutGroup(), channelValid);
         return channelValid;
     }
 
