@@ -10,7 +10,10 @@ package org.openhab.binding.onkyo.handler;
 
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -532,7 +535,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             try {
                 byte[] imgData = onkyoAlbumArt.getAlbumArt();
                 if (imgData != null && imgData.length > 0) {
-                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData));
+                    String mimeType = onkyoAlbumArt.getAlbumArtMimeType();
+                    if (mimeType.isEmpty()) {
+                        mimeType = guessMimeTypeFromData(data.getBytes());
+                    }
+                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData, mimeType));
                 } else {
                     updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
                 }
@@ -738,11 +745,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private boolean isChannelAvailable(String channel) {
         List<Channel> channels = getThing().getChannels();
-        if (channels != null) {
-            for (Channel c : channels) {
-                if (c.getUID().getId().equals(channel)) {
-                    return true;
-                }
+        for (Channel c : channels) {
+            if (c.getUID().getId().equals(channel)) {
+                return true;
             }
         }
         return false;
@@ -815,5 +820,21 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     @Override
     public void setVolume(PercentType volume) throws IOException {
         handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
+    }
+
+    private String guessMimeTypeFromData(byte[] data) {
+        String mimeType = RawType.DEFAULT_MIME_TYPE;
+        try {
+            mimeType = URLConnection
+                    .guessContentTypeFromStream(new BufferedInputStream(new ByteArrayInputStream(data)));
+            logger.debug("Mime type guess from content: {}", mimeType);
+            if (mimeType == null) {
+                mimeType = RawType.DEFAULT_MIME_TYPE;
+            }
+        } catch (IOException e) {
+            // fall back to default mime
+        }
+        logger.debug("Mime type: {}", mimeType);
+        return mimeType;
     }
 }
