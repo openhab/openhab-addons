@@ -11,7 +11,9 @@ Tested successfully with DS18B20 sensor on Raspberry PI 3.
 
 ## Binding Configuration
 
-The binding does not require any special configuration.
+The binding requires OneWire sensor to be properly connected to Raspberry PI GPIO bus,
+"w1_gpio" and "wire" kernel modules should be loaded.
+Configuration is proper when /sys/bus/w1/devices folder is present, and contains sensor's data. 
 
 ## Thing Configuration
 

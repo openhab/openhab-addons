@@ -8,12 +8,10 @@
  */
 package org.openhab.binding.onewiregpio;
 
-import java.math.BigDecimal;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link OneWireGPIOBinding} class defines common constants, which are
+ * The {@link OneWireGPIOBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Anatol Ogorek - Initial contribution
@@ -36,12 +34,8 @@ public class OneWireGPIOBindingConstants {
      */
     public static final Integer DEFAULT_REFRESH_TIME = Integer.valueOf(600);
 
-    public static final String DEFAULT_GPIO_BUS_FOLDER = "";
-
     public static final String GPIO_BUS_FILE = "gpio_bus_file";
 
     public static final String FILE_TEMP_MARKER = "t=";
-
-    public static final BigDecimal INVALID_TEMPERATURE = BigDecimal.valueOf(-127);
 
 }

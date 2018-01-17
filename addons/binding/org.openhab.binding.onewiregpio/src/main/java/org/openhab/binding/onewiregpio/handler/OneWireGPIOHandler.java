@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -78,9 +79,9 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     private void checkConfiguration() {
         Configuration configuration = getConfig();
         gpioBusFile = (String) configuration.get(GPIO_BUS_FILE);
-        if (gpioBusFile == null) {
+        if (StringUtils.isEmpty(gpioBusFile)) {
             logger.warn("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid path to w1_slave file");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "The path to the w1_slave sensor data file is missing.");
             return;
         }
 
@@ -109,18 +110,20 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     private void publishSensorValue(ChannelUID channelUID) {
         String channelID = channelUID.getId();
-        State state = null;
         switch (channelID) {
             case TEMPERATURE:
-                BigDecimal temp = readSensorTemperature(gpioBusFile);
-                temp = temp.setScale(2, BigDecimal.ROUND_HALF_UP);
-                state = new DecimalType(temp);
+                publishTemperatureSensorState(channelUID);
+                break;
+            default:
+                logger.debug("Can not update channel with ID : {} - channel name might be wrong!", channelID);
                 break;
         }
-        if (state != null) {
-            updateState(channelID, state);
-        } else {
-            logger.debug("Can not update channel with ID : {} - channel name might be wrong!", channelID);
+    }
+
+    private void publishTemperatureSensorState(ChannelUID channelUID) {
+        BigDecimal temp = readSensorTemperature(gpioBusFile);
+        if (temp != null) {
+            updateState(channelUID, new DecimalType(temp));
         }
     }
 
@@ -140,14 +143,11 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             } else {
                 logger.debug(
                         "GPIO file didn't contain line with 't=' where temperature value should be available. Check if configuration points to the proper file");
-                updateStatus(ThingStatus.OFFLINE);
-                return OneWireGPIOBindingConstants.INVALID_TEMPERATURE;
+                return null;
             }
         } catch (IOException | InvalidPathException e) {
             logger.warn("error reading GPIO bus file. File path is: {}.  Check if path is proper. {}", gpioFile, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check if path to w1_slave is proper");
-            return OneWireGPIOBindingConstants.INVALID_TEMPERATURE;
+            return null;
         }
 
     }
