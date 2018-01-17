@@ -10,10 +10,7 @@ package org.openhab.binding.onkyo.handler;
 
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
@@ -537,7 +535,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 if (imgData != null && imgData.length > 0) {
                     String mimeType = onkyoAlbumArt.getAlbumArtMimeType();
                     if (mimeType.isEmpty()) {
-                        mimeType = guessMimeTypeFromData(data.getBytes());
+                        mimeType = guessMimeTypeFromData(imgData);
                     }
                     updateState(CHANNEL_ALBUM_ART, new RawType(imgData, mimeType));
                 } else {
@@ -824,15 +822,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private String guessMimeTypeFromData(byte[] data) {
         String mimeType = RawType.DEFAULT_MIME_TYPE;
-        try {
-            mimeType = URLConnection
-                    .guessContentTypeFromStream(new BufferedInputStream(new ByteArrayInputStream(data)));
-            logger.debug("Mime type guess from content: {}", mimeType);
-            if (mimeType == null) {
-                mimeType = RawType.DEFAULT_MIME_TYPE;
-            }
-        } catch (IOException e) {
-            // fall back to default mime
+        mimeType = HttpUtil.guessContentTypeFromData(data);
+        logger.debug("Mime type guess from content: {}", mimeType);
+        if (mimeType == null) {
+            mimeType = RawType.DEFAULT_MIME_TYPE;
         }
         logger.debug("Mime type: {}", mimeType);
         return mimeType;
