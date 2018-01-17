@@ -37,8 +37,9 @@ public class DeviceTestBase {
     protected final Connection connection;
     @NonNull
     protected final TPLinkSmartHomeConfiguration configuration = new TPLinkSmartHomeConfiguration();
-    @NonNull
-    protected final DeviceState deviceState;
+    protected DeviceState deviceState;
+
+    private final String deviceStateFilename;
 
     @Mock
     private Socket socket;
@@ -52,7 +53,7 @@ public class DeviceTestBase {
      * @throws IOException exception in case device not reachable
      */
     public DeviceTestBase(@NonNull String deviceStateFilename) throws IOException {
-        deviceState = new DeviceState(ModelTestUtil.readJson(deviceStateFilename));
+        this.deviceStateFilename = deviceStateFilename;
         configuration.ipAddress = "localhost";
         configuration.refresh = 30;
         configuration.transitionPeriod = 10;
@@ -68,6 +69,7 @@ public class DeviceTestBase {
     public void setUp() throws IOException {
         initMocks(this);
         when(socket.getOutputStream()).thenReturn(outputStream);
+        deviceState = new DeviceState(ModelTestUtil.readJson(deviceStateFilename));
     }
 
     /**
