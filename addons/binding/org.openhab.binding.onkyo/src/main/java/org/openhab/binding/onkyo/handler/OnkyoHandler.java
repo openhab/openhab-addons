@@ -821,8 +821,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private String guessMimeTypeFromData(byte[] data) {
-        String mimeType = RawType.DEFAULT_MIME_TYPE;
-        mimeType = HttpUtil.guessContentTypeFromData(data);
+        String mimeType = HttpUtil.guessContentTypeFromData(data);
         logger.debug("Mime type guess from content: {}", mimeType);
         if (mimeType == null) {
             mimeType = RawType.DEFAULT_MIME_TYPE;
