@@ -3,8 +3,8 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="TX-NR838">
-		<label>Onkyo TX-NR838 AV Receiver</label>
+	<thing-type id="TX-NR828">
+		<label>Onkyo TX-NR828 AV Receiver</label>
 		<description>Network enabled Onkyo AV Receivers</description>
 
 		<channel-groups>
