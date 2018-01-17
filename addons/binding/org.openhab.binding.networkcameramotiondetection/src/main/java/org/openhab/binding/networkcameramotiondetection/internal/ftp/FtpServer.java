@@ -63,32 +63,6 @@ public class FtpServer {
 
     private MyFTPLet myFTPLet;
 
-    private class UsernamePassword {
-        private String username;
-        private String password;
-
-        UsernamePassword(String username, String password) {
-            this.setUsername(username);
-            this.setPassword(password);
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
     public FtpServer() {
 
     }
@@ -140,7 +114,7 @@ public class FtpServer {
             }
 
         } catch (Exception e) {
-            logger.error("Event listener invoking error: ", e.getMessage());
+            logger.debug("Event listener invoking error: ", e.getMessage());
         }
     }
 
@@ -203,12 +177,11 @@ public class FtpServer {
         @Override
         public void init(FtpletContext ftpletContext) throws FtpException {
             this.ftpletContext = ftpletContext;
-
         }
 
         @Override
         public void destroy() {
-
+            logger.trace("destroy");
         }
 
         @Override
@@ -402,7 +375,6 @@ public class FtpServer {
             logger.trace("isRandomAccessible");
             return false;
         }
-
     }
 
     private class MyFtpFile implements FtpFile {
@@ -544,7 +516,6 @@ public class FtpServer {
             logger.trace("getPhysicalFile");
             return null;
         }
-
     }
 
     private class MyOutputStream extends OutputStream {

@@ -37,6 +37,9 @@ public class NetworkCameraMotionDetectionHandlerFactory extends BaseThingHandler
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
 
+    private final int DEFAULT_PORT = 2121;
+    private final int DEFAULT_IDLE_TIMEOUT = 60;
+
     private FtpServer ftpServer = new FtpServer();
 
     @Override
@@ -73,11 +76,11 @@ public class NetworkCameraMotionDetectionHandlerFactory extends BaseThingHandler
 
         Dictionary<String, Object> properties = componentContext.getProperties();
 
+        int port = DEFAULT_PORT;
+        int idleTimeout = DEFAULT_IDLE_TIMEOUT;
+
         String strPort = (String) properties.get("port");
         String strIdleTimeout = (String) componentContext.getProperties().get("idleTimeout");
-
-        int port = 2121;
-        int idleTimeout = 60;
 
         if (StringUtils.isNotEmpty(strPort)) {
             port = Integer.valueOf(strPort);

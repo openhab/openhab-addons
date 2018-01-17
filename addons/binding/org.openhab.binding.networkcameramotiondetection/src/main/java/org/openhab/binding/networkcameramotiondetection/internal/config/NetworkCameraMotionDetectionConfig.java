@@ -24,7 +24,7 @@ public class NetworkCameraMotionDetectionConfig {
         String str = "";
 
         str += "userName = " + userName;
-        str += ", password = " + password;
+        str += ", password = *****";
 
         return str;
     }

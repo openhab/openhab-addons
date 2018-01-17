@@ -10,6 +10,11 @@ package org.openhab.binding.networkcameramotiondetection.handler;
 
 import static org.openhab.binding.networkcameramotiondetection.NetworkCameraMotionDetectionBindingConstants.*;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,11 +52,8 @@ public class NetworkCameraMotionDetectionHandler extends BaseThingHandler implem
         logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         logger.debug("Command sending not supported by this binding");
 
-        switch (channelUID.getId()) {
-            case IMAGE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    ftpServer.printStats();
-                }
+        if (command.equals(RefreshType.REFRESH)) {
+            ftpServer.printStats();
         }
     }
 
@@ -76,9 +78,25 @@ public class NetworkCameraMotionDetectionHandler extends BaseThingHandler implem
     public void fileReceived(String userName, byte[] data) {
         if (configuration.userName.equals(userName)) {
             updateStatus(ThingStatus.ONLINE);
-            updateState(IMAGE, new RawType(data));
+            updateState(IMAGE, new RawType(data, guessMimeTypeFromData(data)));
             updateState(MOTION, OnOffType.ON);
             triggerChannel(MOTION_TRIGGER, "MOTION_DETECTED");
         }
+    }
+
+    private String guessMimeTypeFromData(byte[] data) {
+        String mimeType = RawType.DEFAULT_MIME_TYPE;
+        try {
+            mimeType = URLConnection
+                    .guessContentTypeFromStream(new BufferedInputStream(new ByteArrayInputStream(data)));
+            logger.debug("Mime type guess from content: {}", mimeType);
+            if (mimeType == null) {
+                mimeType = RawType.DEFAULT_MIME_TYPE;
+            }
+        } catch (IOException e) {
+            // fall back to default mime
+        }
+        logger.debug("Mime type: {}", mimeType);
+        return mimeType;
     }
 }
