@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hp1000" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="weatherstation">
+		<label>Weather Station</label>
+		<description>Wetterstation HP100X/WH260X</description>
+
+		<channels>
+			<channel id="tempf" typeId="tempf" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="dewptf" typeId="dewptf" />
+			<channel id="windchillf" typeId="windchillf" />
+			<channel id="winddir" typeId="winddir" />
+			<channel id="windspeedmph" typeId="windspeedmph" />
+			<channel id="windgustmph" typeId="windgustmph" />
+			<channel id="rainin" typeId="rainin" />
+			<channel id="dailyrainin" typeId="dailyrainin" />
+			<channel id="weeklyrainin" typeId="weeklyrainin" />
+			<channel id="monthlyrainin" typeId="monthlyrainin" />
+			<channel id="yearlyrainin" typeId="yearlyrainin" />
+			<channel id="solarradiation" typeId="solarradiation" />
+			<channel id="UV" typeId="uv" />
+			<channel id="indoortempf" typeId="indoortempf" />
+			<channel id="indoorhumidity" typeId="indoorhumidity" />
+			<channel id="baromin" typeId="baromin" />
+			<channel id="lowbatt" typeId="lowbatt" />
+			<channel id="dateutc" typeId="dateutc" />
+			<channel id="softwaretype" typeId="softwaretype" />
+			<channel id="realtime" typeId="realtime" />
+			<channel id="rtfreq" typeId="rtfreq" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname or IP</label>
+				<context>network-address</context>
+				<description>Hostname or IP of the weather station.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="tempf">
+		<item-type>Number</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Current outdoor temperature in °C</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Outdoor Humidity</label>
+		<description>Current outdoor humidity in %%</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="dewptf">
+		<item-type>Number</item-type>
+		<label>Dewpoint</label>
+		<description>Current dewpoint in °C</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="windchillf">
+		<item-type>Number</item-type>
+		<label>Windchill</label>
+		<description>Current windchill in °C</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="winddir">
+		<item-type>String</item-type>
+		<label>Wind Degree</label>
+		<description>Current wind degree in °</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%s °" />
+	</channel-type>
+
+	<channel-type id="windspeedmph">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Current wind speed in km/h</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f km/h" />
+	</channel-type>
+
+	<channel-type id="windgustmph">
+		<item-type>Number</item-type>
+		<label>Gust Speed</label>
+		<description>Current gust speed in km/h</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f km/h" />
+	</channel-type>
+
+	<channel-type id="rainin">
+		<item-type>Number</item-type>
+		<label>Hourly Rain Rate</label>
+		<description>Hourly rain rate in mm</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f mm" />
+	</channel-type>
+
+	<channel-type id="dailyrainin">
+		<item-type>Number</item-type>
+		<label>Daily Rain</label>
+		<description>Daily rain in mm</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f mm" />
+	</channel-type>
+
+	<channel-type id="weeklyrainin">
+		<item-type>Number</item-type>
+		<label>Weekly Rain</label>
+		<description>Weekly rain in mm</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f mm" />
+	</channel-type>
+
+	<channel-type id="monthlyrainin">
+		<item-type>Number</item-type>
+		<label>Monthly Rain</label>
+		<description>Monthly rain in mm</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f mm" />
+	</channel-type>
+
+	<channel-type id="yearlyrainin">
+		<item-type>Number</item-type>
+		<label>Yearly Rain</label>
+		<description>Yearly rain in mm</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.2f mm" />
+	</channel-type>
+
+	<channel-type id="solarradiation">
+		<item-type>Number</item-type>
+		<label>Solar Radiation</label>
+		<description>Solar radiation in w/m²</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.2f w/m²" />
+	</channel-type>
+
+	<channel-type id="uv">
+		<item-type>Number</item-type>
+		<label>UV</label>
+		<description>UV index</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%d index" />
+	</channel-type>
+
+	<channel-type id="indoortempf">
+		<item-type>Number</item-type>
+		<label>Indoor Temperature</label>
+		<description>Indoor temperature in °C</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="indoorhumidity">
+		<item-type>Number</item-type>
+		<label>Indoor Humidity</label>
+		<description>Indoor hmidity in %%</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="baromin">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>Pressure in hPa</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f hPa" />
+	</channel-type>
+
+	<channel-type id="lowbatt">
+		<item-type>String</item-type>
+		<label>Low Battery</label>
+		<description>Low battery state</description>
+		<category>Battery</category>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="dateutc">
+		<item-type>DateTime</item-type>
+		<label>Date UTC</label>
+		<description>Last update date in UTC</description>
+		<category>Date</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="softwaretype">
+		<item-type>String</item-type>
+		<label>Software Type</label>
+		<description>Software version type</description>
+		<category>Info</category>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="realtime">
+		<item-type>String</item-type>
+		<label>Realtime</label>
+		<description>Flag for realtime update</description>
+		<category>Info</category>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="rtfreq">
+		<item-type>String</item-type>
+		<label>Update Frequence</label>
+		<description>Update frequence</description>
+		<category>Info</category>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+</thing:thing-descriptions>
