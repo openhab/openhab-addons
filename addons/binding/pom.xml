@@ -42,6 +42,7 @@
     <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.googlehome</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.jeelink</module>

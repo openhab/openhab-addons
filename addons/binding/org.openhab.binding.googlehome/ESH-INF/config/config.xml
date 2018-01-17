@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:googlehome:home">
+		<parameter-group name="network">
+			<label>Network</label>
+			<description>Network settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+
+		<parameter name="ipAddress" type="text" required="true" groupName="network">
+			<label>Network Address</label>
+			<description>The IP or host name of the Google Home</description>
+			<context>network-address</context>
+		</parameter>
+
+		<parameter name="port" type="integer" required="true" min="1" max="65335" groupName="network">
+			<label>HTTP service port</label>
+			<description>Port for the HTTP service.</description>
+			<default>8008</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="refreshInterval" type="integer" required="false" min="1" max="60" unit="s" groupName="connection">
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Google Home API (in s).</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

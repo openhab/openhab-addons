@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="googlehome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Google Home Thing Type -->
+	<thing-type id="home">
+		<label>Google Home</label>
+		<description>Google Home Binding</description>
+
+		<channels>
+			<channel id="uptime" typeId="uptime" />
+			<channel id="has_update" typeId="has_update" />
+			<channel id="noise_level" typeId="noise_level" />
+			<channel id="signal_level" typeId="signal_level" />
+			<channel id="night_mode" typeId="night_mode" />
+		</channels>
+
+		<config-description-ref uri="thing-type:googlehome:home" />
+
+	</thing-type>
+
+	<!-- Channel Types -->
+
+	<channel-type id="uptime">
+		<item-type>Number</item-type>
+		<label>Uptime</label>
+		<description>Uptime</description>
+	</channel-type>
+
+	<channel-type id="has_update">
+		<item-type>Switch</item-type>
+		<label>Has update</label>
+		<description>Has update</description>
+	</channel-type>
+
+	<channel-type id="noise_level">
+		<item-type>Number</item-type>
+		<label>Noise level</label>
+		<description>Noise level</description>
+	</channel-type>
+
+	<channel-type id="signal_level">
+		<item-type>Number</item-type>
+		<label>Signal level</label>
+		<description>Signal level</description>
+	</channel-type>
+
+	<channel-type id="night_mode">
+		<item-type>Switch</item-type>
+		<label>Night mode</label>
+		<description>Night mode</description>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm Event</label>
+		<description>Fires when the alarm is set or goes off</description>
+		<event>
+			<options>
+				<option value="SET">set</option>
+				<option value="RINGS">rings</option>
+				<option value="SNOOZE">snooze</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="timer">
+		<kind>trigger</kind>
+		<label>Timer Event</label>
+		<description>Fires when the timer is set or starts playing</description>
+		<event>
+			<options>
+				<option value="SET">set</option>
+				<option value="RINGS">rings</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>
