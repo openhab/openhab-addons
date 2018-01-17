@@ -21,6 +21,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.openhab.binding.networkcameramotiondetection,
  org.openhab.binding.networkcameramotiondetection.handler,
  org.openhab.core.library.types,

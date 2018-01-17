@@ -10,11 +10,6 @@ package org.openhab.binding.networkcameramotiondetection.handler;
 
 import static org.openhab.binding.networkcameramotiondetection.NetworkCameraMotionDetectionBindingConstants.*;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URLConnection;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.networkcameramotiondetection.internal.config.NetworkCameraMotionDetectionConfig;
 import org.openhab.binding.networkcameramotiondetection.internal.ftp.FtpServer;
 import org.openhab.binding.networkcameramotiondetection.internal.ftp.FtpServerEventListener;
@@ -85,16 +81,10 @@ public class NetworkCameraMotionDetectionHandler extends BaseThingHandler implem
     }
 
     private String guessMimeTypeFromData(byte[] data) {
-        String mimeType = RawType.DEFAULT_MIME_TYPE;
-        try {
-            mimeType = URLConnection
-                    .guessContentTypeFromStream(new BufferedInputStream(new ByteArrayInputStream(data)));
-            logger.debug("Mime type guess from content: {}", mimeType);
-            if (mimeType == null) {
-                mimeType = RawType.DEFAULT_MIME_TYPE;
-            }
-        } catch (IOException e) {
-            // fall back to default mime
+        String mimeType = HttpUtil.guessContentTypeFromData(data);
+        logger.debug("Mime type guess from content: {}", mimeType);
+        if (mimeType == null) {
+            mimeType = RawType.DEFAULT_MIME_TYPE;
         }
         logger.debug("Mime type: {}", mimeType);
         return mimeType;
