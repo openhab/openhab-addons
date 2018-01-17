@@ -110,15 +110,55 @@ java.io.IOException: java.util.concurrent.ExecutionException: javax.net.ssl.SSLH
 ......
 ```
 
-That indicates a missing certificate for the https-connection on the system.
-In order to get the required certificate on a Linux-system one needs to perform these steps:
+That indicates a missing certificate of a certification authority (CA) in the certificate-store of the java jdk under which openhab2 is running.
+In most cases an update to the latest jdk version does solve this, because the store of the cacerts are maintained with the java versions.
+In other words, while doing an update of the java version the missing certificate will be installed.
+After the java-update openhab2 has to be restarted.
+
+When running an old linux installation which has only old java-versions in the package-repositories, there are three possibilities:
+
+   1.) Update the linux-system and install the latest java-versions
+   
+   2.) Install a newer java-version on a different way
+   
+   On debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
+
+   3.) Update the store of the cacerts / Import the missing certificate to the CA-store
+   
+   Note: Using this version, loaded certificates will expire!
+   If you still want to go the way with the import of the certificate you can use this as a little help:
+   Check which java package you have installed:
 
 ```
-sudo wget http://www.startssl.com/certs/ca.crt
-keytool -import -keystore cacerts -alias startssl -file ca.crt
+>> sudo dpkg -l | grep java
+>> ii  oracle-java8-jdk                    8u65                             armhf        Java™ Platform, Standard Edition 8 Development Kit
 ```
 
+Find the ca-store of your jdk
+
+```
+>> sudo dpkg -L oracle-java8-jdk | grep cacerts
+>> /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security/cacerts
+```
+    
+Check which CA has validated the certificate
+
+Navigate to https://creativecommons.tankerkoenig.de/
+
+Check which CA has validated the certificate
+
+Export the certificate of the certificate authority
+
+Import the certificate to the CA-store which you have found
+
+```
+>> cd /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security
+>> keytool -import -keystore cacerts -alias LetsEncrypt -file ca.crt
+```
 The required password is "changeit".
+
+Restart your server
+
 
 -The Station(s) and Webservice go to OFFLINE after being ONLINE
 
