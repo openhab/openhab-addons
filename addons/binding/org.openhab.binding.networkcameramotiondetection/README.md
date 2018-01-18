@@ -19,10 +19,10 @@ Bindings FTP server listening 2121 TCP port by default, but port can be configur
 
 This binding currently supports following channels:
 
-| Channel Type ID | Item Type    | Description                                                             |
-|-----------------|--------------|-------------------------------------------------------------------------|
-| image  | Image  | Image received from network camera.                                                    |
-| motion | Switch | Motion detection sensor state. Updated to ON state when image is received from camera. |
+| Channel Type ID | Item Type    | Description                                                                            |
+|-----------------|--------------|----------------------------------------------------------------------------------------|
+| image           | Image        | Image received from network camera.                                                    |
+| motion          | Switch       | Motion detection sensor state. Updated to ON state when image is received from camera. |
 
 
 ### Trigger Channels
