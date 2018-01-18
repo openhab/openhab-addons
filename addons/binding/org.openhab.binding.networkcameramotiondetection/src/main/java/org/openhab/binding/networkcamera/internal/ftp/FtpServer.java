@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection.internal.ftp;
+package org.openhab.binding.networkcamera.internal.ftp;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple FTP server implementation to receive images from Network camera.
+ * Simple FTP server implementation to receive images from network camera.
  *
  *
  * @author Pauli Anttila - Initial contribution
@@ -53,19 +53,14 @@ import org.slf4j.LoggerFactory;
 public class FtpServer {
 
     private Logger logger = LoggerFactory.getLogger(FtpServer.class);
-    private int port = 2121;
-    int idleTimeout = 60;
+
+    private int port;
+    int idleTimeout;
 
     private org.apache.ftpserver.FtpServer server;
     private static List<FtpServerEventListener> listeners = new ArrayList<FtpServerEventListener>();
-
     private HashMap<String, UsernamePassword> authenticationData = new HashMap<String, UsernamePassword>();
-
     private MyFTPLet myFTPLet;
-
-    public FtpServer() {
-
-    }
 
     public void startServer(int port, int idleTimeout) {
         stopServer();

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection.internal.ftp;
+package org.openhab.binding.networkcamera.internal.ftp;
 
 /**
  * Simple wrapper class to store user name and password pairs.

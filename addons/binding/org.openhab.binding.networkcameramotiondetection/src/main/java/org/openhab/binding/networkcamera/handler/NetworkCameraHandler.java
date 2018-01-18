@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection.handler;
+package org.openhab.binding.networkcamera.handler;
 
-import static org.openhab.binding.networkcameramotiondetection.NetworkCameraMotionDetectionBindingConstants.*;
+import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -19,26 +19,26 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.networkcameramotiondetection.internal.config.NetworkCameraMotionDetectionConfig;
-import org.openhab.binding.networkcameramotiondetection.internal.ftp.FtpServer;
-import org.openhab.binding.networkcameramotiondetection.internal.ftp.FtpServerEventListener;
+import org.openhab.binding.networkcamera.internal.config.NetworkCameraConfig;
+import org.openhab.binding.networkcamera.internal.ftp.FtpServer;
+import org.openhab.binding.networkcamera.internal.ftp.FtpServerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetworkCameraMotionDetectionHandler} is responsible for handling commands, which are
+ * The {@link NetworkCameraHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class NetworkCameraMotionDetectionHandler extends BaseThingHandler implements FtpServerEventListener {
+public class NetworkCameraHandler extends BaseThingHandler implements FtpServerEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(NetworkCameraMotionDetectionHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetworkCameraHandler.class);
 
-    private NetworkCameraMotionDetectionConfig configuration;
+    private NetworkCameraConfig configuration;
     private FtpServer ftpServer;
 
-    public NetworkCameraMotionDetectionHandler(Thing thing, FtpServer ftpServer) {
+    public NetworkCameraHandler(Thing thing, FtpServer ftpServer) {
         super(thing);
         this.ftpServer = ftpServer;
     }
@@ -55,8 +55,8 @@ public class NetworkCameraMotionDetectionHandler extends BaseThingHandler implem
 
     @Override
     public void initialize() {
-        logger.debug("Initializing handler for Network Camera Motion Detection binding");
-        configuration = getConfigAs(NetworkCameraMotionDetectionConfig.class);
+        logger.debug("Initializing handler for Network Camera Binding");
+        configuration = getConfigAs(NetworkCameraConfig.class);
         logger.info("Using configuration: {}", configuration.toString());
 
         ftpServer.addEventListener(this);

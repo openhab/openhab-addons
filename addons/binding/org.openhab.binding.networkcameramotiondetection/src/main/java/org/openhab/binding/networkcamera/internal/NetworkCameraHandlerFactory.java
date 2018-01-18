@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection.internal;
+package org.openhab.binding.networkcamera.internal;
 
-import static org.openhab.binding.networkcameramotiondetection.NetworkCameraMotionDetectionBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.THING_TYPE_SAMPLE;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -19,21 +19,21 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.networkcameramotiondetection.handler.NetworkCameraMotionDetectionHandler;
-import org.openhab.binding.networkcameramotiondetection.internal.ftp.FtpServer;
+import org.openhab.binding.networkcamera.handler.NetworkCameraHandler;
+import org.openhab.binding.networkcamera.internal.ftp.FtpServer;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetworkCameraMotionDetectionHandlerFactory} is responsible for creating things and thing
+ * The {@link NetworkCameraHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class NetworkCameraMotionDetectionHandlerFactory extends BaseThingHandlerFactory {
+public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(NetworkCameraMotionDetectionHandlerFactory.class);
+    private Logger logger = LoggerFactory.getLogger(NetworkCameraHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
 
@@ -53,7 +53,7 @@ public class NetworkCameraMotionDetectionHandlerFactory extends BaseThingHandler
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
-            return new NetworkCameraMotionDetectionHandler(thing, ftpServer);
+            return new NetworkCameraHandler(thing, ftpServer);
         }
 
         return null;

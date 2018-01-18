@@ -6,15 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection.internal.config;
+package org.openhab.binding.networkcamera.internal.config;
 
 /**
- * Configuration class for {@link NetworkCameraMotionDetectionBinding} device.
+ * Configuration class for {@link NetworkCameraBinding} device.
  *
  * @author Pauli Anttila - Initial contribution
  */
 
-public class NetworkCameraMotionDetectionConfig {
+public class NetworkCameraConfig {
 
     public String userName;
     public String password;

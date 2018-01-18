@@ -8,14 +8,14 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="binding.networkcameramotiondetection">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="binding.networkcamera">
 
-   <implementation class="org.openhab.binding.networkcameramotiondetection.internal.NetworkCameraMotionDetectionHandlerFactory"/>
+   <implementation class="org.openhab.binding.networkcamera.internal.NetworkCameraHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
    
-   <property name="service.pid" type="String" value="org.openhab.networkcameramotiondetection" />
+   <property name="service.pid" type="String" value="org.openhab.networkcamera" />
 
 </scr:component>

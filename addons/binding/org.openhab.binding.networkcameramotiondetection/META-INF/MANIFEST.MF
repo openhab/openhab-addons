@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-Name: NetworkCameraMotionDetection Binding
-Bundle-SymbolicName: org.openhab.binding.networkcameramotiondetection;singleton:=true
+Bundle-Name: Network Camera Binding
+Bundle-SymbolicName: org.openhab.binding.networkcamera;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/ftplet-api-1.1.0.jar,
@@ -22,11 +23,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.networkcameramotiondetection,
- org.openhab.binding.networkcameramotiondetection.handler,
  org.openhab.core.library.types,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.networkcameramotiondetection,
- org.openhab.binding.networkcameramotiondetection.handler

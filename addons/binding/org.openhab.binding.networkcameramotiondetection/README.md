@@ -1,11 +1,11 @@
-# Network Camera Motion Detection Binding
+# Network Camera Binding
 
-This binding integrates large number of network cameras which can send image to FTP server when motion or sound is detected. Binding acts as a FTP server. Images are not saved to file system, therefore binding shouldn't cause any problems on flash based openHAB installations.
+This binding integrates large number of network cameras which can send image to FTP server when motion or sound is detected. Binding acts as a FTP server. Images stored to FTP server are not saved to the file system, therefore binding shouldn't cause any problems on flash based openHAB installations.
 
 
 ## Supported Things
 
-This binding supports ```networkcamera``` Thing. Every camera is identified by FTP user name. Therefore, every camera should use unique user name to login FTP server. 
+This binding supports ```motiondetection``` Thing. Every camera is identified by FTP user name. Therefore, every camera should use unique user name to login FTP server.
 
 ## Discovery
 
@@ -19,17 +19,17 @@ Bindings FTP server listening 2121 TCP port by default, but port can be configur
 
 This binding currently supports following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|
-| image | Image | Image received from network camera. |
+| Channel Type ID | Item Type    | Description                                                             |
+|-----------------|--------------|-------------------------------------------------------------------------|
+| image  | Image  | Image received from network camera.                                                    |
 | motion | Switch | Motion detection sensor state. Updated to ON state when image is received from camera. |
 
 
 ### Trigger Channels
 
-| Channel Type ID | Options | Description  |
-|-----------------|------------------------|--------------|
-| motion-trigger | MOTION_DETECTED | Triggered when image received from network camera. |
+| Channel Type ID | Options                | Description                                        |
+|-----------------|------------------------|----------------------------------------------------|
+| motion-trigger  | MOTION_DETECTED        | Triggered when image received from network camera. |
 
 
 ## Full Example
@@ -37,13 +37,13 @@ This binding currently supports following channels:
 Things:
 
 ```
-Thing networkcameramotiondetection:networkcamera:garage [ userName="garage", password="12345" ]
+Thing networkcamera:motiondetection:garage [ userName="garage", password="12345" ]
 ```
 
 Items:
 
 ```
-Switch Garage_NetworkCamera_Motion { channel="networkcameramotiondetection:networkcamera:garage:motion" } 
+Switch Garage_NetworkCamera_Motion { channel="networkcamera:motiondetection:garage:motion" } 
 ```
 
 Rules:
@@ -51,7 +51,7 @@ Rules:
 ```
 rule "example trigger rule"
 when
-    Channel 'networkcameramotiondetection:networkcamera:garage:motion-trigger' triggered MOTION_DETECTED 
+    Channel 'networkcamera:motiondetection:garage:motion-trigger' triggered MOTION_DETECTED 
 then
     logInfo("Test","MOTION DETECTED trigger example")
 end
@@ -65,7 +65,7 @@ then
 end
 ```
 
-## Logging
+## Logging and problem solving
 
 For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the karaf console:
 
@@ -78,3 +78,6 @@ and set back to default level:
 ```
 log:set DEFAULT org.apache.ftpserver
 ```
+
+If you meet any problems to receive images from the network cameras, you could test connection to binding with any FTP client. You can send image files via FTP client and thing channels should be updated accordingly.
+ 

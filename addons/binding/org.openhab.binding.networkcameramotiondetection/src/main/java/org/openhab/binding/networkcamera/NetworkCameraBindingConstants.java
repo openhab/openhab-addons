@@ -6,22 +6,22 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkcameramotiondetection;
+package org.openhab.binding.networkcamera;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link NetworkCameraMotionDetectionBinding} class defines common constants, which are
+ * The {@link NetworkCameraBinding} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class NetworkCameraMotionDetectionBindingConstants {
+public class NetworkCameraBindingConstants {
 
-    public static final String BINDING_ID = "networkcameramotiondetection";
+    public static final String BINDING_ID = "networkcamera";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "networkcamera");
+    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "motiondetection");
 
     // List of all Channel ids
     public final static String IMAGE = "image";
