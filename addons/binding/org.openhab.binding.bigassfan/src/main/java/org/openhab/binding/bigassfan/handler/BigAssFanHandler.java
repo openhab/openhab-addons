@@ -19,6 +19,7 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.BufferOverflowException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -1118,6 +1119,9 @@ public class BigAssFanHandler extends BaseThingHandler {
                 nextToken = null;
             } catch (IllegalStateException e) {
                 logger.debug("Scanner for {} threw IllegalStateException; scanner possibly closed", thing.getUID());
+                nextToken = null;
+            } catch (BufferOverflowException e) {
+                logger.debug("Scanner for {} threw BufferOverflowException", thing.getUID());
                 nextToken = null;
             }
             return nextToken;
