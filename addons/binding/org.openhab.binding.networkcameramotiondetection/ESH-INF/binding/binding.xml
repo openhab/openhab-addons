@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="networkcamera" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+<binding:binding id="networkcamera" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Network Camera Binding</name>
@@ -14,9 +13,9 @@
 			<default>2121</default>
 		</parameter>
 		<parameter name="idleTimeout" type="integer" min="0" max="65335">
-            <label>Idle timeout</label>
-            <description>The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled.</description>
-            <default>60</default>
-        </parameter>
+			<label>Idle timeout</label>
+			<description>The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled.</description>
+			<default>60</default>
+		</parameter>
 	</config-description>
 </binding:binding>
