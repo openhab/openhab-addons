@@ -22,8 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -39,8 +38,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = ExtendedDiscoveryService.class, immediate = true)
-public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+@Component(service = DiscoveryService.class, immediate = true)
+public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -49,8 +48,6 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
     // Discovery parameters
     public static final boolean BACKGROUND_DISCOVERY_ENABLED = true;
     public static final int BACKGROUND_DISCOVERY_DELAY = 10;
-
-    private DiscoveryServiceCallback discoveryServiceCallback;
 
     private NetworkAddressService networkAddressService;
 
@@ -67,11 +64,6 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
         gcDiscoveryJob = null;
         terminate = false;
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback dscb) {
-        discoveryServiceCallback = dscb;
     }
 
     @Override
@@ -165,18 +157,10 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
                 ThingTypeUID typeUID = gcMulticastListener.getThingTypeUID();
                 if (typeUID != null) {
                     ThingUID uid = new ThingUID(typeUID, gcMulticastListener.getSerialNumber());
-
-                    // If there's not a thing and it's not in the inbox, create the discovery result
-                    if (discoveryServiceCallback != null
-                            && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
-                            && discoveryServiceCallback.getExistingThing(uid) == null) {
-                        logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
-                                gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
-
-                        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel())
-                                .build());
-                    }
+                    logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
+                            gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
+                    thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel()).build());
                 }
             }
         }

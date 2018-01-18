@@ -24,10 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -41,14 +39,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(immediate = true)
-public class BigAssFanDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+@Component(service = DiscoveryService.class, immediate = true)
+public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(BigAssFanDiscoveryService.class);
 
     private static final boolean BACKGROUND_DISCOVERY_ENABLED = true;
     private static final long BACKGROUND_DISCOVERY_DELAY = 8L;
-
-    private DiscoveryServiceCallback callback;
 
     // Our own thread pool for the long-running listener job
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -76,11 +72,6 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
 
     public BigAssFanDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback callback) {
-        this.callback = callback;
     }
 
     @Override
@@ -234,18 +225,9 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         properties.put(Thing.PROPERTY_VENDOR, "Haiku");
 
         ThingUID uid = new ThingUID(thingTypeUid, serialNumber);
-        // If there's not a thing and it's not in the inbox, create the discovery result
-        if (callback != null && callback.getExistingDiscoveryResult(uid) == null
-                && callback.getExistingThing(uid) == null) {
-
-            logger.debug("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getLabel()).build();
-
-            thingDiscovered(result);
-        } else {
-            logger.debug("Thing or inbox entry already exists for UID={}, IP={}", uid, device.getIpAddress());
-        }
+        logger.debug("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
+        thingDiscovered(
+                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(device.getLabel()).build());
     }
 
     private void schedulePollJob() {
