@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.handler;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
@@ -122,12 +124,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
         }
         super.childHandlerDisposed(childHandler, childThing);
-    }
-
-    @Override
-    public void handleConfigurationUpdate(@NonNull Map<@NonNull String, @NonNull Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        start();
     }
 
     @Override
@@ -251,10 +247,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                             try {
                                 temp.makeLogin();
                                 break;
-                            } catch (Exception e) {
+                            } catch (ConnectionException e) {
                                 // Up to 3 retries for login
                                 retry++;
-                                if (retry > 3) {
+                                if (retry >= 3) {
                                     temp.logout();
                                     throw e;
                                 }
@@ -270,6 +266,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                         this.updateProperty("sessionStorage", serializedStorage);
                     }
                     connection = temp;
+                } catch (UnknownHostException e) {
+                    loginIsValid = false;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unknown host name '" + e.getMessage() + "'. Maybe your internet connection is offline");
                 } catch (Exception e) {
                     loginIsValid = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
@@ -283,24 +283,29 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
             }
         }
-
     }
 
     private void refreshData() {
-        synchronized (synchronizeConnection) {
-            logger.debug("amazon account bridge refreshing data ...");
-            Connection temp = connection;
-            if (temp != null) {
-                if (!temp.getIsLoggedIn()) {
-                    return;
+        logger.debug("amazon account bridge refreshing data ...");
+        try {
+            Connection temp = null;
+            synchronized (synchronizeConnection) {
+                temp = connection;
+                if (temp != null) {
+                    if (!temp.getIsLoggedIn()) {
+                        return;
+                    }
                 }
             }
+            if (temp == null) {
+                return;
+            }
             synchronized (childs) {
+
                 updateDeviceList();
-                updateStatus(ThingStatus.ONLINE);
 
                 JsonBluetoothStates states = null;
-                if (temp != null && temp.getIsLoggedIn()) {
+                if (temp.getIsLoggedIn()) {
                     try {
                         states = temp.getBluetoothConnectionStates();
                     } catch (Exception e) {
@@ -317,6 +322,11 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                     child.updateState(device, state);
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
+
+        } catch (Exception e) {
+            logger.warn("Update states of amazon account failed: {}", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
