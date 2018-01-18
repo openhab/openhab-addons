@@ -73,7 +73,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
@@ -217,6 +217,11 @@
     <feature name="openhab-binding-max" description="MAX! Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.max/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-mcp23017" description="MCP23017 Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mcp23017/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-meteostick" description="Meteostick Binding" version="${project.version}">
