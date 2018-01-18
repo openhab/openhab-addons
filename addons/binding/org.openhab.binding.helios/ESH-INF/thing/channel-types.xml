@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="helios" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Helios Channel Types -->
+
+	<channel-type id="audiolooptest" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Audio loop test</label>
+		<description>Audio loop test result</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="audioloopteststamp">
+		<item-type>DateTime</item-type>
+		<label>Audio loop test time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="callstate">
+		<item-type>String</item-type>
+		<label>Call State</label>
+		<description>State of the current call</description>
+		<state readOnly="true">
+			<options>
+				<option value="ringing">Ringing</option>
+				<option value="connected">Connected</option>
+				<option value="terminated">Terminated</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="calldirection" advanced="true">
+		<item-type>String</item-type>
+		<label>Call Direction</label>
+		<description>Direction of the current call</description>
+		<state readOnly="true">
+			<options>
+				<option value="incoming">Incoming</option>
+				<option value="outgoing">Outgoing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="callstatestamp">
+		<item-type>DateTime</item-type>
+		<label>Call state time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="card">
+		<kind>trigger</kind>
+		<label>Card ID</label>
+		<description>Detected card identification with a 24-64-bit number in the hexadecimal format</description>
+	</channel-type>
+	<channel-type id="cardvalid" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Card Valid</label>
+		<description>If the detected card is valid, the parameter value is ON. If not, the parameter is set to OFF</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="cardstamp">
+		<item-type>DateTime</item-type>
+		<label>Card detection time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="code">
+		<kind>trigger</kind>
+		<label>Code Entered</label>
+		<description>Numerical code entered, e.g. 1234.</description>
+	</channel-type>
+	<channel-type id="codevalid" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Code Valid</label>
+		<description>If the entered code is valid, the parameter value is ON. If not, the parameter is set to OFF</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="codestamp">
+		<item-type>DateTime</item-type>
+		<label>Code entered time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="devicestate">
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>State of the Helios device</description>
+		<state readOnly="true">
+			<options>
+				<option value="startup">Startup</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="devicestatestamp">
+		<item-type>DateTime</item-type>
+		<label>Device state time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="keypressed">
+		<kind>trigger</kind>
+		<label>Key pressed</label>
+		<description>The key pressed, 0, 1, …, 9, *, # for keypad buttons and %1..%54 for call buttons</description>
+	</channel-type>
+	<channel-type id="keypressedstamp">
+		<item-type>DateTime</item-type>
+		<label>Key press time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="keyreleased">
+		<kind>trigger</kind>
+		<label>Key Released</label>
+		<description>The key released, 0, 1, …, 9, *, # for keypad buttons and %1..%54 for call buttons</description>
+	</channel-type>
+	<channel-type id="keyreleasedstamp">
+		<item-type>DateTime</item-type>
+		<label>Key released time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="motion">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>Motion detection indicator</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="motionstamp">
+		<item-type>DateTime</item-type>
+		<label>Motion detection time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="noise">
+		<item-type>Switch</item-type>
+		<label>Noise</label>
+		<description>Noise detection indicator</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="noisestamp">
+		<item-type>DateTime</item-type>
+		<label>Noise detection time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="switchstate">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>ON when a switch switched on, OFF when a switch switched off</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="switchstateswitch">
+		<item-type>Number</item-type>
+		<label>Switch Number</label>
+		<description>Number of the switch that switched, e.g. 1 to 4</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="switchstateoriginator">
+		<item-type>String</item-type>
+		<label>Switch State Originator</label>
+		<description>Originator that switched the switch</description>
+		<state readOnly="true">
+			<options>
+				<option value="DTMF">DTMF</option>
+				<option value="API">API</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="switchstatestamp">
+		<item-type>DateTime</item-type>
+		<label>Switch switch time</label>
+		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="switchenabler" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch Enabler</label>
+		<description>Enable or disable a switch</description>
+	</channel-type>
+	<channel-type id="switchtrigger" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch Trigger</label>
+		<description>Switch a switch</description>
+	</channel-type>
+	<channel-type id="io" advanced="true">
+		<item-type>Switch</item-type>
+		<label>IO</label>
+		<description>Enable or disable the output of an I/O port of the Helios device</description>
+	</channel-type>
+</thing:thing-descriptions>

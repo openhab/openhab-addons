@@ -128,6 +128,11 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
+    
+    <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.helios/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-binding-netatmo" description="Netatmo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
