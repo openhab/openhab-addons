@@ -221,7 +221,7 @@ public class BigAssFanHandler extends BaseThingHandler {
     }
 
     private void handleFanSmartmode(Command command) {
-        logger.debug("Handling smartmode command {}", command);
+        logger.debug("Handling fan smartmode command {}", command);
 
         // <mac;SMARTMODE;SET;OFF/COOLING/HEATING>
         if (command instanceof StringType) {
@@ -232,7 +232,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             } else if (command.equals(HEATING)) {
                 sendCommand(macAddress, ";SMARTMODE;STATE;SET;HEATING");
             } else {
-                logger.debug("Unknown Smartmode command: {}", command);
+                logger.debug("Unknown fan smartmode command: {}", command);
             }
         }
     }
@@ -375,8 +375,8 @@ public class BigAssFanHandler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Handling smartmode command {}", command);
-        // Add sample command format <mac;;;ON/OFF>
+        logger.debug("Handling light smartmode command {}", command);
+        // <mac;LIGHT;SMART;ON/OFF>
         if (command instanceof OnOffType) {
             if (command.equals(OnOffType.OFF)) {
                 sendCommand(macAddress, ";LIGHT;SMART;OFF");
@@ -671,22 +671,23 @@ public class BigAssFanHandler extends BaseThingHandler {
             return message;
         }
 
-        private void processMessage(String message) {
-            if (StringUtils.isEmpty(message)) {
+        private void processMessage(String incomingMessage) {
+            if (StringUtils.isEmpty(incomingMessage)) {
                 return;
             }
 
             // Match on (msg)
             logger.debug("FanListener for {} processing received message from {}: {}", thing.getUID(), macAddress,
-                    message);
+                    incomingMessage);
             Pattern pattern = Pattern.compile("[(](.*)");
-            Matcher matcher = pattern.matcher(message);
+            Matcher matcher = pattern.matcher(incomingMessage);
             if (!matcher.find()) {
-                logger.debug("Unable to process message from {}, not in expected format: {}", thing.getUID(), message);
+                logger.debug("Unable to process message from {}, not in expected format: {}", thing.getUID(),
+                        incomingMessage);
                 return;
             }
 
-            message = matcher.group(1);
+            String message = matcher.group(1);
             String[] messageParts = message.split(";");
 
             // Check to make sure it is my MAC address or my label
@@ -715,7 +716,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             } else if (messageUpperCase.contains(";WINTERMODE;STATE;")) {
                 updateFanWintermode(messageParts);
 
-            } else if (messageUpperCase.contains(";SMARTMODE;ACTUAL;")) {
+            } else if (messageUpperCase.contains(";SMARTMODE;STATE;")) {
                 updateFanSmartmode(messageParts);
 
             } else if (messageUpperCase.contains(";FAN;SPD;MIN;")) {
