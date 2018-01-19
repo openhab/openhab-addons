@@ -127,8 +127,8 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
         }
 
         int newVolume = this.volume.get() + volumeChange;
-        newVolume = Math.max(newVolume, 100);
-        newVolume = Math.min(newVolume, 0);
+        newVolume = Math.min(newVolume, 100);
+        newVolume = Math.max(newVolume, 0);
 
         this.volume.set(newVolume);
         logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, volume);
