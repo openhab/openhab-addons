@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true)
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.bigassfan")
 public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(BigAssFanDiscoveryService.class);
 
@@ -89,6 +90,12 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     protected void deactivate() {
         super.deactivate();
         logger.trace("BigAssFan discovery service DEACTIVATED");
+    }
+
+    @Override
+    @Modified
+    protected void modified(Map<String, Object> configProperties) {
+        super.modified(configProperties);
     }
 
     @Override
