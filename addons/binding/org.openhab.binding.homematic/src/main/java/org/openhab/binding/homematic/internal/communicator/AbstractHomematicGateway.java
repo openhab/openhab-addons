@@ -375,8 +375,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
                                     // Make sure to only cache non-reconfigurable channels. For reconfigurable channels,
                                     // the data point set might change depending on the selected mode.
-                                    if (channel.getDatapoint(HmParamsetType.MASTER,
-                                            DATAPOINT_NAME_CHANNEL_FUNCTION) == null) {
+                                    if (!channel.isReconfigurable()) {
                                         datapointsByChannelIdCache.put(channelId, channel.getDatapoints().values());
                                     }
                                 }

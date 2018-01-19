@@ -13,6 +13,10 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,6 +34,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -39,6 +44,7 @@ import org.openhab.binding.homematic.internal.converter.ConverterFactory;
 import org.openhab.binding.homematic.internal.converter.ConverterTypeException;
 import org.openhab.binding.homematic.internal.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
@@ -98,6 +104,13 @@ public class HomematicThingHandler extends BaseThingHandler {
                         }
                     }
                     updateConfiguration(config);
+
+                    // update thing channel list for reconfigurable channels (relies on the new value of the
+                    // CHANNEL_FUNCTION datapoint fetched during configuration update)
+                    List<Channel> thingChannels = new ArrayList<>(getThing().getChannels());
+                    if (updateDynamicChannelList(device, thingChannels)) {
+                        updateThing(editThing().withChannels(thingChannels).build());
+                    }
                 } catch (HomematicClientException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 } catch (IOException ex) {
@@ -109,6 +122,72 @@ public class HomematicThingHandler extends BaseThingHandler {
                 }
             }
         });
+    }
+
+    /**
+     * Update the given thing channel list to reflect the device's current datapoint set
+     *
+     * @return true if the list was modified, false if it was not modified
+     */
+    private boolean updateDynamicChannelList(HmDevice device, List<Channel> thingChannels) {
+        boolean changed = false;
+        for (HmChannel channel : device.getChannels()) {
+            if (!channel.isReconfigurable()) {
+                continue;
+            }
+            final String expectedFunction = channel
+                    .getDatapoint(HmParamsetType.MASTER, HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION)
+                    .getOptionValue();
+            final String propertyName = String.format(PROPERTY_DYNAMIC_FUNCTION_FORMAT, channel.getNumber());
+
+            // remove thing channels that were configured for a different function
+            Iterator<Channel> channelIter = thingChannels.iterator();
+            while (channelIter.hasNext()) {
+                Map<String, String> properties = channelIter.next().getProperties();
+                String function = properties.get(propertyName);
+                if (function != null && !function.equals(expectedFunction)) {
+                    channelIter.remove();
+                    changed = true;
+                }
+            }
+            for (HmDatapoint dp : channel.getDatapoints().values()) {
+                if (HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)
+                        || dp.getParamsetType() != HmParamsetType.VALUES) {
+                    continue;
+                }
+                ChannelUID channelUID = UidUtils.generateChannelUID(dp, getThing().getUID());
+                if (containsChannel(thingChannels, channelUID)) {
+                    // Channel is already present -> channel configuration likely hasn't changed
+                    continue;
+                }
+
+                Map<String, String> channelProps = new HashMap<>();
+                channelProps.put(propertyName, expectedFunction);
+
+                Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
+                        .withProperties(channelProps).withLabel(MetadataUtils.getLabel(dp))
+                        .withDescription(MetadataUtils.getDatapointDescription(dp))
+                        .withType(UidUtils.generateChannelTypeUID(dp)).build();
+                thingChannels.add(thingChannel);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    /**
+     * Checks whether the given list includes a channel with the given UID
+     */
+    private static boolean containsChannel(List<Channel> channels, ChannelUID channelUID) {
+        for (Channel channel : channels) {
+            ChannelUID uid = channel.getUID();
+            if (StringUtils.equals(channelUID.getGroupId(), uid.getGroupId())
+                    && StringUtils.equals(channelUID.getId(), uid.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

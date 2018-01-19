@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 
 /**
  * Object that represents a Homematic channel.
@@ -131,6 +132,14 @@ public class HmChannel {
      */
     public boolean hasDatapoint(HmDatapointInfo dpInfo) {
         return datapoints.get(dpInfo) != null;
+    }
+
+    /**
+     * Returns true, if the channel's datapoint set contains a
+     * channel function datapoint.
+     */
+    public boolean isReconfigurable() {
+        return getDatapoint(HmParamsetType.MASTER, HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION) != null;
     }
 
     /**
