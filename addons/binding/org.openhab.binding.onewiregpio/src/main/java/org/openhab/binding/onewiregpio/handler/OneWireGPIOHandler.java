@@ -68,22 +68,23 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        checkConfiguration();
-        startAutomaticRefresh();
+        if (checkConfiguration()) {
+            startAutomaticRefresh();
+        }
     }
 
     /**
      * This method checks if the provided configuration is valid.
      * When invalid parameter is found, default value is assigned.
      */
-    private void checkConfiguration() {
+    private boolean checkConfiguration() {
         Configuration configuration = getConfig();
         gpioBusFile = (String) configuration.get(GPIO_BUS_FILE);
         if (StringUtils.isEmpty(gpioBusFile)) {
             logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The path to the w1_slave sensor data file is missing.");
-            return;
+            return false;
         }
 
         refreshTime = ((Number) configuration.get(REFRESH_TIME)).intValue();
@@ -92,6 +93,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
                     DEFAULT_REFRESH_TIME);
             refreshTime = DEFAULT_REFRESH_TIME;
         }
+        return true;
     }
 
     private void startAutomaticRefresh() {
@@ -102,6 +104,9 @@ public class OneWireGPIOHandler extends BaseThingHandler {
                 for (Channel channel : channels) {
                     if (isLinked(channel.getUID().getId())) {
                         publishSensorValue(channel.getUID());
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Channel is not linked.");
                     }
                 }
             }
