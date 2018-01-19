@@ -17,6 +17,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -31,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onewiregpio.OneWireGPIOBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +48,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     private String gpioBusFile;
     private Integer refreshTime;
+    private ScheduledFuture<?> sensorRefreshJob;
 
     public OneWireGPIOHandler(Thing thing) {
         super(thing);
@@ -68,7 +69,6 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
-        updateStatus(ThingStatus.INITIALIZING);
         startAutomaticRefresh();
     }
 
@@ -81,7 +81,8 @@ public class OneWireGPIOHandler extends BaseThingHandler {
         gpioBusFile = (String) configuration.get(GPIO_BUS_FILE);
         if (StringUtils.isEmpty(gpioBusFile)) {
             logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "The path to the w1_slave sensor data file is missing.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The path to the w1_slave sensor data file is missing.");
             return;
         }
 
@@ -99,14 +100,14 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             public void run() {
                 List<Channel> channels = getThing().getChannels();
                 for (Channel channel : channels) {
-                    if (isLinked( channel.getUID().getId() )) {
-                        publishSensorValue( channel.getUID() );
+                    if (isLinked(channel.getUID().getId())) {
+                        publishSensorValue(channel.getUID());
                     }
                 }
             }
         };
 
-        scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime.intValue(), TimeUnit.SECONDS);
+        sensorRefreshJob = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime.intValue(), TimeUnit.SECONDS);
         logger.debug("Start automatic refresh every {} seconds", refreshTime.intValue());
     }
 
@@ -157,7 +158,9 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        scheduler.shutdown();
+        if (sensorRefreshJob != null) {
+            sensorRefreshJob.cancel(true);
+        }
         super.dispose();
     }
 }
