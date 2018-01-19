@@ -19,7 +19,7 @@ Background discovery is **enabled** by default.
 To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
 ```text
-org.openhab.binding.bigassfan.discovery.BigAssFanDiscoveryService:backgroundDiscovery.enabled=false
+discovery.bigassfan:background=false
 ```
 
 ## Thing Configuration

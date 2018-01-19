@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true)
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.globalcache")
 public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 
@@ -82,6 +83,12 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Globalcache discovery service deactivated");
         stopBackgroundDiscovery();
         super.deactivate();
+    }
+
+    @Override
+    @Modified
+    protected void modified(Map<String, Object> configProperties) {
+        super.modified(configProperties);
     }
 
     @Override
