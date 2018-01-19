@@ -35,7 +35,7 @@ password used to authenticate on SolarEdge
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
 
 - **legacyMode** (optional)  
-can be set to true for old setups that do not contain a SolarEdge modbus meter (see here: https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter ). In that case live data cannot be retrieved. With legacy mode at least the current production can be retrieved for those setups. (default = false)
+can be set to true for setups that do not contain a SolarEdge modbus meter (see here: https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter ). In that case live data cannot be retrieved. With legacy mode at least the current production can be retrieved for those setups. (default = false)
 
 - **liveDataPollingInterval** (optional)  
 interval (seconds) in which live data values are retrieved from Solaredge. Setting less than 10 seconds is not recommended. (default = 30). 
