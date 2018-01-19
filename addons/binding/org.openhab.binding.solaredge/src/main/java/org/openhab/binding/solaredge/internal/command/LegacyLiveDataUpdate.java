@@ -87,19 +87,25 @@ public class LegacyLiveDataUpdate extends AbstractCommandCallback implements Sol
     private Map<String, String> parseLegacyData(String data) {
         Map<String, String> resultMap = new HashMap<>(1);
 
-        data = data.replaceAll("\\s+", "");
+        String rawData = data.replaceAll("\\s+", "");
 
-        logger.debug("RAW String: {}", data);
+        logger.debug("RAW String: {}", rawData);
 
         Pattern pattern = compile(NCG_NON_GREEDY_TEXT_OR_NUMBER, CG_CURRENT_POWER_AND_UNIT,
                 NCG_NON_GREEDY_TEXT_OR_NUMBER);
 
-        Matcher matcher = pattern.matcher(data);
+        Matcher matcher = pattern.matcher(rawData);
 
         if (matcher.matches()) {
             String value = matcher.group(1);
             String unit = matcher.group(2);
-            resultMap.put(LiveDataChannels.PRODUCTION.getFQName(), getValueAsKW(value, unit));
+            logger.debug("Parsed value: '{}'", value);
+            logger.debug("Parsed unit: '{}'", unit);
+
+            String convertedValue = getValueAsKW(value, unit);
+            logger.debug("Converted value: '{}'", convertedValue);
+
+            resultMap.put(LiveDataChannels.PRODUCTION.getFQName(), convertedValue);
         }
 
         return resultMap;
