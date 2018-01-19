@@ -32,7 +32,7 @@ public class OneWireGPIOBindingConstants {
     /**
      * The default auto refresh time in seconds.
      */
-    public static final Integer DEFAULT_REFRESH_TIME = Integer.valueOf(600);
+    public static final Integer DEFAULT_REFRESH_TIME = Integer.valueOf(120);
 
     public static final String GPIO_BUS_FILE = "gpio_bus_file";
 

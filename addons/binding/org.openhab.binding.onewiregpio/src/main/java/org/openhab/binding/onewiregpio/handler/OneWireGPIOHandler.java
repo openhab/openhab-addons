@@ -68,7 +68,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.INITIALIZING);
         startAutomaticRefresh();
     }
 
@@ -80,7 +80,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
         Configuration configuration = getConfig();
         gpioBusFile = (String) configuration.get(GPIO_BUS_FILE);
         if (StringUtils.isEmpty(gpioBusFile)) {
-            logger.warn("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
+            logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "The path to the w1_slave sensor data file is missing.");
             return;
         }
@@ -99,7 +99,9 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             public void run() {
                 List<Channel> channels = getThing().getChannels();
                 for (Channel channel : channels) {
-                    publishSensorValue(channel.getUID());
+                    if (isLinked( channel.getUID().getId() )) {
+                        publishSensorValue( channel.getUID() );
+                    }
                 }
             }
         };
@@ -146,10 +148,16 @@ public class OneWireGPIOHandler extends BaseThingHandler {
                 return null;
             }
         } catch (IOException | InvalidPathException e) {
-            logger.warn("error reading GPIO bus file. File path is: {}.  Check if path is proper. {}", gpioFile, e);
+            logger.debug("error reading GPIO bus file. File path is: {}.  Check if path is proper. {}", gpioFile, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading GPIO bus file.");
             return null;
         }
 
     }
 
+    @Override
+    public void dispose() {
+        scheduler.shutdown();
+        super.dispose();
+    }
 }
