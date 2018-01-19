@@ -50,13 +50,14 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
 
     <packaging>pom</packaging>
-	
+
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.openhab.tools</groupId>
-                    <artifactId>static-code-analysis</artifactId>
+                    <groupId>org.openhab.tools.sat</groupId>
+                    <artifactId>sat-plugin</artifactId>
+                    <version>{sat.version}</version>
                     <configuration>
                         <checkstyleProperties>${basedirRoot}/tools/checkstyle.properties</checkstyleProperties>
                     </configuration>
@@ -108,7 +109,7 @@
     </pluginRepositories>
 
     <repositories>
-        
+
         <!-- releases -->
         <repository>
             <id>jcenter</id>
