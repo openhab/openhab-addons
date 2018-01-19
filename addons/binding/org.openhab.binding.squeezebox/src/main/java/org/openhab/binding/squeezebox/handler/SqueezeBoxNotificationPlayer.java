@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,23 +27,23 @@ import org.slf4j.LoggerFactory;
 class SqueezeBoxNotificationPlayer implements Closeable {
     // An exception is thrown if we do not receive an acknowledge
     // for a volume set command in the given amount of time [s].
-    final int volumeCommandTimeout = 4;
+    private static final int VOLUME_COMMAND_TIMEOUT = 4;
 
     // We expect the media server to acknowledge a playlist command.
     // An exception is thrown if the playlist command was not processed
     // after the defined amount in [s]
-    final int playlistCommandTimeout = 5;
+    private static final int PLAYLIST_COMMAND_TIMEOUT = 5;
 
     // Max length of the message in [s]. An exception is thrown if we did not
     // receive a "stop" message from the media server.
-    final int notificationLengthTimeout = 90;
+    private static final int MAX_NOTIFICATION_LENGTH = 90;
 
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationPlayer.class);
-    private SqueezeBoxPlayerState playerState;
-    private SqueezeBoxPlayerHandler squeezeBoxPlayerHandler;
-    private SqueezeBoxServerHandler squeezeBoxServerHandler;
-    private StringType uri;
-    private String mac;
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationPlayer.class);
+    private final SqueezeBoxPlayerState playerState;
+    private final SqueezeBoxPlayerHandler squeezeBoxPlayerHandler;
+    private final SqueezeBoxServerHandler squeezeBoxServerHandler;
+    private final StringType uri;
+    private final String mac;
 
     boolean playlistModified;
 
@@ -104,7 +104,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
         int notificationVolume = squeezeBoxPlayerHandler.getNotificationSoundVolume().intValue();
         if (notificationVolume == 0) {
-            logger.warn("Player volume is 0.");
+            logger.warn("Player notification volume is 0.");
         }
         setVolume(notificationVolume);
     }
@@ -127,14 +127,14 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
         squeezeBoxServerHandler.setVolume(mac, requestedVolume);
 
-        logger.trace("Waiting up to {} ms for volume to be updated...", volumeCommandTimeout * 1000);
+        logger.trace("Waiting up to {} s for volume to be updated...", VOLUME_COMMAND_TIMEOUT);
 
         try {
             int timeoutCount = 0;
 
             while (!listener.isVolumeUpdated(requestedVolume)) {
                 Thread.sleep(100);
-                if (timeoutCount++ > volumeCommandTimeout * 10) {
+                if (timeoutCount++ > VOLUME_COMMAND_TIMEOUT * 10) {
                     throw new SqueezeBoxTimeoutException("Unable to update volume.");
                 }
             }
@@ -182,13 +182,13 @@ class SqueezeBoxNotificationPlayer implements Closeable {
      */
     private void waitForPlaylistUpdate(SqueezeBoxNotificationListener listener)
             throws InterruptedException, SqueezeBoxTimeoutException {
-        logger.trace("Waiting up to {} ms for playlist to be updated...", playlistCommandTimeout * 1000);
+        logger.trace("Waiting up to {} s for playlist to be updated...", PLAYLIST_COMMAND_TIMEOUT);
 
         int timeoutCount = 0;
 
         while (!listener.isPlaylistUpdated()) {
             Thread.sleep(100);
-            if (timeoutCount++ > playlistCommandTimeout * 10) {
+            if (timeoutCount++ > PLAYLIST_COMMAND_TIMEOUT * 10) {
                 throw new SqueezeBoxTimeoutException("Unable to update playlist.");
             }
         }
@@ -206,14 +206,14 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
         squeezeBoxServerHandler.playPlaylistItem(mac, notificationMessagePlaylistsIndex);
 
-        logger.trace("Waiting up to {} ms for stop...", notificationLengthTimeout * 1000);
+        logger.trace("Waiting up to {} s for stop...", MAX_NOTIFICATION_LENGTH);
 
         try {
             int timeoutCount = 0;
 
             while (!listener.isStopped()) {
                 Thread.sleep(100);
-                if (timeoutCount++ > notificationLengthTimeout * 10) {
+                if (timeoutCount++ > MAX_NOTIFICATION_LENGTH * 10) {
                     throw new SqueezeBoxTimeoutException("Unable to play message.");
                 }
             }
