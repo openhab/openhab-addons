@@ -13,6 +13,7 @@ import static org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration.
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -30,14 +31,20 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lametrictime.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
+import org.openhab.binding.lametrictime.internal.LaMetricTimeStateDescriptionProvider;
+import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
+import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.Configuration;
 import org.syphr.lametrictime.api.LaMetricTime;
 import org.syphr.lametrictime.api.common.impl.GsonGenerator;
+import org.syphr.lametrictime.api.local.ApplicationActivationException;
 import org.syphr.lametrictime.api.local.LaMetricTimeLocal;
 import org.syphr.lametrictime.api.local.NotificationCreationException;
 import org.syphr.lametrictime.api.local.UpdateException;
@@ -47,6 +54,7 @@ import org.syphr.lametrictime.api.local.model.Bluetooth;
 import org.syphr.lametrictime.api.local.model.Device;
 import org.syphr.lametrictime.api.local.model.Display;
 import org.syphr.lametrictime.api.local.model.Notification;
+import org.syphr.lametrictime.api.local.model.Widget;
 import org.syphr.lametrictime.api.model.enums.BrightnessMode;
 
 import com.google.gson.Gson;
@@ -61,10 +69,17 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandler.class);
 
+    private final LaMetricTimeStateDescriptionProvider stateDescriptionProvider;
+
     private LaMetricTime clock;
 
-    public LaMetricTimeHandler(Bridge bridge) {
+    public LaMetricTimeHandler(Bridge bridge, LaMetricTimeStateDescriptionProvider stateDescriptionProvider) {
         super(bridge);
+        this.stateDescriptionProvider = stateDescriptionProvider;
+
+        if (stateDescriptionProvider == null) {
+            logger.warn("State description provider is null");
+        }
     }
 
     @Override
@@ -89,6 +104,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
             }
 
             updateProperties(device, api.getBluetooth());
+            setAppChannelStateDescription();
         } catch (Exception e) {
             logger.debug("Failed to communicate with LaMetric Time", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -129,6 +145,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 case CHANNEL_AUDIO_VOLUME:
                     handleAudioCommand(channelUID, command);
                     break;
+                case CHANNEL_APP:
+                    handleAppCommand(channelUID, command);
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);
                     break;
@@ -199,6 +217,20 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 }
             } catch (UpdateException e) {
                 logger.debug("Failed to update audio volume - taking clock offline", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private void handleAppCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            // LaMetric Time does not support querying for the active app
+        } else if (command instanceof StringType) {
+            try {
+                WidgetRef widgetRef = WidgetRef.fromString(command.toFullString());
+                clock.getLocalApi().activateApplication(widgetRef.getPackageName(), widgetRef.getWidgetId());
+            } catch (ApplicationActivationException e) {
+                logger.debug("Failed to activate app '" + command.toFullString() + "' - taking clock offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -336,5 +368,19 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     public SortedMap<String, Application> getApps() {
         return getClock().getLocalApi().getApplications();
+    }
+
+    private void setAppChannelStateDescription() {
+        List<StateOption> options = new ArrayList<>();
+        for (Application app : getApps().values()) {
+            for (Widget widget : app.getWidgets().values()) {
+                options.add(new StateOption(new WidgetRef(widget.getPackageName(), widget.getId()).toString(),
+                        LaMetricTimeUtil.getAppLabel(app, widget)));
+            }
+        }
+
+        stateDescriptionProvider.setStateDescription(
+                new ChannelUID(getThing().getUID(), LaMetricTimeBindingConstants.CHANNEL_APP),
+                new StateDescription(null, null, null, null, false, options));
     }
 }

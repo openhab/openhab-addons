@@ -12,6 +12,7 @@
             <channel id="brightnessMode" typeId="brightnessModeType"/>
             <channel id="volume" typeId="volumeType"/>
             <channel id="bluetooth" typeId="bluetoothActiveType"/>
+            <channel id="app" typeId="appType"/>
             <channel id="info" typeId="simpleNotificationType"/>
             <channel id="warning" typeId="simpleNotificationType"/>
             <channel id="alert" typeId="simpleNotificationType"/>

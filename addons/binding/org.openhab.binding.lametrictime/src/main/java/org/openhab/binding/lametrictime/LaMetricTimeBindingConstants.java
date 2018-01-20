@@ -41,6 +41,7 @@ public class LaMetricTimeBindingConstants {
     public static final String CHANNEL_DISPLAY_BRIGHTNESS_MODE = "brightnessMode";
     public static final String CHANNEL_AUDIO_VOLUME = "volume";
     public static final String CHANNEL_BLUETOOTH_ACTIVE = "bluetooth";
+    public static final String CHANNEL_APP = "app";
 
     public static final String CHANNEL_APP_ACTIVATE = "activate";
     public static final String CHANNEL_APP_SET_ALARM = "setAlarm";

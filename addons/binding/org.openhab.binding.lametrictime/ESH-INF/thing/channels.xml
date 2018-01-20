@@ -47,7 +47,19 @@
         <description>Switch Bluetooth on/off</description>
     </channel-type>
 
-    <channel-type id="activateType">
+    <channel-type id="appType">
+        <item-type>String</item-type>
+        <label>Application</label>
+        <description>Active application</description>
+        <state>
+            <!-- These options will be replaced at runtime. -->
+            <options>
+                <option value="reference">App</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="activateType" advanced="true">
         <item-type>Switch</item-type>
         <label>Activate</label>
         <description>Activate the app</description>

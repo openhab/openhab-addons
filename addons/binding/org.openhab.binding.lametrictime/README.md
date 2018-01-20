@@ -6,6 +6,7 @@ The LaMetric binding allows to connect openHab to LaMetric Time connected clock 
     * Control Display Brightness
     * Change Audio Volume
     * Enable / Disable Bluetooth
+    * Activate an Application
 * Send notifications messages
 * Control the core (built-in) apps
 * Push data to private indicator apps
@@ -86,6 +87,7 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 | brightnessMode | String (possible values are 'auto' and 'manual') | The mode for the display brightness. If set to 'auto' the brightness is set by the device automatically based on environment illumination. If set to 'manual' the brightness can be changed via 'brightness' channel. |
 | volume         | Dimmer                                           | The volume of the device speaker.                                                                                                                                                                                     |
 | bluetooth      | Switch                                           | The status of Bluetooth audio streaming on the device.                                                                                                                                                                |
+| app            | String                                           | The active application on the device. State options for UIs are determined at runtime automatically. The value must be formatted as '<package name>:<widget ID>'.                                                     |
 | info           | String                                           | Send informational notifications to the device.                                                                                                                                                                       |
 | warning        | String                                           | Send warning notifications to the device.                                                                                                                                                                             |
 | alert          | String                                           | Send alert notifications to the device.                                                                                                                                                                               |
@@ -262,51 +264,54 @@ See below for examples rules sending updates for the frames.
 Sample item configuration:
  
 ```
-Dimmer DeviceBrightness         "Brightness"               { channel="lametrictime:device:demo:brightness" }
-String DeviceBrightnessMode     "Brightness Mode"          { channel="lametrictime:device:demo:brightnessMode" }
-Dimmer DeviceVolume             "Volume"                   { channel="lametrictime:device:demo:volume" }
-Switch DeviceBluetooth          "Bluetooth"                { channel="lametrictime:device:demo:bluetooth" }
+Dimmer DeviceBrightness         "Brightness"                                { channel="lametrictime:device:demo:brightness" }
+String DeviceBrightnessMode     "Brightness Mode"                           { channel="lametrictime:device:demo:brightnessMode" }
+Dimmer DeviceVolume             "Volume"                   <soundvolume>    { channel="lametrictime:device:demo:volume" }
+Switch DeviceBluetooth          "Bluetooth"                                 { channel="lametrictime:device:demo:bluetooth" }
+String DeviceApp                "Application"                               { channel="lametrictime:device:demo:app" }
 
-String DeviceNotifyInfo                                    { channel="lametrictime:device:demo:info" }
-String DeviceNotifyWarning                                 { channel="lametrictime:device:demo:warning" }
-String DeviceNotifyAlert                                   { channel="lametrictime:device:demo:alert" }
-String DeviceNotifyAdvanced                                { channel="lametrictime:device:demo:advanced" }
+String DeviceNotifyInfo                                                     { channel="lametrictime:device:demo:info" }
+String DeviceNotifyWarning                                                  { channel="lametrictime:device:demo:warning" }
+String DeviceNotifyAlert                                                    { channel="lametrictime:device:demo:alert" }
+String DeviceNotifyAdvanced                                                 { channel="lametrictime:device:demo:advanced" }
 Switch NotifyInfo               "Notify Info"
 Switch NotifyWarning            "Notify Warning"
 Switch NotifyAlert              "Notify Alert"
 Switch NotifyTheRoofIsOnFire    "The Roof Is On Fire!"
 
-Switch ClockActivate            "Activate Clock"           { channel="lametrictime:clockApp:demo:clock:activate" }
-String ClockSetAlarm                                       { channel="lametrictime:clockApp:demo:clock:setAlarm" }
-Switch ClockStopAlarm           "Stop Alarm"               { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
+Switch ClockActivate            "Activate Clock"                            { channel="lametrictime:clockApp:demo:clock:activate" }
+String ClockSetAlarm                                                        { channel="lametrictime:clockApp:demo:clock:setAlarm" }
+Switch ClockStopAlarm           "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
 Switch SetAlarmIn1Min           "Set Alarm in 1 min"
 
-Switch CountdownActivate        "Activate Countdown"       { channel="lametrictime:countdownApp:demo:countdown:activate" }
-String CountdownConfigure                                  { channel="lametrictime:countdownApp:demo:countdown:configure" }
-Switch CountdownPause           "Pause Countdown"          { channel="lametrictime:countdownApp:demo:countdown:pause" }
-Switch CountdownReset           "Reset Countdown"          { channel="lametrictime:countdownApp:demo:countdown:reset" }
-Switch CountdownStart           "Start Countdown"          { channel="lametrictime:countdownApp:demo:countdown:start" }
+Switch CountdownActivate        "Activate Countdown"                        { channel="lametrictime:countdownApp:demo:countdown:activate" }
+String CountdownConfigure                                                   { channel="lametrictime:countdownApp:demo:countdown:configure" }
+Switch CountdownPause           "Pause Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:pause" }
+Switch CountdownReset           "Reset Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:reset" }
+Switch CountdownStart           "Start Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:start" }
 Switch Set2MinCountdown         "Set 2 Min Countdown"
 
-Switch RadioActivate            "Activate Radio"           { channel="lametrictime:radioApp:demo:radio:activate" }
-Player RadioControl             "Player"                   { channel="lametrictime:radioApp:demo:radio:control" }
+Switch RadioActivate            "Activate Radio"                            { channel="lametrictime:radioApp:demo:radio:activate" }
+Player RadioControl             "Player"                                    { channel="lametrictime:radioApp:demo:radio:control" }
 
-Switch StopwatchActivate        "Activate Stopwatch"       { channel="lametrictime:stopwatchApp:demo:stopwatch:activate" }
-Switch StopwatchPause           "Pause Stopwatch"          { channel="lametrictime:stopwatchApp:demo:stopwatch:pause" }
-Switch StopwatchReset           "Reset Stopwatch"          { channel="lametrictime:stopwatchApp:demo:stopwatch:reset" }
-Switch StopwatchStart           "Start Stopwatch"          { channel="lametrictime:stopwatchApp:demo:stopwatch:start" }
+Switch StopwatchActivate        "Activate Stopwatch"                        { channel="lametrictime:stopwatchApp:demo:stopwatch:activate" }
+Switch StopwatchPause           "Pause Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:pause" }
+Switch StopwatchReset           "Reset Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:reset" }
+Switch StopwatchStart           "Start Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:start" }
 
-Switch WeatherActivate          "Activate Weather"         { channel="lametrictime:weatherApp:demo:weather:activate" }
-Switch WeatherForecast          "Forecast Weather"         { channel="lametrictime:weatherApp:demo:weather:forecast" }
+Switch WeatherActivate          "Activate Weather"                          { channel="lametrictime:weatherApp:demo:weather:activate" }
+Switch WeatherForecast          "Forecast Weather"                          { channel="lametrictime:weatherApp:demo:weather:forecast" }
 
-Switch TestAppActivate          "Activate Test"            { channel="lametrictime:genericApp:demo:myApp:activate" }
-String TestAppFrames                                       { channel="lametrictime:genericApp:demo:myApp:frames" }
+Switch TestAppActivate          "Activate Test"                             { channel="lametrictime:genericApp:demo:test:activate" }
+String TestAppFrames                                                        { channel="lametrictime:genericApp:demo:test:frames" }
 Switch UpdateTestApp            "Update Test App"
 ```
 
 ## Sitemap
 
 Sample sitemap configuration:
+
+**Note:** Populating switch or selection options automatically from the state description is not currently possible with the Basic UI. For this reason, the brightness modes are repeated here and the `app` channel is omitted.
 
 ```
         Text label="LaMetric Time Demo" {

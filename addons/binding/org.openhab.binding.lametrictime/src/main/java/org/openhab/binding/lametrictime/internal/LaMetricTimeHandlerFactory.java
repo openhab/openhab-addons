@@ -33,6 +33,7 @@ import org.openhab.binding.lametrictime.handler.WeatherAppHandler;
 import org.openhab.binding.lametrictime.internal.discovery.LaMetricTimeAppDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,8 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
+    private LaMetricTimeStateDescriptionProvider stateDescriptionProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID);
@@ -67,7 +70,7 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             logger.debug("Creating handler for LaMetric Time device {}", thing);
 
-            LaMetricTimeHandler deviceHandler = new LaMetricTimeHandler((Bridge) thing);
+            LaMetricTimeHandler deviceHandler = new LaMetricTimeHandler((Bridge) thing, stateDescriptionProvider);
             registerAppDiscoveryService(deviceHandler);
 
             return deviceHandler;
@@ -130,5 +133,14 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Unregistering app discovery service");
         serviceReg.unregister();
         discoveryServiceReg.remove(thingUID);
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(LaMetricTimeStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(LaMetricTimeStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 }

@@ -23,6 +23,7 @@ import org.openhab.binding.lametrictime.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.openhab.binding.lametrictime.handler.LaMetricTimeAppHandler;
 import org.openhab.binding.lametrictime.handler.LaMetricTimeHandler;
+import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.local.model.Application;
@@ -31,7 +32,6 @@ import org.syphr.lametrictime.api.model.CoreApps;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link LaMetricTimeAppDiscoveryService} is responsible for processing the
@@ -53,15 +53,6 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
                 LaMetricTimeBindingConstants.THING_TYPE_STOPWATCH_APP);
         CORE_APP_THING_TYPE_UIDS.put(CoreApps.weather().getPackageName(),
                 LaMetricTimeBindingConstants.THING_TYPE_WEATHER_APP);
-    }
-
-    private static final Map<String, String> CORE_APP_LABELS = Maps.newHashMap();
-    static {
-        CORE_APP_LABELS.put(CoreApps.clock().getPackageName(), "Clock");
-        CORE_APP_LABELS.put(CoreApps.countdown().getPackageName(), "Timer");
-        CORE_APP_LABELS.put(CoreApps.radio().getPackageName(), "Radio");
-        CORE_APP_LABELS.put(CoreApps.stopwatch().getPackageName(), "Stopwatch");
-        CORE_APP_LABELS.put(CoreApps.weather().getPackageName(), "Weather");
     }
 
     private static final int TIMEOUT = 60;
@@ -118,29 +109,12 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
                 properties.put(LaMetricTimeAppConfiguration.WIDGET_ID, widgetId);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(getLabel(app, widget)).build();
+                        .withBridge(bridgeUID).withLabel(LaMetricTimeUtil.getAppLabel(app, widget)).build();
                 thingDiscovered(discoveryResult);
             }
         }
 
         stopScan();
-    }
-
-    private String getLabel(Application app, Widget widget) {
-        Map<String, JsonPrimitive> settings = widget.getSettings();
-        if (settings != null && settings.containsKey("_title")) {
-            String title = settings.get("_title").getAsString();
-            if (title != null && !title.isEmpty()) {
-                return title;
-            }
-        }
-
-        String coreAppLabel = CORE_APP_LABELS.get(app.getPackageName());
-        if (coreAppLabel != null) {
-            return coreAppLabel;
-        }
-
-        return "Generic App by " + app.getVendor();
     }
 
     private boolean containsThing(List<Thing> things, String widgetId) {
