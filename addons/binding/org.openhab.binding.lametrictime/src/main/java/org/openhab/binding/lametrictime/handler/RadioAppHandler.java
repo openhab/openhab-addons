@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.local.ApplicationActionException;
@@ -28,6 +29,7 @@ import org.syphr.lametrictime.api.model.CoreApps;
  * @author Gregory Moyer - Initial contribution
  */
 public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
+    private static final String PACKAGE_NAME = "com.lametric.radio";
 
     private final Logger logger = LoggerFactory.getLogger(RadioAppHandler.class);
 
@@ -97,5 +99,10 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
 
     private void stop() throws ApplicationActionException {
         getDevice().doAction(getWidget(), CoreApps.radio().stop());
+    }
+
+    @Override
+    protected String getPackageName(LaMetricTimeAppConfiguration config) {
+        return PACKAGE_NAME;
     }
 }

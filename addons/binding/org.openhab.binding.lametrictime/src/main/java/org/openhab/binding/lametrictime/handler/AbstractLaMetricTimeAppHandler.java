@@ -84,8 +84,9 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
         logger.debug("Reading LaMetric Time app thing configuration");
         LaMetricTimeAppConfiguration config = getConfigAs(LaMetricTimeAppConfiguration.class);
+        String packageName = getPackageName(config);
         try {
-            Application app = deviceHandler.getClock().getApplication(config.packageName);
+            Application app = deviceHandler.getClock().getApplication(packageName);
 
             SortedMap<String, Widget> widgets = app.getWidgets();
             if (config.widgetId != null) {
@@ -93,8 +94,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
                 if (widget == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "No widget found with package name " + config.packageName + " and widget ID "
-                                    + config.widgetId);
+                            "No widget found with package name " + packageName + " and widget ID " + config.widgetId);
                     return;
                 }
             } else {
@@ -103,9 +103,13 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
         } catch (ApplicationNotFoundException e) {
             logger.debug("LaMetric Time application not found", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No application found with package name " + config.packageName);
+                    "No application found with package name " + packageName);
             return;
         }
+    }
+
+    protected String getPackageName(LaMetricTimeAppConfiguration config) {
+        return config.packageName;
     }
 
     @Override

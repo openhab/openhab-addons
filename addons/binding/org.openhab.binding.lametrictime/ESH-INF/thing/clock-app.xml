@@ -24,11 +24,6 @@
         </channels>
         
         <config-description>
-            <parameter name="packageName" type="text" required="true">
-                <label>Package Name</label>
-                <description>Unique identifier for the application</description>
-                <default>com.lametric.clock</default>
-            </parameter>
             <parameter name="widgetId" type="text" required="false">
                 <label>Widget ID</label>
                 <description>Unique identifier for the application instance (defaults to first instance)</description>
