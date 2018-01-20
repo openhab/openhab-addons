@@ -224,13 +224,13 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private void handleAppCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // LaMetric Time does not support querying for the active app
+            logger.debug("Skipping app channel refresh - LaMetric Time does not support querying for the active app");
         } else if (command instanceof StringType) {
             try {
                 WidgetRef widgetRef = WidgetRef.fromString(command.toFullString());
                 clock.getLocalApi().activateApplication(widgetRef.getPackageName(), widgetRef.getWidgetId());
             } catch (ApplicationActivationException e) {
-                logger.debug("Failed to activate app '" + command.toFullString() + "' - taking clock offline", e);
+                logger.debug("Failed to activate app - taking clock offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
