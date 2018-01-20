@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
@@ -107,7 +106,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                 logger.debug("Product Secret  {}", config.productSecret);
                 logger.debug("Pincode         {}", config.pincode);
                 logger.debug("Access Token    {}", getExistingOrNewAccessToken());
-                redirectUrlSupplier = new NestRedirectUrlSupplier(getHttpHeaders());
+                redirectUrlSupplier = createRedirectUrlSupplier();
                 restartStreamingUpdates();
             } catch (InvalidAccessTokenException e) {
                 logger.debug("Invalid access token", e);
@@ -119,20 +118,15 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         logger.debug("Finished initializing Nest bridge handler");
     }
 
-    /**
-     * Allows the NestRedirectUrlSupplier to be overriden in tests.
-     *
-     * @return the NestRedirectUrlSupplier
-     */
-    protected NestRedirectUrlSupplier getRedirectUrlSupplier() {
-        return this.redirectUrlSupplier;
+    protected NestRedirectUrlSupplier createRedirectUrlSupplier() throws InvalidAccessTokenException {
+        return new NestRedirectUrlSupplier(getHttpHeaders());
     }
 
     private void startStreamingUpdates() {
         synchronized (this) {
             try {
-                streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(),
-                        getRedirectUrlSupplier(), scheduler);
+                streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(), redirectUrlSupplier,
+                        scheduler);
                 streamingRestClient.addStreamingDataListener(this);
                 streamingRestClient.start();
             } catch (InvalidAccessTokenException e) {
@@ -257,16 +251,20 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         boolean success = listeners.add(listener);
         if (streamingRestClient != null) {
             scheduler.schedule(() -> {
-                TopLevelData data = streamingRestClient.getLastReceivedTopLevelData();
-                if (data != null) {
-                    if (data.getDevices() != null) {
-                        broadcastDevices(listener, data.getDevices());
-                    }
-                    if (data.getStructures() != null) {
-                        broadcastStructures(listener, data.getStructures().values());
-                    }
+                if (streamingRestClient == null) {
+                    logger.debug("streamingRestClient is null");
                 } else {
-                    logger.debug("Last received TopLevelData is null");
+                    TopLevelData data = streamingRestClient.getLastReceivedTopLevelData();
+                    if (data != null) {
+                        if (data.getDevices() != null) {
+                            broadcastDevices(listener, data.getDevices());
+                        }
+                        if (data.getStructures() != null) {
+                            broadcastStructures(listener, data.getStructures().values());
+                        }
+                    } else {
+                        logger.debug("Last received TopLevelData is null");
+                    }
                 }
             }, 1, SECONDS);
         } else {
@@ -304,7 +302,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
 
         try {
-            while (nestUpdateRequests.size() > 0) {
+            while (!nestUpdateRequests.isEmpty()) {
                 // nestUpdateRequests is a CopyOnWriteArrayList so its iterator does not support remove operations
                 NestUpdateRequest request = nestUpdateRequests.get(0);
                 jsonToPutUrl(request);
@@ -322,15 +320,14 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             logger.debug("Error sending data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduler.schedule(this::restartStreamingUpdates, 5, SECONDS);
-            getRedirectUrlSupplier().resetCache();
+            redirectUrlSupplier.resetCache();
         }
     }
 
     private void jsonToPutUrl(NestUpdateRequest request)
             throws FailedSendingNestDataException, InvalidAccessTokenException, FailedResolvingNestUrlException {
         try {
-            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL,
-                    getRedirectUrlSupplier().getRedirectUrl());
+            String url = redirectUrlSupplier.getRedirectUrl() + request.getUpdatePath();
             logger.debug("Putting data to: {}", url);
 
             String jsonContent = gson.toJson(request.getValues());
@@ -351,7 +348,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
     }
 
-    private Properties getHttpHeaders() throws InvalidAccessTokenException {
+    protected Properties getHttpHeaders() throws InvalidAccessTokenException {
         Properties httpHeaders = new Properties();
         httpHeaders.put("Authorization", "Bearer " + getExistingOrNewAccessToken());
         httpHeaders.put("Content-Type", JSON_CONTENT_TYPE);
