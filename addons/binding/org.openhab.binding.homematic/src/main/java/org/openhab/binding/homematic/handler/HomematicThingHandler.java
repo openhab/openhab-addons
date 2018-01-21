@@ -92,6 +92,16 @@ public class HomematicThingHandler extends BaseThingHandler {
                     setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
                     updateProperties(properties);
 
+                    // update data point list for reconfigurable channels
+                    for (HmChannel channel : device.getChannels()) {
+                        if (channel.isReconfigurable()) {
+                            loadHomematicChannelValues(channel);
+                            if (channel.checkForChannelFunctionChange()) {
+                                gateway.updateChannelValueDatapoints(channel);
+                            }
+                        }
+                    }
+
                     // update configurations
                     Configuration config = editConfiguration();
                     for (HmChannel channel : device.getChannels()) {

@@ -60,6 +60,11 @@ public interface HomematicGateway {
     public void loadChannelValues(HmChannel channel) throws IOException;
 
     /**
+     * Reenumerates the set of VALUES datapoints for the given channel.
+     */
+    public void updateChannelValueDatapoints(HmChannel channel) throws IOException;
+
+    /**
      * Prepares the device for reloading all values from the gateway.
      */
     public void triggerDeviceValuesReload(HmDevice device);

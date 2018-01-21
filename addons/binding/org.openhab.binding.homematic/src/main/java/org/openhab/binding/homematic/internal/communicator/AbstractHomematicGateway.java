@@ -466,6 +466,20 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         channel.setInitialized(true);
     }
 
+    @Override
+    public void updateChannelValueDatapoints(HmChannel channel) throws IOException {
+        logger.debug("Updating value datapoints for channel {} of device '{}', has {} datapoints before", channel,
+                channel.getDevice().getAddress(), channel.getDatapoints().size());
+
+        channel.removeValueDatapoints();
+        addChannelDatapoints(channel, HmParamsetType.VALUES);
+        setChannelDatapointValues(channel, HmParamsetType.VALUES);
+
+        logger.debug("Updated value datapoints for channel {} of device '{}' (function {}), now has {} datapoints",
+                channel, channel.getDevice().getAddress(), channel.getCurrentFunction(),
+                channel.getDatapoints().size());
+    }
+
     /**
      * Sets all datapoint values for the given channel.
      */
