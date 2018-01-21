@@ -12,7 +12,6 @@
         <description>Provides control for the countdown app on the LaMetric Time</description>
         
         <channels>
-            <channel id="activate" typeId="activateType"/>
             <channel id="configure" typeId="parameterActionType">
                 <label>Configure</label>
                 <description>Configure the timer</description>

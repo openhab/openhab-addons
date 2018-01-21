@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.lametrictime.handler;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.CHANNEL_APP_ACTIVATE;
-
 import java.util.SortedMap;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -140,15 +138,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
                 return;
             }
 
-            switch (channelUID.getId()) {
-                case CHANNEL_APP_ACTIVATE:
-                    getDevice().activateWidget(getWidget());
-                    updateStatus(ThingStatus.ONLINE);
-                    break;
-                default:
-                    handleAppCommand(channelUID, command);
-                    break;
-            }
+            handleAppCommand(channelUID, command);
         } catch (Exception e) {
             logger.debug("Failed to communicate - taking app offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

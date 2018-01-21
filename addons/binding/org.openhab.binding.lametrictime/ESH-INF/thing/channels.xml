@@ -58,12 +58,6 @@
             </options>
         </state>
     </channel-type>
-
-    <channel-type id="activateType" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Activate</label>
-        <description>Activate the app</description>
-    </channel-type>
     
     <channel-type id="framesType" advanced="true">
         <item-type>String</item-type>

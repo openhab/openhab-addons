@@ -12,7 +12,6 @@
         <description>Provides control for the clock app on the LaMetric Time</description>
         
         <channels>
-            <channel id="activate" typeId="activateType"/>
             <channel id="setAlarm" typeId="parameterActionType">
                 <label>Set Alarm</label>
                 <description>Set the alarm</description>

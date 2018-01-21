@@ -100,7 +100,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                                                                                                |
 |------------|-----------|------------------------------------------------------------------------------------------------------------|
-| activate   | Switch    | Activate the defined instance                                                                              |
 | setAlarm   | String    | Set a JSON string that represents the parameters to set an alarm (enabled, time, wakeOnRadio)              |
 | stopAlarm  | Switch    | Stop the alarm (currently not working)                                                                     |
 
@@ -110,7 +109,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                                                                                 |
 |------------|-----------|---------------------------------------------------------------------------------------------|
-| activate   | Switch    | Activate the defined instance                                                               |
 | configure  | String    | Set a JSON string that represents the parameters to configure the time (duration, startNow) |
 | pause      | Switch    | Pause the active countdown                                                                  |
 | reset      | Switch    | Stop and reset the countdown                                                                |
@@ -122,7 +120,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                                           |
 |------------|-----------|-------------------------------------------------------|
-| activate   | Switch    | Activate the defined instance                         |
 | control    | Player    | Control interface to manipulate the radio             |
 
 ### Stopwatch App
@@ -131,7 +128,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                   |
 |------------|-----------|-------------------------------|
-| activate   | Switch    | Activate the defined instance |
 | pause      | Switch    | Pause the active stopwatch    |
 | reset      | Switch    | Stop and reset the stopwatch  |
 | start      | Switch    | Start the stopwatch           |
@@ -142,7 +138,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                      |
 |------------|-----------|----------------------------------|
-| activate   | Switch    | Activate the defined instance    |
 | forecast   | Switch    | Display the forecast temporarily |
 
 ### Generic App
@@ -151,7 +146,6 @@ All channels have no defined state. They exist as one-way communication to the d
 
 | Channel ID | Item Type | Description                                                                |
 |------------|-----------|----------------------------------------------------------------------------|
-| activate   | Switch    | Activate the defined instance                                              |
 | frames     | String    | Set a JSON string that represents the updated frames to display in the app |
 
 ## How Tos
@@ -279,30 +273,24 @@ Switch NotifyWarning            "Notify Warning"
 Switch NotifyAlert              "Notify Alert"
 Switch NotifyTheRoofIsOnFire    "The Roof Is On Fire!"
 
-Switch ClockActivate            "Activate Clock"                            { channel="lametrictime:clockApp:demo:clock:activate" }
 String ClockSetAlarm                                                        { channel="lametrictime:clockApp:demo:clock:setAlarm" }
 Switch ClockStopAlarm           "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
 Switch SetAlarmIn1Min           "Set Alarm in 1 min"
 
-Switch CountdownActivate        "Activate Countdown"                        { channel="lametrictime:countdownApp:demo:countdown:activate" }
 String CountdownConfigure                                                   { channel="lametrictime:countdownApp:demo:countdown:configure" }
 Switch CountdownPause           "Pause Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:pause" }
 Switch CountdownReset           "Reset Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:reset" }
 Switch CountdownStart           "Start Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:start" }
 Switch Set2MinCountdown         "Set 2 Min Countdown"
 
-Switch RadioActivate            "Activate Radio"                            { channel="lametrictime:radioApp:demo:radio:activate" }
 Player RadioControl             "Player"                                    { channel="lametrictime:radioApp:demo:radio:control" }
 
-Switch StopwatchActivate        "Activate Stopwatch"                        { channel="lametrictime:stopwatchApp:demo:stopwatch:activate" }
 Switch StopwatchPause           "Pause Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:pause" }
 Switch StopwatchReset           "Reset Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:reset" }
 Switch StopwatchStart           "Start Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:start" }
 
-Switch WeatherActivate          "Activate Weather"                          { channel="lametrictime:weatherApp:demo:weather:activate" }
 Switch WeatherForecast          "Forecast Weather"                          { channel="lametrictime:weatherApp:demo:weather:forecast" }
 
-Switch TestAppActivate          "Activate Test"                             { channel="lametrictime:genericApp:demo:test:activate" }
 String TestAppFrames                                                        { channel="lametrictime:genericApp:demo:test:frames" }
 Switch UpdateTestApp            "Update Test App"
 ```
@@ -328,33 +316,27 @@ Sample sitemap configuration:
                 Switch item=NotifyTheRoofIsOnFire
             }
             Frame label="Clock" {
-                Switch item=ClockActivate
                 Switch item=SetAlarmIn1Min
                 Switch item=ClockStopAlarm            
             }
             Frame label="Countdown" {
-                Switch item=CountdownActivate
                 Switch item=Set2MinCountdown
                 Switch item=CountdownPause
                 Switch item=CountdownReset
                 Switch item=CountdownStart             
             }
             Frame label="Radio" {
-                Switch item=RadioActivate
                 Default item=RadioControl
             }
             Frame label="Stopwatch" {
-                Switch item=StopwatchActivate
                 Switch item=StopwatchPause
                 Switch item=StopwatchReset
                 Switch item=StopwatchStart
             }
             Frame label="Weather" {
-                Switch item=WeatherActivate
                 Switch item=WeatherForecast
             }
             Frame label="Test App" {
-                Switch item=TestAppActivate
                 Switch item=UpdateTestApp            
             }
         }

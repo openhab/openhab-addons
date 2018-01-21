@@ -12,7 +12,6 @@
         <description>Provides control for the stopwatch app on the LaMetric Time</description>
         
         <channels>
-            <channel id="activate" typeId="activateType"/>
             <channel id="pause" typeId="triggerActionType">
                 <label>Pause</label>
                 <description>Pause the stopwatch</description>
