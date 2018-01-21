@@ -79,6 +79,9 @@ public abstract class RpcClient<T> {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
+        if (config.getGatewayInfo().isHomegear()) {
+            request.addArg(new Integer(0x20));
+        }
         sendMessage(config.getRpcPort(hmInterface), request);
     }
 
