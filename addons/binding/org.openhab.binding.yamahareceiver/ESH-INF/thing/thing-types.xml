@@ -88,55 +88,6 @@
 		<category>switch</category>
 	</channel-type>
 
-    <!--  input is not directly used. It is the template for 'availableinput' which
-            is provided by the AvailableInputChannelTypeProvider -->
-	<channel-type id="defaultinput">
-		<item-type>String</item-type>
-		<label>Input source</label>
-		<description>Select the input source of the AVR</description>
-		<state pattern="%s">
-			<options>
-				<option value="NET_RADIO">Net Radio</option>
-				<option value="PC">PC</option>
-				<option value="USB">USB</option>
-				<option value="TUNER">Tuner</option>
-				<option value="MULTI_CH">Multi Channel</option>
-				<option value="HDMI_1">HDMI 1</option>
-				<option value="HDMI_2">HDMI 2</option>
-				<option value="HDMI_3">HDMI 3</option>
-				<option value="HDMI_4">HDMI 4</option>
-				<option value="HDMI_5">HDMI 5</option>
-				<option value="HDMI_6">HDMI 6</option>
-				<option value="HDMI_7">HDMI 7</option>
-				<option value="AV_1">AV 1</option>
-				<option value="AV_2">AV 2</option>
-				<option value="AV_3">AV 3</option>
-				<option value="AV_4">AV 4</option>
-				<option value="AV_5">AV 5</option>
-				<option value="AV_6">AV 6</option>
-				<option value="AV_7">AV 7</option>
-				<option value="PHONO">Phono</option>
-				<option value="V_AUX">Aux</option>
-				<option value="AUDIO_1">Audio 1</option>
-				<option value="AUDIO_2">Audio 2</option>
-				<option value="AUDIO_3">Audio 3</option>
-				<option value="AUDIO_4">Audio 4</option>
-				<option value="DOCK">DOCK</option>
-				<option value="iPod">iPod</option>
-				<option value="Bluetooth">Bluetooth</option>
-				<option value="UAW">UAW</option>
-				<option value="NET">NET</option>
-				<option value="SIRIUS">Sirius</option>
-				<option value="Rhapsody">Rhapsody</option>
-				<option value="SIRIUS_IR">SIRIUS IR</option>
-				<option value="Pandora">Pandora</option>
-				<option value="Napster">Napster</option>
-				<option value="iPod_USB">iPod/USB</option>
-				<option value="Spotify">Spotify</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="surroundProgram">
 		<item-type>String</item-type>
 		<label>Surround program</label>
