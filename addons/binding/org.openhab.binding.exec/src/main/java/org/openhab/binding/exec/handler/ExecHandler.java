@@ -69,7 +69,8 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        logger.trace("Received channelUID.getId() '{}', command.toString() '{}', class '{}'", channelUID.getId(),
+                command.toString(), command.getClass());
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
         } else {
@@ -80,7 +81,7 @@ public class ExecHandler extends BaseThingHandler {
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
-                if (command instanceof StringType) {
+                if (command instanceof StringType || command instanceof OnOffType) {
                     String previousInput = lastInput;
                     lastInput = command.toString();
                     if (lastInput != null && !lastInput.equals(previousInput)) {
