@@ -46,7 +46,7 @@ public class SatelOutputHandler extends SatelThingHandler {
 
     @Override
     protected SatelCommand convertCommand(ChannelUID channel, Command command) {
-        if (getStateType(channel.getId()) == OutputState.STATE) {
+        if (command instanceof OnOffType && getStateType(channel.getId()) == OutputState.STATE) {
             boolean switchOn = (command == OnOffType.ON);
             int size = bridgeHandler.getIntegraType().hasExtPayload() ? 32 : 16;
             byte[] outputs = getObjectBitset(size, thingConfig.getId());

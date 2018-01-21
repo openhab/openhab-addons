@@ -46,23 +46,27 @@ public class SatelZoneHandler extends SatelThingHandler {
 
     @Override
     protected SatelCommand convertCommand(ChannelUID channel, Command command) {
-        boolean switchOn = (command == OnOffType.ON);
-        StateType stateType = getStateType(channel.getId());
-        int size = bridgeHandler.getIntegraType().hasExtPayload() ? 32 : 16;
-        byte[] zones = getObjectBitset(size, thingConfig.getId());
-        switch ((ZoneState) stateType) {
-            case BYPASS:
-                return new ControlObjectCommand(switchOn ? ZoneControl.BYPASS : ZoneControl.UNBYPASS, zones,
-                        bridgeHandler.getUserCode());
-            case ISOLATE:
-                if (switchOn) {
-                    return new ControlObjectCommand(ZoneControl.ISOLATE, zones, bridgeHandler.getUserCode());
-                } else {
-                    return null;
-                }
-            default:
-                // do nothing for other types of state
-                break;
+        if (command instanceof OnOffType) {
+            boolean switchOn = (command == OnOffType.ON);
+            StateType stateType = getStateType(channel.getId());
+            int size = bridgeHandler.getIntegraType().hasExtPayload() ? 32 : 16;
+            byte[] zones = getObjectBitset(size, thingConfig.getId());
+            ZoneControl action = null;
+            switch ((ZoneState) stateType) {
+                case BYPASS:
+                    action = switchOn ? ZoneControl.BYPASS : ZoneControl.UNBYPASS;
+                    break;
+                case ISOLATE:
+                    action = switchOn ? ZoneControl.ISOLATE : null;
+                    break;
+                default:
+                    // do nothing for other types of state
+                    break;
+            }
+
+            if (action != null) {
+                return new ControlObjectCommand(action, zones, bridgeHandler.getUserCode());
+            }
         }
 
         return null;

@@ -65,6 +65,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // the bridge does not support any command at the moment
+        logger.debug("New command for {}: {}", channelUID, command.toFullString());
     }
 
     protected void initialize(final SatelModule satelModule) {
