@@ -105,9 +105,9 @@ public class HomematicThingHandler extends BaseThingHandler {
                     // update configurations
                     Configuration config = editConfiguration();
                     for (HmChannel channel : device.getChannels()) {
+                        loadHomematicChannelValues(channel);
                         for (HmDatapoint dp : channel.getDatapoints().values()) {
                             if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                                loadHomematicChannelValues(dp.getChannel());
                                 config.put(MetadataUtils.getParameterName(dp),
                                         dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
                             }
