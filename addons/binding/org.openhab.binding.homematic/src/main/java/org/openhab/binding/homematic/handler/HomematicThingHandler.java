@@ -242,7 +242,9 @@ public class HomematicThingHandler extends BaseThingHandler {
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
         if (dp.isTrigger()) {
-            triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+            if (dp.getValue() != null) {
+                triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
+            }
         } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
