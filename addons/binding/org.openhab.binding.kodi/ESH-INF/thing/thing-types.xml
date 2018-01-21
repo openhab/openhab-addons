@@ -20,7 +20,7 @@
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
 			<channel id="inputtext" typeId="inputtext" />
-			<channel id="inputaction" typeId="inputexecuteaction" />
+			<channel id="inputaction" typeId="inputaction" />
 			<channel id="systemcommand" typeId="systemcommand" />
 			<channel id="title" typeId="title" />
 			<channel id="showtitle" typeId="showtitle" />

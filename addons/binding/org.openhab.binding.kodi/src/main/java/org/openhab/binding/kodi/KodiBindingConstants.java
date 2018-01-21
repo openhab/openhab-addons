@@ -50,7 +50,7 @@ public class KodiBindingConstants {
 
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUTTEXT = "inputtext";
-    public static final String CHANNEL_INPUTEXECUTEACTION = "inputexecuteaction";
+    public static final String CHANNEL_INPUTACTION = "inputaction";
 
     public static final String CHANNEL_SYSTEMCOMMAND = "systemcommand";
 
