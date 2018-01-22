@@ -12,12 +12,17 @@ import static org.junit.Assert.*;
 import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
 /**
@@ -25,14 +30,23 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@RunWith(value = Parameterized.class)
 public class EnergySwitchDeviceTest {
+
+    private static final List<Object[]> TESTS = Arrays
+            .asList(new Object[][] { { "plug_get_realtime_response", }, { "plug_get_realtime_response_v2", } });
 
     private final EnergySwitchDevice device = new EnergySwitchDevice();
     @NonNull
     private final DeviceState deviceState;
 
-    public EnergySwitchDeviceTest() throws IOException {
-        deviceState = new DeviceState(ModelTestUtil.readJson("plug_get_realtime_response"));
+    public EnergySwitchDeviceTest(String name) throws IOException {
+        deviceState = new DeviceState(ModelTestUtil.readJson(name));
+    }
+
+    @Parameters(name = "{0}")
+    public static List<Object[]> data() {
+        return TESTS;
     }
 
     @Test

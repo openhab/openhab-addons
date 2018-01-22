@@ -18,10 +18,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Realtime extends ErrorResponse {
 
+    @SerializedName(value = "current", alternate = "current_ma")
     private double current;
     @SerializedName(value = "power", alternate = "power_mw")
     private double power;
+    @SerializedName(value = "total", alternate = "total_wh")
     private double total;
+    @SerializedName(value = "voltage", alternate = "voltage_mv")
     private double voltage;
 
     public double getCurrent() {
