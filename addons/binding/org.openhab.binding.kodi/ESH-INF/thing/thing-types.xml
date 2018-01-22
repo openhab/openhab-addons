@@ -53,8 +53,7 @@
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind
-        </description>
+		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind</description>
 		<category>Player</category>
 	</channel-type>
 	<channel-type id="stop">
@@ -108,14 +107,12 @@
 	<channel-type id="inputtext" advanced="true">
 		<item-type>String</item-type>
 		<label>Sends text as input</label>
-		<description>Sends a text to the Kodi Player to simulate keyboard text entry
-        </description>
+		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
 	</channel-type>
 	<channel-type id="inputaction" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute an action</label>
-		<description>Send a predefined action to the Kodi Player to control the UI and/or perform other tasks
-        </description>
+		<description>Send a predefined action to the Kodi Player to control the UI and/or perform other tasks</description>
 		<state>
 			<options>
 				<option value="left">left</option>
@@ -323,8 +320,7 @@
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi
-        </description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>
