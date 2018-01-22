@@ -20,7 +20,8 @@ public enum WinkSupportedDevice {
     REMOTE("remote", "/remotes"),
     LOCK("lock", "/locks"),
     HUB("hub", "/hubs"),
-    DOORBELL("door_bell", "/door_bells");
+    DOORBELL("door_bell", "/door_bells"),
+    THERMOSTAT("thermostat", "/thermostats");
 
     private String device_type;
     private String path;

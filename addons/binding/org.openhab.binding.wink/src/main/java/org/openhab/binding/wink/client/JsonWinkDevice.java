@@ -10,8 +10,11 @@ package org.openhab.binding.wink.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -50,6 +53,8 @@ public class JsonWinkDevice implements IWinkDevice {
             return WinkSupportedDevice.REMOTE;
         } else if (json.get("door_bell_id") != null) {
             return WinkSupportedDevice.DOORBELL;
+        } else if (json.get("thermostat_id") != null) {
+            return WinkSupportedDevice.THERMOSTAT;
         } else {
             return WinkSupportedDevice.HUB;
         }
@@ -86,6 +91,37 @@ public class JsonWinkDevice implements IWinkDevice {
     private Map<String, String> toMap(JsonObject json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, String>>() {
         }.getType());
+    }
+
+    @Override
+    public Map<String, String> getCurrentStateComplexJson() {
+        JsonObject data = json.get("last_reading").getAsJsonObject();
+        Map<String, String> theMap = new HashMap<String, String>();
+        Set<Entry<String, JsonElement>> entrySet = data.entrySet();
+        for (Map.Entry<String, JsonElement> entry : entrySet) {
+            if (entry.getValue().isJsonArray()) {
+                // If it is a json array, iterate thru the items and add them as comma separated strings.
+                // This is the item that does not parse correctly in the toMap() call above.
+                String theValues = "";
+                for (JsonElement element : entry.getValue().getAsJsonArray()) {
+                    if (element.isJsonNull()) {
+                        theValues += "null,";
+                        continue;
+                    }
+                    theValues += element.getAsString() + ",";
+                }
+                theMap.put(entry.getKey(), theValues.replaceFirst(",$", "")); // Remove trailing ','
+                continue;
+            }
+
+            if (entry.getValue().isJsonNull()) {
+                theMap.put(entry.getKey(), "null");
+                continue;
+            }
+
+            theMap.put(entry.getKey(), entry.getValue().getAsString());
+        }
+        return theMap;
     }
 
     @Override
