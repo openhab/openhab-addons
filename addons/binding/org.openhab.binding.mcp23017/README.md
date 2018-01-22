@@ -24,10 +24,10 @@ mcp23017 - which is a mcp23017 chip connected to a I2C bus on specified HEX addr
 
 mcp23017 supports 16 channels in 2 groups:
 
- | Group |                       Channels                           |           Additional parameters           |
- |  ---  |                          ---                             |                      ---                  |
- | input | A0, A1, A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6   | pull_mode (OFF, PULL_UP), default is OFF  |
- | output| A0, A1, A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6   | default_state (LOW, HIGH), defauld is LOW |
+ | Group |                       Channels                                   |           Additional parameters           |
+ |  ---  |                          ---                                     |                      ---                  |
+ | input | A0, A1, A2, A3, A4, A5, A6, A7, B0, B1, B2, B3, B4, B5, B6, B7   | pull_mode (OFF, PULL_UP), default is OFF  |
+ | output| A0, A1, A2, A3, A4, A5, A6, A7, B0, B1, B2, B3, B4, B5, B6, B7   | default_state (LOW, HIGH), defauld is LOW |
 
  Channel determines MCP23017 PIN we want to use.
 
