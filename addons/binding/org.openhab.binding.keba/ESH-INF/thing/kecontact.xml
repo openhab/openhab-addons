@@ -10,7 +10,8 @@
 
 		<channels>
 			<channel id="state" typeId="state" />
-			<channel id="error" typeId="error" />
+			<channel id="error1" typeId="error1" />
+			<channel id="error2" typeId="error2" />
 			<channel id="wallbox" typeId="plug" />
 			<channel id="vehicule" typeId="plug" />
 			<channel id="locked" typeId="locked" />
