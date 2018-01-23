@@ -68,6 +68,7 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
+    <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
