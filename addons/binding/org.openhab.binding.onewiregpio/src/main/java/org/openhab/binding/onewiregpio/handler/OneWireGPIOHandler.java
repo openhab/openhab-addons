@@ -70,6 +70,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     public void initialize() {
         if (checkConfiguration()) {
             startAutomaticRefresh();
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -104,9 +105,6 @@ public class OneWireGPIOHandler extends BaseThingHandler {
                 for (Channel channel : channels) {
                     if (isLinked(channel.getUID().getId())) {
                         publishSensorValue(channel.getUID());
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Channel is not linked.");
                     }
                 }
             }
