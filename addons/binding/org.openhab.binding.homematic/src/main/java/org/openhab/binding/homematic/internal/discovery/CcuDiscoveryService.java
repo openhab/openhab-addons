@@ -131,7 +131,7 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
             socket.receive(packet);
 
             Eq3UdpResponse response = new Eq3UdpResponse(packet.getData());
-            logger.trace("{}", response.toString());
+            logger.trace("Eq3UdpResponse: {}", response);
             if (response.isValid()) {
                 logger.debug("Discovered a CCU gateway with serial number '{}'", response.getSerialNumber());
 
