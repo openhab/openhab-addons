@@ -39,6 +39,8 @@ public class DifferenceCheckingPublisher implements ReadingPublisher<LaCrosseTem
         } else {
             logger.debug("Ignoring reading {} differing too much from previous value", reading.getTemperature());
         }
+
+        lastReading = reading;
     }
 
     @Override

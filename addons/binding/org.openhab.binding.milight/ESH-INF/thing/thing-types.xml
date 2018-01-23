@@ -226,25 +226,25 @@
     </thing-type>
 
     <channel-type id="lednightmode">
-        <kind>trigger</kind>
+        <item-type>Switch</item-type>
         <label>Nightmode</label>
         <description>Switch to night mode, a very dimmed brightness mode</description>
     </channel-type>
     
     <channel-type id="ledwhitemode">
-        <kind>trigger</kind>
+        <item-type>Switch</item-type>
         <label>Whitemode</label>
         <description>Switch to white mode, which basically sets the saturation to 0 (turns off the color leds)</description>
     </channel-type>
 
     <channel-type id="ledlink" advanced="true">
-        <kind>trigger</kind>
+        <item-type>Switch</item-type>
         <label>Link bulb</label>
         <description>Sync bulb to this zone within 3 seconds of light bulb socket power on</description>
     </channel-type>
     
     <channel-type id="ledunlink" advanced="true">
-        <kind>trigger</kind>
+        <item-type>Switch</item-type>
         <label>Unlink bulb</label>
         <description>Clear bulb from this zone within 3 seconds of light bulb socket power on</description>
     </channel-type>
@@ -281,13 +281,13 @@
     </channel-type>
     
     <channel-type id="animation_speed_relative">
-        <kind>trigger</kind>
+        <item-type>Dimmer</item-type>
         <label>Animation speed</label>
         <description>The speed of some animations can be increased or decreased</description>
     </channel-type>
     
     <channel-type id="animation_mode_relative">
-        <kind>trigger</kind>
+        <item-type>Dimmer</item-type>
         <label>Animation mode</label>
         <description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous channel type.</description>
     </channel-type>

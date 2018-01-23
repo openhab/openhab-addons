@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="helios" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ipvario221">
+		<label>Helios IP Vario</label>
+		<description>Helios IP Vario Door Station / Intercom with Firmware v2.21</description>
+
+		<channels>
+			<channel id="audiolooptest" typeId="audiolooptest" />
+			<channel id="audioloopteststamp" typeId="audioloopteststamp" />
+			<channel id="callstate" typeId="callstate" />
+			<channel id="calldirection" typeId="calldirection" />
+			<channel id="callstatestamp" typeId="callstatestamp" />
+			<channel id="card" typeId="card" />
+			<channel id="cardvalid" typeId="cardvalid" />
+			<channel id="cardstamp" typeId="cardstamp" />
+			<channel id="code" typeId="code" />
+			<channel id="codevalid" typeId="codevalid" />
+			<channel id="codestamp" typeId="codestamp" />
+			<channel id="devicestate" typeId="devicestate" />
+			<channel id="devicestatestamp" typeId="devicestatestamp" />
+			<channel id="keypressed" typeId="keypressed" />
+			<channel id="keypressedstamp" typeId="keypressedstamp" />
+			<channel id="keyreleased" typeId="keyreleased" />
+			<channel id="keyreleasedstamp" typeId="keyreleasedstamp" />
+			<channel id="motion" typeId="motion" />
+			<channel id="motionstamp" typeId="motionstamp" />
+			<channel id="noise" typeId="noise" />
+			<channel id="noisestamp" typeId="noisestamp" />
+			<channel id="switchstate" typeId="switchstate" />
+			<channel id="switchstateswitch" typeId="switchstateswitch" />
+			<channel id="switchstateoriginator" typeId="switchstateoriginator" />
+			<channel id="switchstatestamp" typeId="switchstatestamp" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Helios IP device</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username to access REST services on the Helios IP device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access REST services on the Helios IP device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

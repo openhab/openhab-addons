@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,10 +22,28 @@ import com.google.gson.annotations.SerializedName;
  */
 class LxJsonResponse {
 
-    class LxJsonSubResponse {
+    class LxJsonKeySalt {
+        String key;
+        String salt;
+    }
+
+    class LxJsonCfgApi {
+        String snr;
+        String version;
+    }
+
+    class LxJsonToken {
+        String token;
+        String key;
+        Integer validUntil;
+        Integer tokenRights;
+        Boolean unsecurePass;
+    }
+
+    static class LxJsonSubResponse {
         String control;
-        String value;
-        @SerializedName("Code")
+        JsonElement value;
+        @SerializedName(value = "Code", alternate = { "code" })
         int code;
     }
 

@@ -36,7 +36,7 @@ Background discovery is **enabled** by default.
 To disable background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
 ```text
-org.openhab.binding.globalcache.discovery.GlobalCacheDiscoveryService:backgroundDiscovery.enabled=false
+discovery.globalcache:background=false
 ```
 
 Note that automatic device discovery **will not work** with GC-100's running firmware earlier than v3.0 as those versions do not emit announcement beacons on the multicast address.
