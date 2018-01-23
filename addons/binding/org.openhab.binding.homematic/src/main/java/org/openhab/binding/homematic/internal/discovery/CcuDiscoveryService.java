@@ -93,7 +93,7 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
             sendBroadcast();
             receiveResponses();
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            logger.error("An error was thrown while running Homematic CCU discovery {}", ex.getMessage(), ex);
         } finally {
             scanFuture = null;
         }
