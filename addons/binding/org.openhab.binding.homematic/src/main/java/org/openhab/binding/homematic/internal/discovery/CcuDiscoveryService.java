@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class CcuDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CcuDiscoveryService.class);
 
-    private static final int RECEIVE_TIMEOUT = 3000;
+    private static final int RECEIVE_TIMEOUT_MSECS = 3000;
     private InetAddress broadcastAddress;
     private MulticastSocket socket;
     private Future<?> scanFuture;
@@ -108,7 +108,7 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private void receiveResponses() throws IOException {
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
-        while (currentTime - startTime < RECEIVE_TIMEOUT) {
+        while (currentTime - startTime < RECEIVE_TIMEOUT_MSECS) {
             extractGatewayInfos();
             currentTime = System.currentTimeMillis();
         }
