@@ -3,6 +3,8 @@
 The openHAB Cloud Connector allows connecting the local openHAB runtime to a remote [openHAB Cloud](https://github.com/openhab/openhab-cloud/blob/master/README.md) instance, such as [myopenHAB.org](http://www.myopenHAB.org), which is an instance of the
 openHAB Cloud service hosted by the [openHAB Foundation](http://www.openhabfoundation.org/).
 
+To install this add-on, open Paper UI and navigate to _Add-Ons > Misc > openHAB Cloud Connector > Install_.
+
 ## Features
 
 The openHAB Cloud service (and thus the connector to it) is useful for different use cases:
