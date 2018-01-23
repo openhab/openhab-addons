@@ -21,10 +21,12 @@ import java.util.concurrent.Future;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.homematic.internal.discovery.eq3udp.Eq3UdpRequest;
 import org.openhab.binding.homematic.internal.discovery.eq3udp.Eq3UdpResponse;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private InetAddress broadcastAddress;
     private MulticastSocket socket;
     private Future<?> scanFuture;
+    private NetworkAddressService networkAddressService;
 
     public CcuDiscoveryService() {
         super(Collections.singleton(THING_TYPE_BRIDGE), 5, true);
@@ -77,7 +80,11 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private synchronized void startDiscovery() {
         try {
             logger.debug("Starting Homematic CCU discovery scan");
-            broadcastAddress = InetAddress.getByName("255.255.255.255");
+            broadcastAddress = InetAddress.getByName(networkAddressService.getConfiguredBroadcastAddress());
+            if (broadcastAddress == null) {
+                logger.warn("Homematic CCU discovery: discovery not possible, no broadcast address found");
+                return;
+            }
             socket = new MulticastSocket();
             socket.setBroadcast(true);
             socket.setTimeToLive(5);
@@ -139,4 +146,12 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
+    }
 }
