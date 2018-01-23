@@ -34,9 +34,9 @@ public final class NikoHomeControlDiscover {
     private InetAddress addr;
     private String nhcBridgeId;
 
-    public NikoHomeControlDiscover() throws IOException {
+    public NikoHomeControlDiscover(String broadcast) throws IOException {
         final byte[] discoverBuffer = { (byte) 0x44 };
-        final InetAddress broadcastAddr = InetAddress.getByName("255.255.255.255");
+        final InetAddress broadcastAddr = InetAddress.getByName(broadcast);
         final int broadcastPort = 10000;
 
         DatagramPacket discoveryPacket = new DatagramPacket(discoverBuffer, discoverBuffer.length, broadcastAddr,
