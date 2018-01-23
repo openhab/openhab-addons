@@ -47,19 +47,22 @@ public class PressVirtualDatapointHandler extends AbstractVirtualDatapointHandle
 
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
-        return dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue());
+        return dp.isPressDatapoint();
     }
 
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
-        String value = StringUtils.substringAfter(dp.getName(), "_");
-        if (ArrayUtils.contains(vdp.getOptions(), value)) {
-            vdp.setValue(value);
+        if (MiscUtils.isTrueValue(dp.getValue())) {
+            String value = StringUtils.substringAfter(dp.getName(), "_");
+            if (ArrayUtils.contains(vdp.getOptions(), value)) {
+                vdp.setValue(value);
+            } else {
+                logger.warn("Unknown value '{}' for PRESS virtual datapoint, only {} allowed", value,
+                        StringUtils.join(vdp.getOptions(), ","));
+            }
         } else {
-            logger.warn("Unknown value '{}' for PRESS virtual datapoint, only {} allowed", value,
-                    StringUtils.join(vdp.getOptions(), ","));
+            vdp.setValue(null);
         }
     }
-
 }

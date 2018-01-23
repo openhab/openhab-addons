@@ -8,14 +8,18 @@ This binding allows you to integrate, view, control and configure all Homematic 
 All gateways which provides the Homematic BIN- or XML-RPC API:
 
 - CCU 1+2
+- [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
 - [Homegear](https://www.homegear.eu)
 - [piVCCU](https://github.com/alexreinert/piVCCU)
 - [YAHM](https://github.com/leonsio/YAHM)
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 
-The Homematic IP Access Point does not support this API and can't be used with this binding.
-But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15.
+Recommended for Homematic IP:
+- CCU2 with at least firmware 2.17.15
+- [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) RF module
+
+The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
 
 These ports are used by the binding by default to communicate **TO** the gateway:
 
@@ -30,6 +34,9 @@ And **FROM** the gateway to openHab:
 
 - XML-RPC: 9125
 - BIN-RPC: 9126
+
+CCU Autodiscovery:
+* UDP 43439
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
@@ -54,9 +61,13 @@ With Homegear or a CCU, variables and scripts are supported too.
 
 ## Discovery
 
-Gateway discovery is only available for Homegear, you need at least 0.6.x for gateway discovery. For all other gateways you have to manually add a bridge in a things file.  
-Device discovery is supported for all gateways.
+Gateway discovery is available:
+* CCU
+* RaspberryMatic >= 2.29.23.20171022
+* Homegear >= 0.6.x
 
+For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways. 
+ 
 The binding has a gateway type autodetection, but sometimes a gateway does not clearly notify the type.
 If you are using a YAHM for example, you have to manually set the gateway type in the bride configuration to CCU.  
 
