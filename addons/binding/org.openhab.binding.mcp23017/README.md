@@ -15,10 +15,10 @@ mcp23017 - which is a mcp23017 chip connected to a I2C bus on specified HEX addr
 
 * Required configuration for mcp23017 thing:
 
-    address - MCP23017 I2C bus address. On Raspberry PI it can be checked as a result of command: "i2cdetect -y 1". Value should be set in HEX.
-        Default value is "20"
-    bus_number - a bus number to which mcp23017 is connected. On RPI2 and RPI3 it will be "1", on RPI1 it will be "0".
-        Default value is "1"    
+ | Parameter  | Description                                                                                                                       | Default value |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------|---------------|
+| address    | MCP23017 I2C bus address. On Raspberry PI it can be checked as a result of command: "i2cdetect -y 1". Value should be set in HEX. | "20"          |
+| bus_number | a bus number to which mcp23017 is connected. On RPI2 and RPI3 it will be "1", on RPI1 it will be "0".                             | "1"           |
 
 ## Channels
 
@@ -61,7 +61,8 @@ Switch living_room_led_switch "Living room led switch"  {channel="mcp23017:mcp23
 Contact living_room_led_contact "Living room led contact"  {channel="mcp23017:mcp23017:chipA:input#B1"}
 ```
 
-*   Rules
+*   Rules:
+
 ```
 rule "living_room_led contact"
 when
