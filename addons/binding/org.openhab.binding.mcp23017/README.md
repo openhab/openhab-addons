@@ -61,7 +61,8 @@ Switch living_room_led_switch "Living room led switch"  {channel="mcp23017:mcp23
 Contact living_room_led_contact "Living room led contact"  {channel="mcp23017:mcp23017:chipA:input#B1"}
 ```
 
-*   Rules
+*   Rules:
+
 ```
 rule "living_room_led contact"
 when
