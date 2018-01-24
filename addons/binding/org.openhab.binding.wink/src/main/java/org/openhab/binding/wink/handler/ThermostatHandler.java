@@ -41,9 +41,17 @@ public class ThermostatHandler extends WinkBaseThingHandler {
     public void handleWinkCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_THERMOSTAT_CURRENTSETPOINT)) {
             if (command instanceof Number) {
-                logger.debug("Setting desire temperature {}", command);
+                logger.debug("Setting desired temperature {}", command);
                 float temperature = ((Number) command).floatValue();
                 setDesiredTemperature(temperature);
+                updateDeviceState(getDevice());
+            }
+        } else if (channelUID.getId().equals(CHANNEL_THERMOSTAT_CURRENTMODE)) {
+            if (command instanceof StringType) {
+                logger.debug("Setting desired mode {}", command);
+                String mode = ((StringType) command).toString();
+                setDesiredMode(mode);
+                updateDeviceState(getDevice());
             }
         }
         if (command instanceof RefreshType) {
@@ -56,6 +64,10 @@ public class ThermostatHandler extends WinkBaseThingHandler {
         bridgeHandler.setThermostatTemperature(getDevice(), temperature);
     }
 
+    private void setDesiredMode(String mode) {
+        bridgeHandler.setThermostatMode(getDevice(), mode);
+    }
+
     @Override
     protected WinkSupportedDevice getDeviceType() {
         return WinkSupportedDevice.THERMOSTAT;
@@ -63,7 +75,6 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
     @Override
     protected void updateDeviceState(IWinkDevice device) {
-        Map<String, String> jsonDataDesired = device.getDesiredState();
         Map<String, String> jsonData = device.getCurrentStateComplexJson();
 
         String units = "f";

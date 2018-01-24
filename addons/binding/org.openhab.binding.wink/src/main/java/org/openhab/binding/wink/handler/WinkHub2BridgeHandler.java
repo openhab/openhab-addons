@@ -152,7 +152,7 @@ public class WinkHub2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Sets the thermostat temperature of a device to the level specified in celcius
+     * Sets the thermostat temperature to the level specified in celcius
      *
      * @param device The device to change temperature
      * @param temperature The temperature desired
@@ -187,6 +187,30 @@ public class WinkHub2BridgeHandler extends BaseBridgeHandler {
             logger.debug("Setting new temperature to {}", desiredTemperature);
             this.setDesiredState(device, updatedState);
         }
+    }
+
+    /**
+     * Sets the thermostat mode to the mode specified
+     *
+     * @param device The device to change temperature
+     * @param temperature The temperature desired
+     * @param mode The desired mode of operation, heat_only, cool_only, auto
+     */
+    public void setThermostatMode(IWinkDevice device, String mode) {
+        Map<String, String> updatedState = new HashMap<String, String>();
+        if (mode.equals("Cool")) {
+            updatedState.put("mode", String.valueOf("cool_only"));
+        } else if (mode.equals("Heat")) {
+            updatedState.put("mode", String.valueOf("heat_only"));
+        } else if (mode.equals("Auto")) {
+            updatedState.put("mode", String.valueOf("auto"));
+        } else {
+            // unknown mode.
+            logger.warn("Detected unknown wink:thermostat mode '{}'", mode);
+        }
+
+        logger.debug("Setting new mode to {}", mode);
+        this.setDesiredState(device, updatedState);
     }
 
 }
