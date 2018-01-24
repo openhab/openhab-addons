@@ -122,7 +122,16 @@ class KeContacTransceiver {
             logger.debug("Stopping the the KEBA KeContact transceiver");
             if (transceiverThread != null) {
                 transceiverThread.interrupt();
+                try {
+                    transceiverThread.join();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                transceiverThread = null;
             }
+
+            locks.clear();
+            flags.clear();
 
             isStarted = false;
         }
@@ -183,10 +192,16 @@ class KeContacTransceiver {
                 buffers.put(handler, buffer);
 
                 synchronized (handlerLock) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("{} waiting on handerLock {}", Thread.currentThread().getName(),
+                                handlerLock.toString());
+                    }
                     handlerLock.wait();
-                    return buffers.remove(handler);
                 }
+
+                return buffers.remove(handler);
             } catch (UnsupportedEncodingException | InterruptedException e) {
+                Thread.currentThread().interrupt();
                 handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } finally {
                 handlerLock.unlock();
@@ -306,6 +321,11 @@ class KeContacTransceiver {
                                                     if (theLock != null && theLock.isLocked()) {
                                                         buffers.put(handler, readBuffer);
                                                         synchronized (theLock) {
+                                                            if (logger.isTraceEnabled()) {
+                                                                logger.trace("{} notifyall on handerLock {}",
+                                                                        Thread.currentThread().getName(),
+                                                                        theLock.toString());
+                                                            }
                                                             theLock.notifyAll();
                                                         }
                                                     } else {
@@ -383,6 +403,7 @@ class KeContacTransceiver {
                         return;
                     }
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     return;
                 }
             }
