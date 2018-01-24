@@ -30,7 +30,7 @@ public class GetRealtime {
 
         @Override
         public String toString() {
-            return "get_real_time:{" + getRealtime + "}";
+            return "get_realtime:{" + getRealtime + "}";
         }
     }
 

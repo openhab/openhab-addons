@@ -64,7 +64,7 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
                 }
                 DatagramPacket packet = (DatagramPacket) invocation.getArguments()[0];
                 packet.setAddress(InetAddress.getLocalHost());
-                packet.setData(CryptUtil.encrypt(ModelTestUtil.readJson("bulb_get_sysinfo_response")));
+                packet.setData(CryptUtil.encrypt(ModelTestUtil.readJson("bulb_get_sysinfo_response_on")));
                 return null;
             }
 
