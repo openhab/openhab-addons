@@ -23,10 +23,28 @@ None required
 
 ### HeatHub Configuration
 
-Once discovered, the HeatHub `SECRET` needs to be configured. There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
+Once discovered, the HeatHub `AUTHTOKEN` needs to be configured. There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
 
-* Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `SECRET` in the header.
-* Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the key.
+1. Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `SECRET` in the header.
+2. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `AUTHTOKEN`.
+
+The `REFRESH` interval defines in seconds, how often the binding will poll the controller for updates.
+
+### Manual configuration with .things files
+
+```
+Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN="authtoken from hub" ]
+{
+	controller controller	[ internalID=0 ]
+	room livingroom	[ internalID=1 ]
+	room bathroom	[ internalID=2 ]
+	room bedroom	[ internalID=3 ]
+	roomstat livingroomstat [ internalID=1234 ]
+	itrv livingroomtrv [ internalID=2345 ]
+}
+```
+
+The `internalID` above corresponds to the ID of the device reported by the api. Currently this is only obtainable by packet inspection if not using auto-discovery. This should hopefully change in future to use the serial number of the devices where possible (which can be found in the battery compartment of each device).
 
 ## Channels
 
