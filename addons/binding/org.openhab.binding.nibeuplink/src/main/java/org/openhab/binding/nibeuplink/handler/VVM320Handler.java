@@ -14,9 +14,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.ChannelType;
 import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
-import org.openhab.binding.nibeuplink.internal.model.VVM320SpecialChannels;
 
 /**
  * VVM320 specific implementation part of handler logic
@@ -26,53 +24,21 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320SpecialChannels;
  */
 public class VVM320Handler extends GenericUplinkHandler {
 
-    private final ChannelSet channelSet;
-
-    public VVM320Handler(@NonNull Thing thing, ChannelSet channelSet) {
+    public VVM320Handler(@NonNull Thing thing) {
         super(thing);
-        this.channelSet = channelSet;
     }
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            return VVM320Channels.fromId(id);
-        } else {
-            return VVM320SpecialChannels.fromId(id);
-        }
+        return VVM320Channels.fromId(id);
     }
 
     @Override
     public List<Channel> getChannels() {
         List<Channel> list = new ArrayList<>(VVM320Channels.values().length);
 
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            for (VVM320Channels channel : VVM320Channels.values()) {
-
-                if (channel.getChannelType().equals(ChannelType.SENSOR)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SENSORS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-
-                else if (channel.getChannelType().equals(ChannelType.SETTING)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SETTINGS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-            }
-        } else {
-            for (VVM320SpecialChannels channel : VVM320SpecialChannels.values()) {
-                list.add(channel);
-            }
+        for (VVM320Channels channel : VVM320Channels.values()) {
+            list.add(channel);
         }
 
         return list;

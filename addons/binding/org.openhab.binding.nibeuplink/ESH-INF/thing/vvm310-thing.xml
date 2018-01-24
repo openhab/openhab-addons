@@ -4,34 +4,14 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="vvm310">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
+		<label>Nibe VVM310 / VVM500</label>
+		<description>Nibe VVM310 / VVM500 heat pump connected through Nibe UpLink</description>
 
 		<channel-groups>
-			<channel-group typeId="vvm310-sensors" id="sensor" />
-			<channel-group typeId="vvm310-settings" id="setting" />
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:nibeuplink:web" />
-	</thing-type>
-
-	<thing-type id="vvm310-sensors">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
-
-		<channel-groups>
-			<channel-group typeId="vvm310-sensors" id="sensor" />
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:nibeuplink:web" />
-	</thing-type>
-
-	<thing-type id="vvm310-settings">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
-
-		<channel-groups>
-			<channel-group typeId="vvm310-settings" id="setting" />
+			<channel-group typeId="vvm310-general" id="general" />
+			<channel-group typeId="vvm310-hotwater" id="hotwater" />
+			<channel-group typeId="vvm310-compressor" id="compressor" />
+			<channel-group typeId="vvm310-airsupply" id="airsupply" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />

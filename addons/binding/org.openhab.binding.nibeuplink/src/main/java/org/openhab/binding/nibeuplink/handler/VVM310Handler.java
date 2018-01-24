@@ -14,7 +14,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.ChannelType;
 import org.openhab.binding.nibeuplink.internal.model.VVM310Channels;
 
 /**
@@ -25,49 +24,21 @@ import org.openhab.binding.nibeuplink.internal.model.VVM310Channels;
  */
 public class VVM310Handler extends GenericUplinkHandler {
 
-    private final ChannelSet channelSet;
-
-    public VVM310Handler(@NonNull Thing thing, ChannelSet channelSet) {
+    public VVM310Handler(@NonNull Thing thing) {
         super(thing);
-        this.channelSet = channelSet;
     }
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            return VVM310Channels.fromId(id);
-        } else {
-            return null;
-        }
+        return VVM310Channels.fromId(id);
     }
 
     @Override
     public List<Channel> getChannels() {
         List<Channel> list = new ArrayList<>(VVM310Channels.values().length);
 
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            for (VVM310Channels channel : VVM310Channels.values()) {
-
-                if (channel.getChannelType().equals(ChannelType.SENSOR)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SENSORS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-
-                else if (channel.getChannelType().equals(ChannelType.SETTING)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SETTINGS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-            }
+        for (VVM310Channels channel : VVM310Channels.values()) {
+            list.add(channel);
         }
 
         return list;

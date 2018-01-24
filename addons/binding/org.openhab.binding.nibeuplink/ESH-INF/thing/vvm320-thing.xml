@@ -4,42 +4,8 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="vvm320">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
-
-		<channel-groups>
-			<channel-group typeId="vvm320-sensors" id="sensor" />
-			<channel-group typeId="vvm320-settings" id="setting" />
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:nibeuplink:web" />
-	</thing-type>
-
-	<thing-type id="vvm320-sensors">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
-
-		<channel-groups>
-			<channel-group typeId="vvm320-sensors" id="sensor" />
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:nibeuplink:web" />
-	</thing-type>
-
-	<thing-type id="vvm320-settings">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
-
-		<channel-groups>
-			<channel-group typeId="vvm320-settings" id="setting" />
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:nibeuplink:web" />
-	</thing-type>
-
-	<thing-type id="vvm320-special">
-		<label>NibeUplink</label>
-		<description>data retrieved from Nibe Uplink web interface</description>
+		<label>Nibe VVM320 / VVM325</label>
+		<description>Nibe VVM320 / VVM325 heat pump connected through Nibe UpLink</description>
 
 		<channel-groups>
 			<channel-group typeId="vvm320-general" id="general" />

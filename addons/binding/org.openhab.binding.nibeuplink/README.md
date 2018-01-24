@@ -27,22 +27,11 @@ Following models (indoor / main units) are currently supported:
 
 | Nibe Model(s)     | Openhab Model     | Description                                           |
 |-------------------|-------------------|-------------------------------------------------------|
-| VVM310 / 500      | vvm310            | all channels                                          |
-| VVM310 / 500      | vvm310-sensors    | only sensors                                          |
-| VVM310 / 500      | vvm310-settings   | only settings                                         |
-| VVM320 / 325      | vvm320            | all channels                                          |
-| VVM320 / 325      | vvm320-sensors    | only sensors                                          |
-| VVM320 / 325      | vvm320-settings   | only settings                                         |
-| VVM320 / 325      | vvm320-special    | a special subset of channels as shown in the Web UI   |
+| VVM310 / 500      | vvm310            | reduced set of channels based on NibeUplink website   |
+| VVM320 / 325      | vvm320            | reduced set of channels based on NibeUplink website   |
 | F750              | f750              | all channels                                          |
-| F750              | f750-sensors      | only sensors                                          |
-| F750              | f750-settings     | only settings                                         |
 | F1145 / 1245      | f1145             | all channels                                          |
-| F1145 / 1245      | f1145-sensors     | only sensors                                          |
-| F1145 / 1245      | f1145-settings    | only settings                                         |
 | F1155 / 1255      | f1155             | all channels                                          |
-| F1155 / 1255      | f1155-sensors     | only sensors                                          |
-| F1155 / 1255      | f1155-settings    | only settings                                         |
 
 There are a few settings this thing:
 
@@ -86,13 +75,13 @@ nibeuplink:vvm320:home2  [ user="...", password="...", nibeId="..."]
 
 Available channels depend on the specific heatpump model. Following models/channels are currently available
 
-| Model          | All Channels                                    | Special configurations                          |
-|----------------|-------------------------------------------------|-------------------------------------------------|
-| VVM310 / 500   | [List](nibe-doc/vvm310/channels.md)             |                                                 |
-| VVM320 / 325   | [List](nibe-doc/vvm320/channels.md)             | [List](nibe-doc/vvm320/special.md)              |
-| F750           | [List](nibe-doc/f750/channels.md)               |                                                 |
-| F1145 / 1245   | [List](nibe-doc/f1145/channels.md)              |                                                 |
-| F1155 / 1255   | [List](nibe-doc/f1155/channels.md)              |                                                 |
+| Model          | All Channels                                    |
+|----------------|-------------------------------------------------|
+| VVM310 / 500   | [List](nibe-doc/vvm310/channels.md)             |
+| VVM320 / 325   | [List](nibe-doc/vvm320/channels.md)             |
+| F750           | [List](nibe-doc/f750/channels.md)               |
+| F1145 / 1245   | [List](nibe-doc/f1145/channels.md)              |
+| F1155 / 1255   | [List](nibe-doc/f1155/channels.md)              |
 
 The "all channels" lists have been generated automatically from Nibe Modbus Manager database. It is very likely that the list of channels is not 100% correct.
 

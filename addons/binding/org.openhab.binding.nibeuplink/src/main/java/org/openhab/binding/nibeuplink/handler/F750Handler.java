@@ -14,7 +14,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
-import org.openhab.binding.nibeuplink.internal.model.ChannelType;
 import org.openhab.binding.nibeuplink.internal.model.F750Channels;
 
 /**
@@ -25,49 +24,21 @@ import org.openhab.binding.nibeuplink.internal.model.F750Channels;
  */
 public class F750Handler extends GenericUplinkHandler {
 
-    private final ChannelSet channelSet;
-
-    public F750Handler(@NonNull Thing thing, ChannelSet channelSet) {
+    public F750Handler(@NonNull Thing thing) {
         super(thing);
-        this.channelSet = channelSet;
     }
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            return F750Channels.fromId(id);
-        } else {
-            return null;
-        }
+        return F750Channels.fromId(id);
     }
 
     @Override
     public List<Channel> getChannels() {
         List<Channel> list = new ArrayList<>(F750Channels.values().length);
 
-        if (!channelSet.equals(ChannelSet.SPECIAL)) {
-            for (F750Channels channel : F750Channels.values()) {
-
-                if (channel.getChannelType().equals(ChannelType.SENSOR)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SENSORS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-
-                else if (channel.getChannelType().equals(ChannelType.SETTING)) {
-                    switch (channelSet) {
-                        case ALL:
-                        case SETTINGS:
-                            list.add(channel);
-                        default:
-                            break;
-                    }
-                }
-            }
+        for (F750Channels channel : F750Channels.values()) {
+            list.add(channel);
         }
 
         return list;
