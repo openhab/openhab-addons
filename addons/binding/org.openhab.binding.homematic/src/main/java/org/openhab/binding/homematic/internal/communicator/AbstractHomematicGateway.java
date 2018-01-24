@@ -360,7 +360,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                             if ((DEVICE_TYPE_VIRTUAL.equals(device.getType())
                                     || DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) && channel.getNumber() > 1) {
                                 HmChannel previousChannel = device.getChannel(channel.getNumber() - 1);
-                                cloneAllDatapointsIntoChannel(channel, previousChannel.getDatapoints().values());
+                                cloneAllDatapointsIntoChannel(channel, previousChannel.getDatapoints());
                             } else {
                                 String channelId = String.format("%s:%s:%s", channel.getDevice().getType(),
                                         channel.getDevice().getFirmware(), channel.getNumber());
@@ -376,7 +376,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                                     // Make sure to only cache non-reconfigurable channels. For reconfigurable channels,
                                     // the data point set might change depending on the selected mode.
                                     if (!channel.isReconfigurable()) {
-                                        datapointsByChannelIdCache.put(channelId, channel.getDatapoints().values());
+                                        datapointsByChannelIdCache.put(channelId, channel.getDatapoints());
                                     }
                                 }
                             }
@@ -443,7 +443,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     public void loadChannelValues(HmChannel channel) throws IOException {
         if (channel.getDevice().isGatewayExtras()) {
             if (channel.getNumber() != HmChannel.CHANNEL_NUMBER_EXTRAS) {
-                Map<HmDatapointInfo, HmDatapoint> datapoints = channel.getDatapoints();
+                List<HmDatapoint> datapoints = channel.getDatapoints();
 
                 if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_VARIABLE) {
                     loadVariables(channel);
@@ -459,7 +459,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             setChannelDatapointValues(channel, HmParamsetType.VALUES);
         }
 
-        for (HmDatapoint dp : channel.getDatapoints().values()) {
+        for (HmDatapoint dp : channel.getDatapoints()) {
             handleVirtualDatapointEvent(dp, false);
         }
 
@@ -726,7 +726,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             logger.trace("{}", device);
             for (HmChannel channel : device.getChannels()) {
                 logger.trace("  {}", channel);
-                for (HmDatapoint dp : channel.getDatapoints().values()) {
+                for (HmDatapoint dp : channel.getDatapoints()) {
                     logger.trace("    {}", dp);
                 }
             }

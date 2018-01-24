@@ -136,7 +136,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     // those will be populated dynamically during thing initialization
                     if (!channel.isReconfigurable()) {
                         // generate channel
-                        for (HmDatapoint dp : channel.getDatapoints().values()) {
+                        for (HmDatapoint dp : channel.getDatapoints()) {
                             if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
                                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
                                 ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
@@ -305,7 +305,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             String groupLabel = MetadataUtils.getDescription("CHANNEL_NAME") + " " + channel.getNumber();
             groups.add(new ConfigDescriptionParameterGroup(groupName, null, false, groupLabel, null));
 
-            for (HmDatapoint dp : channel.getDatapoints().values()) {
+            for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
                     ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));

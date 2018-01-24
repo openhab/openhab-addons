@@ -122,7 +122,7 @@ public class CcuGateway extends AbstractHomematicGateway {
                     channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
             Collection<String> dpNames = new ArrayList<String>();
-            for (HmDatapoint dp : channel.getDatapoints().values()) {
+            for (HmDatapoint dp : channel.getDatapoints()) {
                 if (!dp.isVirtual() && dp.isReadable() && dp.getParamsetType() == HmParamsetType.VALUES) {
                     dpNames.add(dp.getName());
                 }

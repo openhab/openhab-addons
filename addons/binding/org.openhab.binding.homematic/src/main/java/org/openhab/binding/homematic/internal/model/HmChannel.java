@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -103,8 +105,10 @@ public class HmChannel {
     /**
      * Returns all datapoints.
      */
-    public Map<HmDatapointInfo, HmDatapoint> getDatapoints() {
-        return datapoints;
+    public List<HmDatapoint> getDatapoints() {
+        synchronized (datapoints) {
+            return new ArrayList<>(datapoints.values());
+        }
     }
 
     /**
@@ -112,17 +116,21 @@ public class HmChannel {
      */
     public void addDatapoint(HmDatapoint dp) {
         dp.setChannel(this);
-        datapoints.put(new HmDatapointInfo(dp), dp);
+        synchronized (datapoints) {
+            datapoints.put(new HmDatapointInfo(dp), dp);
+        }
     }
 
     /**
      * Removes all datapoints with VALUES param set type from the channel.
      */
     public void removeValueDatapoints() {
-        Iterator<Map.Entry<HmDatapointInfo, HmDatapoint>> iterator = datapoints.entrySet().iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getKey().getParamsetType() == HmParamsetType.VALUES) {
-                iterator.remove();
+        synchronized (datapoints) {
+            Iterator<Map.Entry<HmDatapointInfo, HmDatapoint>> iterator = datapoints.entrySet().iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().getKey().getParamsetType() == HmParamsetType.VALUES) {
+                    iterator.remove();
+                }
             }
         }
     }
@@ -131,7 +139,9 @@ public class HmChannel {
      * Returns the HmDatapoint with the given HmDatapointInfo.
      */
     public HmDatapoint getDatapoint(HmDatapointInfo dpInfo) {
-        return datapoints.get(dpInfo);
+        synchronized (datapoints) {
+            return datapoints.get(dpInfo);
+        }
     }
 
     /**
@@ -145,7 +155,7 @@ public class HmChannel {
      * Returns true, if the channel has the given datapoint.
      */
     public boolean hasDatapoint(HmDatapointInfo dpInfo) {
-        return datapoints.get(dpInfo) != null;
+        return getDatapoint(dpInfo) != null;
     }
 
     /**
@@ -170,7 +180,7 @@ public class HmChannel {
      * Checks whether the function this channel is configured to changed since this method was last invoked.
      * Returns false if the channel is not reconfigurable or was not initialized yet.
      */
-    public boolean checkForChannelFunctionChange() {
+    public synchronized boolean checkForChannelFunctionChange() {
         Integer currentFunction = getCurrentFunction();
         if (currentFunction == null) {
             return false;
@@ -192,7 +202,7 @@ public class HmChannel {
      * Returns true, if the channel has at least one PRESS_ datapoint.
      */
     public boolean hasPressDatapoint() {
-        for (HmDatapoint dp : datapoints.values()) {
+        for (HmDatapoint dp : getDatapoints()) {
             if (dp.isPressDatapoint()) {
                 return true;
             }

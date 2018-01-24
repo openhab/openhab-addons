@@ -201,7 +201,7 @@ public abstract class RpcClient<T> {
      * exception.
      */
     private void setChannelDatapointValues(HmChannel channel) throws IOException {
-        for (HmDatapoint dp : channel.getDatapoints().values()) {
+        for (HmDatapoint dp : channel.getDatapoints()) {
             if (dp.isReadable() && !dp.isVirtual() && dp.getParamsetType() == HmParamsetType.VALUES) {
                 RpcRequest<T> request = createRpcRequest("getValue");
                 request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
