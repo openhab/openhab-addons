@@ -126,7 +126,7 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
 
         logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
 
-        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 0, 1,
+        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 0, 5,
                 TimeUnit.MINUTES);
 
         if (upnpIOService == null || upnpService == null) {
@@ -137,7 +137,7 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
             upnpService.getRegistry().addListener(this);
         }
 
-        upnpPollingJob = scheduler.scheduleWithFixedDelay(this::checkAndCreateServices, 0, 1, TimeUnit.MINUTES);
+        upnpPollingJob = scheduler.scheduleWithFixedDelay(this::checkAndCreateServices, 0, 5, TimeUnit.MINUTES);
     }
 
     @Override
