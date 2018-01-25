@@ -241,7 +241,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 id = list.get(source);
             }
         } else {
-            logger.error("Source list query failed, result='{}'", result);
+            reportError("Source list query failed, result='{}'", result);
         }
 
         if (source != null && id != null) {
@@ -251,10 +251,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             if ("OK".equals(result.get("Result"))) {
                 logger.debug("Command successfully executed");
             } else {
-                logger.error("Command execution failed, result='{}'", result.get("Result"));
+                reportError("Command execution failed, result='{}'", result.get("Result"));
             }
         } else {
-            logger.error("Source id for '{}' couldn't be found", command.toString());
+            logger.error("Source id for '{}' couldn't be found", command);
         }
     }
 
@@ -266,7 +266,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         if ("OK".equals(result.get("Result"))) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            reportError("Command execution failed, result='{}'", result);
         }
     }
 
@@ -277,7 +277,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         if ("OK".equals(result.get("Result"))) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            reportError("Command execution failed, result='{}'", result);
         }
     }
 
@@ -340,6 +340,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     @Override
     public void onStatusChanged(boolean status) {
         logger.debug("onStatusChanged: status={}", status);
+    }
+
+    private void reportError(String message, Object parameter) {
+        reportError(message.replaceFirst("\\{\\}", parameter.toString()), (Throwable) null);
     }
 
     private void reportError(String message, Throwable e) {

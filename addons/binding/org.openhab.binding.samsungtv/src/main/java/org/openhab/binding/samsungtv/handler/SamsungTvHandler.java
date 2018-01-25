@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -130,14 +129,12 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
         nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 0, 1,
                 TimeUnit.MINUTES);
 
-        if (StringUtils.isBlank(configuration.udn)) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                    "Running without UPNP support, UDN is not configured");
-        } else if (upnpIOService == null) {
+        if (upnpIOService == null || upnpService == null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                     "Running without UPNP support, upnp service is missing");
         } else {
             upnpIOService.registerParticipant(this);
+            upnpService.getRegistry().addListener(this);
         }
 
         upnpPollingJob = scheduler.scheduleWithFixedDelay(this::checkAndCreateServices, 0, 1, TimeUnit.MINUTES);
@@ -152,6 +149,12 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
         if (nonUpnpRemoteControllerJob != null && !nonUpnpRemoteControllerJob.isCancelled()) {
             nonUpnpRemoteControllerJob.cancel(true);
             nonUpnpRemoteControllerJob = null;
+        }
+        if (upnpIOService != null) {
+            upnpIOService.removeStatusListener(this);
+        }
+        if (upnpService != null) {
+            upnpService.getRegistry().removeListener(this);
         }
         stopServices();
     }
@@ -212,6 +215,11 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
     public void reportError(ThingStatusDetail statusDetail, String message, Throwable e) {
         logger.info("Error was reported: {}", message, e);
         updateStatus(ThingStatus.OFFLINE, statusDetail, message);
+
+        // immediately try to refresh
+        stopServices();
+        scheduler.submit(this::checkAndCreateServices);
+        scheduler.submit(this::checkCreateManualConnection);
     }
 
     /**
@@ -272,8 +280,10 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
 
     private SamsungTvService findServiceInstance(String serviceName) {
         Class<? extends SamsungTvService> cl = ServiceFactory.getClassByServiceName(serviceName);
+        logger.debug("Found class {} for servicename: {}", cl == null ? null : cl.getSimpleName(), serviceName);
 
         for (SamsungTvService service : services) {
+            logger.trace("Comparing service class {} with: {} => {}", service.getClass(), cl, service.getClass() == cl);
             if (service.getClass() == cl) {
                 return service;
             }
