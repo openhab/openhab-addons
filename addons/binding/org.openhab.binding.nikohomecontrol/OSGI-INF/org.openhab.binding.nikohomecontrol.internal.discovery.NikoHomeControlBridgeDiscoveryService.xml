@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="discovery.nikohomecontrol" immediate="true" name="org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlBridgeDiscoveryService">
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+   <reference bind="setNetworkAddressService" interface="org.eclipse.smarthome.core.net.NetworkAddressService" name="NetworkAddressService" unbind="unsetNetworkAddressService"/>
+   <implementation class="org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlBridgeDiscoveryService"/>
+</scr:component>

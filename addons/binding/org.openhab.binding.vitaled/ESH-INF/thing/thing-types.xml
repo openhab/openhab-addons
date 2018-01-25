@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vitaled" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="vitaled">
+        <label>VitaLED Binding</label>
+        <description>Binding for Brumberg VitaLED. This binding uses the Brumberg VitaLED LAN master for controlling VitaLED zones.</description>
+        <channel-groups>
+            <channel-group id="zone1" typeId="zone" />
+            <channel-group id="zone2" typeId="zone" />
+            <channel-group id="zone3" typeId="zone" />
+            <channel-group id="zone4" typeId="zone" />
+            <channel-group id="zone5" typeId="zone" />
+            <channel-group id="zone6" typeId="zone" />
+            <channel-group id="zone7" typeId="zone" />
+            <channel-group id="zone8" typeId="zone" />
+        </channel-groups>
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>Network Address</label>
+                <description>The IP of the VitaLED LAN Master</description>
+                <default>192.168.0.40</default>
+                <context>network-address</context>
+            </parameter>            
+            <parameter name="port" type="integer" required="true" min="1" max="65335">
+                <label>Port</label>
+                <description>Port of the VitaLED LAN Master</description>
+                <default>80</default>
+                <advanced>true</advanced>
+            </parameter>
+
+            <parameter name="refreshInterval" type="integer">
+                <label>Refresh Interval</label>
+                <description>States how often a refresh shall occur in seconds.</description>
+                <default>60</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>        
+    </thing-type>
+
+    <channel-group-type id="zone">
+        <label>VitaLED Zone</label>
+        <description>This represents a VitaLED zone</description>
+        <channels>
+            <!-- Achromatic Light and intensity -->
+            <channel id="achromaticLight" typeId="achromaticLight">
+                <label>Achromatic Light</label>
+                <description>Achromatic Light in Kelvin</description>
+            </channel>            
+            <channel id="intensity" typeId="intensity">
+                <label>Intensity</label>
+                <description>Intensity in %</description>
+            </channel>            
+            <!-- Chromatic Light - RGBW control -->
+            <channel id="red" typeId="redLight">
+                <label>Red Light</label>
+                <description>Red Light in %</description>
+            </channel>
+            <channel id="green" typeId="greenLight">
+                <label>Green Light</label>
+                <description>Green Light in %</description>
+            </channel>            
+            <channel id="blue" typeId="blueLight">
+                <label>Blue Light</label>
+                <description>Blue Light in %</description>
+            </channel>           
+            <channel id="white" typeId="whiteLight">
+                <label>White Light</label>
+                <description>White Light in %</description>
+            </channel>
+            <!-- Colour gradients -->
+            <channel id="colourSaturation" typeId="colourSaturation">
+                <label>Colour Saturation</label>
+                <description>Colour Saturation</description>
+            </channel>            
+            <channel id="speed" typeId="speed">
+                <label>Speed</label>
+                <description>Speed</description>
+            </channel>                       
+            <channel id="colourGradientIntensity" typeId="colourGradientIntensity">
+                <label>Colour Gradient Intensity</label>
+                <description>Colour Gradient Intensity</description>
+            </channel>                                    
+            <!-- Colour triangle -->            
+            <channel id="xCoord" typeId="colourTriangleX">
+                <label>x-Coordinate</label>
+                <description>x-Coordinate</description>
+            </channel>            
+            <channel id="yCoord" typeId="colourTriangleY">
+                <label>y-Coordinate</label>
+                <description>y-Coordinate</description>
+            </channel>
+            <!-- scenes -->
+            <channel id="scene1" typeId="scene">
+                <label>Scene 1</label>
+                <description>Scene 1</description>
+            </channel>
+            <channel id="scene2" typeId="scene">
+                <label>Scene 2</label>
+                <description>Scene 2</description>
+            </channel>
+            <channel id="scene3" typeId="scene">
+                <label>Scene 3</label>
+                <description>Scene 3</description>
+            </channel>
+            <channel id="scene4" typeId="scene">
+                <label>Scene 4</label>
+                <description>Scene 4</description>
+            </channel>
+            <channel id="scene5" typeId="scene">
+                <label>Scene 5</label>
+                <description>Scene 5</description>
+            </channel>
+            <channel id="scene6" typeId="scene">
+                <label>Scene 6</label>
+                <description>Scene 6</description>
+            </channel>
+            <!-- active mode -->
+            <channel id="activeMode" typeId="activeMode">
+                <label>Active mode</label>
+                <description>Active light mode</description>
+            </channel>                                                
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="achromaticLight">
+        <item-type>Number</item-type>
+        <label>Achromatic Light</label>
+        <description>Achromatic Light in K</description>
+        <category>ColorLight</category>
+        <state min="2000" max="10000" step="50" pattern="%.0f K" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="intensity">
+        <item-type>Number</item-type>
+        <label>Intensity</label>
+        <description>Intensity in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="redLight">
+        <item-type>Number</item-type>
+        <label>Red Light</label>
+        <description>Red Light in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="greenLight">
+        <item-type>Number</item-type>
+        <label>Green Light</label>
+        <description>Green Light in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="blueLight">
+        <item-type>Number</item-type>
+        <label>Blue Light</label>
+        <description>Blue Light in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="whiteLight">
+        <item-type>Number</item-type>
+        <label>White Light</label>
+        <description>White Light in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="colourSaturation">
+        <item-type>Number</item-type>
+        <label>Colour Saturation</label>
+        <description>Colour saturation in %for colour gradients</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="speed">
+        <item-type>Number</item-type>
+        <label>White Light</label>
+        <description>White Light in %</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="colourGradientIntensity">
+        <item-type>Number</item-type>
+        <label>Colour Gradient Intensity</label>
+        <description>Colour Gradient Intensity in % for colour gradients</description>
+        <category>ColorLight</category>
+        <state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="colourTriangleX">
+        <item-type>Number</item-type>
+        <label>Colour Triangle X-coordinate</label>
+        <description>Colour Triangle X-coordinate</description>
+        <category>ColorLight</category>
+        <state min="150" max="681" step="1" pattern="%.0f" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="colourTriangleY">
+        <item-type>Number</item-type>
+        <label>Colour Triangle Y-coordinate</label>
+        <description>Colour Triangle Y-coordinate</description>
+        <category>ColorLight</category>
+        <state min="40" max="660" step="1" pattern="%.0f" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="scene">
+        <item-type>Switch</item-type>
+        <label>Scene switch</label>
+        <description>Scene switch</description>                
+    </channel-type>
+
+    <channel-type id="activeMode">
+        <item-type>Number</item-type>
+        <label>Active Mode</label>
+        <description>Active Mode</description>
+        <category>ColorLight</category>
+        <state readOnly="false">
+            <options>
+                <option value="1">Achromatic light</option>
+                <option value="2">Chromatic light</option>
+                <option value="3">Colour gradients</option>
+                <option value="4">Colour triangle</option>
+                <option value="5">Colour management</option>
+                <option value="6">Vital gradient</option>
+            </options>            
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
