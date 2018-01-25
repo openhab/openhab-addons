@@ -132,19 +132,24 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
                 for (HmChannel channel : device.getChannels()) {
                     List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
-                    // generate channel
-                    for (HmDatapoint dp : channel.getDatapoints().values()) {
-                        if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
-                            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                            ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
-                                    Locale.getDefault());
-                            if (channelType == null) {
-                                channelType = createChannelType(dp, channelTypeUID);
-                                channelTypeProvider.addChannelType(channelType);
-                            }
+                    // Omit thing channel definitions for reconfigurable channels;
+                    // those will be populated dynamically during thing initialization
+                    if (!channel.isReconfigurable()) {
+                        // generate channel
+                        for (HmDatapoint dp : channel.getDatapoints()) {
+                            if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
+                                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
+                                        Locale.getDefault());
+                                if (channelType == null) {
+                                    channelType = createChannelType(dp, channelTypeUID);
+                                    channelTypeProvider.addChannelType(channelType);
+                                }
 
-                            ChannelDefinition channelDef = new ChannelDefinition(dp.getName(), channelType.getUID());
-                            channelDefinitions.add(channelDef);
+                                ChannelDefinition channelDef = new ChannelDefinition(dp.getName(),
+                                        channelType.getUID());
+                                channelDefinitions.add(channelDef);
+                            }
                         }
                     }
 
@@ -300,7 +305,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             String groupLabel = MetadataUtils.getDescription("CHANNEL_NAME") + " " + channel.getNumber();
             groups.add(new ConfigDescriptionParameterGroup(groupName, null, false, groupLabel, null));
 
-            for (HmDatapoint dp : channel.getDatapoints().values()) {
+            for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
                     ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
