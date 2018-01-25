@@ -133,7 +133,7 @@ public class LegacyLiveDataUpdate extends AbstractCommandCallback implements Sol
      * @return converted value
      */
     private String getValueAsKW(String value, String unit) {
-        Double convertedValue = Double.valueOf(value);
+        Double convertedValue = Double.valueOf(value.replaceAll(",", "."));
 
         if (unit != null && unit.equals(UNIT_W)) {
             convertedValue = convertedValue / 1000;
