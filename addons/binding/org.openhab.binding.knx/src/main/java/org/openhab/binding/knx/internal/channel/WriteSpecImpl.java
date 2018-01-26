@@ -9,26 +9,37 @@
 package org.openhab.binding.knx.internal.channel;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.types.Type;
+import org.openhab.binding.knx.client.OutboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
- * Response meta-data
+ * Command meta-data
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
-public class ResponseSpec extends AbstractSpec {
+public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
 
+    private final Type type;
     private final @Nullable GroupAddress groupAddress;
 
-    public ResponseSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+    public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type type)
+            throws KNXFormatException {
         super(channelConfiguration, defaultDPT);
         if (channelConfiguration != null) {
-            this.groupAddress = toGroupAddress(channelConfiguration.getMainGA());
+            this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
+
         } else {
             this.groupAddress = null;
         }
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public @Nullable GroupAddress getGroupAddress() {

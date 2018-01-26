@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.client.InboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 
@@ -23,11 +24,11 @@ import tuwien.auto.calimero.GroupAddress;
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
-public class ListenSpec extends AbstractSpec {
+public class ListenSpecImpl extends AbstractSpec implements InboundSpec {
 
     private final List<GroupAddress> listenAddresses;
 
-    public ListenSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+    public ListenSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
         super(channelConfiguration, defaultDPT);
         if (channelConfiguration != null) {
             this.listenAddresses = channelConfiguration.getListenGAs().stream().map(this::toGroupAddress)
@@ -37,7 +38,7 @@ public class ListenSpec extends AbstractSpec {
         }
     }
 
-    public List<GroupAddress> getListenAddresses() {
+    public List<GroupAddress> getGroupAddresses() {
         return listenAddresses;
     }
 

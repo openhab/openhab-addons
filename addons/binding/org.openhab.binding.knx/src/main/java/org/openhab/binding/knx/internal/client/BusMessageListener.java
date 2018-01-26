@@ -29,7 +29,7 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupWrite(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      *
@@ -39,7 +39,7 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupRead(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      *
@@ -49,6 +49,6 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupReadResponse(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
 }

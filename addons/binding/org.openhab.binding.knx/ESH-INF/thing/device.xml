@@ -44,8 +44,8 @@
     </channel-type>
     <channel-type id="switch-control">
         <item-type>Switch</item-type>
-        <label>Wall Button</label>
-        <description>A channel to control a simple DPT 1.001 switch that reports back its status</description>
+        <label>Switch Control</label>
+        <description>A channel to control switch that reports back its status</description>
         <config-description-ref uri="channel-type:knx:switch" />
     </channel-type>
     
@@ -58,7 +58,7 @@
 	</channel-type>
 	<channel-type id="dimmer-control">
 		<item-type>Dimmer</item-type>
-		<label>Dimmer</label>
+		<label>Dimmer Control</label>
 		<description>A channel to control a dimmer</description>
         <config-description-ref uri="channel-type:knx:dimmer-control" />
 	</channel-type>
@@ -72,7 +72,7 @@
 	</channel-type>
 	<channel-type id="rollershutter-control">
 		<item-type>Rollershutter</item-type>
-		<label>Rollershutter</label>
+		<label>Rollershutter Control</label>
 		<description>A channel to control a rollershutter</description>
         <config-description-ref uri="channel-type:knx:rollershutter" />
 	</channel-type>
@@ -86,7 +86,7 @@
     </channel-type>
     <channel-type id="contact-control">
         <item-type>Contact</item-type>
-        <label>Contact</label>
+        <label>Contact Control</label>
         <description>A channel to manage a generic Group Addresses with a DPT compatible with Contact Items</description>
         <config-description-ref uri="channel-type:knx:single" />
     </channel-type>
@@ -99,7 +99,7 @@
         <config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="number-control">
-		<item-type>Number</item-type>
+		<item-type>Number Control</item-type>
 		<label>Number</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Number Items</description>
         <config-description-ref uri="channel-type:knx:single" />
@@ -113,7 +113,7 @@
         <config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="string-control">
-		<item-type>String</item-type>
+		<item-type>String Control</item-type>
 		<label>String</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with String Items</description>
         <config-description-ref uri="channel-type:knx:single" />
@@ -127,7 +127,7 @@
         <config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="datetime-control">
-		<item-type>DateTime</item-type>
+		<item-type>DateTime Control</item-type>
 		<label>DateTime</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with DateTime Items</description>
         <config-description-ref uri="channel-type:knx:single" />

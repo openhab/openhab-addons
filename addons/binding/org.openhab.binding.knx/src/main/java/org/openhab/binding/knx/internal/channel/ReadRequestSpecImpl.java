@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.client.InboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -24,12 +25,12 @@ import tuwien.auto.calimero.exception.KNXFormatException;
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
-public class ReadSpec {
+public class ReadRequestSpecImpl implements InboundSpec {
 
     private final String dpt;
     private final List<GroupAddress> readAddresses;
 
-    public ReadSpec(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+    public ReadRequestSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
         if (channelConfiguration != null) {
             this.dpt = channelConfiguration.getDPT() != null ? channelConfiguration.getDPT() : defaultDPT;
             this.readAddresses = channelConfiguration.getReadGAs().stream().map(this::toGroupAddress).collect(toList());
@@ -39,11 +40,13 @@ public class ReadSpec {
         }
     }
 
+    @Override
     public String getDPT() {
         return dpt;
     }
 
-    public List<GroupAddress> getReadAddresses() {
+    @Override
+    public List<GroupAddress> getGroupAddresses() {
         return readAddresses;
     }
 

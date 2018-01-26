@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.client.DeviceInfoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +30,12 @@ import tuwien.auto.calimero.mgmt.ManagementClient;
  *
  */
 @NonNullByDefault
-public class DeviceInfoClient {
+public class DeviceInfoClientImpl implements DeviceInfoClient {
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceInfoClient.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceInfoClientImpl.class);
     private final ManagementClient managementClient;
 
-    DeviceInfoClient(ManagementClient managementClient) {
+    DeviceInfoClientImpl(ManagementClient managementClient) {
         this.managementClient = managementClient;
     }
 

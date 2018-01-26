@@ -16,20 +16,13 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
  * rollershutter channel type description
- * 
+ *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
@@ -52,37 +45,6 @@ class TypeRollershutter extends KNXChannelType {
             return DPTXlator8BitUnsigned.DPT_SCALING.getID();
         }
         throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
-    }
-
-    @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Type command) throws KNXFormatException {
-        ChannelConfiguration confUpDown = parse((String) configuration.get(UP_DOWN_GA));
-        ChannelConfiguration confPosition = parse((String) configuration.get(POSITION_GA));
-
-        if (command instanceof UpDownType) {
-            if (confUpDown != null) {
-                return new CommandSpec(confUpDown, getDefaultDPT(UP_DOWN_GA), command);
-            } else if (confPosition != null) {
-                return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA),
-                        ((UpDownType) command).as(PercentType.class));
-            }
-        }
-
-        if (command instanceof PercentType) {
-            if (confPosition != null) {
-                return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA), command);
-            } else if (confUpDown != null) {
-                return new CommandSpec(confUpDown, getDefaultDPT(UP_DOWN_GA),
-                        ((PercentType) command).as(UpDownType.class));
-            }
-        }
-
-        if (command instanceof StopMoveType) {
-            return new CommandSpec(parse((String) configuration.get(STOP_MOVE_GA)), getDefaultDPT(STOP_MOVE_GA),
-                    command);
-        }
-
-        return null;
     }
 
     @Override

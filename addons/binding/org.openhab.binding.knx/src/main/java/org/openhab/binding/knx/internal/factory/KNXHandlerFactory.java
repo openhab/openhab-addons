@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.knx.handler.DeviceThingHandler;
-import org.openhab.binding.knx.handler.IPBridgeThingHandler;
-import org.openhab.binding.knx.handler.SerialBridgeThingHandler;
+import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
+import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
+import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

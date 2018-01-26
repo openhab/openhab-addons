@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.knx.handler.StatusUpdateCallback;
+import org.openhab.binding.knx.client.StatusUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +25,12 @@ import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
 import tuwien.auto.calimero.link.medium.TPSettings;
 
 /**
- * Serial specific {@link KNXClient} implementation.
+ * Serial specific {@link AbstractKNXClient} implementation.
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
-public class SerialClient extends KNXClient {
+public class SerialClient extends AbstractKNXClient {
 
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 

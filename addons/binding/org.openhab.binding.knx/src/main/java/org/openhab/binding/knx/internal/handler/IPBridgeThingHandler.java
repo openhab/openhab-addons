@@ -6,12 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.knx.handler;
+package org.openhab.binding.knx.internal.handler;
 
 import java.net.InetSocketAddress;
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -19,8 +18,10 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.knx.KNXBindingConstants;
+import org.openhab.binding.knx.client.KNXClient;
+import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.client.IPClient;
-import org.openhab.binding.knx.internal.client.KNXClient;
+import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
 
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
@@ -65,7 +66,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             ipConnectionType = KNXNetworkLinkIP.TUNNELING;
         } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
             useNAT = false;
-            if (StringUtils.isBlank(ip)) {
+            if (ip == null || ip.isEmpty()) {
                 ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
             ipConnectionType = KNXNetworkLinkIP.ROUTING;
@@ -75,8 +76,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                             connectionTypeString));
             return;
         }
+        if (ip == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'ipAddress' of the gateway must be configured in 'TUNNEL' mode");
+            return;
+        }
 
-        if (StringUtils.isNotBlank(config.getLocalIp())) {
+        if (config.getLocalIp() != null && !config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
             localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
@@ -103,7 +109,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     protected KNXClient getClient() {
         KNXClient ret = client;
         if (ret == null) {
-            throw new IllegalStateException("Thing handler is not initialized");
+            return new NoOpClient();
         }
         return ret;
     }

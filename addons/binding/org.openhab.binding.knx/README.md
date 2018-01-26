@@ -51,7 +51,7 @@ The *serial* bridge accepts the following configuration parameters:
 
 ### *device* Things
 
-*basic* Things are wrappers around an arbitrary group addresses on the KNX bus. They have no specific function in the KNX binding, except that if the *address* is defined the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actor is reachable. Under normal real world circumstances, either all devices on a bus are reachable, or the entire bus is down. When *fetch* is set to true, the binding will read-out the memory of the KNX actor in order to detect configuration data and so forth. This is however an experimental feature very prone to the actual on the KNX bus. 
+*basic* Things are wrappers around an arbitrary group addresses on the KNX bus. They have no specific function in the KNX binding, except that if the *address* is defined the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actuator is reachable. Under normal real world circumstances, either all devices on a bus are reachable, or the entire bus is down. When *fetch* is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth. This is however an experimental feature very prone to the actual on the KNX bus. 
 
 | Name         | Required | Description                                                                                                              | Default value                                                               |
 |--------------|----------|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
@@ -64,7 +64,7 @@ Different kinds of channels are defined and can be used to group together Group 
 
 #### Standard Channels
 
-Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actor who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
+Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
 
 ##### Switch
 
@@ -152,7 +152,7 @@ Bridge knx:ip:bridge [
     autoReconnectPeriod=1,
     localSourceAddr="0.0.0"
 ] {
-    Thing device magicActor [
+    Thing device magicActuator [
         address="1.2.3",
         fetch=true,
         pingInterval=300,

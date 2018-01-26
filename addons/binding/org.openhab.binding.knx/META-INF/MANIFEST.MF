@@ -5,11 +5,7 @@ Bundle-SymbolicName: org.openhab.binding.knx;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.google.common.collect,
- gnu.io;resolution:=optional,
- org.apache.commons.collections,
- org.apache.commons.io,
- org.apache.commons.lang,
+Import-Package: gnu.io;resolution:=optional,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -34,6 +30,7 @@ Import-Package: com.google.common.collect,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.knx,
+ org.openhab.binding.knx.client,
  org.openhab.binding.knx.handler
 Bundle-ClassPath: lib/calimero-rxtx-2.3.jar,
  lib/calimero-core-2.3.jar,

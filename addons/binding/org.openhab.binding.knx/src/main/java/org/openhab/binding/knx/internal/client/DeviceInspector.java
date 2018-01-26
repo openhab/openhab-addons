@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.client.DeviceInfoClient;
 import org.openhab.binding.knx.internal.handler.Firmware;
 import org.openhab.binding.knx.internal.handler.Manufacturer;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class DeviceInspector {
                     OPERATION_TIMEOUT);
             if (elements != null) {
                 int numberOfElements = toUnsigned(elements);
-                logger.debug("The KNX Actor with address {} uses {} group addresses", address, numberOfElements - 1);
+                logger.debug("The KNX device with address {} uses {} group addresses", address, numberOfElements - 1);
 
                 byte[] addressData = null;
                 while (addressData == null) {
@@ -120,7 +121,7 @@ public class DeviceInspector {
                             OPERATION_TIMEOUT);
                     if (addressData != null) {
                         IndividualAddress individualAddress = new IndividualAddress(addressData);
-                        logger.debug("The KNX Actor with address {} its real reported individual address is  {}",
+                        logger.debug("The KNX device with address {} its real reported individual address is  {}",
                                 address, individualAddress);
                     }
                 }
@@ -139,11 +140,11 @@ public class DeviceInspector {
                 }
 
                 for (GroupAddress anAddress : ret) {
-                    logger.debug("The KNX Actor with address {} uses Group Address {}", address, anAddress);
+                    logger.debug("The KNX device with address {} uses Group Address {}", address, anAddress);
                 }
             }
         } else {
-            logger.warn("The KNX Actor with address {} does not expose a Group Address table", address);
+            logger.warn("The KNX device with address {} does not expose a Group Address table", address);
         }
         return ret;
     }
@@ -151,7 +152,7 @@ public class DeviceInspector {
     private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
         Map<String, String> ret = new HashMap<>();
         Thread.sleep(OPERATION_INTERVAL);
-        // check if there is a Device Object in the KNX Actor
+        // check if there is a Device Object in the KNX device
         byte[] elements = getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.OBJECT_TYPE, 0, 1, false,
                 OPERATION_TIMEOUT);
         if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
@@ -176,7 +177,7 @@ public class DeviceInspector {
             logger.info("Identified device {} as a {}, type {}, revision {}, serial number {}", address, ManufacturerID,
                     hardwareType, firmwareRevision, serialNo);
         } else {
-            logger.warn("The KNX Actor with address {} does not expose a Device Object", address);
+            logger.warn("The KNX device with address {} does not expose a Device Object", address);
         }
         return ret;
     }
@@ -194,7 +195,7 @@ public class DeviceInspector {
                     Firmware.getName(dd.getFirmwareType()), Firmware.getName(dd.getFirmwareVersion()),
                     Firmware.getName(dd.getSubcode()));
         } else {
-            logger.warn("The KNX Actor with address {} does not expose a Device Descriptor", address);
+            logger.warn("The KNX device with address {} does not expose a Device Descriptor", address);
         }
         return ret;
     }

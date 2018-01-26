@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.knx.handler;
+package org.openhab.binding.knx.internal.handler;
 
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
@@ -15,26 +15,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -43,15 +34,12 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.internal.channel.CommandSpec;
+import org.openhab.binding.knx.client.InboundSpec;
+import org.openhab.binding.knx.client.OutboundSpec;
+import org.openhab.binding.knx.handler.AbstractKNXThingHandler;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
 import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
-import org.openhab.binding.knx.internal.channel.ListenSpec;
-import org.openhab.binding.knx.internal.channel.ReadSpec;
-import org.openhab.binding.knx.internal.channel.ResponseSpec;
-import org.openhab.binding.knx.internal.client.DeviceInspector;
-import org.openhab.binding.knx.internal.client.DeviceInspector.Result;
-import org.openhab.binding.knx.internal.client.KNXClient;
+import org.openhab.binding.knx.internal.client.AbstractKNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.slf4j.Logger;
@@ -71,20 +59,13 @@ import tuwien.auto.calimero.exception.KNXFormatException;
  * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
-public class DeviceThingHandler extends BaseThingHandler implements GroupAddressListener {
+public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
-    private final Random random = new Random();
 
     private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
-
     private final Set<GroupAddress> groupAddresses = new HashSet<>();
-    private boolean filledDescription = false;
-
     private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
-    private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable Future<?> descriptionJob;
-
     private @Nullable IndividualAddress address;
     private int readInterval;
 
@@ -94,36 +75,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
 
     @Override
     public void initialize() {
+        super.initialize();
         DeviceConfig config = getConfigAs(DeviceConfig.class);
+        readInterval = config.getReadInterval().intValue();
         initializeGroupAddresses();
-        try {
-            if (StringUtils.isNotBlank(config.getAddress())) {
-                address = new IndividualAddress(config.getAddress());
-
-                long pingInterval = config.getPingInterval().longValue();
-                long initialPingDelay = Math.round(pingInterval * random.nextFloat());
-
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if ((pollingJob == null || pollingJob.isCancelled())) {
-                    logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(), initialPingDelay,
-                            pingInterval, TimeUnit.SECONDS);
-                }
-
-                readInterval = config.getReadInterval().intValue();
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (KNXFormatException e) {
-            logger.debug("An exception occurred while setting the individual address '{}'", config.getAddress(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
-        }
-        getClient().registerGroupAddressListener(this);
-        scheduleReadJobs();
-    }
-
-    private ScheduledExecutorService getScheduler() {
-        return getBridgeHandler().getScheduler();
     }
 
     private void initializeGroupAddresses() {
@@ -134,40 +89,8 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         });
     }
 
-    private KNXChannelType getKNXChannelType(Channel channel) {
-        return KNXChannelTypes.getType(channel.getChannelTypeUID());
-    }
-
-    private KNXBridgeBaseThingHandler getBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            KNXBridgeBaseThingHandler handler = (KNXBridgeBaseThingHandler) bridge.getHandler();
-            if (handler != null) {
-                return handler;
-            }
-        }
-        throw new IllegalStateException("The bridge must not be null and must be initialized");
-    }
-
-    private KNXClient getClient() {
-        return getBridgeHandler().getClient();
-    }
-
     @Override
-    public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
-        if (descriptionJob != null) {
-            descriptionJob.cancel(true);
-            descriptionJob = null;
-        }
-        cancelReadFutures();
-        getClient().unregisterGroupAddressListener(this);
-    }
-
-    private void cancelReadFutures() {
+    protected void cancelReadFutures() {
         for (ScheduledFuture<?> future : readFutures.values()) {
             if (future != null && !future.isDone()) {
                 future.cancel(true);
@@ -214,9 +137,9 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         }
     }
 
-    private void scheduleReadJobs() {
+    @Override
+    protected void scheduleReadJobs() {
         cancelReadFutures();
-
         for (Channel channel : getThing().getChannels()) {
             if (isLinked(channel.getUID().getId()) && !isControl(channel.getUID())) {
                 withKNXType(channel, (selector, configuration) -> {
@@ -227,9 +150,9 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     private void scheduleRead(KNXChannelType selector, Configuration configuration) throws KNXFormatException {
-        List<ReadSpec> readSpecs = selector.getReadSpec(configuration);
-        for (ReadSpec readSpec : readSpecs) {
-            for (GroupAddress groupAddress : readSpec.getReadAddresses()) {
+        List<InboundSpec> readSpecs = selector.getReadSpec(configuration);
+        for (InboundSpec readSpec : readSpecs) {
+            for (GroupAddress groupAddress : readSpec.getGroupAddresses()) {
                 scheduleReadJob(groupAddress, readSpec.getDPT());
             }
         }
@@ -260,18 +183,6 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            getClient().registerGroupAddressListener(this);
-            scheduleReadJobs();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            cancelReadFutures();
-            getClient().unregisterGroupAddressListener(this);
-        }
-    }
-
-    @Override
     public boolean listensTo(GroupAddress destination) {
         return groupAddresses.contains(destination);
     }
@@ -293,14 +204,19 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     break;
                 default:
                     withKNXType(channelUID, (selector, channelConfiguration) -> {
-                        CommandSpec commandSpec = selector.getCommandSpec(channelConfiguration, command);
+                        OutboundSpec commandSpec = selector.getCommandSpec(channelConfiguration, typeHelper, command);
                         if (commandSpec != null) {
                             getClient().writeToKNX(commandSpec);
+                        } else {
+                            logger.debug(
+                                    "None of the configured GAs on channel '{}' could handle the command '{}' of type '{}'",
+                                    channelUID, command, command.getClass().getSimpleName());
                         }
                     });
                     break;
             }
         }
+
     }
 
     private boolean isControl(ChannelUID channelUID) {
@@ -317,14 +233,15 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     @Override
-    public void onGroupRead(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
+    public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
         logger.trace("Thing '{}' received a Group Read Request telegram from '{}' for destination '{}'",
                 getThing().getUID(), source, destination);
 
         for (Channel channel : getThing().getChannels()) {
             if (isControl(channel.getUID())) {
                 withKNXType(channel, (selector, configuration) -> {
-                    ResponseSpec responseSpec = selector.getResponseSpec(configuration, destination);
+                    OutboundSpec responseSpec = selector.getResponseSpec(configuration, destination,
+                            RefreshType.REFRESH);
                     if (responseSpec != null) {
                         postCommand(channel.getUID().getId(), RefreshType.REFRESH);
                     }
@@ -334,19 +251,21 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     @Override
-    public void onGroupReadResponse(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
+    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
+            byte[] asdu) {
         // Group Read Responses are treated the same as Group Write telegrams
         onGroupWrite(client, source, destination, asdu);
     }
 
     @Override
-    public void onGroupWrite(KNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
+    public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
+            byte[] asdu) {
         logger.debug("Thing '{}' received a Group Write telegram from '{}' for destination '{}'", getThing().getUID(),
                 source, destination);
 
         for (Channel channel : getThing().getChannels()) {
             withKNXType(channel, (selector, configuration) -> {
-                ListenSpec listenSpec = selector.getListenSpec(configuration, destination);
+                InboundSpec listenSpec = selector.getListenSpec(configuration, destination);
                 if (listenSpec != null) {
                     logger.trace("Thing '{}' processes a Group Write telegram for destination '{}' for channel '{}'",
                             getThing().getUID(), destination, channel.getUID());
@@ -358,7 +277,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
 
     private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
 
-    private void processDataReceived(GroupAddress destination, byte[] asdu, ListenSpec listenSpec,
+    private void processDataReceived(GroupAddress destination, byte[] asdu, InboundSpec listenSpec,
             ChannelUID channelUID) {
         if (!isDPTSupported(listenSpec.getDPT())) {
             logger.warn("DPT '{}' is not supported by the KNX binding.", listenSpec.getDPT());
@@ -405,66 +324,12 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         }
     }
 
-    private String asduToHex(byte[] asdu) {
-        final char[] hexCode = "0123456789ABCDEF".toCharArray();
-        StringBuilder sb = new StringBuilder(2 + asdu.length * 2);
-        sb.append("0x");
-        for (byte b : asdu) {
-            sb.append(hexCode[(b >> 4) & 0xF]);
-            sb.append(hexCode[(b & 0xF)]);
-        }
-        return sb.toString();
-    }
-
-    public void restart() {
-        if (address != null) {
-            getClient().restartNetworkDevice(address);
-        }
-    }
-
-    private void pollDeviceStatus() {
-        try {
-            if (address != null && getClient().isConnected()) {
-                logger.debug("Polling individual address '{}'", address);
-                boolean isReachable = getClient().isReachable(address);
-                if (isReachable) {
-                    updateStatus(ThingStatus.ONLINE);
-                    DeviceConfig config = getConfigAs(DeviceConfig.class);
-                    if (!filledDescription && config.getFetch()) {
-                        Future<?> descriptionJob = this.descriptionJob;
-                        if (descriptionJob == null || descriptionJob.isCancelled()) {
-                            this.descriptionJob = getScheduler().submit(() -> {
-                                filledDescription = describeDevice(address);
-                            });
-                        }
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            }
-        } catch (KNXException e) {
-            logger.debug("An error occurred while testing the reachability of a thing '{}'", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        }
-    }
-
-    private boolean describeDevice(@Nullable IndividualAddress address) {
-        if (address == null) {
-            return false;
-        }
-        DeviceInspector inspector = new DeviceInspector(getClient().getDeviceInfoClient(), address);
-        Result result = inspector.readDeviceInfo();
-        if (result != null) {
-            Map<String, String> properties = editProperties();
-            properties.putAll(result.getProperties());
-            updateProperties(properties);
-            return true;
-        }
-        return false;
-    }
-
     private boolean isDPTSupported(@Nullable String dpt) {
         return typeHelper.toTypeClass(dpt) != null;
+    }
+
+    private KNXChannelType getKNXChannelType(Channel channel) {
+        return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
 
 }

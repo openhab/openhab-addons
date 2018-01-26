@@ -20,10 +20,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.knx.internal.client.KNXClient;
+import org.openhab.binding.knx.client.KNXClient;
+import org.openhab.binding.knx.client.StatusUpdateCallback;
 
 import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.mgmt.Destination;
 
 /**
@@ -36,11 +36,6 @@ import tuwien.auto.calimero.mgmt.Destination;
 public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implements StatusUpdateCallback {
 
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
-
-    @FunctionalInterface
-    private interface ReadFunction<T, R> {
-        R apply(T t) throws KNXException, InterruptedException;
-    }
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);

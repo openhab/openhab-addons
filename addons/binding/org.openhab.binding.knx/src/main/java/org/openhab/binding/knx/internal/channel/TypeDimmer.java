@@ -16,21 +16,14 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
  * dimmer channel type description
- * 
+ *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
@@ -39,37 +32,6 @@ class TypeDimmer extends KNXChannelType {
 
     TypeDimmer() {
         super(CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
-    }
-
-    @Override
-    public @Nullable CommandSpec getCommandSpec(Configuration configuration, Type command) throws KNXFormatException {
-        ChannelConfiguration confSwitch = parse((String) configuration.get(SWITCH_GA));
-        ChannelConfiguration confPosition = parse((String) configuration.get(POSITION_GA));
-
-        if (command instanceof OnOffType) {
-            if (confSwitch != null) {
-                return new CommandSpec(confSwitch, getDefaultDPT(SWITCH_GA), command);
-            } else if (confPosition != null) {
-                return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA),
-                        ((OnOffType) command).as(PercentType.class));
-            }
-        }
-
-        if (command instanceof PercentType) {
-            if (confPosition != null) {
-                return new CommandSpec(confPosition, getDefaultDPT(POSITION_GA), command);
-            } else if (confSwitch != null) {
-                return new CommandSpec(confSwitch, getDefaultDPT(SWITCH_GA),
-                        ((PercentType) command).as(OnOffType.class));
-            }
-        }
-
-        if (command instanceof UpDownType) {
-            return new CommandSpec(parse((String) configuration.get(INCREASE_DECREASE_GA)),
-                    getDefaultDPT(INCREASE_DECREASE_GA), command);
-        }
-
-        return null;
     }
 
     @Override
