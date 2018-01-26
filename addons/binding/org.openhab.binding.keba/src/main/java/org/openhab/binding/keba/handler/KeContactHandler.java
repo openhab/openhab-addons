@@ -176,6 +176,7 @@ public class KeContactHandler extends BaseThingHandler {
             } catch (InterruptedException | NumberFormatException | IOException e) {
                 logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                         e.getMessage(), e);
+                Thread.currentThread().interrupt();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "An exception occurred while while polling the charging station");
             }
