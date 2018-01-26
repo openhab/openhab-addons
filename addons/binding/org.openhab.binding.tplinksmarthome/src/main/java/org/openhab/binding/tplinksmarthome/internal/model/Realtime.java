@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Data class for reading tp-Link Smart Plug energy monitoring.
  * Only getter methods as the values are set by gson based on the retrieved json.
@@ -18,30 +16,50 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Realtime extends ErrorResponse {
 
-    @SerializedName(value = "current", alternate = "current_ma")
+    private static final int V2_TO_V1 = 1000;
+
     private double current;
-    @SerializedName(value = "power", alternate = "power_mw")
     private double power;
-    @SerializedName(value = "total", alternate = "total_wh")
     private double total;
-    @SerializedName(value = "voltage", alternate = "voltage_mv")
     private double voltage;
 
+    // JSON names used for v2 hardware
+    private double current_ma;
+    private double power_mw;
+    private double total_wh;
+    private double voltage_mv;
+
     public double getCurrent() {
+        if (current == 0 && current_ma != 0) {
+         return current_ma / V2_TO_V1; // v1 displays as amps
+        }
+
         return current;
     }
 
     public double getPower() {
+        if (power == 0.0 && power_mw != 0.0) {
+          return power_mw / V2_TO_V1; // v1 displays as watts
+        }
+
         return power;
     }
 
     public double getTotal() {
+        if (total == 0.0 && total_wh != 0.0) {
+          return total_wh / V2_TO_V1; // v1 displays as kWh
+        }
+
         return total;
     }
 
     public double getVoltage() {
+        if (total == 0.0 && voltage_mv != 0.0) {
+          return voltage_mv / V2_TO_V1; // v1 displays as volts
+        }
         return voltage;
     }
+
 
     @Override
     public String toString() {
