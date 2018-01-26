@@ -11,6 +11,9 @@ package org.openhab.binding.wink.handler;
 import static org.openhab.binding.wink.WinkBindingConstants.*;
 
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -39,24 +42,28 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
     @Override
     public void handleWinkCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            logger.debug("Refreshing state");
+            updateDeviceState(getDevice());
+        }
         if (channelUID.getId().equals(CHANNEL_THERMOSTAT_CURRENTSETPOINT)) {
             if (command instanceof Number) {
                 logger.debug("Setting desired temperature {}", command);
                 float temperature = ((Number) command).floatValue();
                 setDesiredTemperature(temperature);
-                updateDeviceState(getDevice());
+
+                // Try running the update after a few seconds.
+                delayedUpdateState();
             }
         } else if (channelUID.getId().equals(CHANNEL_THERMOSTAT_CURRENTMODE)) {
             if (command instanceof StringType) {
                 logger.debug("Setting desired mode {}", command);
                 String mode = ((StringType) command).toString();
                 setDesiredMode(mode);
-                updateDeviceState(getDevice());
+
+                // Try running the update after a few seconds.
+                delayedUpdateState();
             }
-        }
-        if (command instanceof RefreshType) {
-            logger.debug("Refreshing state");
-            updateDeviceState(getDevice());
         }
     }
 
@@ -68,6 +75,16 @@ public class ThermostatHandler extends WinkBaseThingHandler {
         bridgeHandler.setThermostatMode(getDevice(), mode);
     }
 
+    private void delayedUpdateState() {
+        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                updateDeviceState(getDevice());
+            }
+        }, 20, TimeUnit.SECONDS);
+    }
+
     @Override
     protected WinkSupportedDevice getDeviceType() {
         return WinkSupportedDevice.THERMOSTAT;
@@ -76,6 +93,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
     @Override
     protected void updateDeviceState(IWinkDevice device) {
         Map<String, String> jsonData = device.getCurrentStateComplexJson();
+        Map<String, String> jsonDataDesired = device.getDesiredState();
 
         String units = "f";
         if (jsonData.get("units") != null && !jsonData.get("units").equals("null")) {
@@ -90,12 +108,20 @@ public class ThermostatHandler extends WinkBaseThingHandler {
             updateState(CHANNEL_THERMOSTAT_CURRENTTEMPERATURE, new DecimalType(temperature));
         }
 
+        // For the channels the user changes, I need to take into account the desired data as well.
         if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
+            String desiredOperationMode = jsonDataDesired.get("mode");
             String currentOperationMode = jsonData.get("mode");
             String currentOperationModePretty = "";
             float currentSetPoint = 0.0f;
             float minSet = Float.valueOf(jsonData.get("min_set_point"));
             float maxSet = Float.valueOf(jsonData.get("max_set_point"));
+            float minSetDesired = Float.valueOf(jsonDataDesired.get("min_set_point"));
+            float maxSetDesired = Float.valueOf(jsonDataDesired.get("max_set_point"));
+            logger.debug(
+                    "Updating State for set point and set mode. current mode '{}', desired mode '{}',"
+                            + " current min '{}', desired min '{}', current max '{}', desired max '{}'",
+                    currentOperationMode, desiredOperationMode, minSet, minSetDesired, maxSet, maxSetDesired);
             if (currentOperationMode.equals("cool_only")) {
                 currentSetPoint = maxSet;
                 currentOperationModePretty = "Cool";

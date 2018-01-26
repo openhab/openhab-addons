@@ -193,7 +193,6 @@ public class WinkHub2BridgeHandler extends BaseBridgeHandler {
      * Sets the thermostat mode to the mode specified
      *
      * @param device The device to change temperature
-     * @param temperature The temperature desired
      * @param mode The desired mode of operation, heat_only, cool_only, auto
      */
     public void setThermostatMode(IWinkDevice device, String mode) {
