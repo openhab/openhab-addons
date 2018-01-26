@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -126,6 +127,10 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    public Thing getThingByUIDGlobally(ThingUID thingUID) {
+        return thingRegistry.get(thingUID);
     }
 
     public LightifyDeviceDiscoveryService getDiscoveryService() {
