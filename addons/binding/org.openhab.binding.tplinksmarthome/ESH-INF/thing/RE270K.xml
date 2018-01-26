@@ -6,6 +6,7 @@
 	<thing-type id="re270">
 		<label>RE270K</label>
 		<description>TP-Link AC750 Wi-Fi Range Extender with Smart Plug</description>
+		<category>PowerOutlet</category>
 
 		<channels>
 			<channel id="switch" typeId="switch" />

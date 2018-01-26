@@ -6,6 +6,7 @@
 	<thing-type id="hs110">
 		<label>HS110</label>
 		<description>TP-Link HS110 Smart Wi-Fi Plug with Energy Monitoring</description>
+		<category>PowerOutlet</category>
 
 		<channels>
 			<channel id="switch" typeId="switch" />

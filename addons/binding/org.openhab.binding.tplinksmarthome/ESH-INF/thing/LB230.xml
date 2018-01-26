@@ -6,6 +6,7 @@
 	<thing-type id="lb230">
 		<label>LB230</label>
 		<description>TP-Link LB230 Smart Wi-Fi LED Bulb with Color Changing Hue</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="color" typeId="color" />

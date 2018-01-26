@@ -6,6 +6,7 @@
 	<thing-type id="kb100">
 		<label>KB100</label>
 		<description>TP-Link KB100 Kasa Smart Light Bulb</description>
+        <category>Lightbulb</category>
 
 		<channels>
 			<channel id="brightness" typeId="brightness" />

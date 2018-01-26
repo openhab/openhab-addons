@@ -6,6 +6,7 @@
 	<thing-type id="hs200">
 		<label>HS200</label>
 		<description>TP-Link HS200 Smart Wi-Fi Switch</description>
+		<category>WallSwitch</category>
 
 		<channels>
 			<channel id="switch" typeId="switch" />

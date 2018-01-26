@@ -6,6 +6,7 @@
 	<thing-type id="re370">
 		<label>RE370K</label>
 		<description>TP-Link AC1200 Wi-Fi Range Extender with Smart Plug</description>
+		<category>PowerOutlet</category>
 
 		<channels>
 			<channel id="switch" typeId="switch" />

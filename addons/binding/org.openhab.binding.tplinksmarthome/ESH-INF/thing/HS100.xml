@@ -6,6 +6,7 @@
 	<thing-type id="hs100">
 		<label>HS100</label>
 		<description>TP-Link HS100 Smart Wi-Fi Plug</description>
+		<category>PowerOutlet</category>
 
 		<channels>
 			<channel id="switch" typeId="switch" />

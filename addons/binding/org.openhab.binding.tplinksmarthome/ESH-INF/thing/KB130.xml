@@ -6,6 +6,7 @@
 	<thing-type id="kb130">
 		<label>KB130</label>
 		<description>TP-Link KB130 Kasa Multi-color Smart Light Bulb</description>
+        <category>Lightbulb</category>
 
 		<channels>
 			<channel id="color" typeId="color" />
