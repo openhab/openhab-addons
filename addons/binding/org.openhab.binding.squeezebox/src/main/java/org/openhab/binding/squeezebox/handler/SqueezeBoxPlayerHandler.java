@@ -386,7 +386,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
-        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(coverArtUrl)));
+        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(mac, coverArtUrl)));
     }
 
     /**
@@ -396,20 +396,25 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @return A RawType object containing the image, null if the content type could not be found or the content type is
      *         not an image.
      */
-    private RawType downloadImage(String url) {
-        if (StringUtils.isNotEmpty(url)) {
-            if (!IMAGE_CACHE.containsKey(url)) {
-                IMAGE_CACHE.put(url, () -> {
+    private RawType downloadImage(String mac, String url) {
+        // Only get the image if this is my PlayerHandler instance
+        if (isMe(mac)) {
+            if (StringUtils.isNotEmpty(url)) {
+                RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
                     logger.debug("Trying to download the content of URL {}", url);
-                    return HttpUtil.downloadImage(url);
+                    try {
+                        return HttpUtil.downloadImage(url);
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("IllegalArgumentException when downloading image from {}", url, e);
+                        return null;
+                    }
                 });
-            }
-            RawType image = IMAGE_CACHE.get(url);
-            if (image == null) {
-                logger.debug("Failed to download the content of URL {}", url);
-                return null;
-            } else {
-                return image;
+                if (image == null) {
+                    logger.debug("Failed to download the content of URL {}", url);
+                    return null;
+                } else {
+                    return image;
+                }
             }
         }
         return null;

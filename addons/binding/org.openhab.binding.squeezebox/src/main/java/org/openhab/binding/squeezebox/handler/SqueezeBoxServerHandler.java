@@ -510,7 +510,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
 
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNK");
+                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
             }
         }
@@ -554,31 +554,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
-        private String fetchUrl(String messagePart, final String mac) {
-            // default url for cover art. Works all the time except for some particular case
-            String url = "http://" + host + ":" + webport + "/music/current/cover.jpg?player=" + encode(mac);
-            // if messagePart start with "artwork_url:http://", default url works
-            if (messagePart != null && messagePart.startsWith("artwork_url%3A")
-                    && !messagePart.startsWith("artwork_url%3Ahttp%3A%2F%2F")) {
-                url = messagePart.substring("artwork_url%3A".length());
-                // example of particular case.
-                // this web radio : http://broadcast.infomaniak.net/tsfjazz-high.mp3
-                // default url return error 404
-                // messagePart = artwork_url%3Ahtml%2Fimages%2Fradio.png (artwork_url:html/images/radio.png)
-                // working url : "http://" + host + ":" + webport + "/" + "html/images/radio.png";
-                if (url.startsWith("%2F")) {
-                    url = "http://" + host + ":" + webport + decode(url);
-                } else {
-                    url = "http://" + host + ":" + webport + "/" + decode(url);
-                }
-            }
-            return url;
-        }
-
-        private String fetchUrl(final String mac) {
-            return fetchUrl(null, mac);
-        }
-
         private void handleMixerMessage(String mac, String[] messageParts) {
             String action = messageParts[2];
 
@@ -611,18 +586,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
 
             }
-
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
             String remoteTitle = "", artist = "", album = "", genre = "", year = "";
-            String url = fetchUrl(mac);
+            boolean coverart = false;
+            String coverid = null;
+            String artworkUrl = null;
 
             for (String messagePart : messageParts) {
                 // Parameter Power
                 if (messagePart.startsWith("power%3A")) {
-                    String value = messagePart.substring("power%3A".length());
-                    final boolean power = value.matches("1");
+                    final boolean power = "1".matches(messagePart.substring("power%3A".length()));
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
@@ -748,16 +723,24 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 else if (messagePart.startsWith("year%3A")) {
                     year = messagePart.substring("year%3A".length());
                 }
-                // Parameter Artwork_url
+                // Parameter artwork_url contains url to cover art
                 else if (messagePart.startsWith("artwork_url%3A")) {
-                    url = fetchUrl(messagePart, mac);
+                    artworkUrl = messagePart.substring("artwork_url%3A".length());
+                }
+                // When coverart is "1" coverid will contain a unique coverart id
+                else if (messagePart.startsWith("coverart%3A")) {
+                    coverart = "1".matches(messagePart.substring("coverart%3A".length()));
+                }
+                // Id for covert art (only valid when coverart is "1")
+                else if (messagePart.startsWith("coverid%3A")) {
+                    coverid = messagePart.substring("coverid%3A".length());
                 } else {
                     // Added to be able to see additional status message types
                     logger.trace("Unhandled status message type '{}'", messagePart);
                 }
             }
 
-            final String finalUrl = url;
+            final String finalUrl = constructCoverArtUrl(mac, coverart, coverid, artworkUrl);
             final String finalRemoteTitle = remoteTitle;
             final String finalArtist = artist;
             final String finalAlbum = album;
@@ -775,6 +758,34 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     listener.yearChangeEvent(mac, decode(finalYear));
                 }
             });
+        }
+
+        private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
+            String hostAndPort = "http://" + host + ":" + webport;
+
+            // Default to using the convenience artwork URL (should be rare)
+            String url = hostAndPort + "/music/current/cover.jpg?player=" + encode(mac);
+
+            // If additional artwork info provided, use that instead
+            if (coverart) {
+                if (coverid != null) {
+                    // Typically is used to access cover art of local music files
+                    url = hostAndPort + "/music/" + coverid + "/cover.jpg";
+                }
+            } else if (artwork_url != null) {
+                if (artwork_url.startsWith("http")) {
+                    // Typically indicates that cover art is not local to LMS
+                    url = decode(artwork_url);
+                } else if (artwork_url.startsWith("%2F")) {
+                    // Typically used for default coverart for plugins (e.g. Pandora, etc.)
+                    url = hostAndPort + decode(artwork_url);
+                } else {
+                    // Another variation of default coverart for plugins (e.g. Pandora, etc.)
+                    url = hostAndPort + "/" + decode(artwork_url);
+                }
+            }
+            logger.trace("{}: URL for cover art is {}", mac, url);
+            return url;
         }
 
         private void handlePlaylistMessage(final String mac, String[] messageParts) {
