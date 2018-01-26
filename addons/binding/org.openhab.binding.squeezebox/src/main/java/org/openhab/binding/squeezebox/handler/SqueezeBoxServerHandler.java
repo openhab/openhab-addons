@@ -773,7 +773,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     url = hostAndPort + "/music/" + coverid + "/cover.jpg";
                 }
             } else if (artwork_url != null) {
-                if (artwork_url.startsWith("http") || artwork_url.startsWith("https")) {
+                if (artwork_url.startsWith("http")) {
                     // Typically indicates that cover art is not local to LMS
                     url = decode(artwork_url);
                 } else if (artwork_url.startsWith("%2F")) {

@@ -400,18 +400,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
             if (StringUtils.isNotEmpty(url)) {
-                if (!IMAGE_CACHE.containsKey(url)) {
-                    IMAGE_CACHE.put(url, () -> {
-                        logger.debug("Trying to download the content of URL {}", url);
-                        try {
-                            return HttpUtil.downloadImage(url);
-                        } catch (IllegalArgumentException e) {
-                            logger.error("IllegalArgumentException when downloading image from {}", url);
-                            return null;
-                        }
-                    });
-                }
-                RawType image = IMAGE_CACHE.get(url);
+                RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    try {
+                        return HttpUtil.downloadImage(url);
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("IllegalArgumentException when downloading image from {}", url, e);
+                        return null;
+                    }
+                });
                 if (image == null) {
                     logger.debug("Failed to download the content of URL {}", url);
                     return null;
