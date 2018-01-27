@@ -42,11 +42,26 @@ public class VitaLEDConnection {
     public VitaLEDZone[] zones = new VitaLEDZone[8];
     public String[] scenes = new String[6];
 
+    /**
+     * Costructor that set IP address and port of the vitaLED LAN master to the class attributes
+     * in order to establish a connection to the vitaLED LAN master
+     *
+     * @param ip IP address of the vita LED LAN master
+     * @param port port of the vita LED LAN master
+     */
     public VitaLEDConnection(String ip, int port) {
         this.setIp(ip);
         this.setPort(port);
     }
 
+    /**
+     * Update state of channelUID with command by sending HTTP GET requests
+     * with URL parameter to vitaLED LAN master
+     *
+     * @param channelUID The channelUID for which the current state should be updated with the command
+     * @param command The command that is used to update the channelUID
+     * @return the current state of the requested channelUID
+     */
     public boolean updateState(ChannelUID channelUID, Command command) throws Exception {
         // check channelUID like room7#achromaticLight
         // get attribute like achromaticLight
@@ -251,8 +266,15 @@ public class VitaLEDConnection {
         return fullUpdate;
     }
 
+    /**
+     * Send command via HTTP GET request to vitaLED LAN Master based on URL Parameter
+     * and referer URL
+     *
+     * @param channelUID The channel UID for which the current state should returned
+     */
     public void sendCommand(String urlParameter, String referer) throws Exception {
         /*
+         * to do authentication via basic authenthication
          * String name = "admin";
          * String password = "admin";
          * String authString = name + ":" + password;
@@ -260,7 +282,6 @@ public class VitaLEDConnection {
          * byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
          * String authStringEnc = new String(authEncBytes);
          * System.out.println("Base64 encoded auth string: " + authStringEnc);
-         *
          */
 
         int responseCode;
@@ -292,6 +313,12 @@ public class VitaLEDConnection {
         logger.debug("Response Code : " + responseCode);
     }
 
+    /**
+     * Get current state of VitaLED channel
+     *
+     * @param channelUID The channel UID for which the current state should returned
+     * @return the current state of the requested channelUID
+     */
     public DecimalType getCurrentState(ChannelUID channelUID) throws Exception {
         // channelUID like room7#achromaticLight
         // get attribute like achromaticLight
@@ -363,10 +390,11 @@ public class VitaLEDConnection {
         }
     }
 
-    /*
-     * getCurrentState of VitaLED from LAN Master via HTTP Get Request
-     * Read configuration for all 8 Zones, therefore get room0.txt - room7.txt
-     * to-do: later enhancement 4 Groups
+    /**
+     * Get current state of VitaLED zone from LAN Master via HTTP GET Request
+     *
+     * @param zoneNumber The number of the zone for which the current state should be read from the
+     *            vitaLED LAN master. The number can only be between 0 and 7 representing the 8 zones.
      */
     public void getCurrentStateOfZone(int zoneNumber) throws Exception {
         int line;
@@ -522,6 +550,11 @@ public class VitaLEDConnection {
         in.close();
     }
 
+    /**
+     * Reads zone descriptions that are stored in the vitaLED LAN master
+     * for the 8 zones that can be defined in the vitaLED LAN master
+     *
+     */
     public void getZoneDescriptions() throws Exception {
         int line;
         int responseCode;
@@ -565,6 +598,11 @@ public class VitaLEDConnection {
         in.close();
     }
 
+    /**
+     * Reads scene descriptions that are stored in the vitaLED LAN master
+     * for the 6 scenes that can be defined in the vitaLED LAN master
+     *
+     */
     public void getSceneDescription() throws Exception {
         int line;
         int responseCode;
@@ -608,26 +646,58 @@ public class VitaLEDConnection {
         in.close();
     }
 
+    /**
+     * Returns the IP address of the vitaLED LAN master
+     *
+     * @return the IP address of the vitaLED LAN master
+     */
     public String getIp() {
         return ip;
     }
 
+    /**
+     * Set the IP address of the vitaLED LAN master
+     *
+     * @param ip IP address of the vitaLED LAN master
+     */
     public void setIp(String ip) {
         this.ip = ip;
     }
 
+    /**
+     * Returns the port of the vitaLED LAN master
+     *
+     * @return the port of the vitaLED LAN master
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * Set the port of the vitaLED LAN master
+     *
+     * @param port port of the vitaLED LAN master
+     */
     public void setPort(int port) {
         this.port = port;
     }
 
+    /**
+     * Returns the refresh interval that is used to read current vitaLED settings
+     * from the vitaLED LAN master
+     *
+     * @return the port of the vitaLED LAN master
+     */
     public BigDecimal getRefreshInterval() {
         return refreshInterval;
     }
 
+    /**
+     * Set the refresh interval that is used to read current vitaLED settings
+     * from the vitaLED LAN master
+     *
+     * @param refreshInterval Refresh interval of the vitaLED LAN master
+     */
     public void setRefreshInterval(BigDecimal refreshInterval) {
         this.refreshInterval = refreshInterval;
     }
