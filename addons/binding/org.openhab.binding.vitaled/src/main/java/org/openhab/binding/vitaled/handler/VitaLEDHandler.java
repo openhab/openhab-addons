@@ -186,7 +186,7 @@ public class VitaLEDHandler extends BaseThingHandler {
         if (this.getConfig().get(HOST_PARAMETER) != null) {
             String host = (String) this.getConfig().get(HOST_PARAMETER);
             Integer port = 80;
-            Object portObj = this.getConfig().get(TCP_PORT_PARAMETER);
+            Object portObj = this.getConfig().get(PORT_PARAMETER);
             if (portObj != null) {
                 if (portObj instanceof Number) {
                     port = ((Number) portObj).intValue();
@@ -195,7 +195,7 @@ public class VitaLEDHandler extends BaseThingHandler {
                 }
             }
             try {
-                refreshInterval = ((BigDecimal) this.getConfig().get(REFRESH_INTERVAL));
+                refreshInterval = ((BigDecimal) this.getConfig().get(REFRESH_INTERVAL_PARAMETER));
             } catch (Exception e) {
                 refreshInterval = new BigDecimal(60);
                 logger.warn("No refresh Interval defined using {}s", refreshInterval);

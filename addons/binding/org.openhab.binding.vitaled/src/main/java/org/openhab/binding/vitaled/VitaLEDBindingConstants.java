@@ -23,16 +23,31 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class VitaLEDBindingConstants {
-
+    /**
+     * Binding ID
+     */
     public static final String BINDING_ID = "vitaled";
 
-    // List of all Thing Type UIDs
+    /**
+     * ThingTypeUID
+     */
     public final static ThingTypeUID THING_TYPE_VITA_LED = new ThingTypeUID(BINDING_ID, "vitaled");
 
-    // List of thing parameters names
+    /**
+     * Host parameter ipAddress
+     */
     public final static String HOST_PARAMETER = "ipAddress";
-    public final static String TCP_PORT_PARAMETER = "port";
-    public final static String REFRESH_INTERVAL = "refreshInterval";
+
+    /**
+     * Host parameter port
+     */
+    public final static String PORT_PARAMETER = "port";
+
+    /**
+     * Refresh interval parameter
+     */
+    public final static String REFRESH_INTERVAL_PARAMETER = "refreshInterval";
+
     public final static String ZONE = "zone";
 
     public final static String ACHROMATIC_LIGHT = "achromaticLight";
