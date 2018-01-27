@@ -549,7 +549,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         "Ensuring that enough time passes before retrying again. Sleeping if necessary [operation ID {}]",
                         operationId);
                 long slept = ModbusSlaveConnectionFactoryImpl.waitAtleast(lastTryMillis, retryDelay);
-                logger.trace("Sleep ended, slept {} [operation ID {}]", operationId, slept);
+                logger.trace("Sleep ended, slept {} [operation ID {}]", slept, operationId);
                 if (callbackThreadPool == null) {
                     logger.debug("Manager has been shut down, aborting proecssing request {} [operation ID {}]",
                             request, operationId);
