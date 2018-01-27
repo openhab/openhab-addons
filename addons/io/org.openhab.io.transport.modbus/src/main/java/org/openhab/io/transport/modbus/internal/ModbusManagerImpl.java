@@ -115,7 +115,8 @@ public class ModbusManagerImpl implements ModbusManager {
                     "Transaction id of the response ({}) does not match request ({}) {}. Endpoint {}. Ignoring response. [operation ID {}]",
                     response.getTransactionID(), libRequest.getTransactionID(), task.getRequest(), task.getEndpoint(),
                     operationId);
-            throw new ModbusUnexpectedTransactionIdException();
+            throw new ModbusUnexpectedTransactionIdException(libRequest.getTransactionID(),
+                    response.getTransactionID());
         }
     }
 

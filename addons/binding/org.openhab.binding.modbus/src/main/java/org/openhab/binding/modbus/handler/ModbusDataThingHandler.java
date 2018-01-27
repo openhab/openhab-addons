@@ -652,14 +652,16 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had connection error on read: {} ({})", getThing().getUID(),
-                    getThing().getLabel(), error, error.getClass().getSimpleName());
+            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+                    error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had error on read: {} {}", getThing().getUID(), getThing().getLabel(),
-                    error.getClass().getSimpleName(), error.getMessage());
+            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+                    error.getClass().getSimpleName(), error.toString());
         } else {
-            logger.error("Thing {} '{}' had error on read: {} {}. Stack trace follows since this is unexpected error.",
-                    getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.getMessage(), error);
+            logger.error(
+                    "Thing {} '{}' had {} error on read: {} (message: {}). Stack trace follows since this is unexpected error.",
+                    getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.toString(),
+                    error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
         states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstants.CHANNEL_LAST_READ_ERROR),
@@ -684,14 +686,16 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had connection error on write: {} ({})", getThing().getUID(),
-                    getThing().getLabel(), error, error.getClass().getSimpleName());
+            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+                    error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had error on write: {} {}", getThing().getUID(), getThing().getLabel(),
-                    error.getClass().getSimpleName(), error.getMessage());
+            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+                    error.getClass().getSimpleName(), error.toString());
         } else {
-            logger.error("Thing {} '{}' had error on write: {} {}. Stack trace follows since this is unexpected error.",
-                    getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.getMessage(), error);
+            logger.error(
+                    "Thing {} '{}' had {} error on write: {} (message: {}). Stack trace follows since this is unexpected error.",
+                    getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.toString(),
+                    error.getMessage(), error);
         }
         DateTimeType now = new DateTimeType();
         logger.error("Unsuccessful write: {} {}", error.getClass().getName(), error.getMessage());

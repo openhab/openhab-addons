@@ -35,7 +35,7 @@ public class ModbusSlaveIOExceptionImpl extends ModbusSlaveIOException {
 
     @Override
     public String toString() {
-        return String.format("ModbusSlaveIOException(%s, EOF=%s, message='%s', cause=%s)",
+        return String.format("ModbusSlaveIOException(cause=%s, EOF=%s, message='%s', cause=%s)",
                 error.getClass().getSimpleName(),
                 error instanceof ModbusIOException ? ((ModbusIOException) error).isEOF() : "?", error.getMessage(),
                 error.getCause());

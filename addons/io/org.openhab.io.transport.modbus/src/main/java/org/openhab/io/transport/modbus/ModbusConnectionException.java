@@ -43,4 +43,8 @@ public class ModbusConnectionException extends ModbusTransportException {
         return String.format("Error connecting to endpoint %s", endpoint);
     }
 
+    @Override
+    public String toString() {
+        return String.format("ModbusConnectionException(Error connecting to endpoint=%s)", endpoint);
+    }
 }

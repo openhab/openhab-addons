@@ -27,4 +27,28 @@ package org.openhab.io.transport.modbus;
 @SuppressWarnings("serial")
 public class ModbusUnexpectedTransactionIdException extends ModbusTransportException {
 
+    private int requestId;
+    private int responseId;
+
+    public ModbusUnexpectedTransactionIdException(int requestId, int responseId) {
+        this.requestId = requestId;
+        this.responseId = responseId;
+
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "ModbusUnexpectedTransactionIdException(requestTransactionId=%d, responseTransactionId=%d)", requestId,
+                responseId);
+    }
+
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public int getResponseId() {
+        return responseId;
+    }
+
 }
