@@ -21,24 +21,24 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.vitaled.vitaLEDBindingConstants;
-import org.openhab.binding.vitaled.handler.vitaLEDHandler;
+import org.openhab.binding.vitaled.VitaLEDBindingConstants;
+import org.openhab.binding.vitaled.handler.VitaLEDHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
 
 /**
- * The {@link vitaLEDHandlerFactory} is responsible for creating things and thing
+ * The {@link VitaLEDHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Marcel Salein - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.vitaled")
 @NonNullByDefault
-public class vitaLEDHandlerFactory extends BaseThingHandlerFactory {
+public class VitaLEDHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-            .newArrayList(vitaLEDBindingConstants.THING_TYPE_VITA_LED);
+            .newArrayList(VitaLEDBindingConstants.THING_TYPE_VITA_LED);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,11 +47,8 @@ public class vitaLEDHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        // ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        // return null;
-
         // create VitaLED thing
-        vitaLEDHandler handler = new vitaLEDHandler(thing);
+        VitaLEDHandler handler = new VitaLEDHandler(thing);
         return handler;
 
     }

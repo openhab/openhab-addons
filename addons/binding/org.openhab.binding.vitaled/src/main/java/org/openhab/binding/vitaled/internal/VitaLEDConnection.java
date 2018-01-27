@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vitaled.internal;
 
-import static org.openhab.binding.vitaled.vitaLEDBindingConstants.*;
+import static org.openhab.binding.vitaled.VitaLEDBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,25 +24,25 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.vitaled.handler.vitaLEDHandler;
+import org.openhab.binding.vitaled.handler.VitaLEDHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link vitaLEDConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link VitaLEDConnection} class contains fields mapping thing configuration parameters.
  *
  * @author Marcel Salein - Initial contribution
  */
-public class vitaLEDConfiguration {
+public class VitaLEDConnection {
     private String ip;
     private int port;
     private BigDecimal refreshInterval;
 
-    private Logger logger = LoggerFactory.getLogger(vitaLEDHandler.class);
-    public vitaLEDZone[] zones = new vitaLEDZone[8];
+    private Logger logger = LoggerFactory.getLogger(VitaLEDHandler.class);
+    public VitaLEDZone[] zones = new VitaLEDZone[8];
     public String[] scenes = new String[6];
 
-    public vitaLEDConfiguration(String ip, int port) {
+    public VitaLEDConnection(String ip, int port) {
         this.setIp(ip);
         this.setPort(port);
     }
@@ -70,14 +70,14 @@ public class vitaLEDConfiguration {
                 sendCommand(urlParameter, referer);
                 urlParameter = "&TK=" + command.toString();
                 zones[zoneIndex].setAchromaticLight(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case INTENSITY:
                 referer = ACHROMATIC_REFERER;
                 sendCommand(urlParameter, referer);
                 urlParameter = "&Lightness=" + command.toString();
                 zones[zoneIndex].setIntensity(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             /***********************
              *** Chromatic Light ***
@@ -89,7 +89,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "&R=" + command.toString() + "&G=" + zones[zoneIndex].getGreen() + "&B="
                         + zones[zoneIndex].getBlue() + "&W=" + zones[zoneIndex].getWhite();
                 zones[zoneIndex].setRed(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case GREEN:
                 // we have chromatic light use RGBW
@@ -98,7 +98,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "&R=" + zones[zoneIndex].getRed() + "&G=" + command.toString() + "&B="
                         + zones[zoneIndex].getBlue() + "&W=" + zones[zoneIndex].getWhite();
                 zones[zoneIndex].setGreen(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case BLUE:
                 // we have chromatic light use RGBW
@@ -107,7 +107,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "&R=" + zones[zoneIndex].getRed() + "&G=" + zones[zoneIndex].getGreen() + "&B="
                         + command.toString() + "&W=" + zones[zoneIndex].getWhite();
                 zones[zoneIndex].setBlue(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case WHITE:
                 // we have chromatic light use RGBW
@@ -116,7 +116,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "&R=" + zones[zoneIndex].getRed() + "&G=" + zones[zoneIndex].getGreen() + "B="
                         + zones[zoneIndex].getBlue() + "&W=" + command.toString();
                 zones[zoneIndex].setWhite(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case COLOUR_SATURATION:
                 // we have colour gradients
@@ -125,7 +125,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "LEDSPARTYManual=1&Saturation=" + command.toString() + "&Speed="
                         + zones[zoneIndex].getSpeed() + "Lightness=" + zones[zoneIndex].getIntensity();
                 zones[zoneIndex].setColourSaturation(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case SPEED:
                 // we have colour gradients
@@ -134,7 +134,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "LEDSPARTYManual=1&Saturation=" + zones[zoneIndex].getColourSaturation() + "&Speed="
                         + command.toString() + "Lightness=" + zones[zoneIndex].getIntensity();
                 zones[zoneIndex].setSpeed(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case X_COORDINATE:
                 // we have colour triangle
@@ -143,7 +143,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "Lightness=" + zones[zoneIndex].getIntensity() + "&X=" + command.toString() + "&Y="
                         + zones[zoneIndex].getyCoord();
                 zones[zoneIndex].setxCoord(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case Y_COORDINATE:
                 // we have colour triangle
@@ -152,7 +152,7 @@ public class vitaLEDConfiguration {
                 urlParameter = "Lightness=" + zones[zoneIndex].getIntensity() + "&X=" + zones[zoneIndex].getxCoord()
                         + "&Y=" + command.toString();
                 zones[zoneIndex].setyCoord(Integer.parseInt(command.toString()));
-                logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 break;
             case SCENE1:
                 if (command.equals(OnOffType.ON)) {
@@ -162,11 +162,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT1Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene1(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene1(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             case SCENE2:
@@ -177,11 +177,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT2Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene2(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene2(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             case SCENE3:
@@ -192,11 +192,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT3Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene3(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene3(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             case SCENE4:
@@ -207,11 +207,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT4Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene4(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene4(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             case SCENE5:
@@ -222,11 +222,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT5Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene5(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene5(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             case SCENE6:
@@ -237,11 +237,11 @@ public class vitaLEDConfiguration {
                     urlParameter = "SLOT6Manual=1";
                     // switch on scene
                     zones[zoneIndex].setScene6(1);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                     fullUpdate = true;
                 } else {
                     zones[zoneIndex].setScene6(0);
-                    logger.info("Update " + channelUID.getId() + " with " + command.toString());
+                    logger.debug("Update " + channelUID.getId() + " with " + command.toString());
                 }
                 break;
             default:
@@ -267,9 +267,7 @@ public class vitaLEDConfiguration {
         String url;
         URL obj;
         HttpURLConnection connection;
-
         url = "http://" + getIp() + ":" + getPort() + "/sample?" + urlParameter;
-
         obj = new URL(url);
         connection = (HttpURLConnection) obj.openConnection();
 
@@ -289,9 +287,9 @@ public class vitaLEDConfiguration {
         connection.setRequestProperty("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0");
 
-        logger.info("Sending 'GET' request to URL : " + url);
+        logger.debug("Sending 'GET' request to URL : " + url);
         responseCode = connection.getResponseCode();
-        logger.info("Response Code : " + responseCode);
+        logger.debug("Response Code : " + responseCode);
     }
 
     public DecimalType getCurrentState(ChannelUID channelUID) throws Exception {
@@ -384,7 +382,6 @@ public class vitaLEDConfiguration {
 
         // get zone configuration
         url = "http://" + getIp() + ":" + getPort() + "/room" + i + ".txt";
-
         obj = new URL(url);
         connection = (HttpURLConnection) obj.openConnection();
 
@@ -402,12 +399,12 @@ public class vitaLEDConfiguration {
         connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 
         responseCode = connection.getResponseCode();
-        logger.info("Sending 'GET' request to URL : " + url);
-        logger.info("Response Code : " + responseCode);
+        logger.debug("Sending 'GET' request to URL : " + url);
+        logger.debug("Response Code : " + responseCode);
 
         in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-        vitaLEDZone zone = new vitaLEDZone();
+        VitaLEDZone zone = new VitaLEDZone();
         zones[i] = zone;
 
         line = 1;
@@ -553,8 +550,8 @@ public class vitaLEDConfiguration {
         connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 
         responseCode = connection.getResponseCode();
-        logger.info("Sending 'GET' request to URL : " + url);
-        logger.info("Response Code : " + responseCode);
+        logger.debug("Sending 'GET' request to URL : " + url);
+        logger.debug("Response Code : " + responseCode);
 
         in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
@@ -596,8 +593,8 @@ public class vitaLEDConfiguration {
         connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 
         responseCode = connection.getResponseCode();
-        logger.info("Sending 'GET' request to URL : " + url);
-        logger.info("Response Code : " + responseCode);
+        logger.debug("Sending 'GET' request to URL : " + url);
+        logger.debug("Response Code : " + responseCode);
 
         in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 

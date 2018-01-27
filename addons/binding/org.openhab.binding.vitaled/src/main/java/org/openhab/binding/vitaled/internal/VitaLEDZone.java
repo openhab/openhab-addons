@@ -1,12 +1,12 @@
 package org.openhab.binding.vitaled.internal;
 
 /**
- * The {@link vitaLEDZone} is responsible for handling a zone.
+ * The {@link VitaLEDZone} is responsible for handling a zone.
  *
  * @author Marcel Salein - Initial contribution
  */
-public class vitaLEDZone {
-    private String ZoneDescription = new String();
+public class VitaLEDZone {
+    private String zoneDescription = new String();
     private int red;
     private int blue;
     private int green;
@@ -24,14 +24,6 @@ public class vitaLEDZone {
     private int scene4;
     private int scene5;
     private int scene6;
-
-    public String getZoneDescription() {
-        return ZoneDescription;
-    }
-
-    public void setZoneDescription(String zoneDescription) {
-        ZoneDescription = zoneDescription;
-    }
 
     public int getRed() {
         return red;
@@ -167,5 +159,13 @@ public class vitaLEDZone {
 
     public void setScene6(int scene6) {
         this.scene6 = scene6;
+    }
+
+    public String getZoneDescription() {
+        return zoneDescription;
+    }
+
+    public void setZoneDescription(String zoneDescription) {
+        this.zoneDescription = zoneDescription;
     }
 }

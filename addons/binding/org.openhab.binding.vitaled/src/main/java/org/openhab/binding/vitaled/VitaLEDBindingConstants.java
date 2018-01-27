@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link vitaLEDBindingConstants} class defines common constants, which are
+ * The {@link VitaLEDBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marcel Salein - Initial contribution
  */
 @NonNullByDefault
-public class vitaLEDBindingConstants {
+public class VitaLEDBindingConstants {
 
     public static final String BINDING_ID = "vitaled";
 

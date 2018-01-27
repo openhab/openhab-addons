@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vitaled.handler;
 
-import static org.openhab.binding.vitaled.vitaLEDBindingConstants.*;
+import static org.openhab.binding.vitaled.VitaLEDBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
@@ -27,24 +27,24 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.vitaled.internal.vitaLEDConfiguration;
+import org.openhab.binding.vitaled.internal.VitaLEDConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link vitaLEDHandler} is responsible for handling commands, which are
+ * The {@link VitaLEDHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Marcel Salein - Initial contribution
  */
 @NonNullByDefault
-public class vitaLEDHandler extends BaseThingHandler {
+public class VitaLEDHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(vitaLEDHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VitaLEDHandler.class);
 
     private BigDecimal refreshInterval;
 
-    private vitaLEDConfiguration connection;
+    private VitaLEDConnection connection;
     ScheduledFuture<?> refreshJob;
 
     @Override
@@ -119,7 +119,8 @@ public class vitaLEDHandler extends BaseThingHandler {
         handleCommand(channelUID, command);
     }
 
-    public vitaLEDHandler(Thing thing) {
+    @SuppressWarnings("null")
+    public VitaLEDHandler(Thing thing) {
         super(thing);
     }
 
@@ -181,7 +182,7 @@ public class vitaLEDHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.info("Initializing handler for VitaLED");
+        logger.debug("Initializing handler for VitaLED");
         if (this.getConfig().get(HOST_PARAMETER) != null) {
             String host = (String) this.getConfig().get(HOST_PARAMETER);
             Integer port = 80;
@@ -200,8 +201,8 @@ public class vitaLEDHandler extends BaseThingHandler {
                 logger.warn("No refresh Interval defined using {}s", refreshInterval);
             }
             logger.warn("No refresh Interval defined using {}s", refreshInterval);
-            logger.info("Host " + host + " Port " + port);
-            connection = new vitaLEDConfiguration(host, port);
+            logger.debug("Host " + host + " Port " + port);
+            connection = new VitaLEDConnection(host, port);
             try {
                 // update state of channels for all zones
                 for (int i = 0; i < 8; i++) {
@@ -216,14 +217,8 @@ public class vitaLEDHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
             // schedule automatic refresh
-            // startAutomaticRefresh();
+            startAutomaticRefresh();
         } else {
-            // Note: When initialization can NOT be done set the status with more details for further
-            // analysis. See also class ThingStatusDetail for all available status details.
-            // Add a description to give user information to understand why thing does not work
-            // as expected. E.g.
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-            // "Can not access device as username and/or password are invalid");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to VitaLED LAN Master. IP address not set.");
         }
