@@ -216,7 +216,7 @@ public class vitaLEDHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
             // schedule automatic refresh
-            startAutomaticRefresh();
+            // startAutomaticRefresh();
         } else {
             // Note: When initialization can NOT be done set the status with more details for further
             // analysis. See also class ThingStatusDetail for all available status details.
