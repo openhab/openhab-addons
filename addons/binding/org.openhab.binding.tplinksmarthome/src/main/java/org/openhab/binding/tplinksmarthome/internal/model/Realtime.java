@@ -16,7 +16,10 @@ package org.openhab.binding.tplinksmarthome.internal.model;
  */
 public class Realtime extends ErrorResponse {
 
-    private static final int V2_TO_V1 = 1000;
+    private static final int MILLIWATT_TO_WATT = 1000;
+    private static final int MILLIAMP_TO_AMP = 1000;
+    private static final int WATTHOUR_TO_KILOWATTHOUR = 1000;
+    private static final int MILLIVOLT_TO_VOLT = 1000;
 
     private double current;
     private double power;
@@ -24,47 +27,31 @@ public class Realtime extends ErrorResponse {
     private double voltage;
 
     // JSON names used for v2 hardware
-    private double current_ma;
-    private double power_mw;
-    private double total_wh;
-    private double voltage_mv;
+    private double currentMa;
+    private double powerMw;
+    private double totalWh;
+    private double voltageMv;
 
     public double getCurrent() {
-        if (current == 0 && current_ma != 0) {
-         return current_ma / V2_TO_V1; // v1 displays as amps
-        }
-
-        return current;
+        return currentMa > 0.0 ? currentMa / MILLIAMP_TO_AMP : current;
     }
 
     public double getPower() {
-        if (power == 0.0 && power_mw != 0.0) {
-          return power_mw / V2_TO_V1; // v1 displays as watts
-        }
-
-        return power;
+        return powerMw > 0.0 ? powerMw / MILLIWATT_TO_WATT : power;
     }
 
     public double getTotal() {
-        if (total == 0.0 && total_wh != 0.0) {
-          return total_wh / V2_TO_V1; // v1 displays as kWh
-        }
-
-        return total;
+        return totalWh > 0.0 ? totalWh / WATTHOUR_TO_KILOWATTHOUR : total;
     }
 
     public double getVoltage() {
-        if (total == 0.0 && voltage_mv != 0.0) {
-          return voltage_mv / V2_TO_V1; // v1 displays as volts
-        }
-        return voltage;
+        return voltageMv > 0.0 ? voltageMv / MILLIVOLT_TO_VOLT : voltage;
     }
-
 
     @Override
     public String toString() {
-        return "current:" + current + ", power:" + power + ", total:" + total + ", voltage:" + voltage
-                + super.toString();
+        return "current:" + getCurrent() + ", power:" + getPower() + ", total:" + getTotal() + ", voltage:"
+                + getVoltage() + super.toString();
     }
 
 }
