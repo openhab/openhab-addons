@@ -575,9 +575,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         if (readStartBitIndex < pollStartBitIndex || readEndBitIndex > pollEndBitIndex) {
             String errmsg = String.format(
-                    "Out-of-bounds: Poller is reading from index %d to %d (inclusive) but tring tries to read '%s' starting from element %d. Exceeds polled data by %d bits (=%d 16 bit words)",
+                    "Out-of-bounds: Poller is reading from index %d to %d (inclusive) but this thing configured to read '%s' starting from element %d. Exceeds polled data bounds.",
                     pollStartBitIndex / dataElementBits, pollEndBitIndex / dataElementBits, readValueType,
-                    readIndex.get(), readEndBitIndex - pollEndBitIndex, (readEndBitIndex - pollEndBitIndex) / 16);
+                    readIndex.get());
             logger.error("Thing {} '{}' readIndex is out of bounds: {}", getThing().getUID(), getThing().getLabel(),
                     errmsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
