@@ -148,7 +148,7 @@ String Echo_Living_Room_AmazonMusicTrackId    "Amazon Music Track Id"           
 String Echo_Living_Room_AmazonMusicPlayListId "Amazon Music Playlist Id (Write Only)"  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicPlayListId"}
 String Echo_Living_Room_AmazonMusicPlayListIdLastUsed "Amazon Music Playlist Id last used"  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicPlayListIdLastUsed"}
 Switch Echo_Living_Room_AmazonMusic           "Amazon Music"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusic"}
-String Echo_Living_Room_Remind                "Remind"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusic"}
+String Echo_Living_Room_Remind                "Remind"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
 String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
 ```
 
@@ -174,9 +174,9 @@ sitemap amzonechocontrol label="Echo Devices"
             Text    item=Echo_Living_Room_AmazonMusicTrackId
             Text    item=Echo_Living_Room_AmazonMusicPlayListId
             Text    item=Echo_Living_Room_AmazonMusicPlayListIdLastUsed
-            Switch  item=Echo_Living_Room_AmazonMusic    
-            Text    item=Echo_Living_Room_Remind  
-            Text    item=Echo_Living_Room_PlayAlarmSound  
+            Switch  item=Echo_Living_Room_AmazonMusic
+            Text    item=Echo_Living_Room_Remind
+            Text    item=Echo_Living_Room_PlayAlarmSound
         }
 }
 ```
