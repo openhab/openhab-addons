@@ -674,7 +674,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             });
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
+                    String.format("Error (%s) with read. Request: %s. Description: %s. Message: %s",
+                            error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
     }
 
@@ -697,11 +698,20 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.toString(),
                     error.getMessage(), error);
         }
-        DateTimeType now = new DateTimeType();
-        logger.error("Unsuccessful write: {} {}", error.getClass().getName(), error.getMessage());
-        updateState(ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR, now);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String.format(
-                "Error with writing request %s: %s: %s", request, error.getClass().getName(), error.getMessage()));
+        Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
+        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR),
+                new DateTimeType());
+
+        synchronized (this) {
+            // Update channels
+            states.forEach((uid, state) -> {
+                tryUpdateState(uid, state);
+            });
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
+                            error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
+        }
     }
 
     @Override
