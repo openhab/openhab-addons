@@ -15,6 +15,7 @@ The smappee supports clamps for 3 phase and 1 phase systems and there is a separ
 This binding provides 1 bridge thing type : 'smappee'. There should be only 1 smappee device installed in your home.
 This thing act like a bridge and represents your smappee monitor device and should be configured first. Once configured, this will autodetect all other smappee things.
 Detected things :
+
 - smappee-appliance : A detected appliance, the appliances that are not categorized yet (type "Find Me"), are skipped. 
 - smappee-actuator : A paired smappee switch.
 - smappee-sensor : A paired water or gas sensor.
@@ -26,6 +27,7 @@ The smappee thing must be configured manually. Appliances, Actuators and the sen
 ## Smappee thing configuration
 
 As described on their [support page] (https://support.smappee.com/hc/en-us/articles/202153935-Where-can-I-find-the-API-documentation-), you need to email [support@smappee.com] (mailto:support@smappee.com) to get a client ID and a client secret to access the api. In that mail you need to provide them :
+
 - Full name: your full name
 - Monitor serial number: this can be found at the back of your smappee
 - Account username: the username you use to log in in Smappee, same as thing setting 'Username'
@@ -40,8 +42,8 @@ Following settings must be configured in order to make your smappee binding work
 |----------------------|------------------------------------------------------------------------|
 |Client Id             | The Smappee Api Oauth client id (obtain by mail from smappee support) |
 |Client Secret         | The Smappee Api Oauth client secret (obtain by mail from smappee support)|
-|Username              | The username of your Smappee|
-|Password              | The password of your Smappee|
+|Username              | The username for your Smappee|
+|Password              | The password for your Smappee|
 |Service location name | The name of your Smappee installation|
 |Polling time          | How often (in minutes) does the smappee needs to be checked ?|
 
@@ -69,7 +71,7 @@ Following settings must be configured in order to make your smappee binding work
 A manual setup through a `things/smappee.things` file could look like this:
 
 ```
-Bridge smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", servicelocationname="xxx", polltime=5]
+Bridge smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", service_location_name="xxx", poll_time=5]
 {
     Thing smappee:smappee-appliance:myAppliance [ id="xxx", type="Blinds" ]
     Thing smappee:smappee-actuator:myPlug [ id="xxx" ]

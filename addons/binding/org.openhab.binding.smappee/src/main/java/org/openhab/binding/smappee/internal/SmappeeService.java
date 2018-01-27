@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.smappee.internal;
 
 import java.io.IOException;
@@ -41,14 +40,9 @@ public class SmappeeService {
 
     ScheduledFuture<?> scheduledJob;
 
-    public long pollTime;
     private int retry;
 
-    private String clientId;
-    private String clientSecret;
-    private String username;
-    private String password;
-    private String serviceLocationName;
+    public SmappeeConfigurationParameters config;
 
     private String serviceLocationId;
 
@@ -60,16 +54,10 @@ public class SmappeeService {
     private DateTime accessTokenValidity;
     private String refreshToken;
 
-    public SmappeeService(String clientId, String clientSecret, String username, String password,
-            String serviceLocationName, long pollTime) {
-        this.serviceLocationName = serviceLocationName;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.username = username;
-        this.password = password;
+    public SmappeeService(SmappeeConfigurationParameters config) {
+        this.config = config;
 
         this.retry = 1;
-        this.pollTime = pollTime;
 
         this.gson = new Gson();
 
@@ -85,7 +73,7 @@ public class SmappeeService {
             }
         };
 
-        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, this.pollTime, TimeUnit.MILLISECONDS);
+        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.pollTime, TimeUnit.MINUTES);
     }
 
     public void stopAutomaticRefresh() {
@@ -110,8 +98,12 @@ public class SmappeeService {
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123/consumption?aggregation=1&from=1388534400000&to=1391212800000
 
-                String responseReadings = GetData("/dev/v1/servicelocation/" + this.serviceLocationId
+                String responseReadings = getData("/dev/v1/servicelocation/" + this.serviceLocationId
                         + "/consumption?aggregation=1&from=" + nowUtcMinus20MinMillis + "&to=" + nowUtcMillis);
+
+                if (responseReadings.isEmpty()) {
+                    return null;
+                }
 
                 SmappeeDeviceReading readings = gson.fromJson(responseReadings, SmappeeDeviceReading.class);
 
@@ -141,7 +133,11 @@ public class SmappeeService {
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123/info
 
-                String responseReadings = GetData("/dev/v1/servicelocation/" + this.serviceLocationId + "/info");
+                String responseReadings = getData("/dev/v1/servicelocation/" + this.serviceLocationId + "/info");
+
+                if (responseReadings.isEmpty()) {
+                    return null;
+                }
 
                 SmappeeServiceLocationInfo readings = gson.fromJson(responseReadings, SmappeeServiceLocationInfo.class);
 
@@ -150,7 +146,7 @@ public class SmappeeService {
                 return readings;
 
             } catch (Exception se) {
-                logger.error("failed to read servicelocationinfo '{}'", se.getMessage());
+                logger.warn("failed to read servicelocationinfo '{}'", se.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -176,9 +172,13 @@ public class SmappeeService {
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123123/events?
                 // applianceId=1&applianceId=2&maxNumber=100&from=1388534400000&to=1391212800000
 
-                String responseReadings = GetData(
+                String responseReadings = getData(
                         "/dev/v1/servicelocation/" + this.serviceLocationId + "/events?applianceId=" + applianceId
                                 + "&maxNumber=1&from=" + nowUtcMinus1YearMillis + "&to=" + nowUtcMillis);
+
+                if (responseReadings.isEmpty()) {
+                    return null;
+                }
 
                 SmappeeApplianceEvent[] readings = gson.fromJson(responseReadings, SmappeeApplianceEvent[].class);
 
@@ -190,7 +190,7 @@ public class SmappeeService {
                 return null;
 
             } catch (Exception se) {
-                logger.error("failed to read smappee '{}' - appliance '{}' : {}", this.serviceLocationId, applianceId,
+                logger.warn("failed to read smappee '{}' - appliance '{}' : {}", this.serviceLocationId, applianceId,
                         se.getMessage());
             }
         } while (currentTry++ < this.retry);
@@ -216,9 +216,13 @@ public class SmappeeService {
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/1/sensor/4/consumption?
                 // from=1457597400000&to=1458666049000&aggregation=1
-                String responseReadings = GetData(
+                String responseReadings = getData(
                         "/dev/v1/servicelocation/" + this.serviceLocationId + "/sensor" + sensorId + "/consumption?"
                                 + "aggregation=1&from=" + nowUtcMinus1YearMillis + "&to=" + nowUtcMillis);
+
+                if (responseReadings.isEmpty()) {
+                    return null;
+                }
 
                 SmappeeSensorConsumption readings = gson.fromJson(responseReadings, SmappeeSensorConsumption.class);
 
@@ -230,7 +234,7 @@ public class SmappeeService {
                 return null;
 
             } catch (Exception se) {
-                logger.error("failed to read smappee '{}' - sensorId '{}' : {}", this.serviceLocationId, sensorId,
+                logger.warn("failed to read smappee '{}' - sensorId '{}' : {}", this.serviceLocationId, sensorId,
                         se.getMessage());
             }
         } while (currentTry++ < this.retry);
@@ -253,15 +257,15 @@ public class SmappeeService {
         // https://app1pub.smappee.net/dev/v1/servicelocation/[SERVICELOCATIONID]/actuator/[ACTUATORID]/on
 
         if (turnOn) {
-            SetData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on");
+            setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on");
         } else {
-            SetData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
+            setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
         }
     }
 
     public boolean initialize() {
         // get service locations
-        String response = GetData("/dev/v1/servicelocation");
+        String response = getData("/dev/v1/servicelocation");
 
         if (response.isEmpty()) {
             return false;
@@ -275,7 +279,7 @@ public class SmappeeService {
         }
 
         for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
-            if (smappeeServiceLocation.name.equals(this.serviceLocationName)) {
+            if (smappeeServiceLocation.name.equals(config.serviceLocationName)) {
                 this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
                 initialized = true;
 
@@ -290,7 +294,7 @@ public class SmappeeService {
         return initialized;
     }
 
-    private String GetData(String request) {
+    private String getData(String request) {
         String url = "https://app1pub.smappee.net" + request;
 
         HttpClient getClient = new HttpClient();
@@ -301,7 +305,7 @@ public class SmappeeService {
                 "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         getMethod.addRequestHeader("Accept", "application/json");
 
-        String accessTokenToInclude = GetAccessToken();
+        String accessTokenToInclude = getAccessToken();
         if (accessTokenToInclude.isEmpty()) {
             logger.warn("Could not get access token");
             return "";
@@ -319,17 +323,17 @@ public class SmappeeService {
 
             return IOUtils.toString(getMethod.getResponseBodyAsStream());
         } catch (HttpException e) {
-            logger.warn("Fatal protocol violation: {}", e.toString());
+            logger.warn("Fatal protocol violation", e);
             return "";
         } catch (IOException e) {
-            logger.warn("Fatal transport error: {}", e.toString());
+            logger.warn("Fatal transport error", e);
             return "";
         } finally {
             getMethod.releaseConnection();
         }
     }
 
-    private void SetData(String request) {
+    private void setData(String request) {
         String url = "https://app1pub.smappee.net" + request;
 
         HttpClient getClient = new HttpClient();
@@ -341,7 +345,7 @@ public class SmappeeService {
                 "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         postMethod.addRequestHeader("Accept", "application/json");
 
-        String accessTokenToInclude = GetAccessToken();
+        String accessTokenToInclude = getAccessToken();
         if (accessTokenToInclude.isEmpty()) {
             logger.warn("Could not get access token");
             return;
@@ -359,17 +363,17 @@ public class SmappeeService {
 
             return;
         } catch (HttpException e) {
-            logger.warn("Fatal protocol violation: {}", e.toString());
+            logger.warn("Fatal protocol violation", e);
             return;
         } catch (IOException e) {
-            logger.warn("Fatal transport error: {}", e.toString());
+            logger.warn("Fatal transport error", e);
             return;
         } finally {
             postMethod.releaseConnection();
         }
     }
 
-    private String GetAccessToken() {
+    private String getAccessToken() {
         if (accessToken != null && !accessToken.isEmpty() && accessTokenValidity != null
                 && accessTokenValidity.isBeforeNow()) {
             return accessToken;
@@ -384,8 +388,8 @@ public class SmappeeService {
 
             postMethod.addParameter("grant_type", "refresh_token");
             postMethod.addParameter("refresh_token", refreshToken);
-            postMethod.addParameter("client_id", clientId);
-            postMethod.addParameter("client_secret", clientSecret);
+            postMethod.addParameter("client_id", config.clientId);
+            postMethod.addParameter("client_secret", config.clientSecret);
 
             try {
                 int statusCode = postClient.executeMethod(postMethod);
@@ -405,13 +409,13 @@ public class SmappeeService {
                 return accessToken;
 
             } catch (HttpException e) {
-                logger.warn("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
+                logger.warn("GetAccessToken on credentials : Fatal protocol violation", e);
                 return "";
             } catch (IOException e) {
-                logger.warn("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+                logger.warn("GetAccessToken on credentials : Fatal transport error", e);
                 return "";
-            } catch (Exception e) {
-                logger.error("Failed to parse access token (from refreshtoken request) : {}", e.toString());
+            } catch (RuntimeException e) {
+                logger.warn("Failed to parse access token (from refreshtoken request)", e);
                 return "";
             } finally {
                 postMethod.releaseConnection();
@@ -424,10 +428,10 @@ public class SmappeeService {
         postMethod.addRequestHeader("Accept", "application/json");
 
         postMethod.addParameter("grant_type", "password");
-        postMethod.addParameter("client_id", clientId);
-        postMethod.addParameter("client_secret", clientSecret);
-        postMethod.addParameter("username", username);
-        postMethod.addParameter("password", password);
+        postMethod.addParameter("client_id", config.clientId);
+        postMethod.addParameter("client_secret", config.clientSecret);
+        postMethod.addParameter("username", config.username);
+        postMethod.addParameter("password", config.password);
 
         try {
             int statusCode = postClient.executeMethod(postMethod);
@@ -446,13 +450,13 @@ public class SmappeeService {
             return accessToken;
 
         } catch (HttpException e) {
-            logger.warn("GetAccessToken on credentials : Fatal protocol violation: {}", e.toString());
+            logger.warn("GetAccessToken on credentials : Fatal protocol violation", e);
             return "";
         } catch (IOException e) {
-            logger.warn("GetAccessToken on credentials : Fatal transport error: {}", e.toString());
+            logger.warn("GetAccessToken on credentials : Fatal transport error", e);
             return "";
-        } catch (Exception e) {
-            logger.error("Failed to parse access token : {}", e.toString());
+        } catch (RuntimeException e) {
+            logger.error("Failed to parse access token", e);
             return "";
         } finally {
             postMethod.releaseConnection();

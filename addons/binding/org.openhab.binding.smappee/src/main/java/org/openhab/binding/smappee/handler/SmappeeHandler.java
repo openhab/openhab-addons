@@ -1,19 +1,17 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.smappee.handler;
 
 import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
 
 import java.util.Hashtable;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -25,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.smappee.internal.ReadingsUpdate;
+import org.openhab.binding.smappee.internal.SmappeeConfigurationParameters;
 import org.openhab.binding.smappee.internal.SmappeeDeviceReading;
 import org.openhab.binding.smappee.internal.SmappeeService;
 import org.openhab.binding.smappee.internal.discovery.SmappeeDiscoveryService;
@@ -73,59 +72,37 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
     @Override
     public void initialize() {
-        Configuration conf = this.getConfig();
+        SmappeeConfigurationParameters config = this.getConfigAs(SmappeeConfigurationParameters.class);
 
-        String clientId = String.valueOf(conf.get(PARAMETER_CLIENT_ID));
-        String clientSecret = String.valueOf(conf.get(PARAMETER_CLIENT_SECRET));
-        String username = String.valueOf(conf.get(PARAMETER_USERNAME));
-        String password = String.valueOf(conf.get(PARAMETER_PASSWORD));
-        String serviceLocationName = String.valueOf(conf.get(PARAMETER_SERVICE_LOCATION_NAME));
-        String pollTime = String.valueOf(conf.get(PARAMETER_POLLTIME));
-
-        if (clientId.isEmpty()) {
+        if (config.clientId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client Id must be provided");
             return;
         }
-        if (clientSecret.isEmpty()) {
+        if (config.clientSecret.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client secret must be provided");
             return;
         }
-        if (username.isEmpty()) {
+        if (config.username.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Username must be provided");
             return;
         }
-        if (password.isEmpty()) {
+        if (config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Password must be provided");
             return;
         }
-        if (serviceLocationName.isEmpty()) {
+        if (config.serviceLocationName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Service location name must be provided");
             return;
         }
-        if (pollTime.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check configuration, polling time must be provided");
-            return;
-        }
-
-        int pollTimeMSec = 300000; // 5 minutes
-        try {
-            pollTimeMSec = Integer.parseInt(pollTime) * 60000;
-        } catch (NumberFormatException e) {
-            logger.warn("Invalid polling time : '{}', taking default of 5 min", pollTime);
-        }
 
         logger.debug("Initialize Network handler.");
 
-        smappeeService = new SmappeeService(clientId, clientSecret, username, password, serviceLocationName,
-                pollTimeMSec);
-
-        super.initialize();
+        smappeeService = new SmappeeService(config);
 
         if (smappeeService.initialize()) {
 
@@ -135,7 +112,9 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not find a smappee with configured service location name '" + serviceLocationName + "'");
+                    "Could not find a smappee with configured service location name '" + config.serviceLocationName
+                            + "'");
+            return;
         }
 
         logger.debug("Initialize discovery service.");
@@ -145,7 +124,9 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
     @Override
     public void dispose() {
-        smappeeService.stopAutomaticRefresh();
+        if (smappeeService != null) {
+            smappeeService.stopAutomaticRefresh();
+        }
 
         if (discoveryService != null) {
             discoveryService.stopScan();
@@ -154,7 +135,7 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
     }
 
     private void registerDeviceDiscoveryService() {
-        discoveryService = new SmappeeDiscoveryService(this, this.thing.getUID());
+        discoveryService = new SmappeeDiscoveryService(this.smappeeService, this.thing.getUID());
         discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
         discoveryService.activate();

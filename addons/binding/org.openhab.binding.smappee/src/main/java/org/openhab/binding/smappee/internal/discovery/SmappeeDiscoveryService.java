@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,7 +20,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.smappee.SmappeeBindingConstants;
-import org.openhab.binding.smappee.handler.SmappeeHandler;
+import org.openhab.binding.smappee.internal.SmappeeService;
 import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfo;
 import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfoActuator;
 import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfoAppliance;
@@ -40,13 +40,13 @@ import com.google.common.collect.ImmutableSet;
  */
 public class SmappeeDiscoveryService extends AbstractDiscoveryService {
 
+    private static final int SEARCH_TIME = 60;
+
     private final Logger logger = LoggerFactory.getLogger(SmappeeDiscoveryService.class);
-    private SmappeeHandler _smappeeHandler;
+    private SmappeeService _smappeeService;
     private ThingUID _bridgeUID;
 
     ScheduledFuture<?> scheduledJob;
-
-    private static final int SEARCH_TIME = 60;
 
     /**
      * Whether we are currently scanning or not
@@ -58,11 +58,11 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
      * - actuators (plugs)
      * - detected appliances
      */
-    public SmappeeDiscoveryService(SmappeeHandler smappeeHandler, ThingUID bridgeUID) {
+    public SmappeeDiscoveryService(SmappeeService smappeeService, ThingUID bridgeUID) {
         super(ImmutableSet.of(SmappeeBindingConstants.THING_TYPE_ACTUATOR,
                 SmappeeBindingConstants.THING_TYPE_APPLIANCE), SEARCH_TIME, false);
 
-        _smappeeHandler = smappeeHandler;
+        _smappeeService = smappeeService;
         _bridgeUID = bridgeUID;
     }
 
@@ -87,8 +87,6 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Starts the scan. This discovery will:
      * <ul>
      * <li>Call 'get service location info'
@@ -104,7 +102,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
             stopScan();
         }
 
-        // this should be done base class ???
+        // this should be done by base class ???
         // somehow this is not working, so starting a scheduler instead
         startAutomaticRefresh();
 
@@ -116,18 +114,18 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
             scanForNewDevices();
         };
 
-        scheduledJob = scheduler.scheduleAtFixedRate(runnable, 0, 5, TimeUnit.MILLISECONDS);
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, 5, TimeUnit.MILLISECONDS);
     }
 
     private void scanForNewDevices() {
-        if (_smappeeHandler.smappeeService == null || !_smappeeHandler.smappeeService.isInitialized()) {
+        if (!_smappeeService.isInitialized()) {
             logger.debug("skipping discovery because smappee service is not up yet (config error ?)");
             return;
         }
 
         logger.debug("Starting Discovery");
 
-        SmappeeServiceLocationInfo serviceLocationInfo = _smappeeHandler.smappeeService.getServiceLocationInfo();
+        SmappeeServiceLocationInfo serviceLocationInfo = _smappeeService.getServiceLocationInfo();
 
         for (SmappeeServiceLocationInfoActuator actuator : serviceLocationInfo.actuators) {
             String id = actuator.id;
@@ -184,8 +182,6 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Stops the discovery scan.
      */
     @Override

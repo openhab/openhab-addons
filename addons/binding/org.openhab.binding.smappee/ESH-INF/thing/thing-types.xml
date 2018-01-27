@@ -9,9 +9,9 @@
         <description>Smappee Monitor Device</description>
 
         <channels>
-            <channel id="channelconsumption" typeId="smappee-consumption-channel"/>
-            <channel id="channelsolar" typeId="smappee-solar-channel"/>
-            <channel id="channelalwayson" typeId="smappee-alwayson-channel"/>
+            <channel id="consumption" typeId="smappee-consumption-channel"/>
+            <channel id="solar" typeId="smappee-solar-channel"/>
+            <channel id="alwayson" typeId="smappee-alwayson-channel"/>
         </channels>
 
         <config-description>
@@ -29,24 +29,24 @@
 
             <parameter name="username" type="text" required="true">
                 <label>Username</label>
-                <description>The username of your Smappee</description>
+                <description>The username for your Smappee</description>
                 <advanced>false</advanced>
             </parameter>
 
             <parameter name="password" type="text" required="true">
                 <label>Password</label>
-                <description>The password of your Smappee</description>
+                <description>The password for your Smappee</description>
                 <context>password</context>
                 <advanced>false</advanced>
             </parameter>
             
-            <parameter name="servicelocationname" type="text" required="true">
+            <parameter name="service_location_name" type="text" required="true">
                 <label>Service location name</label>
                 <description>The name of your Smappee installation</description>
                 <advanced>false</advanced>
             </parameter>
             
-            <parameter name="polltime" type="integer" required="true" min="1" max="1440">
+            <parameter name="poll_time" type="integer" required="true" min="1" max="1440">
                 <label>Polling time</label>
                 <description>How often (in minutes) does the smappee needs to be checked ?</description>
                 <default>5</default>
@@ -83,8 +83,8 @@
         <description>Detected Smappee Appliance</description>
 
         <channels>
-            <channel id="channelappliancepower" typeId="smappee-appliance-power"/>
-            <channel id="channelappliancelastupdate" typeId="smappee-appliance-lastupdate"/>
+            <channel id="appliance-power" typeId="smappee-appliance-power"/>
+            <channel id="appliance-lastupdate" typeId="smappee-appliance-lastupdate"/>
         </channels>
         
         <config-description>
@@ -123,7 +123,7 @@
         <description>Smappee Plug</description>
 
         <channels>
-            <channel id="channelactuatorpower" typeId="smappee-actuator-power"/>
+            <channel id="actuator-switch" typeId="smappee-actuator-switch"/>
         </channels>
         
         <config-description>
@@ -149,7 +149,7 @@
         <description>Smappee Sensor</description>
 
         <channels>
-            <channel id="channelsensorvalue" typeId="smappee-sensor-value"/>
+            <channel id="sensor-value" typeId="smappee-sensor-value"/>
         </channels>
         
         <config-description>
@@ -158,6 +158,11 @@
                 <description>Unique identifier for the sensor. format : [SensorId-ChannelId]</description>
                 <required>true</required>
             </parameter>                        
+            <parameter name="channel_id" type="text">
+                <label>ID</label>
+                <description>Unique identifier for the channel of this sensor.</description>
+                <required>true</required>
+            </parameter> 
             <parameter name="type" type="text">
                 <label>Type</label>
                 <description>The type of the sensor (water/gas/...)</description>
@@ -170,12 +175,6 @@
         <item-type>String</item-type>
         <label>Value</label>
         <description>The measured value of this sensor</description>
-    </channel-type>
-
-    <channel-type id="smappee-sensor-channelid">
-        <item-type>String</item-type>
-        <label>ChannelID</label>
-        <description>The channel identifier for this sensor</description>
     </channel-type>
     
 </thing:thing-descriptions>

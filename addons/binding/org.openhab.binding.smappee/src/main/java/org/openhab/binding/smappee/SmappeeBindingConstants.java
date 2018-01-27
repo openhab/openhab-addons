@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,17 +39,16 @@ public class SmappeeBindingConstants {
 
     // List of all Channel ids
     // Smappee
-    public final static String CHANNEL_CONSUMPTION = "channelconsumption";
-    public final static String CHANNEL_SOLAR = "channelsolar";
-    public final static String CHANNEL_ALWAYSON = "channelalwayson";
+    public final static String CHANNEL_CONSUMPTION = "consumption";
+    public final static String CHANNEL_SOLAR = "solar";
+    public final static String CHANNEL_ALWAYSON = "alwayson";
     // Appliance
-    public final static String CHANNEL_APPLIANCE_POWER = "smappee-appliance-power";
-    public final static String CHANNEL_APPLIANCE_LASTUPDATE = "smappee-appliance-lastupdate";
+    public final static String CHANNEL_APPLIANCE_POWER = "appliance-power";
+    public final static String CHANNEL_APPLIANCE_LASTUPDATE = "appliance-lastupdate";
     // Actuator
-    public final static String CHANNEL_ACTUATOR_SWITCH = "smappee-actuator-switch";
+    public final static String CHANNEL_ACTUATOR_SWITCH = "actuator-switch";
     // Sensor
-    public final static String CHANNEL_SENSOR_VALUE = "smappee-sensor-value";
-    public final static String PARAMETER_SENSOR_CHANNEL_ID = "smappee-sensor-channelid";
+    public final static String CHANNEL_SENSOR_VALUE = "sensor-value";
 
     // List of all Parameters
     // Smappee
@@ -57,8 +56,8 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_CLIENT_SECRET = "client_secret";
     public final static String PARAMETER_USERNAME = "username";
     public final static String PARAMETER_PASSWORD = "password";
-    public final static String PARAMETER_SERVICE_LOCATION_NAME = "servicelocationname";
-    public final static String PARAMETER_POLLTIME = "polltime";
+    public final static String PARAMETER_SERVICE_LOCATION_NAME = "service_location_name";
+    public final static String PARAMETER_POLLTIME = "poll_time";
     // Appliance
     public final static String PARAMETER_APPLIANCE_ID = "id";
     public final static String PARAMETER_APPLIANCE_TYPE = "type";
@@ -66,6 +65,7 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_ACTUATOR_ID = "id";
     // Sensor
     public final static String PARAMETER_SENSOR_ID = "id";
+    public final static String PARAMETER_SENSOR_CHANNEL_ID = "channel_id";
     public final static String PARAMETER_SENSOR_TYPE = "type";
 
 }

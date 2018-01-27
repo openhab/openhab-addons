@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.smappee.handler;
 
 import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
@@ -40,9 +39,6 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     public SmappeeSensorHandler(Thing thing) {
         super(thing);
-
-        thingId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
-        channelid = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
     }
 
     @Override
@@ -70,17 +66,22 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-        // start automatic refresh
-        super.initialize();
 
+        thingId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
+        channelid = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
+
+        super.initialize(); // set it online
+
+        // start automatic refresh
         startAutomaticRefresh();
     }
 
     @Override
     public void dispose() {
         // stop automatic refresh
-
-        scheduledJob.cancel(true);
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+        }
     }
 
     public void startAutomaticRefresh() {
@@ -89,10 +90,10 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
             if (smappeeService != null && smappeeService.isInitialized()) {
                 readSensor(smappeeService);
             }
-            ;
         };
 
-        scheduledJob = scheduler.scheduleAtFixedRate(runnable, 0, smappeeService.pollTime, TimeUnit.MILLISECONDS);
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollTime,
+                TimeUnit.MILLISECONDS);
     }
 
     private void readSensor(SmappeeService smappeeService) {
