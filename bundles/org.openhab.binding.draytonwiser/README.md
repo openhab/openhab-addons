@@ -6,10 +6,10 @@ This binding integrates the [Drayton Wiser Smart Heating System](https://wiser.d
 
 The Drayton Wiser binding supports the following things:
 * Bridge - The network device in the controller that allows us to interact with the other devices in the system
-* Controller - The HeatHub attached to the boiler. This also acts as the hub device.
-* Rooms - Virtual groups of Room Stats and TRVs that can have temperatures and schedules
-* Room Stats - Wireless thermostats which monitor temperature and humidity, and call for heat
-* Smart TRVs - Wireless TRVs that monitor temperature and can alter the radiator valve state and call for heat
+* Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
+* Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and schedules
+* Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
+* Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
 
 ## Discovery
 
@@ -35,16 +35,16 @@ The `REFRESH` interval defines in seconds, how often the binding will poll the c
 ```
 Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN="authtoken from hub" ]
 {
-	controller controller	[ internalID=0 ]
-	room livingroom	[ internalID=1 ]
-	room bathroom	[ internalID=2 ]
-	room bedroom	[ internalID=3 ]
-	roomstat livingroomstat [ internalID=1234 ]
-	itrv livingroomtrv [ internalID=2345 ]
+	controller controller
+	room livingroom	[ roomName="Living Room" ]
+	room bathroom	[ roomName="Bathroom" ]
+	room bedroom	[ roomName="Bedroom" ]
+	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
+	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
 }
 ```
 
-The `internalID` above corresponds to the ID of the device reported by the api. Currently this is only obtainable by packet inspection if not using auto-discovery. This should hopefully change in future to use the serial number of the devices where possible (which can be found in the battery compartment of each device).
+The `roomName` corresponds to the room name configured in the Wiser App. It is not case sensitive. The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
 
 ## Channels
 

@@ -54,16 +54,6 @@
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
         </channels>
-        
-        <config-description>
-            <parameter name="internalID" type="integer">
-                <label>ID</label>
-                <description>
-                    Device ID on the network.
-                </description>
-                <required>true</required>
-            </parameter>
-        </config-description>
     </thing-type>
     
     <!-- Room Thing Type -->
@@ -85,10 +75,10 @@
         </channels>
         
         <config-description>
-            <parameter name="internalID" type="integer">
-                <label>ID</label>
+            <parameter name="roomName" type="text">
+                <label>Room Name</label>
                 <description>
-                    Device ID on the network.
+                    The room name as it appears in the Wiser app.
                 </description>
                 <required>true</required>
             </parameter>
@@ -114,10 +104,10 @@
        </channels>
         
         <config-description>
-            <parameter name="internalID" type="integer">
-                <label>ID</label>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
                 <description>
-                    Device ID on the network.
+                    Device Serial Number.
                 </description>
                 <required>true</required>
             </parameter>
@@ -143,10 +133,10 @@
         </channels>
         
         <config-description>
-            <parameter name="internalID" type="integer">
-                <label>ID</label>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
                 <description>
-                    Device ID on the network.
+                    Device Serial Number.
                 </description>
                 <required>true</required>
             </parameter>

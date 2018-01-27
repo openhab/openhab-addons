@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -91,8 +89,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateSmartValveData() {
-        smartValve = getBridgeHandler()
-                .getSmartValve(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
+        smartValve = getBridgeHandler().getSmartValve(getThing().getConfiguration().get("serialNumber").toString());
         return smartValve != null;
     }
 

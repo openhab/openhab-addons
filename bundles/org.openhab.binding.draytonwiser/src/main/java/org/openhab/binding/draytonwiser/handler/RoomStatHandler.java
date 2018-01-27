@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -91,8 +89,7 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateRoomStatData() {
-        roomStat = getBridgeHandler()
-                .getRoomStat(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
+        roomStat = getBridgeHandler().getRoomStat(getThing().getConfiguration().get("serialNumber").toString());
         return roomStat != null;
     }
 

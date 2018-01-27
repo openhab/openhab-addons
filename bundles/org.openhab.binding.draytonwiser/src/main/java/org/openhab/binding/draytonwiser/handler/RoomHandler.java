@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -97,7 +95,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateRoomData() {
-        room = getBridgeHandler().getRoom(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue());
+        room = getBridgeHandler().getRoom(getThing().getConfiguration().get("roomName").toString());
         return room != null;
     }
 
@@ -110,8 +108,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private void setSetPoint(Integer setPoint) {
-        getBridgeHandler().setRoomSetPoint(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue(),
-                setPoint);
+        getBridgeHandler().setRoomSetPoint(getThing().getConfiguration().get("roomName").toString(), setPoint);
     }
 
     private State getHumidity() {
@@ -166,7 +163,6 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private void setManualMode(Boolean manualMode) {
-        getBridgeHandler().setRoomManualMode(((BigDecimal) getThing().getConfiguration().get("internalID")).intValue(),
-                manualMode);
+        getBridgeHandler().setRoomManualMode(getThing().getConfiguration().get("roomName").toString(), manualMode);
     }
 }

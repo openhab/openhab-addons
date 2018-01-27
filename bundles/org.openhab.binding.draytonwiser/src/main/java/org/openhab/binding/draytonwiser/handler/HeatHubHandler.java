@@ -168,13 +168,13 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return domain.getRoom();
     }
 
-    public @Nullable Room getRoom(Integer id) {
+    public @Nullable Room getRoom(String name) {
         if (domain == null) {
             return null;
         }
 
         for (Room room : domain.getRoom()) {
-            if (room.getId().equals(id)) {
+            if (room.getName().toLowerCase().equals(name.toLowerCase())) {
                 return room;
             }
         }
@@ -182,7 +182,27 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return null;
     }
 
-    public @Nullable RoomStat getRoomStat(Integer id) {
+    public @Nullable RoomStat getRoomStat(String serialNumber) {
+        if (domain == null) {
+            return null;
+        }
+
+        Integer id = getIdFromSerialNumber(serialNumber);
+
+        if (id == null) {
+            return null;
+        }
+
+        for (RoomStat roomStat : domain.getRoomStat()) {
+            if (roomStat.getId().equals(id)) {
+                return roomStat;
+            }
+        }
+
+        return null;
+    }
+
+    public @Nullable RoomStat getRoomStat(int id) {
         if (domain == null) {
             return null;
         }
@@ -196,8 +216,14 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return null;
     }
 
-    public @Nullable SmartValve getSmartValve(Integer id) {
+    public @Nullable SmartValve getSmartValve(String serialNumber) {
         if (domain == null) {
+            return null;
+        }
+
+        Integer id = getIdFromSerialNumber(serialNumber);
+
+        if (id == null) {
             return null;
         }
 
@@ -253,17 +279,27 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return domain.getHeatingChannel();
     }
 
-    public void setRoomSetPoint(Integer roomId, Integer setPoint) {
+    public void setRoomSetPoint(String roomName, Integer setPoint) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
-        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
         getDomain();
     }
 
-    public void setRoomManualMode(Integer roomId, Boolean manualMode) {
+    public void setRoomManualMode(String roomName, Boolean manualMode) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
         String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
-        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
-        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + roomId.toString(), "PATCH", payload);
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
         getDomain();
     }
 
@@ -306,6 +342,21 @@ public class HeatHubHandler extends BaseBridgeHandler {
             e.printStackTrace();
             updateStatus(ThingStatus.OFFLINE);
         }
+        return null;
+    }
+
+    private @Nullable Integer getIdFromSerialNumber(String serialNumber) {
+        if (domain == null) {
+            return null;
+        }
+
+        for (Device device : domain.getDevice()) {
+            if (device.getSerialNumber() != null
+                    && device.getSerialNumber().toLowerCase().equals(serialNumber.toLowerCase())) {
+                return device.getId();
+            }
+        }
+
         return null;
     }
 }
