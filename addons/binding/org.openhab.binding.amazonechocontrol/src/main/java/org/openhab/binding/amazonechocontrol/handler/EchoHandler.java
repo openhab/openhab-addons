@@ -10,6 +10,7 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -37,6 +39,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.InfoText;
@@ -56,14 +59,18 @@ public class EchoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
 
+    private static HashMap<ThingUID, EchoHandler> instances = new HashMap<ThingUID, EchoHandler>();
     private @Nullable Device device;
     private @Nullable Connection connection;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable String lastKnownRadioStationId;
     private @Nullable String lastKnownBluetoothId;
+    private @Nullable String lastKnownAmazonMusicId;
     private int lastKnownVolume = 25;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
+    private boolean updateRemind = true;
+    private boolean updateAlarm = true;
 
     public EchoHandler(Thing thing) {
         super(thing);
@@ -72,6 +79,9 @@ public class EchoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.info("Amazon Echo Control Binding initialized");
+        synchronized (instances) {
+            instances.put(this.getThing().getUID(), this);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -82,12 +92,33 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        synchronized (instances) {
+            instances.remove(this.getThing().getUID());
+        }
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
             updateStateJob.cancel(false);
         }
         super.dispose();
+    }
+
+    public static @Nullable EchoHandler find(ThingUID uid) {
+        synchronized (instances) {
+            return instances.get(uid);
+        }
+    }
+
+    public @Nullable BluetoothState findBluetoothState() {
+        return this.bluetoothState;
+    }
+
+    public @Nullable Connection findConnection() {
+        return this.connection;
+    }
+
+    public @Nullable Device findDevice() {
+        return this.device;
     }
 
     public String findSerialNumber() {
@@ -143,24 +174,27 @@ public class EchoHandler extends BaseThingHandler {
                 if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
                     int volume = value.intValue();
-                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume + "}");
+                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
+                            + ",\"contentFocusClientId\":\"Default\"}");
                 } else if (command == OnOffType.OFF) {
-                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + 0 + "}");
+                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + 0
+                            + ",\"contentFocusClientId\":\"Default\"}");
                 } else if (command == OnOffType.ON) {
-                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume + "}");
+                    temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
+                            + ",\"contentFocusClientId\":\"Default\"}");
                 } else if (command == IncreaseDecreaseType.INCREASE) {
                     if (lastKnownVolume < 100) {
                         lastKnownVolume++;
                         updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
-                        temp.command(device,
-                                "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume + "}");
+                        temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
+                                + ",\"contentFocusClientId\":\"Default\"}");
                     }
                 } else if (command == IncreaseDecreaseType.DECREASE) {
                     if (lastKnownVolume > 0) {
                         lastKnownVolume--;
                         updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
-                        temp.command(device,
-                                "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume + "}");
+                        temp.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
+                                + ",\"contentFocusClientId\":\"Default\"}");
                     }
                 }
             }
@@ -175,7 +209,7 @@ public class EchoHandler extends BaseThingHandler {
             }
 
             // bluetooth commands
-            if (channelId.equals(CHANNEL_BLUETOOTH_ID)) {
+            if (channelId.equals(CHANNEL_BLUETOOTH_ID) || channelId.equals(CHANNEL_BLUETOOTH_ID_SELECTION)) {
                 needBluetoothRefresh = true;
                 if (command instanceof StringType) {
                     String address = ((StringType) command).toFullString();
@@ -211,6 +245,43 @@ public class EchoHandler extends BaseThingHandler {
             if (channelId.equals(CHANNEL_BLUETOOTH_DEVICE_NAME)) {
                 needBluetoothRefresh = true;
             }
+            // amazon music commands
+            if (channelId.equals(CHANNEL_AMAZON_MUSIC_TRACK_ID)) {
+                if (command instanceof StringType) {
+
+                    String trackId = ((StringType) command).toFullString();
+                    if (trackId != null && !trackId.isEmpty()) {
+                        waitForUpdate = 3000;
+                    }
+                    temp.playAmazonMusicTrack(device, trackId);
+
+                }
+            }
+            if (channelId.equals(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID)) {
+                if (command instanceof StringType) {
+
+                    String playListId = ((StringType) command).toFullString();
+                    if (playListId != null && !playListId.isEmpty()) {
+                        waitForUpdate = 3000;
+                        updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID_LAST_USED, new StringType(playListId));
+                    }
+                    temp.playAmazonMusicPlayList(device, playListId);
+
+                }
+            }
+            if (channelId.equals(CHANNEL_AMAZON_MUSIC)) {
+
+                if (command == OnOffType.ON) {
+                    if (lastKnownAmazonMusicId != null && !lastKnownAmazonMusicId.isEmpty()) {
+                        waitForUpdate = 3000;
+                    }
+                    temp.playAmazonMusicTrack(device, lastKnownAmazonMusicId);
+                } else if (command == OnOffType.OFF) {
+                    temp.playAmazonMusicTrack(device, "");
+                }
+
+            }
+
             // radio commands
             if (channelId.equals(CHANNEL_RADIO_STATION_ID)) {
                 if (command instanceof StringType) {
@@ -220,7 +291,6 @@ public class EchoHandler extends BaseThingHandler {
                         waitForUpdate = 3000;
                     }
                     temp.playRadio(device, stationId);
-
                 }
             }
             if (channelId.equals(CHANNEL_RADIO)) {
@@ -235,7 +305,38 @@ public class EchoHandler extends BaseThingHandler {
                 }
 
             }
+            // notification
+            if (channelId.equals(CHANNEL_REMIND)) {
+                if (command instanceof StringType) {
 
+                    String reminder = ((StringType) command).toFullString();
+                    if (reminder != null && !reminder.isEmpty()) {
+                        waitForUpdate = 3000;
+                        updateRemind = true;
+                        temp.notification(device, "Reminder", reminder, null);
+                    }
+                }
+            }
+            if (channelId.equals(CHANNEL_PLAY_ALARM_SOUND)) {
+                if (command instanceof StringType) {
+
+                    String alarmSound = ((StringType) command).toFullString();
+                    if (alarmSound != null && !alarmSound.isEmpty()) {
+                        waitForUpdate = 3000;
+                        updateAlarm = true;
+                        String[] parts = alarmSound.split(":", 2);
+                        JsonNotificationSound sound = new JsonNotificationSound();
+                        if (parts.length == 2) {
+                            sound.providerId = parts[0];
+                            sound.id = parts[1];
+                        } else {
+                            sound.providerId = "ECHO";
+                            sound.id = alarmSound;
+                        }
+                        temp.notification(device, "Alarm", null, sound);
+                    }
+                }
+            }
             // force update of the state
             this.disableUpdate = true;
             final boolean bluetoothRefresh = needBluetoothRefresh;
@@ -295,9 +396,9 @@ public class EchoHandler extends BaseThingHandler {
             JsonPlayerState playerState = connection.getPlayer(device);
             playerInfo = playerState.playerInfo;
             if (playerInfo != null) {
-                infoText = playerInfo.miniInfoText;
+                infoText = playerInfo.infoText;
                 if (infoText == null) {
-                    infoText = playerInfo.infoText;
+                    infoText = playerInfo.miniInfoText;
                 }
                 mainArt = playerInfo.mainArt;
                 provider = playerInfo.provider;
@@ -330,6 +431,20 @@ public class EchoHandler extends BaseThingHandler {
         // check playing
         boolean playing = playerInfo != null && playerInfo.state != null && playerInfo.state.equals("PLAYING");
 
+        // handle amazon music
+        String amazonMusicTrackId = "";
+        String amazonMusicPlayListId = "";
+        boolean amazonMusic = false;
+        if (mediaState != null && mediaState.currentState != null && mediaState.currentState.equals("PLAYING")
+                && mediaState.providerId != null && mediaState.providerId.equals("CLOUD_PLAYER")
+                && mediaState.contentId != null && !mediaState.contentId.isEmpty()) {
+
+            amazonMusicTrackId = mediaState.contentId;
+            lastKnownAmazonMusicId = amazonMusicTrackId;
+            amazonMusic = true;
+
+        }
+
         // handle bluetooth
         String bluetoothId = "";
         String bluetoothDeviceName = "";
@@ -349,7 +464,6 @@ public class EchoHandler extends BaseThingHandler {
                     }
                 }
             }
-
         }
         if (bluetoothId != null && !bluetoothId.isEmpty()) {
             lastKnownBluetoothId = bluetoothId;
@@ -363,8 +477,8 @@ public class EchoHandler extends BaseThingHandler {
             }
         }
         String radioStationId = "";
-
-        if (isRadio && mediaState != null && mediaState.radioStationId != null) {
+        if (isRadio && mediaState != null && mediaState.currentState != null
+                && mediaState.currentState.equals("PLAYING") && mediaState.radioStationId != null) {
             radioStationId = mediaState.radioStationId;
         }
         // handle title, subtitle, imageUrl
@@ -438,6 +552,15 @@ public class EchoHandler extends BaseThingHandler {
         }
 
         // Update states
+        if (updateRemind) {
+            updateState(CHANNEL_REMIND, new StringType(""));
+        }
+        if (updateAlarm) {
+            updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+        }
+        updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
+        updateState(CHANNEL_AMAZON_MUSIC, playing && amazonMusic ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
         updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
         updateState(CHANNEL_RADIO, playing && isRadio ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_VOLUME, volume != null ? new PercentType(volume) : UnDefType.UNDEF);
@@ -451,6 +574,7 @@ public class EchoHandler extends BaseThingHandler {
         if (bluetoothState != null) {
             updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_BLUETOOTH_ID, new StringType(bluetoothId));
+            updateState(CHANNEL_BLUETOOTH_ID_SELECTION, new StringType(bluetoothId));
             updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
         }
 

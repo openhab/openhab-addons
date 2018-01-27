@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +31,17 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server and
@@ -217,7 +224,8 @@ public class Connection {
         return m_loginTime;
     }
 
-    private HttpsURLConnection makeRequest(String url, String referer, String postData, Boolean json) throws Exception {
+    private HttpsURLConnection makeRequest(String verb, String url, String referer, String postData, Boolean json)
+            throws Exception {
         String currentUrl = url;
         for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
                                      // all response headers must be catched
@@ -228,6 +236,7 @@ public class Connection {
 
                 logger.debug("Make request to {}", url);
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
+                connection.setRequestMethod(verb);
                 connection.setRequestProperty("Accept-Language", "en-US");
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestProperty("DNT", "1");
@@ -254,7 +263,6 @@ public class Connection {
                 if (cookieHeaderBuilder.length() > 0) {
                     connection.setRequestProperty("Cookie", cookieHeaderBuilder.toString());
                 }
-
                 if (postData != null) {
 
                     // post data
@@ -269,8 +277,9 @@ public class Connection {
                         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
                     connection.setRequestProperty("Content-Length", Integer.toString(postDataLength));
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Expect", "100-continue");
+                    if (verb == "POST") {
+                        connection.setRequestProperty("Expect", "100-continue");
+                    }
 
                     connection.setDoOutput(true);
                     OutputStream outputStream = connection.getOutputStream();
@@ -393,7 +402,7 @@ public class Connection {
             String referer = "https://www." + m_amazonSite + "/ap/signin?" + queryParameters;
             m_cookieManager.getCookieStore().add(new URL("https://www." + m_amazonSite).toURI(),
                     HttpCookie.parse("session-id=" + m_sessionId).get(0));
-            String response = makeRequestAndReturnString("https://www." + m_amazonSite + "/ap/signin", referer,
+            String response = makeRequestAndReturnString("POST", "https://www." + m_amazonSite + "/ap/signin", referer,
                     postData, false);
             if (response.contains("<title>Amazon Alexa</title>")) {
                 logger.debug("Response seems to be alexa app");
@@ -424,12 +433,12 @@ public class Connection {
     }
 
     private String makeRequestAndReturnString(String url) throws Exception {
-        return makeRequestAndReturnString(url, null, null, false);
+        return makeRequestAndReturnString("GET", url, null, null, false);
     }
 
-    private String makeRequestAndReturnString(String url, String referer, String postData, Boolean json)
+    private String makeRequestAndReturnString(String verb, String url, String referer, String postData, Boolean json)
             throws Exception {
-        HttpsURLConnection connection = makeRequest(url, referer, postData, json);
+        HttpsURLConnection connection = makeRequest(verb, url, referer, postData, json);
         return getResponse(connection);
     }
 
@@ -456,54 +465,71 @@ public class Connection {
         m_loginTime = null;
     }
 
+    // parser
+    private <T> T parseJson(String json, Class<T> type) {
+        try {
+            Gson gson = new Gson();
+            return gson.fromJson(json, type);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Parsing json failed {}", e);
+            logger.warn("{}", json);
+            throw e;
+        }
+    }
+
     // commands and states
 
     public Device[] getDeviceList() throws Exception {
         String json = makeRequestAndReturnString(m_alexaServer + "/api/devices-v2/device?cached=false");
-        Gson gson = new Gson();
-        JsonDevices devices = gson.fromJson(json, JsonDevices.class);
+        JsonDevices devices = parseJson(json, JsonDevices.class);
         return devices.devices;
     }
 
     public JsonPlayerState getPlayer(Device device) throws Exception {
         String json = makeRequestAndReturnString(m_alexaServer + "/api/np/player?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&screenWidth=1440");
-        Gson gson = new Gson();
-        JsonPlayerState playerState = gson.fromJson(json, JsonPlayerState.class);
+        JsonPlayerState playerState = parseJson(json, JsonPlayerState.class);
         return playerState;
     }
 
     public JsonMediaState getMediaState(Device device) throws Exception {
         String json = makeRequestAndReturnString(m_alexaServer + "/api/media/state?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType);
-        Gson gson = new Gson();
-        JsonMediaState mediaState = gson.fromJson(json, JsonMediaState.class);
+        JsonMediaState mediaState = parseJson(json, JsonMediaState.class);
         return mediaState;
     }
 
     public JsonBluetoothStates getBluetoothConnectionStates() throws Exception {
         String json = makeRequestAndReturnString(m_alexaServer + "/api/bluetooth?cached=true");
-        Gson gson = new Gson();
-        JsonBluetoothStates bluetoothStates = gson.fromJson(json, JsonBluetoothStates.class);
+        JsonBluetoothStates bluetoothStates = parseJson(json, JsonBluetoothStates.class);
         return bluetoothStates;
+    }
+
+    public JsonPlaylists getPlaylists(Device device) throws Exception {
+        String json = makeRequestAndReturnString(
+                m_alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber=" + device.serialNumber + "&deviceType="
+                        + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId);
+        JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
+        return playlists;
     }
 
     public void command(Device device, String command) throws Exception {
         String url = m_alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
-        makeRequest(url, null, command, true);
+        makeRequest("POST", url, null, command, true);
 
     }
 
     public void bluetooth(Device device, String address) throws Exception {
         if (address == null || address.isEmpty()) {
             // disconnect
-            makeRequest(
+            makeRequest("POST",
                     m_alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber,
                     null, "", true);
         } else {
-            makeRequest(m_alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber,
-                    null, "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true);
+            makeRequest("POST",
+                    m_alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber, null,
+                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true);
 
         }
     }
@@ -512,7 +538,7 @@ public class Connection {
         if (stationId == null || stationId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
-            makeRequest(
+            makeRequest("POST",
                     m_alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
                             + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
@@ -520,11 +546,71 @@ public class Connection {
         }
     }
 
-    public void playPrimeSong(Device device, String trackId) throws Exception {
-        String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
-        makeRequest(m_alexaServer + "/api/cloudplayer?deviceSerialNumber=" + device.serialNumber + "&deviceType="
-                + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId + "&shuffle=false", null,
-                command, true);
+    public void playAmazonMusicTrack(Device device, String trackId) throws Exception {
+        if (trackId == null || trackId.isEmpty()) {
+            command(device, "{\"type\":\"PauseCommand\"}");
+        } else {
+            String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
+            makeRequest("POST",
+                    m_alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                    null, command, true);
+        }
+    }
+
+    public void playAmazonMusicPlayList(Device device, String playListId) throws Exception {
+        if (playListId == null || playListId.isEmpty()) {
+            command(device, "{\"type\":\"PauseCommand\"}");
+        } else {
+            String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
+            makeRequest("POST",
+                    m_alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                    null, command, true);
+        }
+    }
+
+    public JsonNotificationSound[] getNotificationSounds(Device device) throws Exception {
+        String json = makeRequestAndReturnString(
+                "GET", m_alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber
+                        + "&deviceType=" + device.deviceType + "&softwareVersion=" + device.softwareVersion,
+                null, null, true);
+        JsonNotificationSounds result = parseJson(json, JsonNotificationSounds.class);
+        if (result.notificationSounds != null) {
+            return result.notificationSounds;
+        }
+        return new JsonNotificationSound[0];
+    }
+
+    public void notification(Device device, String type, String label, JsonNotificationSound sound) throws Exception {
+
+        Date date = new Date(new Date().getTime());
+        long createdDate = date.getTime();
+        Date alarm = new Date(createdDate + 5000); // add 5 seconds, because amazon does not except calls for times in
+                                                   // the past (compared with the server time)
+        long alarmTime = alarm.getTime();
+
+        JsonNotificationRequest request = new JsonNotificationRequest();
+        request.type = type;
+        request.deviceSerialNumber = device.serialNumber;
+        request.deviceType = device.deviceType;
+        request.createdDate = createdDate;
+        request.alarmTime = alarmTime;
+        request.reminderLabel = label;
+        request.sound = sound;
+        request.originalDate = new SimpleDateFormat("yyyy-MM-dd").format(alarm);
+        request.originalTime = new SimpleDateFormat("HH:mm:ss.SSSS").format(alarm);
+        request.type = type;
+        request.id = "create" + type;
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+
+        String data = gson.toJson(request);
+        makeRequestAndReturnString("PUT", m_alexaServer + "/api/notifications/createReminder", null, data, true);
 
     }
 

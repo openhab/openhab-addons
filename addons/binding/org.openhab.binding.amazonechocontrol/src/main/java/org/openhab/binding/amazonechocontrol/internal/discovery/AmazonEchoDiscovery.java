@@ -24,7 +24,9 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -152,21 +154,38 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             if (serialNumber != null) {
                 boolean alreadyfound = toRemove.remove(serialNumber);
                 // new
-                if (!alreadyfound && deviceInformation.deviceFamily != null
-                        && deviceInformation.deviceFamily.equals("ECHO")) {
+                if (!alreadyfound && deviceInformation.deviceFamily != null) {
+                    ThingTypeUID thingTypeId;
+                    if (deviceInformation.deviceFamily.equals("ECHO")) {
+                        thingTypeId = THING_TYPE_ECHO;
+                    } else if (deviceInformation.deviceFamily.equals("ROOK")) {
+                        thingTypeId = THING_TYPE_ECHO_SPOT;
+                    } else if (deviceInformation.deviceFamily.equals("KNIGHT")) {
+                        thingTypeId = THING_TYPE_ECHO_SHOW;
+                    } else if (deviceInformation.deviceFamily.equals("WHA")) {
+                        thingTypeId = THING_TYPE_ECHO_WHA;
+                    } else {
+                        thingTypeId = THING_TYPE_UNKNOWN;
+                    }
 
-                    ThingUID thingUID = new ThingUID(THING_TYPE_ECHO, brigdeThingUID, serialNumber);
+                    ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, serialNumber);
 
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withLabel(deviceInformation.accountName)
-                            .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
-                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
-                            .build();
+                    // Check if already created
+                    if (EchoHandler.find(thingUID) == null) {
 
-                    logger.debug("Device [{}, {}] found.", serialNumber, deviceInformation.accountName);
+                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                .withLabel(deviceInformation.accountName)
+                                .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
+                                .withProperty(DEVICE_PROPERTY_FAMILY, deviceInformation.deviceFamily)
+                                .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
+                                .build();
 
-                    thingDiscovered(result);
-                    lastDeviceInformations.put(serialNumber, thingUID);
+                        logger.debug("Device [{}: {}] found. Mapped to thing type {}", deviceInformation.deviceFamily,
+                                serialNumber, thingTypeId.getAsString());
+
+                        thingDiscovered(result);
+                        lastDeviceInformations.put(serialNumber, thingUID);
+                    }
                 }
             }
         }

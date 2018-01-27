@@ -43,20 +43,11 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             AccountHandler bridgeHandler = new AccountHandler((Bridge) thing);
-
             return bridgeHandler;
         }
-        if (thingTypeUID.equals(THING_TYPE_ECHO)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_ECHO)) {
             return new EchoHandler(thing);
         }
-
         return null;
     }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-
-        super.removeHandler(thingHandler);
-    }
-
 }

@@ -8,24 +8,21 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.Map;
+
 /**
- * The {@link JsonDevices} encapsulate the GSON data of device list
+ * The {@link JsonPlayerState} encapsulate the GSON data of playlist query
  *
  * @author Michael Geramb - Initial contribution
  */
-public class JsonDevices {
+public class JsonPlaylists {
 
-    public class Device {
-        public String accountName;
-        public String serialNumber;
-        public String deviceOwnerCustomerId;
-        public String deviceAccountId;
-        public String deviceFamily;
-        public String deviceType;
-        public String softwareVersion;
-        public boolean online;
+    public Map<String, PlayList[]> playlists;
 
+    public class PlayList {
+        public String playlistId;
+        public String title;
+        public int trackCount;
+        public int version;
     }
-
-    public Device[] devices;
 }

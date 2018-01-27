@@ -6,7 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 /**
@@ -37,7 +36,7 @@ public class JsonMediaState {
     public String referenceId;
     public String service;
     public boolean shuffling;
-    public int timeLastShuffled;
+    // public long timeLastShuffled; parsing fails with some values, so do not use it
     public int volume;
 
     public class QueueEntry {
