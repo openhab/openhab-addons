@@ -4,7 +4,7 @@ Fragment-Host: org.openhab.binding.modbus
 Bundle-Name: Modbus Binding Tests
 Bundle-SymbolicName: org.openhab.binding.modbus.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,  
  lib/mockito-all-1.10.19.jar

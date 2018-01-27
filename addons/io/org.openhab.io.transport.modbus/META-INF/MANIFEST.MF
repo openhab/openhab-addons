@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: openHAB MODBUS Transport Bundle
 Bundle-SymbolicName:  org.openhab.io.transport.modbus
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-Vendor: openHAB
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: 
