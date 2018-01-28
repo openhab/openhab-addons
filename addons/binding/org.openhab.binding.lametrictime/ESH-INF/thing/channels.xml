@@ -9,13 +9,6 @@
         <description>Channel to send custom messages with the LaMetric APIs JSON structure.</description>
     </channel-type>
 
-    <channel-type id="simpleNotificationType">
-        <item-type>String</item-type>
-        <label>Simple notification</label>
-        <description>Send a notification to LaMetric Time</description>
-        <category>Recorder</category>
-    </channel-type>
-
     <channel-type id="brightnessType">
         <item-type>Dimmer</item-type>
         <label>Display Brightness</label>

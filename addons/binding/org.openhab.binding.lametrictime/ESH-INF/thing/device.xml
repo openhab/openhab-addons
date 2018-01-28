@@ -13,9 +13,15 @@
             <channel id="volume" typeId="volumeType"/>
             <channel id="bluetooth" typeId="bluetoothActiveType"/>
             <channel id="app" typeId="appType"/>
-            <channel id="info" typeId="simpleNotificationType"/>
-            <channel id="warning" typeId="simpleNotificationType"/>
-            <channel id="alert" typeId="simpleNotificationType"/>
+            <channel id="info" typeId="simpleNotificationType">
+                <label>Info Notification</label>
+            </channel>
+            <channel id="warning" typeId="simpleNotificationType">
+                <label>Warning Notification</label>
+            </channel>
+            <channel id="alert" typeId="simpleNotificationType">
+                <label>Alert Notification</label>
+            </channel>
             <channel id="advanced" typeId="jsonNotificationType"/>
         </channels>
 
@@ -30,4 +36,11 @@
             </parameter>
         </config-description>
     </bridge-type>
+
+    <channel-type id="simpleNotificationType">
+        <item-type>String</item-type>
+        <label>Simple Notification</label>
+        <description>Send a notification to LaMetric Time</description>
+        <category>Text</category>
+    </channel-type>
 </thing:thing-descriptions>
