@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -54,7 +55,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
     @Override
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisher() {
         return new ReadingPublisher<LaCrosseTemperatureReading>() {
-            private final HashMap<Integer, ReadingPublisher<LaCrosseTemperatureReading>> channelPublishers = new HashMap<>();
+            private final Map<Integer, ReadingPublisher<LaCrosseTemperatureReading>> channelPublishers = new HashMap<>();
 
             @Override
             public void publish(LaCrosseTemperatureReading reading) {
