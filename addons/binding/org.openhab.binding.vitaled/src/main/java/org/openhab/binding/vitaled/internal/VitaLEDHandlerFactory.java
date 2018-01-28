@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.vitaled")
 @NonNullByDefault
 public class VitaLEDHandlerFactory extends BaseThingHandlerFactory {
-    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(VitaLEDBindingConstants.THING_TYPE_VITA_LED);
 
     @Override
