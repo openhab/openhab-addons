@@ -132,15 +132,15 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     /**
      * return an internal description for logging
      *
-     * @return
+     * @return the description of the thing
      */
     protected abstract String getDescription();
 
     /**
      * get the "new" associated value for a channelId
      *
-     * @param channelId
-     * @return
+     * @param channelId the id identifying the channel
+     * @return the "new" associated value
      */
     protected abstract Object getValue(String channelId);
 
@@ -148,7 +148,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      * do whatever a thing must do to update the values
      * this function is called from the bridge in a given interval
      *
-     * @param bridgeConfiguration
+     * @param bridgeConfiguration the connected bridge configuration
      */
     public abstract void refresh(FroniusBridgeConfiguration bridgeConfiguration);
 

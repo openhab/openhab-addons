@@ -68,8 +68,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * Update the channel from the last data retrieved
      *
      * @param channelId the id identifying the channel to be updated
-     * @param data
-     * @return
+     * @return the last retrieved data
      */
     @Override
     protected Object getValue(String channelId) {
@@ -125,7 +124,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     /**
      * Get new data
-     *
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config) {
         inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
@@ -135,8 +133,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Make the PowerFlowRealtimeDataRequest
      *
-     * @param ip
-     * @return {PowerFlowRealtimeResponse}
+     * @param ip address of the device
+     * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
     private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) {
         PowerFlowRealtimeResponse result = null;
@@ -177,8 +175,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Make the InverterRealtimeDataRequest
      *
-     * @param ip
-     * @return {InverterRealtimeResponse}
+     * @param ip address of the device
+     * @return {InverterRealtimeResponse} the object representation of the json response
      */
     private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
         InverterRealtimeResponse result = null;

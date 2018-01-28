@@ -21,8 +21,8 @@ public class SiPrefixFactors {
      * k == 1000, M = 1000000 ...
      * Not completely!!! Rank from n to T
      *
-     * @param prefix
-     * @return
+     * @param prefix of the unit
+     * @return relative factor to the base unit
      */
 
     public static double getFactorToBaseUnit(String prefix) {
