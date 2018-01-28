@@ -1,14 +1,10 @@
 /**
- * Copyright (c) 2014,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.vitaled.handler;
 
@@ -146,7 +142,7 @@ public class VitaLEDHandler extends BaseThingHandler {
             updateState(channelUID, newState);
         } else {
             // handle update of channels
-            logger.debug("Trying to update " + channelUID.getId().toString() + " with value " + command.toString());
+            logger.debug("Trying to update {} with value {}", channelUID.getId().toString(), command.toString());
             try {
                 boolean success = connection.updateState(channelUID, command);
                 if (success) {
@@ -156,7 +152,7 @@ public class VitaLEDHandler extends BaseThingHandler {
                 }
                 ;
             } catch (Exception e) {
-                logger.error("Failed to update " + channelUID.getId().toString() + " with value " + command.toString());
+                logger.error("Failed to update {}  with value {}", channelUID.getId().toString(), command.toString());
             }
         }
     }
@@ -201,7 +197,7 @@ public class VitaLEDHandler extends BaseThingHandler {
                 logger.warn("No refresh Interval defined using {}s", refreshInterval);
             }
             logger.warn("No refresh Interval defined using {}s", refreshInterval);
-            logger.debug("Host " + host + " Port " + port);
+            logger.debug("Host {} Port {}", host, port);
             connection = new VitaLEDConnection(host, port);
             try {
                 // update state of channels for all zones

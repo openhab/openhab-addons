@@ -1,14 +1,10 @@
 /**
- * Copyright (c) 2014,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.vitaled;
 
@@ -31,53 +27,53 @@ public class VitaLEDBindingConstants {
     /**
      * ThingTypeUID
      */
-    public final static ThingTypeUID THING_TYPE_VITA_LED = new ThingTypeUID(BINDING_ID, "vitaled");
+    public static final ThingTypeUID THING_TYPE_VITA_LED = new ThingTypeUID(BINDING_ID, "vitaled");
 
     /**
      * Host parameter ipAddress
      */
-    public final static String HOST_PARAMETER = "ipAddress";
+    public static final String HOST_PARAMETER = "ipAddress";
 
     /**
      * Host parameter port
      */
-    public final static String PORT_PARAMETER = "port";
+    public static final String PORT_PARAMETER = "port";
 
     /**
      * Refresh interval parameter
      */
-    public final static String REFRESH_INTERVAL_PARAMETER = "refreshInterval";
+    public static final String REFRESH_INTERVAL_PARAMETER = "refreshInterval";
 
-    public final static String ZONE = "zone";
+    public static final String ZONE = "zone";
 
-    public final static String ACHROMATIC_LIGHT = "achromaticLight";
-    public final static String INTENSITY = "intensity";
+    public static final String ACHROMATIC_LIGHT = "achromaticLight";
+    public static final String INTENSITY = "intensity";
 
-    public final static String RED = "red";
-    public final static String GREEN = "green";
-    public final static String BLUE = "blue";
-    public final static String WHITE = "white";
+    public static final String RED = "red";
+    public static final String GREEN = "green";
+    public static final String BLUE = "blue";
+    public static final String WHITE = "white";
 
-    public final static String COLOUR_SATURATION = "colourSaturation";
-    public final static String SPEED = "speed";
-    public final static String COLOUR_GRADIENT_INTENSITY = "colourGradientIntensity";
+    public static final String COLOUR_SATURATION = "colourSaturation";
+    public static final String SPEED = "speed";
+    public static final String COLOUR_GRADIENT_INTENSITY = "colourGradientIntensity";
 
-    public final static String X_COORDINATE = "xCoord";
-    public final static String Y_COORDINATE = "yCoord";
+    public static final String X_COORDINATE = "xCoord";
+    public static final String Y_COORDINATE = "yCoord";
 
-    public final static String SCENE1 = "scene1";
-    public final static String SCENE2 = "scene2";
-    public final static String SCENE3 = "scene3";
-    public final static String SCENE4 = "scene4";
-    public final static String SCENE5 = "scene5";
-    public final static String SCENE6 = "scene6";
+    public static final String SCENE1 = "scene1";
+    public static final String SCENE2 = "scene2";
+    public static final String SCENE3 = "scene3";
+    public static final String SCENE4 = "scene4";
+    public static final String SCENE5 = "scene5";
+    public static final String SCENE6 = "scene6";
 
-    public final static String ACTIVE_MODE = "activeMode";
+    public static final String ACTIVE_MODE = "activeMode";
 
-    public final static String CHROMATIC_REFERER = "erweitert/farblicht-d.html";
-    public final static String ACHROMATIC_REFERER = "erweitert/weisslicht-d.html";
-    public final static String COLOUR_GRADIENTS_REFERER = "erweitert/farbverlauf-d.html";
-    public final static String COLOUR_TRIANGLE_REFERER = "erweitert/farbdreieck-d.html";
-    public final static String SCENE_REFERER = "user-d.html";
+    public static final String CHROMATIC_REFERER = "erweitert/farblicht-d.html";
+    public static final String ACHROMATIC_REFERER = "erweitert/weisslicht-d.html";
+    public static final String COLOUR_GRADIENTS_REFERER = "erweitert/farbverlauf-d.html";
+    public static final String COLOUR_TRIANGLE_REFERER = "erweitert/farbdreieck-d.html";
+    public static final String SCENE_REFERER = "user-d.html";
 
 }
