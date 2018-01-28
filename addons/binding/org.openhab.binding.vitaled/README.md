@@ -24,150 +24,142 @@ The Brumberg vitaLED supports the following channels:
 
 | Channel Type ID                | Item Type | Description                                                                                                      |
 |--------------------------------|-----------|------------------------------------------------------------------------------------------------------------------|
-| zone1#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|
-| zone1#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone1#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone1#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone1#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone1#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone1#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone1#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone1#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone1#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone1#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone1#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone1#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone1#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone1#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone1#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone1#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone2#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone2#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone2#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone2#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone2#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone2#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone2#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone2#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone2#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone2#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone2#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone2#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone2#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone2#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone2#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone2#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone2#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone3#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone3#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone3#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone3#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone3#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone3#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone3#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone3#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone3#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone3#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone3#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone3#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone3#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone3#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone3#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone3#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone3#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone4#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone4#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone4#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone4#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone4#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone4#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone4#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone4#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone4#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone4#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone4#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone4#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone4#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone4#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone4#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone4#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone4#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone5#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone5#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone5#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone5#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone5#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone5#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone5#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone5#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone5#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone5#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone5#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone5#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone5#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone5#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone5#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone5#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone5#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone6#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone6#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone6#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone6#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone6#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone6#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone6#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone6#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone6#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone6#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone6#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone6#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone6#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone6#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone6#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone6#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone6#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone7#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone7#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone7#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone7#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone7#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone7#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone7#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone7#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone7#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone7#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone7#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone7#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone7#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone7#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone7#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone7#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone7#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
-| zone8#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    
-| zone8#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
-| zone8#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
-| zone8#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
-| zone8#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
-| zone8#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
-| zone8#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
-| zone8#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
-| zone8#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
-| zone8#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
-| zone8#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
-| zone8#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
-| zone8#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
-| zone8#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
-| zone8#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
-| zone8#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
-| zone8#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone1#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |
+| zone1#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone1#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone1#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone1#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone1#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone1#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone1#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone1#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone1#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone1#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone1#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone1#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone1#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone1#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone1#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone1#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone2#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone2#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone2#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone2#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone2#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone2#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone2#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone2#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone2#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone2#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone2#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone2#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone2#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone2#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone2#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone2#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone2#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone3#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone3#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone3#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone3#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone3#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone3#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone3#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone3#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone3#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone3#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone3#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone3#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone3#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone3#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone3#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone3#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone3#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone4#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone4#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone4#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone4#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone4#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone4#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone4#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone4#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone4#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone4#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone4#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone4#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone4#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone4#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone4#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone4#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone4#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone5#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone5#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone5#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone5#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone5#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone5#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone5#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone5#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone5#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone5#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone5#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone5#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone5#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone5#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone5#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone5#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone5#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone6#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone6#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone6#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone6#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone6#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone6#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone6#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone6#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone6#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone6#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone6#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone6#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone6#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone6#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone6#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone6#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone6#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone7#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone7#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone7#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone7#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone7#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone7#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone7#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone7#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone7#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone7#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone7#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone7#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone7#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone7#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone7#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone7#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone7#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
+| zone8#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps.                                         |                                                                                                                                    
+| zone8#intensity                | Number    | The light intensity between 0 and 100 %.                                                                         |
+| zone8#red                      | Number    | The red light value between 0 and 100 %.                                                                         |
+| zone8#green                    | Number    | The green light value between 0 and 100 %.                                                                       |
+| zone8#blue                     | Number    | The blue light value between 0 and 100 %.                                                                        |
+| zone8#white                    | Number    | The white light value between 0 and 100 %.                                                                       |
+| zone8#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                       |
+| zone8#speed                    | Number    | The speed between 0 and 100 %.                                                                                   |
+| zone8#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                 |
+| zone8#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                         |
+| zone8#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                         |
+| zone8#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                          |
+| zone8#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                          |
+| zone8#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                          |
+| zone8#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                          |
+| zone8#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                          |
+| zone8#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                          |
 
 
 ## Full Example
