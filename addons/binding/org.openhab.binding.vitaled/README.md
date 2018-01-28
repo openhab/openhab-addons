@@ -25,7 +25,7 @@ The Brumberg vitaLED supports the following channels:
 | Channel Type ID                | Item Type | Description                                                                                                      |
 |--------------------------------|-----------|------------------------------------------------------------------------------------------------------------------|
 | zone1#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|
 | zone1#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone1#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone1#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -43,7 +43,7 @@ The Brumberg vitaLED supports the following channels:
 | zone1#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone1#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone2#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone2#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone2#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone2#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -61,7 +61,7 @@ The Brumberg vitaLED supports the following channels:
 | zone2#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone2#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone3#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone3#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone3#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone3#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -79,7 +79,7 @@ The Brumberg vitaLED supports the following channels:
 | zone3#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone3#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone4#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone4#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone4#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone4#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -97,7 +97,7 @@ The Brumberg vitaLED supports the following channels:
 | zone4#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone4#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone5#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone5#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone5#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone5#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -115,7 +115,7 @@ The Brumberg vitaLED supports the following channels:
 | zone5#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone5#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone6#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone6#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone6#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone6#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -133,7 +133,7 @@ The Brumberg vitaLED supports the following channels:
 | zone6#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone6#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone7#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone7#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone7#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone7#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
@@ -151,7 +151,7 @@ The Brumberg vitaLED supports the following channels:
 | zone7#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
 | zone7#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
 | zone8#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
-|                                                                                                                                    |
+|                                                                                                                                    
 | zone8#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
 | zone8#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
 | zone8#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
