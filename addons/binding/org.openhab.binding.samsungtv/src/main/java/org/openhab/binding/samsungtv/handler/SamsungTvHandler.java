@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
@@ -47,15 +46,15 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  * @author Martin van Wingerden - Some changes for non-UPnP configured devices
  */
-public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticipant, RegistryListener, EventListener {
+public class SamsungTvHandler extends BaseThingHandler implements RegistryListener, EventListener {
 
     private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     /* Global configuration for Samsung TV Thing */
     private SamsungTvConfiguration configuration;
 
-    private UpnpIOService upnpIOService;
-    private UpnpService upnpService;
+    private final UpnpIOService upnpIOService;
+    private final UpnpService upnpService;
 
     /* Samsung TV services */
     private final List<SamsungTvService> services = new CopyOnWriteArrayList<>();
@@ -73,15 +72,17 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
 
         logger.debug("Create a Samsung TV Handler for thing '{}'", getThing().getUID());
 
-        if (upnpIOService != null) {
+        if (upnpService != null) {
             this.upnpIOService = upnpIOService;
         } else {
+            this.upnpIOService = null;
             logger.debug("upnpIOService not set.");
         }
 
         if (upnpService != null) {
             this.upnpService = upnpService;
         } else {
+            this.upnpService = null;
             logger.debug("upnpService not set.");
         }
     }
@@ -126,14 +127,13 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
 
         logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
 
-        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 0, 5,
+        nonUpnpRemoteControllerJob = scheduler.scheduleWithFixedDelay(this::checkCreateManualConnection, 1, 5,
                 TimeUnit.MINUTES);
 
         if (upnpIOService == null || upnpService == null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                     "Running without UPNP support, upnp service is missing");
         } else {
-            upnpIOService.registerParticipant(this);
             upnpService.getRegistry().addListener(this);
         }
 
@@ -149,9 +149,6 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
         if (nonUpnpRemoteControllerJob != null && !nonUpnpRemoteControllerJob.isCancelled()) {
             nonUpnpRemoteControllerJob.cancel(true);
             nonUpnpRemoteControllerJob = null;
-        }
-        if (upnpIOService != null) {
-            upnpIOService.removeStatusListener(this);
         }
         if (upnpService != null) {
             upnpService.getRegistry().removeListener(this);
@@ -219,7 +216,7 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
         // immediately try to refresh
         stopServices();
         scheduler.submit(this::checkAndCreateServices);
-        scheduler.submit(this::checkCreateManualConnection);
+        scheduler.schedule(this::checkCreateManualConnection, 15, TimeUnit.SECONDS);
     }
 
     /**
@@ -255,9 +252,8 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
                     SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
                             configuration.refreshInterval, configuration.hostName, configuration.port);
 
-                    logger.debug("Replacing {} with {}", existingService, newService);
-
                     if (newService != null) {
+                        logger.debug("Replacing {} with {}", existingService, newService);
                         if (existingService != null) {
                             stopService(existingService);
                             services.remove(existingService);
@@ -280,10 +276,9 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
 
     private SamsungTvService findServiceInstance(String serviceName) {
         Class<? extends SamsungTvService> cl = ServiceFactory.getClassByServiceName(serviceName);
-        logger.debug("Found class {} for servicename: {}", cl == null ? null : cl.getSimpleName(), serviceName);
+        logger.trace("Found class {} for servicename: {}", cl == null ? null : cl.getSimpleName(), serviceName);
 
         for (SamsungTvService service : services) {
-            logger.trace("Comparing service class {} with: {} => {}", service.getClass(), cl, service.getClass() == cl);
             if (service.getClass() == cl) {
                 return service;
             }
@@ -340,31 +335,6 @@ public class SamsungTvHandler extends BaseThingHandler implements UpnpIOParticip
         List<String> availableServices = services.stream().map(SamsungTvService::getDescription)
                 .collect(Collectors.toList());
         logger.debug("Available services: {}", availableServices);
-    }
-
-    @Override
-    public String getUDN() {
-        return configuration.udn;
-    }
-
-    @Override
-    public void onValueReceived(String variable, String value, String service) {
-        logger.debug("onValueReceived('{}', '{}', '{}'", variable, value, service);
-    }
-
-    @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
-        logger.debug("onServiceSubscribed('{}', {})", service, succeeded);
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
-        logger.debug("onStatusChanged({})", status);
-        if (status) {
-            putOnline();
-        } else {
-            putOffline();
-        }
     }
 
     private void putOnline() {
