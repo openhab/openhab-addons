@@ -1,52 +1,237 @@
-# <bindingName> Binding
+# Brumberg vitaLED Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding integrates Brumberg vitaLED via the Brumberg vitaLED LAN master that communicates via DMX with the Brumberg vitaLED bulbs. The LAN master supports 8 zones. Each zone can consists of 6 vitaLED bulbs.  
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+This binding supports the Brumberg vitaLED LAN master (Brumberg Article number 18308000).
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+There is no auto-discovery feature available for this binding.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The Brumberg vitaLED thing requires the IP address and the port to access it on. Optional you can set a refresh interval in seconds. The refresh interval states how often a refresh shall occur in seconds, that reads the current vitaLED setting of each zone from the Brumberg vitaLED LAN master.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+```text
+vitaled:vitaled:demo [ ipAddress="192.168.0.40", port=80, refreshInterval=60 ]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The Brumberg vitaLED supports the following channels:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Channel Type ID                | Item Type | Description                                                                                                      |
+|--------------------------------|-----------|------------------------------------------------------------------------------------------------------------------|
+| zone1#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone1#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone1#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone1#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone1#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone1#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone1#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone1#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone1#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone1#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone1#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone1#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone1#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone1#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone1#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone1#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone1#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone2#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone2#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone2#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone2#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone2#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone2#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone2#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone2#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone2#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone2#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone2#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone2#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone2#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone2#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone2#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone2#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone2#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone3#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone3#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone3#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone3#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone3#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone3#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone3#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone3#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone3#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone3#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone3#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone3#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone3#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone3#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone3#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone3#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone3#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone4#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone4#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone4#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone4#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone4#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone4#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone4#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone4#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone4#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone4#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone4#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone4#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone4#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone4#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone4#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone4#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone4#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone5#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone5#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone5#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone5#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone5#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone5#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone5#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone5#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone5#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone5#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone5#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone5#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone5#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone5#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone5#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone5#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone5#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone6#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone6#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone6#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone6#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone6#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone6#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone6#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone6#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone6#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone6#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone6#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone6#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone6#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone6#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone6#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone6#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone6#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone7#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone7#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone7#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone7#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone7#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone7#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone7#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone7#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone7#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone7#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone7#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone7#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone7#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone7#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone7#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone7#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone7#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+| zone8#achromaticLight          | Number    | Achromatic Light supports values between 2000 and 10000 K in 50 K steps. 
+|                                                                                                                                    |
+| zone8#intensity                | Number    | The light intensity between 0 and 100 %.                                                                                                |
+| zone8#red                      | Number    | The red light value between 0 and 100 %.                                                                                                |
+| zone8#green                    | Number    | The green light value between 0 and 100 %.                                                                                                |
+| zone8#blue                     | Number    | The blue light value between 0 and 100 %.                                                                                                |
+| zone8#white                    | Number    | The white light value between 0 and 100 %.                                                                                                |
+| zone8#colourSaturation         | Number    | The colour saturation between 0 and 100 %.                                                                                                |
+| zone8#speed                    | Number    | The speed between 0 and 100 %.                                                                                                |
+| zone8#colourGradientIntensity  | Number    | The light intensity for the colour gradient between 0 and 100 %.                                                                                                |
+| zone8#xCoord                   | Number    | The x-coordinate in the colour triangle.                                                                                                |
+| zone8#yCoord                   | Number    | The y-coordinate in the colour triangle.                                                                                                |
+| zone8#scene1                   | Switch    | Activates scene 1. Only ON makes sense.                                                                                                |
+| zone8#scene2                   | Switch    | Activates scene 2. Only ON makes sense.                                                                                                |
+| zone8#scene3                   | Switch    | Activates scene 3. Only ON makes sense.                                                                                                |
+| zone8#scene4                   | Switch    | Activates scene 4. Only ON makes sense.                                                                                                |
+| zone8#scene5                   | Switch    | Activates scene 5. Only ON makes sense.                                                                                                |
+| zone8#scene6                   | Switch    | Activates scene 6. Only ON makes sense.                                                                                                |
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+The following example show the configuration for zone 1.
 
-## Any custom content here!
+## Item Configuration
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+demo.items
+
+```java
+// vitaLED
+Number zone1_achromaticLight { channel = "vitaled:vitaled:demo:zone1#achromaticLight" }
+Number zone1_intensity { channel = "vitaled:vitaled:demo:zone1#intensity" }
+Number zone1_red { channel = "vitaled:vitaled:demo:zone1#red" }
+Number zone1_green { channel = "vitaled:vitaled:demo:zone1#green" }
+Number zone1_blue { channel = "vitaled:vitaled:demo:zone1#blue" }
+Number zone1_white { channel = "vitaled:vitaled:demo:zone1#white" }
+Number zone1_colour_saturation { channel = "vitaled:vitaled:demo:zone1#colourSaturation" }
+Number zone1_speed { channel = "vitaled:vitaled:demo:zone1#speed" }
+Number zone1_colourGradientIntensity { channel = "vitaled:vitaled:demo:zone1#colourGradientIntensity" }
+Number zone1_xCoord { channel = "vitaled:vitaled:demo:zone1#xCoord" }
+Number zone1_yCoord { channel = "vitaled:vitaled:demo:zone1#yCoord" }
+Switch zone1_scene1 { channel = "vitaled:vitaled:demo:zone1#scene1" }
+Switch zone1_scene2 { channel = "vitaled:vitaled:demo:zone1#scene2" }
+Switch zone1_scene3 { channel = "vitaled:vitaled:demo:zone1#scene3" }
+Switch zone1_scene4 { channel = "vitaled:vitaled:demo:zone1#scene4" }
+Switch zone1_scene5 { channel = "vitaled:vitaled:demo:zone1#scene5" }
+Switch zone1_scene6 { channel = "vitaled:vitaled:demo:zone1#scene6" }
+```
+
+## Sitemap Configuration
+
+demo.sitemap
+
+```perl
+sitemap demo label="Brumberg vitaLED"
+{
+        // intensity is used for all modes except for colour gradients
+        Slider item=zone1_intensity label="Intensity" icon="none"
+        // achromatic light
+        Setpoint item=zone1_achromaticLight label="Achromtaic Light" icon="none" minValue=2000 maxValue=10000 step=50        
+        // chromatic light
+        Slider item=zone1_red label="Red" icon="none"
+        Slider item=zone1_green label="Green" icon="none"
+        Slider item=zone1_blue label="Blue" icon="none"
+        Slider item=zone1_white label="White" icon="none"
+        // colour gradients
+        Slider item=zone1_colour_saturation label="Colour saturation" icon="none"
+        Slider item=zone1_speed label="Speed" icon="none"
+        Slider item=zone1_colourGradientIntensity label="Colour gradient intensity" icon="none"
+        // scenes
+        Switch item=zone1_scene1 label="Scene 1" icon="none" mappings=[ON="activate"]
+        Switch item=zone1_scene2 label="Scene 2" icon="none" mappings=[ON="activate"]
+        Switch item=zone1_scene3 label="Scene 3" icon="none" mappings=[ON="activate"]
+        Switch item=zone1_scene4 label="Scene 4" icon="none" mappings=[ON="activate"]
+        Switch item=zone1_scene5 label="Scene 5" icon="none" mappings=[ON="activate"]
+        Switch item=zone1_scene6 label="Scene 6" icon="none" mappings=[ON="activate"]
+}
+```
+
+## Current limitations
+
+The binding has in the current version the following limitations.
+ 
+Only none is supported as authentication yet. Do not use DHCP client, use instead a fix IP address. 
+Groups are also not supported, but this can be handled via openHAB rule. Colour management and vital gradient are not yet supported.
