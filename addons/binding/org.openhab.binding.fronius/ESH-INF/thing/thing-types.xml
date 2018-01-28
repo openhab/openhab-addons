@@ -3,12 +3,12 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- Powerinverter Thing Type -->
 	<thing-type id="powerinverter">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>	
-		<label>Fronius Symo inverter</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Fronius Symo Inverter</label>
 		<description>Fronius Symo power inverter</description>
 
 		<channels>
@@ -28,7 +28,7 @@
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
-				<label>DeviceId</label>
+				<label>Device ID</label>
 				<description>Specific device identifier</description>
 				<default>1</default>
 			</parameter>
@@ -43,7 +43,7 @@
 	</channel-type>
 	<channel-type id="pac">
 		<item-type>Number</item-type>
-		<label>AC powery</label>
+		<label>AC power</label>
 		<description>AC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
@@ -62,33 +62,33 @@
 
 	<channel-type id="fac">
 		<item-type>Number</item-type>
-		<label>FAC</label>
+		<label>AC frequency</label>
 		<description>AC frequency</description>
 		<state pattern="%.2f Hz" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="iac">
 		<item-type>Number</item-type>
-		<label>IAC</label>
+		<label>AC current</label>
 		<description>AC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="idc">
 		<item-type>Number</item-type>
-		<label>IDC</label>
+		<label>DC current</label>
 		<description>DC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uac">
 		<item-type>Number</item-type>
-		<label>UAC</label>
+		<label>AC voltage</label>
 		<description>AC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc">
 		<item-type>Number</item-type>
-		<label>UDC</label>
+		<label>DC voltage</label>
 		<description>DC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>

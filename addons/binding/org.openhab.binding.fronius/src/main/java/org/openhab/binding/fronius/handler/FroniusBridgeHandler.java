@@ -39,7 +39,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 10;
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private ScheduledFuture<?> refreshJob;
-    private boolean connectionFailed = false;
 
     public FroniusBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -47,7 +46,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     public void registerService(final FroniusBaseThingHandler service) {
@@ -81,7 +79,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
-        updateStatus(ThingStatus.OFFLINE);
+        services.clear();
     }
 
     /**
@@ -92,22 +90,15 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-
                     boolean online = false;
                     try {
                         InetAddress inet;
                         inet = InetAddress.getByName(config.hostname);
                         if (inet.isReachable(5000)) {
                             online = true;
-                            connectionFailed = false;
                         }
                     } catch (IOException e) {
-                        if (!connectionFailed) {
-                            logger.error("Connection Error: {}", e.getMessage());
-                            connectionFailed = true;
-                        } else {
-                            logger.debug("Connection Error: {}", e.getMessage());
-                        }
+                        logger.debug("Connection Error: {}", e.getMessage());
                         return;
                     }
 

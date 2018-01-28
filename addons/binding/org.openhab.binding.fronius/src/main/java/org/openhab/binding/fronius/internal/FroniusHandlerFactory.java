@@ -34,9 +34,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
-        /**
-         *
-         */
+
         private static final long serialVersionUID = 1L;
         {
             add(THING_TYPE_INVERTER);

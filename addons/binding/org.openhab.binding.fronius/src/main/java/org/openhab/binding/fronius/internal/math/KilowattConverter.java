@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.fronius.math;
+package org.openhab.binding.fronius.internal.math;
 
 /**
  * Helper class for unit conversions
@@ -21,7 +21,6 @@ public class KilowattConverter {
         String adjustedtoUnit = toUnit.replace("Wh", "");
         return SiPrefixFactors.getFactorToBaseUnit(adjustedFromUnit) * 1
                 / SiPrefixFactors.getFactorToBaseUnit(adjustedtoUnit);
-
     }
 
     public static double convertTo(double value, String fromUnit, String toUnit) {

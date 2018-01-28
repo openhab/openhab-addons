@@ -22,10 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.fronius.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.api.ValueUnit;
+import org.openhab.binding.fronius.internal.api.ValueUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +49,15 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+        if (command == RefreshType.REFRESH) {
+            updateChannels();
+        }
     }
 
     @Override
     public void initialize() {
         if (getFroniusBridgeHandler() == null) {
-            logger.error("Initializing {} Service is only supported within a bridge", serviceDescription);
+            logger.debug("Initializing {} Service is only supported within a bridge", serviceDescription);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
@@ -124,7 +127,6 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         if (state != null) {
             updateState(channelId, state);
         }
-
     }
 
     /**

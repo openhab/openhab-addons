@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.fronius.math;
+package org.openhab.binding.fronius.internal.math;
 
 /**
  * Helper class for unit conversions
@@ -19,7 +19,7 @@ public class SiPrefixFactors {
     /**
      * return the relative factor to the base unit
      * k == 1000, M = 1000000 ...
-     * Not completely!!! Rang from n to T
+     * Not completely!!! Rank from n to T
      *
      * @param prefix
      * @return
@@ -54,6 +54,5 @@ public class SiPrefixFactors {
                 return 0.000000001;
         }
         return 1;
-
     }
 }

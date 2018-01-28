@@ -18,9 +18,9 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.fronius.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.FroniusBindingConstants;
 import org.openhab.binding.fronius.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.api.InverterRealtimeResponse;
-import org.openhab.binding.fronius.api.PowerFlowRealtimeResponse;
-import org.openhab.binding.fronius.api.ValueUnit;
+import org.openhab.binding.fronius.internal.api.InverterRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.ValueUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         super.initialize();
-
     }
 
     /**
@@ -145,7 +144,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         String errorMsg = null;
 
         try {
-
             String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%",
                     StringUtils.trimToEmpty(ip));
             logger.debug("URL = {}", location);
@@ -164,13 +162,13 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             }
 
             if (!resultOk) {
-                logger.error("Error in fronius response: {}", errorMsg);
+                logger.debug("Error in fronius response: {}", errorMsg);
             }
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.error("Error running fronius request: {}", errorMsg);
+            logger.debug("Error running fronius request: {}", errorMsg);
         } catch (IOException | IllegalStateException e) {
-            logger.error("Error running fronius request: {}", e.getMessage());
+            logger.debug("Error running fronius request: {}", e.getMessage());
         }
 
         return resultOk ? result : null;
@@ -188,7 +186,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         String errorMsg = null;
 
         try {
-
             String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
                     StringUtils.trimToEmpty(ip));
             location = location.replace("%DEVICEID%", Integer.toString(deviceId));
@@ -209,14 +206,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             }
 
             if (!resultOk) {
-                logger.error("Error in fronius response: {}", errorMsg);
+                logger.debug("Error in fronius response: {}", errorMsg);
             }
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.error("Error running fronius request: {}", e.getMessage());
+            logger.debug("Error running fronius request: {}", e.getMessage());
         } catch (IOException | IllegalStateException e) {
             errorMsg = "Connection failed";
-            logger.error("Error running fronius request: {}", e.getMessage());
+            logger.debug("Error running fronius request: {}", e.getMessage());
         }
 
         // Update the thing status

@@ -1,12 +1,12 @@
 # Fronius Binding
 
-This binding uses the [Fronius Solar API V1](http://www.fronius.com/cps/rde/xchg/SID-50921547-DF4684B5/fronius_international/hs.xsl/83_28911_DEU_HTML.htm) to obtain data from a Fronius devices
+This binding uses the [Fronius Solar API V1](http://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from a Fronius devices.
 
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents a fronius device. 
-You can add multiple Things with different "DeviceIds". ( Default 1 ) 
+Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. 
+You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 ) 
 
 ## Discovery
 
@@ -48,7 +48,6 @@ The thing has a few configuration parameters:
 demo.things:
 
 ```
-
 Bridge fronius:bridge:mybridge [hostname="192.168.66.148",refreshInterval=5] {
     Thing powerinverter myinverter [ deviceId=1 ]
 }
@@ -71,9 +70,6 @@ Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflow
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
-
 ```
-
-## Any custom content here!
 
 Tested with a Fronius Symo 8.2-3-M
