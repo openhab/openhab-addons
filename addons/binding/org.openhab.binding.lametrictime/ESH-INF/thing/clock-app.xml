@@ -16,10 +16,7 @@
                 <label>Set Alarm</label>
                 <description>Set the alarm</description>
             </channel>
-            <channel id="stopAlarm" typeId="triggerActionType">
-                <label>Stop Alarm</label>
-                <description>Stop the alarm</description>
-            </channel>
+            <channel id="stopAlarm" typeId="stopAlarmType"/>
         </channels>
         
         <config-description>
@@ -29,4 +26,10 @@
             </parameter>
         </config-description>
     </thing-type>
+
+    <channel-type id="stopAlarmType">
+        <item-type>Switch</item-type>
+        <label>Stop Alarm</label>
+        <description>Stop the alarm</description>
+    </channel-type>
 </thing:thing-descriptions>

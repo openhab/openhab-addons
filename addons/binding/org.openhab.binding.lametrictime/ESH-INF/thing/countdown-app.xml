@@ -16,18 +16,9 @@
                 <label>Configure</label>
                 <description>Configure the timer</description>
             </channel>
-            <channel id="pause" typeId="triggerActionType">
-                <label>Pause</label>
-                <description>Pause the countdown</description>
-            </channel>
-            <channel id="reset" typeId="triggerActionType">
-                <label>Reset</label>
-                <description>Reset the countdown</description>
-            </channel>
-            <channel id="start" typeId="triggerActionType">
-                <label>Start</label>
-                <description>Start the countdown</description>
-            </channel>
+            <channel id="pause" typeId="pauseType"/>
+            <channel id="reset" typeId="resetType"/>
+            <channel id="start" typeId="startType"/>
         </channels>
         
         <config-description>

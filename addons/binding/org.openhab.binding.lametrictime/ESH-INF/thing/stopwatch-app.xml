@@ -12,18 +12,9 @@
         <description>Provides control for the stopwatch app on the LaMetric Time</description>
         
         <channels>
-            <channel id="pause" typeId="triggerActionType">
-                <label>Pause</label>
-                <description>Pause the stopwatch</description>
-            </channel>
-            <channel id="reset" typeId="triggerActionType">
-                <label>Reset</label>
-                <description>Reset the stopwatch</description>
-            </channel>
-            <channel id="start" typeId="triggerActionType">
-                <label>Start</label>
-                <description>Start the stopwatch</description>
-            </channel>
+            <channel id="pause" typeId="pauseType"/>
+            <channel id="reset" typeId="resetType"/>
+            <channel id="start" typeId="startType"/>
         </channels>
         
         <config-description>

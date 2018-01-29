@@ -8,10 +8,17 @@
         <label>Parameter Action</label>
         <description>Perform an action with parameters as input</description>
     </channel-type>
-    
-    <channel-type id="triggerActionType">
+
+    <channel-type id="pauseType">
         <item-type>Switch</item-type>
-        <label>Trigger Action</label>
-        <description>Perform an action with a simple trigger (no parameters)</description>
+        <label>Pause</label>
+    </channel-type>
+    <channel-type id="resetType">
+        <item-type>Switch</item-type>
+        <label>Reset</label>
+    </channel-type>
+    <channel-type id="startType">
+        <item-type>Switch</item-type>
+        <label>Start</label>
     </channel-type>
 </thing:thing-descriptions>

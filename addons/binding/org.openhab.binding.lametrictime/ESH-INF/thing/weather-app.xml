@@ -12,10 +12,7 @@
         <description>Provides control for the weather app on the LaMetric Time</description>
         
         <channels>
-            <channel id="forecast" typeId="triggerActionType">
-                <label>Forecast</label>
-                <description>Show the forecast</description>
-            </channel>
+            <channel id="forecast" typeId="forecastType"/>
         </channels>
         
         <config-description>
@@ -25,4 +22,10 @@
             </parameter>
         </config-description>
     </thing-type>
+
+    <channel-type id="forecastType">
+        <item-type>Switch</item-type>
+        <label>Forecast</label>
+        <description>Show the forecast</description>
+    </channel-type>
 </thing:thing-descriptions>
