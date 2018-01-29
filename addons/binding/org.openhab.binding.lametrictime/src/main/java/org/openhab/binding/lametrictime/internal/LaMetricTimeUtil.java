@@ -46,6 +46,6 @@ public class LaMetricTimeUtil {
             return coreAppLabel;
         }
 
-        return "Generic App by " + app.getVendor();
+        return app.getVendor() + "'s App";
     }
 }
