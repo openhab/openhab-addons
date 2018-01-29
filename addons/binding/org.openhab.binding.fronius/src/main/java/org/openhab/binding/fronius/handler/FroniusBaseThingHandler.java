@@ -11,7 +11,6 @@ package org.openhab.binding.fronius.handler;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -106,7 +105,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         if (value == null) {
             state = UnDefType.UNDEF;
         } else if (value instanceof Calendar) {
-            state = new DateTimeType((Calendar) value);
+            state = new StringType(((Calendar) value).toString());
         } else if (value instanceof BigDecimal) {
             state = new DecimalType((BigDecimal) value);
         } else if (value instanceof Integer) {
