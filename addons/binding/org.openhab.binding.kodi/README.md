@@ -13,7 +13,9 @@ The Kodi binding is the successor to the openHAB 1.x xbmc binding.
 In order to allow control of Kodi by this binding, you need to enable the Kodi application remote control feature.
 Please enable "Allow remote control from applications on this/other systems" in the Kodi settings menu under:
 
-*   Settings ➔ Services ➔ Control ➔ Allow remote control from applications on this/other systems
+*   Settings ➔ Services ➔ Control ➔
+    * Allow remote control from applications on **this** systems
+    * Allow remote control from applications on **other** systems
 
 To make use of the auto-discovery feature, you additionally need to enable "Allow control of Kodi via UPnP" in the Kodi settings menu.
 
