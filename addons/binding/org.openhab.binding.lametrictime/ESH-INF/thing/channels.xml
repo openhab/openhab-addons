@@ -3,61 +3,6 @@
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
                           xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    <channel-type id="jsonNotificationType">
-        <item-type>String</item-type>
-        <label>Advanced Notification</label>
-        <description>Channel to send custom messages with the LaMetric APIs JSON structure.</description>
-    </channel-type>
-
-    <channel-type id="brightnessType">
-        <item-type>Dimmer</item-type>
-        <label>Display Brightness</label>
-        <description>Adjust the brightness of the display</description>
-        <state min="0" max="100" step="1" readOnly="false"/>
-    </channel-type>
-
-    <channel-type id="brightnessModeType">
-        <item-type>String</item-type>
-        <label>Display Brightness Mode</label>
-        <description>Manual or Auto mode</description>
-        <state>
-            <options>
-                <option value="auto">Automatic</option>
-                <option value="manual">Manual</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="volumeType">
-        <item-type>Dimmer</item-type>
-        <label>Volume</label>
-        <description>Adjust the volume of the speaker</description>
-    </channel-type>
-
-    <channel-type id="bluetoothActiveType">
-        <item-type>Switch</item-type>
-        <label>Bluetooth</label>
-        <description>Switch Bluetooth on/off</description>
-    </channel-type>
-
-    <channel-type id="appType">
-        <item-type>String</item-type>
-        <label>Application</label>
-        <description>Active application</description>
-        <state>
-            <!-- These options will be replaced at runtime. -->
-            <options>
-                <option value="reference">App</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="framesType" advanced="true">
-        <item-type>String</item-type>
-        <label>Frames</label>
-        <description>Update app frames using JSON</description>
-    </channel-type>
-    
     <channel-type id="parameterActionType" advanced="true">
         <item-type>String</item-type>
         <label>Parameter Action</label>
@@ -68,11 +13,5 @@
         <item-type>Switch</item-type>
         <label>Trigger Action</label>
         <description>Perform an action with a simple trigger (no parameters)</description>
-    </channel-type>
-    
-    <channel-type id="controlType">
-        <item-type>Player</item-type>
-        <label>Control</label>
-        <description>Player control</description>
     </channel-type>
 </thing:thing-descriptions>

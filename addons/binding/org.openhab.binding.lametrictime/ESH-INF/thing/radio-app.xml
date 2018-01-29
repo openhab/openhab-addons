@@ -25,4 +25,10 @@
             </parameter>
         </config-description>
     </thing-type>
+
+    <channel-type id="controlType">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Player control</description>
+    </channel-type>
 </thing:thing-descriptions>

@@ -30,4 +30,10 @@
             </parameter>
         </config-description>
     </thing-type>
+
+    <channel-type id="framesType" advanced="true">
+        <item-type>String</item-type>
+        <label>Frames</label>
+        <description>Update app frames using JSON</description>
+    </channel-type>
 </thing:thing-descriptions>

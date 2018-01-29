@@ -38,10 +38,59 @@
         </config-description>
     </bridge-type>
 
+    <channel-type id="brightnessType">
+        <item-type>Dimmer</item-type>
+        <label>Display Brightness</label>
+        <description>Adjust the brightness of the display</description>
+        <state min="0" max="100" step="1" readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="brightnessModeType">
+        <item-type>String</item-type>
+        <label>Display Brightness Mode</label>
+        <description>Manual or Auto mode</description>
+        <state>
+            <options>
+                <option value="auto">Automatic</option>
+                <option value="manual">Manual</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="volumeType">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Adjust the volume of the speaker</description>
+    </channel-type>
+
+    <channel-type id="bluetoothActiveType">
+        <item-type>Switch</item-type>
+        <label>Bluetooth</label>
+        <description>Switch Bluetooth on/off</description>
+    </channel-type>
+
+    <channel-type id="appType">
+        <item-type>String</item-type>
+        <label>Application</label>
+        <description>Active application</description>
+        <state>
+            <!-- These options will be replaced at runtime. -->
+            <options>
+                <option value="reference">App</option>
+            </options>
+        </state>
+    </channel-type>
+
     <channel-type id="simpleNotificationType">
         <item-type>String</item-type>
         <label>Simple Notification</label>
         <description>Send a notification to LaMetric Time</description>
         <category>Text</category>
+    </channel-type>
+
+    <channel-type id="jsonNotificationType">
+        <item-type>String</item-type>
+        <label>Advanced Notification</label>
+        <description>Channel to send custom messages with the LaMetric APIs JSON structure.</description>
     </channel-type>
 </thing:thing-descriptions>
