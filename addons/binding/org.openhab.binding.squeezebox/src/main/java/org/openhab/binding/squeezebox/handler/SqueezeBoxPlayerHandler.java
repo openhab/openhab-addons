@@ -277,6 +277,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             case CHANNEL_NOTIFICATION_SOUND_VOLUME:
                 setNotificationSoundVolume(((PercentType) command));
                 break;
+            case CHANNEL_FAVORITES_PLAY:
+                squeezeBoxServerHandler.playFavorite(mac, command.toString());
+                break;
             default:
                 break;
         }

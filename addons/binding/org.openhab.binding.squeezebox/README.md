@@ -48,39 +48,48 @@ Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=
 Or, if Squeeze Server authentication is enabled:
 
 ```
-Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword" ]
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword", quoteFavoritesList=true ]
 {
     Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1" ]
 }
 ```
 
-## Channels
+## Server Channels
+
+The Squeezebox server supports the following channel:
+
+| Channel Type ID         | Item Type | Description                                                                            |
+|-------------------------|-----------|----------------------------------------------------------------------------------------|
+| favoritesList           | String    | Comma-separated list of favorite IDs & names, updated whenever list changes on server  |
+
+## Player Channels
 
 All devices support some of the following channels:
 
-| Channel Type ID         | Item Type | Description                                                                            |                      |   |
-|-------------------------|-----------|----------------------------------------------------------------------------------------|----------------------|---|
-| power                   | Switch    | Power on/off your device                                                               |                      |   |
-| mute                    | Switch    | Mute/unmute your device                                                                |                      |   |
-| volume                  | Dimmer    | Volume of your device                                                                  |                      |   |
-| stop                    | Switch    | Stop the current title                                                                 |                      |   |
-| control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |                      |   |
-| stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |                      |   |
-| sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |                      |   |
-| playListIndex           | Number    | Playlist Index                                                                         |                      |   |
-| currentPlayingTime      |           | Number                                                                                 | Current Playing Time |   |
-| currentPlaylistShuffle  | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)        |                      |   |
-| currentPlaylistRepeat   | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)           |                      |   |
-| title                   | String    | Title of the current song                                                              |                      |   |
-| remotetitle             | String    | Remote Title (Radio) of the current song                                               |                      |   |
-| album                   | String    | Album name of the current song                                                         |                      |   |
-| artist                  | String    | Artist name of the current song                                                        |                      |   |
-| year                    | String    | Release year of the current song                                                       |                      |   |
-| genre                   | String    | Genre name of the current song                                                         |                      |   |
-| coverartdata            | Image     | Image data of cover art of the current song                                            |                      |   |
-| ircode                  | String    | Received IR code                                                                       |                      |   |
-| numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |                      |   |
-| notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |                      |   |
+| Channel Type ID         | Item Type | Description                                                                            |
+|-------------------------|-----------|----------------------------------------------------------------------------------------|
+| power                   | Switch    | Power on/off your device                                                               |
+| mute                    | Switch    | Mute/unmute your device                                                                |
+| volume                  | Dimmer    | Volume of your device                                                                  |
+| stop                    | Switch    | Stop the current title                                                                 |
+| control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |
+| stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |
+| sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |
+| playListIndex           | Number    | Playlist Index                                                                         |
+| currentPlayingTime      | Number    | Current Playing Time                                                                   |
+| currentPlaylistShuffle  | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)        |
+| currentPlaylistRepeat   | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)           |
+| title                   | String    | Title of the current song                                                              |
+| remotetitle             | String    | Remote Title (Radio) of the current song                                               |
+| album                   | String    | Album name of the current song                                                         |
+| artist                  | String    | Artist name of the current song                                                        |
+| year                    | String    | Release year of the current song                                                       |
+| genre                   | String    | Genre name of the current song                                                         |
+| coverartdata            | Image     | Image data of cover art of the current song                                            |
+| ircode                  | String    | Received IR code                                                                       |
+| numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
+| notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |
+| favoritesPlay           | String    | ID of Favorite to play (as available in server's favoritesList channel)                |
 
 ## Notifications
 

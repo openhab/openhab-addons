@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
+import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,6 +31,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -40,7 +41,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +81,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
             .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+
     private Map<String, SqueezeBoxPlayer> players = Collections
             .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+
     // client socket and listener thread
     private Socket clientSocket;
     private SqueezeServerListener listener;
@@ -100,7 +106,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initializing server handler for thing {}", getThing());
+        logger.debug("initializing server handler for thing {}", getThing().getUID());
 
         scheduler.schedule(new Runnable() {
 
@@ -113,7 +119,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("disposing server handler for thing {}", getThing());
+        logger.debug("disposing server handler for thing {}", getThing().getUID());
         cancelReconnect();
         disconnect();
     }
@@ -257,6 +263,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + String.valueOf(duration));
     }
 
+    public void playFavorite(String mac, String favorite) {
+        sendCommand(mac + " favorites playlist play item_id:" + favorite);
+    }
+
     /**
      * Send a generic command to a given player
      *
@@ -272,6 +282,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      */
     public void requestPlayers() {
         sendCommand("players 0");
+    }
+
+    /**
+     * Ask for favorites list
+     */
+    public void requestFavorites() {
+        sendCommand("favorites items 0 100");
     }
 
     /**
@@ -370,6 +387,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         logger.trace("Squeeze Server connection stopped.");
     }
 
+    private void updateChannel(String channelID, State state) {
+        logger.trace("Updating channel {} for {} to state {}", channelID, getThing().getUID(), state);
+        try {
+            updateState(channelID, state);
+        } catch (IllegalStateException e) {
+            logger.error("Could not update channel on thing {}", getThing().getUID(), e);
+        }
+    }
+
     private class SqueezeServerListener extends Thread {
         private boolean terminate = false;
 
@@ -392,6 +418,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 login();
                 updateStatus(ThingStatus.ONLINE);
                 requestPlayers();
+                requestFavorites();
                 sendCommand("listen 1");
 
                 String message = null;
@@ -405,6 +432,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
                     if (message.startsWith("players 0")) {
                         handlePlayersList(message);
+                    } else if (message.startsWith("favorites")) {
+                        handleFavorites(message);
                     } else {
                         handlePlayerUpdate(message);
                     }
@@ -574,7 +603,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                                 } else {
                                     listener.absoluteVolumeChangeEvent(mac, volume);
                                 }
-
                             } catch (NumberFormatException e) {
                                 logger.warn("Unable to parse volume [{}] received from mixer message.",
                                         volumeStringValue, e);
@@ -845,6 +873,114 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         }
                     });
                 }
+            }
+        }
+
+        private void handleFavorites(String message) {
+            logger.trace("Handle favorites message: {}", message);
+
+            String[] messageParts = message.split("\\s");
+            if (messageParts.length == 2 && "changed".equals(messageParts[1])) {
+                // LMS informing us that favorites have changed; request an update to the favorites list
+                requestFavorites();
+                return;
+            }
+            if (messageParts.length < 7) {
+                logger.trace("No favorites in message.");
+                return;
+            }
+
+            List<Favorite> favorites = new ArrayList<Favorite>();
+            String title = "";
+            String count = "";
+            Favorite f = null;
+            for (String part : messageParts) {
+                String id;
+                String name;
+                String type;
+                Boolean isaudio;
+                Boolean hasitems;
+
+                // Title of Favorites
+                if (part.startsWith("title%3A")) {
+                    title = decode(part.substring("title%3A".length()));
+                    logger.trace("Favorite title: {}", title);
+                }
+                // Number of favorites in this message
+                else if (part.startsWith("count%3A")) {
+                    count = part.substring("count%3A".length());
+                    logger.trace("Favorite count: {}", count);
+                }
+                // Favorite ID (in form xxxxxxxxx.n)
+                else if (part.startsWith("id%3A")) {
+                    id = part.substring("id%3A".length());
+                    f = new Favorite(id);
+                    favorites.add(f);
+                }
+                // Favorite name
+                else if (part.startsWith("name%3A")) {
+                    name = decode(part.substring("name%3A".length()));
+                    if (f != null) {
+                        f.name = name;
+                    }
+                }
+                // Favorite type
+                else if (part.startsWith("type%3A")) {
+                    type = decode(part.substring("type%3A".length()));
+                    if (f != null) {
+                        f.type = type;
+                    }
+                }
+                // Favorite is audio
+                else if (part.startsWith("isaudio%3A")) {
+                    isaudio = new Boolean("1".matches(part.substring("isaudio%3A".length())));
+                    if (f != null) {
+                        f.isaudio = isaudio;
+                    }
+                }
+                // When "1", favorite is a submenu with additional favorites
+                else if (part.startsWith("hasitems%3A")) {
+                    hasitems = new Boolean("1".matches(part.substring("hasitems%3A".length())));
+                    if (f != null) {
+                        f.hasitems = hasitems;
+                    }
+                }
+            }
+            updateChannelFavoritesList(favorites);
+        }
+
+        private void updateChannelFavoritesList(List<Favorite> favorites) {
+            // Get config parameter indicating whether name should be wrapped with double quotes
+            final boolean includeQuotes = getConfigAs(SqueezeBoxServerConfig.class).quoteFavoritesList;
+            final String quote = includeQuotes ? "\"" : "";
+            String adjustedName;
+
+            StringBuilder sb = new StringBuilder();
+            for (Favorite favorite : favorites) {
+                if (favorite.hasitems) {
+                    // Skip favorites that are folders with sub-items as we
+                    // only want favorites at the root level
+                    continue;
+                }
+                sb.append(favorite.shortId + "=");
+                // If not quoting, we don't want any embedded commas
+                adjustedName = includeQuotes ? favorite.name : favorite.name.replaceAll(",", "");
+                sb.append(quote + adjustedName + quote);
+                sb.append(",");
+            }
+
+            // If the channel doesn't exist we can't update it
+            if (getThing().getChannel(CHANNEL_FAVORITES_LIST) == null) {
+                logger.debug("Channel '{}' does not exist.  Delete and readd player thing to pick up channel.",
+                        CHANNEL_FAVORITES_LIST);
+                return;
+            }
+            if (sb.length() == 0) {
+                updateChannel(CHANNEL_FAVORITES_LIST, UnDefType.NULL);
+            } else {
+                // Drop the last comma
+                sb.setLength(sb.length() - 1);
+                updateChannel(CHANNEL_FAVORITES_LIST, new StringType(sb.toString()));
             }
         }
     }
