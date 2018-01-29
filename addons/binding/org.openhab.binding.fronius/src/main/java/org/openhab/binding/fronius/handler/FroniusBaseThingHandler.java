@@ -9,10 +9,8 @@
 package org.openhab.binding.fronius.handler;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,7 +21,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.fronius.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
 import org.slf4j.Logger;
@@ -48,8 +45,8 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            updateChannels();
+        if (command instanceof RefreshType) {
+            updateChannel(channelUID.getId());
         }
     }
 
@@ -98,20 +95,13 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         if (!isLinked(channelId)) {
             return;
         }
-        Object value;
-        value = getValue(channelId);
+        Object value = getValue(channelId);
 
         State state = null;
-        if (value == null) {
-            state = UnDefType.UNDEF;
-        } else if (value instanceof Calendar) {
-            state = new StringType(((Calendar) value).toString());
-        } else if (value instanceof BigDecimal) {
+        if (value instanceof BigDecimal) {
             state = new DecimalType((BigDecimal) value);
         } else if (value instanceof Integer) {
             state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
-        } else if (value instanceof String) {
-            state = new StringType(value.toString());
         } else if (value instanceof Double) {
             state = new DecimalType((double) value);
         } else if (value instanceof ValueUnit) {
@@ -120,7 +110,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }
         logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
-                (value == null) ? "null" : value.getClass().getSimpleName());
+                value.getClass().getSimpleName());
 
         // Update the channel
         if (state != null) {
