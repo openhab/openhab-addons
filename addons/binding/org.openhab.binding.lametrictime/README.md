@@ -106,12 +106,12 @@ All channels have no defined state. They exist as one-way communication to the d
 
 All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
 
-| Channel ID | Item Type | Description                                                                                 |
-|------------|-----------|---------------------------------------------------------------------------------------------|
-| configure  | String    | Set a JSON string that represents the parameters to configure the time (duration, startNow) |
-| pause      | Switch    | Pause the active countdown                                                                  |
-| reset      | Switch    | Stop and reset the countdown                                                                |
-| start      | Switch    | Start the countdown                                                                         |
+| Channel ID | Item Type | Description                                  |
+|------------|-----------|----------------------------------------------|
+| duration   | Number    | Set the duration of the countdown in seconds |
+| pause      | Switch    | Pause the active countdown                   |
+| reset      | Switch    | Stop and reset the countdown                 |
+| start      | Switch    | Start the countdown                          |
 
 ### Radio App
 
@@ -276,7 +276,7 @@ String ClockSetAlarm                                                        { ch
 Switch ClockStopAlarm           "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
 Switch SetAlarmIn1Min           "Set Alarm in 1 min"
 
-String CountdownConfigure                                                   { channel="lametrictime:countdownApp:demo:countdown:configure" }
+Number CountdownDuration        "Countdown Duration"                        { channel="lametrictime:countdownApp:demo:countdown:duration" }
 Switch CountdownPause           "Pause Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:pause" }
 Switch CountdownReset           "Reset Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:reset" }
 Switch CountdownStart           "Start Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:start" }
@@ -430,13 +430,7 @@ rule "Set 2 Minute Countdown"
          postUpdate(Set2MinCountdown, OFF)
          
          logInfo("demo.rules", "Configure countdown for 2 minutes without starting")
-         
-         val jsonMessage = String::format('{
-                   "duration": 120,
-                   "startNow": false
-                 }')
-    
-         sendCommand(CountdownConfigure, jsonMessage)
+         sendCommand(CountdownDuration, 120)
 end
 
 rule "Update Test App"

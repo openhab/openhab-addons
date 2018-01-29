@@ -16,13 +16,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
-import org.openhab.binding.lametrictime.handler.model.ParamsConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.common.impl.GsonGenerator;
 import org.syphr.lametrictime.api.model.CoreApps;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link CountdownAppHandler} represents an instance of the built-in countdown app.
@@ -34,8 +30,6 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CountdownAppHandler.class);
 
-    private final Gson gson = GsonGenerator.create();
-
     public CountdownAppHandler(Thing thing) {
         super(thing);
     }
@@ -44,9 +38,9 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
     public void handleAppCommand(ChannelUID channelUID, Command command) {
         try {
             switch (channelUID.getId()) {
-                case CHANNEL_APP_CONFIGURE: {
-                    ParamsConfigure params = gson.fromJson(command.toString(), ParamsConfigure.class);
-                    getDevice().doAction(getWidget(), CoreApps.countdown().configure(params.duration, params.startNow));
+                case CHANNEL_APP_DURATION: {
+                    getDevice().doAction(getWidget(),
+                            CoreApps.countdown().configure(((Number) command).intValue(), false));
                     break;
                 }
                 case CHANNEL_APP_PAUSE:

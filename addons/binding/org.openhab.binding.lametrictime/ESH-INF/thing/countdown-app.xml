@@ -12,10 +12,7 @@
         <description>Provides control for the countdown app on the LaMetric Time</description>
         
         <channels>
-            <channel id="configure" typeId="parameterActionType">
-                <label>Configure</label>
-                <description>Configure the timer</description>
-            </channel>
+            <channel id="duration" typeId="durationType"/>
             <channel id="pause" typeId="pauseType"/>
             <channel id="reset" typeId="resetType"/>
             <channel id="start" typeId="startType"/>
@@ -28,4 +25,10 @@
             </parameter>
         </config-description>
     </thing-type>
+
+    <channel-type id="durationType">
+        <item-type>Number</item-type>
+        <label>Countdown Duration</label>
+        <description>Set the duration of the countdown in seconds</description>
+    </channel-type>
 </thing:thing-descriptions>
