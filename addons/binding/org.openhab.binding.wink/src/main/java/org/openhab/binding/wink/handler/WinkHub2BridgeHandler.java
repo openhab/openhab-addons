@@ -34,182 +34,182 @@ import org.slf4j.LoggerFactory;
  */
 public class WinkHub2BridgeHandler extends BaseBridgeHandler {
 
-    private IWinkClient client = WinkClient.getInstance();
-    private final Logger logger = LoggerFactory.getLogger(WinkHub2BridgeHandler.class);
+	private IWinkClient client = WinkClient.getInstance();
+	private final Logger logger = LoggerFactory.getLogger(WinkHub2BridgeHandler.class);
 
-    public WinkHub2BridgeHandler(Bridge bridge) {
-        super(bridge);
-    }
+	public WinkHub2BridgeHandler(Bridge bridge) {
+		super(bridge);
+	}
 
-    @Override
-    public void initialize() {
-        WinkDeviceDiscoveryService discovery = new WinkDeviceDiscoveryService(this);
+	@Override
+	public void initialize() {
+		WinkDeviceDiscoveryService discovery = new WinkDeviceDiscoveryService(this);
 
-        this.bundleContext.registerService(DiscoveryService.class, discovery, null);
+		this.bundleContext.registerService(DiscoveryService.class, discovery, null);
 
-        this.scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                // connect();
-            }
-        }, 0, TimeUnit.SECONDS);
-        super.initialize();
-    }
+		this.scheduler.schedule(new Runnable() {
+			@Override
+			public void run() {
+				// connect();
+			}
+		}, 0, TimeUnit.SECONDS);
+		super.initialize();
+	}
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Bridge Handler doesn't supporte any commands");
-    }
+	@Override
+	public void handleCommand(ChannelUID channelUID, Command command) {
+		logger.debug("Bridge Handler doesn't supporte any commands");
+	}
 
-    /**
-     * Attempts to change the state of a specified device to the provided state.
-     *
-     * @param device The device to update
-     * @param updatedState Map of properties to update and the new values
-     */
-    public void setDesiredState(IWinkDevice device, Map<String, String> updatedState) {
-        logger.debug("Setting device state: {}", updatedState);
-        try {
-            client.updateDeviceState(device, updatedState);
-        } catch (AuthenticationException e) {
-            logger.error("Unable to communicate with wink api: {}", e.getMessage());
-        }
-    }
+	/**
+	 * Attempts to change the state of a specified device to the provided state.
+	 *
+	 * @param device The device to update
+	 * @param updatedState Map of properties to update and the new values
+	 */
+	public void setDesiredState(IWinkDevice device, Map<String, String> updatedState) {
+		logger.debug("Setting device state: {}", updatedState);
+		try {
+			client.updateDeviceState(device, updatedState);
+		} catch (AuthenticationException e) {
+			logger.error("Unable to communicate with wink api: {}", e.getMessage());
+		}
+	}
 
-    /**
-     * Change the state of a device to a 'powered' state
-     *
-     * @param device The device to power on
-     */
-    public void switchOnDevice(IWinkDevice device) {
-        logger.debug("Switching on Device {}", device);
-        Map<String, String> updatedState = new HashMap<String, String>();
-        updatedState.put("powered", "true");
-        this.setDesiredState(device, updatedState);
-    }
+	/**
+	 * Change the state of a device to a 'powered' state
+	 *
+	 * @param device The device to power on
+	 */
+	public void switchOnDevice(IWinkDevice device) {
+		logger.debug("Switching on Device {}", device);
+		Map<String, String> updatedState = new HashMap<String, String>();
+		updatedState.put("powered", "true");
+		this.setDesiredState(device, updatedState);
+	}
 
-    /**
-     * Change the 'powered' state of a device to off
-     *
-     * @param device The device to power off
-     */
-    public void switchOffDevice(IWinkDevice device) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        updatedState.put("powered", "false");
-        this.setDesiredState(device, updatedState);
-    }
+	/**
+	 * Change the 'powered' state of a device to off
+	 *
+	 * @param device The device to power off
+	 */
+	public void switchOffDevice(IWinkDevice device) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		updatedState.put("powered", "false");
+		this.setDesiredState(device, updatedState);
+	}
 
-    /**
-     * Set the state of a lockable device to 'locked'
-     *
-     * @param device The device to lock
-     */
-    public void lockDevice(IWinkDevice device) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        updatedState.put("locked", "true");
-        this.setDesiredState(device, updatedState);
-    }
+	/**
+	 * Set the state of a lockable device to 'locked'
+	 *
+	 * @param device The device to lock
+	 */
+	public void lockDevice(IWinkDevice device) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		updatedState.put("locked", "true");
+		this.setDesiredState(device, updatedState);
+	}
 
-    /**
-     * Set the 'locked' state of a lockable device to unlocked
-     *
-     * @param device The device to unlock
-     */
-    public void unLockDevice(IWinkDevice device) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        updatedState.put("locked", "false");
-        this.setDesiredState(device, updatedState);
-    }
+	/**
+	 * Set the 'locked' state of a lockable device to unlocked
+	 *
+	 * @param device The device to unlock
+	 */
+	public void unLockDevice(IWinkDevice device) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		updatedState.put("locked", "false");
+		this.setDesiredState(device, updatedState);
+	}
 
-    /**
-     * Sets the dimmer level of a device to the level specified as a percentage
-     *
-     * @param device The device to change brightness
-     * @param level The percentage of brightness desired
-     */
-    public void setDeviceDimmerLevel(IWinkDevice device, int level) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        if (level > 0) {
-            Float fLevel = Float.valueOf(level);
-            updatedState.put("powered", "true");
-            updatedState.put("brightness", String.valueOf(fLevel / 100.0f));
-        } else {
-            updatedState.put("powered", "false");
-        }
-        this.setDesiredState(device, updatedState);
-    }
+	/**
+	 * Sets the dimmer level of a device to the level specified as a percentage
+	 *
+	 * @param device The device to change brightness
+	 * @param level The percentage of brightness desired
+	 */
+	public void setDeviceDimmerLevel(IWinkDevice device, int level) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		if (level > 0) {
+			Float fLevel = Float.valueOf(level);
+			updatedState.put("powered", "true");
+			updatedState.put("brightness", String.valueOf(fLevel / 100.0f));
+		} else {
+			updatedState.put("powered", "false");
+		}
+		this.setDesiredState(device, updatedState);
+	}
 
-    /**
-     * Retrieve a specified device from the Hub API
-     *
-     * @param deviceType The type of device to retrieve
-     * @param uuid The unique identifier for the device
-     * @return The device
-     */
-    public IWinkDevice getDevice(WinkSupportedDevice deviceType, String uuid) {
-        logger.debug("Getting device through handler {}", uuid);
-        return client.getDevice(deviceType, uuid);
-    }
+	/**
+	 * Retrieve a specified device from the Hub API
+	 *
+	 * @param deviceType The type of device to retrieve
+	 * @param uuid The unique identifier for the device
+	 * @return The device
+	 */
+	public IWinkDevice getDevice(WinkSupportedDevice deviceType, String uuid) {
+		logger.debug("Getting device through handler {}", uuid);
+		return client.getDevice(deviceType, uuid);
+	}
 
-    /**
-     * Sets the thermostat temperature to the level specified in celcius
-     *
-     * @param device The device to change temperature
-     * @param temperature The temperature desired
-     */
-    public void setThermostatTemperature(IWinkDevice device, float temperature) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        Map<String, String> jsonData = device.getCurrentStateComplexJson();
+	/**
+	 * Sets the thermostat temperature to the level specified in celcius
+	 *
+	 * @param device The device to change temperature
+	 * @param temperature The temperature desired
+	 */
+	public void setThermostatTemperature(IWinkDevice device, float temperature) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		Map<String, String> jsonData = device.getCurrentStateComplexJson();
 
-        String units = "f";
-        if (jsonData.get("units") != null && !jsonData.get("units").equals("null")) {
-            units = jsonData.get("units");
-        }
+		String units = "f";
+		if (jsonData.get("units") != null && !jsonData.get("units").equals("null")) {
+			units = jsonData.get("units");
+		}
 
-        float desiredTemperature = temperature;
-        if (units.equals("f")) {
-            // Convert to Celcius before setting new temp.
-            desiredTemperature = (desiredTemperature - 32) / 1.8f;
-        }
+		float desiredTemperature = temperature;
+		if (units.equals("f")) {
+			// Convert to Celcius before setting new temp.
+			desiredTemperature = (desiredTemperature - 32) / 1.8f;
+		}
 
-        if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
-            String currentOperationMode = jsonData.get("mode");
-            if (currentOperationMode.equals("cool_only")) {
-                updatedState.put("max_set_point", String.valueOf(desiredTemperature));
-            } else if (currentOperationMode.equals("heat_only")) {
-                updatedState.put("min_set_point", String.valueOf(desiredTemperature));
-            } else { // auto
-                // Set them both the same.
-                updatedState.put("min_set_point", String.valueOf(desiredTemperature));
-                updatedState.put("max_set_point", String.valueOf(desiredTemperature));
-            }
+		if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
+			String currentOperationMode = jsonData.get("mode");
+			if (currentOperationMode.equals("cool_only")) {
+				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
+			} else if (currentOperationMode.equals("heat_only")) {
+				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
+			} else { // auto
+				// Set them both the same.
+				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
+				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
+			}
 
-            logger.debug("Setting new temperature to {}", desiredTemperature);
-            this.setDesiredState(device, updatedState);
-        }
-    }
+			logger.debug("Setting new temperature to {}", desiredTemperature);
+			this.setDesiredState(device, updatedState);
+		}
+	}
 
-    /**
-     * Sets the thermostat mode to the mode specified
-     *
-     * @param device The device to change temperature
-     * @param mode The desired mode of operation, heat_only, cool_only, auto
-     */
-    public void setThermostatMode(IWinkDevice device, String mode) {
-        Map<String, String> updatedState = new HashMap<String, String>();
-        if (mode.equals("Cool")) {
-            updatedState.put("mode", String.valueOf("cool_only"));
-        } else if (mode.equals("Heat")) {
-            updatedState.put("mode", String.valueOf("heat_only"));
-        } else if (mode.equals("Auto")) {
-            updatedState.put("mode", String.valueOf("auto"));
-        } else {
-            // unknown mode.
-            logger.warn("Detected unknown wink:thermostat mode '{}'", mode);
-        }
+	/**
+	 * Sets the thermostat mode to the mode specified
+	 *
+	 * @param device The device to change temperature
+	 * @param mode The desired mode of operation, heat_only, cool_only, auto
+	 */
+	public void setThermostatMode(IWinkDevice device, String mode) {
+		Map<String, String> updatedState = new HashMap<String, String>();
+		if (mode.equals("Cool")) {
+			updatedState.put("mode", String.valueOf("cool_only"));
+		} else if (mode.equals("Heat")) {
+			updatedState.put("mode", String.valueOf("heat_only"));
+		} else if (mode.equals("Auto")) {
+			updatedState.put("mode", String.valueOf("auto"));
+		} else {
+			// unknown mode.
+			logger.warn("Detected unknown wink:thermostat mode '{}'", mode);
+		}
 
-        logger.debug("Setting new mode to {}", mode);
-        this.setDesiredState(device, updatedState);
-    }
+		logger.debug("Setting new mode to {}", mode);
+		this.setDesiredState(device, updatedState);
+	}
 
 }

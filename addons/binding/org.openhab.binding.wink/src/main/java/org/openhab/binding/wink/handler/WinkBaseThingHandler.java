@@ -177,7 +177,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
                     JsonParser parser = new JsonParser();
                     JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                     IWinkDevice device = new JsonWinkDevice(jsonMessage);
-                    logger.debug("Received update from device: {}", device);
+                    logger.debug("pubnub.addListener: Received update from device: {}", device);
                     updateDeviceState(device);
                 }
 
