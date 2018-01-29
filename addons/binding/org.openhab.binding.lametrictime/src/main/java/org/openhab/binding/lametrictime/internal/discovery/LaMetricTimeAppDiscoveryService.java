@@ -68,14 +68,8 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
      */
     public LaMetricTimeAppDiscoveryService(final LaMetricTimeHandler deviceHandler) {
         super(Sets.union(Sets.newHashSet(CORE_APP_THING_TYPE_UIDS.values()),
-                Collections.singleton(LaMetricTimeBindingConstants.THING_TYPE_GENERIC_APP)), TIMEOUT, true);
+                Collections.singleton(LaMetricTimeBindingConstants.THING_TYPE_GENERIC_APP)), TIMEOUT, false);
         this.deviceHandler = deviceHandler;
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("Starting background discovery for new apps");
-        startScan();
     }
 
     @Override
@@ -113,8 +107,6 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
                 thingDiscovered(discoveryResult);
             }
         }
-
-        stopScan();
     }
 
     private boolean containsThing(List<Thing> things, String widgetId) {
