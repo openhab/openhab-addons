@@ -29,13 +29,11 @@ public class LaMetricTimeBindingConstants {
     public static final ThingTypeUID THING_TYPE_RADIO_APP = new ThingTypeUID(BINDING_ID, "radioApp");
     public static final ThingTypeUID THING_TYPE_STOPWATCH_APP = new ThingTypeUID(BINDING_ID, "stopwatchApp");
     public static final ThingTypeUID THING_TYPE_WEATHER_APP = new ThingTypeUID(BINDING_ID, "weatherApp");
-    public static final ThingTypeUID THING_TYPE_GENERIC_APP = new ThingTypeUID(BINDING_ID, "genericApp");
 
     // List of all Channel ids
     public static final String CHANNEL_NOTIFICATIONS_INFO = "info";
     public static final String CHANNEL_NOTIFICATIONS_WARN = "warning";
     public static final String CHANNEL_NOTIFICATIONS_ALERT = "alert";
-    public static final String CHANNEL_NOTIFICATIONS_ADVANCED = "advanced";
 
     public static final String CHANNEL_DISPLAY_BRIGHTNESS = "brightness";
     public static final String CHANNEL_DISPLAY_BRIGHTNESS_MODE = "brightnessMode";
@@ -51,7 +49,6 @@ public class LaMetricTimeBindingConstants {
     public static final String CHANNEL_APP_START = "start";
     public static final String CHANNEL_APP_CONTROL = "control";
     public static final String CHANNEL_APP_FORECAST = "forecast";
-    public static final String CHANNEL_APP_FRAMES = "frames";
 
     // List of non-standard Properties
     public static final String PROPERTY_ID = "id";

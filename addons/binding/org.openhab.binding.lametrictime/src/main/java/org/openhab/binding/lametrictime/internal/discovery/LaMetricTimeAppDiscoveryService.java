@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.lametrictime.internal.discovery;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +66,7 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
      * @param deviceHandler the LaMetric Time device handler (bridge)
      */
     public LaMetricTimeAppDiscoveryService(final LaMetricTimeHandler deviceHandler) {
-        super(Sets.union(Sets.newHashSet(CORE_APP_THING_TYPE_UIDS.values()),
-                Collections.singleton(LaMetricTimeBindingConstants.THING_TYPE_GENERIC_APP)), TIMEOUT, false);
+        super(Sets.newHashSet(CORE_APP_THING_TYPE_UIDS.values()), TIMEOUT, false);
         this.deviceHandler = deviceHandler;
     }
 
@@ -84,7 +82,8 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
 
             ThingTypeUID thingType = CORE_APP_THING_TYPE_UIDS.get(packageName);
             if (thingType == null) {
-                thingType = LaMetricTimeBindingConstants.THING_TYPE_GENERIC_APP;
+                // skip generic apps
+                continue;
             }
 
             for (Widget widget : app.getWidgets().values()) {

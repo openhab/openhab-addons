@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.Configuration;
 import org.syphr.lametrictime.api.LaMetricTime;
-import org.syphr.lametrictime.api.common.impl.GsonGenerator;
 import org.syphr.lametrictime.api.local.ApplicationActivationException;
 import org.syphr.lametrictime.api.local.LaMetricTimeLocal;
 import org.syphr.lametrictime.api.local.NotificationCreationException;
@@ -52,11 +51,8 @@ import org.syphr.lametrictime.api.local.model.Audio;
 import org.syphr.lametrictime.api.local.model.Bluetooth;
 import org.syphr.lametrictime.api.local.model.Device;
 import org.syphr.lametrictime.api.local.model.Display;
-import org.syphr.lametrictime.api.local.model.Notification;
 import org.syphr.lametrictime.api.local.model.Widget;
 import org.syphr.lametrictime.api.model.enums.BrightnessMode;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link LaMetricTimeHandler} is responsible for handling commands, which are
@@ -131,9 +127,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 case CHANNEL_NOTIFICATIONS_WARN:
                     handleNotificationsCommand(channelUID, command);
                     break;
-                case CHANNEL_NOTIFICATIONS_ADVANCED:
-                    handleNotificationsAdvanceCommand(channelUID, command);
-                    break;
                 case CHANNEL_DISPLAY_BRIGHTNESS:
                 case CHANNEL_DISPLAY_BRIGHTNESS_MODE:
                     handleBrightnessChannel(channelUID, command);
@@ -157,25 +150,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         } catch (Exception e) {
             logger.debug("Unexpected error while handling command - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void handleNotificationsAdvanceCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // verify communication
-            clock.getLocalApi().getApi();
-            return;
-        }
-
-        String jsonCommand = command.toString();
-        try {
-            logger.debug("Send advanced notification: {}", jsonCommand);
-            Gson gson = GsonGenerator.create(true);
-            Notification notification = gson.fromJson(jsonCommand, Notification.class);
-            String response = clock.getLocalApi().createNotification(notification);
-            logger.debug("Advanced notification response was {}", response);
-        } catch (NotificationCreationException e) {
-            logger.error("Could not send advanced notification: {}", jsonCommand, e);
         }
     }
 

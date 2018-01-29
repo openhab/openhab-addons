@@ -22,7 +22,6 @@
             <channel id="alert" typeId="simpleNotificationType">
                 <label>Alert Notification</label>
             </channel>
-            <channel id="advanced" typeId="jsonNotificationType"/>
         </channels>
 
         <config-description>
@@ -86,11 +85,5 @@
         <label>Simple Notification</label>
         <description>Send a notification to LaMetric Time</description>
         <category>Text</category>
-    </channel-type>
-
-    <channel-type id="jsonNotificationType">
-        <item-type>String</item-type>
-        <label>Advanced Notification</label>
-        <description>Channel to send custom messages with the LaMetric APIs JSON structure.</description>
     </channel-type>
 </thing:thing-descriptions>

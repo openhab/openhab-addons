@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.lametrictime.handler.ClockAppHandler;
 import org.openhab.binding.lametrictime.handler.CountdownAppHandler;
-import org.openhab.binding.lametrictime.handler.GenericAppHandler;
 import org.openhab.binding.lametrictime.handler.LaMetricTimeHandler;
 import org.openhab.binding.lametrictime.handler.RadioAppHandler;
 import org.openhab.binding.lametrictime.handler.StopwatchAppHandler;
@@ -50,7 +49,7 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets.newHashSet(THING_TYPE_DEVICE,
             THING_TYPE_CLOCK_APP, THING_TYPE_COUNTDOWN_APP, THING_TYPE_RADIO_APP, THING_TYPE_STOPWATCH_APP,
-            THING_TYPE_WEATHER_APP, THING_TYPE_GENERIC_APP);
+            THING_TYPE_WEATHER_APP);
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandlerFactory.class);
 
@@ -89,9 +88,6 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_WEATHER_APP.equals(thingTypeUID)) {
             logger.debug("Creating handler for LaMetric Time weather app {}", thing);
             return new WeatherAppHandler(thing);
-        } else if (THING_TYPE_GENERIC_APP.equals(thingTypeUID)) {
-            logger.debug("Creating handler for LaMetric Time generic app {}", thing);
-            return new GenericAppHandler(thing);
         }
 
         return null;
