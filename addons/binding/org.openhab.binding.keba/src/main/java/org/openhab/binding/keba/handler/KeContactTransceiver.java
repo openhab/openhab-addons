@@ -34,14 +34,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KeContacTransceiver} is responsible for receiving UDP broadcast messages sent by the KEBA Charging
+ * The {@link KeContactTransceiver} is responsible for receiving UDP broadcast messages sent by the KEBA Charging
  * Stations. {@link KeContactHandler} willing to receive these messages have to register themselves with the
- * {@link KeContacTransceiver}
+ * {@link KeContactTransceiver}
  *
  * @author Karel Goderis - Initial contribution
  */
 
-class KeContacTransceiver {
+class KeContactTransceiver {
 
     public static final int LISTENER_PORT_NUMBER = 7090;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -65,7 +65,7 @@ class KeContacTransceiver {
     private Map<KeContactHandler, Boolean> flags = Collections
             .synchronizedMap(new HashMap<KeContactHandler, Boolean>());
 
-    private final Logger logger = LoggerFactory.getLogger(KeContacTransceiver.class);
+    private final Logger logger = LoggerFactory.getLogger(KeContactTransceiver.class);
 
     public void start() {
         if (!isStarted) {
