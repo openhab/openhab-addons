@@ -12,7 +12,6 @@ import static org.openhab.binding.vitaled.VitaLEDBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -158,22 +157,35 @@ public class VitaLEDHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // refresh all zones
-                    for (int i = 0; i < 8; i++) {
-                        updateVitaLED(i);
-                    }
-                    // update zone description
-                    connection.getZoneDescriptions();
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-                }
+        /*
+         * Runnable runnable = new Runnable() {
+         * 
+         * @Override
+         * public void run() {
+         * try {
+         * // refresh all zones
+         * for (int i = 0; i < 8; i++) {
+         * updateVitaLED(i);
+         * }
+         * // update zone description
+         * connection.getZoneDescriptions();
+         * } catch (Exception e) {
+         * logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+         * }
+         * }
+         * };
+         * refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshInterval.intValue(), TimeUnit.SECONDS);
+         */
+        try {
+            // refresh all zones
+            for (int i = 0; i < 8; i++) {
+                updateVitaLED(i);
             }
-        };
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshInterval.intValue(), TimeUnit.SECONDS);
+            // update zone description
+            connection.getZoneDescriptions();
+        } catch (Exception e) {
+            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+        }
     }
 
     @Override
