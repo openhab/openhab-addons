@@ -51,13 +51,13 @@
 		<item-type>Number</item-type>
 		<label>Total Energy</label>
 		<description>Energy generated overall</description>
-		<state pattern="%.4f MWh" readOnly="true"></state>
+		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="year_energy">
 		<item-type>Number</item-type>
 		<label>Year Energy</label>
 		<description>Energy generated in current year</description>
-		<state pattern="%.4f MWh" readOnly="true"></state>
+		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fac">
