@@ -10,19 +10,20 @@ package org.openhab.binding.lametrictime.handler;
 
 import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
+
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
-import org.openhab.binding.lametrictime.handler.model.ParamsSetAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.common.impl.GsonGenerator;
 import org.syphr.lametrictime.api.model.CoreApps;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link ClockAppHandler} represents an instance of the built-in clock app.
@@ -34,8 +35,6 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClockAppHandler.class);
 
-    private final Gson gson = GsonGenerator.create();
-
     public ClockAppHandler(Thing thing) {
         super(thing);
     }
@@ -45,9 +44,9 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_SET_ALARM: {
-                    ParamsSetAlarm params = gson.fromJson(command.toString(), ParamsSetAlarm.class);
-                    getDevice().doAction(getWidget(),
-                            CoreApps.clock().setAlarm(params.enabled, params.time, params.wakeWithRadio));
+                    LocalTime time = Instant.ofEpochMilli(((DateTimeType) command).getCalendar().getTimeInMillis())
+                            .atZone(ZoneId.systemDefault()).toLocalTime();
+                    getDevice().doAction(getWidget(), CoreApps.clock().setAlarm(true, time, null));
                     break;
                 }
                 case CHANNEL_APP_STOP_ALARM:

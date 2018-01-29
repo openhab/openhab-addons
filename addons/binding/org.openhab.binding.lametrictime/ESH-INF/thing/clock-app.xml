@@ -12,10 +12,7 @@
         <description>Provides control for the clock app on the LaMetric Time</description>
         
         <channels>
-            <channel id="setAlarm" typeId="parameterActionType">
-                <label>Set Alarm</label>
-                <description>Set the alarm</description>
-            </channel>
+            <channel id="setAlarm" typeId="setAlarmType"/>
             <channel id="stopAlarm" typeId="stopAlarmType"/>
         </channels>
         
@@ -27,6 +24,11 @@
         </config-description>
     </thing-type>
 
+    <channel-type id="setAlarmType">
+        <item-type>DateTime</item-type>
+        <label>Set Alarm</label>
+        <description>Set the alarm to a specific time (date is ignored)</description>
+    </channel-type>
     <channel-type id="stopAlarmType">
         <item-type>Switch</item-type>
         <label>Stop Alarm</label>

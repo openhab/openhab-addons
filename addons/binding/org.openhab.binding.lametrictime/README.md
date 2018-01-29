@@ -97,10 +97,10 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 
 All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
 
-| Channel ID | Item Type | Description                                                                                                |
-|------------|-----------|------------------------------------------------------------------------------------------------------------|
-| setAlarm   | String    | Set a JSON string that represents the parameters to set an alarm (enabled, time, wakeOnRadio)              |
-| stopAlarm  | Switch    | Stop the alarm (currently not working)                                                                     |
+| Channel ID | Item Type | Description                                                         |
+|------------|-----------|---------------------------------------------------------------------|
+| setAlarm   | DateTime  | Set the alarm using the given time (note that the date is not used) |
+| stopAlarm  | Switch    | Stop the alarm (currently not working)                              |
 
 ### Countdown App
 
@@ -272,9 +272,9 @@ Switch NotifyWarning            "Notify Warning"
 Switch NotifyAlert              "Notify Alert"
 Switch NotifyTheRoofIsOnFire    "The Roof Is On Fire!"
 
-String ClockSetAlarm                                                        { channel="lametrictime:clockApp:demo:clock:setAlarm" }
-Switch ClockStopAlarm           "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
-Switch SetAlarmIn1Min           "Set Alarm in 1 min"
+DateTime ClockSetAlarm          "Set Alarm"                                 { channel="lametrictime:clockApp:demo:clock:setAlarm" }
+Switch   ClockStopAlarm         "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
+Switch   SetAlarmIn1Min         "Set Alarm in 1 min"
 
 Number CountdownDuration        "Countdown Duration"                        { channel="lametrictime:countdownApp:demo:countdown:duration" }
 Switch CountdownPause           "Pause Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:pause" }
@@ -347,6 +347,8 @@ Sample sitemap configuration:
 Sample rules:
 
 ```
+import java.util.Calendar
+
 rule "Notify Info"
     when
         Item NotifyInfo changed to ON
@@ -412,15 +414,9 @@ rule "Set Alarm in 1 Minute"
          
          logInfo("demo.rules", "Setting alarm for 1 minute from now")
          
-         val time = java.time.LocalTime.now().plusMinutes(1)
-         val jsonMessage = String::format('{
-                   "enabled": true,
-                   "time": "%1$s",
-                   "wakeWithRadio": false
-                 }', time)
-    
-         logInfo("demo.rules", "Setting alarm for " + time)
-         sendCommand(ClockSetAlarm, jsonMessage)
+         val cal = Calendar.getInstance()
+         cal.add(Calendar.MINUTE, 1)
+         sendCommand(ClockSetAlarm, new DateTimeType(cal))
 end
 
 rule "Set 2 Minute Countdown"

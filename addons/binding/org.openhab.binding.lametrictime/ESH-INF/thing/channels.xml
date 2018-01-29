@@ -3,12 +3,6 @@
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
                           xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    <channel-type id="parameterActionType" advanced="true">
-        <item-type>String</item-type>
-        <label>Parameter Action</label>
-        <description>Perform an action with parameters as input</description>
-    </channel-type>
-
     <channel-type id="pauseType">
         <item-type>Switch</item-type>
         <label>Pause</label>
