@@ -56,7 +56,7 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
-    private LaMetricTimeStateDescriptionProvider stateDescriptionProvider;
+    private StateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -136,11 +136,11 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setDynamicStateDescriptionProvider(LaMetricTimeStateDescriptionProvider provider) {
+    protected void setDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
         this.stateDescriptionProvider = provider;
     }
 
-    protected void unsetDynamicStateDescriptionProvider(LaMetricTimeStateDescriptionProvider provider) {
+    protected void unsetDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
         this.stateDescriptionProvider = null;
     }
 }

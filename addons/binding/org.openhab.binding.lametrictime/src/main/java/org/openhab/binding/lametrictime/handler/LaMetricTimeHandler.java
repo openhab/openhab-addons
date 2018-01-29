@@ -31,13 +31,12 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lametrictime.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
-import org.openhab.binding.lametrictime.internal.LaMetricTimeStateDescriptionProvider;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
+import org.openhab.binding.lametrictime.internal.StateDescriptionOptionsProvider;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +68,11 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandler.class);
 
-    private final LaMetricTimeStateDescriptionProvider stateDescriptionProvider;
+    private final StateDescriptionOptionsProvider stateDescriptionProvider;
 
     private LaMetricTime clock;
 
-    public LaMetricTimeHandler(Bridge bridge, LaMetricTimeStateDescriptionProvider stateDescriptionProvider) {
+    public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider) {
         super(bridge);
         this.stateDescriptionProvider = stateDescriptionProvider;
 
@@ -379,8 +378,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
             }
         }
 
-        stateDescriptionProvider.setStateDescription(
-                new ChannelUID(getThing().getUID(), LaMetricTimeBindingConstants.CHANNEL_APP),
-                new StateDescription(null, null, null, null, false, options));
+        stateDescriptionProvider.setStateOptions(
+                new ChannelUID(getThing().getUID(), LaMetricTimeBindingConstants.CHANNEL_APP), options);
     }
 }
