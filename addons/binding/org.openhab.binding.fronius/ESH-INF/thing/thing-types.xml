@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fronius" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Powerinverter Thing Type -->
+	<thing-type id="powerinverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Fronius Symo Inverter</label>
+		<description>Fronius Symo power inverter</description>
+
+		<channels>
+			<channel id="inverterdatachannelpac" typeId="pac" />
+			<channel id="inverterdatachanneldayenergy" typeId="day_energy" />
+			<channel id="inverterdatachanneltotal" typeId="total_energy" />
+			<channel id="inverterdatachannelyear" typeId="year_energy" />
+			<channel id="inverterdatachannelfac" typeId="fac" />
+			<channel id="inverterdatachanneliac" typeId="iac" />
+			<channel id="inverterdatachannelidc" typeId="idc" />
+			<channel id="inverterdatachanneluac" typeId="uac" />
+			<channel id="inverterdatachanneludc" typeId="udc" />
+			<channel id="powerflowchannelpgrid" typeId="pGrid" />
+			<channel id="powerflowchannelpload" typeId="pLoad" />
+			<channel id="powerflowchannelpakku" typeId="pAkku" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="day_energy">
+		<item-type>Number</item-type>
+		<label>Day Energy</label>
+		<description>Energy generated on current day</description>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pac">
+		<item-type>Number</item-type>
+		<label>AC power</label>
+		<description>AC power</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total_energy">
+		<item-type>Number</item-type>
+		<label>Total Energy</label>
+		<description>Energy generated overall</description>
+		<state pattern="%.3f MWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="year_energy">
+		<item-type>Number</item-type>
+		<label>Year Energy</label>
+		<description>Energy generated in current year</description>
+		<state pattern="%.3f MWh" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fac">
+		<item-type>Number</item-type>
+		<label>AC frequency</label>
+		<description>AC frequency</description>
+		<state pattern="%.2f Hz" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="iac">
+		<item-type>Number</item-type>
+		<label>AC current</label>
+		<description>AC current</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="idc">
+		<item-type>Number</item-type>
+		<label>DC current</label>
+		<description>DC current</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="uac">
+		<item-type>Number</item-type>
+		<label>AC voltage</label>
+		<description>AC voltage</description>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="udc">
+		<item-type>Number</item-type>
+		<label>DC voltage</label>
+		<description>DC voltage</description>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="pGrid">
+		<item-type>Number</item-type>
+		<label>Grid Power</label>
+		<description>Grid Power ( + from grid, - to grid )</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pLoad">
+		<item-type>Number</item-type>
+		<label>Load Power</label>
+		<description>Load Power ( + generator, - consumer )</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pAkku">
+		<item-type>Number</item-type>
+		<label>Battery Power</label>
+		<description>Battery Power ( + charge, - discharge )</description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
