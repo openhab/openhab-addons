@@ -10,6 +10,7 @@ package org.openhab.binding.squeezebox.handler;
 
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +41,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
+import org.openhab.binding.squeezebox.internal.StateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
@@ -111,6 +114,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private String callbackUrl;
 
+    private StateDescriptionOptionsProvider stateDescriptionProvider;
+
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
@@ -118,10 +123,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Creates SqueezeBox Player Handler
      *
      * @param thing
+     * @param stateDescriptionProvider
      */
-    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl) {
+    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
+            StateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.callbackUrl = callbackUrl;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -462,6 +470,14 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void updateFavoritesList(List<Favorite> favorites) {
         // TODO: Process updated favorites list
         logger.trace("Player {} Options: {}", mac, favorites);
+
+        List<StateOption> options = new ArrayList<>();
+
+        for (Favorite favorite : favorites) {
+            options.add(new StateOption(favorite.shortId, favorite.name));
+        }
+        stateDescriptionProvider.setStateOptions(
+                new ChannelUID(getThing().getUID(), SqueezeBoxBindingConstants.CHANNEL_FAVORITES_PLAY), options);
     }
 
     /**
