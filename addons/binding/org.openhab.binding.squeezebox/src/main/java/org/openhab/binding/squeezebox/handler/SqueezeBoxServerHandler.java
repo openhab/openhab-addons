@@ -942,7 +942,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 else if (part.startsWith("hasitems%3A")) {
                     hasitems = new Boolean("1".matches(part.substring("hasitems%3A".length())));
                     if (f != null) {
-                        f.hasitems = hasitems;
+                        if (hasitems) {
+                            // Skip subfolders
+                            favorites.remove(f);
+                            f = null;
+                        } else {
+                            f.hasitems = hasitems;
+                        }
                     }
                 }
             }
@@ -957,14 +963,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             StringBuilder sb = new StringBuilder();
             for (Favorite favorite : favorites) {
-                if (favorite.hasitems) {
-                    // Skip favorites that are folders with sub-items as we
-                    // only want favorites at the root level
-                    continue;
-                }
-                sb.append(favorite.shortId + "=");
                 // If not quoting, we don't want any embedded commas
                 adjustedName = includeQuotes ? favorite.name : favorite.name.replaceAll(",", "");
+                sb.append(favorite.shortId + "=");
                 sb.append(quote + adjustedName + quote);
                 sb.append(",");
             }
