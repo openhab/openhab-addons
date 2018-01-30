@@ -33,7 +33,6 @@ import com.google.gson.Gson;
  *
  * @author Niko Tanghe - Initial contribution
  */
-
 public class SmappeeService {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeService.class);

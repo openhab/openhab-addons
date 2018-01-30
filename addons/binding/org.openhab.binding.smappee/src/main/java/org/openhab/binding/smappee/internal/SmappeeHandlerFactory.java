@@ -38,7 +38,6 @@ import com.google.common.collect.Sets;
  *
  * @author Niko Tanghe - Initial contribution
  */
-
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smappee", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SmappeeHandlerFactory extends BaseThingHandlerFactory {
 

@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * The {@link SmappeeBinding} class defines common constants, which are
+ * The {@link Smappee2BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Niko Tanghe - Initial contribution

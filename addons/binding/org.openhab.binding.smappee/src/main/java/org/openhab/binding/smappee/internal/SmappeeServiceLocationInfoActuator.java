@@ -14,7 +14,6 @@ package org.openhab.binding.smappee.internal;
  *
  * @author Niko Tanghe - Initial contribution
  */
-
 public class SmappeeServiceLocationInfoActuator {
     public String id;
     public String name;

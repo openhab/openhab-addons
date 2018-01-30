@@ -16,7 +16,6 @@ import org.joda.time.DateTimeZone;
  *
  * @author Niko Tanghe - Initial contribution
  */
-
 public class SmappeeDeviceReadingConsumption {
 
     public long timestamp;
