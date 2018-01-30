@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,5 +202,9 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     @Override
     public void irCodeChangeEvent(String mac, String ircode) {
+    }
+
+    @Override
+    public void updateFavoritesList(List<Favorite> favorites) {
     }
 }

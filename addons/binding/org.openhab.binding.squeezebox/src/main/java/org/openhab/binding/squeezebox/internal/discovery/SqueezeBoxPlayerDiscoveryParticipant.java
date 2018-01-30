@@ -11,6 +11,7 @@ package org.openhab.binding.squeezebox.internal.discovery;
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayer;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,5 +195,9 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void irCodeChangeEvent(String mac, String ircode) {
+    }
+
+    @Override
+    public void updateFavoritesList(List<Favorite> favorites) {
     }
 }

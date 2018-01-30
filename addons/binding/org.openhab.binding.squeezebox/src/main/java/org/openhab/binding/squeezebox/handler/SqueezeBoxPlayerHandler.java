@@ -12,6 +12,7 @@ import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -43,6 +44,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -454,6 +456,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (isMe(mac)) {
             postCommand(CHANNEL_IRCODE, new StringType(ircode));
         }
+    }
+
+    @Override
+    public void updateFavoritesList(List<Favorite> favorites) {
+        // TODO: Process updated favorites list
+        logger.trace("Player {} Options: {}", mac, favorites);
     }
 
     /**

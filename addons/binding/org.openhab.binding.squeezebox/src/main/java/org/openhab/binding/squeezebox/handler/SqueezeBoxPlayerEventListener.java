@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
+
+import org.openhab.binding.squeezebox.internal.model.Favorite;
+
 /**
  * @author Markus Wolters
  * @author Ben Jones
@@ -24,7 +28,7 @@ public interface SqueezeBoxPlayerEventListener {
 
     /**
      * Reports a new absolute volume for a given player.
-     * 
+     *
      * @param mac
      * @param volume
      */
@@ -32,7 +36,7 @@ public interface SqueezeBoxPlayerEventListener {
 
     /**
      * Reports a relative volume change for a given player.
-     * 
+     *
      * @param mac
      * @param volumeChange
      */
@@ -67,4 +71,6 @@ public interface SqueezeBoxPlayerEventListener {
     void remoteTitleChangeEvent(String mac, String title);
 
     void irCodeChangeEvent(String mac, String ircode);
+
+    void updateFavoritesList(List<Favorite> favorites);
 }
