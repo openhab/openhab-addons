@@ -16,6 +16,6 @@
 	name="org.openhab.binding.miele.discovery.MieleMDNSDiscoveryParticipant">
 	<implementation class="org.openhab.binding.miele.internal.discovery.MieleMDNSDiscoveryParticipant" />
 	<service>
-		<provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant" />
+		<provide interface="org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant" />
 	</service>
 </scr:component>
