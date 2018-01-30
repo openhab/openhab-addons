@@ -73,7 +73,7 @@ public class KeContactHandler extends BaseThingHandler {
     protected JsonParser parser = new JsonParser();
 
     private ScheduledFuture<?> pollingJob;
-    private static KeContacTransceiver transceiver = new KeContacTransceiver();
+    private static KeContactTransceiver transceiver = new KeContactTransceiver();
     private ExpiringCacheMap<String, ByteBuffer> cache;
 
     private int maxPresetCurrent = 0;
