@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -45,7 +46,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
 
             if (isDevice) {
                 String address = getAddress(data.get("ADDRESS"));
-                String type = toString(data.get("TYPE"));
+                String type = MiscUtils.validateCharacters(toString(data.get("TYPE")), "Device type", "-");
                 String id = toString(data.get("ID"));
                 String firmware = toString(data.get("FIRMWARE"));
 
