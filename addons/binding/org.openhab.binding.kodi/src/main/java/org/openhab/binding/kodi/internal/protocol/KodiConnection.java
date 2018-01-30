@@ -12,7 +12,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +40,6 @@ import com.google.gson.JsonPrimitive;
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
  * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
- *
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
@@ -50,6 +51,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             .asList(new Integer[] { -32, -16, -8, -4, -2, 1, 2, 4, 8, 16, 32 });
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
+    private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(5)); // 5min
 
     private URI wsUri;
     private URI imageUri;
@@ -569,9 +572,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private synchronized JsonArray getChannelGroups(final String channelType) {
-        JsonObject params = new JsonObject();
-        params.addProperty("channeltype", channelType);
-        JsonElement response = socket.callMethod("PVR.GetChannelGroups", params);
+        String method = "PVR.GetChannelGroups";
+        String hash = method + "#channeltype=" + channelType;
+        if (!REQUEST_CACHE.containsKey(hash)) {
+            REQUEST_CACHE.put(hash, () -> {
+                JsonObject params = new JsonObject();
+                params.addProperty("channeltype", channelType);
+                return socket.callMethod(method, params);
+            });
+        }
+        JsonElement response = REQUEST_CACHE.get(hash);
 
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
@@ -597,9 +607,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private synchronized JsonArray getChannels(final int channelGroupID) {
-        JsonObject params = new JsonObject();
-        params.addProperty("channelgroupid", channelGroupID);
-        JsonElement response = socket.callMethod("PVR.GetChannels", params);
+        String method = "PVR.GetChannels";
+        String hash = method + "#channelgroupid=" + channelGroupID;
+        if (!REQUEST_CACHE.containsKey(hash)) {
+            REQUEST_CACHE.put(hash, () -> {
+                JsonObject params = new JsonObject();
+                params.addProperty("channelgroupid", channelGroupID);
+                return socket.callMethod(method, params);
+            });
+        }
+        JsonElement response = REQUEST_CACHE.get(hash);
 
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
@@ -608,6 +625,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
             }
         }
         return null;
+    }
+
+    public List<String> getChannelsAsList(final int channelGroupID) {
+        JsonArray array = getChannels(channelGroupID);
+        if (array instanceof JsonArray) {
+            List<String> channels = new ArrayList<>();
+            for (JsonElement element : array) {
+                JsonObject channel = (JsonObject) element;
+                if (channel.has("label")) {
+                    channels.add(channel.get("label").getAsString());
+                }
+            }
+            return Collections.unmodifiableList(channels);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public int getChannelID(final int channelGroupID, final String channelName) {
