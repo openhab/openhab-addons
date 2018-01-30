@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="eightdevices"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>8devices Binding</name>
+	<description>This binding is created in order to display 8devices sensor's (3700, 3800, 4400, 4500) data on openHAB 2 platform.</description>
+	<author>Nedas Jarmolenka</author>
+
+</binding:binding>
