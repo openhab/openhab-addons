@@ -9,17 +9,19 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 
 - CCU 1+2
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
-- [Homegear](https://www.homegear.eu)
+- [Homegear](https://www.homegear.eu) (>= 0.8.0-1988)
 - [piVCCU](https://github.com/alexreinert/piVCCU)
 - [YAHM](https://github.com/leonsio/YAHM)
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 
-Recommended for Homematic IP:
+The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
+
+Homematic IP support:
 - CCU2 with at least firmware 2.17.15
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) RF module
-
-The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
+- [piVCCU](https://github.com/alexreinert/piVCCU)
+- [YAHM](https://github.com/leonsio/YAHM)
 
 These ports are used by the binding by default to communicate **TO** the gateway:
 
