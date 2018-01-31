@@ -12,6 +12,7 @@ import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -91,7 +92,7 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
             }
         };
 
-        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollTime,
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.poll_time,
                 TimeUnit.MILLISECONDS);
     }
 

@@ -8,19 +8,20 @@
  */
 package org.openhab.binding.smappee.internal;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.Fields;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -53,6 +54,8 @@ public class SmappeeService {
     private DateTime accessTokenValidity;
     private String refreshToken;
 
+    private static HttpClient httpClient = new HttpClient(new SslContextFactory());
+
     public SmappeeService(SmappeeConfigurationParameters config) {
         this.config = config;
 
@@ -61,6 +64,16 @@ public class SmappeeService {
         this.gson = new Gson();
 
         this.initialized = false;
+
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.setFollowRedirects(false);
+                httpClient.start();
+            } catch (Exception e) {
+                logger.warn("Cannot start HttpClient!", e);
+            }
+        }
+
     }
 
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
@@ -72,7 +85,7 @@ public class SmappeeService {
             }
         };
 
-        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.pollTime, TimeUnit.MINUTES);
+        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.poll_time, TimeUnit.MINUTES);
     }
 
     public void stopAutomaticRefresh() {
@@ -278,7 +291,7 @@ public class SmappeeService {
         }
 
         for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
-            if (smappeeServiceLocation.name.equals(config.serviceLocationName)) {
+            if (smappeeServiceLocation.name.equals(config.service_location_name)) {
                 this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
                 initialized = true;
 
@@ -296,13 +309,11 @@ public class SmappeeService {
     private String getData(String request) {
         String url = "https://app1pub.smappee.net" + request;
 
-        HttpClient getClient = new HttpClient();
-
-        GetMethod getMethod = new GetMethod(url);
-        getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        getMethod.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-        getMethod.addRequestHeader("Accept", "application/json");
+        Request getMethod = httpClient.newRequest(url);
+        // getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
+        // false));
+        getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+        getMethod.accept("application/json");
 
         String accessTokenToInclude = getAccessToken();
         if (accessTokenToInclude.isEmpty()) {
@@ -310,39 +321,41 @@ public class SmappeeService {
             return "";
         }
 
-        getMethod.addRequestHeader("Authorization", "Bearer " + accessTokenToInclude); // add the authorization header
-                                                                                       // to the request
+        getMethod.header("Authorization", "Bearer " + accessTokenToInclude);
 
         try {
-            int statusCode = getClient.executeMethod(getMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.warn("Get readings method failed: {}", getMethod.getStatusLine());
+            ContentResponse response = getMethod.send();
+            int statusCode = response.getStatus();
+            if (statusCode != HttpStatus.OK_200) {
+                logger.warn("Get readings method failed: {}", response.getReason());
                 return "";
             }
 
-            return IOUtils.toString(getMethod.getResponseBodyAsStream());
-        } catch (HttpException e) {
-            logger.warn("Fatal protocol violation", e);
+            return response.getContentAsString();
+        } catch (InterruptedException e) {
+            logger.warn("Request aborted", e);
             return "";
-        } catch (IOException e) {
-            logger.warn("Fatal transport error", e);
+        } catch (TimeoutException e) {
+            logger.warn("Timeout error", e);
             return "";
-        } finally {
-            getMethod.releaseConnection();
+        } catch (ExecutionException e) {
+            logger.warn("Communication error", e.getCause());
+            return "";
+        } catch (Exception e) {
+            logger.warn("Error occured", e);
+            return "";
         }
     }
 
     private void setData(String request) {
         String url = "https://app1pub.smappee.net" + request;
 
-        HttpClient getClient = new HttpClient();
-
-        PostMethod postMethod = new PostMethod(url);
-        postMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-                new DefaultHttpMethodRetryHandler(3, false));
-        postMethod.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-        postMethod.addRequestHeader("Accept", "application/json");
+        Request postMethod = httpClient.newRequest(url);
+        // postMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
+        // false));
+        postMethod.method(HttpMethod.POST);
+        postMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+        postMethod.accept("application/json");
 
         String accessTokenToInclude = getAccessToken();
         if (accessTokenToInclude.isEmpty()) {
@@ -350,25 +363,28 @@ public class SmappeeService {
             return;
         }
 
-        postMethod.addRequestHeader("Authorization", "Bearer " + accessTokenToInclude); // add the authorization header
-                                                                                        // to the request
+        postMethod.header("Authorization", "Bearer " + accessTokenToInclude);
 
         try {
-            int statusCode = getClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.warn("Post method failed: {}", postMethod.getStatusLine());
+            ContentResponse response = postMethod.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                logger.warn("Post method failed: {}", response.getReason());
                 return;
             }
 
             return;
-        } catch (HttpException e) {
-            logger.warn("Fatal protocol violation", e);
+        } catch (InterruptedException e) {
+            logger.warn("Request aborted", e);
             return;
-        } catch (IOException e) {
-            logger.warn("Fatal transport error", e);
+        } catch (TimeoutException e) {
+            logger.warn("Timeout error", e);
             return;
-        } finally {
-            postMethod.releaseConnection();
+        } catch (ExecutionException e) {
+            logger.warn("Communication error", e.getCause());
+            return;
+        } catch (Exception e) {
+            logger.warn("Error occured", e);
+            return;
         }
     }
 
@@ -378,26 +394,28 @@ public class SmappeeService {
             return accessToken;
         }
 
-        HttpClient postClient = new HttpClient();
-
         if (accessTokenValidity != null) {
             // get new accesstoken by using the refreshToken
-            PostMethod postMethod = new PostMethod("https://app1pub.smappee.net/dev/v1/oauth2/token");
-            postMethod.addRequestHeader("Accept", "application/json");
+            Request postMethod = httpClient.newRequest("https://app1pub.smappee.net/dev/v1/oauth2/token");
+            postMethod.method(HttpMethod.POST);
+            postMethod.accept("application/json");
 
-            postMethod.addParameter("grant_type", "refresh_token");
-            postMethod.addParameter("refresh_token", refreshToken);
-            postMethod.addParameter("client_id", config.clientId);
-            postMethod.addParameter("client_secret", config.clientSecret);
+            Fields params = new Fields();
+            params.add("grant_type", "refresh_token");
+            params.add("refresh_token", refreshToken);
+            params.add("client_id", config.client_id);
+            params.add("client_secret", config.client_secret);
+
+            postMethod.content(new FormContentProvider(params));
 
             try {
-                int statusCode = postClient.executeMethod(postMethod);
-                if (statusCode != HttpStatus.SC_OK) {
-                    logger.warn("Get Access Token failed: {}", postMethod.getStatusLine());
+                ContentResponse response = postMethod.send();
+                if (response.getStatus() != HttpStatus.OK_200) {
+                    logger.warn("Refresh Access Token failed: {}", response.getReason());
                     return "";
                 }
 
-                String result = IOUtils.toString(postMethod.getResponseBodyAsStream());
+                String result = response.getContentAsString();
                 SmappeeAccessTokenResponse accessTokenResponse = gson.fromJson(result,
                         SmappeeAccessTokenResponse.class);
 
@@ -407,39 +425,44 @@ public class SmappeeService {
 
                 return accessToken;
 
-            } catch (HttpException e) {
-                logger.warn("GetAccessToken on credentials : Fatal protocol violation", e);
+            } catch (InterruptedException e) {
+                logger.warn("Request aborted", e);
                 return "";
-            } catch (IOException e) {
-                logger.warn("GetAccessToken on credentials : Fatal transport error", e);
+            } catch (TimeoutException e) {
+                logger.warn("Timeout error", e);
                 return "";
-            } catch (RuntimeException e) {
-                logger.warn("Failed to parse access token (from refreshtoken request)", e);
+            } catch (ExecutionException e) {
+                logger.warn("Communication error", e.getCause());
                 return "";
-            } finally {
-                postMethod.releaseConnection();
+            } catch (Exception e) {
+                logger.warn("Error occured", e);
+                return "";
             }
         }
 
         // get new accesstoken by using the credentials
 
-        PostMethod postMethod = new PostMethod("https://app1pub.smappee.net/dev/v1/oauth2/token");
-        postMethod.addRequestHeader("Accept", "application/json");
+        Request postMethod = httpClient.newRequest("https://app1pub.smappee.net/dev/v1/oauth2/token");
+        postMethod.method(HttpMethod.POST);
+        postMethod.accept("application/json");
 
-        postMethod.addParameter("grant_type", "password");
-        postMethod.addParameter("client_id", config.clientId);
-        postMethod.addParameter("client_secret", config.clientSecret);
-        postMethod.addParameter("username", config.username);
-        postMethod.addParameter("password", config.password);
+        Fields params = new Fields();
+        params.add("grant_type", "password");
+        params.add("client_id", config.client_id);
+        params.add("client_secret", config.client_secret);
+        params.add("username", config.username);
+        params.add("password", config.password);
+
+        postMethod.content(new FormContentProvider(params));
 
         try {
-            int statusCode = postClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.warn("Get token method failed: {}", postMethod.getStatusLine());
+            ContentResponse response = postMethod.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                logger.warn("Get Access token failed: {}", response.getReason());
                 return "";
             }
 
-            String result = IOUtils.toString(postMethod.getResponseBodyAsStream());
+            String result = response.getContentAsString();
             SmappeeAccessTokenResponse accessTokenResponse = gson.fromJson(result, SmappeeAccessTokenResponse.class);
 
             accessToken = accessTokenResponse.access_token;
@@ -447,18 +470,18 @@ public class SmappeeService {
             accessTokenValidity = DateTime.now().plusSeconds(accessTokenResponse.expires_in);
 
             return accessToken;
-
-        } catch (HttpException e) {
-            logger.warn("GetAccessToken on credentials : Fatal protocol violation", e);
+        } catch (InterruptedException e) {
+            logger.warn("Request aborted", e);
             return "";
-        } catch (IOException e) {
-            logger.warn("GetAccessToken on credentials : Fatal transport error", e);
+        } catch (TimeoutException e) {
+            logger.warn("Timeout error", e);
             return "";
-        } catch (RuntimeException e) {
-            logger.error("Failed to parse access token", e);
+        } catch (ExecutionException e) {
+            logger.warn("Communication error", e.getCause());
             return "";
-        } finally {
-            postMethod.releaseConnection();
+        } catch (Exception e) {
+            logger.warn("Error occured", e);
+            return "";
         }
     }
 }
