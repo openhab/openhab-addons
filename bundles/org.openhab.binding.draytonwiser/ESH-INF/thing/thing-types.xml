@@ -48,6 +48,7 @@
             <channel id="heatChannel1DemandState" typeId="heatChannel1DemandState-channel" />
             <channel id="heatChannel2Demand" typeId="heatChannel2Demand-channel" />
             <channel id="heatChannel2DemandState" typeId="heatChannel2DemandState-channel" />
+            <channel id="hotWaterDemandState" typeId="hotWaterDemandState-channel" />
             <channel id="awayModeState" typeId="awayModeState-channel" />
             <channel id="awayModeSetPoint" typeId="awayModeSetPoint-channel" />
             <channel id="ecoModeState" typeId="ecoModeState-channel" />
@@ -249,6 +250,13 @@
         <item-type>Switch</item-type>
         <label>Channel 2 Requesting Heat</label>
         <description>Current channel is requesting heat</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="hotWaterDemandState-channel">
+        <item-type>Switch</item-type>
+        <label>Hot Water Requesting Heat</label>
+        <description>Hot Water is requesting heat</description>
         <state readOnly="true"></state>
     </channel-type>
     

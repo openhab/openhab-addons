@@ -60,6 +60,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `heatChannel1DemandState` | Is channel 1 calling the boiler for heat                 | Yes         |
 | `heatChannel2Demand`      | Current demand level of heating channel 2                | Yes         |
 | `heatChannel2DemandState` | Is channel 2 calling the boiler for heat                 | Yes         |
+| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 | Yes         |
 | `currentSignalRSSI`       | Relative Signal Strength Indicator                       | Yes         |
 | `currentSignalStrength`   | Human readable signal strength                           | Yes         |
 

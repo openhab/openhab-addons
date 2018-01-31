@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
+import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Station;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,9 @@ public class ControllerHandler extends DraytonWiserThingHandler {
 
     @Nullable
     List<HeatingChannel> heatingChannels;
+
+    @Nullable
+    List<HotWater> hotWaterChannels;
 
     public ControllerHandler(Thing thing) {
         super(thing);
@@ -102,6 +106,9 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                         new ChannelUID(getThing().getUID(),
                                 DraytonWiserBindingConstants.CHANNEL_HEATCHANNEL_2_DEMAND_STATE),
                         getHeatChannel2DemandState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOTWATER_DEMAND_STATE),
+                        getHotWaterDemandState());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE),
                         getAwayModeState());
                 updateState(
@@ -127,6 +134,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         system = bridgeHandler.getSystem();
         station = bridgeHandler.getStation();
         heatingChannels = bridgeHandler.getHeatingChannels();
+        hotWaterChannels = bridgeHandler.getHotWater();
 
         return device != null && system != null && station != null;
     }
@@ -200,6 +208,17 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     private State getHeatChannel2DemandState() {
         if (heatingChannels != null && heatingChannels.size() >= 2) {
             if (heatingChannels.get(1).getHeatingRelayState().toUpperCase().equals("ON")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    @SuppressWarnings("null")
+    private State getHotWaterDemandState() {
+        if (hotWaterChannels != null && heatingChannels.size() >= 1) {
+            if (hotWaterChannels.get(0).getHotWaterRelayState().toUpperCase().equals("ON")) {
                 return OnOffType.ON;
             }
         }

@@ -33,6 +33,7 @@ import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.Domain;
 import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
+import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
@@ -277,6 +278,14 @@ public class HeatHubHandler extends BaseBridgeHandler {
         }
 
         return domain.getHeatingChannel();
+    }
+
+    public List<HotWater> getHotWater() {
+        if (domain == null) {
+            return new ArrayList<HotWater>();
+        }
+
+        return domain.getHotWater();
     }
 
     public void setRoomSetPoint(String roomName, Integer setPoint) {

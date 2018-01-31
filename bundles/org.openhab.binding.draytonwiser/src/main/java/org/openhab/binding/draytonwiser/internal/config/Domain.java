@@ -25,6 +25,9 @@ public class Domain {
     @SerializedName("HeatingChannel")
     @Expose
     private List<HeatingChannel> heatingChannel = null;
+    @SerializedName("HotWater")
+    @Expose
+    private List<HotWater> hotWater = null;
     @SerializedName("Room")
     @Expose
     private List<Room> room = null;
@@ -55,6 +58,14 @@ public class Domain {
 
     public void setHeatingChannel(List<HeatingChannel> heatingChannel) {
         this.heatingChannel = heatingChannel;
+    }
+
+    public List<HotWater> getHotWater() {
+        return hotWater;
+    }
+
+    public void setHotWater(List<HotWater> hotWater) {
+        this.hotWater = hotWater;
     }
 
     public List<Room> getRoom() {

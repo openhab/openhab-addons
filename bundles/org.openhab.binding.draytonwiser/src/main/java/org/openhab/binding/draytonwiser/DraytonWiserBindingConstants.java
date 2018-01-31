@@ -69,6 +69,7 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_HEATCHANNEL_2_DEMAND = "heatChannel2Demand";
     public static final String CHANNEL_HEATCHANNEL_1_DEMAND_STATE = "heatChannel1DemandState";
     public static final String CHANNEL_HEATCHANNEL_2_DEMAND_STATE = "heatChannel2DemandState";
+    public static final String CHANNEL_HOTWATER_DEMAND_STATE = "hotWaterDemandState";
     public static final String CHANNEL_AWAY_MODE_STATE = "awayModeState";
     public static final String CHANNEL_AWAY_MODE_SETPOINT = "awayModeSetPoint";
     public static final String CHANNEL_ECO_MODE_STATE = "ecoModeState";
