@@ -91,6 +91,14 @@ All devices support some of the following channels:
 | notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |
 | favoritesPlay           | String    | ID of Favorite to play (as available in server's favoritesList channel)                |
 
+## Playing Favorites
+
+Using the **favoritesPlay** channel, you can play a favorite from the *Favorites* list on the Logitech Media Server (LMS).
+The favorites from the LMS will be populated into the state options of the **favoritesPlay** channel.
+The Selection widget in HABpanel can be used to present the favorites as a choice list.
+Selecting from that choice list will play the favorite on the SqueezeBox player.
+Currently, only favorites from the root level of the LMS favorites list are exposed on the **favoritesPlay** channel.
+
 ## Notifications
 
 ### How To Set Up
@@ -146,3 +154,5 @@ end
 -   There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 -   When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
+
+-   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5. Therefore, it is recommended that the LMS be on a more current version than 7.7.5.

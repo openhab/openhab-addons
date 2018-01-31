@@ -65,7 +65,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
-    private StateDescriptionOptionsProvider stateDescriptionProvider;
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -203,11 +203,11 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
+    protected void setDynamicStateDescriptionProvider(SqueezeBoxStateDescriptionOptionsProvider provider) {
         this.stateDescriptionProvider = provider;
     }
 
-    protected void unsetDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
+    protected void unsetDynamicStateDescriptionProvider(SqueezeBoxStateDescriptionOptionsProvider provider) {
         this.stateDescriptionProvider = null;
     }
 }

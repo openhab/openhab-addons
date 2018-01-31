@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * that's used to monitor certain events related to the notification functionality.
  *
  * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
@@ -205,6 +206,6 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     @Override
-    public void updateFavoritesList(List<Favorite> favorites) {
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
 }

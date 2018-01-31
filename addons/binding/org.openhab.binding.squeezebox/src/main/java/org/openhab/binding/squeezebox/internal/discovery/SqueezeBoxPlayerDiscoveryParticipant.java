@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham
  * @author Mark Hilbush - added method to cancel request player job, and to set thing properties
  * @author Mark Hilbush - Added duration channel
+ * @author Mark Hilbush - Added event to update favorites list
  *
  */
 public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryService
@@ -198,6 +199,6 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     @Override
-    public void updateFavoritesList(List<Favorite> favorites) {
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
 }

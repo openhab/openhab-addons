@@ -17,6 +17,7 @@ import org.openhab.binding.squeezebox.internal.model.Favorite;
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
  * @author Mark Hilbush added durationEvent
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public interface SqueezeBoxPlayerEventListener {
 
@@ -72,5 +73,5 @@ public interface SqueezeBoxPlayerEventListener {
 
     void irCodeChangeEvent(String mac, String ircode);
 
-    void updateFavoritesList(List<Favorite> favorites);
+    void updateFavoritesListEvent(List<Favorite> favorites);
 }

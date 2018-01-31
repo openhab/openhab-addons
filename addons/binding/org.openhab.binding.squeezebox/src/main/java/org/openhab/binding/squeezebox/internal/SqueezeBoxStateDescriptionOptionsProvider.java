@@ -27,9 +27,11 @@ import org.osgi.service.component.annotations.Deactivate;
  * Dynamic provider of state options while leaving other state description fields as original.
  *
  * @author Gregory Moyer - Initial contribution
+ * @author Mark Hilbush - Adapted to squeezebox binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionOptionsProvider.class }, immediate = true)
-public class StateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class,
+        SqueezeBoxStateDescriptionOptionsProvider.class }, immediate = true)
+public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {

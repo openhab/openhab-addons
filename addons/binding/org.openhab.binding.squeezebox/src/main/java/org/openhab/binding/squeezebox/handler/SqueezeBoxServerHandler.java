@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Added login/password authentication for LMS
  * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
  * @author Patrik Gfeller - Support for mixer volume message added
+ * @author Mark Hilbush - Get favorites from LMS; update channel and send to players
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -530,14 +531,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Save player if we haven't seen it yet
                 if (!players.containsKey(macAddress)) {
                     players.put(macAddress, player);
-
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.playerAdded(player);
                         }
                     });
-
                     // tell the server we want to subscribe to player updates
                     sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
@@ -969,7 +968,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             updatePlayer(new PlayerUpdateEvent() {
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.updateFavoritesList(favorites);
+                    listener.updateFavoritesListEvent(favorites);
                 }
             });
         }

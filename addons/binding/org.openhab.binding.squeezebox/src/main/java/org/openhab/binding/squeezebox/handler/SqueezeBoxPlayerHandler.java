@@ -45,7 +45,7 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
-import org.openhab.binding.squeezebox.internal.StateDescriptionOptionsProvider;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
  * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
+ * @author Mark Hilbush - Get favorites from server and play favorite
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -114,7 +115,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private String callbackUrl;
 
-    private StateDescriptionOptionsProvider stateDescriptionProvider;
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
 
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
@@ -126,7 +127,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @param stateDescriptionProvider
      */
     public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
-            StateDescriptionOptionsProvider stateDescriptionProvider) {
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.callbackUrl = callbackUrl;
         this.stateDescriptionProvider = stateDescriptionProvider;
@@ -137,6 +138,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
         updateBridgeStatus();
+        logger.debug("player thing {} initialized.", getThing().getUID());
     }
 
     @Override
@@ -467,12 +469,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void updateFavoritesList(List<Favorite> favorites) {
-        // TODO: Process updated favorites list
-        logger.trace("Player {} Options: {}", mac, favorites);
-
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
+        logger.debug("Player {} updating favorites list", mac);
         List<StateOption> options = new ArrayList<>();
-
         for (Favorite favorite : favorites) {
             options.add(new StateOption(favorite.shortId, favorite.name));
         }
