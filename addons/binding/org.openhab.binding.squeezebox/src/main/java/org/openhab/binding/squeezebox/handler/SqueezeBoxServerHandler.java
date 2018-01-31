@@ -637,7 +637,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     String value = messagePart.substring("mixer%20volume%3A".length());
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
-
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
@@ -646,9 +645,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
                 // Parameter Mode
                 else if (messagePart.startsWith("mode%3A")) {
-
                     final String mode = messagePart.substring("mode%3A".length());
-
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
@@ -657,9 +654,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playing Time
-                else if (messagePart.startsWith("time%3A"))
-
-                {
+                else if (messagePart.startsWith("time%3A")) {
                     String value = messagePart.substring("time%3A".length());
                     final int time = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
@@ -733,7 +728,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                             listener.titleChangeEvent(mac, decode(value));
                         }
                     });
-
                 }
                 // Parameter Remote Title (radio)
                 else if (messagePart.startsWith("remote_title%3A")) {
