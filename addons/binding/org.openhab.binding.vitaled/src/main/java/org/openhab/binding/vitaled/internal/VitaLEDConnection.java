@@ -68,7 +68,7 @@ public class VitaLEDConnection {
         // referer
         String referer = "";
         // prepare urlParameter
-        String urlParameter = "Room=" + zone.toString();
+        String urlParameter = "Room=" + zoneIndex;
         // return parameter that indicates full update of channel states
         boolean fullUpdate = false;
         switch (attribute) {
