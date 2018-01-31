@@ -287,7 +287,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        getDomain();
+        refresh();
     }
 
     public void setRoomManualMode(String roomName, Boolean manualMode) {
@@ -300,7 +300,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        getDomain();
+        refresh();
     }
 
     public void setAwayMode(Boolean awayMode) {
@@ -308,13 +308,13 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT + "RequestOverride", "PATCH", payload);
         payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "-200" : "0") + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2/RequestOverride", "PATCH", payload);
-        getDomain();
+        refresh();
     }
 
     public void setEcoMode(Boolean ecoMode) {
         String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, "PATCH", payload);
-        getDomain();
+        refresh();
     }
 
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
