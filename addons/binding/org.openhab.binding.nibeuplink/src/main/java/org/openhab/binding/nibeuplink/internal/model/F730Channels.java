@@ -14,7 +14,7 @@ package org.openhab.binding.nibeuplink.internal.model;
  * @author Alexander Friese - initial contribution
  *
  */
-public enum F750Channels implements Channel {
+public enum F730Channels implements Channel {
 
     // General
     CH_40004("40004", "BT1 Outdoor Temperature", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
@@ -28,6 +28,7 @@ public enum F750Channels implements Channel {
     CH_40008("40008", "BT2 Supply temp S1", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
     CH_40072("40072", "BF1 EP14 Flow", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
+    CH_10033("10033", "Int. el.add. blocked", ChannelType.SENSOR, ChannelGroup.GENERAL, String.class),
 
     CH_43081("43081", "Tot. op.time add.", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
     CH_43084("43084", "Int. el.add. Power", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
@@ -57,11 +58,16 @@ public enum F750Channels implements Channel {
     CH_43136("43136", "Compressor Frequency, Actual", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
     CH_43122("43122", "Compr. current min.freq.", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
     CH_43123("43123", "Compr. current max.freq.", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
+    CH_10012("10012", "Compressor blocked", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, String.class),
     // Airsupply
+    CH_10001("10001", "Fan speed current", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
     CH_40026("40026", "BT21 Vented air temp. 1", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
     CH_43124("43124", "Air flow ref.", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
     CH_41026("41026", "EB100-Adjusted BS1 Air flow", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
+    CH_43125("43125", "Air flow reduction", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
+    CH_40919("40919", "Air mix", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, String.class),
+    CH_40101("40101", "BT28 Air mix Temp", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
 
     /* END */
     ;
@@ -79,7 +85,7 @@ public enum F750Channels implements Channel {
      * @param name
      * @param type
      */
-    F750Channels(String id, String name, ChannelType channelType, ChannelGroup channelGroup, Class<?> javaType) {
+    F730Channels(String id, String name, ChannelType channelType, ChannelGroup channelGroup, Class<?> javaType) {
         this.id = id;
         this.name = name;
         this.channelType = channelType;
@@ -87,8 +93,8 @@ public enum F750Channels implements Channel {
         this.javaType = javaType;
     }
 
-    public static F750Channels fromId(String id) {
-        for (F750Channels channel : F750Channels.values()) {
+    public static F730Channels fromId(String id) {
+        for (F730Channels channel : F730Channels.values()) {
             if (channel.id.equals(id)) {
                 return channel;
             }

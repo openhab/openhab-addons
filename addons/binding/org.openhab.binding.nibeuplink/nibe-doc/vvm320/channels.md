@@ -5,7 +5,7 @@
 | general#43005 | Number | -30000 | 30000 | Setting | Degree Minutes (16 bit) |  |
 | general#43009 | Number | -32767 | 32767 | Sensor | Calc. Supply S1 |  |
 | general#40033 | Number | -32767 | 32767 | Sensor | BT50 Room Temp S1 |  |
-| general#43161 | String | 0 | 255 | Sensor | External adjustment activated via input S1 |  |
+| general#43161 | String | --- | --- | Sensor | External adjustment activated via input S1 |  |
 | general#40008 | Number | -32767 | 32767 | Sensor | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | Sensor | EB100-EP14-BT3 Return temp |  |
 | general#40071 | Number | -32767 | 32767 | Sensor | BT25 Ext. Supply |  |
@@ -24,11 +24,11 @@
 | hotwater#40014 | Number | -32767 | 32767 | Sensor | BT6 HW Load |  |
 | hotwater#44306 | Number | 0 | 9999999 | Sensor | Heat Meter - HW Cpr EP14 |  |
 | hotwater#44298 | Number | 0 | 9999999 | Sensor | Heat Meter - HW Cpr and Add EP14 |  |
-| hotwater#48132 | String | -128 | 127 | Setting | Temporary Lux | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
-| hotwater#47041 | String | 0 | 2 | Setting | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
+| hotwater#48132 | String | --- | --- | Setting | Temporary Lux | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
+| hotwater#47041 | String | --- | --- | Setting | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
 | compressor#44362 | Number | -32767 | 32767 | Sensor | EB101-EP14-BT28 Outdoor Temp |  |
 | compressor#44396 | Number | 0 | 255 | Sensor | EB101 Speed charge pump |  |
-| compressor#44703 | String | 0 | 255 | Sensor | EB101-EP14 Defrosting Outdoor Unit | 0=No, 1=Active, 2=Passive |
+| compressor#44703 | String | --- | --- | Sensor | EB101-EP14 Defrosting Outdoor Unit | 0=No, 1=Active, 2=Passive |
 | compressor#44073 | Number | 0 | 9999999 | Sensor | EB101-EP14 Tot. HW op.time compr |  |
 | compressor#40737 | Number | 0 | 9999999 | Sensor | EB101-EP14 Tot. Cooling op.time compr |  |
 | compressor#44071 | Number | 0 | 9999999 | Sensor | EB101-EP14 Tot. op.time compr |  |
@@ -42,7 +42,7 @@
 | compressor#44699 | Number | -32767 | 32767 | Sensor | EB101-EP14-BP4 Pressure Sensor |  |
 | compressor#40781 | Number | 0 | 255 | Sensor | EB101 Cpr Frequency Desired F2040 |  |
 | compressor#44701 | Number | -32767 | 32767 | Sensor | EB101-EP14 Actual Cpr Frequency Outdoor Unit |  |
-| compressor#44702 | String | 0 | 65535 | Sensor | EB101-EP14 Protection Status Register Outdoor Unit |  |
+| compressor#44702 | String | --- | --- | Sensor | EB101-EP14 Protection Status Register Outdoor Unit |  |
 | compressor#44700 | Number | -32767 | 32767 | Sensor | EB101-EP14 Low Pressure Sensor Outdoor Unit |  |
 | airsupply#40025 | Number | -32767 | 32767 | Sensor | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | Sensor | BT21 Vented air temp. 1 |  |
@@ -50,4 +50,4 @@
 | airsupply#40183 | Number | -32767 | 32767 | Sensor | AZ30-BT23 Outdoor temp. ERS |  |
 | airsupply#40311 | Number | 0 | 255 | Sensor | External ERS accessory GQ2 speed |  |
 | airsupply#40312 | Number | 0 | 255 | Sensor | External ERS accessory GQ3 speed |  |
-| airsupply#40942 | String | 0 | 255 | Sensor | External ERS accessory block status |  |
+| airsupply#40942 | String | --- | --- | Sensor | External ERS accessory block status |  |

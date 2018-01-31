@@ -29,6 +29,7 @@ public final class NibeUplinkBindingConstants {
     // List of main device types
     public static final @NonNull String DEVICE_VVM320 = "vvm320";
     public static final @NonNull String DEVICE_VVM310 = "vvm310";
+    public static final @NonNull String DEVICE_F730 = "f730";
     public static final @NonNull String DEVICE_F750 = "f750";
     public static final @NonNull String DEVICE_F1145 = "f1145";
     public static final @NonNull String DEVICE_F1155 = "f1155";
@@ -36,6 +37,7 @@ public final class NibeUplinkBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VVM320 = new ThingTypeUID(BINDING_ID, DEVICE_VVM320);
     public static final ThingTypeUID THING_TYPE_VVM310 = new ThingTypeUID(BINDING_ID, DEVICE_VVM310);
+    public static final ThingTypeUID THING_TYPE_F730 = new ThingTypeUID(BINDING_ID, DEVICE_F730);
     public static final ThingTypeUID THING_TYPE_F750 = new ThingTypeUID(BINDING_ID, DEVICE_F750);
     public static final ThingTypeUID THING_TYPE_F1145 = new ThingTypeUID(BINDING_ID, DEVICE_F1145);
     public static final ThingTypeUID THING_TYPE_F1155 = new ThingTypeUID(BINDING_ID, DEVICE_F1155);
@@ -59,6 +61,6 @@ public final class NibeUplinkBindingConstants {
     public static final String DATA_API_FIELD_DATA_DEFAULT_VALUE = "0";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VVM320,
-            THING_TYPE_VVM310, THING_TYPE_F750, THING_TYPE_F1145, THING_TYPE_F1155);
+            THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750, THING_TYPE_F1145, THING_TYPE_F1155);
 
 }

@@ -29,7 +29,8 @@ Following models (indoor / main units) are currently supported:
 |-------------------|-------------------|-------------------------------------------------------|
 | VVM310 / 500      | vvm310            | reduced set of channels based on NibeUplink website   |
 | VVM320 / 325      | vvm320            | reduced set of channels based on NibeUplink website   |
-| F750              | f750              | all channels                                          |
+| F730              | f730              | reduced set of channels based on NibeUplink website   |
+| F750              | f750              | reduced set of channels based on NibeUplink website   |
 | F1145 / 1245      | f1145             | all channels                                          |
 | F1155 / 1255      | f1155             | all channels                                          |
 
@@ -79,6 +80,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 |----------------|-------------------------------------------------|
 | VVM310 / 500   | [List](nibe-doc/vvm310/channels.md)             |
 | VVM320 / 325   | [List](nibe-doc/vvm320/channels.md)             |
+| F730           | [List](nibe-doc/f730/channels.md)               |
 | F750           | [List](nibe-doc/f750/channels.md)               |
 | F1145 / 1245   | [List](nibe-doc/f1145/channels.md)              |
 | F1155 / 1255   | [List](nibe-doc/f1155/channels.md)              |

@@ -3,17 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="f750">
-		<label>Nibe F750</label>
-		<description>Nibe F750 heat pump connected through Nibe UpLink</description>
+	<thing-type id="f730">
+		<label>Nibe F730</label>
+		<description>Nibe F730 heat pump connected through Nibe UpLink</description>
 
 		<channel-groups>
-			<channel-group typeId="f750-general" id="general" />
-			<channel-group typeId="f750-hotwater" id="hotwater" />
-			<channel-group typeId="f750-compressor" id="compressor" />
-			<channel-group typeId="f750-airsupply" id="airsupply" />
+			<channel-group typeId="f730-general" id="general" />
+			<channel-group typeId="f730-hotwater" id="hotwater" />
+			<channel-group typeId="f730-compressor" id="compressor" />
+			<channel-group typeId="f730-airsupply" id="airsupply" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />
 	</thing-type>
-    

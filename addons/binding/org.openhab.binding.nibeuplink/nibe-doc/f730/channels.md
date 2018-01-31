@@ -10,6 +10,7 @@
 | general#40008 | Number | -32767 | 32767 | Sensor | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | Sensor | EB100-EP14-BT3 Return temp |  |
 | general#40072 | Number | -32767 | 32767 | Sensor | BF1 EP14 Flow |  |
+| general#10033 | String | --- | --- | Sensor | Int. el.add. blocked |  |
 | general#43081 | Number | 0 | 1000000 | Sensor | Tot. op.time add. |  |
 | general#43084 | Number | -32767 | 32767 | Sensor | Int. el.add. Power |  |
 | general#47212 | Number | 0 | 4500 | Setting | Max int add. power |  |
@@ -35,7 +36,12 @@
 | compressor#43136 | Number | 0 | 65535 | Sensor | Compressor Frequency, Actual |  |
 | compressor#43122 | Number | -32767 | 32767 | Sensor | Compr. current min.freq. |  |
 | compressor#43123 | Number | -32767 | 32767 | Sensor | Compr. current max.freq. |  |
+| compressor#10012 | String | --- | --- | Sensor | Compressor blocked |  |
+| airsupply#10001 | Number | 0 | 100 | Sensor | Fan speed current |  |
 | airsupply#40025 | Number | -32767 | 32767 | Sensor | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | Sensor | BT21 Vented air temp. 1 |  |
 | airsupply#43124 | Number | -32767 | 32767 | Sensor | Airflow ref. |  |
 | airsupply#41026 | Number | -32767 | 32767 | Sensor | EB100-Adjusted BS1 Air flow |  |
+| airsupply#43125 | Number | 0 | 100 | Sensor | Airflow reduction |  |
+| airsupply#40919 | String | --- | --- | Sensor | Air mix |  |
+| airsupply#40101 | Number | -32767 | 32767 | Sensor | BT28 Airmix Temp |  |

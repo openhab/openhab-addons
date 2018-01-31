@@ -4,119 +4,154 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 
-	<channel-type id="f750-type-40004">
+	<channel-type id="f730-type-10001">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed</description>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-10012">
+		<item-type>String</item-type>
+		<label>Compressor blocked</label>
+		<description>states if the compressor is blocked</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-10033">
+		<item-type>String</item-type>
+		<label>Int. el.add. blocked</label>
+		<description>states if internal electric additional heater is blocked</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-40004">
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40008">
+	<channel-type id="f730-type-40008">
 		<item-type>Number</item-type>
 		<label>BT2 Supply temp S1</label>
 		<description>Supply temperature for system 1</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40012">
+	<channel-type id="f730-type-40012">
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT3 Return temp</label>
 		<description>Return temperature</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40013">
+	<channel-type id="f730-type-40013">
 		<item-type>Number</item-type>
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40014">
+	<channel-type id="f730-type-40014">
 		<item-type>Number</item-type>
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40017">
+	<channel-type id="f730-type-40017">
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT12 Condensor Out</label>
 		<description>Condensor out temperature, BT12</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40018">
+	<channel-type id="f730-type-40018">
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT14 Hot Gas Temp</label>
 		<description>Hot gas temperature, BT14</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40019">
+	<channel-type id="f730-type-40019">
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT15 Liquid Line</label>
 		<description>Liquid line temperature, BT15</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40020">
+	<channel-type id="f730-type-40020">
 		<item-type>Number</item-type>
 		<label>EB100-BT16 Evaporator temp</label>
 		<description></description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40022">
+	<channel-type id="f730-type-40022">
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT17 Suction</label>
 		<description>Suction temperature, BT17</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40025">
+	<channel-type id="f730-type-40025">
 		<item-type>Number</item-type>
 		<label>BT20 Exhaust air temp. 1</label>
 		<description></description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40026">
+	<channel-type id="f730-type-40026">
 		<item-type>Number</item-type>
 		<label>BT21 Vented air temp. 1</label>
 		<description></description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40033">
+	<channel-type id="f730-type-40033">
 		<item-type>Number</item-type>
 		<label>BT50 Room Temp S1</label>
 		<description></description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40067">
+	<channel-type id="f730-type-40067">
 		<item-type>Number</item-type>
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40071">
+	<channel-type id="f730-type-40071">
 		<item-type>Number</item-type>
 		<label>BT25 Ext. Supply</label>
 		<description>External supply temperature, BT25</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-40072">
+	<channel-type id="f730-type-40072">
 		<item-type>Number</item-type>
 		<label>BF1 EP14 Flow</label>
 		<description>Current flow EP14|Current flow EP15</description>
 		<state pattern="%.1f l/m" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43005">
+	<channel-type id="f730-type-40101">
+		<item-type>Number</item-type>
+		<label>BT28 Airmix Temp</label>
+		<description>External airmix temperature BT28</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-40919">
+		<item-type>String</item-type>
+		<label>Air mix</label>
+		<description></description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-43005">
 		<item-type>Number</item-type>
 		<label>Degree Minutes (16 bit)</label>
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest
@@ -124,133 +159,140 @@
 		<state min="-30000" max="30000" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43009">
+	<channel-type id="f730-type-43009">
 		<item-type>Number</item-type>
 		<label>Calc. Supply S1</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-41026">
+	<channel-type id="f730-type-41026">
 		<item-type>Number</item-type>
 		<label>EB100-Adjusted BS1 Air flow</label>
 		<description></description>
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43081">
+	<channel-type id="f730-type-43081">
 		<item-type>Number</item-type>
 		<label>Tot. op.time add.</label>
 		<description>Total electric additive operation time</description>
 		<state pattern="%.1f h" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43084">
+	<channel-type id="f730-type-43084">
 		<item-type>Number</item-type>
 		<label>Int. el.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
 		<state pattern="%.2f kW" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43122">
+	<channel-type id="f730-type-43122">
 		<item-type>Number</item-type>
 		<label>Compr. current min.freq.</label>
 		<description>The current minimum frequency of the compressor</description>
 		<state pattern="%d Hz" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43123">
+	<channel-type id="f730-type-43123">
 		<item-type>Number</item-type>
 		<label>Compr. current max.freq.</label>
 		<description>The current maximum frequency of the compressor</description>
 		<state pattern="%d Hz" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43124">
+	<channel-type id="f730-type-43124">
 		<item-type>Number</item-type>
 		<label>Airflow ref.</label>
 		<description>Reference value for the airflow.</description>
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43136">
+	<channel-type id="f730-type-43125">
+		<item-type>Number</item-type>
+		<label>Airflow reduction</label>
+		<description></description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f730-type-43136">
 		<item-type>Number</item-type>
 		<label>Compressor Frequency, Actual</label>
 		<description>The compressor frequency the compressor is currently running at</description>
 		<state pattern="%.1f Hz" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43161">
+	<channel-type id="f730-type-43161">
 		<item-type>String</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43181">
+	<channel-type id="f730-type-43181">
 		<item-type>Number</item-type>
 		<label>Chargepump speed</label>
 		<description></description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43416">
+	<channel-type id="f730-type-43416">
 		<item-type>Number</item-type>
 		<label>Compressor starts EB100-EP14</label>
 		<description>Number of compressorer starts</description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43420">
+	<channel-type id="f730-type-43420">
 		<item-type>Number</item-type>
 		<label>Tot. op.time compr. EB100-EP14</label>
 		<description>Total compressorer operation time</description>
 		<state pattern="%d h" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43424">
+	<channel-type id="f730-type-43424">
 		<item-type>Number</item-type>
 		<label>Tot. HW op.time compr. EB100-EP14</label>
 		<description>Total compressorer operation time in hot water mode</description>
 		<state pattern="%d h" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-44298">
+	<channel-type id="f730-type-44298">
 		<item-type>Number</item-type>
 		<label>Heat Meter - HW Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-44300">
+	<channel-type id="f730-type-44300">
 		<item-type>Number</item-type>
 		<label>Heat Meter - Heat Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-44304">
+	<channel-type id="f730-type-44304">
 		<item-type>Number</item-type>
 		<label>Heat Meter - Pool Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-44306">
+	<channel-type id="f730-type-44306">
 		<item-type>Number</item-type>
 		<label>Heat Meter - HW Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-44308">
+	<channel-type id="f730-type-44308">
 		<item-type>Number</item-type>
 		<label>Heat Meter - Heat Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-47041">
+	<channel-type id="f730-type-47041">
 		<item-type>String</item-type>
 		<label>Hot water mode</label>
 		<description></description>
@@ -262,14 +304,14 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-47212">
+	<channel-type id="f730-type-47212">
 		<item-type>Number</item-type>
 		<label>Max int add. power</label>
 		<description></description>
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-48132">
+	<channel-type id="f730-type-48132">
 		<item-type>String</item-type>
 		<label>Temporary Lux</label>
 		<description></description>
@@ -283,7 +325,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-48914">
+	<channel-type id="f730-type-48914">
 		<item-type>Number</item-type>
 		<label>Max int add. power, SG Ready</label>
 		<description></description>
