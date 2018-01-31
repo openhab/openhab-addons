@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ac-average-voltage-to-n-type">
+		<item-type>Number</item-type>
+		<label>Average Line to Neutral AC Voltage</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-average-voltage-to-next-type">
+		<item-type>Number</item-type>
+		<label>Average Line to Line AC Voltage</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-real-power-type">
+		<item-type>Number</item-type>
+		<label>Total Real Power value (W)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-real-power-type">
+		<item-type>Number</item-type>
+		<label>AC Real Power value (W)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-apparent-power-type">
+		<item-type>Number</item-type>
+		<label>Total Apparent Power value (W)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-reactive-power-type">
+		<item-type>Number</item-type>
+		<label>Total Reactive Power value (W)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-average-power-factor-type">
+		<item-type>Number</item-type>
+		<label>Average AC Power Factor (%)</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ac-total-exported-real-energy-type">
+		<item-type>Number</item-type>
+		<label>Total Real Energy Exported (Wh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-exported-real-energy-type">
+		<item-type>Number</item-type>
+		<label>Real Energy Exported (Wh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-imported-real-energy-type">
+		<item-type>Number</item-type>
+		<label>Total Real Energy Imported (Wh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-imported-real-energy-type">
+		<item-type>Number</item-type>
+		<label>Real Energy Imported (Wh)</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ac-total-exported-apparent-energy-type">
+		<item-type>Number</item-type>
+		<label>Total Apparent Energy Exported (VAh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-exported-apparent-energy-type">
+		<item-type>Number</item-type>
+		<label>Apparent Energy Exported (VAh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-imported-apparent-energy-type">
+		<item-type>Number</item-type>
+		<label>Total Apparent Energy Imported (VAh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-imported-apparent-energy-type">
+		<item-type>Number</item-type>
+		<label>Apparent Energy Imported (VAh)</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ac-total-imported-reactive-energy-q1-type">
+		<item-type>Number</item-type>
+		<label>Total Reactive Energy Imported Quadrant 1 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-imported-reactive-energy-q1-type">
+		<item-type>Number</item-type>
+		<label>Reactive Energy Imported Quadrant 1 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-imported-reactive-energy-q2-type">
+		<item-type>Number</item-type>
+		<label>Total Reactive Energy Imported Quadrant 2 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-imported-reactive-energy-q2-type">
+		<item-type>Number</item-type>
+		<label>Reactive Energy Imported Quadrant 2 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ac-total-exported-reactive-energy-q3-type">
+		<item-type>Number</item-type>
+		<label>Total Reactive Energy Exported Quadrant 3 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-exported-reactive-energy-q3-type">
+		<item-type>Number</item-type>
+		<label>Reactive Energy Exported Quadrant 3 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-total-exported-reactive-energy-q4-type">
+		<item-type>Number</item-type>
+		<label>Total Reactive Energy Exported Quadrant 4 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ac-exported-reactive-energy-q4-type">
+		<item-type>Number</item-type>
+		<label>Reactive Energy Exported Quadrant 4 (VARh)</label>
+		<state readOnly="true" />
+	</channel-type>
+
+
+</thing:thing-descriptions>
