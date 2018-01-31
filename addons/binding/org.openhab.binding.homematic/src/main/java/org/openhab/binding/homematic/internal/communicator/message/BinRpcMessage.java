@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,9 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             throw new EOFException("Only " + length + " bytes received reading message length");
         }
         int datasize = (new BigInteger(ArrayUtils.subarray(sig, 4, 8))).intValue();
-        byte[] message = ArrayUtils.addAll(sig, IOUtils.toByteArray(is, datasize));
+        byte payload[] = new byte[datasize];
+        is.read(payload, 0, datasize);
+        byte[] message = ArrayUtils.addAll(sig, payload);
         decodeMessage(message, methodHeader);
     }
 
