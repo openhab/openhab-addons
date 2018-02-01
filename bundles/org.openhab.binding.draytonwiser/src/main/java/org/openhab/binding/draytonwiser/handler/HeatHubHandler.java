@@ -288,6 +288,29 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return domain.getHotWater();
     }
 
+    @Nullable
+    public Room getRoomForDeviceId(Integer id) {
+        refresh();
+        if (domain == null) {
+            return null;
+        }
+
+        for (Room room : domain.getRoom()) {
+            if (room != null) {
+                if (room.getRoomStatId() != null && room.getRoomStatId().equals(id)) {
+                    return room;
+                }
+                for (Integer itrv : room.getSmartValveIds()) {
+                    if (itrv.equals(id)) {
+                        return room;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public void setRoomSetPoint(String roomName, Integer setPoint) {
         Room room = getRoom(roomName);
         if (room == null) {

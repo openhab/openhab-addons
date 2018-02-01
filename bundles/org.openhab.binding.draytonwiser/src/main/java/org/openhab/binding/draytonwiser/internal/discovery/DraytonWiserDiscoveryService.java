@@ -108,11 +108,13 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
             properties.put("Model", device.getProductModel());
             properties.put("Serial Number", device.getSerialNumber());
 
+            Room assignedRoom = bridgeHandler.getRoomForDeviceId(r.getId());
+            String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
+
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID,
                             device.getSerialNumber().toString()))
-                    .withProperties(properties).withBridge(bridgeUID)
-                    .withLabel("Room Thermostat - " + r.getId().toString())
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - Thermostat")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
             thingDiscovered(discoveryResult);
@@ -143,10 +145,13 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
             properties.put("Model", device.getProductModel());
             properties.put("Serial Number", device.getSerialNumber());
 
+            Room assignedRoom = bridgeHandler.getRoomForDeviceId(r.getId());
+            String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
+
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID,
                             device.getSerialNumber().toString()))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel("Smart Valve - " + r.getId().toString())
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - TRV")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
             thingDiscovered(discoveryResult);
