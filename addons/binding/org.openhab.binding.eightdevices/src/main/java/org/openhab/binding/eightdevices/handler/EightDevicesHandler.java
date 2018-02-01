@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.eightdevices.connection.EightDevicesConnection;
-import org.openhab.binding.eightdevices.connectionput.EightDevicesConnectionPut;
 import org.openhab.binding.eightdevices.embeddedservlet.ExampleServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,6 @@ public class EightDevicesHandler extends BaseThingHandler {
     private static Boolean callbackSet = false;
 
     private final EightDevicesConnection connection = new EightDevicesConnection();
-    private final EightDevicesConnectionPut connectionPut = new EightDevicesConnectionPut();
 
     private String uid = "";
     private String interval = "";
@@ -197,7 +195,7 @@ public class EightDevicesHandler extends BaseThingHandler {
         uid = config.get(UID).toString();
         interval = config.get(INTERVAL).toString();
         if (callbackSet == false) {
-            connectionPut.SetCallback();
+            connection.SetCallback();
             Server server = new Server(5727);
             ServletContextHandler handler = new ServletContextHandler(server, "/notification");
             handler.addServlet(ExampleServlet.class, "/");
