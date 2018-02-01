@@ -3,6 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+
 	<thing-type id="generic">
 		<label>SolarEdge</label>
 		<description>data retrieved from SolarEdge web interface</description>
@@ -17,5 +18,6 @@
 
 		<config-description-ref uri="thing-type:solaredge:web" />
 	</thing-type>
+
 
 </thing:thing-descriptions>

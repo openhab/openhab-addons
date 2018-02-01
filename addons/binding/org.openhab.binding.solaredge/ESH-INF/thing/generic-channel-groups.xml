@@ -3,6 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+
 	<channel-group-type id="genericweb-live">
 		<label>Live data</label>
 		<channels>
@@ -77,5 +78,6 @@
 			<channel id="export" typeId="aggregate-type-export" />
 		</channels>
 	</channel-group-type>
+
 
 </thing:thing-descriptions>
