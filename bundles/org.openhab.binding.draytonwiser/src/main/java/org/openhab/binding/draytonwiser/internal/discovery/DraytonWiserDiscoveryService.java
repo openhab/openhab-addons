@@ -82,36 +82,41 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         Device device = bridgeHandler.getExtendedDeviceProperties(0);
-        properties.put("Device Type", device.getProductIdentifier());
-        properties.put("Firmware Version", device.getActiveFirmwareVersion());
-        properties.put("Manufacturer", device.getManufacturer());
-        properties.put("Model", device.getModelIdentifier());
+        if (device != null) {
+            properties.put("Device Type", device.getProductIdentifier());
+            properties.put("Firmware Version", device.getActiveFirmwareVersion());
+            properties.put("Manufacturer", device.getManufacturer());
+            properties.put("Model", device.getModelIdentifier());
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER, bridgeUID, "controller"))
-                .withProperties(properties).withBridge(bridgeUID).withLabel("Controller").build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER, bridgeUID, "controller"))
+                    .withProperties(properties).withBridge(bridgeUID).withLabel("Controller").build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
     }
 
     private void onRoomStatAdded(RoomStat r) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
-        properties.put("serialNumber", device.getSerialNumber());
-        properties.put("Device Type", device.getModelIdentifier());
-        properties.put("Firmware Version", device.getActiveFirmwareVersion());
-        properties.put("Manufacturer", device.getManufacturer());
-        properties.put("Model", device.getProductModel());
-        properties.put("Serial Number", device.getSerialNumber());
+        if (device != null) {
+            properties.put("serialNumber", device.getSerialNumber());
+            properties.put("Device Type", device.getModelIdentifier());
+            properties.put("Firmware Version", device.getActiveFirmwareVersion());
+            properties.put("Manufacturer", device.getManufacturer());
+            properties.put("Model", device.getProductModel());
+            properties.put("Serial Number", device.getSerialNumber());
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID,
-                        device.getSerialNumber().toString()))
-                .withProperties(properties).withBridge(bridgeUID).withLabel("Room Thermostat - " + r.getId().toString())
-                .withRepresentationProperty(device.getSerialNumber()).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID,
+                            device.getSerialNumber().toString()))
+                    .withProperties(properties).withBridge(bridgeUID)
+                    .withLabel("Room Thermostat - " + r.getId().toString())
+                    .withRepresentationProperty(device.getSerialNumber()).build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
     }
 
     private void onRoomAdded(Room r) {
@@ -130,20 +135,22 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
-        properties.put("serialNumber", device.getSerialNumber());
-        properties.put("Device Type", device.getModelIdentifier());
-        properties.put("Firmware Version", device.getActiveFirmwareVersion());
-        properties.put("Manufacturer", device.getManufacturer());
-        properties.put("Model", device.getProductModel());
-        properties.put("Serial Number", device.getSerialNumber());
+        if (device != null) {
+            properties.put("serialNumber", device.getSerialNumber());
+            properties.put("Device Type", device.getModelIdentifier());
+            properties.put("Firmware Version", device.getActiveFirmwareVersion());
+            properties.put("Manufacturer", device.getManufacturer());
+            properties.put("Model", device.getProductModel());
+            properties.put("Serial Number", device.getSerialNumber());
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID,
-                        device.getSerialNumber().toString()))
-                .withProperties(properties).withBridge(bridgeUID).withLabel("Smart Valve - " + r.getId().toString())
-                .withRepresentationProperty(device.getSerialNumber()).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID,
+                            device.getSerialNumber().toString()))
+                    .withProperties(properties).withBridge(bridgeUID).withLabel("Smart Valve - " + r.getId().toString())
+                    .withRepresentationProperty(device.getSerialNumber()).build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
     }
 
     @Override

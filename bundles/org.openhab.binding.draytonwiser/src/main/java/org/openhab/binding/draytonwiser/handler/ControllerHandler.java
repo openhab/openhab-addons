@@ -64,6 +64,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refresh();
+            return;
         }
 
         if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE)) {

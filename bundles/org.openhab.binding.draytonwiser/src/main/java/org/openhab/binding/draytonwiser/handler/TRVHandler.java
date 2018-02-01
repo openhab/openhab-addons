@@ -48,6 +48,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refresh();
+            return;
         }
         // if (channelUID.getId().equals(CHANNEL_1)) {
         // TODO: handle command
