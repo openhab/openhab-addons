@@ -16,4 +16,6 @@
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />
 	</thing-type>
+
+</thing:thing-descriptions>
     
