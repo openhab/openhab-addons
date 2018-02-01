@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="eightdevices" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+   <thing-type id="s3700">
+      <label>Sensor 3700</label>
+      <description>Sensor 3700 for 8Devices Binding. Measures active/reactive energy and active/reactive power</description>
+      <channels>
+         <channel id="activePower" typeId="activePower" />
+         <channel id="activeEnergy" typeId="activeEnergy" />
+         <channel id="reactivePower" typeId="reactivePower" />
+         <channel id="reactiveEnergy" typeId="reactiveEnergy" />
+      </channels>
+      <config-description>
+         <parameter name="uid" type="text" required="true">
+            <label>Name or UID</label>
+            <description>Name of the sensor 3700 in REST server</description>
+         </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
+      </config-description>
+   </thing-type>
+   <channel-type id="activeEnergy">
+      <item-type>Number</item-type>
+      <label>Active Energy</label>
+      <description>Active Energy</description>
+      <category>ActiveEnergy</category>
+      <state readOnly="true" pattern="%.7f" />
+   </channel-type>
+   <channel-type id="reactiveEnergy">
+      <item-type>Number</item-type>
+      <label>Reactive Energy</label>
+      <description>Reactive Energy</description>
+      <category>ReactiveEnergy</category>
+      <state readOnly="true" pattern="%.7f" />
+   </channel-type>
+   <channel-type id="activePower">
+      <item-type>Number</item-type>
+      <label>Active Power</label>
+      <description>Active Power</description>
+      <category>ActivePower</category>
+      <state readOnly="true" pattern="%.7f" />
+   </channel-type>
+   <channel-type id="reactivePower">
+      <item-type>Number</item-type>
+      <label>Reactive Power</label>
+      <description>Reactive Power</description>
+      <category>ReactivePower</category>
+      <state readOnly="true" pattern="%.7f" />
+   </channel-type>
+   <channel-type id="relay">
+      <item-type>Switch</item-type>
+      <label>Relay</label>
+      <description>Relay's state (ON/OFF)</description>
+      <category>Switch</category>
+      <event>
+         <options>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+         </options>
+      </event>
+   </channel-type>
+
+   <thing-type id="s3800">
+      <label>Sensor 3800</label>
+      <description>Sensor 3800 for 8Devices Binding. Measures temperature and humidity</description>
+      <channels>
+         <channel id="temperature" typeId="temperature" />
+         <channel id="humidity" typeId="humidity" />
+         <channel id="voltage" typeId="voltage" />
+      </channels>
+      <config-description>
+         <parameter name="uid" type="text" required="true">
+            <label>Name or UID</label>
+            <description>Name of the sensor 3800 in REST server</description>
+         </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
+      </config-description>
+   </thing-type>
+   <channel-type id="temperature">
+      <item-type>Number</item-type>
+      <label>Temperature</label>
+      <description>Current temperature in degrees celsius</description>
+      <category>Temperature</category>
+      <state readOnly="true" pattern="%.1f °C" />
+   </channel-type>
+   <channel-type id="humidity">
+      <item-type>Number</item-type>
+      <label>Humidity</label>
+      <description>Current humidity in %</description>
+      <category>Humidity</category>
+      <state readOnly="true" pattern="%d %%" />
+   </channel-type>
+
+   <thing-type id="s4400">
+      <label>Sensor 4400</label>
+      <description>Sensor 4400 for 8Devices Binding. Measures temperature, magnetic field and has magnetic field counter</description>
+      <channels>
+         <channel id="temperature" typeId="temperature" />
+         <channel id="magneticField" typeId="magneticField" />
+         <channel id="magneticCounter" typeId="magneticCounter" />
+      </channels>
+      <config-description>
+         <parameter name="uid" type="text" required="true">
+            <label>Name or UID</label>
+            <description>Name of the sensor 4400 in REST server</description>
+         </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
+      </config-description>
+   </thing-type>
+   <channel-type id="magneticField">
+      <item-type>Number</item-type>
+      <label>Magnetic Field</label>
+      <description>Magnetic Field</description>
+      <category>MagneticField</category>
+      <state readOnly="true" pattern="%.5f" />
+   </channel-type>
+   <channel-type id="magneticCounter">
+      <item-type>Number</item-type>
+      <label>Magnetic Counter</label>
+      <description>Magnetic Counter</description>
+      <category>MagneticCounter</category>
+      <state readOnly="true" pattern="%.2f" />
+   </channel-type>
+
+   <thing-type id="s4500">
+      <label>Sensor 4500</label>
+      <description>Sensor 4500 for 8Devices Binding. Measures voltage</description>
+      <channels>
+         <channel id="voltage" typeId="voltage" />
+      </channels>
+      <config-description>
+         <parameter name="uid" type="text" required="true">
+            <label>Name or UID</label>
+            <description>Name of the sensor 4500 in REST server</description>
+         </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between requested data updates (seconds)</description>
+         </parameter>
+      </config-description>
+   </thing-type>
+   <channel-type id="voltage">
+      <item-type>Number</item-type>
+      <label>Voltage</label>
+      <description>Voltage in mV</description>
+      <category>Voltage</category>
+      <state readOnly="true" pattern="%.2f" />
+   </channel-type>
+</thing:thing-descriptions>
