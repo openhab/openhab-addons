@@ -13,8 +13,8 @@ import static org.openhab.binding.eightdevices.EightDevicesBindingConstants.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.server.Server;
@@ -22,6 +22,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -36,10 +37,6 @@ import org.openhab.binding.eightdevices.embeddedservlet.ExampleServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import net.minidev.json.JSONObject;
-
-//import net.minidev.json.JSONObject;
-
 /**
  * The {@link EightDevicesHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -50,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class EightDevicesHandler extends BaseThingHandler {
 
     private static final String UID = "uid";
+    private static final String INTERVAL = "interval";
 
     private final Logger logger = LoggerFactory.getLogger(EightDevicesHandler.class);
     private static Boolean callbackSet = false;
@@ -58,11 +56,13 @@ public class EightDevicesHandler extends BaseThingHandler {
     private final EightDevicesConnectionPut connectionPut = new EightDevicesConnectionPut();
 
     private String uid = "";
-    private boolean connected = false;
-    private static final int CACHE_EXPIRY = 60 * 1000; // 1m
-    private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(CACHE_EXPIRY);
+    private String interval = "";
 
-    static Map<String, ChannelUID> ReqAsyncResponses = new HashMap<String, ChannelUID>();
+    private static final int CACHE_EXPIRY = 45 * 1000; // 45s
+    // private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(CACHE_EXPIRY);
+
+    static ExpiringCacheMap<String, ChannelUID> ReqAsyncResponses = new ExpiringCacheMap<String, ChannelUID>(
+            CACHE_EXPIRY);
     static ExampleServlet Servlet = new ExampleServlet();
 
     public EightDevicesHandler(Thing thing) {
@@ -74,24 +74,25 @@ public class EightDevicesHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String sensorType;
         String[] splitArr;
-
-        System.out.println(command);
-        // System.out.println(CheckIfConnected(uid));
-
         if (command instanceof RefreshType) {
             splitArr = channelUID.getThingUID().toString().split(":");
             sensorType = splitArr[1];
-            if (sensorType.equals("s3700")) {
-                handle3700(channelUID);
-            }
-            if (sensorType.equals("s3800")) {
-                handle3800(channelUID);
-            }
-            if (sensorType.equals("s4400")) {
-                handle4400(channelUID);
-            }
-            if (sensorType.equals("s4500")) {
-                handle4500(channelUID);
+            try {
+                if (sensorType.equals("s3700")) {
+                    handle3700(channelUID);
+                }
+                if (sensorType.equals("s3800")) {
+                    handle3800(channelUID);
+                }
+                if (sensorType.equals("s4400")) {
+                    handle4400(channelUID);
+                }
+                if (sensorType.equals("s4500")) {
+                    handle4500(channelUID);
+                }
+            } catch (Exception e) {
+                System.out.println(sensorType + " ERROR");
+                updateStatus(ThingStatus.OFFLINE);
             }
         }
     }
@@ -102,22 +103,22 @@ public class EightDevicesHandler extends BaseThingHandler {
         if (channelUID.getId().equals(CHANNEL_ACTIVE_POWER)) {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3305/1/5800");
             splitArr = data.split("\"");
-            ReqAsyncResponses.put(splitArr[3], channelUID);
+            ReqAsyncResponses.put(splitArr[3], () -> channelUID);
         }
         if (channelUID.getId().equals(CHANNEL_ACTIVE_ENERGY)) {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3305/1/5805");
             splitArr = data.split("\"");
-            ReqAsyncResponses.put(splitArr[3], channelUID);
+            ReqAsyncResponses.put(splitArr[3], () -> channelUID);
         }
         if (channelUID.getId().equals(CHANNEL_REACTIVE_POWER)) {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3305/1/5810");
             splitArr = data.split("\"");
-            ReqAsyncResponses.put(splitArr[3], channelUID);
+            ReqAsyncResponses.put(splitArr[3], () -> channelUID);
         }
         if (channelUID.getId().equals(CHANNEL_REACTIVE_ENERGY)) {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3305/1/5815");
             splitArr = data.split("\"");
-            ReqAsyncResponses.put(splitArr[3], channelUID);
+            ReqAsyncResponses.put(splitArr[3], () -> channelUID);
         }
         if (channelUID.getId().equals(CHANNEL_RELAY)) {
             System.out.println("REALAY");
@@ -136,7 +137,7 @@ public class EightDevicesHandler extends BaseThingHandler {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3304/0/5700");
         }
         splitArr = data.split("\"");
-        ReqAsyncResponses.put(splitArr[3], channelUID);
+        ReqAsyncResponses.put(splitArr[3], () -> channelUID);
     }
 
     public void handle4400(ChannelUID channelUID) {
@@ -152,7 +153,7 @@ public class EightDevicesHandler extends BaseThingHandler {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3200/0/5501");
         }
         splitArr = data.split("\"");
-        ReqAsyncResponses.put(splitArr[3], channelUID);
+        ReqAsyncResponses.put(splitArr[3], () -> channelUID);
     }
 
     public void handle4500(ChannelUID channelUID) {
@@ -162,7 +163,7 @@ public class EightDevicesHandler extends BaseThingHandler {
             data = connection.getResponseFromQuery("endpoints/" + uid + "/3202/0/5600");
         }
         splitArr = data.split("\"");
-        ReqAsyncResponses.put(splitArr[3], channelUID);
+        ReqAsyncResponses.put(splitArr[3], () -> channelUID);
     }
 
     public void CheckIfConnected(String uid) {
@@ -170,6 +171,9 @@ public class EightDevicesHandler extends BaseThingHandler {
         String[] splitArr;
         // JSONObject json;
         data = connection.getResponseFromQuery("endpoints/");
+        // Object obj = JSONValue.parse(data);
+        // JSONArray finalResult = (JSONArray) obj;
+        // System.out.println(finalResult);
         /*
          * JSONParser parser = new JSONParser();
          * try {
@@ -181,9 +185,8 @@ public class EightDevicesHandler extends BaseThingHandler {
          * }
          */
         // splitArr = data.split("\"");
-
         // if (Arrays.asList(splitArr).contains(uid)) {
-        connected = true;
+        // connected = true;
         // }
         // return false;
     }
@@ -192,6 +195,7 @@ public class EightDevicesHandler extends BaseThingHandler {
     public void initialize() {
         Configuration config = getThing().getConfiguration();
         uid = config.get(UID).toString();
+        interval = config.get(INTERVAL).toString();
         if (callbackSet == false) {
             connectionPut.SetCallback();
             Server server = new Server(5727);
@@ -206,17 +210,50 @@ public class EightDevicesHandler extends BaseThingHandler {
             callbackSet = true;
         }
         CheckIfConnected(uid);
+        sendAutomaticRequests(getThing().getChannels());
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void handleAsync(String id, String payload) {
+    public void handleAsync(String id, String status, String payload) {
         if (ReqAsyncResponses.containsKey(id)) {
-            updateState(ReqAsyncResponses.get(id), getMeasurement(payload));
+            if (status.equals("200")) {
+                updateState(ReqAsyncResponses.get(id), getMeasurement(payload));
+            }
         }
     }
 
-    private State getMeasurement(String payload) {
+    public void sendAutomaticRequests(java.util.List<Channel> channels) {
+        ScheduledFuture<?> refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            String sensorType;
+            String[] splitArr;
+            ChannelUID channelUID;
+            for (int i = 0; i < channels.size(); i++) {
+                channelUID = channels.get(i).getUID();
+                splitArr = channelUID.getThingUID().toString().split(":");
+                sensorType = splitArr[1];
+                try {
+                    if (sensorType.equals("s3700")) {
+                        handle3700(channelUID);
+                    }
+                    if (sensorType.equals("s3800")) {
+                        handle3800(channelUID);
+                    }
+                    if (sensorType.equals("s4400")) {
+                        handle4400(channelUID);
+                    }
+                    if (sensorType.equals("s4500")) {
+                        handle4500(channelUID);
+                    }
 
+                } catch (Exception e) {
+                    System.out.println(sensorType + " ERROR");
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            }
+        }, 0, Integer.parseInt(interval), TimeUnit.SECONDS);
+    }
+
+    private State getMeasurement(String payload) {
         if (payload != null) {
             byte[] decoded = Base64.getDecoder().decode(payload);
             String myString = String.format("%x", new BigInteger(1, decoded)).substring(6);
@@ -224,7 +261,6 @@ public class EightDevicesHandler extends BaseThingHandler {
             Float f = Float.intBitsToFloat(in.intValue());
             return new DecimalType(BigDecimal.valueOf(f));
         }
-
         return UnDefType.UNDEF;
     }
 

@@ -14,6 +14,10 @@
             <label>Name or UID</label>
             <description>Name of the sensor 3700 in REST server</description>
          </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
       </config-description>
    </thing-type>
    <channel-type id="activeEnergy">
@@ -70,6 +74,10 @@
             <label>Name or UID</label>
             <description>Name of the sensor 3800 in REST server</description>
          </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
       </config-description>
    </thing-type>
    <channel-type id="temperature">
@@ -100,6 +108,10 @@
             <label>Name or UID</label>
             <description>Name of the sensor 4400 in REST server</description>
          </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between data update requests</description>
+         </parameter>
       </config-description>
    </thing-type>
    <channel-type id="magneticField">
@@ -127,6 +139,10 @@
          <parameter name="uid" type="text" required="true">
             <label>Name or UID</label>
             <description>Name of the sensor 4500 in REST server</description>
+         </parameter>
+         <parameter name="interval" type="text" required="true">
+            <label>Interval of time</label>
+            <description>Interval of time between requested data updates (seconds)</description>
          </parameter>
       </config-description>
    </thing-type>

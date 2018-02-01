@@ -44,6 +44,7 @@ public class ExampleServlet extends HttpServlet {
         String[] splitArr;
         String id = "";
         String payload = "";
+        String status = "";
         resp.setStatus(HttpStatus.OK_200);
         BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
         String data = br.readLine();
@@ -52,10 +53,13 @@ public class ExampleServlet extends HttpServlet {
             if (splitArr[i].equals("id")) {
                 id = splitArr[i + 2];
             }
+            if (splitArr[i].equals("status")) {
+                status = splitArr[i + 1].substring(1, 4);
+            }
             if (splitArr[i].equals("payload")) {
                 payload = splitArr[i + 2];
                 for (EightDevicesHandler h : asyncHandlers) {
-                    h.handleAsync(id, payload);
+                    h.handleAsync(id, status, payload);
                 }
             }
         }
@@ -67,6 +71,6 @@ public class ExampleServlet extends HttpServlet {
         asyncHandlers.add(h);
         System.out.println("Listener registration");
         System.out.println(this);
-        System.out.println(asyncHandlers.size());
+        // System.out.println(asyncHandlers.size());
     }
 }
