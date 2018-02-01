@@ -50,7 +50,6 @@ public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDe
             return new StateDescription(original.getMinimum(), original.getMaximum(), original.getStep(),
                     original.getPattern(), original.isReadOnly(), options);
         }
-
         return new StateDescription(null, null, null, null, false, options);
     }
 
