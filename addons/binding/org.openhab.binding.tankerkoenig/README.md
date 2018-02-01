@@ -110,7 +110,7 @@ java.io.IOException: java.util.concurrent.ExecutionException: javax.net.ssl.SSLH
 ......
 ```
 
-That indicates a missing certificate of a certification authority (CA) in the certificate-store of the java jdk under which openhab2 is running.
+That indicates a missing certificate of a certification authority (CA) in the certificate-store of the java jdk under which openHAB is running.
 In most cases an update to the latest jdk version does solve this, because the store of the cacerts are maintained with the java versions.
 In other words, while doing an update of the java version the missing certificate will be installed.
 After the java-update openhab2 has to be restarted.
