@@ -307,7 +307,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Send a command to the Squeeze Server.
      */
     private synchronized void sendCommand(String command) {
-
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
@@ -892,7 +891,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             }
 
-            List<Favorite> favorites = new ArrayList<Favorite>();
+            List<Favorite> favorites = new ArrayList<>();
             String title = "";
             String count = "";
             Favorite f = null;
@@ -977,14 +976,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             for (Favorite favorite : favorites) {
                 // If not quoting, we don't want any embedded commas
                 adjustedName = includeQuotes ? favorite.name : favorite.name.replaceAll(",", "");
-                sb.append(favorite.shortId + "=");
-                sb.append(quote + adjustedName + quote);
-                sb.append(",");
+                sb.append(favorite.shortId).append("=").append(quote).append(adjustedName).append(quote).append(",");
             }
 
             // If the channel doesn't exist we can't update it
             if (getThing().getChannel(CHANNEL_FAVORITES_LIST) == null) {
-                logger.debug("Channel '{}' does not exist.  Delete and readd player thing to pick up channel.",
+                logger.debug("Channel '{}' does not exist. Delete and readd player thing to pick up channel.",
                         CHANNEL_FAVORITES_LIST);
                 return;
             }

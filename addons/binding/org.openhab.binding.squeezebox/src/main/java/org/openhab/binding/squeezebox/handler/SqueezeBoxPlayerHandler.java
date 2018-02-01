@@ -475,8 +475,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         for (Favorite favorite : favorites) {
             options.add(new StateOption(favorite.shortId, favorite.name));
         }
-        stateDescriptionProvider.setStateOptions(
-                new ChannelUID(getThing().getUID(), SqueezeBoxBindingConstants.CHANNEL_FAVORITES_PLAY), options);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAVORITES_PLAY), options);
     }
 
     /**

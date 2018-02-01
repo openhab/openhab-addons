@@ -84,7 +84,7 @@
 			<channel id="ircode" typeId="ircode" />
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
 			<channel id="notificationSoundVolume" typeId="notificationVolume" />
-			<channel id="favoritesPlay" typeId="favoritesPlay" />
+			<channel id="playFavorite" typeId="playFavorite" />
 		</channels>
 
 		<properties>
@@ -110,7 +110,7 @@
 		<description>Comma-separated list of favorites of form favoriteId=favoriteName</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-	<channel-type id="favoritesPlay">
+	<channel-type id="playFavorite">
 		<item-type>String</item-type>
 		<label>Play a Favorite</label>
 		<description>Play favorite by sending command with favoriteId</description>
