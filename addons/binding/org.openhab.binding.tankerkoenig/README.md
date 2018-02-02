@@ -119,7 +119,7 @@ If you receive the error because you are running an old linux installation which
 
    1.) Update the linux-system and install the latest java-versions
    
-   2.) 2.) Download the most recent jdk and install it directly on to your system without using a pre-composed package
+   2.) Download the most recent jdk and install it directly on to your system without using a pre-composed package
    
    On debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
 
