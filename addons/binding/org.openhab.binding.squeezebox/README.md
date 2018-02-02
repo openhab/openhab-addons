@@ -89,15 +89,15 @@ All devices support some of the following channels:
 | ircode                  | String    | Received IR code                                                                       |
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |
-| favoritesPlay           | String    | ID of Favorite to play (as available in server's favoritesList channel)                |
+| playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
 
 ## Playing Favorites
 
-Using the **favoritesPlay** channel, you can play a favorite from the *Favorites* list on the Logitech Media Server (LMS).
-The favorites from the LMS will be populated into the state options of the **favoritesPlay** channel.
+Using the **playFavorite** channel, you can play a favorite from the *Favorites* list on the Logitech Media Server (LMS).
+The favorites from the LMS will be populated into the state options of the **playFavorite** channel.
 The Selection widget in HABpanel can be used to present the favorites as a choice list.
 Selecting from that choice list will play the favorite on the SqueezeBox player.
-Currently, only favorites from the root level of the LMS favorites list are exposed on the **favoritesPlay** channel.
+Currently, only favorites from the root level of the LMS favorites list are exposed on the **playFavorite** channel.
 
 ## Notifications
 
