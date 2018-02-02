@@ -44,7 +44,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
@@ -640,8 +639,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             logger.debug("Initializing notification volume to current player volume");
             notificationSoundVolume = currentVolume();
             if (notificationSoundVolume != 0) {
-                updateState(SqueezeBoxBindingConstants.CHANNEL_NOTIFICATION_SOUND_VOLUME,
-                        new PercentType(notificationSoundVolume));
+                updateState(CHANNEL_NOTIFICATION_SOUND_VOLUME, new PercentType(notificationSoundVolume));
             }
         }
         return PercentType.valueOf(String.valueOf(notificationSoundVolume));
