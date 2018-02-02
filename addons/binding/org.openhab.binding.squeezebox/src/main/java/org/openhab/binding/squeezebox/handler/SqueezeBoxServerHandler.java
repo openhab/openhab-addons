@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -79,6 +80,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     // DECREASE-Event
     private static final int VOLUME_CHANGE_SIZE = 5;
     private static final String NEW_LINE = System.getProperty("line.separator");
+
+    private static final String CHANNEL_CONFIG_QUOTE_FAVORITES_LIST = "quoteFavoritesList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
             .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
@@ -967,24 +970,25 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void updateChannelFavoritesList(List<Favorite> favorites) {
-            // Get config parameter indicating whether name should be wrapped with double quotes
-            final boolean includeQuotes = getConfigAs(SqueezeBoxServerConfig.class).quoteFavoritesList;
-            final String quote = includeQuotes ? "\"" : "";
-            String adjustedName;
-
-            StringBuilder sb = new StringBuilder();
-            for (Favorite favorite : favorites) {
-                // If not quoting, we don't want any embedded commas
-                adjustedName = includeQuotes ? favorite.name : favorite.name.replaceAll(",", "");
-                sb.append(favorite.shortId).append("=").append(quote).append(adjustedName).append(quote).append(",");
-            }
-
-            // If the channel doesn't exist we can't update it
-            if (getThing().getChannel(CHANNEL_FAVORITES_LIST) == null) {
-                logger.debug("Channel '{}' does not exist. Delete and readd player thing to pick up channel.",
-                        CHANNEL_FAVORITES_LIST);
+            final Channel channel = thing.getChannel(CHANNEL_FAVORITES_LIST);
+            if (channel == null) {
+                logger.debug("Channel {} doesn't exist. Delete & add thing to get channel.", CHANNEL_FAVORITES_LIST);
                 return;
             }
+
+            // Get channel config parameter indicating whether name should be wrapped with double quotes
+            Boolean includeQuotes = Boolean.FALSE;
+            if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_QUOTE_FAVORITES_LIST)) {
+                includeQuotes = (Boolean) channel.getConfiguration().get(CHANNEL_CONFIG_QUOTE_FAVORITES_LIST);
+            }
+
+            final String quote = includeQuotes.booleanValue() ? "\"" : "";
+            StringBuilder sb = new StringBuilder();
+            for (Favorite favorite : favorites) {
+                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replaceAll(",", ""))
+                        .append(quote).append(",");
+            }
+
             if (sb.length() == 0) {
                 updateChannel(CHANNEL_FAVORITES_LIST, UnDefType.NULL);
             } else {
