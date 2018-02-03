@@ -122,8 +122,8 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 | Channel                 | Known responses                          |
 |-------------------------|------------------------------------------|
-| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", Poor }` |
-| `currentBatteryLevel`   | `{ "Normal", "TwoThirds" }`              |
+| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", "Poor", "NoSignal" }` |
+| `currentBatteryLevel`   | `{ "Full", "Normal", "TwoThirds", "OneThird", "Low", "Critical" }`              |
 
 ## Full Example
 
