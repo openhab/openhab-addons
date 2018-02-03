@@ -62,6 +62,7 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_CURRENT_DEMAND = "currentDemand";
     public static final String CHANNEL_HEAT_REQUEST = "heatRequest";
     public static final String CHANNEL_CURRENT_SIGNAL_RSSI = "currentSignalRSSI";
+    public static final String CHANNEL_CURRENT_SIGNAL_LQI = "currentSignalLQI";
     public static final String CHANNEL_CURRENT_SIGNAL_STRENGTH = "currentSignalStrength";
     public static final String CHANNEL_HEATING_OVERRIDE = "heatingOverride";
     public static final String CHANNEL_HOT_WATER_OVERRIDE = "hotWaterOverride";

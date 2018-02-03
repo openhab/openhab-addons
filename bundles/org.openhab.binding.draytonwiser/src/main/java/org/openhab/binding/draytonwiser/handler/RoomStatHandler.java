@@ -75,6 +75,9 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_RSSI),
                         getSignalRSSI());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_LQI),
+                        getSignalLQI());
                 updateState(new ChannelUID(getThing().getUID(),
                         DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_VOLTAGE), getBatteryVoltage());
                 updateState(new ChannelUID(getThing().getUID(),
@@ -122,6 +125,17 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
             Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new DecimalType((float) device.getRssi());
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getSignalLQI() {
+        if (roomStat != null) {
+            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                return new DecimalType((float) device.getLqi());
             }
         }
 

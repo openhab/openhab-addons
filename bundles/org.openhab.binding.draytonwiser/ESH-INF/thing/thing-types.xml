@@ -101,6 +101,7 @@
             <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
+            <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
        </channels>
         
@@ -130,6 +131,7 @@
             <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
+            <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
         </channels>
         
@@ -208,6 +210,13 @@
         <item-type>Number</item-type>
         <label>Signal RSSI</label>
         <description>The reported network signal RSSI</description>
+        <state readOnly="true" ></state>
+    </channel-type>
+    
+    <channel-type id="signalLQI-channel">
+        <item-type>Number</item-type>
+        <label>Signal LQI</label>
+        <description>The reported network signal LQI</description>
         <state readOnly="true" ></state>
     </channel-type>
     
