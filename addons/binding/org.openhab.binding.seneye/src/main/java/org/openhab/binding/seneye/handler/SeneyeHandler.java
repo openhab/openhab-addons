@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.seneye.handler;
 
 import static org.openhab.binding.seneye.SeneyeBindingConstants.*;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,10 +19,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.seneye.service.InvalidConfigurationException;
-import org.openhab.binding.seneye.service.ReadingsUpdate;
-import org.openhab.binding.seneye.service.SeneyeDeviceReading;
-import org.openhab.binding.seneye.service.SeneyeService;
+import org.openhab.binding.seneye.internal.InvalidConfigurationException;
+import org.openhab.binding.seneye.internal.ReadingsUpdate;
+import org.openhab.binding.seneye.internal.SeneyeConfigurationParameters;
+import org.openhab.binding.seneye.internal.SeneyeDeviceReading;
+import org.openhab.binding.seneye.internal.SeneyeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
                 SeneyeDeviceReading readings = seneyeService.getDeviceReadings();
                 newState(readings);
             } catch (InvalidConfigurationException invalidConfigurationException) {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
@@ -76,43 +76,31 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
 
     @Override
     public void invalidConfig() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Override
     public void initialize() {
-        Configuration conf = this.getConfig();
+        SeneyeConfigurationParameters config = getConfigAs(SeneyeConfigurationParameters.class);
 
-        String param_aquariumname = String.valueOf(conf.get(PARAMETER_AQUARIUMNAME));
-        String param_username = String.valueOf(conf.get(PARAMETER_USERNAME));
-        String param_password = String.valueOf(conf.get(PARAMETER_PASSWORD));
-        String param_polltime = String.valueOf(conf.get(PARAMETER_POLLTIME));
-
-        if (param_aquariumname.isEmpty()) {
+        if (config.aquarium_name.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, aquarium name must be provided");
             return;
         }
-        if (param_username.isEmpty()) {
+        if (config.username.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye username must be provided");
             return;
         }
-        if (param_password.isEmpty()) {
+        if (config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye password must be provided");
             return;
         }
-        if (param_polltime.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check configuration, polling time must be provided");
-            return;
-        }
-
-        int polltime = Integer.parseInt(param_polltime) * 60000;
 
         logger.debug("Initialize Network handler.");
-        this.seneyeService = new SeneyeService(param_aquariumname, param_username, param_password, polltime);
+        this.seneyeService = new SeneyeService(config);
 
         super.initialize();
 

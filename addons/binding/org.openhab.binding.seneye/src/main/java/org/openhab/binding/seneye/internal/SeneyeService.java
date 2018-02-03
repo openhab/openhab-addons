@@ -1,26 +1,24 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+package org.openhab.binding.seneye.internal;
 
-package org.openhab.binding.seneye.service;
-
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,39 +27,43 @@ import com.google.gson.Gson;
 /**
  * The {@link SeneyeService} handles the connection to the Seneye API
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
  */
 
 public class SeneyeService {
 
     private static Logger logger = LoggerFactory.getLogger(SeneyeService.class);
 
-    private long refreshInterval;
     private int retry;
 
-    private String aquariumname;
-    private String userName;
-    private String password;
+    private SeneyeConfigurationParameters config;
+
     private String seneyeId;
 
     private boolean isInitialized;
 
     private final Gson gson;
 
-    public SeneyeService() {
-        this("", "", "", 120000);
-    }
+    private static HttpClient httpClient = new HttpClient(new SslContextFactory());
 
-    public SeneyeService(String aquariumname, String userName, String password, long refreshInterval) {
-        this.aquariumname = aquariumname;
-        this.userName = userName;
-        this.password = password;
-        this.refreshInterval = refreshInterval;
+    public SeneyeService(SeneyeConfigurationParameters config) {
+        this.config = config;
+
         this.retry = 1;
 
         this.gson = new Gson();
 
         this.isInitialized = false;
+
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.setFollowRedirects(false);
+                httpClient.start();
+            } catch (Exception e) {
+                logger.warn("Cannot start HttpClient!", e);
+            }
+        }
+
     }
 
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
@@ -77,8 +79,7 @@ public class SeneyeService {
             }
         };
 
-        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, this.refreshInterval,
-                TimeUnit.MILLISECONDS);
+        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, config.poll_time, TimeUnit.MINUTES);
     }
 
     ScheduledFuture<?> scheduledJob;
@@ -124,7 +125,7 @@ public class SeneyeService {
         }
 
         for (Seneye seneye : seneyeDevices) {
-            if (seneye.description.equals(this.aquariumname)) {
+            if (seneye.description.equals(config.aquarium_name)) {
                 seneyeId = Integer.toString(seneye.id);
                 isInitialized = true;
 
@@ -153,34 +154,36 @@ public class SeneyeService {
 
         String url = "https://api.seneye.com/v1/devices" + request;
 
-        HttpClient getClient = new HttpClient();
-
-        GetMethod getMethod = new GetMethod(url);
-        getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        getMethod.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-        getMethod.addRequestHeader("Accept", "application/json");
+        Request getMethod = httpClient.newRequest(url);
+        // getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
+        // false));
+        getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+        getMethod.accept("application/json");
 
         try {
-            int statusCode = getClient.executeMethod(getMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.error("Method failed: {}", getMethod.getStatusLine());
+            ContentResponse response = getMethod.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                logger.warn("Get readings method failed: {}", response.getReason());
                 return "";
             }
 
-            return IOUtils.toString(getMethod.getResponseBodyAsStream());
-        } catch (HttpException e) {
-            logger.error("Fatal protocol violation: {}", e.toString());
+            return response.getContentAsString();
+        } catch (InterruptedException e) {
+            logger.warn("Request aborted", e);
             return "";
-        } catch (IOException e) {
-            logger.error("Fatal transport error: {}", e.toString());
+        } catch (TimeoutException e) {
+            logger.warn("Timeout error", e);
             return "";
-        } finally {
-            getMethod.releaseConnection();
+        } catch (ExecutionException e) {
+            logger.warn("Communication error", e.getCause());
+            return "";
+        } catch (Exception e) {
+            logger.warn("Error occured", e);
+            return "";
         }
     }
 
     private String GetCredentials() {
-        return "user=" + userName + "&pwd=" + password;
+        return "user=" + config.username + "&pwd=" + config.password;
     }
 }
