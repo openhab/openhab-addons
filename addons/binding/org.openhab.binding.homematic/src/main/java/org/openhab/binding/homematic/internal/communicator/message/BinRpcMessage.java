@@ -82,7 +82,17 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         }
         int datasize = (new BigInteger(ArrayUtils.subarray(sig, 4, 8))).intValue();
         byte payload[] = new byte[datasize];
-        is.read(payload, 0, datasize);
+        int offset = 0;
+        int currentLength;
+
+        while (offset < datasize && (currentLength = is.read(payload, offset, datasize - offset)) != -1) {
+            offset += currentLength;
+        }
+        if (offset != datasize) {
+            throw new EOFException(
+                    "Only " + offset + " bytes received while reading message payload, expected " + datasize
+                            + " bytes");
+        }
         byte[] message = ArrayUtils.addAll(sig, payload);
         decodeMessage(message, methodHeader);
     }
