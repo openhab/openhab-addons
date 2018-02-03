@@ -40,8 +40,4 @@ public class SqueezeBoxServerConfig {
      * User ID (when authentication enabled in LMS)
      */
     public String password;
-    /*
-     * When true, wrap the name of the favorite in quotes
-     */
-    public boolean quoteFavoritesList;
 }

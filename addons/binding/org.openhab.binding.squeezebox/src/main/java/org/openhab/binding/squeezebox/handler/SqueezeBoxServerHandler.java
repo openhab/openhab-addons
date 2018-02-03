@@ -81,7 +81,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private static final int VOLUME_CHANGE_SIZE = 5;
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private static final String CHANNEL_CONFIG_QUOTE_FAVORITES_LIST = "quoteFavoritesList";
+    private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
             .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
@@ -970,7 +970,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void updateChannelFavoritesList(List<Favorite> favorites) {
-            final Channel channel = thing.getChannel(CHANNEL_FAVORITES_LIST);
+            final Channel channel = getThing().getChannel(CHANNEL_FAVORITES_LIST);
             if (channel == null) {
                 logger.debug("Channel {} doesn't exist. Delete & add thing to get channel.", CHANNEL_FAVORITES_LIST);
                 return;
@@ -978,8 +978,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // Get channel config parameter indicating whether name should be wrapped with double quotes
             Boolean includeQuotes = Boolean.FALSE;
-            if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_QUOTE_FAVORITES_LIST)) {
-                includeQuotes = (Boolean) channel.getConfiguration().get(CHANNEL_CONFIG_QUOTE_FAVORITES_LIST);
+            if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_QUOTE_LIST)) {
+                includeQuotes = (Boolean) channel.getConfiguration().get(CHANNEL_CONFIG_QUOTE_LIST);
             }
 
             final String quote = includeQuotes.booleanValue() ? "\"" : "";

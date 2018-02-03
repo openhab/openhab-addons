@@ -48,7 +48,7 @@ Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=
 Or, if Squeeze Server authentication is enabled:
 
 ```
-Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword", quoteFavoritesList=true ]
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword" ]
 {
     Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1" ]
 }
