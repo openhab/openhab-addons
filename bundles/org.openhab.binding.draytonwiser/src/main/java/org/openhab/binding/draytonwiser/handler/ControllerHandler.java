@@ -117,6 +117,8 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                         getAwayModeSetPoint());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ECO_MODE_STATE),
                         getEcoModeState());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
 
         } catch (Exception e) {
