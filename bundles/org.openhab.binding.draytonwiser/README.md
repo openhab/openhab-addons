@@ -10,6 +10,7 @@ The Drayton Wiser binding supports the following things:
 * Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and schedules
 * Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
 * Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
+* Hot Water - Virtual thing to manage hot water states
 
 ## Discovery
 
@@ -41,6 +42,7 @@ Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN=
 	room bedroom	[ roomName="Bedroom" ]
 	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
 	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
+    hotwater hotwater
 }
 ```
 
@@ -55,14 +57,19 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | Channel                   | Description                                              | Implemented |
 |---------------------------|----------------------------------------------------------|-------------|
 | `heatingOverride`         | State of the heating override button on the controller   | Yes         |
-| `hotWaterOverride`        | State of the hot water override button on the controller | Yes         |
 | `heatChannel1Demand`      | Current demand level of heating channel 1                | Yes         |
 | `heatChannel1DemandState` | Is channel 1 calling the boiler for heat                 | Yes         |
 | `heatChannel2Demand`      | Current demand level of heating channel 2                | Yes         |
 | `heatChannel2DemandState` | Is channel 2 calling the boiler for heat                 | Yes         |
-| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 | Yes         |
 | `currentSignalRSSI`       | Relative Signal Strength Indicator                       | Yes         |
 | `currentSignalStrength`   | Human readable signal strength                           | Yes         |
+
+#### Hot Water
+
+| Channel                   | Description                                              | Implemented |
+|---------------------------|----------------------------------------------------------|-------------|
+| `hotWaterOverride`        | State of the hot water override button on the controller | Yes         |
+| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 | Yes         |
 
 #### Room
 
@@ -108,6 +115,12 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `awayModeState`    | Has away mode been enabled               | Yes         |
 | `awayModeSetPoint` | Set point of all TRVs/Stats in away mode | ReadOnly    |
 | `ecoModeState`     | Has eco mode been enabled                | Yes         |
+
+#### Hot Water
+
+| Channel            | Description                              | Implemented |
+|--------------------|------------------------------------------|-------------|
+| `manualModeState` | Has manual mode been enabled                   | Yes         |
 
 #### Room
 
