@@ -336,6 +336,14 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    public void setHotWaterManualMode(Boolean manualMode) {
+        String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
+        payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
+        refresh();
+    }
+
     public void setAwayMode(Boolean awayMode) {
         String payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "50" : "0") + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT + "RequestOverride", "PATCH", payload);

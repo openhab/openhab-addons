@@ -55,6 +55,11 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
             refresh();
             return;
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE)) {
+            boolean manualMode = command.toString().toUpperCase().equals("ON");
+            setManualMode(manualMode);
+        }
     }
 
     @Override
@@ -68,6 +73,8 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOTWATER_DEMAND_STATE),
                         getHotWaterDemandState());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE),
+                        getManualModeState());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
@@ -110,5 +117,19 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
         }
 
         return OnOffType.OFF;
+    }
+
+    private State getManualModeState() {
+        if (hotWaterChannels != null && hotWaterChannels.size() >= 1) {
+            if (hotWaterChannels.get(0).getMode().toUpperCase().equals("MANUAL")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private void setManualMode(Boolean manualMode) {
+        getBridgeHandler().setHotWaterManualMode(manualMode);
     }
 }
