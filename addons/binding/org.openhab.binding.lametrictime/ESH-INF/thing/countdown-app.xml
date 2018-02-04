@@ -8,8 +8,8 @@
             <bridge-type-ref id="device" />
         </supported-bridge-type-refs>
         
-        <label>LaMetric Time Countdown App</label>
-        <description>Provides control for the countdown app on the LaMetric Time</description>
+        <label>LaMetric Time Timer App</label>
+        <description>Provides control for the timer app on the LaMetric Time</description>
         
         <channels>
             <channel id="duration" typeId="durationType"/>
@@ -26,13 +26,13 @@
 
     <channel-type id="durationType">
         <item-type>Number</item-type>
-        <label>Countdown Duration</label>
-        <description>Set the duration of the countdown in seconds</description>
+        <label>Timer Duration</label>
+        <description>Set the duration of the timer in seconds</description>
     </channel-type>
     <channel-type id="countdownCommandType">
         <item-type>String</item-type>
-        <label>Countdown Command</label>
-        <description>Send a command to the countdown app</description>
+        <label>Timer Command</label>
+        <description>Send a command to the timer app</description>
         <state>
             <options>
                 <option value="start">Start</option>

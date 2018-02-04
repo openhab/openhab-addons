@@ -17,7 +17,7 @@ The device acts as a bridge and is exposed as "LaMetric Time" Thing. The "LaMetr
 | App               | Thing Type   | Description                                                   |
 |-------------------|--------------|---------------------------------------------------------------|
 | Clock             | clockApp     | Clock that dispays time and date                              |
-| Countdown (Timer) | countdownApp | A countdown timer the counts by seconds                       |
+| Timer             | countdownApp | A countdown timer that counts by seconds                       |
 | Radio             | radioApp     | Streaming radio player                                        |
 | Stopwatch         | stopwatchApp | Stopwatch that counts up by seconds                           |
 | Weather           | weatherApp   | Current weather conditions as well as a forecast              |
@@ -55,7 +55,7 @@ The core app things can be defined with no configuration at all. The package nam
 Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 {
     Thing clockApp     clock       [ widgetId="generatedcorewidgetid1" ]
-    Thing countdownApp countdown
+    Thing countdownApp timer
     Thing radioApp     radio
     Thing stopwatchApp stopwatch
     Thing weatherApp   weather     [ widgetId="generatedcorewidgetid2" ]
@@ -88,11 +88,11 @@ Note that app channels have no defined state from the device. They exist as one-
 | setAlarm   | DateTime  | Set the alarm using the given time (note that the date is not used) |
 | command    | String    | Send a command to the app (disableAlarm)                            |
 
-#### Countdown App
+#### Timer App
 
 | Channel ID | Item Type | Description                                     |
 |------------|-----------|-------------------------------------------------|
-| duration   | Number    | Set the duration of the countdown in seconds    |
+| duration   | Number    | Set the duration of the timer in seconds    |
 | command    | String    | Send a command to the app (start, pause, reset) |
 
 #### Radio App
@@ -163,9 +163,9 @@ DateTime ClockSetAlarm          "Set Alarm"                                 { ch
 String   ClockCommand           "Clock Command"                             { channel="lametrictime:clockApp:demo:clock:command" }
 Switch   SetAlarmIn1Min         "Set Alarm in 1 min"
 
-Number CountdownDuration        "Countdown Duration"                        { channel="lametrictime:countdownApp:demo:countdown:duration" }
-String CountdownCommand         "Countdown Command"                         { channel="lametrictime:countdownApp:demo:countdown:command" }
-Switch Set2MinCountdown         "Set 2 Min Countdown"
+Number TimerDuration            "Timer Duration"                            { channel="lametrictime:countdownApp:demo:timer:duration" }
+String TimerCommand             "Timer Command"                             { channel="lametrictime:countdownApp:demo:timer:command" }
+Switch Set2MinTimer             "Set 2 Minute Timer"
 
 Player RadioControl             "Player"                                    { channel="lametrictime:radioApp:demo:radio:control" }
 
@@ -198,9 +198,9 @@ Sample sitemap configuration:
                 Switch item=SetAlarmIn1Min
                 Selection item=ClockCommand mappings=["disableAlarm"="Disable Alarm"]
             }
-            Frame label="Countdown" {
-                Switch item=Set2MinCountdown
-                Selection item=CountdownCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
+            Frame label="Timer" {
+                Switch item=Set2MinTimer
+                Selection item=TimerCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
             }
             Frame label="Radio" {
                 Default item=RadioControl
@@ -264,13 +264,13 @@ rule "Set Alarm in 1 Minute"
          sendCommand(ClockSetAlarm, new DateTimeType(cal))
 end
 
-rule "Set 2 Minute Countdown"
+rule "Set 2 Minute Timer"
     when
-         Item Set2MinCountdown changed to ON
+         Item Set2MinTimer changed to ON
     then
-         postUpdate(Set2MinCountdown, OFF)
+         postUpdate(Set2MinTimer, OFF)
          
-         logInfo("demo.rules", "Configure countdown for 2 minutes without starting")
-         sendCommand(CountdownDuration, 120)
+         logInfo("demo.rules", "Configure timer for 2 minutes without starting")
+         sendCommand(TimerDuration, 120)
 end
 ```
