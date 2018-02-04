@@ -24,6 +24,7 @@ import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAThermostatDataBody;
 import io.swagger.client.model.NAYearMonth;
+import retrofit.RetrofitError;
 
 /**
  * {@link NAPlugHandler} is the class used to handle the plug
@@ -39,7 +40,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     @Override
-    protected NAPlug updateReadings() {
+    protected NAPlug updateReadings() throws RetrofitError {
         NAPlug result = null;
         NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(getId());
         if (thermostatDataBody != null) {

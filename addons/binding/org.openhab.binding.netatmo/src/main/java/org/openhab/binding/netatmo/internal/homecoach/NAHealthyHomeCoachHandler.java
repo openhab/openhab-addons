@@ -21,6 +21,7 @@ import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAHealthyHomeCoach;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
+import retrofit.RetrofitError;
 
 /**
  * {@link NAHealthyHomeCoachHandler} is the class used to handle the Health Home Coach device
@@ -35,7 +36,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected NAHealthyHomeCoach updateReadings() {
+    protected NAHealthyHomeCoach updateReadings() throws RetrofitError {
         NAHealthyHomeCoach result = null;
         NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(getId());
         if (homecoachDataBody != null) {
