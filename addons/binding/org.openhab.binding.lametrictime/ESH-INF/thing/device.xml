@@ -72,12 +72,6 @@
         <item-type>String</item-type>
         <label>Application</label>
         <description>Active application</description>
-        <state>
-            <!-- These options will be replaced at runtime. -->
-            <options>
-                <option value="reference">App</option>
-            </options>
-        </state>
     </channel-type>
 
     <channel-type id="simpleNotificationType">
