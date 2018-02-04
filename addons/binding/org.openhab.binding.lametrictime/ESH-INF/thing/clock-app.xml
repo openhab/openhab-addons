@@ -8,7 +8,7 @@
             <bridge-type-ref id="device" />
         </supported-bridge-type-refs>
         
-        <label>LaMetric Time Clock App</label>
+        <label>LaMetric Time Clock</label>
         <description>Provides control for the clock app on the LaMetric Time</description>
         
         <channels>
@@ -31,7 +31,7 @@
     </channel-type>
     <channel-type id="clockCommandType">
         <item-type>String</item-type>
-        <label>Clock Command</label>
+        <label>Command</label>
         <description>Send a command to the clock app</description>
         <state>
             <options>

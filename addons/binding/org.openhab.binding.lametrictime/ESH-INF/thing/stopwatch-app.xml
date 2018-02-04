@@ -8,7 +8,7 @@
             <bridge-type-ref id="device" />
         </supported-bridge-type-refs>
         
-        <label>LaMetric Time Stopwatch App</label>
+        <label>LaMetric Time Stopwatch</label>
         <description>Provides control for the stopwatch app on the LaMetric Time</description>
         
         <channels>
@@ -25,7 +25,7 @@
 
     <channel-type id="stopwatchCommandType">
         <item-type>String</item-type>
-        <label>Stopwatch Command</label>
+        <label>Command</label>
         <description>Send a command to the stopwatch app</description>
         <state>
             <options>

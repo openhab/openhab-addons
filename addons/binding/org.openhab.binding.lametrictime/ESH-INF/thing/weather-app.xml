@@ -8,7 +8,7 @@
             <bridge-type-ref id="device" />
         </supported-bridge-type-refs>
         
-        <label>LaMetric Time Weather App</label>
+        <label>LaMetric Time Weather</label>
         <description>Provides control for the weather app on the LaMetric Time</description>
         
         <channels>
@@ -25,7 +25,7 @@
 
     <channel-type id="weatherCommandType">
         <item-type>String</item-type>
-        <label>Weather Command</label>
+        <label>Command</label>
         <description>Send a command to the weather app</description>
         <state>
             <options>
