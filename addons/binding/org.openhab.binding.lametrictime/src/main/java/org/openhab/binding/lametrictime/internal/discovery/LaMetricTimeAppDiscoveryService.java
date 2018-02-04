@@ -31,6 +31,7 @@ import org.syphr.lametrictime.api.model.CoreApps;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link LaMetricTimeAppDiscoveryService} is responsible for processing the
@@ -100,6 +101,13 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
                 Map<String, Object> properties = Maps.newHashMap();
                 properties.put(LaMetricTimeAppConfiguration.PACKAGE_NAME, app.getPackageName());
                 properties.put(LaMetricTimeAppConfiguration.WIDGET_ID, widgetId);
+                properties.put(Thing.PROPERTY_VENDOR, app.getVendor());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, app.getVersion());
+
+                Map<String, JsonPrimitive> settings = widget.getSettings();
+                if (settings != null) {
+                    settings.entrySet().stream().forEach(entry -> properties.put(entry.getKey(), entry.getValue()));
+                }
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(LaMetricTimeUtil.getAppLabel(app, widget)).build();
