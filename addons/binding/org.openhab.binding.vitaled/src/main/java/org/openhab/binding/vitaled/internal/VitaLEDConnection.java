@@ -272,25 +272,11 @@ public class VitaLEDConnection {
      * @param channelUID The channel UID for which the current state should returned
      */
     public void sendCommand(String urlParameter, String referer) throws Exception {
-        /*
-         * to do authentication via basic authenthication
-         * String name = "admin";
-         * String password = "admin";
-         * String authString = name + ":" + password;
-         * System.out.println("auth string: " + authString);
-         * byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-         * String authStringEnc = new String(authEncBytes);
-         * System.out.println("Base64 encoded auth string: " + authStringEnc);
-         */
         url = "http://" + getIp() + ":" + getPort() + "/sample?" + urlParameter;
         obj = new URL(url);
         connection = (HttpURLConnection) obj.openConnection();
-        // --> Basic authentication
-        // con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
         // optional default is GET
         connection.setRequestMethod("GET");
-
         // add request header
         connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
