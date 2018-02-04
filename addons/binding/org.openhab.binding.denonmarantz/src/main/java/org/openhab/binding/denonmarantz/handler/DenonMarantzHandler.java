@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,9 +10,9 @@ package org.openhab.binding.denonmarantz.handler;
 
 import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.*;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,17 +21,18 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
-import org.openhab.binding.denonmarantz.internal.DenonMarantzConnector;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzStateChangedListener;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
+import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
+import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnectorFactory;
+import org.openhab.binding.denonmarantz.internal.connector.http.DenonMarantzHttpConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     private Logger logger = LoggerFactory.getLogger(DenonMarantzHandler.class);
     private DenonMarantzConnector connector;
-    private DenonMarantzConfiguration configuration;
+    private DenonMarantzConfiguration config;
+    private DenonMarantzConnectorFactory connectorFactory = new DenonMarantzConnectorFactory();
+    private DenonMarantzState denonMarantzState;
 
     public DenonMarantzHandler(Thing thing) {
         super(thing);
@@ -53,6 +56,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (connector == null) {
+            return;
+        }
+
+        if (connector instanceof DenonMarantzHttpConnector && command instanceof RefreshType) {
+            // Refreshing individual channels isn't supported by the Http connector.
+            // The connector refreshes all channels together at the configured polling interval.
+            return;
+        }
 
         try {
             switch (channelUID.getId()) {
@@ -114,72 +126,120 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     logger.warn("Command for channel {} not supported.", channelUID.getId());
                     break;
             }
-
         } catch (UnsupportedCommandTypeException e) {
             logger.warn("Unsupported command {} for channel {}", command, channelUID.getId());
         }
     }
 
+    public boolean checkConfiguration() {
+        // prevent too low values for polling interval
+        if (config.httpPollingInterval < 5) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The polling interval should be at least 5 seconds!");
+            return false;
+        }
+        // Check zone count is within supported range
+        if (config.getZoneCount() < 1 || config.getZoneCount() > 3) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "This binding supports 1 to 3 zones. Please update the zone count.");
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void initialize() {
-        // create connection (either Telnet & HTTP or HTTP only)
+        config = getConfigAs(DenonMarantzConfiguration.class);
+        denonMarantzState = new DenonMarantzState(this);
+
+        if (!checkConfiguration()) {
+            return;
+        }
+
+        configureZoneChannels();
+        // create connection (either Telnet or HTTP)
         // ThingStatus ONLINE/OFFLINE is set when AVR status is known.
         createConnection();
-        addZoneChannels();
     }
 
     private void createConnection() {
-        configuration = getConfigAs(DenonMarantzConfiguration.class);
-        if (connector != null) {
-            connector.dispose();
-        }
-        connector = new DenonMarantzConnector(configuration, this, scheduler);
+        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler);
         connector.connect();
     }
 
-    private void addZoneChannels() {
-        // only add when this is a new Thing instance (and doesn't have the 'zones' property set yet).
+    private void configureZoneChannels() {
+        logger.debug("Configuring zone channels");
+        Integer zoneCount = config.getZoneCount();
+        ArrayList<Channel> channels = new ArrayList<Channel>(this.getThing().getChannels());
+        boolean channelsUpdated = false;
 
-        if (this.getThing().getProperties().containsKey("zones")) {
-            return;
-        }
-        if (configuration.getZoneCount() > 1) {
-            logger.debug("Adding zone channels");
-            // add channels for the secondary zones
-            ThingBuilder thingBuilder = editThing();
-            CopyOnWriteArrayList<Channel> channels = new CopyOnWriteArrayList<Channel>(this.getThing().getChannels());
+        // construct a set with the existing channel type UIDs, to quickly check
+        HashSet<ChannelTypeUID> currentChannelTypeUIDs = new HashSet<ChannelTypeUID>();
+        channels.forEach(channel -> currentChannelTypeUIDs.add(channel.getChannelTypeUID()));
 
-            for (Entry<ChannelTypeUID, String> entry : DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet()) {
-                ChannelType type = TypeResolver.resolve(entry.getKey());
-                Channel channel = ChannelBuilder
-                        .create(new ChannelUID(this.getThing().getUID(), entry.getValue()), type.getItemType())
-                        .withType(entry.getKey()).build();
-                channels.add(channel);
+        HashSet<Entry<ChannelTypeUID, String>> channelsToRemove = new HashSet<Entry<ChannelTypeUID, String>>();
+
+        if (zoneCount > 1) {
+            ArrayList<Entry<ChannelTypeUID, String>> channelsToAdd = new ArrayList<Entry<ChannelTypeUID, String>>(
+                    DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
+
+            if (zoneCount > 2) {
+                // add channels for zone 3 (more zones currently not supported)
+                channelsToAdd.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
+            } else {
+                channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
             }
 
-            if (configuration.getZoneCount() > 2) {
-                // add channels for zone 3 (more zones currently not supported)
-                for (Entry<ChannelTypeUID, String> entry : DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES
-                        .entrySet()) {
-                    ChannelType type = TypeResolver.resolve(entry.getKey());
+            // filter out the already existing channels
+            channelsToAdd.removeIf(c -> currentChannelTypeUIDs.contains(c.getKey()));
+
+            // add the channels that were not yet added
+            if (!channelsToAdd.isEmpty()) {
+                for (Entry<ChannelTypeUID, String> entry : channelsToAdd) {
+                    String itemType = DenonMarantzBindingConstants.CHANNEL_ITEM_TYPES.get(entry.getValue());
                     Channel channel = ChannelBuilder
-                            .create(new ChannelUID(this.getThing().getUID(), entry.getValue()), type.getItemType())
+                            .create(new ChannelUID(this.getThing().getUID(), entry.getValue()), itemType)
                             .withType(entry.getKey()).build();
                     channels.add(channel);
                 }
+                channelsUpdated = true;
+            } else {
+                logger.debug("No zone channels have been added");
             }
+        } else {
+            channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
+            channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
+        }
 
-            thingBuilder.withChannels(channels);
-            Map<String, String> properties = editProperties();
-            properties.put("zones", configuration.getZoneCount().toString());
-            thingBuilder.withProperties(properties);
-            updateThing(thingBuilder.build());
+        // filter out the non-existing channels
+        channelsToRemove.removeIf(c -> !currentChannelTypeUIDs.contains(c.getKey()));
+
+        // remove the channels that were not yet added
+        if (!channelsToRemove.isEmpty()) {
+            for (Entry<ChannelTypeUID, String> entry : channelsToRemove) {
+                if (channels.removeIf(c -> (entry.getKey()).equals(c.getChannelTypeUID()))) {
+                    logger.trace("Removed channel {}", entry.getKey().getAsString());
+                } else {
+                    logger.trace("Could NOT remove channel {}", entry.getKey().getAsString());
+                }
+            }
+            channelsUpdated = true;
+        } else {
+            logger.debug("No zone channels have been removed");
+        }
+
+        // update Thing if channels changed
+        if (channelsUpdated) {
+            updateThing(editThing().withChannels(channels).build());
         }
     }
 
     @Override
     public void dispose() {
-        connector.dispose();
+        if (connector != null) {
+            connector.dispose();
+            connector = null;
+        }
         super.dispose();
     }
 
@@ -188,13 +248,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         super.channelLinked(channelUID);
         String channelID = channelUID.getId();
         if (isLinked(channelID)) {
-            updateState(channelID, connector.getState().getStateForChannelID(channelID));
+            updateState(channelID, denonMarantzState.getStateForChannelID(channelID));
         }
     }
 
     @Override
     public void stateChanged(String channelID, State state) {
-        logger.debug("Recieved state {} for channelID {}", state, channelID);
+        logger.debug("Received state {} for channelID {}", state, channelID);
+
+        // Don't flood the log with thing 'updated: ONLINE' each time a single channel changed
         if (this.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -203,6 +265,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void connectionError(String errorMessage) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        if (this.getThing().getStatus() != ThingStatus.OFFLINE) {
+            // Don't flood the log with thing 'updated: OFFLINE' when already offline
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        }
     }
 }

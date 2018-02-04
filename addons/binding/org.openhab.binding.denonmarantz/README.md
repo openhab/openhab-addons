@@ -4,7 +4,8 @@ This binding integrates Denon & Marantz AV receivers by using either Telnet or a
 
 ## Introduction
 
-This binding is an adaptation of the existing Denon 1.x binding. It can be fully configured without any configuration files.
+This binding is an adaptation of the existing Denon 1.x binding.
+It can be fully configured without any configuration files.
 In most cases the AVRs can be discovered and will be added to the Inbox of the Paper UI.
 
 ## Supported Things
@@ -18,26 +19,30 @@ During Discovery this is auto-detected and configured.
 
 ## Discovery
 
-This binding can discover Denon and Marantz receivers using mDNS. The serial number (which is the MAC address of the network interface) is used as unique identifier.
+This binding can discover Denon and Marantz receivers using mDNS.
+The serial number (which is the MAC address of the network interface) is used as unique identifier.
 
 It tries to detect the number of zones (when the AVR responds to HTTP). It defaults to 2 zones.
 
 ## Binding Configuration
 
-The AVR should be auto-discovered correctly. In case it does not work you can add the AVR manually. There are no configuration files for this binding.
+The AVR should be auto-discovered correctly.
+In case it does not work you can add the AVR manually.
+There are no configuration files for this binding.
 
 ## Thing Configuration
 
-The DenonMarantz AVR thing requires the `host` it can connect to. There are more parameters which all have defaults set.
+The DenonMarantz AVR thing requires the `host` it can connect to.
+There are more parameters which all have defaults set.
 
-| Parameter           | Values                           | Default |
-|---------------------|----------------------------------|---------|
-| host                | hostname / IP address of the AVR | -       |
-| zoneCount           | [1, 2 or 3]                      | 2       |
-| telnetEnabled       | true, false                      | false   |
-| telnetPort          | port number, e.g. 23             | 23      |
-| httpPort            | port number, e.g. 80             | 80      |
-| httpPollingInterval | polling interval in ms           | 5000    |
+| Parameter           | Values                                    | Default |
+|---------------------|-------------------------------------------|---------|
+| host                | hostname / IP address of the AVR          | -       |
+| zoneCount           | [1, 2 or 3]                               | 2       |
+| telnetEnabled       | true, false                               | false   |
+| telnetPort          | port number, e.g. 23                      | 23      |
+| httpPort            | port number, e.g. 80                      | 80      |
+| httpPollingInterval | polling interval in seconds (minimal 5)   | 5       |
 
 ### Static definition in a .things file
 Example  `.things` file entry:
@@ -57,26 +62,30 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 |  mainVolume       | Dimmer | Main zone volume
 |  mainVolumeDB     | Number | Main zone volume in dB (-80 offset)
 |  mute             | Switch | Main zone mute
-|  input            | String | Main zone input (e.g. TV, TUNER, ..)
-|  surroundProgram  | String | (_read-only_) current surround program (e.g. STEREO)
+|  input            | String (RW) | Main zone input (e.g. TV, TUNER, ..)
+|  surroundProgram  | String (R) | current surround program (e.g. STEREO)
 |Now Playing
-|  artist | String | (_read-only_) artist of current track
-|  album | String | (_read-only_) album of current track
-|  track | String | (_read-only_) title of current track
+|  artist | String (R) | artist of current track
+|  album | String (R) |  album of current track
+|  track | String (R) |  title of current track
 |  Zone 2
-|  zone2Power | Switch | Zone 2 power on/off
+|  zone2Power | Switch (RW) | Zone 2 power on/off
 |  zone2Volume | Dimmer | Zone 2 volume
 |  zone2VolumeDB | Number | Zone 2 volume in dB (-80 offset)
 |  zone2Mute | Switch | Zone 2 mute
-|  zone2Input | String | Zone 2 input
+|  zone2Input | String (RW) | Zone 2 input
 |  Zone 3
 |  zone3Power | Switch | Zone 3 power on/off
 |  zone3Volume | Dimmer | Zone 3 volume
 |  zone3VolumeDB | Number | Zone 3 volume in dB (-80 offset)
 |  zone3Mute | Switch | Zone 3 mute
-|  zone3Input | String | Zone 3 input
+|  zone3Input | String (RW) | Zone 3 input
 | Special
-|  command          | String | Command to send to the AVR (for use in Rules)
+|  command          | String (W) | Command to send to the AVR (for use in Rules)
+
+(R) = read-only (no updates possible)
+(RW) = read-write
+(W) = write-only (no feedback)
 
 ## Item Configuration
 

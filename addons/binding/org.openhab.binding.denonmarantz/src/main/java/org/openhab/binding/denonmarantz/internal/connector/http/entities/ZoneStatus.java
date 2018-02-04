@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.communication.entities;
+package org.openhab.binding.denonmarantz.internal.connector.http.entities;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.denonmarantz.internal.communication.entities.types.OnOffType;
-import org.openhab.binding.denonmarantz.internal.communication.entities.types.StringType;
-import org.openhab.binding.denonmarantz.internal.communication.entities.types.VolumeType;
+import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.OnOffType;
+import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.StringType;
+import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.VolumeType;
 
 /**
  * Holds information about the secondary zones of the receiver

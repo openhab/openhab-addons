@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.denonmarantz;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -62,23 +63,44 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE3_INPUT = "zone3Input";
 
     // HashMap of Zone2 Channel Type UIDs (to be added to Thing later when needed)
-    public final static HashMap<ChannelTypeUID, String> ZONE2_CHANNEL_TYPES = new HashMap<ChannelTypeUID, String>();
+    public final static LinkedHashMap<ChannelTypeUID, String> ZONE2_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
     static {
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone2Power"), CHANNEL_ZONE2_POWER);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone2Volume"), CHANNEL_ZONE2_VOLUME);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone2VolumeDB"), CHANNEL_ZONE2_VOLUME_DB);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone2Mute"), CHANNEL_ZONE2_MUTE);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone2Input"), CHANNEL_ZONE2_INPUT);
+        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_POWER), CHANNEL_ZONE2_POWER);
+        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_VOLUME), CHANNEL_ZONE2_VOLUME);
+        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_VOLUME_DB), CHANNEL_ZONE2_VOLUME_DB);
+        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_MUTE), CHANNEL_ZONE2_MUTE);
+        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_INPUT), CHANNEL_ZONE2_INPUT);
     }
 
     // HashMap of Zone3 Channel Type UIDs (to be added to Thing later when needed)
-    public final static HashMap<ChannelTypeUID, String> ZONE3_CHANNEL_TYPES = new HashMap<ChannelTypeUID, String>();
+    public final static LinkedHashMap<ChannelTypeUID, String> ZONE3_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
     static {
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone3Power"), CHANNEL_ZONE3_POWER);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone3Volume"), CHANNEL_ZONE3_VOLUME);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone3VolumeDB"), CHANNEL_ZONE3_VOLUME_DB);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone3Mute"), CHANNEL_ZONE3_MUTE);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, "zone3Input"), CHANNEL_ZONE3_INPUT);
+        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_POWER), CHANNEL_ZONE3_POWER);
+        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_VOLUME), CHANNEL_ZONE3_VOLUME);
+        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_VOLUME_DB), CHANNEL_ZONE3_VOLUME_DB);
+        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_MUTE), CHANNEL_ZONE3_MUTE);
+        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_INPUT), CHANNEL_ZONE3_INPUT);
+    }
+
+    /**
+     * Static mapping of ChannelType-to-ItemType (workaround while waiting for
+     * https://github.com/eclipse/smarthome/issues/4950 as yet there is no convenient way to extract the item type from
+     * thing-types.xml)
+     * See https://github.com/eclipse/smarthome/pull/4787#issuecomment-362287430
+     */
+    public final static HashMap<String, String> CHANNEL_ITEM_TYPES = new HashMap<String, String>();
+    static {
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_POWER, "Switch");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME, "Dimmer");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME_DB, "Number");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_MUTE, "Switch");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_INPUT, "String");
+
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_POWER, "Switch");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_VOLUME, "Dimmer");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_VOLUME_DB, "Number");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_MUTE, "Switch");
+        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_INPUT, "String");
     }
 
     // Offset in dB from the actual dB value to the volume as presented by the AVR (0 == -80 dB)

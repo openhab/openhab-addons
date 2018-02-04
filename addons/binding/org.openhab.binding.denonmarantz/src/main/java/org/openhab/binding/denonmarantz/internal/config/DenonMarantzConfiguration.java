@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,9 +11,7 @@ package org.openhab.binding.denonmarantz.internal.config;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.openhab.binding.denonmarantz.internal.DenonMarantzConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
 
 /**
  * Configuration class for the Denon Marantz binding.
@@ -22,8 +20,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DenonMarantzConfiguration {
-
-    private static final Logger logger = LoggerFactory.getLogger(DenonMarantzConfiguration.class);
 
     /**
      * The hostname (or IP Address) of the Denon Marantz AVR
@@ -38,17 +34,17 @@ public class DenonMarantzConfiguration {
     /**
      * The telnet port
      */
-    public int telnetPort;
+    public Integer telnetPort;
 
     /**
      * The HTTP port
      */
-    public int httpPort;
+    public Integer httpPort;
 
     /**
      * The interval to poll the AVR over HTTP for changes
      */
-    public int httpPollingInterval;
+    public Integer httpPollingInterval;
 
     // Default maximum volume
     public static final BigDecimal MAX_VOLUME = new BigDecimal("98");
@@ -113,11 +109,8 @@ public class DenonMarantzConfiguration {
         return zoneCount;
     }
 
-    public void setZoneCount(Integer zoneCount) {
-        if (zoneCount > 3) {
-            logger.info("Current implementation allows up to 3 zones. {} zones detected. Defaulting to 3.", zoneCount);
-            zoneCount = 3;
-        }
+    public void setZoneCount(Integer count) {
+        Integer zoneCount = count;
         this.zoneCount = zoneCount;
     }
 

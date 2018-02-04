@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.telnet;
+package org.openhab.binding.denonmarantz.internal.connector.telnet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeroen Idserda
  * @author Jan-Willem Veldhuis
  */
-public class DenonMarantzTelnetClient extends Thread {
+public class DenonMarantzTelnetClient implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetClient.class);
 
@@ -86,7 +86,10 @@ public class DenonMarantzTelnetClient extends Thread {
                         connected = false;
                     }
                 } catch (IOException e) {
-                    logger.debug("Error in telnet connection ", e);
+                    if (!Thread.currentThread().isInterrupted()) {
+                        // only log if we don't stop this on purpose causing a SocketClosed
+                        logger.debug("Error in telnet connection ", e);
+                    }
                     connected = false;
                     listener.telnetClientConnected(false);
                 }
@@ -110,7 +113,6 @@ public class DenonMarantzTelnetClient extends Thread {
 
     public void shutdown() {
         this.running = false;
-        interrupt();
         disconnect();
     }
 
@@ -147,13 +149,15 @@ public class DenonMarantzTelnetClient extends Thread {
         logger.debug("Denon telnet client connected to {}", config.getHost());
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
     private void disconnect() {
         if (socket != null) {
             logger.debug("Disconnecting socket");
             try {
                 socket.close();
-                out.close();
-                in.close();
             } catch (IOException e) {
                 logger.debug("Error while disconnecting telnet client", e);
             } finally {

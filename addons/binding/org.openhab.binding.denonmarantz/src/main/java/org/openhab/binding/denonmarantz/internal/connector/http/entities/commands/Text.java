@@ -1,29 +1,44 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.communication.entities.types;
+package org.openhab.binding.denonmarantz.internal.connector.http.entities.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.openhab.binding.denonmarantz.internal.communication.adapters.StringAdapter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
- * Contains a string value
+ * Holds text values with a certain id
  *
  * @author Jeroen Idserda
  */
+@XmlRootElement(name = "text")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StringType {
+public class Text {
 
-    @XmlJavaTypeAdapter(value = StringAdapter.class)
+    @XmlAttribute(name = "id")
+    private String id;
+
+    @XmlValue
     private String value;
+
+    public Text() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getValue() {
         return value;
@@ -32,5 +47,4 @@ public class StringType {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

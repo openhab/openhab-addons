@@ -43,9 +43,9 @@
               <advanced>true</advanced>
             </parameter-group>
 
-            <parameter name="zoneCount" type="integer" required="true" groupName="receiverProperties">
+            <parameter name="zoneCount" type="integer" groupName="receiverProperties">
                 <label>Zone count of the receiver</label>
-                <description>Number of zones (including main zone).</description>
+                <description>Number of zones (including main zone), values 1-3 are supported.</description>
                 <default>2</default>
             </parameter>
 
@@ -55,34 +55,33 @@
                 <description>Hostname or IP address of the AVR to control.</description>
             </parameter>
 
-            <parameter name="telnetEnabled" type="boolean" required="true" groupName="connectionSettings">
+            <parameter name="telnetEnabled" type="boolean" groupName="connectionSettings">
                 <label>Use Telnet port?</label>
                 <description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet. However, the AVR only allows 1 simultaneous connection. Uncheck if you are using dedicated apps to control the AVR. Then HTTP polling is used instead.</description>
                 <default>false</default>
             </parameter>
 
-            <parameter name="telnetPort" type="integer" required="false" groupName="telnetSettings">
+            <parameter name="telnetPort" type="integer" groupName="telnetSettings">
                 <label>Telnet port</label>
                 <description>Telnet port used for AVR communication. Normally shouldn't be changed.</description>
                 <default>23</default>
                 <advanced>true</advanced>
             </parameter>
 
-            <parameter name="httpPort" type="integer" required="true" groupName="httpSettings">
+            <parameter name="httpPort" type="integer" groupName="httpSettings">
                 <label>HTTP port</label>
                 <description>HTTP Port used for AVR communication. Normally shouldn't be changed.</description>
                 <default>80</default>
                 <advanced>true</advanced>
             </parameter>
 
-            <parameter name="httpPollingInterval" type="integer" required="true" groupName="httpSettings">
+            <parameter name="httpPollingInterval" type="integer" groupName="httpSettings">
                 <label>Polling interval</label>
-                <description>Refresh interval of the HTTP API in milliseconds</description>
-                <default>5000</default>
+                <description>Refresh interval of the HTTP API in seconds (minimal 5)</description>
+                <default>5</default>
                 <advanced>true</advanced>
             </parameter>
         </config-description>
-
     </thing-type>
 
     <channel-type id="power">
@@ -198,8 +197,8 @@
 
     <channel-type id="command" advanced="true">
         <item-type>String</item-type>
-        <label>Send a custom command text</label>
-        <description>Use this channel to send any custom command, e.g. SITV or MSSTANDARD</description>
+        <label>Send a custom command</label>
+        <description>Use this channel to send any custom command, e.g. SITV or MSSTANDARD (check the protocol documentation)</description>
     </channel-type>
 
     <channel-type id="zone2Power">
@@ -356,5 +355,4 @@
             </options>
         </state>
     </channel-type>
-
 </thing:thing-descriptions>
