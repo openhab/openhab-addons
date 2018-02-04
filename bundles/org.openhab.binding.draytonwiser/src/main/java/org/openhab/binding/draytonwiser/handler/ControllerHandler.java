@@ -86,9 +86,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEATING_OVERRIDE),
                         getHeatingOverride());
                 updateState(
-                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_OVERRIDE),
-                        getHotWaterOverride());
-                updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_RSSI),
                         getRSSI());
                 updateState(new ChannelUID(getThing().getUID(),
@@ -107,9 +104,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                         new ChannelUID(getThing().getUID(),
                                 DraytonWiserBindingConstants.CHANNEL_HEATCHANNEL_2_DEMAND_STATE),
                         getHeatChannel2DemandState());
-                updateState(
-                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOTWATER_DEMAND_STATE),
-                        getHotWaterDemandState());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE),
                         getAwayModeState());
                 updateState(
@@ -145,16 +139,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     private State getHeatingOverride() {
         if (system != null) {
             if (system.getHeatingButtonOverrideState().toUpperCase().equals("ON")) {
-                return OnOffType.ON;
-            }
-        }
-
-        return OnOffType.OFF;
-    }
-
-    private State getHotWaterOverride() {
-        if (system != null) {
-            if (system.getHotWaterButtonOverrideState().toUpperCase().equals("ON")) {
                 return OnOffType.ON;
             }
         }
@@ -211,17 +195,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     private State getHeatChannel2DemandState() {
         if (heatingChannels != null && heatingChannels.size() >= 2) {
             if (heatingChannels.get(1).getHeatingRelayState().toUpperCase().equals("ON")) {
-                return OnOffType.ON;
-            }
-        }
-
-        return OnOffType.OFF;
-    }
-
-    @SuppressWarnings("null")
-    private State getHotWaterDemandState() {
-        if (hotWaterChannels != null && heatingChannels.size() >= 1) {
-            if (hotWaterChannels.get(0).getHotWaterRelayState().toUpperCase().equals("ON")) {
                 return OnOffType.ON;
             }
         }

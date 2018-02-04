@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.internal.config.Device;
+import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
@@ -76,6 +77,11 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         for (SmartValve v : smartValves) {
             onSmartValveAdded(v);
         }
+        List<HotWater> hotWater = bridgeHandler.getHotWater();
+        if (hotWater != null && hotWater.size() > 0) {
+            onHotWaterAdded();
+        }
+
     }
 
     private void onControllerAdded() {
@@ -94,6 +100,15 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
         }
+    }
+
+    private void onHotWaterAdded() {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_HOTWATER, bridgeUID, "controller"))
+                .withBridge(bridgeUID).withLabel("Hot Water").build();
+
+        thingDiscovered(discoveryResult);
     }
 
     private void onRoomStatAdded(RoomStat r) {
