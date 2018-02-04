@@ -32,6 +32,10 @@ public class VitaLEDConnection {
     private String ip;
     private int port;
     private BigDecimal refreshInterval;
+    private int responseCode;
+    private String url;
+    private URL obj;
+    private HttpURLConnection connection;
 
     private Logger logger = LoggerFactory.getLogger(VitaLEDConnection.class);
     public VitaLEDZone[] zones = new VitaLEDZone[8];
@@ -278,15 +282,9 @@ public class VitaLEDConnection {
          * String authStringEnc = new String(authEncBytes);
          * System.out.println("Base64 encoded auth string: " + authStringEnc);
          */
-
-        int responseCode;
-        String url;
-        URL obj;
-        HttpURLConnection connection;
         url = "http://" + getIp() + ":" + getPort() + "/sample?" + urlParameter;
         obj = new URL(url);
         connection = (HttpURLConnection) obj.openConnection();
-
         // --> Basic authentication
         // con.setRequestProperty("Authorization", "Basic " + authStringEnc);
 
@@ -302,9 +300,9 @@ public class VitaLEDConnection {
         connection.setRequestProperty("Referer", "http://" + getIp() + "/" + referer);
         connection.setRequestProperty("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0");
-        logger.debug("Sending 'GET' request to URL : {}", url);
+        logger.info("Sending 'GET' request to URL : {}", url);
         responseCode = connection.getResponseCode();
-        logger.debug("Response Code : {}", responseCode);
+        logger.info("Response Code : {}", responseCode);
     }
 
     /**
@@ -394,9 +392,6 @@ public class VitaLEDConnection {
         int line;
         int responseCode;
         String inputLine;
-        String url;
-        URL obj;
-        HttpURLConnection connection;
         BufferedReader in;
 
         // determine technical zone
@@ -551,11 +546,7 @@ public class VitaLEDConnection {
      */
     public void getZoneDescriptions() throws Exception {
         int line;
-        int responseCode;
         String inputLine;
-        String url;
-        URL obj;
-        HttpURLConnection connection;
         BufferedReader in;
 
         // get zone description
@@ -599,11 +590,7 @@ public class VitaLEDConnection {
      */
     public void getSceneDescription() throws Exception {
         int line;
-        int responseCode;
         String inputLine;
-        String url;
-        URL obj;
-        HttpURLConnection connection;
         BufferedReader in;
 
         // get scenes description

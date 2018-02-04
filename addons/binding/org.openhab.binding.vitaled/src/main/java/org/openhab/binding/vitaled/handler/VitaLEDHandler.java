@@ -12,6 +12,7 @@ import static org.openhab.binding.vitaled.VitaLEDBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -50,7 +51,6 @@ public class VitaLEDHandler extends BaseThingHandler {
     private void updateVitaLED(int zoneNumber) throws Exception {
         // read values from VitaLED LAN Master
         connection.getCurrentStateOfZone(zoneNumber);
-        connection.getSceneDescription();
         Command command = RefreshType.REFRESH;
         ChannelUID channelUID;
         // update all channels of zone
@@ -151,17 +151,31 @@ public class VitaLEDHandler extends BaseThingHandler {
                 }
                 ;
             } catch (Exception e) {
-                logger.error("Failed to update {}  with value {}", channelUID.getId().toString(), command.toString());
+                logger.error("Failed to update {} with value {}", channelUID.getId().toString(), command.toString());
             }
         }
     }
 
     private void startAutomaticRefresh() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // refresh all zones
+                    for (int i = 0; i < 8; i++) {
+                        updateVitaLED(i);
+                    }
+                    // update zone description
+                    connection.getZoneDescriptions();
+                    // update scene description
+                    connection.getSceneDescription();
+                } catch (Exception e) {
+                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+                }
+            }
+        };
+        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshInterval.intValue(), TimeUnit.SECONDS);
         /*
-         * Runnable runnable = new Runnable() {
-         * 
-         * @Override
-         * public void run() {
          * try {
          * // refresh all zones
          * for (int i = 0; i < 8; i++) {
@@ -169,23 +183,12 @@ public class VitaLEDHandler extends BaseThingHandler {
          * }
          * // update zone description
          * connection.getZoneDescriptions();
+         * // update scene descriptions
+         * connection.getSceneDescription();
          * } catch (Exception e) {
          * logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
          * }
-         * }
-         * };
-         * refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshInterval.intValue(), TimeUnit.SECONDS);
          */
-        try {
-            // refresh all zones
-            for (int i = 0; i < 8; i++) {
-                updateVitaLED(i);
-            }
-            // update zone description
-            connection.getZoneDescriptions();
-        } catch (Exception e) {
-            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-        }
     }
 
     @Override
