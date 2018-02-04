@@ -43,10 +43,8 @@ public class LaMetricTimeBindingConstants {
 
     public static final String CHANNEL_APP_COMMAND = "command";
     public static final String CHANNEL_APP_SET_ALARM = "setAlarm";
-    public static final String CHANNEL_APP_STOP_ALARM = "stopAlarm";
     public static final String CHANNEL_APP_DURATION = "duration";
     public static final String CHANNEL_APP_CONTROL = "control";
-    public static final String CHANNEL_APP_FORECAST = "forecast";
 
     // List of non-standard Properties
     public static final String PROPERTY_ID = "id";

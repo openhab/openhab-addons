@@ -12,7 +12,7 @@
         <description>Provides control for the weather app on the LaMetric Time</description>
         
         <channels>
-            <channel id="forecast" typeId="forecastType"/>
+            <channel id="command" typeId="weatherCommandType"/>
         </channels>
         
         <config-description>
@@ -23,9 +23,14 @@
         </config-description>
     </thing-type>
 
-    <channel-type id="forecastType">
-        <item-type>Switch</item-type>
-        <label>Forecast</label>
-        <description>Show the forecast</description>
+    <channel-type id="weatherCommandType">
+        <item-type>String</item-type>
+        <label>Weather Command</label>
+        <description>Send a command to the weather app</description>
+        <state>
+            <options>
+                <option value="forecast">Forecast</option>
+            </options>
+        </state>
     </channel-type>
 </thing:thing-descriptions>

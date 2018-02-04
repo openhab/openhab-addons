@@ -77,48 +77,41 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 | warning        | String                                           | Send warning notifications to the device.                                                                                                                                                                             |
 | alert          | String                                           | Send alert notifications to the device.                                                                                                                                                                               |
 
+### Apps
 
-### Clock App
+Note that app channels have no defined state from the device. They exist as one-way communication only.
 
-All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
+#### Clock App
 
 | Channel ID | Item Type | Description                                                         |
 |------------|-----------|---------------------------------------------------------------------|
 | setAlarm   | DateTime  | Set the alarm using the given time (note that the date is not used) |
-| stopAlarm  | Switch    | Stop the alarm (currently not working)                              |
+| command    | String    | Send a command to the app (disableAlarm)                            |
 
-### Countdown App
-
-All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
+#### Countdown App
 
 | Channel ID | Item Type | Description                                     |
 |------------|-----------|-------------------------------------------------|
 | duration   | Number    | Set the duration of the countdown in seconds    |
 | command    | String    | Send a command to the app (start, pause, reset) |
 
-### Radio App
-
-All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
+#### Radio App
 
 | Channel ID | Item Type | Description                                           |
 |------------|-----------|-------------------------------------------------------|
 | control    | Player    | Control interface to manipulate the radio             |
 
-### Stopwatch App
-
-All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
+#### Stopwatch App
 
 | Channel ID | Item Type | Description                                     |
 |------------|-----------|-------------------------------------------------|
 | command    | String    | Send a command to the app (start, pause, reset) |
 
-### Weather App
+#### Weather App
 
-All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
-
-| Channel ID | Item Type | Description                      |
-|------------|-----------|----------------------------------|
-| forecast   | Switch    | Display the forecast temporarily |
+| Channel ID | Item Type | Description                          |
+|------------|-----------|--------------------------------------|
+| command    | String    | Send a command to the app (forecast) |
 
 ## How Tos
 
@@ -167,7 +160,7 @@ Switch NotifyWarning            "Notify Warning"
 Switch NotifyAlert              "Notify Alert"
 
 DateTime ClockSetAlarm          "Set Alarm"                                 { channel="lametrictime:clockApp:demo:clock:setAlarm" }
-Switch   ClockStopAlarm         "Stop Alarm"                                { channel="lametrictime:clockApp:demo:clock:stopAlarm" }
+String   ClockCommand           "Clock Command"                             { channel="lametrictime:clockApp:demo:clock:command" }
 Switch   SetAlarmIn1Min         "Set Alarm in 1 min"
 
 Number CountdownDuration        "Countdown Duration"                        { channel="lametrictime:countdownApp:demo:countdown:duration" }
@@ -178,7 +171,7 @@ Player RadioControl             "Player"                                    { ch
 
 String StopwatchCommand         "Stopwatch Command"                         { channel="lametrictime:stopwatchApp:demo:stopwatch:command" }
 
-Switch WeatherForecast          "Forecast Weather"                          { channel="lametrictime:weatherApp:demo:weather:forecast" }
+String WeatherCommand           "Weather Command"                           { channel="lametrictime:weatherApp:demo:weather:command" }
 ```
 
 ## Sitemap
@@ -203,7 +196,7 @@ Sample sitemap configuration:
             }
             Frame label="Clock" {
                 Switch item=SetAlarmIn1Min
-                Switch item=ClockStopAlarm            
+                Selection item=ClockCommand mappings=["disableAlarm"="Disable Alarm"]
             }
             Frame label="Countdown" {
                 Switch item=Set2MinCountdown
@@ -216,7 +209,7 @@ Sample sitemap configuration:
                 Selection item=StopwatchCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
             }
             Frame label="Weather" {
-                Switch item=WeatherForecast
+                Selection item=WeatherCommand mappings=["forecast"="Forecast"]
             }
         }
 ```

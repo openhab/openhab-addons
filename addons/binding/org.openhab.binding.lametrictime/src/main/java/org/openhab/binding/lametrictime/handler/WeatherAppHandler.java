@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.lametrictime.handler;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.CHANNEL_APP_FORECAST;
+import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.CHANNEL_APP_COMMAND;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.syphr.lametrictime.api.local.ApplicationActionException;
 import org.syphr.lametrictime.api.model.CoreApps;
 
 /**
@@ -27,6 +29,8 @@ import org.syphr.lametrictime.api.model.CoreApps;
  */
 public class WeatherAppHandler extends AbstractLaMetricTimeAppHandler {
     private static final String PACKAGE_NAME = "com.lametric.weather";
+
+    public static final String COMMAND_FORECAST = "forecast";
 
     private final Logger logger = LoggerFactory.getLogger(WeatherAppHandler.class);
 
@@ -38,8 +42,9 @@ public class WeatherAppHandler extends AbstractLaMetricTimeAppHandler {
     public void handleAppCommand(ChannelUID channelUID, Command command) {
         try {
             switch (channelUID.getId()) {
-                case CHANNEL_APP_FORECAST:
-                    getDevice().doAction(getWidget(), CoreApps.weather().forecast());
+                case CHANNEL_APP_COMMAND:
+                    handleCommandChannel(command);
+                    updateState(channelUID, new StringType()); // clear state
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);
@@ -55,5 +60,17 @@ public class WeatherAppHandler extends AbstractLaMetricTimeAppHandler {
     @Override
     protected String getPackageName(LaMetricTimeAppConfiguration config) {
         return PACKAGE_NAME;
+    }
+
+    private void handleCommandChannel(Command command) throws ApplicationActionException {
+        String commandStr = command.toFullString();
+        switch (commandStr) {
+            case COMMAND_FORECAST:
+                getDevice().doAction(getWidget(), CoreApps.weather().forecast());
+                break;
+            default:
+                logger.debug("Weather app command '{}' not supported", commandStr);
+                break;
+        }
     }
 }

@@ -13,7 +13,7 @@
         
         <channels>
             <channel id="setAlarm" typeId="setAlarmType"/>
-            <channel id="stopAlarm" typeId="stopAlarmType"/>
+            <channel id="command" typeId="clockCommandType"/>
         </channels>
         
         <config-description>
@@ -29,9 +29,14 @@
         <label>Set Alarm</label>
         <description>Set the alarm to a specific time (date is ignored)</description>
     </channel-type>
-    <channel-type id="stopAlarmType">
-        <item-type>Switch</item-type>
-        <label>Stop Alarm</label>
-        <description>Stop the alarm</description>
+    <channel-type id="clockCommandType">
+        <item-type>String</item-type>
+        <label>Clock Command</label>
+        <description>Send a command to the clock app</description>
+        <state>
+            <options>
+                <option value="disableAlarm">Disable Alarm</option>
+            </options>
+        </state>
     </channel-type>
 </thing:thing-descriptions>
