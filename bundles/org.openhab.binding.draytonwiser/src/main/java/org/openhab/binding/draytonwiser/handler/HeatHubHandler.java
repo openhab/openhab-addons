@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -370,6 +371,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
             }
         } catch (TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect Heat Hub address");
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             updateStatus(ThingStatus.OFFLINE);
