@@ -91,12 +91,10 @@ All channels have no defined state. They exist as one-way communication to the d
 
 All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
 
-| Channel ID | Item Type | Description                                  |
-|------------|-----------|----------------------------------------------|
-| duration   | Number    | Set the duration of the countdown in seconds |
-| pause      | Switch    | Pause the active countdown                   |
-| reset      | Switch    | Stop and reset the countdown                 |
-| start      | Switch    | Start the countdown                          |
+| Channel ID | Item Type | Description                                     |
+|------------|-----------|-------------------------------------------------|
+| duration   | Number    | Set the duration of the countdown in seconds    |
+| command    | String    | Send a command to the app (start, pause, reset) |
 
 ### Radio App
 
@@ -110,11 +108,9 @@ All channels have no defined state. They exist as one-way communication to the d
 
 All channels have no defined state. They exist as one-way communication to the device. This means that a switch that is "ON" has no more meaning than one that is "OFF".
 
-| Channel ID | Item Type | Description                   |
-|------------|-----------|-------------------------------|
-| pause      | Switch    | Pause the active stopwatch    |
-| reset      | Switch    | Stop and reset the stopwatch  |
-| start      | Switch    | Start the stopwatch           |
+| Channel ID | Item Type | Description                                     |
+|------------|-----------|-------------------------------------------------|
+| command    | String    | Send a command to the app (start, pause, reset) |
 
 ### Weather App
 
@@ -175,16 +171,12 @@ Switch   ClockStopAlarm         "Stop Alarm"                                { ch
 Switch   SetAlarmIn1Min         "Set Alarm in 1 min"
 
 Number CountdownDuration        "Countdown Duration"                        { channel="lametrictime:countdownApp:demo:countdown:duration" }
-Switch CountdownPause           "Pause Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:pause" }
-Switch CountdownReset           "Reset Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:reset" }
-Switch CountdownStart           "Start Countdown"                           { channel="lametrictime:countdownApp:demo:countdown:start" }
+String CountdownCommand         "Countdown Command"                         { channel="lametrictime:countdownApp:demo:countdown:command" }
 Switch Set2MinCountdown         "Set 2 Min Countdown"
 
 Player RadioControl             "Player"                                    { channel="lametrictime:radioApp:demo:radio:control" }
 
-Switch StopwatchPause           "Pause Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:pause" }
-Switch StopwatchReset           "Reset Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:reset" }
-Switch StopwatchStart           "Start Stopwatch"                           { channel="lametrictime:stopwatchApp:demo:stopwatch:start" }
+String StopwatchCommand         "Stopwatch Command"                         { channel="lametrictime:stopwatchApp:demo:stopwatch:command" }
 
 Switch WeatherForecast          "Forecast Weather"                          { channel="lametrictime:weatherApp:demo:weather:forecast" }
 ```
@@ -215,17 +207,13 @@ Sample sitemap configuration:
             }
             Frame label="Countdown" {
                 Switch item=Set2MinCountdown
-                Switch item=CountdownPause
-                Switch item=CountdownReset
-                Switch item=CountdownStart             
+                Selection item=CountdownCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
             }
             Frame label="Radio" {
                 Default item=RadioControl
             }
             Frame label="Stopwatch" {
-                Switch item=StopwatchPause
-                Switch item=StopwatchReset
-                Switch item=StopwatchStart
+                Selection item=StopwatchCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
             }
             Frame label="Weather" {
                 Switch item=WeatherForecast

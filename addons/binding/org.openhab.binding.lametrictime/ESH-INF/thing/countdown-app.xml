@@ -13,9 +13,7 @@
         
         <channels>
             <channel id="duration" typeId="durationType"/>
-            <channel id="pause" typeId="pauseType"/>
-            <channel id="reset" typeId="resetType"/>
-            <channel id="start" typeId="startType"/>
+            <channel id="command" typeId="countdownCommandType"/>
         </channels>
         
         <config-description>
@@ -30,5 +28,17 @@
         <item-type>Number</item-type>
         <label>Countdown Duration</label>
         <description>Set the duration of the countdown in seconds</description>
+    </channel-type>
+    <channel-type id="countdownCommandType">
+        <item-type>String</item-type>
+        <label>Countdown Command</label>
+        <description>Send a command to the countdown app</description>
+        <state>
+            <options>
+                <option value="start">Start</option>
+                <option value="pause">Pause</option>
+                <option value="reset">Reset</option>
+            </options>
+        </state>
     </channel-type>
 </thing:thing-descriptions>

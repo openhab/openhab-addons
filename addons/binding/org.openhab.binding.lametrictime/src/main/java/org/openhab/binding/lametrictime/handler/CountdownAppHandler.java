@@ -10,6 +10,7 @@ package org.openhab.binding.lametrictime.handler;
 
 import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.syphr.lametrictime.api.local.ApplicationActionException;
 import org.syphr.lametrictime.api.model.CoreApps;
 
 /**
@@ -27,6 +29,10 @@ import org.syphr.lametrictime.api.model.CoreApps;
  */
 public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
     private static final String PACKAGE_NAME = "com.lametric.countdown";
+
+    public static final String COMMAND_PAUSE = "pause";
+    public static final String COMMAND_RESET = "reset";
+    public static final String COMMAND_START = "start";
 
     private final Logger logger = LoggerFactory.getLogger(CountdownAppHandler.class);
 
@@ -43,14 +49,9 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
                             CoreApps.countdown().configure(((Number) command).intValue(), false));
                     break;
                 }
-                case CHANNEL_APP_PAUSE:
-                    getDevice().doAction(getWidget(), CoreApps.countdown().pause());
-                    break;
-                case CHANNEL_APP_RESET:
-                    getDevice().doAction(getWidget(), CoreApps.countdown().reset());
-                    break;
-                case CHANNEL_APP_START:
-                    getDevice().doAction(getWidget(), CoreApps.countdown().start());
+                case CHANNEL_APP_COMMAND:
+                    handleCommandChannel(command);
+                    updateState(channelUID, new StringType()); // clear state
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);
@@ -66,5 +67,23 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
     @Override
     protected String getPackageName(LaMetricTimeAppConfiguration config) {
         return PACKAGE_NAME;
+    }
+
+    private void handleCommandChannel(Command command) throws ApplicationActionException {
+        String commandStr = command.toFullString();
+        switch (commandStr) {
+            case COMMAND_PAUSE:
+                getDevice().doAction(getWidget(), CoreApps.countdown().pause());
+                break;
+            case COMMAND_RESET:
+                getDevice().doAction(getWidget(), CoreApps.countdown().reset());
+                break;
+            case COMMAND_START:
+                getDevice().doAction(getWidget(), CoreApps.countdown().start());
+                break;
+            default:
+                logger.debug("Countdown app command '{}' not supported", commandStr);
+                break;
+        }
     }
 }
