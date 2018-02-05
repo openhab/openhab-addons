@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.dsmr.internal.device.cosem;
 
-import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +25,13 @@ import org.slf4j.LoggerFactory;
  * @author M. Volaart - Initial contribution
  */
 public class CosemObject {
-    private final Logger logger = LoggerFactory.getLogger(CosemObject.class);
 
     /**
      * Regular expression for finding CosemValues
      */
-    private static final Pattern cosemValuesPattern = Pattern.compile("(\\(([^\\(\\)]*)\\))");
+    private static final Pattern COSEM_VALUES_PATTERN = Pattern.compile("(\\(([^\\(\\)]*)\\))");
+
+    private final Logger logger = LoggerFactory.getLogger(CosemObject.class);
 
     /**
      * CosemObject type
@@ -44,13 +46,13 @@ public class CosemObject {
     /**
      * List of COSEM value in this message
      */
-    private Map<String, CosemValue<? extends Object>> cosemValues;
+    private Map<String, State> cosemValues;
 
     /**
      * Construct a new CosemObject with the specified OBIS Message Type
      *
      * @param msgType
-     *            {@link CosemObjectType}
+     *                    {@link CosemObjectType}
      */
     public CosemObject(CosemObjectType msgType, OBISIdentifier obisIdentifier) {
         this.type = msgType;
@@ -88,55 +90,43 @@ public class CosemObject {
     /**
      * Returns the Cosem values that are part of this Cosem Object
      *
-     * @return List of {@link CosemValue} that are part of this Cosem Object
+     * @return Map of channel keys with state values that are part of this Cosem Object
      */
-    public Map<String, ? extends CosemValue<? extends Object>> getCosemValues() {
+    public Map<String, ? extends State> getCosemValues() {
         return cosemValues;
     }
 
     /**
-     * Parses the List of COSEM String value to internal openHAB values.
+     * Parses the List of COSEM String value to COSEM objects values.
      * <p>
      * When the parser has problems it throws an {@link ParseException}. The
      * already parsed values will still be available. It is up to the caller how
      * to handle a partially parsed message.
      *
-     * @param cosemStringValues
-     *            the List of COSEM String values
-     * @throws ParseException
-     *             if parsing fails
+     * @param cosemValueString the List of COSEM String values
+     * @throws ParseException if parsing fails
      */
     public void parseCosemValues(String cosemValueString) throws ParseException {
         logger.trace("Parsing CosemValue string {}", cosemValueString);
 
-        Matcher cosemValueMatcher = cosemValuesPattern.matcher(cosemValueString);
-
-        int nrOfCosemValues = 0;
-        while (cosemValueMatcher.find()) {
-            nrOfCosemValues++;
-        }
-        // We need the matcher again, reset to initial state
-        cosemValueMatcher.reset();
+        Matcher cosemValueMatcher = COSEM_VALUES_PATTERN.matcher(cosemValueString);
+        int nrOfCosemValues = countCosemValues(cosemValueMatcher);
 
         if (type.supportsNrOfValues(nrOfCosemValues)) {
             logger.trace("Received items: {} is supported", nrOfCosemValues);
 
             int cosemValueItr = 0;
             while (cosemValueMatcher.find()) {
-                String cosemStringValue = cosemValueMatcher.group(2);
-                CosemValueDescriptor valueDescriptor = type.getDescriptor(cosemValueItr);
-
-                CosemValue<? extends Object> cosemValue = parseCosemValue(valueDescriptor, cosemStringValue);
+                Entry<String, CosemValueDescriptor<?>> valueDescriptorEntry = type.getDescriptor(cosemValueItr);
+                State cosemValue = valueDescriptorEntry.getValue().getStateValue(cosemValueMatcher.group(2));
 
                 if (cosemValue != null) {
-                    if (!cosemValues.containsKey(valueDescriptor.getChannelId())) {
-                        cosemValues.put(valueDescriptor.getChannelId(), cosemValue);
+                    if (!cosemValues.containsKey(valueDescriptorEntry.getKey())) {
+                        cosemValues.put(valueDescriptorEntry.getKey(), cosemValue);
                     } else {
-                        logger.warn("Value for descriptor {} already exists, dropping value {}", valueDescriptor,
+                        logger.warn("Value for descriptor {} already exists, dropping value {}", valueDescriptorEntry,
                                 cosemValue);
                     }
-                } else {
-                    logger.warn("Failed to parse: {} for OBISMsgType: {}", cosemStringValue, type);
                 }
                 cosemValueItr++;
             }
@@ -145,31 +135,14 @@ public class CosemObject {
         }
     }
 
-    /**
-     * Creates an empty CosemValue object
-     *
-     * @param cosemValueDescriptor
-     *            the CosemValueDescriptor object that describes the CosemValue
-     * @return the instantiated CosemValue based on the specified
-     *         CosemValueDescriptor
-     * @throws ParseException if a CosemValue could not be created
-     */
-    private CosemValue<? extends Object> parseCosemValue(CosemValueDescriptor cosemValueDescriptor,
-            String cosemValueString) throws ParseException {
-        Class<? extends CosemValue<? extends Object>> cosemValueClass = cosemValueDescriptor.getCosemValueClass();
+    private int countCosemValues(Matcher cosemValueMatcher) {
+        int nrOfCosemValues = 0;
 
-        String unit = cosemValueDescriptor.getUnit();
-
-        try {
-            Constructor<? extends CosemValue<? extends Object>> c = cosemValueClass.getConstructor(String.class);
-
-            CosemValue<? extends Object> cosemValue = c.newInstance(unit);
-            cosemValue.setValue(cosemValueString);
-
-            return cosemValue;
-        } catch (ReflectiveOperationException roe) {
-            logger.warn("Failed to create {} message", type.obisId, roe);
+        while (cosemValueMatcher.find()) {
+            nrOfCosemValues++;
         }
-        return null;
+        // We need the matcher again, reset to initial state
+        cosemValueMatcher.reset();
+        return nrOfCosemValues;
     }
 }

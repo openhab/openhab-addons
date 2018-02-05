@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,58 +8,33 @@
  */
 package org.openhab.binding.dsmr.internal.device.cosem;
 
-import java.text.ParseException;
-
 import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
  * CosemString represents a string value
  *
  * @author M. Volaart - Initial contribution
+ * @author Hilbrand Bouwkamp - Class now a factory instead of data containing class
  */
-public class CosemString extends CosemValue<String> {
-    /**
-     * Creates a new CosemString
-     *
-     * @param unit
-     *            the unit of the value
-     */
-    public CosemString(String unit) {
-        super(unit);
+class CosemString extends CosemValueDescriptor<StringType> {
+
+    public static final CosemString INSTANCE = new CosemString();
+
+    private CosemString() {
+    }
+
+    public CosemString(String channelId) {
+        super(channelId);
     }
 
     /**
-     * Creates a new CosemString with the specified value
+     * Parses a String value to a {@link StringType}.
      *
-     * @param unit the unit of the value
-     * @param value the value
-     */
-    public CosemString(String unit, String value) {
-        super(unit);
-        this.value = value;
-    }
-
-    /**
-     * Parses a String value to a CosemString (does nothing in fact)
-     *
-     * @param cosemValue
-     *            the value to parse
-     * @return Parsed string representation of the cosemValue
-     * @throws ParseException
-     *             if parsing failed
+     * @param cosemValue the value to parse
+     * @return {@link StringType} representing the value of the cosem value
      */
     @Override
-    protected String parse(String cosemValue) throws ParseException {
-        return cosemValue;
-    }
-
-    /**
-     * Returns an openHAB representation of this String
-     *
-     * @return {@link StringType} representing the value of this CosemString
-     */
-    @Override
-    public StringType getOpenHABValue() {
-        return new StringType(value);
+    protected StringType getStateValue(String cosemValue) {
+        return new StringType(cosemValue);
     }
 }

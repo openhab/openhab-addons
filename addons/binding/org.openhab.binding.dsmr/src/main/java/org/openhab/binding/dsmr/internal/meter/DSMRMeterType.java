@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.dsmr.internal.meter;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
@@ -262,15 +263,10 @@ public enum DSMRMeterType {
     SLAVE_ELECTRICITY_V5_0(DSMRMeterKind.SLAVE_ELECTRICITY1, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
             CosemObjectType.METER_DEVICE_TYPE, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
             CosemObjectType.EMETER_VALUE);
-    // @formatter:off
+    // @formatter:on
 
-    public static final Set<ThingTypeUID> METER_THING_TYPES;
-    static {
-        METER_THING_TYPES = new HashSet<>();
-        for (DSMRMeterType meterType : DSMRMeterType.values()) {
-            METER_THING_TYPES.add(meterType.getThingTypeUID());
-        }
-    }
+    public static final Set<ThingTypeUID> METER_THING_TYPES = Arrays.asList(DSMRMeterType.values()).stream()
+            .map(DSMRMeterType::getThingTypeUID).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterType.class);
 
@@ -303,7 +299,7 @@ public enum DSMRMeterType {
      * Creates a new enum
      *
      * @param channelKey
-     *            String containing the channel configuration for this meter
+     *                       String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType... requiredCosemObjects) {
@@ -314,7 +310,7 @@ public enum DSMRMeterType {
      * Creates a new enum
      *
      * @param channelKey
-     *            String containing the channel configuration for this meter
+     *                       String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
@@ -340,13 +336,14 @@ public enum DSMRMeterType {
      *
      *
      * @param availableCosemObjects the Cosem Objects to detect if the current meter compatible
-     * @return {@link DSMRMeterIdentification} containing the identification of the compatible meter
+     * @return {@link DSMRMeterDescriptor} containing the identification of the compatible meter
      */
     public DSMRMeterDescriptor isCompatible(Map<CosemObjectType, CosemObject> availableCosemObjects) {
         DSMRMeterDescriptor meterDescriptor = null;
+
         for (CosemObjectType objectType : requiredCosemObjects) {
             if (!availableCosemObjects.containsKey(objectType)) {
-                logger.debug("required objectType {} not found", objectType);
+                logger.trace("Required objectType {} not found", objectType);
                 return null;
             }
             CosemObject cosemObject = availableCosemObjects.get(objectType);
@@ -358,10 +355,10 @@ public enum DSMRMeterType {
         }
         // Meter type is compatible, check if an identification exists
         if (meterDescriptor == null) {
-            logger.debug("Meter type {} has no identification", this.toString());
+            logger.trace("Meter type {} has no identification", this.toString());
             meterDescriptor = new DSMRMeterDescriptor(this, DSMRMeterConstants.UNKNOWN_CHANNEL);
         }
-        logger.debug("Meter type is compatible and has the following descriptor {}", meterDescriptor);
+        logger.trace("Meter type is compatible and has the following descriptor {}", meterDescriptor);
 
         return meterDescriptor;
     }

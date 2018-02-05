@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="binding:dsmr:bridgesettings">
-		<parameter-group name='serialPortAdvanced'>
+		<parameter-group name="serialPortAdvanced">
 			<label>Manual Serial Port Settings</label>
 			<description>In case auto detection fails, it is possible to specify the Serial Port manually</description>
 			<context>serial-port</context>
@@ -13,16 +14,21 @@
 		<parameter name="serialPort" type="text">
 			<context>serial-port</context>
 			<label>Serial Port</label>
-			<description>The Serial Port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+			<description>The Serial Port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows:
+				COM1)</description>
 		</parameter>
-		<parameter name="serialPortDisableAutoDetection" type="boolean" required="true" groupName="serialPortAdvanced">
-			<default>false</default>
-			<label>Disable Serial Port auto detection</label>
-			<description>In case auto detection of the DSMR-device does not work it is possible 
-		              to disable auto detection and use the manual Serial port parameters.</description>
+		<parameter name="receivedTimeout" type="integer" required="true" min="1">
+			<default>30</default>
+			<label>Received Timeout</label>
+			<description>The time period within results are expected in seconds</description>
 		</parameter>
-		<parameter name="serialPortBaudrate" type="integer" required="true" groupName="serialPortAdvanced">
-			<default>115200</default>
+		<parameter name="enableAutoDetection" type="boolean" groupName="serialPortAdvanced">
+			<default>true</default>
+			<label>Enable Serial Port auto detection</label>
+			<description>In case auto detection of the DSMR-device does not work it is possible
+to disable auto detection and use the manual Serial port parameters.</description>
+		</parameter>
+		<parameter name="baudrate" type="integer" groupName="serialPortAdvanced">
 			<label>Serial Port baud rate</label>
 			<description>Specify the Serial Port baud rate.</description>
 			<options>
@@ -34,8 +40,7 @@
 				<option value="115200">115200</option>
 			</options>
 		</parameter>
-		<parameter name="serialPortDatabits" type="integer" required="true" groupName="serialPortAdvanced">
-			<default>8</default>
+		<parameter name="databits" type="integer" groupName="serialPortAdvanced">
 			<label>Serial Port data bits</label>
 			<description>Specify the Serial Port data bits.</description>
 			<options>
@@ -45,8 +50,7 @@
 				<option value="8">8</option>
 			</options>
 		</parameter>
-		<parameter name="serialPortParity" type="text" required="true" groupName="serialPortAdvanced">
-			<default>N</default>
+		<parameter name="parity" type="text" groupName="serialPortAdvanced">
 			<label>Serial Port parity</label>
 			<description>Specify the Serial Port parity.</description>
 			<options>
@@ -55,8 +59,7 @@
 				<option value="N">N(ormal)</option>
 			</options>
 		</parameter>
-		<parameter name="serialPortStopbits" type="text" required="false" groupName="serialPortAdvanced">
-			<default>1</default>
+		<parameter name="stopbits" type="text" groupName="serialPortAdvanced">
 			<label>Serial Port stop bits</label>
 			<description>Specify the Serial Port stop bits.</description>
 			<options>
@@ -65,26 +68,21 @@
 				<option value="2">2</option>
 			</options>
 		</parameter>
-		<parameter name="lenientMode" type="boolean" required="true">
-			<default>false</default>
-			<label>Lenient Mode</label>
-			<description><![CDATA[ In lenient mode the binding will handle communication problems more silently. 
-                If your experiencing lots of errors in the log and receive no data setting lenient mode to true could help.<br><br>
-                Please note that receiving data is not steady (the communication problems are still there).<br><br>
-                This option could be needed for embedded platforms and should not be needed if the platform fast enough. ]]></description>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
+
 	<config-description uri="binding:dsmr:meterdescriptor">
+		<parameter name="refresh" type="integer" required="true" min="1">
+			<default>60</default>
+			<label>Refresh</label>
+			<description>The time interval the data is refreshed in seconds</description>
+		</parameter>
 		<parameter name="channel" type="integer" required="true">
 			<advanced>true</advanced>
 			<label>Channel</label>
 			<description><![CDATA[ The DSMR-device channel for this meter (M-Bus channel). 
-			     The binding will auto detect this value.<br>
-			     In normal situations it is not necessary to adapt this value.<br><br>
-			     If the auto detection failed or if physical changes are made to the meter setup (changed water, gas, heating) meters
-			     it can be necessary to update the M-Bus channel.
-			     ]]></description>
+The binding will auto detect this value. In normal situations it is not necessary to adapt this value.
+If the auto detection failed or if physical changes are made to the meter setup (changed water, gas, heating) meters
+it can be necessary to update the M-Bus channel.]]></description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

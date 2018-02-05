@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="coolingValueType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Cooling delivery (GJ)</label>
 		<description>The total amount of cooling used.</description>
 		<state pattern="%.3f GJ" readOnly="true"></state>

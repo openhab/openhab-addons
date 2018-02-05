@@ -4,5 +4,5 @@
 
 	<name>DSMR Binding</name>
 	<description>This binding integrates Dutch Smart Meters</description>
-	<author>Marcel Volaart</author>
+	<author>Marcel Volaart, Hilbrand Bouwkamp</author>
 </binding:binding>

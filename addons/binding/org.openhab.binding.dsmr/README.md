@@ -4,65 +4,42 @@
 
 The DSMR-binding is targeted towards Dutch users having a smart meter (Dutch: 'Slimme meter'). Data of Dutch smart meters can be obtained via the P1-port. When connecting this port from a serial port the data can be read out.
 
-This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.  
-Although DSMR v4.2 is not an official specification, the binding has support for this version.
+This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0. Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
-If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding).
+If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding). Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
 ## Supported Things
 
-### Bridge
+- dsmrBridge: This is the device that communicated between the binding (serial) and its internal meters. You always have to have a 'Dutch Smart Meter'-bridge. The bridge contains the serial port configuration. Specific meters are bound via the bridge to the smart meter. A smart meter consists typically out of minimal 2 meters. A generic meter and the electricity meter. Each meter is bound to the DSMR protocol the physical meter supports. For each meter it is possible to set a refresh rate at which the status is updated. The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
 
-- Dutch Smart Meter. This is the device that communicated between the binding (serial) and its internal meters. You always have to have a 'Dutch Smart Meter'-bridge.
+### Discovery
+
+Both bridges and meters can be discovered via the discovery process. If a bridge is manually configured it is possible to auto detect available meters.
+
 
 #### Configuration
 
-The configuration consists of the following parameters:
+The configuration for the Bridge consists of the following parameters:
 
-- `serialPort` (mandatory). The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`)
-- `serialPortSettings` (optional, default: &lt;empty&gt;). Serial Port parameters in the format `<speed> <nr of bits><parity [E(ven)/N(one)/O(dd)]><stop bits (1/1.5/2)>`.  
-E.g. `115200 8N1` or `9600 E71`  
-Setting a value will disable the serial port autodetection functionality of the binding, clearing the value will enable the serial port autodetection functionality again.  
-**Note:** *This parameter is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*  
-- `lenientMode` (optional, default: `false`). In lenient mode the binding will handle communication problems more silently and gracefully. If your experiencing lots of errors in the log and don't receive data, enabling lenient mode could help.
-  
-This option is targeted for embedded platforms with limited CPU power.    
-**Note:** *With lenientMode enabled receiving data is not guaranteed to be steady.*
+| Parameter           | Description                                                                                                 |
+|---------------------|-------------------------------------------------------------------------------------------------------------|
+| serialPort          | The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`) (mandatory) |
+| receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds.                       |
+| enableAutoDetection | When true serial port configuration is auto detected, default is true                                       |
+| baudrate            | Baudrate when no auto detect. valid values: 4800, 9600, 19200, 38400, 57600, 115200                         |
+| databits            | Data bits when no auto detect. valid values: 5, 6, 7, 8                                                     |
+| parity              | Parity when no auto detect. valid values: E(even), N(one), O(dd)                                            |
+| stopbits            | Stop bits when no auto detect. valid values: 1, 1.5, 2                                                      |
 
-Manual configuration:
-The following configuration need to be added to a thing-configuration file. E.g. `things/dsmr.things`
+Only when `enableAutoDetection` is set to false the manual port configuration settings will be active.
+**Note:** *The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*
 
-```
-Bridge dsmr:dsmrBridge:<id> [serialPort="<com port>"] {
-    Things:
-        * Thing configuration *
-}
-```
-
-**Examples**
-Default configuration:
-
-```
-Bridge dsmr:dsmrBridge:myDSMRDevice [serialPort="/dev/ttyUSB0"] {
-    Things:
-    ... thing configuration ...
-}
-```
-
-Advanced configuration:
-
-```
-dsmr:dsmrBridge:myEmbDSMRDevice [serialPort="/dev/ttyUSB0", serialPortSettings="115200 8N1", lenientMode=true] {
-    Things:
-    ... thing configuration ...
-}
-```
 
 ### Meters
 
 The information in this paragraph in necessary if you choose to configure the meters manually in a `.things` file.
 
-Supported meters:  
+Supported meters:
 
 | Meter Thing                                     | Thing type ID                | M-Bus channel | Refresh rate |
 |-------------------------------------------------|------------------------------|---------------|--------------|
@@ -103,22 +80,13 @@ Supported meters:
 
 #### Configuration
 
-Manual configuration:
-The following configuration parameters are mandatory:
+The configuration for the meters consists of the following parameters:
 
-- Thing type ID. See table above
-- id. The id for this Thing
-- Thing type ID in capitals. The Thing type ID in capitals
-- M-Bus channel. See the table above
+| Parameter           | Description                                                                          |
+|---------------------|--------------------------------------------------------------------------------------|
+| refresh             | Time in seconds with which the state of the device is updated. Default is 60 seconds |
+| channel             | M-Bus channel. See the table above                                                   |
 
-The following configuration must to be added to a thing-configuration file. E.g. `things/dsmr.things`
-
-```
-Bridge configuration {
-    Things:
-        <Thing type ID> <id> [channel=<M-Bus channel>] {
-}
-```
 
 **Examples**
 
@@ -259,8 +227,8 @@ The following channels are supported:
 | `wmeter_value_v3`                                | Number    | Water Delivery past period                                             | -       | -         | -         | Y         | -         | -           | -         | -       |
 | `meter_valve_switch_position`                    | Number    | Water Meter Valve position                                             | -       | -         | -         | Y         | -         | -           | -         | -       |
 
-*note 2*. The power failure log has a dynamic number of entries starting at `0`. 
-So `emeter_power_failure_log_timestamp0`, `emeter_power_failure_log_duration0` refers to the first entry, 
+*note 2*. The power failure log has a dynamic number of entries starting at `0`.
+So `emeter_power_failure_log_timestamp0`, `emeter_power_failure_log_duration0` refers to the first entry,
 `emeter_power_failure_log_timestamp1`, `emeter_power_failure_log_duration1` refers to the second entry, etc.
 
 Channel identifier: `dsmr:<ThingTypeID>:<bridge id>:<id>:<channel type id>`
@@ -304,9 +272,8 @@ Number MeterDeliveryTariff1 "Total electricity delivered to the resident during 
 
 ## Determine M-Bus channel
 
-Since autodetecting meters is always active, you can use the logging to find out a M-Bus channel.  
-Look for the following logfile line:  
-`<Timestamp> [INFO ] [enhab.binding.dsmr.device.DSMRDevice] - Detected the following new meters: [Meter type: M3_V5_0, channel: 1, Meter type: ELECTRICITY_V5, channel: 0]`
+By manually trigger the discovery process, e.g. via PaperUI, you can use the logging to find out a M-Bus channel. Look for the following logfile line:
+`<Timestamp> [INFO ] [<class>] - New compatible meter: [Meter type: M3_V5_0, channel: 1, Meter type: ELECTRICITY_V5, channel: 0]`
 
 Here you find the ThingTypeID (it is stated only in capitals) and the M-Bus channel. The above example would lead to the following Thing definition
 

@@ -4,6 +4,10 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="electricity_v2_1" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dsmrBridge" />
+		</supported-bridge-type-refs>
+
 		<label>Electricity meter (DSMR V2.1)</label>
 		<description>This is an electricity meter that complies to the DSMR V2.1 specification.</description>
 

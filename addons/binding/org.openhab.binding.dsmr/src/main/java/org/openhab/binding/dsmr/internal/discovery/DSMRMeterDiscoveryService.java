@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,110 +8,58 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
-import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
-import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
-import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This implements the discovery service for new DSMR Meters
+ * This implements the discovery service for new DSMR Meters on a active DSMR bridge.
  *
  * @author M. Volaart - Initial contribution
+ * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.
  */
-public class DSMRMeterDiscoveryService extends AbstractDiscoveryService implements DSMRMeterDiscoveryListener {
+@NonNullByDefault
+public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P1TelegramListener {
+
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterDiscoveryService.class);
 
     /**
-     * The Bridge ThingUID
-     */
-    private final ThingUID dsmrBridgeUID;
-
-    /**
-     * The DSMRBridgeHandler instance
+     * The {@link DSMRBridgeHandler} instance
      */
     private final DSMRBridgeHandler dsmrBridgeHandler;
 
     /**
-     * Constructs a new DSMRMeterDiscoveryService with the specified DSMR Bridge ThingUID
+     * Constructs a new {@link DSMRMeterDiscoveryService} attached to the give bridge handler.
      *
-     * @param dsmrBridgeUID ThingUID for the DSMR Bridges
+     * @param dsmrBridgeHandler The bridge handler this discovery service is attached to
      */
-    public DSMRMeterDiscoveryService(ThingUID dsmrBridgeUID, DSMRBridgeHandler dsmrBridgeHandler) {
-        super(DSMRMeterType.METER_THING_TYPES, DSMRBindingConstants.DSMR_DISCOVERY_TIMEOUT_SECONDS, false);
-
-        this.dsmrBridgeUID = dsmrBridgeUID;
+    public DSMRMeterDiscoveryService(DSMRBridgeHandler dsmrBridgeHandler) {
         this.dsmrBridgeHandler = dsmrBridgeHandler;
     }
 
-    /**
-     * Activates the DSMRDiscoveryService
-     */
-    public void activate() {
-        dsmrBridgeHandler.registerMeterDiscoveryListener(this);
-    }
-
-    /**
-     * Deactivates the DSMRDiscoveryService
-     */
-    @Override
-    public void deactivate() {
-        dsmrBridgeHandler.unregisterMeterDiscoveryListener(this);
-    }
-
-    /**
-     * Manual scanning is not supported for meters. The bridge will handle this automatically
-     */
     @Override
     protected void startScan() {
-        // Manual scanning is not supported
-        logger.debug("Started Discovery Scan (Not supported for DSMR meter Thing types)");
+        logger.info("Start discovery on existing DSMR bridge.");
+        dsmrBridgeHandler.setLenientMode(true);
+        dsmrBridgeHandler.registerDSMRMeterListener(this);
     }
 
-    /**
-     * Callback when a new meter is discovered
-     * The new meter is described by the {@link DSMRMeterDescriptor}
-     *
-     * There will be a DiscoveryResult created and sent to the framework.
-     *
-     * At this moment there are no reasons why a new meter will not be accepted.
-     *
-     * Therefore this callback will always return true.
-     *
-     * @param meterDescriptor the descriptor of the new detected meter
-     * @return true (meter is always accepted)
-     */
     @Override
-    public boolean meterDiscovered(DSMRMeterDescriptor meterDescriptor) {
-        DSMRMeterType meterType = meterDescriptor.getMeterType();
+    protected synchronized void stopScan() {
+        logger.info("Stop discovery on existing DSMR bridge.");
+        dsmrBridgeHandler.setLenientMode(false);
+        super.stopScan();
+        dsmrBridgeHandler.unregisterDSMRMeterListener(this);
+    }
 
-        ThingTypeUID thingTypeUID = meterType.getThingTypeUID();
-        String thingId = "dsmr:" + meterType.name().toLowerCase() + ":"
-                + (meterDescriptor.getChannel() == DSMRMeterConstants.UNKNOWN_CHANNEL ? "default"
-                        : meterDescriptor.getChannel());
-        ThingUID thingUID = new ThingUID(thingId);
-
-        // Construct the configuration for this meter
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("meterType", meterType.name());
-        properties.put("channel", meterDescriptor.getChannel());
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withBridge(dsmrBridgeUID).withProperties(properties).withLabel(meterType.meterKind.toString()).build();
-
-        logger.debug("{} for meterDescriptor {}", discoveryResult, meterDescriptor);
-        thingDiscovered(discoveryResult);
-
-        return true;
+    @Override
+    public void telegramReceived(P1Telegram telegram) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
+        }
+        meterDetector.detectMeters(telegram).forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
     }
 }

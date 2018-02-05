@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="heatingValueType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Heating delivery (GJ)</label>
 		<description>The total amount of heating used in the past period.</description>
-		<state pattern="%.3f GJ" readOnly="true"></state>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

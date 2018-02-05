@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,85 +8,70 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import java.util.Objects;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Class described the DSMRDeviceConfiguration.
- *
- * This class is supporting the Configuration.as functionality from {@link Configuration}
+ * Class describing the DSMR bridge user configuration
  *
  * @author M. Volaart - Initial contribution
+ * @author Hilbrand Bouwkamp - added receivedTimeout configuration
  */
 public class DSMRDeviceConfiguration {
     /**
-     * Portname
+     * Serial port name
      */
     public String serialPort;
 
     /**
      * Serial port baud rate
      */
-    public Integer serialPortBaudrate;
+    public int baudrate;
 
     /**
      * Serial port data bits
      */
-    public Integer serialPortDatabits;
+    public int databits;
 
     /**
      * Serial port parity
      */
-    public String serialPortParity;
+    public String parity;
 
     /**
      * Serial port stop bits
      */
-    public String serialPortStopbits;
+    public String stopbits;
 
     /**
      * Serial port auto detection flag
      */
-    public Boolean serialPortDisableAutoDetection;
+    public boolean enableAutoDetection = true;
 
     /**
-     * The DSMR Device can work in a lenient mode.
-     * This means the binding is less strict during communication errors and will ignore the CRC-check
-     * Data that is available will be communicated to the OpenHAB2 system and recoverable communication errors
-     * won't be logged.
-     * This can be needed for devices handling the serial port not fast enough (e.g. embedded devices)
+     * When no message was received after the configured number of seconds action will be taken.
      */
-    public Boolean lenientMode;
+    public int receivedTimeout;
+
+    /**
+     * @return true is serial port speed should be detected automatically.
+     */
+    public boolean isSerialAutoDetection() {
+        return enableAutoDetection;
+    }
+
+    /**
+     * @return true if serial port settings are all set and no auto detecting is enabled.
+     */
+    public boolean isSerialFixedSettings() {
+        return !isSerialAutoDetection() && baudrate > 0 && databits > 0 && !StringUtils.isBlank(parity)
+                && !StringUtils.isBlank(stopbits);
+    }
 
     @Override
     public String toString() {
-        return "DSMRDeviceConfiguration(portName:" + serialPort + ", baudrate:" + serialPortBaudrate + ", data bits:"
-                + serialPortDatabits + ", parity:" + serialPortParity + ", stop bits:" + serialPortStopbits
-                + ", auto detection disabled:" + serialPortDisableAutoDetection + ", lenientMode:" + lenientMode + ")";
-    }
-
-    /**
-     * Returns if this DSMRDeviceConfiguration is equal to the other DSMRDeviceConfiguration.
-     * Evaluation is done based on all the parameters
-     *
-     * @param other the other DSMRDeviceConfiguration to check
-     * @return true if both are equal, false otherwise or if other == null
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof DSMRDeviceConfiguration)) {
-            return false;
-        }
-        DSMRDeviceConfiguration o = (DSMRDeviceConfiguration) other;
-
-        return serialPort.equals(o.serialPort) && serialPortBaudrate.equals(o.serialPortBaudrate)
-                && serialPortDatabits.equals(o.serialPortDatabits) && serialPortParity.equals(o.serialPortParity)
-                && serialPortStopbits.equals(o.serialPortStopbits) && lenientMode == o.lenientMode
-                && serialPortDisableAutoDetection == o.serialPortDisableAutoDetection;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(serialPort, serialPortBaudrate, serialPortDatabits, serialPortParity, serialPortStopbits,
-                lenientMode, serialPortDisableAutoDetection);
+        return "DSMRDeviceConfiguration [serialPort=" + serialPort + ", serialPortBaudrate=" + baudrate
+                + ", serialPortDatabits=" + databits + ", serialPortParity=" + parity + ", serialPortStopbits="
+                + stopbits + ", serialPortEnableAutoDetection=" + enableAutoDetection + ", receivedTimeout="
+                + receivedTimeout + "]";
     }
 }

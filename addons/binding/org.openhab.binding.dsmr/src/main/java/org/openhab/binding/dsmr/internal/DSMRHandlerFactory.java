@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,19 +33,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DSMRHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link DSMRHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author M. Volaart - Initial contribution
+ * @author Hilbrand Bouwkamp - Refactored discovery service to use standard discovery class methods.
  */
-@Component(service = ThingHandlerFactory.class)
+@NonNullByDefault
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.dsmr")
 public class DSMRHandlerFactory extends BaseThingHandlerFactory {
+
     private final Logger logger = LoggerFactory.getLogger(DSMRHandlerFactory.class);
 
-    /**
-     * The registration handler
-     */
-    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     /**
      * Returns if the specified ThingTypeUID is supported by this handler.
@@ -51,7 +52,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
      * This handler support the THING_TYPE_DSMR_BRIDGE type and all ThingTypesUID that
      * belongs to the supported DSMRMeterType objects
      *
-     * @param {@link ThingTypeUID} to check
+     * @param thingTypeUID {@link ThingTypeUID} to check
      * @return true if the specified ThingTypeUID is supported, false otherwise
      */
     @Override
@@ -61,12 +62,9 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
             return true;
         } else {
             boolean thingTypeUIDIsMeter = DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID);
-            if (logger.isDebugEnabled()) {
-                if (thingTypeUIDIsMeter) {
-                    logger.trace("{} is a supported DSMR Meter thing", thingTypeUID);
-                } else {
-                    logger.trace("{} is not a DSMR Meter thing or not a supported DSMR Meter thing", thingTypeUID);
-                }
+
+            if (thingTypeUIDIsMeter) {
+                logger.trace("{} is a supported DSMR Meter thing", thingTypeUID);
             }
             return thingTypeUIDIsMeter;
         }
@@ -84,19 +82,14 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
      * @return ThingHandler for the given Thing or null if the Thing is not supported
      */
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
-        if (thingTypeUID.equals(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE)) {
-            Bridge dsmrBridge = (Bridge) thing;
-            DSMRBridgeHandler bridgeHandler = new DSMRBridgeHandler((Bridge) thing);
-            DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(dsmrBridge.getUID(),
-                    bridgeHandler);
-            discoveryService.activate();
 
-            serviceRegs.put(thing.getUID(), bundleContext.registerService(DiscoveryService.class.getName(),
-                    discoveryService, new Hashtable<String, Object>()));
-            return bridgeHandler;
+        if (DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID)) {
+            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing);
+            registerDiscoveryService(handler);
+            return handler;
         } else if (DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID)) {
             return new DSMRMeterHandler(thing);
         }
@@ -105,27 +98,26 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
-     * Removes the service registration for the given ThingHandler
+     * Registers a meter discovery service for the bridge handler.
      *
-     * Only for the DSMRBridgeHandler this is needed.
-     *
-     * @param ThingHandler to remove
+     * @param bridgeHandler handler to register service for
      */
+    private synchronized void registerDiscoveryService(DSMRBridgeHandler bridgeHandler) {
+        DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(bridgeHandler);
+
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof DSMRBridgeHandler) {
-            ServiceRegistration<?> serviceReg = serviceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
-                DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                if (service != null) {
-                    service.deactivate();
-                }
                 serviceReg.unregister();
-                serviceRegs.remove(thingHandler.getThing().getUID());
+                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
-
         }
     }
 }

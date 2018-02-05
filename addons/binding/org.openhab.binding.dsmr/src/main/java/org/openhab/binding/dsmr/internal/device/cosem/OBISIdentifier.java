@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,17 +17,18 @@ import java.util.regex.Pattern;
  * Class representing an OBISIdentifier
  *
  * @author M. Volaart - Initial contribution
+ * @author Hilbrand Bouwkamp - Fix bug in regex pattern.
  */
 public class OBISIdentifier {
     /**
-     * String representing a.b.c.d.e.f OBIS ID
+     * String representing a-b:c.d.e.f OBIS ID
      */
-    private static final String OBISID_REGEX = "((\\d+)\\-)?((\\d+):)?((\\d+)\\.)(\\d+)(\\.(\\d+))?(\\*(\\d+))?";
+    private static final String OBISID_REGEX = "((\\d+)\\-)?((\\d+):)?((\\d+)\\.)(\\d+)(\\.(\\d+))?(.(\\d+))?";
 
     /**
      * OBIS ID pattern
      */
-    private static final Pattern obisIdPattern = Pattern.compile(OBISID_REGEX);
+    private static final Pattern OBIS_ID_PATTERN = Pattern.compile(OBISID_REGEX);
 
     /* the six individual group values of the OBIS ID */
     private Integer groupA;
@@ -38,7 +39,7 @@ public class OBISIdentifier {
     private Integer groupF;
 
     /**
-     * Constructs a new OBIS Identifier (A.B.C.D.E.F)
+     * Constructs a new OBIS Identifier (A-B:C.D.E.F)
      *
      * @param groupA A value
      * @param groupB B value
@@ -58,13 +59,13 @@ public class OBISIdentifier {
     }
 
     /**
-     * Creates a new OBISIdentifier of the specified String
+     * Creates a new {@link OBISIdentifier} of the specified String
      *
      * @param obisIDString the OBIS String ID
      * @throws ParseException if obisIDString is not a valid OBIS Identifier
      */
     public OBISIdentifier(String obisIDString) throws ParseException {
-        Matcher m = obisIdPattern.matcher(obisIDString);
+        Matcher m = OBIS_ID_PATTERN.matcher(obisIDString);
 
         if (m.matches()) {
             // Optional value A
@@ -144,7 +145,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns whether or not both OBISIdentifier are exact equal (all identifiers match).
+     * Returns whether or not both {@link OBISIdentifier} are exact equal (all identifiers match).
      *
      * If wild card matching is needed (since some fields are null in case of a wildcard) use
      * {@link #equalsWildCard(OBISIdentifier)} instead
@@ -190,7 +191,7 @@ public class OBISIdentifier {
     /**
      * Checks whether this OBIS Identifer and the other identifer equals taking the wildcards into account
      *
-     * @param other OBISIdentifier to compare to
+     * @param o OBISIdentifier to compare to
      *
      * @return true if identifiers match fully or against a wildcard, false otherwise
      */
@@ -236,7 +237,7 @@ public class OBISIdentifier {
      * Returns whether or not the reduced OBIS Identifier is a wildcard identifier (meaning groupA groupB or groupC is
      * null)
      * Note that the DSMR specification does not use groupF so this is implemented always as a wildcard.
-     * To distuinguish wildcard from non wildcard OBISIdentifiers, groupF is ignored.
+     * To distinguish wildcard from non wildcard OBISIdentifiers, groupF is ignored.
      *
      * @return true if the reducedOBISIdentifier is a wildcard identifier, false otherwise.
      */

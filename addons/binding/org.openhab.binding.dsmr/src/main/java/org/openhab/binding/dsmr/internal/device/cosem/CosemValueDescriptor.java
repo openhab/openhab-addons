@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,85 +8,65 @@
  */
 package org.openhab.binding.dsmr.internal.device.cosem;
 
+import java.text.ParseException;
+
+import org.eclipse.smarthome.core.types.State;
+
 /**
  * This CosemValueDescriptor provides meta data for a CosemValue
  *
  * @author M. Volaart - Initial contribution
  */
-public class CosemValueDescriptor {
-    public static final String DEFAULT_CHANNEL = "default";
+abstract class CosemValueDescriptor<S extends State> {
 
     /**
-     * Class describing the type
+     * String describing the channel on which this value descriptor is available.
      */
-    private final Class<? extends CosemValue<? extends Object>> cosemValueClass;
+    private final String channelId;
 
     /**
-     * String describing the unit
-     */
-    private final String unit;
-
-    /* String describing the channel on which this value descriptor is available */
-    private final String ohCannelId;
-
-    /**
-     * Creates a new CosemValueDescriptor
+     * Creates a new {@link CosemValueDescriptor} with no unit and a default channel.
      *
-     * @param cosemValueClass the CosemValue class that the CosemValueDescriptor represent
-     * @param unit the unit for the CosemValue
-     * @param ohChannelId the channel for this CosemValueDescriptor
+     * @param cosemValueClass the {@link CosemValue} class that the {@link CosemValueDescriptor} represent
      */
-    public CosemValueDescriptor(Class<? extends CosemValue<? extends Object>> cosemValueClass, String unit,
-            String ohChannelId) {
-        this.cosemValueClass = cosemValueClass;
-        this.unit = unit;
-        this.ohCannelId = ohChannelId;
+    public CosemValueDescriptor() {
+        this("");
     }
 
     /**
-     * Creates a new CosemValueDescriptor with a default channel
+     * Creates a new {@link CosemValueDescriptor}.
      *
-     * @param cosemValueClass the CosemValue class that the CosemValueDescriptor represent
-     * @param unit the unit for the CosemValue
+     * @param channelId the channel for this CosemValueDescriptor
      */
-    public CosemValueDescriptor(Class<? extends CosemValue<? extends Object>> cosemValueClass, String unit) {
-        this(cosemValueClass, unit, DEFAULT_CHANNEL);
+    public CosemValueDescriptor(String channelId) {
+        this.channelId = channelId;
     }
 
     /**
-     * Returns the class of the CosemValue
+     * Parses the string value to the {@link State} value
      *
-     * @return the class of the CosemValue
+     * @param CosemValue the Cosem value to parse
+     * @return S the {@link State} object instance of the Cosem value
+     * @throws ParseException if parsing failed
      */
-    public Class<? extends CosemValue<? extends Object>> getCosemValueClass() {
-        return cosemValueClass;
-    }
+    protected abstract S getStateValue(String cosemValue) throws ParseException;
 
     /**
-     * Returns the unit
-     *
-     * @return the unit
-     */
-    public String getUnit() {
-        return unit;
-    }
-
-    /**
-     * Returns the channel id for this CosemValueDescriptor
+     * Returns the channel id for this {@link CosemValueDescriptor}
      *
      * @return the channel identifier
      */
     public String getChannelId() {
-        return ohCannelId;
+        return channelId;
     }
 
     /**
-     * Returns String representation of this CosemValueDescriptor
+     * Returns String representation of this {@link CosemValueDescriptor}
      *
-     * @return String representation of this CosemValueDescriptor
+     * @return String representation of this {@link CosemValueDescriptor}
      */
     @Override
     public String toString() {
-        return "CosemValueDescriptor[class=" + cosemValueClass.toString() + ", unit=" + unit + "]";
+        return "CosemValueDescriptor[channel=" + channelId + "]";
     }
 }
