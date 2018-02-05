@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.connection;
 
+/**
+ * The {@link JsonWebSocketConnection} class is responsible for handling
+ * the communication with the Hyperion json server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class JsonWebSocketConnection {
     /*
      *

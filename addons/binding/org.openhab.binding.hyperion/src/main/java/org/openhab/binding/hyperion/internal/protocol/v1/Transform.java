@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.v1;
 
+import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Transform} is a POJO for a transformation on the Hyperion server.
  *
  * @author Daniel Walters - Initial contribution
  */
-import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
-
 public class Transform {
 
     @SerializedName("blacklevel")
