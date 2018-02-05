@@ -31,26 +31,6 @@ public class Favorite {
     public String name;
 
     /**
-     * Type of favorite (currently unused)
-     */
-    public String type;
-
-    /**
-     * Indicates if the favorite is audio (currently unused)
-     */
-    public Boolean isaudio;
-
-    /**
-     * Indicates if favorite has sub-items
-     */
-    public Boolean hasitems;
-
-    /**
-     * URL of the favorite (currently unused)
-     */
-    public String url;
-
-    /**
      * Creates a preset from the given favorite id
      *
      * @param id Squeezebox Server internal identifier for favorite
@@ -67,8 +47,7 @@ public class Favorite {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Favorite {id=").append(id).append(", shortId=").append(shortId).append(", name=").append(name)
-                .append(", type=").append(type).append(", isaudio=").append(isaudio).append(", hasitems=")
-                .append(hasitems).append(", url=").append(url).append("}");
+                .append("}");
         return sb.toString();
     }
 }

@@ -895,63 +895,29 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
 
             List<Favorite> favorites = new ArrayList<>();
-            String title = "";
-            String count = "";
             Favorite f = null;
             for (String part : messageParts) {
-                String id;
-                String name;
-                String type;
-                Boolean isaudio;
-                Boolean hasitems;
-
-                // Title of Favorites
-                if (part.startsWith("title%3A")) {
-                    title = decode(part.substring("title%3A".length()));
-                    logger.trace("Favorite title: {}", title);
-                }
-                // Number of favorites in this message
-                else if (part.startsWith("count%3A")) {
-                    count = part.substring("count%3A".length());
-                    logger.trace("Favorite count: {}", count);
-                }
                 // Favorite ID (in form xxxxxxxxx.n)
-                else if (part.startsWith("id%3A")) {
-                    id = part.substring("id%3A".length());
+                if (part.startsWith("id%3A")) {
+                    String id = part.substring("id%3A".length());
                     f = new Favorite(id);
                     favorites.add(f);
                 }
                 // Favorite name
                 else if (part.startsWith("name%3A")) {
-                    name = decode(part.substring("name%3A".length()));
+                    String name = decode(part.substring("name%3A".length()));
                     if (f != null) {
                         f.name = name;
                     }
                 }
-                // Favorite type
-                else if (part.startsWith("type%3A")) {
-                    type = decode(part.substring("type%3A".length()));
-                    if (f != null) {
-                        f.type = type;
-                    }
-                }
-                // Favorite is audio
-                else if (part.startsWith("isaudio%3A")) {
-                    isaudio = new Boolean("1".matches(part.substring("isaudio%3A".length())));
-                    if (f != null) {
-                        f.isaudio = isaudio;
-                    }
-                }
                 // When "1", favorite is a submenu with additional favorites
                 else if (part.startsWith("hasitems%3A")) {
-                    hasitems = new Boolean("1".matches(part.substring("hasitems%3A".length())));
+                    boolean hasitems = "1".matches(part.substring("hasitems%3A".length()));
                     if (f != null) {
                         if (hasitems) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;
-                        } else {
-                            f.hasitems = hasitems;
                         }
                     }
                 }
@@ -982,7 +948,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 includeQuotes = (Boolean) channel.getConfiguration().get(CHANNEL_CONFIG_QUOTE_LIST);
             }
 
-            final String quote = includeQuotes.booleanValue() ? "\"" : "";
+            String quote = includeQuotes.booleanValue() ? "\"" : "";
             StringBuilder sb = new StringBuilder();
             for (Favorite favorite : favorites) {
                 sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replaceAll(",", ""))
