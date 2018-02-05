@@ -65,6 +65,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
         try {
             boolean smartValveUpdated = updateSmartValveData();
             if (smartValveUpdated) {
+                updateStatus(ThingStatus.ONLINE);
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_TEMPERATURE),
                         getTemperature());

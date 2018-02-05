@@ -75,6 +75,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
         try {
             boolean roomUpdated = updateRoomData();
             if (roomUpdated) {
+                updateStatus(ThingStatus.ONLINE);
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_TEMPERATURE),
                         getTemperature());

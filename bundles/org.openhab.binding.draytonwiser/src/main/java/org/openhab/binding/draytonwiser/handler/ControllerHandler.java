@@ -83,6 +83,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         try {
             boolean updated = updateControllerData();
             if (updated) {
+                updateStatus(ThingStatus.ONLINE);
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEATING_OVERRIDE),
                         getHeatingOverride());
                 updateState(

@@ -67,6 +67,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
         try {
             boolean updated = updateControllerData();
             if (updated) {
+                updateStatus(ThingStatus.ONLINE);
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_OVERRIDE),
                         getHotWaterOverride());
