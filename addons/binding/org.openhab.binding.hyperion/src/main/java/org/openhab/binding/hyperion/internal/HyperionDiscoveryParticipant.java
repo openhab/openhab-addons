@@ -18,9 +18,9 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.hyperion.HyperionBindingConstants;
 
 /**
@@ -44,6 +44,8 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
 
+        DiscoveryResult result = null;
+
         // return null if the service info is invalid / not fully formed
         if (service.getHostAddresses().length == 0) {
             return null;
@@ -64,10 +66,10 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         String friendlyName = longName.substring(0, pos);
         ThingUID uid = getThingUID(service);
-
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                .withThingType(HyperionBindingConstants.THING_TYPE_SERVER_NG).withProperties(properties)
-                .withLabel(friendlyName).build();
+        if (uid != null) {
+            result = DiscoveryResultBuilder.create(uid).withThingType(HyperionBindingConstants.THING_TYPE_SERVER_NG)
+                    .withProperties(properties).withLabel(friendlyName).build();
+        }
         return result;
     }
 

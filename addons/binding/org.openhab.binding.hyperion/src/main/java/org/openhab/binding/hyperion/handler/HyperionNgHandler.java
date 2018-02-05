@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.hyperion.internal.HyperionStateDescriptionProvider;
 import org.openhab.binding.hyperion.internal.connection.JsonTcpConnection;
 import org.openhab.binding.hyperion.internal.protocol.ColorCommand;
 import org.openhab.binding.hyperion.internal.protocol.CommandUnsuccessfulException;
@@ -118,7 +119,7 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     };
 
-    public HyperionNgHandler(Thing thing) {
+    public HyperionNgHandler(Thing thing, HyperionStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
     }
 

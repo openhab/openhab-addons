@@ -8,14 +8,17 @@
  */
 package org.openhab.binding.hyperion.internal;
 
-import static org.openhab.binding.hyperion.HyperionBindingConstants.*;
-
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.hyperion.HyperionBindingConstants;
 import org.openhab.binding.hyperion.handler.HyperionHandler;
 import org.openhab.binding.hyperion.handler.HyperionNgHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HyperionHandlerFactory} is responsible for creating things and thing
@@ -23,11 +26,15 @@ import org.openhab.binding.hyperion.handler.HyperionNgHandler;
  *
  * @author Daniel Walters - Initial contribution
  */
+
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hyperion", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HyperionHandlerFactory extends BaseThingHandlerFactory {
+
+    private HyperionStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return HyperionBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -35,12 +42,21 @@ public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SERVER_V1)) {
+        if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_V1)) {
             return new HyperionHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_SERVER_NG)) {
-            return new HyperionNgHandler(thing);
+        } else if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_NG)) {
+            return new HyperionNgHandler(thing, stateDescriptionProvider);
         }
 
         return null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(HyperionStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(HyperionStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = null;
     }
 }
