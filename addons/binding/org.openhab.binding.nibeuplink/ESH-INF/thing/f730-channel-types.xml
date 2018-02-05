@@ -151,6 +151,13 @@
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="f730-type-41026">
+		<item-type>Number</item-type>
+		<label>EB100-Adjusted BS1 Air flow</label>
+		<description></description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="f730-type-43005">
 		<item-type>Number</item-type>
 		<label>Degree Minutes (16 bit)</label>
@@ -166,11 +173,11 @@
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f730-type-41026">
+	<channel-type id="f750-type-43066">
 		<item-type>Number</item-type>
-		<label>EB100-Adjusted BS1 Air flow</label>
-		<description></description>
-		<state pattern="%.1f" readOnly="true">
+		<label>Defrosting time</label>
+		<description>Defrosting time, no defrosting heater in the product</description>
+		<state pattern="%d s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43081">

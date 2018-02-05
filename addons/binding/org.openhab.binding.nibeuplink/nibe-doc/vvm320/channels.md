@@ -16,6 +16,7 @@
 | general#47212 | Number | 0 | 4500 | Setting | Max int add. power |  |
 | general#48914 | Number | 0 | 4500 | Setting | Max int add. power, SG Ready |  |
 | general#40121 | Number | -32767 | 32767 | Sensor | BT63 Add Supply Temp |  |
+| general#43437 | Number | 0 | 255 | Sensor | Supply Pump Speed EP14 |  |
 | general#44308 | Number | 0 | 9999999 | Sensor | Heat Meter - Heat Cpr EP14 |  |
 | general#44304 | Number | 0 | 9999999 | Sensor | Heat Meter - Pool Cpr EP14 |  |
 | general#44302 | Number | 0 | 9999999 | Sensor | Heat Meter - Cooling Cpr EP14 |  |
@@ -40,10 +41,11 @@
 | compressor#44055 | Number | -32767 | 32767 | Sensor | EB101-EP14-BT3 Return Temp. |  |
 | compressor#44363 | Number | -32767 | 32767 | Sensor | EB101-EP14-BT16 Evaporator |  |
 | compressor#44699 | Number | -32767 | 32767 | Sensor | EB101-EP14-BP4 Pressure Sensor |  |
-| compressor#40781 | Number | 0 | 255 | Sensor | EB101 Cpr Frequency Desired F2040 |  |
+| compressor#40782 | Number | 0 | 255 | Sensor | EB101 Cpr Frequency Desired F2040 |  |
 | compressor#44701 | Number | -32767 | 32767 | Sensor | EB101-EP14 Actual Cpr Frequency Outdoor Unit |  |
 | compressor#44702 | String | --- | --- | Sensor | EB101-EP14 Protection Status Register Outdoor Unit |  |
 | compressor#44700 | Number | -32767 | 32767 | Sensor | EB101-EP14 Low Pressure Sensor Outdoor Unit |  |
+| compressor#44457 | Number | 0 | 255 | Sensor | EB101-EP14 Compressor State |  |
 | airsupply#40025 | Number | -32767 | 32767 | Sensor | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | Sensor | BT21 Vented air temp. 1 |  |
 | airsupply#40075 | Number | -32767 | 32767 | Sensor | BT22 Supply air temp. |  |

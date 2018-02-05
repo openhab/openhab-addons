@@ -59,6 +59,7 @@ public enum F730Channels implements Channel {
     CH_43122("43122", "Compr. current min.freq.", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
     CH_43123("43123", "Compr. current max.freq.", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
     CH_10012("10012", "Compressor blocked", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, String.class),
+    CH_43066("43066", "Defrosting time", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
     // Airsupply
     CH_10001("10001", "Fan speed current", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),

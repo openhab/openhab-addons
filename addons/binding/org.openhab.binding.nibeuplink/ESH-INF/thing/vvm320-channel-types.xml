@@ -117,7 +117,7 @@
 	</channel-type>
 	<channel-type id="vvm320-type-40782">
 		<item-type>Number</item-type>
-		<label>EB101 Cpr Frequency Desired F2040 #2</label>
+		<label>EB101 Cpr Frequency Desired F2040</label>
 		<description>The desired frequency as shown in service info</description>
 		<state pattern="%d Hz" readOnly="true">
 		</state>
@@ -169,6 +169,13 @@
 		<label>External adjustment activated via input S1</label>
 		<description></description>
 		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="vvm320-type-43437">
+		<item-type>Number</item-type>
+		<label>Supply Pump Speed EP14</label>
+		<description>Supply Pump Speed EP14 (GP6)</description>
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-44055">
@@ -295,6 +302,13 @@
 		<label>EB101 Speed charge pump</label>
 		<description></description>
 		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="vvm320-type-44457">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-44699">

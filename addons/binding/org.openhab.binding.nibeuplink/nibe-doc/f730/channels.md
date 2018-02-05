@@ -37,6 +37,7 @@
 | compressor#43122 | Number | -32767 | 32767 | Sensor | Compr. current min.freq. |  |
 | compressor#43123 | Number | -32767 | 32767 | Sensor | Compr. current max.freq. |  |
 | compressor#10012 | String | --- | --- | Sensor | Compressor blocked |  |
+| compressor#43066 | Number | -32767 | 32767 | Sensor | Defrosting time |  |
 | airsupply#10001 | Number | 0 | 100 | Sensor | Fan speed current |  |
 | airsupply#40025 | Number | -32767 | 32767 | Sensor | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | Sensor | BT21 Vented air temp. 1 |  |
