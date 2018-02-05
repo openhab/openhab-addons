@@ -8,11 +8,11 @@
         <description>Provides control for the LaMetric Time connected clock and its apps</description>
         
         <channels>
+            <channel id="volume" typeId="volumeType"/>
+            <channel id="app" typeId="appType"/>
             <channel id="brightness" typeId="brightnessType"/>
             <channel id="brightnessMode" typeId="brightnessModeType"/>
-            <channel id="volume" typeId="volumeType"/>
             <channel id="bluetooth" typeId="bluetoothActiveType"/>
-            <channel id="app" typeId="appType"/>
             <channel id="info" typeId="simpleNotificationType">
                 <label>Info Notification</label>
             </channel>
@@ -62,7 +62,7 @@
         <description>Adjust the volume of the speaker</description>
     </channel-type>
 
-    <channel-type id="bluetoothActiveType">
+    <channel-type id="bluetoothActiveType" advanced="true">
         <item-type>Switch</item-type>
         <label>Bluetooth</label>
         <description>Switch Bluetooth on/off</description>
@@ -74,7 +74,7 @@
         <description>Active application</description>
     </channel-type>
 
-    <channel-type id="simpleNotificationType">
+    <channel-type id="simpleNotificationType" advanced="true">
         <item-type>String</item-type>
         <label>Simple Notification</label>
         <description>Send a notification to LaMetric Time</description>
