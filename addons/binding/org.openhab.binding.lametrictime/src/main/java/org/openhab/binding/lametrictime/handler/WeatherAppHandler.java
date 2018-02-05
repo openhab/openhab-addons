@@ -44,6 +44,7 @@ public class WeatherAppHandler extends AbstractLaMetricTimeAppHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_COMMAND:
                     handleCommandChannel(command);
+                    updateActiveAppOnDevice();
                     updateState(channelUID, new StringType()); // clear state
                     break;
                 default:

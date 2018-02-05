@@ -47,10 +47,12 @@ public class CountdownAppHandler extends AbstractLaMetricTimeAppHandler {
                 case CHANNEL_APP_DURATION: {
                     getDevice().doAction(getWidget(),
                             CoreApps.countdown().configure(((Number) command).intValue(), false));
+                    updateActiveAppOnDevice();
                     break;
                 }
                 case CHANNEL_APP_COMMAND:
                     handleCommandChannel(command);
+                    updateActiveAppOnDevice();
                     updateState(channelUID, new StringType()); // clear state
                     break;
                 default:

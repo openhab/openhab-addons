@@ -43,6 +43,7 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_CONTROL:
                     handleControl(command);
+                    updateActiveAppOnDevice();
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);

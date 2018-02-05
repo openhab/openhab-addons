@@ -153,6 +153,16 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
+    /**
+     * This method can be called by app-specific thing handlers to update the state of the "app" channel on the device.
+     * Note: When sending a command to an app, the device automatically switches to this app, so we reflect this here.
+     *
+     * @param widgetId The current widgetId of the active app
+     */
+    public void updateActiveApp(String widgetId) {
+        updateState(LaMetricTimeBindingConstants.CHANNEL_APP, new StringType(widgetId));
+    }
+
     private void handleNotificationsCommand(ChannelUID channelUID, Command command)
             throws NotificationCreationException {
         if (command instanceof RefreshType) {

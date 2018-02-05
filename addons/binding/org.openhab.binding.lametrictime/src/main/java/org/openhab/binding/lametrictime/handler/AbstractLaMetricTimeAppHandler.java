@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
+import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.LaMetricTime;
@@ -104,6 +105,11 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
                     "No application found with package name " + packageName);
             return;
         }
+    }
+
+    protected void updateActiveAppOnDevice() {
+        String widgetId = new WidgetRef(widget.getPackageName(), widget.getId()).toString();
+        ((LaMetricTimeHandler) getBridge().getHandler()).updateActiveApp(widgetId);
     }
 
     protected String getPackageName(LaMetricTimeAppConfiguration config) {

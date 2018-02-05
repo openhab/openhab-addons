@@ -47,6 +47,7 @@ public class StopwatchAppHandler extends AbstractLaMetricTimeAppHandler {
                 case CHANNEL_APP_COMMAND:
                     handleCommandChannel(command);
                     updateState(channelUID, new StringType()); // clear state
+                    updateActiveAppOnDevice();
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);

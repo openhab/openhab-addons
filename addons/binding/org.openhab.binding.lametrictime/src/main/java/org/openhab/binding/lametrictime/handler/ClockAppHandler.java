@@ -51,11 +51,13 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
                     LocalTime time = Instant.ofEpochMilli(((DateTimeType) command).getCalendar().getTimeInMillis())
                             .atZone(ZoneId.systemDefault()).toLocalTime();
                     getDevice().doAction(getWidget(), CoreApps.clock().setAlarm(true, time, null));
+                    updateActiveAppOnDevice();
                     break;
                 }
                 case CHANNEL_APP_COMMAND:
                     handleCommandChannel(command);
                     updateState(channelUID, new StringType()); // clear state
+                    updateActiveAppOnDevice();
                     break;
                 default:
                     logger.debug("Channel '{}' not supported", channelUID);
