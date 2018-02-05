@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.digiplex
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Digiplex/EVO Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.digiplex;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Export-Package: 
+ org.openhab.binding.digiplex,
+ org.openhab.binding.digiplex.communication;x-internal:=true,
+ org.openhab.binding.digiplex.communication.events;x-internal:=true,
+ org.openhab.binding.digiplex.discovery;x-internal:=true,
+ org.openhab.binding.digiplex.handler
+Import-Package: 
+ com.google.common.base,
+ gnu.io,
+ org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.digiplex,
+ org.openhab.binding.digiplex.handler,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
