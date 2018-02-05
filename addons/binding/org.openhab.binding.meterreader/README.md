@@ -85,7 +85,6 @@ Number HouseActualUsage     "Current usage [%.2f W]"                    { channe
 
 ## Known limitations/issues
 
-- MeterReaderBinding has not been well tested for meters that are working in PULL mode and never been tested in D mode
 - Octet encoding for OBIS Codes
  
     - '129-129:199.130.5'
@@ -106,3 +105,6 @@ SML PUSH mode:
 
 IEC 62056-21 Mode C:
 - Apator EC3 with IR-Reader from volkszaehler
+
+IEC 62056-21 Mode D:
+- Hager EHZ 361Z5 and EHZ 161L5
