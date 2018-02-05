@@ -60,6 +60,7 @@
         <item-type>Dimmer</item-type>
         <label>Volume</label>
         <description>Adjust the volume of the speaker</description>
+        <category>soundvolume</category>
     </channel-type>
 
     <channel-type id="bluetoothActiveType" advanced="true">

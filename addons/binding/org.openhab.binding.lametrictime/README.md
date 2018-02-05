@@ -148,7 +148,7 @@ Sample item configuration:
 ```
 Dimmer DeviceBrightness         "Brightness"                                { channel="lametrictime:device:demo:brightness" }
 String DeviceBrightnessMode     "Brightness Mode"                           { channel="lametrictime:device:demo:brightnessMode" }
-Dimmer DeviceVolume             "Volume"                   <soundvolume>    { channel="lametrictime:device:demo:volume" }
+Dimmer DeviceVolume             "Volume"                                    { channel="lametrictime:device:demo:volume" }
 Switch DeviceBluetooth          "Bluetooth"                                 { channel="lametrictime:device:demo:bluetooth" }
 String DeviceApp                "Application"                               { channel="lametrictime:device:demo:app" }
 
