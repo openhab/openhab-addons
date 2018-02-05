@@ -15,12 +15,16 @@ Import-Package:
  com.google.gson,
  com.google.gson.annotations,
  javax.jmdns,
+ org.eclipse.jdt.annotation,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.io.transport.mdns.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
+ org.osgi.service.component.annotations,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
