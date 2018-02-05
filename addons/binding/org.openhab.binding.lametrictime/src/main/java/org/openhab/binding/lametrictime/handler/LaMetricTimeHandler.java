@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
@@ -59,14 +61,19 @@ import org.syphr.lametrictime.api.model.enums.BrightnessMode;
  * sent to one of the channels.
  *
  * @author Gregory Moyer - Initial contribution
+ * @author Kai Kreuzer - Improved status handling, introduced refresh job and app state update
  */
 public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
+
+    private static final long CONNECTION_CHECK_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandler.class);
 
     private final StateDescriptionOptionsProvider stateDescriptionProvider;
 
     private LaMetricTime clock;
+
+    private ScheduledFuture<?> connectionJob;
 
     public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider) {
         super(bridge);
@@ -87,32 +94,39 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 .withDeviceApiKey(bindingConfig.apiKey).withLogging(logger.isDebugEnabled());
         clock = LaMetricTime.create(clockConfig);
 
-        logger.debug("Verifying communication with LaMetric Time");
-        try {
-            LaMetricTimeLocal api = clock.getLocalApi();
-            Device device = api.getDevice();
-            if (device == null) {
-                logger.debug("Failed to communicate with LaMetric Time");
+        connectionJob = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Verifying communication with LaMetric Time");
+            try {
+                LaMetricTimeLocal api = clock.getLocalApi();
+                Device device = api.getDevice();
+                if (device == null) {
+                    logger.debug("Failed to communicate with LaMetric Time");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to connect to LaMetric Time");
+                    return;
+                }
+
+                updateProperties(device, api.getBluetooth());
+                setAppChannelStateDescription();
+            } catch (Exception e) {
+                logger.debug("Failed to communicate with LaMetric Time", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to connect to LaMetric Time");
                 return;
             }
 
-            updateProperties(device, api.getBluetooth());
-            setAppChannelStateDescription();
-        } catch (Exception e) {
-            logger.debug("Failed to communicate with LaMetric Time", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to connect to LaMetric Time");
-            return;
-        }
-
-        logger.debug("Setting LaMetric Time online");
-        updateStatus(ThingStatus.ONLINE);
+            logger.debug("Setting LaMetric Time online");
+            updateStatus(ThingStatus.ONLINE);
+        }, 0, CONNECTION_CHECK_INTERVAL, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
     public void dispose() {
+        if (connectionJob != null && !connectionJob.isCancelled()) {
+            connectionJob.cancel(true);
+        }
+        connectionJob = null;
         clock = null;
     }
 
@@ -143,7 +157,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     logger.debug("Channel '{}' not supported", channelUID);
                     break;
             }
-            updateStatus(ThingStatus.ONLINE);
         } catch (NotificationCreationException e) {
             logger.debug("Failed to create notification - taking clock offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -184,6 +197,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
             default:
                 logger.debug("Invalid notification channel: {}", channelUID);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void handleAudioCommand(ChannelUID channelUID, Command command) {
@@ -197,6 +211,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                 if (volume >= 0 && volume != audio.getVolume()) {
                     audio.setVolume(volume);
                     clock.getLocalApi().updateAudio(audio);
+                    updateStatus(ThingStatus.ONLINE);
                 }
             } catch (UpdateException e) {
                 logger.debug("Failed to update audio volume - taking clock offline", e);
@@ -212,6 +227,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
             try {
                 WidgetRef widgetRef = WidgetRef.fromString(command.toFullString());
                 clock.getLocalApi().activateApplication(widgetRef.getPackageName(), widgetRef.getWidgetId());
+                updateStatus(ThingStatus.ONLINE);
             } catch (ApplicationActivationException e) {
                 logger.debug("Failed to activate app - taking clock offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -239,6 +255,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     bluetooth.setActive(false);
                     clock.getLocalApi().updateBluetooth(bluetooth);
                 }
+                updateStatus(ThingStatus.ONLINE);
             }
         } catch (UpdateException e) {
             logger.debug("Failed to update bluetooth - taking clock offline", e);
@@ -274,6 +291,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                     logger.debug("Set Brightness to {}.", brightness);
                     Display newDisplay = clock.setBrightness(brightness);
                     updateState(CHANNEL_DISPLAY_BRIGHTNESS_MODE, new StringType(newDisplay.getBrightnessMode()));
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
                     logger.debug("Unsupported command {} for display brightness! Supported commands: REFRESH", command);
                 }
@@ -284,6 +302,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
                         logger.warn("Unknown brightness mode: {}", command);
                     } else {
                         clock.setBrightnessMode(mode);
+                        updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
                     logger.debug("Unsupported command {} for display brightness! Supported commands: REFRESH", command);
