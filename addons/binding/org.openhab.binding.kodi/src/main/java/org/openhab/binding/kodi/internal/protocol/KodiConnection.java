@@ -159,7 +159,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } else if (position == 0 || position == (SPEEDS.size() - 1)) {
                 return SPEEDS.get(position);
             } else {
-                return (int) SPEEDS.get(position + modifier);
+                return SPEEDS.get(position + modifier);
             }
         } else {
             return 0;
@@ -692,6 +692,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject params = new JsonObject();
         params.addProperty("text", text);
         socket.callMethod("Input.SendText", params);
+    }
+
+    public void inputAction(String action) {
+        JsonObject params = new JsonObject();
+        params.addProperty("action", action);
+        socket.callMethod("Input.ExecuteAction", params);
     }
 
     public void playNotificationSoundURI(String uri) {

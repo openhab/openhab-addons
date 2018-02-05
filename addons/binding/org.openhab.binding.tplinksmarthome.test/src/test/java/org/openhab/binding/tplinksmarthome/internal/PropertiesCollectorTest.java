@@ -38,7 +38,7 @@ public class PropertiesCollectorTest {
      */
     @Test
     public void testBulbProperties() throws IOException {
-        assertProperties("bulb_get_sysinfo_response", TPLinkSmartHomeThingType.LB130, 11);
+        assertProperties("bulb_get_sysinfo_response_on", TPLinkSmartHomeThingType.LB130, 11);
     }
 
     /**

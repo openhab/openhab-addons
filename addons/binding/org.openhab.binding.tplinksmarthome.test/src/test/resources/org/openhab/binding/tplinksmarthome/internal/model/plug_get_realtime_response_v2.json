@@ -1,0 +1,11 @@
+{
+	"emeter": {
+		"get_realtime": {
+			"current_ma": 1.000000,
+			"voltage_mv": 230.123456,
+			"power_mw": 20.000000,
+			"total_wh": 10.00000,
+			"err_code": 0
+		}
+	}
+}

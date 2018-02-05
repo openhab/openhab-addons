@@ -16,6 +16,6 @@
 	name="org.openhab.binding.minecraft.discovery.MinecraftMDNSDiscoveryParticipant">
 	<implementation class="org.openhab.binding.minecraft.internal.discovery.MinecraftMDNSDiscoveryParticipant" />
 	<service>
-		<provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant" />
+		<provide interface="org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant" />
 	</service>
 </scr:component>

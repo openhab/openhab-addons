@@ -27,7 +27,7 @@
 					"mode": "normal",
 					"saturation": 44
 				},
-				"on_off": 1
+				"on_off": 0
 			},
 			"mic_mac": "50C7BF7BE306",
 			"mic_type": "IOT.SMARTBULB",
@@ -65,6 +65,11 @@
 			],
 			"rssi": -61,
 			"sw_ver": "1.5.5 Build 170623 Rel.090105"
+		}
+	},
+	"smartlife.iot.common.emeter": {
+		"get_realtime": {
+			"power_mw": 10800
 		}
 	}
 }

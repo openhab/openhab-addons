@@ -112,12 +112,26 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
      * Monitor for when the volume is updated to a specific target value
      */
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
         if (!this.playerMAC.equals(mac)) {
             return;
         }
         this.volume.set(volume);
         logger.trace("Volume is {} for player {}", volume, mac);
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
+        if (!this.playerMAC.equals(mac)) {
+            return;
+        }
+
+        int newVolume = this.volume.get() + volumeChange;
+        newVolume = Math.min(newVolume, 100);
+        newVolume = Math.max(newVolume, 0);
+
+        this.volume.set(newVolume);
+        logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, volume);
     }
 
     @Override

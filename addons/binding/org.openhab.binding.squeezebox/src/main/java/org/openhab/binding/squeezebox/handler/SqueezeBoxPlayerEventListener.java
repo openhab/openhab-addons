@@ -22,7 +22,21 @@ public interface SqueezeBoxPlayerEventListener {
 
     void modeChangeEvent(String mac, String mode);
 
-    void volumeChangeEvent(String mac, int volume);
+    /**
+     * Reports a new absolute volume for a given player.
+     * 
+     * @param mac
+     * @param volume
+     */
+    void absoluteVolumeChangeEvent(String mac, int volume);
+
+    /**
+     * Reports a relative volume change for a given player.
+     * 
+     * @param mac
+     * @param volumeChange
+     */
+    void relativeVolumeChangeEvent(String mac, int volumeChange);
 
     void muteChangeEvent(String mac, boolean mute);
 

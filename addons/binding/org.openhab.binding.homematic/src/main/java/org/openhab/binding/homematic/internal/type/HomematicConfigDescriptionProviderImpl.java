@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
 import org.osgi.service.component.annotations.Component;
@@ -32,7 +33,7 @@ public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDe
     }
 
     @Override
-    public ConfigDescription getConfigDescription(URI uri, Locale locale) {
+    public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
         return configDescriptionsByURI.get(uri);
     }
 

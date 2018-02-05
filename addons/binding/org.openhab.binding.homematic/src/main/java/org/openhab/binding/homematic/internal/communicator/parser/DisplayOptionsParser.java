@@ -138,7 +138,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
      */
     private String[] getAvailableSymbols(HmChannel channel) {
         List<String> symbols = new ArrayList<String>();
-        for (HmDatapoint datapoint : channel.getDatapoints().values()) {
+        for (HmDatapoint datapoint : channel.getDatapoints()) {
             if (!datapoint.isReadOnly() && datapoint.isBooleanType()
                     && datapoint.getParamsetType() == HmParamsetType.VALUES
                     && !DATAPOINT_NAME_SUBMIT.equals(datapoint.getName())

@@ -52,8 +52,8 @@ public class CcuMetadataExtractor {
             CcuMetadataExtractor dg = new CcuMetadataExtractor();
             dg.generate();
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
     }
 

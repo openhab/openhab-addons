@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
+import java.net.URI;
+import java.util.Locale;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
 
@@ -23,4 +27,15 @@ public interface HomematicConfigDescriptionProvider extends ConfigDescriptionPro
      */
     public void addConfigDescription(ConfigDescription configDescription);
 
+    /**
+     * Provides a {@link ConfigDescription} for the given URI.
+     *
+     * @param uri uri of the config description
+     * @param locale locale
+     *
+     * @return config description or null if no config description could be found
+     */
+    @Override
+    @Nullable
+    ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale);
 }

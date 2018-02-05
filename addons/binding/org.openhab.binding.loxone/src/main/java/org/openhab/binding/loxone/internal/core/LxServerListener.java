@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import java.util.Map;
+
 /**
  * Interface to get notifications about {@link LxServer} asynchronous events.
  * These events are triggered by messages received from Miniserver over websocket connection or the state of the
@@ -54,5 +56,9 @@ public interface LxServerListener {
      *            name of the state that was updated
      */
     void onControlStateUpdate(LxControl control, String stateName);
+
+    Object getSetting(String name);
+
+    void setSettings(Map<String, String> properties);
 
 }

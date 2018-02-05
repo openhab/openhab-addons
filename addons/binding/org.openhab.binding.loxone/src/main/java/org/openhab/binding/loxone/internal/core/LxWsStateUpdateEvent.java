@@ -32,10 +32,11 @@ class LxWsStateUpdateEvent {
      *            true if this event updates double value, false if it updates text message
      * @param data
      *            buffer with binary message received from Miniserver
-     * @param offset
+     * @param offsetParam
      *            offset in buffer where event is expected
      */
-    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
+    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offsetParam) throws IndexOutOfBoundsException {
+        int offset = offsetParam;
         uuid = new LxUuid(data, offset);
         offset += 16;
 

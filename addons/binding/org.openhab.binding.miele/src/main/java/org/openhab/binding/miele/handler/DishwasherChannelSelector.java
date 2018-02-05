@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
@@ -101,7 +99,6 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
-
         public State getState(String s, DeviceMetaData dmd) {
             if (s.equals("true")) {
                 return getState("OPEN");

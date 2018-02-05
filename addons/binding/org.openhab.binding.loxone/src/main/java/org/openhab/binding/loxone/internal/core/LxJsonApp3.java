@@ -33,6 +33,8 @@ class LxJsonApp3 {
         String msName;
         String projectName;
         String remoteUrl;
+        String swVersion;
+        String macAddress;
     }
 
     class LxJsonRoom {

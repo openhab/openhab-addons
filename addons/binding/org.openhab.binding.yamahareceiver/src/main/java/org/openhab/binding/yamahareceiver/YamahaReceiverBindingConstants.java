@@ -36,7 +36,6 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUT_TYPE_AVAILABLE = "availableinput";
-    public static final String CHANNEL_INPUT_TYPE_DEFAULT = "defaultinput";
     public static final String CHANNEL_SURROUND = "surroundProgram";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_VOLUME_DB = "volumeDB";
@@ -78,9 +77,8 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_PLAYBACK_SONG = "playback_song";
     public static final String CHANNEL_PLAYBACK_SONG_IMAGE_URL = "playback_song_image_url";
 
-    public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK,
-            CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG,
-            CHANNEL_PLAYBACK_SONG_IMAGE_URL);
+    public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK, CHANNEL_PLAYBACK_STATION,
+            CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG, CHANNEL_PLAYBACK_SONG_IMAGE_URL);
 
     public static final String UPNP_TYPE = "MediaRenderer";
     public static final String UPNP_MANUFACTURER = "YAMAHA";

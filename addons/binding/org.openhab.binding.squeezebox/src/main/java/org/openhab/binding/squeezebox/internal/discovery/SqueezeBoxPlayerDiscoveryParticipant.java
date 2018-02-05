@@ -128,7 +128,11 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
     }
 
     @Override
