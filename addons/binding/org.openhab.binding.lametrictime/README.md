@@ -12,7 +12,9 @@ The LaMetric binding allows to connect openHab to LaMetric Time connected clock 
 
 ## Supported Things
 
-The device acts as a bridge and is exposed as "LaMetric Time" Thing. The "LaMetric Time" Thing is directly responsible for device operations which include the display, audio, bluetooth, and notifications. All apps are implemented as separate things under the bridge.
+The device acts as a bridge and is exposed as "LaMetric Time" Thing.
+The "LaMetric Time" Thing is directly responsible for device operations which include the display, audio, bluetooth, and notifications.
+All apps are implemented as separate things under the bridge.
 
 | App               | Thing Type   | Description                                                   |
 |-------------------|--------------|---------------------------------------------------------------|
@@ -24,7 +26,9 @@ The device acts as a bridge and is exposed as "LaMetric Time" Thing. The "LaMetr
 
 ## Discovery
 
-The binding supports two levels of discovery - device and apps. Device discovery is accomplished via UPnP. Once a device is added, discovery will find all apps installed on the device and suggest them as individual things with the device being the bridge.
+The binding supports two levels of discovery - device and apps.
+Device discovery is accomplished via UPnP.
+Once a device is added, discovery will find all apps installed on the device and suggest them as individual things with the device being the bridge.
 
 ## Binding Configuration
 
@@ -34,7 +38,7 @@ The binding requires no special configuration.
 
 ### Bridge (Thing ID: "device")
 
-The bridge requires a host and an API key. The key can be found by visiting <a href="https://developer.lametric.com/user/devices">the LaMetric dev portal</a>.
+The bridge requires a host and an API key. The key can be found by visiting [the LaMetric dev portal](https://developer.lametric.com/user/devices).
 
 | Configuration Parameter | Type    | Description                                            | Default | Required |
 |-------------------------|---------|--------------------------------------------------------|---------|----------|
@@ -43,7 +47,11 @@ The bridge requires a host and an API key. The key can be found by visiting <a h
 
 ### Core (Built-in) Apps (Thing ID: "clockApp", "countdownApp", "radioApp", "stopwatchApp", "weatherApp")
 
-The core app things can be defined with no configuration at all. The package name is defaulted for you. If you do not specify a widget ID, the first available one will be used automatically. Widgets are instances of the application. For example, if you duplicated the weather app for two locations, the app would have two widgets.
+The core app things can be defined with no configuration at all.
+The package name is defaulted for you.
+If you do not specify a widget ID, the first available one will be used automatically.
+Widgets are instances of the application.
+For example, if you duplicated the weather app for two locations, the app would have two widgets.
 
 | Configuration Parameter | Type    | Description                                                     | Default                   | Required |
 |-------------------------|---------|-----------------------------------------------------------------|---------------------------|----------|
@@ -79,7 +87,8 @@ Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 
 ### Apps
 
-Note that app channels have no defined state from the device. They exist as one-way communication only.
+Note that app channels have no defined state from the device.
+They exist as one-way communication only.
 
 #### Clock App
 
@@ -115,27 +124,24 @@ Note that app channels have no defined state from the device. They exist as one-
 
 ## How Tos
 
-The following configuration examples assume the device was added with the thing id `lametrictime:device:demo`. Replace the thing id in all the configurations with your real thing id which can be looked up via paper UI.
+The following configuration examples assume the device was added with the thing id `lametrictime:device:demo`.
+Replace the thing id in all the configurations with your real thing id which can be looked up via paper UI.
 
 ### Notifications
 
 #### Simple text notifications
 
-The binding provides three simple notification channels for 
+The binding provides three simple notification channels for info messages (channel id `info`), warning messages (channel id `warning`) and alert messages (channel id `alert`).
 
-* info messages: `lametrictime:device:demo:info`
-* warning messages: `lametrictime:device:demo:warning`
-* alert messages: `lametrictime:device:demo:alert`
-
-To post messages to these channels, simply map them to a String item. For example like this:
+To post messages to these channels, simply map them to a String item, e.g. like this:
 
 ```
 String DeviceNotifyInfo "Info Message" {channel="lametrictime:device:demo:info"}
 ```
 
-By setting a text on the item, the binding will send the notification which is displays on the LaMetric device. 
+By setting a text on the item, the binding will send the notification which is then shown on the LaMetric device. 
 
-In a rule this could be done the following way:
+In a rule this can be done the following way:
 
 ``` 
 sendCommand(DeviceNotifyInfo, "My Information Message to be displayed")
@@ -178,7 +184,8 @@ String WeatherCommand           "Weather Command"                           { ch
 
 Sample sitemap configuration:
 
-**Note:** Populating switch or selection options automatically from the state description is not currently possible with sitemaps. For this reason, the brightness modes and example applications are repeated here.
+**Note:** Populating switch or selection options automatically from the state description is not currently possible with sitemaps.
+For this reason, the brightness modes and example applications are repeated here.
 
 ```
         Text label="LaMetric Time Demo" {
