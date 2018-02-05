@@ -42,7 +42,7 @@ public class RxTxPortCreator implements SerialPortCreator<RXTXPort> {
             // port.toLowerCase().contains("FTDI".toLowerCase())||
             // port.toLowerCase().contains("ftdi".toLowerCase())
             // ){
-            System.setProperty("gnu.io.rxtx.SerialPorts", port);
+            // SerialPortUtil.appendSerialPortProperty(port);
             // }
         }
         ident = CommPortIdentifier.getPortIdentifier(port);

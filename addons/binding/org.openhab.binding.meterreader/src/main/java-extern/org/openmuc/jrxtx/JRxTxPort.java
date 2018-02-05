@@ -12,6 +12,7 @@ import gnu.io.PortInUseException;
 import gnu.io.UnsupportedCommOperationException;
 import gnu.io.factory.DefaultSerialPortFactory;
 import gnu.io.factory.SerialPortFactory;
+import gnu.io.factory.SerialPortUtil;
 
 @SuppressWarnings("deprecation")
 class JRxTxPort implements SerialPort {
@@ -40,7 +41,7 @@ class JRxTxPort implements SerialPort {
     public static JRxTxPort openSerialPort(String portName, int baudRate, Parity parity, DataBits dataBits,
             StopBits stopBits, FlowControl flowControl) throws IOException {
         try {
-            System.setProperty("gnu.io.rxtx.SerialPorts", portName);
+//            SerialPortUtil.appendSerialPortProperty(portName);
             SerialPortFactory serialFactory = new DefaultSerialPortFactory();
             gnu.io.SerialPort comPort = serialFactory.createSerialPort(portName);
 
