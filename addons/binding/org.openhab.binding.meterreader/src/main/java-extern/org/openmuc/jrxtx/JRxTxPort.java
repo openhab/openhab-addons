@@ -12,7 +12,6 @@ import gnu.io.PortInUseException;
 import gnu.io.UnsupportedCommOperationException;
 import gnu.io.factory.DefaultSerialPortFactory;
 import gnu.io.factory.SerialPortFactory;
-import gnu.io.factory.SerialPortUtil;
 
 @SuppressWarnings("deprecation")
 class JRxTxPort implements SerialPort {
