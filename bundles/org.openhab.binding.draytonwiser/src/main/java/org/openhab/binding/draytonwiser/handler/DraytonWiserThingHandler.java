@@ -49,7 +49,7 @@ public abstract class DraytonWiserThingHandler extends BaseThingHandler {
         }
     }
 
-    private void startAutomaticRefresh() {
+    private synchronized void startAutomaticRefresh() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {

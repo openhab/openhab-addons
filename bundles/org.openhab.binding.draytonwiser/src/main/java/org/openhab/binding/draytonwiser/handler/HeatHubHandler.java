@@ -115,7 +115,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
-    private void startAutomaticRefresh() {
+    private synchronized void startAutomaticRefresh() {
         Thing thing = getThing();
         if (thing != null) {
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
