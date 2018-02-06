@@ -117,6 +117,7 @@
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
        </channels>
         
         <config-description>
@@ -147,6 +148,7 @@
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
         </channels>
         
         <config-description>
@@ -307,6 +309,13 @@
         <item-type>Switch</item-type>
         <label>Manual Mode Enabled</label>
         <description>Manual Mode activation state</description>
+    </channel-type>
+    
+    <channel-type id="zigbeeConnected-channel">
+        <item-type>Switch</item-type>
+        <label>Device connected</label>
+        <description>Is the device still connected to the ZigBee network</description>
+        <state readOnly="true" ></state>
     </channel-type>
 
 </thing:thing-descriptions>

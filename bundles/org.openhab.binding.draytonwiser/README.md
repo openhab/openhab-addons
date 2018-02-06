@@ -92,7 +92,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentSignalRSSI`     | Relative Signal Strength Indicator | Yes         |
 | `currentSignalLQI`      | Link Quality Indicator             | Yes         |
 | `currentSignalStrength` | Human readable signal strength     | Yes         |
-| Zigbee connected state  | Is the roomstat joined to network  | No          |
+| `zigbeeConnected`       | Is the roomstat joined to network  | Yes         |
 
 #### Smart TRV
 
@@ -106,7 +106,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentSignalRSSI`     | Relative Signal Strength Indicator        | Yes         |
 | `currentSignalLQI`      | Link Quality Indicator                    | Yes         |
 | `currentSignalStrength` | Human readable signal strength            | Yes         |
-| Zigbee connected state  | Is the TRV joined to network              | No          |
+| `zigbeeConnected`       | Is the TRV joined to network              | Yes          |
 
 ### Writeable Channels
 

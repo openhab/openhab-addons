@@ -11,6 +11,7 @@ package org.openhab.binding.draytonwiser.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -86,6 +87,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_LEVEL),
                         getBatteryLevel());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ZIGBEE_CONNECTED),
+                        getZigbeeConnected());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -178,5 +181,17 @@ public class TRVHandler extends DraytonWiserThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    private State getZigbeeConnected() {
+        if (smartValve != null) {
+            Integer fullScaleTemp = smartValve.getMeasuredTemperature();
+            if (fullScaleTemp.equals(DraytonWiserBindingConstants.OFFLINE_TEMPERATURE)) {
+                return OnOffType.OFF;
+            }
+            return OnOffType.ON;
+        }
+
+        return OnOffType.OFF;
     }
 }
