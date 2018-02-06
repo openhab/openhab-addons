@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Data class for reading tp-Link Smart Plug energy monitoring.
  * Only getter methods as the values are set by gson based on the retrieved json.
@@ -18,35 +16,42 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Realtime extends ErrorResponse {
 
-    @SerializedName(value = "current", alternate = "current_ma")
+    private static final int MILLIWATT_TO_WATT = 1000;
+    private static final int MILLIAMP_TO_AMP = 1000;
+    private static final int WATTHOUR_TO_KILOWATTHOUR = 1000;
+    private static final int MILLIVOLT_TO_VOLT = 1000;
+
     private double current;
-    @SerializedName(value = "power", alternate = "power_mw")
     private double power;
-    @SerializedName(value = "total", alternate = "total_wh")
     private double total;
-    @SerializedName(value = "voltage", alternate = "voltage_mv")
     private double voltage;
 
+    // JSON names used for v2 hardware
+    private double currentMa;
+    private double powerMw;
+    private double totalWh;
+    private double voltageMv;
+
     public double getCurrent() {
-        return current;
+        return currentMa > 0.0 ? currentMa / MILLIAMP_TO_AMP : current;
     }
 
     public double getPower() {
-        return power;
+        return powerMw > 0.0 ? powerMw / MILLIWATT_TO_WATT : power;
     }
 
     public double getTotal() {
-        return total;
+        return totalWh > 0.0 ? totalWh / WATTHOUR_TO_KILOWATTHOUR : total;
     }
 
     public double getVoltage() {
-        return voltage;
+        return voltageMv > 0.0 ? voltageMv / MILLIVOLT_TO_VOLT : voltage;
     }
 
     @Override
     public String toString() {
-        return "current:" + current + ", power:" + power + ", total:" + total + ", voltage:" + voltage
-                + super.toString();
+        return "current:" + getCurrent() + ", power:" + getPower() + ", total:" + getTotal() + ", voltage:"
+                + getVoltage() + super.toString();
     }
 
 }
