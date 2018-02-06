@@ -42,7 +42,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
@@ -388,15 +387,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
         players.clear();
         logger.trace("Squeeze Server connection stopped.");
-    }
-
-    private void updateChannel(String channelID, State state) {
-        logger.trace("Updating channel {} for {} to state {}", channelID, getThing().getUID(), state);
-        try {
-            updateState(channelID, state);
-        } catch (IllegalStateException e) {
-            logger.error("Could not update channel on thing {}", getThing().getUID(), e);
-        }
     }
 
     private class SqueezeServerListener extends Thread {
@@ -956,11 +946,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
 
             if (sb.length() == 0) {
-                updateChannel(CHANNEL_FAVORITES_LIST, UnDefType.NULL);
+                updateState(CHANNEL_FAVORITES_LIST, UnDefType.NULL);
             } else {
                 // Drop the last comma
                 sb.setLength(sb.length() - 1);
-                updateChannel(CHANNEL_FAVORITES_LIST, new StringType(sb.toString()));
+                String favoritesList = sb.toString();
+                logger.trace("Updating favorites channel for {} to state {}", getThing().getUID(), favoritesList);
+                updateState(CHANNEL_FAVORITES_LIST, new StringType(favoritesList));
             }
         }
     }

@@ -490,11 +490,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (prevState == null || !prevState.equals(state)) {
                 logger.trace("Updating channel {} for thing {} with mac {} to state {}", channelID, getThing().getUID(),
                         mac, state);
-                try {
-                    updateState(channelID, state);
-                } catch (Exception e) {
-                    logger.error("Could not update channel", e);
-                }
+                updateState(channelID, state);
             }
         }
     }

@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -31,6 +31,7 @@ import org.osgi.service.component.annotations.Deactivate;
  */
 @Component(service = { DynamicStateDescriptionProvider.class,
         SqueezeBoxStateDescriptionOptionsProvider.class }, immediate = true)
+@NonNullByDefault
 public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
@@ -39,7 +40,7 @@ public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDe
     }
 
     @Override
-    public @Nullable StateDescription getStateDescription(@NonNull Channel channel, @Nullable StateDescription original,
+    public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         List<StateOption> options = channelOptionsMap.get(channel.getUID());
         if (options == null) {
