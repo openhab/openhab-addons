@@ -115,7 +115,11 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
 
     private State getTemperature() {
         if (roomStat != null) {
-            return new DecimalType((float) roomStat.getMeasuredTemperature() / 10);
+            Integer fullScaleTemp = roomStat.getMeasuredTemperature();
+            if (fullScaleTemp.equals(DraytonWiserBindingConstants.OFFLINE_TEMPERATURE)) {
+                return UnDefType.UNDEF;
+            }
+            return new DecimalType((float) fullScaleTemp / 10);
         }
 
         return UnDefType.UNDEF;

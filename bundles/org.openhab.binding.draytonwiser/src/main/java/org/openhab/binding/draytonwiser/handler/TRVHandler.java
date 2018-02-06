@@ -115,7 +115,11 @@ public class TRVHandler extends DraytonWiserThingHandler {
 
     private State getTemperature() {
         if (smartValve != null) {
-            return new DecimalType((float) smartValve.getMeasuredTemperature() / 10);
+            Integer fullScaleTemp = smartValve.getMeasuredTemperature();
+            if (fullScaleTemp.equals(DraytonWiserBindingConstants.OFFLINE_TEMPERATURE)) {
+                return UnDefType.UNDEF;
+            }
+            return new DecimalType((float) fullScaleTemp / 10);
         }
 
         return UnDefType.UNDEF;

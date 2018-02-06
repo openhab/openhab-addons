@@ -32,6 +32,8 @@ public class DraytonWiserBindingConstants {
 
     public static final String REFRESH_INTERVAL = "REFRESH";
 
+    public static final Integer OFFLINE_TEMPERATURE = -32768;
+
     // Web Service Endpoints
     public static final String DEVICE_ENDPOINT = "data/domain/Device/";
     public static final String ROOMSTATS_ENDPOINT = "data/domain/RoomStat/";
