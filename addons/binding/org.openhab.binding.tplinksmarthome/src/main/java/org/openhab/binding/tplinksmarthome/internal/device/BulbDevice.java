@@ -36,8 +36,6 @@ import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightStateRe
 @NonNullByDefault
 public class BulbDevice extends SmartHomeDevice {
 
-    private static final int MILLIWATT_TO_WATT = 1000;
-
     protected Commands commands = new Commands();
 
     private final int colorTempMin;
@@ -136,7 +134,7 @@ public class BulbDevice extends SmartHomeDevice {
                 state = lightState.getOnOff();
                 break;
             case CHANNEL_ENERGY_POWER:
-                state = getWattValue(deviceState);
+                state = new DecimalType(deviceState.getRealtime().getPower());
                 break;
             default:
                 state = UnDefType.UNDEF;
@@ -145,9 +143,4 @@ public class BulbDevice extends SmartHomeDevice {
         return state;
     }
 
-    private DecimalType getWattValue(DeviceState deviceState) {
-        double powerMilliWatt = deviceState.getRealtime().getPower();
-
-        return new DecimalType(powerMilliWatt > 0 ? (powerMilliWatt / MILLIWATT_TO_WATT) : 0.0);
-    }
 }
