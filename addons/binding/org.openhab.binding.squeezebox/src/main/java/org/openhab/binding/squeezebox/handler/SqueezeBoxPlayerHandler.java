@@ -10,8 +10,10 @@ package org.openhab.binding.squeezebox.handler;
 
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -39,10 +41,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
  * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
+ * @author Mark Hilbush - Get favorites from server and play favorite
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -109,6 +114,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private String callbackUrl;
 
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
+
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
@@ -116,10 +123,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Creates SqueezeBox Player Handler
      *
      * @param thing
+     * @param stateDescriptionProvider
      */
-    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl) {
+    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.callbackUrl = callbackUrl;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -127,6 +137,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
         updateBridgeStatus();
+        logger.debug("player thing {} initialized.", getThing().getUID());
     }
 
     @Override
@@ -276,6 +287,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 break;
             case CHANNEL_NOTIFICATION_SOUND_VOLUME:
                 setNotificationSoundVolume(((PercentType) command));
+                break;
+            case CHANNEL_FAVORITES_PLAY:
+                squeezeBoxServerHandler.playFavorite(mac, command.toString());
                 break;
             default:
                 break;
@@ -453,6 +467,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
+        logger.debug("Player {} updating favorites list", mac);
+        List<StateOption> options = new ArrayList<>();
+        for (Favorite favorite : favorites) {
+            options.add(new StateOption(favorite.shortId, favorite.name));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAVORITES_PLAY), options);
+    }
+
     /**
      * Update a channel if the mac matches our own
      *
@@ -466,11 +490,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (prevState == null || !prevState.equals(state)) {
                 logger.trace("Updating channel {} for thing {} with mac {} to state {}", channelID, getThing().getUID(),
                         mac, state);
-                try {
-                    updateState(channelID, state);
-                } catch (Exception e) {
-                    logger.error("Could not update channel", e);
-                }
+                updateState(channelID, state);
             }
         }
     }
@@ -615,8 +635,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             logger.debug("Initializing notification volume to current player volume");
             notificationSoundVolume = currentVolume();
             if (notificationSoundVolume != 0) {
-                updateState(SqueezeBoxBindingConstants.CHANNEL_NOTIFICATION_SOUND_VOLUME,
-                        new PercentType(notificationSoundVolume));
+                updateState(CHANNEL_NOTIFICATION_SOUND_VOLUME, new PercentType(notificationSoundVolume));
             }
         }
         return PercentType.valueOf(String.valueOf(notificationSoundVolume));
