@@ -42,7 +42,7 @@ Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN=
 	room bedroom	[ roomName="Bedroom" ]
 	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
 	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
-    hotwater hotwater
+	hotwater hotwater
 }
 ```
 
@@ -79,8 +79,6 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room | Yes         |
 | `currentDemand`      | Current heat demand percentage of the room                                   | Yes         |
 | `heatRequest`        | Is the room actively requesting heat from the controller                     | Yes         |
-| next set point temp  | The next set point temperature to be active                                  | No          |
-| next set point time  | The time of the next set point temperature to be active                      | No          |
 
 #### Room Stat
 
@@ -92,7 +90,9 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentBatteryVoltage` | Currently reported battery voltage | Yes         |
 | `currentBatteryLevel`   | Human readable battery level       | Yes         |
 | `currentSignalRSSI`     | Relative Signal Strength Indicator | Yes         |
+| `currentSignalLQI`      | Link Quality Indicator             | Yes         |
 | `currentSignalStrength` | Human readable signal strength     | Yes         |
+| Zigbee connected state  | Is the roomstat joined to network  | No          |
 
 #### Smart TRV
 
@@ -104,7 +104,9 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentBatteryVoltage` | Currently reported battery voltage        | Yes         |
 | `currentBatteryLevel`   | Human readable battery level              | Yes         |
 | `currentSignalRSSI`     | Relative Signal Strength Indicator        | Yes         |
+| `currentSignalLQI`      | Link Quality Indicator                    | Yes         |
 | `currentSignalStrength` | Human readable signal strength            | Yes         |
+| Zigbee connected state  | Is the TRV joined to network              | No          |
 
 ### Writeable Channels
 
@@ -118,9 +120,12 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 #### Hot Water
 
-| Channel            | Description                              | Implemented |
-|--------------------|------------------------------------------|-------------|
-| `manualModeState` | Has manual mode been enabled                   | Yes         |
+| Channel            | Description                                | Implemented |
+|--------------------|--------------------------------------------|-------------|
+| `manualModeState`  | Has manual mode been enabled               | Yes         |
+| SetPoint (on off)  | The current hot water setpoint (on or off) | No          |
+| Hot Water Boosting | Boost the hot water for a set interval     | No          |
+| Schedules          | The time and hot water state schedule      | No          |
 
 #### Room
 
