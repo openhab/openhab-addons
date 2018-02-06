@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * that's used to monitor certain events related to the notification functionality.
  *
  * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
@@ -200,5 +203,9 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     @Override
     public void irCodeChangeEvent(String mac, String ircode) {
+    }
+
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
 }
