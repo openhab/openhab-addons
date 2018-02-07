@@ -22,6 +22,7 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.hyperion.HyperionBindingConstants;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link HyperionDiscoveryParticipant} class is responsible for listening
@@ -29,6 +30,8 @@ import org.openhab.binding.hyperion.HyperionBindingConstants;
  *
  * @author Daniel Walters - Initial contribution
  */
+
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
