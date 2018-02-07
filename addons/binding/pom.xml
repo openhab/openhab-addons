@@ -49,6 +49,7 @@
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.kostalinverter</module>
+    <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.loxone</module>

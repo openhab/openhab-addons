@@ -1,3 +1,5 @@
+*.iml
+.DS_Store
 target/
 src-gen/
 xtend-gen/
