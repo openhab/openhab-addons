@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Niko Tanghe - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.seneye", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.seneye", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class SeneyeHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);

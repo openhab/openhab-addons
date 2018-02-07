@@ -83,17 +83,17 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
     public void initialize() {
         SeneyeConfigurationParameters config = getConfigAs(SeneyeConfigurationParameters.class);
 
-        if (config.aquarium_name.isEmpty()) {
+        if (config.aquarium_name != null && config.aquarium_name.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, aquarium name must be provided");
             return;
         }
-        if (config.username.isEmpty()) {
+        if (config.username != null && config.username.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye username must be provided");
             return;
         }
-        if (config.password.isEmpty()) {
+        if (config.password != null && config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye password must be provided");
             return;

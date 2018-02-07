@@ -8,11 +8,11 @@ The seneye monitor monitors what is happening inside your aquarium to ensure tha
 The monitor allows you to continuously track the changes in the water parameters, alerting you to the problems before they affect the fish. 
 
 At least one Seneye monitor is required ([Home / pond or reef](https://www.seneye.com/devices/compare)) and the measure results must be synced to the seneye cloud by using a seneye web server (see [shop](https://www.seneye.com/store), there is one for wifi and one for a wired network)
-Each monitor is represented by 1 openhab seneye thing.
+Each monitor is represented by one seneye thing.
 
 ## Supported Things
 
-This binding provides one thing type : 'seneye'. You can have multiple seneye devices in your home, just make sure that your aquariumname is properly set for each seneye thing.
+This binding provides one thing type : 'seneye'. You can have multiple seneye devices in your home, just make sure that your aquarium_name is properly set for each seneye thing.
 
 ## Discovery
 
@@ -26,11 +26,11 @@ The following settings must be configured in order to make your seneye binding w
 
 | Setting              |                                                                                 |
 |----------------------|---------------------------------------------------------------------------------|
-| Aquariumname         | The name of the aquarium, as specified in [seneye.me] (https://www.seneye.me/). |
+| aquarium_name        | The name of the aquarium, as specified in [seneye.me] (https://www.seneye.me/). |
 |                      | Useful to distinguish multiple seneye installations.                            |
-| Username             | Your login name for [seneye.me] (https://www.seneye.me/)                        |
-| Password             | Your password for [seneye.me] (https://www.seneye.me/)                          |
-| Polling time         | How often (in minutes) should the seneye account be checked.                    |
+| username             | Your login name for [seneye.me] (https://www.seneye.me/)                        |
+| password             | Your password for [seneye.me] (https://www.seneye.me/)                          |
+| poll_time            | How often (in minutes) should the seneye account be checked.                    |
 
 ### Configuration with config files
 

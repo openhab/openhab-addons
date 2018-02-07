@@ -79,7 +79,7 @@ public class SeneyeService {
             }
         };
 
-        scheduledJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, config.poll_time, TimeUnit.MINUTES);
+        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.poll_time, TimeUnit.MINUTES);
     }
 
     ScheduledFuture<?> scheduledJob;
@@ -98,12 +98,12 @@ public class SeneyeService {
                 SeneyeDeviceReading readings = gson.fromJson(responseReadings, SeneyeDeviceReading.class);
                 readings.status = gson.fromJson(responseState, SeneyeStatus.class);
 
-                logger.debug("seneye '{}' read", new Object[] { this.seneyeId });
+                logger.debug("seneye '{}' read", this.seneyeId);
 
                 return readings;
 
             } catch (Exception se) {
-                logger.debug("failed to read seneye '{}'", new Object[] { se.getMessage() });
+                logger.debug("failed to read seneye '{}'", se.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -119,10 +119,6 @@ public class SeneyeService {
         }
 
         Seneye[] seneyeDevices = gson.fromJson(response, Seneye[].class);
-
-        if (seneyeDevices == null) {
-            return false;
-        }
 
         for (Seneye seneye : seneyeDevices) {
             if (seneye.description.equals(config.aquarium_name)) {
@@ -155,30 +151,28 @@ public class SeneyeService {
         String url = "https://api.seneye.com/v1/devices" + request;
 
         Request getMethod = httpClient.newRequest(url);
-        // getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
-        // false));
         getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         getMethod.accept("application/json");
 
         try {
             ContentResponse response = getMethod.send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Get readings method failed: {}", response.getReason());
+                logger.debug("Get readings method failed: {}", response.getReason());
                 return "";
             }
 
             return response.getContentAsString();
         } catch (InterruptedException e) {
-            logger.warn("Request aborted", e);
+            logger.debug("Request aborted", e);
             return "";
         } catch (TimeoutException e) {
-            logger.warn("Timeout error", e);
+            logger.debug("Timeout error", e);
             return "";
         } catch (ExecutionException e) {
-            logger.warn("Communication error", e.getCause());
+            logger.debug("Communication error", e.getCause());
             return "";
         } catch (Exception e) {
-            logger.warn("Error occured", e);
+            logger.debug("Error occured", e);
             return "";
         }
     }
