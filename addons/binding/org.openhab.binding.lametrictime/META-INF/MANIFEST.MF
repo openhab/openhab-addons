@@ -29,6 +29,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.glassfish.jersey.client,
  org.glassfish.jersey.client.authentication,
  org.glassfish.jersey.filter,
  org.jupnp.model.meta,

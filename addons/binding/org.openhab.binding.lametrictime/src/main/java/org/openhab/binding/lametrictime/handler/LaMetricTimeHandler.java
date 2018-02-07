@@ -19,6 +19,8 @@ import java.util.SortedMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -34,6 +36,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
+import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.binding.lametrictime.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
@@ -92,7 +95,9 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         logger.debug("Creating LaMetric Time client");
         Configuration clockConfig = new Configuration().withDeviceHost(bindingConfig.host)
                 .withDeviceApiKey(bindingConfig.apiKey).withLogging(logger.isDebugEnabled());
-        clock = LaMetricTime.create(clockConfig);
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().property(ClientProperties.CONNECT_TIMEOUT, 10000)
+                .property(ClientProperties.READ_TIMEOUT, 10000);
+        clock = LaMetricTime.create(clockConfig, clientBuilder);
 
         connectionJob = scheduler.scheduleWithFixedDelay(() -> {
             logger.debug("Verifying communication with LaMetric Time");
