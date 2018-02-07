@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Added duration channel
  * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
  * @author Mark Hilbush - Get favorites from server and play favorite
+ * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -110,7 +111,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /**
      * Separate volume level for notifications
      */
-    private int notificationSoundVolume = -1;
+    private Integer notificationSoundVolume = null;
 
     private String callbackUrl;
 
@@ -284,9 +285,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 break;
             case CHANNEL_CURRENT_PLAYLIST_REPEAT:
                 squeezeBoxServerHandler.setRepeatMode(mac, ((DecimalType) command).intValue());
-                break;
-            case CHANNEL_NOTIFICATION_SOUND_VOLUME:
-                setNotificationSoundVolume(((PercentType) command));
                 break;
             case CHANNEL_FAVORITES_PLAY:
                 squeezeBoxServerHandler.playFavorite(mac, command.toString());
@@ -627,24 +625,41 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     /*
-     * The following methods were added to enable notifications using the ESH AudioSink
+     * Give the notification player access to the notification timeout
      */
-    public PercentType getNotificationSoundVolume() {
-        if (notificationSoundVolume == -1) {
-            // Initialize the value for the first time
-            logger.debug("Initializing notification volume to current player volume");
-            notificationSoundVolume = currentVolume();
-            if (notificationSoundVolume != 0) {
-                updateState(CHANNEL_NOTIFICATION_SOUND_VOLUME, new PercentType(notificationSoundVolume));
-            }
-        }
-        return PercentType.valueOf(String.valueOf(notificationSoundVolume));
+    public Integer getNotificationTimeout() {
+        return getConfigAs(SqueezeBoxPlayerConfig.class).notificationTimeout;
     }
 
-    public void setNotificationSoundVolume(PercentType volume) {
-        if (volume != null) {
-            logger.debug("Set notification volume to: {}", volume.toString());
-            notificationSoundVolume = volume.intValue();
+    /*
+     * Used by the AudioSink to get the volume level that should be used for the notification.
+     * Priority for determining volume is:
+     * - volume is provided in the say/playSound actions
+     * - volume is contained in the player thing's configuration
+     * - current player volume setting
+     */
+    public PercentType getNotificationSoundVolume() {
+        // Get the notification sound volume from this player thing's configuration
+        Integer configNotificationSoundVolume = getConfigAs(SqueezeBoxPlayerConfig.class).notificationVolume;
+
+        // Determine which volume to use
+        Integer currentNotificationSoundVolume;
+        if (notificationSoundVolume != null) {
+            currentNotificationSoundVolume = notificationSoundVolume;
+        } else if (configNotificationSoundVolume != null) {
+            currentNotificationSoundVolume = configNotificationSoundVolume;
+        } else {
+            currentNotificationSoundVolume = Integer.valueOf(currentVolume());
+        }
+        return new PercentType(currentNotificationSoundVolume.intValue());
+    }
+
+    /*
+     * Used by the AudioSink to set the volume level that should be used to play the notification
+     */
+    public void setNotificationSoundVolume(PercentType newNotificationSoundVolume) {
+        if (newNotificationSoundVolume != null) {
+            notificationSoundVolume = Integer.valueOf(newNotificationSoundVolume.intValue());
         }
     }
 
@@ -657,8 +672,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         try (SqueezeBoxNotificationPlayer notificationPlayer = new SqueezeBoxNotificationPlayer(this,
                 squeezeBoxServerHandler, uri)) {
             notificationPlayer.play();
-        } catch (InterruptedException | SqueezeBoxTimeoutException e) {
-            logger.warn("Problem during notification playback.", e);
+        } catch (InterruptedException e) {
+            logger.warn("Notification playback was interrupted", e);
+        } catch (SqueezeBoxTimeoutException e) {
+            logger.debug("SqueezeBoxTimeoutException during notification: {}", e.getMessage());
+        } finally {
+            notificationSoundVolume = null;
         }
     }
 
