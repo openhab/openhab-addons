@@ -8,15 +8,15 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab.rule</groupId>
+  <groupId>org.openhab.action</groupId>
   <artifactId>pom</artifactId>
 
-  <name>openHAB Rule Add-Ons</name>
+  <name>openHAB Action Add-Ons</name>
 
   <packaging>pom</packaging>
 
   <modules>
-    <module>org.openhab.rule.lgwebos</module>
+    <module>org.openhab.action.lgwebos</module>
   </modules>
 
 </project>

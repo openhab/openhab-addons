@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.rule.lgwebos.handler;
+package org.openhab.action.lgwebos.handler;
 
 import java.util.Map;
 
@@ -16,19 +16,19 @@ import org.eclipse.smarthome.automation.handler.BaseModuleHandler;
 import org.openhab.binding.lgwebos.LGWebOS;
 
 /**
- * This action handler allows to launch an application.
+ * This action handler allows to open a URL.
  *
  * @author Sebastian Prehn - initial contribution
  *
  */
-public class AppActionHandler extends BaseModuleHandler<Action> implements ActionHandler {
-    public static final String TYPE_ID = "lgwebos.ApplicationAction";
+public class BrowserActionHandler extends BaseModuleHandler<Action> implements ActionHandler {
+    public static final String TYPE_ID = "lgwebos.BrowserAction";
     public static final String PARAM_THING_ID = "thingId";
-    public static final String PARAM_APP_ID = "appId";
+    public static final String PARAM_URL = "url";
 
     private LGWebOS api;
 
-    public AppActionHandler(Action module, LGWebOS api) {
+    public BrowserActionHandler(Action module, LGWebOS api) {
         super(module);
         this.api = api;
     }
@@ -36,9 +36,8 @@ public class AppActionHandler extends BaseModuleHandler<Action> implements Actio
     @Override
     public Map<String, Object> execute(Map<String, Object> context) {
         String thingId = module.getConfiguration().get(PARAM_THING_ID).toString();
-        String appId = module.getConfiguration().get(PARAM_APP_ID).toString();
-        api.launchApplication(thingId, appId);
+        String url = module.getConfiguration().get(PARAM_URL).toString();
+        api.launchBrowser(thingId, url);
         return null;
     }
-
 }

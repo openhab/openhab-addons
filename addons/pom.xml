@@ -19,7 +19,7 @@
     <module>binding</module>
     <module>io</module>
     <module>ui</module>
-    <module>rule</module>
+    <module>action</module>
     <module>voice</module>
   </modules>
 </project>

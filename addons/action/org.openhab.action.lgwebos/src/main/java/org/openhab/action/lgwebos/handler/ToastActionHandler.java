@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.rule.lgwebos.handler;
+package org.openhab.action.lgwebos.handler;
 
 import java.io.IOException;
 import java.util.Map;

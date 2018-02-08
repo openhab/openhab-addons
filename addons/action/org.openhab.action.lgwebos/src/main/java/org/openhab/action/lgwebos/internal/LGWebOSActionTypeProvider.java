@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.rule.lgwebos.internal;
+package org.openhab.action.lgwebos.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,11 +30,11 @@ import org.eclipse.smarthome.core.common.registry.ProviderChangeListener;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.openhab.binding.lgwebos.LGWebOS;
 import org.openhab.binding.lgwebos.LGWebOSBindingConstants;
-import org.openhab.rule.lgwebos.handler.AppActionHandler;
-import org.openhab.rule.lgwebos.handler.BrowserActionHandler;
-import org.openhab.rule.lgwebos.handler.ButtonActionHandler;
-import org.openhab.rule.lgwebos.handler.TextActionHandler;
-import org.openhab.rule.lgwebos.handler.ToastActionHandler;
+import org.openhab.action.lgwebos.handler.AppActionHandler;
+import org.openhab.action.lgwebos.handler.BrowserActionHandler;
+import org.openhab.action.lgwebos.handler.ButtonActionHandler;
+import org.openhab.action.lgwebos.handler.TextActionHandler;
+import org.openhab.action.lgwebos.handler.ToastActionHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
