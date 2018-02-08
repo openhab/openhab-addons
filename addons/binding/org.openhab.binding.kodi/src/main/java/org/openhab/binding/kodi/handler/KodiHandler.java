@@ -252,17 +252,18 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     public void playPVRChannel(final Command command, final String channelType, final String channelId) {
-        KodiChannelConfig config = getThing().getChannel(channelId).getConfiguration().as(KodiChannelConfig.class);
-        int channelID = connection.getChannelID(getPVRChannelGroupID(channelType, config.getGroup()),
-                command.toString());
+        int channelGroupID = getPVRChannelGroupID(channelType, channelId);
+        int channelID = connection.getChannelID(channelGroupID, command.toString());
         if (channelID > 0) {
             connection.playPVRChannel(channelID);
         } else {
-            logger.debug("Received unknown PVR channel '{}'.", command.toString());
+            logger.debug("Received unknown PVR channel '{}'.", command);
         }
     }
 
-    private int getPVRChannelGroupID(final String channelType, final String channelGroupName) {
+    private int getPVRChannelGroupID(final String channelType, final String channelId) {
+        KodiChannelConfig config = getThing().getChannel(channelId).getConfiguration().as(KodiChannelConfig.class);
+        String channelGroupName = config.getGroup();
         int channelGroupID = connection.getChannelGroupID(channelType, channelGroupName);
         if (channelGroupID <= 0) {
             logger.warn("Received unknown PVR channel group '{}'. Using default.", channelGroupName);
@@ -316,9 +317,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private void updatePVRChannelStateDescription(final String channelType, final String channelId) {
         if (isLinked(channelId)) {
-            KodiChannelConfig config = getThing().getChannel(channelId).getConfiguration().as(KodiChannelConfig.class);
-            List<KodiPVRChannel> channels = connection
-                    .getChannelsAsList(getPVRChannelGroupID(channelType, config.getGroup()));
+            int channelGroupID = getPVRChannelGroupID(channelType, channelId);
+            List<KodiPVRChannel> channels = connection.getChannels(channelGroupID);
             List<StateOption> options = new ArrayList<>();
             for (KodiPVRChannel channel : channels) {
                 options.add(new StateOption(channel.getLabel(), channel.getLabel()));

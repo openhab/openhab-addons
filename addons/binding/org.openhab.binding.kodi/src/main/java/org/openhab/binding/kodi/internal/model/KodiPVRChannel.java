@@ -18,6 +18,10 @@ public class KodiPVRChannel extends KodiBaseItem {
      * The PVR channel id
      */
     private int channelId;
+    /**
+     * The PVR channel group id
+     */
+    private int channelGroupId;
 
     public int getId() {
         return channelId;
@@ -25,5 +29,13 @@ public class KodiPVRChannel extends KodiBaseItem {
 
     public void setId(int channelId) {
         this.channelId = channelId;
+    }
+
+    public int getChannelGroupId() {
+        return channelGroupId;
+    }
+
+    public void setChannelGroupId(int channelGroupId) {
+        this.channelGroupId = channelGroupId;
     }
 }

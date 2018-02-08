@@ -14,13 +14,11 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -28,13 +26,9 @@ import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
-import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroups;
-import org.openhab.binding.kodi.internal.model.KodiPVRChannels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -68,7 +62,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private KodiState currentState = KodiState.Stop;
 
     private final KodiEventListener listener;
-    private static final Gson GSON = new GsonBuilder().create();
 
     public KodiConnection(KodiEventListener listener) {
         this.listener = listener;
@@ -575,9 +568,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.Open", params);
     }
 
-    @Nullable
-    // public synchronized KodiPVRChannelGroups getChannelGroups(final String channelType) {
-    private synchronized JsonArray getChannelGroups(final String channelType) {
+    public synchronized List<KodiPVRChannelGroup> getChannelGroups(final String channelType) {
         String method = "PVR.GetChannelGroups";
         String hash = method + "#channeltype=" + channelType;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
@@ -586,42 +577,32 @@ public class KodiConnection implements KodiClientSocketEventListener {
             return socket.callMethod(method, params);
         });
 
-        // if( response instanceof JsonElement) {
-        // KodiPVRChannelGroups channelGroups = GSON.fromJson(response, KodiPVRChannelGroups.class);
-        // channelGroups.setChannelType(channelType);
-        // return channelGroups;
+        List<KodiPVRChannelGroup> channelGroups = new ArrayList<>();
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
-            if (result.has("channelgroups")) {
-                return result.get("channelgroups").getAsJsonArray();
+            for (JsonElement element : result.get("channelgroups").getAsJsonArray()) {
+                JsonObject object = (JsonObject) element;
+                KodiPVRChannelGroup channelGroup = new KodiPVRChannelGroup();
+                channelGroup.setId(object.get("channelgroupid").getAsInt());
+                channelGroup.setLabel(object.get("label").getAsString());
+                channelGroup.setChannelType(channelType);
+                channelGroups.add(channelGroup);
             }
         }
-        return null;
+        return channelGroups;
     }
 
     public int getChannelGroupID(final String channelType, final String channelGroupName) {
-        // KodiPVRChannelGroups channelGroups = getChannelGroups(channelType);
-        // for (KodiPVRChannelGroup channelGroup : channelGroups.getChannelgroups()) {
-        // if (StringUtils.equalsIgnoreCase(channelGroup.getLabel(), channelGroupName)) {
-        // return channelGroup.getId();
-        // }
-        // }
-        JsonArray channelGroups = getChannelGroups(channelType);
-        if (channelGroups instanceof JsonArray) {
-            for (JsonElement element : channelGroups) {
-                JsonObject channelGroup = (JsonObject) element;
-                String label = channelGroup.get("label").getAsString();
-                if (StringUtils.equalsIgnoreCase(label, channelGroupName)) {
-                    return channelGroup.get("channelgroupid").getAsInt();
-                }
+        List<KodiPVRChannelGroup> channelGroups = getChannelGroups(channelType);
+        for (KodiPVRChannelGroup channelGroup : channelGroups) {
+            if (StringUtils.equalsIgnoreCase(channelGroup.getLabel(), channelGroupName)) {
+                return channelGroup.getId();
             }
         }
         return 0;
     }
 
-    @Nullable
-    // public synchronized KodiPVRChannels getChannels(final int channelGroupID) {
-    private synchronized JsonArray getChannels(final int channelGroupID) {
+    public synchronized List<KodiPVRChannel> getChannels(final int channelGroupID) {
         String method = "PVR.GetChannels";
         String hash = method + "#channelgroupid=" + channelGroupID;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
@@ -630,48 +611,26 @@ public class KodiConnection implements KodiClientSocketEventListener {
             return socket.callMethod(method, params);
         });
 
-        // if (response instanceof JsonElement) {
-        // KodiPVRChannels channels = GSON.fromJson(response, KodiPVRChannels.class);
-        // channels.setChannelGroupId(channelGroupID);
-        // return channels;
+        List<KodiPVRChannel> channels = new ArrayList<>();
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
-            if (result.has("channels")) {
-                return result.get("channels").getAsJsonArray();
-            }
-        }
-        return null;
-    }
-
-    public List<KodiPVRChannel> getChannelsAsList(final int channelGroupID) {
-        JsonArray array = getChannels(channelGroupID);
-        if (array instanceof JsonArray) {
-            List<KodiPVRChannel> channels = new ArrayList<>();
-            for (JsonElement element : array) {
-                KodiPVRChannel channel = GSON.fromJson(element, KodiPVRChannel.class);
+            for (JsonElement element : result.get("channels").getAsJsonArray()) {
+                JsonObject object = (JsonObject) element;
+                KodiPVRChannel channel = new KodiPVRChannel();
+                channel.setId(object.get("channelid").getAsInt());
+                channel.setLabel(object.get("label").getAsString());
+                channel.setChannelGroupId(channelGroupID);
                 channels.add(channel);
             }
-            return Collections.unmodifiableList(channels);
-        } else {
-            return Collections.emptyList();
         }
+        return channels;
     }
 
     public int getChannelID(final int channelGroupID, final String channelName) {
-        // KodiPVRChannels channels = getChannels(channelGroupID);
-        // for (KodiPVRChannel channel : channels.getChannels()) {
-        // if (StringUtils.equalsIgnoreCase(channel.getLabel(), channelName)) {
-        // return channel.getId();
-        // }
-        // }
-        JsonArray channels = getChannels(channelGroupID);
-        if (channels instanceof JsonArray) {
-            for (JsonElement element : channels) {
-                JsonObject channel = (JsonObject) element;
-                String label = channel.get("label").getAsString();
-                if (StringUtils.equalsIgnoreCase(label, channelName)) {
-                    return channel.get("channelid").getAsInt();
-                }
+        List<KodiPVRChannel> channels = getChannels(channelGroupID);
+        for (KodiPVRChannel channel : channels) {
+            if (StringUtils.equalsIgnoreCase(channel.getLabel(), channelName)) {
+                return channel.getId();
             }
         }
         return 0;
