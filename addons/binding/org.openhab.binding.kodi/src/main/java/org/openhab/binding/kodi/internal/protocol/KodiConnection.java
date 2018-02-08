@@ -580,13 +580,15 @@ public class KodiConnection implements KodiClientSocketEventListener {
         List<KodiPVRChannelGroup> channelGroups = new ArrayList<>();
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
-            for (JsonElement element : result.get("channelgroups").getAsJsonArray()) {
-                JsonObject object = (JsonObject) element;
-                KodiPVRChannelGroup channelGroup = new KodiPVRChannelGroup();
-                channelGroup.setId(object.get("channelgroupid").getAsInt());
-                channelGroup.setLabel(object.get("label").getAsString());
-                channelGroup.setChannelType(channelType);
-                channelGroups.add(channelGroup);
+            if (result.has("channelgroups")) {
+                for (JsonElement element : result.get("channelgroups").getAsJsonArray()) {
+                    JsonObject object = (JsonObject) element;
+                    KodiPVRChannelGroup channelGroup = new KodiPVRChannelGroup();
+                    channelGroup.setId(object.get("channelgroupid").getAsInt());
+                    channelGroup.setLabel(object.get("label").getAsString());
+                    channelGroup.setChannelType(channelType);
+                    channelGroups.add(channelGroup);
+                }
             }
         }
         return channelGroups;
@@ -614,13 +616,15 @@ public class KodiConnection implements KodiClientSocketEventListener {
         List<KodiPVRChannel> channels = new ArrayList<>();
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
-            for (JsonElement element : result.get("channels").getAsJsonArray()) {
-                JsonObject object = (JsonObject) element;
-                KodiPVRChannel channel = new KodiPVRChannel();
-                channel.setId(object.get("channelid").getAsInt());
-                channel.setLabel(object.get("label").getAsString());
-                channel.setChannelGroupId(channelGroupID);
-                channels.add(channel);
+            if (result.has("channels")) {
+                for (JsonElement element : result.get("channels").getAsJsonArray()) {
+                    JsonObject object = (JsonObject) element;
+                    KodiPVRChannel channel = new KodiPVRChannel();
+                    channel.setId(object.get("channelid").getAsInt());
+                    channel.setLabel(object.get("label").getAsString());
+                    channel.setChannelGroupId(channelGroupID);
+                    channels.add(channel);
+                }
             }
         }
         return channels;
