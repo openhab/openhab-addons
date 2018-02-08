@@ -378,13 +378,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private RawType downloadImage(String url) {
         if (StringUtils.isNotEmpty(url)) {
-            if (!IMAGE_CACHE.containsKey(url)) {
-                IMAGE_CACHE.put(url, () -> {
-                    logger.debug("Trying to download the content of URL {}", url);
-                    return HttpUtil.downloadImage(url);
-                });
-            }
-            RawType image = IMAGE_CACHE.get(url);
+            RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
+                logger.debug("Trying to download the content of URL {}", url);
+                return HttpUtil.downloadImage(url);
+            });
             if (image == null) {
                 logger.debug("Failed to download the content of URL {}", url);
                 return null;
@@ -583,14 +580,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private synchronized JsonArray getChannelGroups(final String channelType) {
         String method = "PVR.GetChannelGroups";
         String hash = method + "#channeltype=" + channelType;
-        if (!REQUEST_CACHE.containsKey(hash)) {
-            REQUEST_CACHE.put(hash, () -> {
-                JsonObject params = new JsonObject();
-                params.addProperty("channeltype", channelType);
-                return socket.callMethod(method, params);
-            });
-        }
-        JsonElement response = REQUEST_CACHE.get(hash);
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
+            JsonObject params = new JsonObject();
+            params.addProperty("channeltype", channelType);
+            return socket.callMethod(method, params);
+        });
 
         // if( response instanceof JsonElement) {
         // KodiPVRChannelGroups channelGroups = GSON.fromJson(response, KodiPVRChannelGroups.class);
@@ -630,14 +624,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private synchronized JsonArray getChannels(final int channelGroupID) {
         String method = "PVR.GetChannels";
         String hash = method + "#channelgroupid=" + channelGroupID;
-        if (!REQUEST_CACHE.containsKey(hash)) {
-            REQUEST_CACHE.put(hash, () -> {
-                JsonObject params = new JsonObject();
-                params.addProperty("channelgroupid", channelGroupID);
-                return socket.callMethod(method, params);
-            });
-        }
-        JsonElement response = REQUEST_CACHE.get(hash);
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
+            JsonObject params = new JsonObject();
+            params.addProperty("channelgroupid", channelGroupID);
+            return socket.callMethod(method, params);
+        });
 
         // if (response instanceof JsonElement) {
         // KodiPVRChannels channels = GSON.fromJson(response, KodiPVRChannels.class);

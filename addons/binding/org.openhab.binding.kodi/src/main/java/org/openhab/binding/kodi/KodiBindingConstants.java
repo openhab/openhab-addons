@@ -70,4 +70,6 @@ public class KodiBindingConstants {
     public static final String MANUFACTURER = "XBMC Foundation";
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";
 
+    public static final String PVR_TV = "tv";
+    public static final String PVR_RADIO = "radio";
 }

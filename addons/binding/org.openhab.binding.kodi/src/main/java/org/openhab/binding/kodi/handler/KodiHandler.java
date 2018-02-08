@@ -164,7 +164,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_PVR_OPEN_TV:
                 if (command instanceof StringType) {
-                    playPVRChannel(command, "tv", CHANNEL_PVR_OPEN_TV);
+                    playPVRChannel(command, PVR_TV, CHANNEL_PVR_OPEN_TV);
                     updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
@@ -172,7 +172,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_PVR_OPEN_RADIO:
                 if (command instanceof StringType) {
-                    playPVRChannel(command, "radio", CHANNEL_PVR_OPEN_RADIO);
+                    playPVRChannel(command, PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
                     updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
@@ -266,7 +266,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         int channelGroupID = connection.getChannelGroupID(channelType, channelGroupName);
         if (channelGroupID <= 0) {
             logger.warn("Received unknown PVR channel group '{}'. Using default.", channelGroupName);
-            channelGroupID = (channelType == "tv") ? 1 : 2;
+            channelGroupID = PVR_TV.equals(channelType) ? 1 : 2;
         }
         return channelGroupID;
     }
@@ -295,8 +295,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
                 connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
                     if (connection.checkConnection()) {
-                        updatePVRChannelStateDescription("tv", CHANNEL_PVR_OPEN_TV);
-                        updatePVRChannelStateDescription("radio", CHANNEL_PVR_OPEN_RADIO);
+                        updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
+                        updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
