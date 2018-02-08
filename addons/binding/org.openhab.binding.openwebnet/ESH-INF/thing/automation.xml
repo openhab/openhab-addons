@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing-type id="automation">
+	<supported-bridge-type-refs>
+		<bridge-type-ref id="dongle" />
+	</supported-bridge-type-refs>
+	<label>OpenWebNet Automation</label>
+	<description>A OpenWebNet ZigBee automation to control roller shutter.</description>
+	<channels>
+		<channel id="Shutter" typeId="shutter" />
+	</channels>
+	<properties>
+		<property name="vendor">BTicino/Legrand</property>
+		<property name="model">088326/...</property>
+		<property name="macAddress">Unknown</property>
+		<property name="firmwareVersion">Unknown</property>
+		<property name="hardwareVersion">Unknown</property>
+		<property name="channel1">Unknown</property>
+	</properties>
+	<representation-property>macAddress</representation-property>
+</thing-type>
+</thing:thing-descriptions>

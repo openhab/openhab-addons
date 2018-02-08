@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- OpenWebNet USB Dongle -->
+	<bridge-type id="dongle">
+		<label>OpenWebNet USB Dongle</label>
+			<description><![CDATA[This gateway (BTicino/Legrand models: BTI-3578/088328) connects via USB to a BTicino/Legrand ZigBee network using the OpenWebNet protocol.<br>For more information see:<li>http://www.catalogue.bticino.com/BTI-3578-EN</li><li>http://ecatalogue.legrand.fr/088328-interface-open-radio-permet-piloter-installation.html</li>]]></description>
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-3578/088328</property>
+			<property name="firmwareVersion">Unknown</property>
+			<property name="hardwareVersion">Unknown</property>
+		</properties>
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<description>Serial Port used to connect to dongle.</description>
+				<context>serial-port</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
