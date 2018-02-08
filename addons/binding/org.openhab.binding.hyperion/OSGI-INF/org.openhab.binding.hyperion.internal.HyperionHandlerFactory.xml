@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.hyperion" configuration-policy="optional" immediate="true" name="org.openhab.binding.hyperion.internal.HyperionHandlerFactory">
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <reference bind="setDynamicStateDescriptionProvider" interface="org.openhab.binding.hyperion.internal.HyperionStateDescriptionProvider" name="DynamicStateDescriptionProvider" unbind="unsetDynamicStateDescriptionProvider"/>
+   <implementation class="org.openhab.binding.hyperion.internal.HyperionHandlerFactory"/>
+</scr:component>

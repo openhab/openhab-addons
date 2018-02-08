@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hyperion.internal.HyperionStateDescriptionProvider;
 import org.openhab.binding.hyperion.internal.connection.JsonTcpConnection;
@@ -85,6 +87,7 @@ public class HyperionNgHandler extends BaseThingHandler {
     private int refreshInterval;
     private int priority;
     private String origin;
+    private HyperionStateDescriptionProvider stateDescriptionProvider;
 
     private Runnable refreshJob = new Runnable() {
         @Override
@@ -121,6 +124,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     public HyperionNgHandler(Thing thing, HyperionStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -171,6 +175,9 @@ public class HyperionNgHandler extends BaseThingHandler {
             Hyperion hyperion = info.getHyperion();
             updateHyperion(hyperion);
 
+            List<Effect> effects = info.getEffects();
+            updateEffects(effects);
+
             // update adjustments
             List<Adjustment> adjustments = info.getAdjustment();
             updateAdjustments(adjustments);
@@ -183,6 +190,14 @@ public class HyperionNgHandler extends BaseThingHandler {
             List<Priority> priorities = info.getPriorities();
             updatePriorities(priorities);
         }
+    }
+
+    private void updateEffects(List<Effect> effects) {
+        List<StateOption> options = new ArrayList<>();
+        for (Effect effect : effects) {
+            options.add(new StateOption(effect.getName(), effect.getName()));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_EFFECT), options);
     }
 
     private void updatePriorities(List<Priority> priorities) {

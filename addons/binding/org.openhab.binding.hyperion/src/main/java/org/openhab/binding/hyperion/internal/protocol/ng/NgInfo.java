@@ -10,6 +10,8 @@ package org.openhab.binding.hyperion.internal.protocol.ng;
 
 import java.util.List;
 
+import org.openhab.binding.hyperion.internal.protocol.v1.Effect;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,16 +22,19 @@ import com.google.gson.annotations.SerializedName;
 public class NgInfo {
 
     @SerializedName("components")
-    private List<Component> components;
+    private List<Component> components = null;
 
     @SerializedName("adjustment")
-    private List<Adjustment> adjustment;
+    private List<Adjustment> adjustment = null;
 
     @SerializedName("priorities")
     private List<Priority> priorities = null;
 
     @SerializedName("hyperion")
-    private Hyperion hyperion;
+    private Hyperion hyperion = null;
+
+    @SerializedName("effects")
+    private List<Effect> effects = null;
 
     public List<Component> getComponents() {
         return components;
@@ -61,6 +66,10 @@ public class NgInfo {
 
     public void setHyperion(Hyperion hyperion) {
         this.hyperion = hyperion;
+    }
+
+    public List<Effect> getEffects() {
+        return effects;
     }
 
 }
