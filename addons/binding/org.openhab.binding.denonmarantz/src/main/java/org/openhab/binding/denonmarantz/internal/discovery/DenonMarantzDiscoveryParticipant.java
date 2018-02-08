@@ -12,6 +12,7 @@ import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.THIN
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
                 httpClient.start();
                 response = httpClient.newRequest("http://" + host + "/goform/Deviceinfo.xml")
                         .timeout(3, TimeUnit.SECONDS).send();
-                if (response.getStatus() == 200) {
+                if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                     logger.debug("We can access the HTTP API, disabling the Telnet mode by default.");
                     telnetEnable = false;
                     httpApiUsable = true;
@@ -154,7 +155,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
                 try {
                     response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
                             .timeout(3, TimeUnit.SECONDS).send();
-                    if (response.getStatus() == 200) {
+                    if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                         logger.debug(
                                 "This model responds to HTTP port 8080, we use this port to retrieve the number of zones.");
                         httpPort = 8080;
@@ -181,7 +182,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
                     logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count: {}", e.getMessage());
                 }
 
-                if (status == 200 && response != null) {
+                if (status == HttpURLConnection.HTTP_OK && response != null) {
                     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder;
                     try {
@@ -203,6 +204,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
 
             httpClient.destroy();
             properties.put(DenonMarantzBindingConstants.PARAMETER_HOST, host);
+            properties.put(DenonMarantzBindingConstants.PARAMETER_HTTP_PORT, httpPort);
             properties.put(DenonMarantzBindingConstants.PARAMETER_TELNET_ENABLED, telnetEnable);
             properties.put(DenonMarantzBindingConstants.PARAMETER_ZONE_COUNT, zoneCount);
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);

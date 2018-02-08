@@ -6,30 +6,40 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities;
+package org.openhab.binding.denonmarantz.internal.xml.entities;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.OnOffType;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.StringType;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.VolumeType;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
 
 /**
- * Holds limited information about the secondary zones of the receiver
+ * Holds information about the secondary zones of the receiver
  *
  * @author Jeroen Idserda
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ZoneStatusLite {
+public class ZoneStatus {
 
     private OnOffType power;
+
+    @XmlElementWrapper(name = "inputFuncList")
+    @XmlElement(name = "value")
+    private List<String> inputFunctions;
 
     private StringType inputFuncSelect;
 
     private StringType volumeDisplay;
+
+    private StringType surrMode;
 
     private VolumeType masterVolume;
 
@@ -59,6 +69,14 @@ public class ZoneStatusLite {
         this.volumeDisplay = volumeDisplay;
     }
 
+    public StringType getSurrMode() {
+        return surrMode;
+    }
+
+    public void setSurrMode(StringType surrMode) {
+        this.surrMode = surrMode;
+    }
+
     public VolumeType getMasterVolume() {
         return masterVolume;
     }
@@ -73,6 +91,10 @@ public class ZoneStatusLite {
 
     public void setMute(OnOffType mute) {
         this.mute = mute;
+    }
+
+    public List<String> getInputFuncList() {
+        return this.inputFunctions;
     }
 
 }

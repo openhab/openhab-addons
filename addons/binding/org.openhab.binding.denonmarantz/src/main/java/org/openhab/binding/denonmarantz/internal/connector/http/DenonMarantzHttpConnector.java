@@ -39,14 +39,14 @@ import org.eclipse.jetty.client.api.Result;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.Deviceinfo;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.Main;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.ZoneStatus;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.ZoneStatusLite;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.commands.AppCommandRequest;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.commands.AppCommandResponse;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.commands.CommandRx;
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.commands.CommandTx;
+import org.openhab.binding.denonmarantz.internal.xml.entities.Deviceinfo;
+import org.openhab.binding.denonmarantz.internal.xml.entities.Main;
+import org.openhab.binding.denonmarantz.internal.xml.entities.ZoneStatus;
+import org.openhab.binding.denonmarantz.internal.xml.entities.ZoneStatusLite;
+import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppCommandRequest;
+import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppCommandResponse;
+import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandRx;
+import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandTx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(DenonMarantzHttpConnector.class);
+    private Logger logger = LoggerFactory.getLogger(DenonMarantzHttpConnector.class);
 
     private static final int REQUEST_TIMEOUT_MS = 5000; // 5 seconds
 
@@ -115,11 +115,24 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
     private void startPolling() {
         if (!isPolling()) {
-            logger.info("HTTP polling started.");
+            logger.debug("HTTP polling started.");
             pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    refreshHttpProperties();
+                    try {
+                        refreshHttpProperties();
+                    } catch (RuntimeException e) {
+                        /**
+                         * We need to catch this RuntimeException, as otherwise the polling stops.
+                         * Log as error as it could be a user configuration error.
+                         */
+                        StringBuilder sb = new StringBuilder();
+                        for (StackTraceElement s : e.getStackTrace()) {
+                            sb.append(s.toString()).append("\n");
+                        }
+                        logger.error("Error while polling Http: \"{}\". Stacktrace: \n{}", e.getMessage(),
+                                sb.toString());
+                    }
                 }
             }, config.httpPollingInterval, config.httpPollingInterval, TimeUnit.SECONDS);
         }
@@ -132,7 +145,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     private void stopPolling() {
         if (isPolling()) {
             pollingJob.cancel(true);
-            logger.info("HTTP polling stopped.");
+            logger.debug("HTTP polling stopped.");
         }
     }
 
@@ -358,8 +371,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         return null;
     }
 
-    private String doHttpRequest(String method, String uri, String request) throws IOException {
-
+    public static String doHttpRequest(String method, String uri, String request) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
         connection.setRequestMethod(method);
         connection.setConnectTimeout(REQUEST_TIMEOUT_MS);
@@ -373,7 +385,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         InputStream is = connection.getInputStream();
         String ret = IOUtils.toString(is);
-
         connection.disconnect();
 
         return ret;

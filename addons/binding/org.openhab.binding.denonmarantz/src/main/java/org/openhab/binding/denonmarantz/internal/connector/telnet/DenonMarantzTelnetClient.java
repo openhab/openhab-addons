@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DenonMarantzTelnetClient implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetClient.class);
+    private Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetClient.class);
 
     private static final Integer RECONNECT_DELAY = 60000; // 1 minute
 

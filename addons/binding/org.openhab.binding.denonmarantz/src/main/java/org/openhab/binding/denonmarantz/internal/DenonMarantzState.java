@@ -52,14 +52,14 @@ public class DenonMarantzState {
     private State zone3Mute = UnDefType.UNDEF;
     private State zone3Input = UnDefType.UNDEF;
 
-    private DenonMarantzStateChangedListener listener;
+    private DenonMarantzStateChangedListener handler;
 
-    public DenonMarantzState(DenonMarantzStateChangedListener listener) {
-        this.listener = listener;
+    public DenonMarantzState(DenonMarantzStateChangedListener handler) {
+        this.handler = handler;
     }
 
     public void connectionError(String errorMessage) {
-        listener.connectionError(errorMessage);
+        handler.connectionError(errorMessage);
     }
 
     public State getStateForChannelID(String channelID) {
@@ -117,7 +117,7 @@ public class DenonMarantzState {
         OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.power) {
             this.power = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_POWER, this.power);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_POWER, this.power);
         }
     }
 
@@ -125,7 +125,7 @@ public class DenonMarantzState {
         OnOffType newVal = mainPower ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.mainZonePower) {
             this.mainZonePower = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_ZONE_POWER, this.mainZonePower);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_ZONE_POWER, this.mainZonePower);
         }
     }
 
@@ -133,7 +133,7 @@ public class DenonMarantzState {
         OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.mute) {
             this.mute = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_MUTE, this.mute);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MUTE, this.mute);
         }
     }
 
@@ -141,10 +141,10 @@ public class DenonMarantzState {
         PercentType newVal = new PercentType(volume);
         if (!newVal.equals(this.mainVolume)) {
             this.mainVolume = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME, this.mainVolume);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME, this.mainVolume);
             // update the main volume in dB too
             this.mainVolumeDB = DecimalType.valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME_DB, this.mainVolumeDB);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME_DB, this.mainVolumeDB);
         }
     }
 
@@ -152,7 +152,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(input);
         if (!newVal.equals(this.input)) {
             this.input = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_INPUT, this.input);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_INPUT, this.input);
         }
     }
 
@@ -160,7 +160,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(surroundProgram);
         if (!newVal.equals(this.surroundProgram)) {
             this.surroundProgram = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_SURROUND_PROGRAM, this.surroundProgram);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_SURROUND_PROGRAM, this.surroundProgram);
         }
     }
 
@@ -168,7 +168,7 @@ public class DenonMarantzState {
         StringType newVal = StringUtils.isBlank(artist) ? StringType.EMPTY : StringType.valueOf(artist);
         if (!newVal.equals(this.artist)) {
             this.artist = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ARTIST, this.artist);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ARTIST, this.artist);
         }
     }
 
@@ -176,7 +176,7 @@ public class DenonMarantzState {
         StringType newVal = StringUtils.isBlank(album) ? StringType.EMPTY : StringType.valueOf(album);
         if (!newVal.equals(this.album)) {
             this.album = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ALBUM, this.album);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ALBUM, this.album);
         }
     }
 
@@ -184,7 +184,7 @@ public class DenonMarantzState {
         StringType newVal = StringUtils.isBlank(track) ? StringType.EMPTY : StringType.valueOf(track);
         if (!newVal.equals(this.track)) {
             this.track = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_TRACK, this.track);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_TRACK, this.track);
         }
     }
 
@@ -192,7 +192,7 @@ public class DenonMarantzState {
         OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.zone2Power) {
             this.zone2Power = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_POWER, this.zone2Power);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_POWER, this.zone2Power);
         }
     }
 
@@ -200,11 +200,11 @@ public class DenonMarantzState {
         PercentType newVal = new PercentType(volume);
         if (!newVal.equals(this.zone2Volume)) {
             this.zone2Volume = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME, this.zone2Volume);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME, this.zone2Volume);
             // update the volume in dB too
             this.zone2VolumeDB = DecimalType
                     .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME_DB, this.zone2VolumeDB);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME_DB, this.zone2VolumeDB);
         }
     }
 
@@ -212,7 +212,7 @@ public class DenonMarantzState {
         OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.zone2Mute) {
             this.zone2Mute = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_MUTE, this.zone2Mute);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_MUTE, this.zone2Mute);
         }
     }
 
@@ -220,7 +220,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(zone2Input);
         if (!newVal.equals(this.zone2Input)) {
             this.zone2Input = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, this.zone2Input);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, this.zone2Input);
         }
     }
 
@@ -228,7 +228,7 @@ public class DenonMarantzState {
         OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.zone3Power) {
             this.zone3Power = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_POWER, this.zone3Power);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_POWER, this.zone3Power);
         }
     }
 
@@ -236,11 +236,11 @@ public class DenonMarantzState {
         PercentType newVal = new PercentType(volume);
         if (!newVal.equals(this.zone3Volume)) {
             this.zone3Volume = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME, this.zone3Volume);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME, this.zone3Volume);
             // update the volume in dB too
             this.zone3VolumeDB = DecimalType
                     .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME_DB, this.zone3VolumeDB);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME_DB, this.zone3VolumeDB);
         }
 
     }
@@ -249,7 +249,7 @@ public class DenonMarantzState {
         OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
         if (newVal != this.zone3Mute) {
             this.zone3Mute = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_MUTE, this.zone3Mute);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_MUTE, this.zone3Mute);
         }
     }
 
@@ -257,7 +257,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(zone3Input);
         if (!newVal.equals(this.zone3Input)) {
             this.zone3Input = newVal;
-            listener.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, this.zone3Input);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, this.zone3Input);
         }
     }
 }

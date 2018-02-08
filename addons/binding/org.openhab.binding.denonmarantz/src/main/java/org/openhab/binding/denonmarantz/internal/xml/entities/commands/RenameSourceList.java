@@ -6,31 +6,30 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities;
+package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.denonmarantz.internal.connector.http.entities.types.OnOffType;
-
 /**
- * Holds information about the Main zone of the receiver
+ * Used to unmarshall <list> items of the <functionrename> CommandRX.
  *
- * @author Jeroen Idserda
+ * @author Jan-Willem Veldhuis
  */
-@XmlRootElement(name = "item")
+@XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Main {
+public class RenameSourceList {
 
-    private OnOffType power;
+    private String name;
 
-    public OnOffType getPower() {
-        return power;
+    private String rename;
+
+    public String getName() {
+        return name;
     }
 
-    public void setPower(OnOffType power) {
-        this.power = power;
+    public String getRename() {
+        return rename;
     }
-
 }

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -45,6 +46,14 @@ public class CommandRx {
 
     @XmlElement(name = "text")
     private List<Text> texts = new ArrayList<Text>();
+
+    @XmlElementWrapper(name = "functionrename")
+    @XmlElement(name = "list")
+    private List<RenameSourceList> renameSourceLists;
+
+    @XmlElementWrapper(name = "functiondelete")
+    @XmlElement(name = "list")
+    private List<DeletedSourceList> deletedSourceLists;
 
     private String playstatus;
 
@@ -178,5 +187,13 @@ public class CommandRx {
             }
         }
         return null;
+    }
+
+    public List<RenameSourceList> getRenameSourceLists() {
+        return renameSourceLists;
+    }
+
+    public List<DeletedSourceList> getDeletedSourceLists() {
+        return deletedSourceLists;
     }
 }

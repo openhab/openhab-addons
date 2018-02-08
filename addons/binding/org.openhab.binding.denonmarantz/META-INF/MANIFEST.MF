@@ -31,6 +31,5 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.denonmarantz,
  org.openhab.binding.denonmarantz.handler,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

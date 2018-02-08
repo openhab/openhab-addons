@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DenonMarantzTelnetConnector extends DenonMarantzConnector implements DenonMarantzTelnetListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetConnector.class);
+    private Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetConnector.class);
 
     // All regular commands. Example: PW, SICD, SITV, Z2MU
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^([A-Z0-9]{2})(.+)$");

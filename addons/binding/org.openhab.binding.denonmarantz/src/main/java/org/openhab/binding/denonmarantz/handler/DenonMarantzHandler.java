@@ -86,6 +86,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                 case CHANNEL_INPUT:
                     connector.sendInputCommand(command, 1);
                     break;
+                case CHANNEL_SURROUND_PROGRAM:
+                    connector.sendSurroundProgramCommand(command);
+                    break;
                 case CHANNEL_COMMAND:
                     connector.sendCustomCommand(command);
                     break;
@@ -123,7 +126,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     break;
 
                 default:
-                    logger.warn("Command for channel {} not supported.", channelUID.getId());
+                    logger.warn("Command for (read only) channel {} not supported.", channelUID.getId());
                     break;
             }
         } catch (UnsupportedCommandTypeException e) {
@@ -150,12 +153,12 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     @Override
     public void initialize() {
         config = getConfigAs(DenonMarantzConfiguration.class);
-        denonMarantzState = new DenonMarantzState(this);
 
         if (!checkConfiguration()) {
             return;
         }
 
+        denonMarantzState = new DenonMarantzState(this);
         configureZoneChannels();
         // create connection (either Telnet or HTTP)
         // ThingStatus ONLINE/OFFLINE is set when AVR status is known.

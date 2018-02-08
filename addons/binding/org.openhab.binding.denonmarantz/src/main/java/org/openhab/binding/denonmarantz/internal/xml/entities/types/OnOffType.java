@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities.types;
+package org.openhab.binding.denonmarantz.internal.xml.entities.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.openhab.binding.denonmarantz.internal.connector.http.adapters.OnOffAdapter;
+import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
 
 /**
  * Contains an On/Off value in the form of a boolean

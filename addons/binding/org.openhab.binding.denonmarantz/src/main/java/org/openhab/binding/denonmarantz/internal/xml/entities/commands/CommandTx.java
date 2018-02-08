@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,21 +23,25 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CommandTx {
 
-    private static String DEFAULT_ID = "1";
+    private static final String DEFAULT_ID = "1";
 
-    public static CommandTx CMD_ALL_POWER = of("GetAllZonePowerStatus");
+    public static final CommandTx CMD_ALL_POWER = of("GetAllZonePowerStatus");
 
-    public static CommandTx CMD_VOLUME_LEVEL = of("GetVolumeLevel");
+    public static final CommandTx CMD_VOLUME_LEVEL = of("GetVolumeLevel");
 
-    public static CommandTx CMD_MUTE_STATUS = of("GetMuteStatus");
+    public static final CommandTx CMD_MUTE_STATUS = of("GetMuteStatus");
 
-    public static CommandTx CMD_SOURCE_STATUS = of("GetSourceStatus");
+    public static final CommandTx CMD_SOURCE_STATUS = of("GetSourceStatus");
 
-    public static CommandTx CMD_SURROUND_STATUS = of("GetSurroundModeStatus");
+    public static final CommandTx CMD_SURROUND_STATUS = of("GetSurroundModeStatus");
 
-    public static CommandTx CMD_ZONE_NAME = of("GetZoneName");
+    public static final CommandTx CMD_ZONE_NAME = of("GetZoneName");
 
-    public static CommandTx CMD_NET_STATUS = of("GetNetAudioStatus");
+    public static final CommandTx CMD_NET_STATUS = of("GetNetAudioStatus");
+
+    public static final CommandTx CMD_RENAME_SOURCE = of("GetRenameSource");
+
+    public static final CommandTx CMD_DELETED_SOURCE = of("GetDeletedSource");
 
     @XmlAttribute(name = "id")
     private String id;

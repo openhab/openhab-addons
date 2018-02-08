@@ -6,39 +6,24 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.internal.connector.http.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.entities.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
 
 /**
- * Holds text values with a certain id
+ * Contains a string value
  *
  * @author Jeroen Idserda
  */
-@XmlRootElement(name = "text")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Text {
+public class StringType {
 
-    @XmlAttribute(name = "id")
-    private String id;
-
-    @XmlValue
+    @XmlJavaTypeAdapter(value = StringAdapter.class)
     private String value;
-
-    public Text() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getValue() {
         return value;
@@ -47,4 +32,5 @@ public class Text {
     public void setValue(String value) {
         this.value = value;
     }
+
 }

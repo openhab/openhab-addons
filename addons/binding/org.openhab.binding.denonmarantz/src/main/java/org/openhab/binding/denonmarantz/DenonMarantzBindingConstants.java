@@ -26,7 +26,7 @@ public class DenonMarantzBindingConstants {
     public static final String BINDING_ID = "denonmarantz";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_AVR = new ThingTypeUID(BINDING_ID, "avr");
+    public static final ThingTypeUID THING_TYPE_AVR = new ThingTypeUID(BINDING_ID, "avr");
 
     // List of thing Parameters names
     public static final String PARAMETER_ZONE_COUNT = "zoneCount";
@@ -37,18 +37,18 @@ public class DenonMarantzBindingConstants {
     public static final String PARAMETER_POLLING_INTERVAL = "httpPollingInterval";
 
     // List of all Channel ids
-    public final static String CHANNEL_POWER = "power";
-    public final static String CHANNEL_MAIN_ZONE_POWER = "mainZonePower";
-    public final static String CHANNEL_MAIN_VOLUME = "mainVolume";
-    public final static String CHANNEL_MAIN_VOLUME_DB = "mainVolumeDB";
-    public final static String CHANNEL_MUTE = "mute";
-    public final static String CHANNEL_INPUT = "input";
-    public final static String CHANNEL_SURROUND_PROGRAM = "surroundProgram";
-    public final static String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_MAIN_ZONE_POWER = "mainZonePower";
+    public static final String CHANNEL_MAIN_VOLUME = "mainVolume";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "mainVolumeDB";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_SURROUND_PROGRAM = "surroundProgram";
+    public static final String CHANNEL_COMMAND = "command";
 
-    public final static String CHANNEL_NOW_PLAYING_ARTIST = "artist";
-    public final static String CHANNEL_NOW_PLAYING_ALBUM = "album";
-    public final static String CHANNEL_NOW_PLAYING_TRACK = "track";
+    public static final String CHANNEL_NOW_PLAYING_ARTIST = "artist";
+    public static final String CHANNEL_NOW_PLAYING_ALBUM = "album";
+    public static final String CHANNEL_NOW_PLAYING_TRACK = "track";
 
     public static final String CHANNEL_ZONE2_POWER = "zone2Power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2Volume";
@@ -63,7 +63,7 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE3_INPUT = "zone3Input";
 
     // HashMap of Zone2 Channel Type UIDs (to be added to Thing later when needed)
-    public final static LinkedHashMap<ChannelTypeUID, String> ZONE2_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
+    public static final LinkedHashMap<ChannelTypeUID, String> ZONE2_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
     static {
         ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_POWER), CHANNEL_ZONE2_POWER);
         ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_VOLUME), CHANNEL_ZONE2_VOLUME);
@@ -73,7 +73,7 @@ public class DenonMarantzBindingConstants {
     }
 
     // HashMap of Zone3 Channel Type UIDs (to be added to Thing later when needed)
-    public final static LinkedHashMap<ChannelTypeUID, String> ZONE3_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
+    public static final LinkedHashMap<ChannelTypeUID, String> ZONE3_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
     static {
         ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_POWER), CHANNEL_ZONE3_POWER);
         ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_VOLUME), CHANNEL_ZONE3_VOLUME);
@@ -88,7 +88,7 @@ public class DenonMarantzBindingConstants {
      * thing-types.xml)
      * See https://github.com/eclipse/smarthome/pull/4787#issuecomment-362287430
      */
-    public final static HashMap<String, String> CHANNEL_ITEM_TYPES = new HashMap<String, String>();
+    public static final HashMap<String, String> CHANNEL_ITEM_TYPES = new HashMap<String, String>();
     static {
         CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_POWER, "Switch");
         CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME, "Dimmer");

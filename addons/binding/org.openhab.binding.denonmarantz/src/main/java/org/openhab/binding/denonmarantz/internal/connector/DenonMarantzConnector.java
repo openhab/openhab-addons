@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -26,7 +27,7 @@ import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguratio
 
 /**
  * Abstract class containing common functionality for the connectors.
- * 
+ *
  * @author Jan-Willem Veldhuis
  */
 public abstract class DenonMarantzConnector {
@@ -69,6 +70,16 @@ public abstract class DenonMarantzConnector {
         if (command instanceof StringType) {
             cmd += command.toString();
         } else if (command instanceof RefreshType) {
+            cmd += "?";
+        } else {
+            throw new UnsupportedCommandTypeException();
+        }
+        internalSendCommand(cmd);
+    }
+
+    public void sendSurroundProgramCommand(@NonNull Command command) throws UnsupportedCommandTypeException {
+        String cmd = "MS";
+        if (command instanceof RefreshType) {
             cmd += "?";
         } else {
             throw new UnsupportedCommandTypeException();
