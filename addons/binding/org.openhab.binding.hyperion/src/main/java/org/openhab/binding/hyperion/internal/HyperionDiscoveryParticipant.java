@@ -79,10 +79,12 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
 
-        // TODO: is there a better way to create a unique uid?
-        String longName = service.getName();
-        int hashCode = longName.hashCode();
-        String uid = Integer.toUnsignedString(hashCode);
+        String uid = service.getPropertyString("id");
+        if (uid == null) {
+            String longName = service.getName();
+            int hashCode = longName.hashCode();
+            uid = Integer.toUnsignedString(hashCode);
+        }
         return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER_NG, uid);
     }
 
