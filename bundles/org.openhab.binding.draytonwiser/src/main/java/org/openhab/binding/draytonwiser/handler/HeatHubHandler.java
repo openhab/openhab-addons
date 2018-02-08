@@ -66,6 +66,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
     public HeatHubHandler(Bridge thing) {
         super(thing);
         httpClient = new HttpClient();
+
+        // attempt to prevent EOFException as per https://bugs.eclipse.org/bugs/show_bug.cgi?id=440729
+        httpClient.setMaxConnectionsPerDestination(3);
+
         gson = new Gson();
 
         try {
