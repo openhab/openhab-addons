@@ -41,6 +41,7 @@ import org.openhab.binding.kodi.internal.KodiDynamicStateDescriptionProvider;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
+import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -316,10 +317,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private void updatePVRChannelStateDescription(final String channelType, final String channelId) {
         if (isLinked(channelId)) {
             KodiChannelConfig config = getThing().getChannel(channelId).getConfiguration().as(KodiChannelConfig.class);
-            List<String> channels = connection.getChannelsAsList(getPVRChannelGroupID(channelType, config.getGroup()));
+            List<KodiPVRChannel> channels = connection
+                    .getChannelsAsList(getPVRChannelGroupID(channelType, config.getGroup()));
             List<StateOption> options = new ArrayList<>();
-            for (String channel : channels) {
-                options.add(new StateOption(channel, channel));
+            for (KodiPVRChannel channel : channels) {
+                options.add(new StateOption(channel.getLabel(), channel.getLabel()));
             }
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
         }
