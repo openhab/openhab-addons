@@ -53,10 +53,12 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
         OFF(0),
         ON(1),
         UP(2),
-        DOWN(3),
-        RUN_UP__2ND_OFF(4), // G6R_H4T1 and G6R_H4TB respectively only
-        RUN_DOWN__2ND_ON(5), // G6R_H4T1 and G6R_H4TB respectively only
-        STOP(6); // G6R_H4T1 only
+        DOWN(3);
+        
+        // For now unimplemented commands
+        // RUN_UP__2ND_OFF(4), // G6R_H4T1 and G6R_H4TB respectively only
+        // RUN_DOWN__2ND_ON(5), // G6R_H4T1 and G6R_H4TB respectively only
+        // STOP(6); // G6R_H4T1 only
 
         private final int command;
 
@@ -80,37 +82,6 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                     return new String("UP");
                 case DOWN:
                     return new String("DOWN");
-                case RUN_UP__2ND_OFF:
-                    if (subtype == SubType.MERTIK__G6R_H4T1) {
-                        return new String("RUN_UP");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TB__G6_H4T__G6R_H4T21_Z22) {
-                        return new String("2ND_OFF");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TD__G6R_H4T16) {
-                        return new String("Command not supported by Mertik G6R H4TD");
-                    } else if (subtype == SubType.MERTIK__G6R_H4S_TRANSMIT_ONLY) {
-                        return new String("Command not supported by Mertik G6R H4S");
-                    }
-
-                case RUN_DOWN__2ND_ON:
-                    if (subtype == SubType.MERTIK__G6R_H4T1) {
-                        return new String("RUN_DOWN");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TB__G6_H4T__G6R_H4T21_Z22) {
-                        return new String("2ND_ON");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TD__G6R_H4T16) {
-                        return new String("Command not supported by Mertik G6R H4TD");
-                    } else if (subtype == SubType.MERTIK__G6R_H4S_TRANSMIT_ONLY) {
-                        return new String("Command not supported by Mertik G6R H4S");
-                    }
-                case STOP:
-                    if (subtype == SubType.MERTIK__G6R_H4T1) {
-                        return new String("STOP");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TB__G6_H4T__G6R_H4T21_Z22) {
-                        return new String("Command not supported by Mertik G6R H4TB");
-                    } else if (subtype == SubType.MERTIK__G6R_H4TD__G6R_H4T16) {
-                        return new String("Command not supported by Mertik G6R H4TD");
-                    } else if (subtype == SubType.MERTIK__G6R_H4S_TRANSMIT_ONLY) {
-                        return new String("Command not supported by Mertik G6R H4S");
-                    }
                 default:
                     return new String("Unknown command");
             }
@@ -180,15 +151,11 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
 		switch (channelId) {
 	        case CHANNEL_COMMAND:
-	        case CHANNEL_CONTACT:
 	            switch (command) {
 	            	case OFF: return OnOffType.OFF;
 					case ON: return OnOffType.ON;
-//					case UP:
-//					case DOWN:
-//					case RUN_UP__2ND_OFF: // G6R_H4T1 and G6R_H4TB respectively only
-//					case RUN_DOWN__2ND_ON: // G6R_H4T1 and G6R_H4TB respectively only
-//					case STOP: // G6R_H4T1 only
+					case UP: return OpenClosedType.CLOSED;
+					case DOWN: return OpenClosedType.OPEN;
 			        default:
 		                    throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
 	            }
@@ -203,7 +170,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
-
+				} else if (type instanceof UpDownType) {
+					command = (type == UpDownType.DOWN ? Commands.DOWN : Commands.UP);
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
