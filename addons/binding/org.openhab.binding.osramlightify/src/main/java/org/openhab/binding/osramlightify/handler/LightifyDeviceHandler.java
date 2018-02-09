@@ -20,6 +20,7 @@ import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -133,6 +134,10 @@ public class LightifyDeviceHandler extends BaseThingHandler {
 
         if (configuration.transitionToOffTime == null) {
             configuration.transitionToOffTime = bridgeConfig.transitionToOffTime;
+        }
+
+        if (configuration.increaseDecreaseStep == null) {
+            configuration.increaseDecreaseStep = bridgeConfig.increaseDecreaseStep;
         }
 
         if (configuration.whiteTemperatureMin == null) {
@@ -278,6 +283,30 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                 return;
             }
 
+            if (command instanceof IncreaseDecreaseType) {
+                int value;
+
+                if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
+                    value = temperatureToIntegerPercent(lightifyDeviceState.temperature);
+                } else {
+                    value = lightifyDeviceState.luminance;
+                }
+
+                if (command.toString().equals("INCREASE")) {
+                    value += configuration.increaseDecreaseStep;
+                    if (value > 100) {
+                        value = 100;
+                    }
+                } else {
+                    value -= configuration.increaseDecreaseStep;
+                    if (value < 0) {
+                        value = 0;
+                    }
+                }
+
+                command = new PercentType(value);
+            }
+
             if (command instanceof HSBType) {
                 HSBType hsb = (HSBType) command;
 
@@ -392,12 +421,16 @@ public class LightifyDeviceHandler extends BaseThingHandler {
     }
 
     private PercentType temperatureToPercent(DecimalType temperature) {
-        if (temperature.doubleValue() <= configuration.whiteTemperatureMin) {
-            return new PercentType(0);
-        } else if (temperature.doubleValue() >= configuration.whiteTemperatureMax) {
-            return new PercentType(100);
+        return new PercentType(temperatureToIntegerPercent(temperature.intValue()));
+    }
+
+    private int temperatureToIntegerPercent(int temperature) {
+        if (temperature <= configuration.whiteTemperatureMin) {
+            return 0;
+        } else if (temperature >= configuration.whiteTemperatureMax) {
+            return 100;
         } else {
-            double percent = whiteTemperatureFactor * (configuration.whiteTemperatureMax - temperature.doubleValue());
+            int percent = (int) (whiteTemperatureFactor * (configuration.whiteTemperatureMax - temperature));
 
             if (percent < 0) {
                 percent = 0;
@@ -405,7 +438,7 @@ public class LightifyDeviceHandler extends BaseThingHandler {
                 percent = 100;
             }
 
-            return new PercentType((int) percent);
+            return percent;
         }
     }
 

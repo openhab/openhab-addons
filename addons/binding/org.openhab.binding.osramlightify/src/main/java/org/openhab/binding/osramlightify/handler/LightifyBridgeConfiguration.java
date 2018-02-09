@@ -52,6 +52,12 @@ public final class LightifyBridgeConfiguration {
     public Integer whiteTemperatureMax;
 
     /**
+     * How much to step brightness and temperature percentages in response
+     * to an INCREASE or DESCREASE.
+     */
+    public Integer increaseDecreaseStep;
+
+    /**
      * Nanosecond equivalent of {@link minPollInterval}/{@link maxPollInterval}.
      * Calculated by the bridge handler when it loads the configuration.
      */

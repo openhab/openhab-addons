@@ -45,6 +45,12 @@
 				<description>Default maximum white temperature in Kelvin for devices unless otherwise specified.</description>
 			</parameter>
 
+			<parameter name="increaseDecreaseStep" type="integer" required="false" min="0" max="100">
+				<default>5</default>
+				<label>Step size for INCREASE/DECREASE commands</label>
+				<description>How much to step brightness or temperature percentage in response to an INCREASE or DECREASE command.</description>
+			</parameter>
+
 			<parameter name="minPollInterval" type="decimal" min="0.01" required="true">
 				<label>Minimum polling interval (seconds to 3 d.p. minimum is 0.01s or 10ms)</label>
 				<description>The minimum interval between polls of the gateway for changes to device states or pairings. If changes are seen that have not been initiate by openHAB the polling interval is set to this value. Each poll that does not find changes doubles the polling interval until it reaches the maximum polling interval.</description>

@@ -26,6 +26,12 @@ public final class LightifyDeviceConfiguration {
     public Double transitionToOffTime;
 
     /**
+     * How much to step brightness and temperature percentages in response
+     * to an INCREASE or DESCREASE.
+     */
+    public Integer increaseDecreaseStep;
+
+    /**
      * Minimum white temperature as configured via UI.
      */
     public Integer whiteTemperatureMin;

@@ -66,36 +66,65 @@ public final class LightifyGroupHandler extends LightifyDeviceHandler {
             return;
         }
 
-        Command percent;
-        Command onoff;
-
         if (command instanceof HSBType) {
             lastHSB = (HSBType) command;
-            percent = lastHSB.getBrightness();
-            onoff = (((PercentType) percent).intValue() != 0 ? OnOffType.ON : OnOffType.OFF);
+
+            updateState(CHANNEL_COLOR, (State) command);
+
+            command = ((HSBType) command).getBrightness();
+            postCommand(CHANNEL_DIMMER, command);
+            updateState(CHANNEL_DIMMER, (State) command);
+
+            command = (((PercentType) command).intValue() != 0 ? OnOffType.ON : OnOffType.OFF);
+            postCommand(CHANNEL_SWITCH, command);
+            updateState(CHANNEL_SWITCH, (State) command);
+
         } else if (command instanceof PercentType) {
             lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), (PercentType) command);
-            percent = command;
-            onoff = (((PercentType) percent).intValue() != 0 ? OnOffType.ON : OnOffType.OFF);
-        } else {
-            // Must be OnOff...
-            lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), new PercentType(100));
-            percent = command;
-            onoff = command;
-        }
 
-        if (!channelID.equals(CHANNEL_SWITCH)) {
-            postCommand(CHANNEL_SWITCH, onoff);
-        }
-        if (!channelID.equals(CHANNEL_DIMMER)) {
-            postCommand(CHANNEL_DIMMER, percent);
-        }
-        if (!channelID.equals(CHANNEL_COLOR)) {
-            postCommand(CHANNEL_COLOR, percent);
-        }
+            if (!channelID.equals(CHANNEL_DIMMER)) {
+                postCommand(CHANNEL_DIMMER, command);
+            }
+            updateState(CHANNEL_DIMMER, (State) command);
 
-        updateState(CHANNEL_SWITCH, (State) onoff);
-        updateState(CHANNEL_DIMMER, (State) percent);
-        updateState(CHANNEL_COLOR, (State) lastHSB);
+            if (!channelID.equals(CHANNEL_COLOR)) {
+                postCommand(CHANNEL_COLOR, command);
+            }
+            updateState(CHANNEL_COLOR, (State) lastHSB);
+
+            command = (((PercentType) command).intValue() != 0 ? OnOffType.ON : OnOffType.OFF);
+            postCommand(CHANNEL_SWITCH, command);
+            updateState(CHANNEL_SWITCH, (State) command);
+
+        } else if (command instanceof OnOffType) {
+            if (!channelID.equals(CHANNEL_SWITCH)) {
+                postCommand(CHANNEL_SWITCH, command);
+            }
+            if (!channelID.equals(CHANNEL_DIMMER)) {
+                postCommand(CHANNEL_DIMMER, command);
+            }
+            if (!channelID.equals(CHANNEL_COLOR)) {
+                postCommand(CHANNEL_COLOR, command);
+            }
+
+            updateState(CHANNEL_SWITCH, (State) command);
+
+            if (command == OnOffType.OFF) {
+                PercentType percentZero = new PercentType(0);
+
+                updateState(CHANNEL_DIMMER, percentZero);
+                updateState(CHANNEL_COLOR, new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), percentZero));
+            } else {
+                PercentType percent = lastHSB.getBrightness();
+
+                if (percent.intValue() == 0) {
+                    percent = new PercentType(1);
+                    lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), percent);
+                }
+
+                updateState(CHANNEL_DIMMER, percent);
+                updateState(CHANNEL_COLOR, lastHSB);
+            }
+        }
     }
 }
