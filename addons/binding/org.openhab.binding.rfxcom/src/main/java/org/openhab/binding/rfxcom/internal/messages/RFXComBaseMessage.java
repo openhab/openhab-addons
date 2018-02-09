@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import javax.xml.bind.DatatypeConverter;
+
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Base class for RFXCOM data classes. All other data classes should extend this class.
@@ -17,9 +22,9 @@ import javax.xml.bind.DatatypeConverter;
  */
 public abstract class RFXComBaseMessage implements RFXComMessage {
 
-    public final static String ID_DELIMITER = ".";
+    public static final String ID_DELIMITER = ".";
 
-    public enum PacketType {
+    public enum PacketType implements ByteEnumWrapper {
         INTERFACE_CONTROL(0),
         INTERFACE_MESSAGE(1),
         TRANSMITTER_MESSAGE(2),
@@ -35,13 +40,18 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         CURTAIN1(24),
         BLINDS1(25),
         RFY(26),
+        HOME_CONFORT(27),
+        EDISIO(28),
         SECURITY1(32),
+        SECURITY2(33),
         CAMERA1(40),
         REMOTE_CONTROL(48),
         THERMOSTAT1(64),
         THERMOSTAT2(65),
         THERMOSTAT3(66),
-        BBQ1(78),
+        THERMOSTAT4(67),
+        RADIATOR1(72),
+        BBQ(78),
         TEMPERATURE_RAIN(79),
         TEMPERATURE(80),
         HUMIDITY(81),
@@ -59,12 +69,11 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         WEIGHT(93),
         GAS(94),
         WATER(95),
+        CARTELECTRONIC(96),
         RFXSENSOR(112),
         RFXMETER(113),
         FS20(114),
-        IO_LINES(128),
-
-        UNKNOWN(255);
+        IO_LINES(128);
 
         private final int packetType;
 
@@ -72,49 +81,35 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
             this.packetType = packetType;
         }
 
-        PacketType(byte packetType) {
-            this.packetType = packetType;
-        }
-
+        @Override
         public byte toByte() {
             return (byte) packetType;
         }
-
-        public static PacketType fromByte(int input) {
-            for (PacketType packetType : PacketType.values()) {
-                if (packetType.packetType == input) {
-                    return packetType;
-                }
-            }
-
-            return PacketType.UNKNOWN;
-        }
-
     }
 
     public byte[] rawMessage;
-    public PacketType packetType = PacketType.UNKNOWN;
-    public byte packetId = 0;
-    public byte subType = 0;
-    public byte seqNbr = 0;
-    public byte id1 = 0;
-    public byte id2 = 0;
+    private PacketType packetType;
+    public byte packetId;
+    public byte subType;
+    public byte seqNbr;
+    public byte id1;
+    public byte id2;
 
     public RFXComBaseMessage() {
 
     }
 
-    public RFXComBaseMessage(byte[] data) {
-        encodeMessage(data);
+    public RFXComBaseMessage(PacketType packetType) {
+        this.packetType = packetType;
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         rawMessage = data;
 
         packetId = data[1];
-        packetType = PacketType.fromByte(data[1]);
+        packetType = fromByte(PacketType.class, data[1]);
         subType = data[2];
         seqNbr = data[3];
         id1 = data[4];
@@ -124,14 +119,18 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         }
     }
 
+    public PacketType getPacketType() {
+        return packetType;
+    }
+
     @Override
     public String toString() {
-        String str = "";
+        String str;
 
         if (rawMessage == null) {
-            str += "Raw data = unknown";
+            str = "Raw data = unknown";
         } else {
-            str += "Raw data = " + DatatypeConverter.printHexBinary(rawMessage);
+            str = "Raw data = " + DatatypeConverter.printHexBinary(rawMessage);
         }
 
         str += ", Packet type = " + packetType;
@@ -141,7 +140,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     }
 
     @Override
-    public String getDeviceId() {
-        return id1 + ID_DELIMITER + id2;
+    public void setConfig(RFXComDeviceConfiguration deviceConfiguration) throws RFXComException {
+        // noop
     }
 }

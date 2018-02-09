@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MilightBridgeDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private ScheduledFuture<?> backgroundFuture;
-    private final InetAddress broadcast;
     private Logger logger = LoggerFactory.getLogger(MilightBridgeDiscovery.class);
     private MilightDiscover receiveThread;
 
@@ -50,9 +49,9 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
     private void startDiscoveryService() {
         if (receiveThread == null) {
             try {
-                receiveThread = new MilightDiscover(broadcast, this, 50, 2000 / 50);
+                receiveThread = new MilightDiscover(this, 200, 2000 / 200);
             } catch (SocketException e) {
-                logger.error("Opening a socket for the milight discovery service failed. " + e.getLocalizedMessage());
+                logger.error("Opening a socket for the milight discovery service failed. {}", e.getLocalizedMessage());
                 return;
             }
             receiveThread.start();
@@ -61,8 +60,6 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
     public MilightBridgeDiscovery() throws IllegalArgumentException, UnknownHostException {
         super(MilightBindingConstants.BRIDGE_THING_TYPES_UIDS, 2, true);
-        byte[] addr = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
-        broadcast = InetAddress.getByAddress(addr);
         startDiscoveryService();
     }
 
@@ -74,7 +71,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
         startDiscoveryService();
 
-        backgroundFuture = scheduler.scheduleAtFixedRate(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -85,19 +82,22 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
             backgroundFuture = null;
         }
         if (receiveThread != null) {
-            receiveThread.stopReceiving();
+            receiveThread.release();
         }
         receiveThread = null;
     }
 
     @Override
-    public void bridgeDetected(InetAddress addr, String id) {
-        logger.debug("Milight bridge found " + addr.getHostName() + " " + id);
-        ThingUID thingUID = new ThingUID(MilightBindingConstants.BINDING_ID, "bridge", id);
-        String label = "Milight Bridge " + id;
+    public void bridgeDetected(InetAddress addr, String id, int version) {
+        ThingUID thingUID = new ThingUID(version == 6 ? MilightBindingConstants.BRIDGEV6_THING_TYPE
+                : MilightBindingConstants.BRIDGEV3_THING_TYPE, id);
+
         Map<String, Object> properties = new TreeMap<>();
-        properties.put((String) MilightBindingConstants.CONFIG_ID, id);
-        properties.put((String) MilightBindingConstants.CONFIG_HOST_NAME, addr.getHostAddress());
+        properties.put(MilightBindingConstants.CONFIG_ID, id);
+        properties.put(MilightBindingConstants.CONFIG_HOST_NAME, addr.getHostAddress());
+
+        String label = "Bridge " + id;
+
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
                 .withProperties(properties).build();
         thingDiscovered(discoveryResult);
@@ -122,4 +122,3 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
     }
 }
-

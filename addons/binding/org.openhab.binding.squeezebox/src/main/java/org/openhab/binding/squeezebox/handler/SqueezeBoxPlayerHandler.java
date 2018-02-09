@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,14 +10,18 @@ package org.openhab.binding.squeezebox.handler;
 
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -37,8 +41,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.squeezebox.config.SqueezeBoxPlayerConfig;
-import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
+import org.eclipse.smarthome.core.types.StateOption;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
+import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
+import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +57,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
+ * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added duration channel
+ * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
+ * @author Mark Hilbush - Get favorites from server and play favorite
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
 
     /**
@@ -95,12 +108,28 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private boolean playing;
 
     /**
+     * Separate volume level for notifications
+     */
+    private int notificationSoundVolume = -1;
+
+    private String callbackUrl;
+
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
+
+    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+            TimeUnit.MINUTES.toMillis(15)); // 15min
+
+    /**
      * Creates SqueezeBox Player Handler
      *
      * @param thing
+     * @param stateDescriptionProvider
      */
-    public SqueezeBoxPlayerHandler(Thing thing) {
+    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
+        this.callbackUrl = callbackUrl;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -108,6 +137,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
         updateBridgeStatus();
+        logger.debug("player thing {} initialized.", getThing().getUID());
     }
 
     @Override
@@ -222,9 +252,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 }
                 if (command instanceof RewindFastforwardType) {
                     if (command.equals(RewindFastforwardType.REWIND)) {
-                        squeezeBoxServerHandler.setPlayingTime(mac, currentTime() - 5);
+                        squeezeBoxServerHandler.setPlayingTime(mac, currentPlayingTime() - 5);
                     } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
-                        squeezeBoxServerHandler.setPlayingTime(mac, currentTime() + 5);
+                        squeezeBoxServerHandler.setPlayingTime(mac, currentPlayingTime() + 5);
                     }
                 }
                 break;
@@ -255,6 +285,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             case CHANNEL_CURRENT_PLAYLIST_REPEAT:
                 squeezeBoxServerHandler.setRepeatMode(mac, ((DecimalType) command).intValue());
                 break;
+            case CHANNEL_NOTIFICATION_SOUND_VOLUME:
+                setNotificationSoundVolume(((PercentType) command));
+                break;
+            case CHANNEL_FAVORITES_PLAY:
+                squeezeBoxServerHandler.playFavorite(mac, command.toString());
+                break;
             default:
                 break;
         }
@@ -274,20 +310,32 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void modeChangeEvent(String mac, String mode) {
+    public synchronized void modeChangeEvent(String mac, String mode) {
         updateChannel(mac, CHANNEL_CONTROL, "play".equals(mode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
         updateChannel(mac, CHANNEL_STOP, mode.equals("stop") ? OnOffType.ON : OnOffType.OFF);
         if (isMe(mac)) {
-            logger.trace("Mode: {} for mac: {}", mode, mac);
             playing = "play".equalsIgnoreCase(mode);
         }
     }
 
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
-        volume = Math.min(100, volume);
-        volume = Math.max(0, volume);
-        updateChannel(mac, CHANNEL_VOLUME, new PercentType(volume));
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
+        int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
+        int newVolume = currentVolume() + volumeChange;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+
+        if (isMe(mac)) {
+            logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, newVolume);
+        }
     }
 
     @Override
@@ -307,6 +355,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (isMe(mac)) {
             currentTime = time;
         }
+    }
+
+    @Override
+    public void durationEvent(String mac, int duration) {
+        if (getThing().getChannel(CHANNEL_DURATION) == null) {
+            logger.debug("Channel 'duration' does not exist.  Delete and readd player thing to pick up channel.");
+            return;
+        }
+        updateChannel(mac, CHANNEL_DURATION, new DecimalType(duration));
     }
 
     @Override
@@ -343,11 +400,48 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
-        try {
-            byte[] data = HttpUtils.getData(coverArtUrl);
-            updateChannel(mac, CHANNEL_COVERART_DATA, new RawType(data));
-        } catch (Exception e) {
-            logger.debug("Coul not get album art data", e);
+        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(mac, coverArtUrl)));
+    }
+
+    /**
+     * Download and cache the image data from an URL.
+     *
+     * @param url The URL of the image to be downloaded.
+     * @return A RawType object containing the image, null if the content type could not be found or the content type is
+     *         not an image.
+     */
+    private RawType downloadImage(String mac, String url) {
+        // Only get the image if this is my PlayerHandler instance
+        if (isMe(mac)) {
+            if (StringUtils.isNotEmpty(url)) {
+                RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
+                    logger.debug("Trying to download the content of URL {}", url);
+                    try {
+                        return HttpUtil.downloadImage(url);
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("IllegalArgumentException when downloading image from {}", url, e);
+                        return null;
+                    }
+                });
+                if (image == null) {
+                    logger.debug("Failed to download the content of URL {}", url);
+                    return null;
+                } else {
+                    return image;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
+     */
+    private State createImage(RawType image) {
+        if (image == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return image;
         }
     }
 
@@ -363,7 +457,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void remoteTitleChangeEvent(String mac, String title) {
-        updateChannel(mac, CHANNEL_TITLE, new StringType(title));
+        updateChannel(mac, CHANNEL_REMOTE_TITLE, new StringType(title));
     }
 
     @Override
@@ -371,6 +465,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (isMe(mac)) {
             postCommand(CHANNEL_IRCODE, new StringType(ircode));
         }
+    }
+
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
+        logger.debug("Player {} updating favorites list", mac);
+        List<StateOption> options = new ArrayList<>();
+        for (Favorite favorite : favorites) {
+            options.add(new StateOption(favorite.shortId, favorite.name));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAVORITES_PLAY), options);
     }
 
     /**
@@ -386,17 +490,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (prevState == null || !prevState.equals(state)) {
                 logger.trace("Updating channel {} for thing {} with mac {} to state {}", channelID, getThing().getUID(),
                         mac, state);
-                try {
-                    updateState(channelID, state);
-                } catch (Exception e) {
-                    logger.error("Could not update channel", e);
-                }
+                updateState(channelID, state);
             }
         }
     }
 
     /**
-     * Helper method to mute a players
+     * Helper method to mute a player
      */
     private void mute() {
         unmuteVolume = currentVolume();
@@ -404,11 +504,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     /**
-     * Helper method to get the current volume
+     * Helper methods to get the current state of the player
      *
      * @return
      */
-    private int currentVolume() {
+    int currentVolume() {
         if (stateMap.containsKey(CHANNEL_VOLUME)) {
             return ((DecimalType) stateMap.get(CHANNEL_VOLUME)).intValue();
         } else {
@@ -416,14 +516,73 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    /**
-     * Helper method to get the current track time
-     *
-     * @return
-     */
-    private int currentTime() {
+    int currentPlayingTime() {
         if (stateMap.containsKey(CHANNEL_CURRENT_PLAYING_TIME)) {
             return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYING_TIME)).intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    int currentNumberPlaylistTracks() {
+        if (stateMap.containsKey(CHANNEL_NUMBER_PLAYLIST_TRACKS)) {
+            return ((DecimalType) stateMap.get(CHANNEL_NUMBER_PLAYLIST_TRACKS)).intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    int currentPlaylistIndex() {
+        if (stateMap.containsKey(CHANNEL_PLAYLIST_INDEX)) {
+            return ((DecimalType) stateMap.get(CHANNEL_PLAYLIST_INDEX)).intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    boolean currentPower() {
+        if (stateMap.containsKey(CHANNEL_POWER)) {
+            return (stateMap.get(CHANNEL_POWER).equals(OnOffType.ON) ? true : false);
+        } else {
+            return false;
+        }
+    }
+
+    boolean currentStop() {
+        if (stateMap.containsKey(CHANNEL_STOP)) {
+            return (stateMap.get(CHANNEL_STOP).equals(OnOffType.ON) ? true : false);
+        } else {
+            return false;
+        }
+    }
+
+    boolean currentControl() {
+        if (stateMap.containsKey(CHANNEL_CONTROL)) {
+            return (stateMap.get(CHANNEL_CONTROL).equals(PlayPauseType.PLAY) ? true : false);
+        } else {
+            return false;
+        }
+    }
+
+    boolean currentMute() {
+        if (stateMap.containsKey(CHANNEL_MUTE)) {
+            return (stateMap.get(CHANNEL_MUTE).equals(OnOffType.ON) ? true : false);
+        } else {
+            return false;
+        }
+    }
+
+    int currentShuffle() {
+        if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)) {
+            return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)).intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    int currentRepeat() {
+        if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_REPEAT)) {
+            return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_REPEAT)).intValue();
         } else {
             return 0;
         }
@@ -442,7 +601,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             }
         };
 
-        timeCounterJob = scheduler.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.SECONDS);
+        timeCounterJob = scheduler.scheduleWithFixedDelay(runnable, 0, 1, TimeUnit.SECONDS);
     }
 
     private boolean isMe(String mac) {
@@ -465,5 +624,48 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      */
     public String getMac() {
         return this.mac;
+    }
+
+    /*
+     * The following methods were added to enable notifications using the ESH AudioSink
+     */
+    public PercentType getNotificationSoundVolume() {
+        if (notificationSoundVolume == -1) {
+            // Initialize the value for the first time
+            logger.debug("Initializing notification volume to current player volume");
+            notificationSoundVolume = currentVolume();
+            if (notificationSoundVolume != 0) {
+                updateState(CHANNEL_NOTIFICATION_SOUND_VOLUME, new PercentType(notificationSoundVolume));
+            }
+        }
+        return PercentType.valueOf(String.valueOf(notificationSoundVolume));
+    }
+
+    public void setNotificationSoundVolume(PercentType volume) {
+        if (volume != null) {
+            logger.debug("Set notification volume to: {}", volume.toString());
+            notificationSoundVolume = volume.intValue();
+        }
+    }
+
+    /*
+     * Play the notification.
+     */
+    public void playNotificationSoundURI(StringType uri) {
+        logger.debug("Play notification sound on player {} at URI {}", mac, uri);
+
+        try (SqueezeBoxNotificationPlayer notificationPlayer = new SqueezeBoxNotificationPlayer(this,
+                squeezeBoxServerHandler, uri)) {
+            notificationPlayer.play();
+        } catch (InterruptedException | SqueezeBoxTimeoutException e) {
+            logger.warn("Problem during notification playback.", e);
+        }
+    }
+
+    /*
+     * Return the IP and port of the OH2 web server
+     */
+    public String getHostAndPort() {
+        return callbackUrl;
     }
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icloud" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="account">
+		<label>iCloud Account</label>
+		<description>Provides various information for iCloud devices registered with this account.</description>
+
+		<config-description>
+			<parameter name="appleId" type="text" required="true">
+				<context>email</context>
+				<label>Apple Id</label>
+				<description>Apple Id (e-mail) to access iCloud information.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Apple iCloud password for the given Id.</description>
+			</parameter>
+			<parameter name="refreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
+				<label>Refresh</label>
+				<description>Refresh time in minutes.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>iCloud Device</label>
+
+		<channels>
+			<channel typeId="BatteryStatus" id="batteryStatus" />
+			<channel typeId="system.battery-level" id="batteryLevel" />
+			<channel typeId="FindMyPhone" id="findMyPhone" />
+			<channel typeId="Location" id="location" />
+			<channel typeId="LocationAccuracy" id="locationAccuracy" />
+			<channel typeId="LocationLastUpdate" id="locationLastUpdate" />
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device id</label>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="BatteryStatus">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="NotCharging">Not charging</option>
+				<option value="Charged">Charged</option>
+				<option value="Charging">Charging</option>
+				<option value="Unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="FindMyPhone">
+		<item-type>Switch</item-type>
+		<label>Find My Phone</label>
+	</channel-type>
+	<channel-type id="Location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="LocationAccuracy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Location Accuracy</label>
+		<state readOnly="true" pattern="%d m" />
+	</channel-type>
+	<channel-type id="LocationLastUpdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Location Update</label>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>
+ 

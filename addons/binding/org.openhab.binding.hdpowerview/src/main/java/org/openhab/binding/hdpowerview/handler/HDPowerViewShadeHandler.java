@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
         getBridgeHandler().pollNow();
     }
 
@@ -108,12 +108,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if ((bridge = getBridgeHandler()) == null) {
             return;
         }
-        int shadeId = getShadeId();
+        String shadeId = getShadeId();
         Response response;
         try {
             response = bridge.getWebTargets().moveShade(shadeId, position);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
             return;
         }
         if (response != null) {
@@ -121,7 +121,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private int getShadeId() {
+    private String getShadeId() {
         return getConfigAs(HDPowerViewShadeConfiguration.class).id;
     }
 

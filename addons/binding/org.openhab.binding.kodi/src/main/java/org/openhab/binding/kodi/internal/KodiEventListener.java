@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,12 +10,14 @@ package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
 
-import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+import org.eclipse.smarthome.core.library.types.RawType;
 
 /**
- * Interface which has to be implemented by a class in order to get status updates from a {@link KodiConnection}
+ * Interface which has to be implemented by a class in order to get status
+ * updates from a {@link KodiConnection}
  *
- * @author Paul Frank
+ * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
  *
  */
 public interface KodiEventListener extends EventListener {
@@ -47,4 +49,10 @@ public interface KodiEventListener extends EventListener {
     void updateArtist(String artist);
 
     void updateMediaType(String mediaType);
+
+    void updatePVRChannel(final String channel);
+
+    void updateThumbnail(RawType thumbnail);
+
+    void updateFanart(RawType fanart);
 }

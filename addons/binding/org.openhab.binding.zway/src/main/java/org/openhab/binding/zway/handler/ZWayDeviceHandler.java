@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.zway.handler;
 import static de.fh_zwickau.informatik.sensor.ZWayConstants.*;
 import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -38,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -49,6 +52,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorBinary;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorDiscrete;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
@@ -66,10 +70,13 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * @author Patrick Hecker - Initial contribution
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
+    protected Calendar lastUpdate;
+
+    protected abstract void refreshLastUpdate();
 
     /**
      * Initialize polling job and register all linked item in openHAB connector as observer
@@ -94,7 +101,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Starting polling job at intervall {}",
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval());
-                    pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
+                    pollingJob = scheduler.scheduleWithFixedDelay(devicePolling, 10,
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
                 } else {
                     // Called when thing or bridge updated ...
@@ -120,9 +127,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -240,6 +247,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         public void run() {
             logger.debug("Starting polling for device: {}", getThing().getLabel());
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                // Refresh device states
                 for (Channel channel : getThing().getChannels()) {
                     logger.debug("Checking link state of channel: {}", channel.getLabel());
                     if (isLinked(channel.getUID().getId())) {
@@ -253,9 +261,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             refreshChannel(channel);
                         } catch (Throwable t) {
                             if (t instanceof Exception) {
-                                logger.error("Error occurred when performing polling:" + ((Exception) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else if (t instanceof Error) {
-                                logger.error("Error occurred when performing polling: " + ((Error) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else {
                                 logger.error("Error occurred when performing polling: Unexpected error");
                             }
@@ -269,6 +277,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 channel.getLabel());
                     }
                 }
+
+                // Refresh last update
+                refreshLastUpdate();
             } else {
                 logger.debug("Polling not possible, Z-Way device isn't ONLINE");
             }
@@ -313,14 +324,25 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     return;
                 }
 
-                updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
+                try {
+                    updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
+                } catch (IllegalArgumentException iae) {
+                    logger.debug(
+                            "IllegalArgumentException ({}) during refresh channel for device: {} (level: {}) with channel: {}",
+                            iae.getMessage(), device.getMetrics().getTitle(), device.getMetrics().getLevel(),
+                            channel.getChannelTypeUID());
 
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "Channel refresh for device: " + device.getMetrics().getTitle() + " (level: "
+                                    + device.getMetrics().getLevel() + ") with channel: " + channel.getChannelTypeUID()
+                                    + " failed!");
+                }
                 // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
                 try {
                     device.update();
                 } catch (Exception e) {
-                    logger.debug(device.getMetrics().getTitle()
-                            + " doesn't support update (triggered during refresh channel)");
+                    logger.debug("{} doesn't support update (triggered during refresh channel)",
+                            device.getMetrics().getTitle());
                 }
             } else {
                 logger.warn("Devices not loaded");
@@ -443,6 +465,14 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        // Refresh update time
+        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
+
+        refreshLastUpdate();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
         logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
@@ -501,9 +531,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             }
                         } else if (device instanceof SwitchMultilevel) {
                             // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(),
-                            // increase(),
-                            // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
-                            if (command instanceof DecimalType) {
+                            // increase(), decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(),
+                            // startDown()
+                            if (command instanceof DecimalType || command instanceof PercentType) {
                                 logger.debug("Handle command: DecimalType");
 
                                 device.exact(command.toString());
@@ -517,14 +547,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
                                     device.startDown();
                                 }
-                            } else {
-                                if (command instanceof StopMoveType) {
-                                    logger.debug("Handle command: StopMoveType");
+                            } else if (command instanceof StopMoveType) {
+                                logger.debug("Handle command: StopMoveType");
 
-                                    device.stop();
+                                device.stop();
+                            } else if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.off();
                                 }
                             }
-
                         } else if (device instanceof SwitchRGBW) {
                             // possible commands: on(), off(), exact(red, green, blue)
                             if (command instanceof HSBType) {
@@ -548,8 +583,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof SwitchToggle) {
-                            // possible commands: ?
                         } else if (device instanceof Thermostat) {
                             if (command instanceof DecimalType) {
                                 logger.debug("Handle command: DecimalType");
@@ -569,10 +602,16 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof ToggleButton) {
+                        } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
                             // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
                             // downstop()
-                            // TODO
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } // no else - only ON command is sent to Z-Way
+                            }
                         }
                     }
                 } catch (UnsupportedOperationException e) {
@@ -598,8 +637,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
-        logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
-
         // Device.probeType
         // |
         // Device.metrics.probeType
@@ -611,6 +648,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Default, depends on device type
 
         if (device != null) {
+            logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
+
             HashMap<String, String> properties = new HashMap<String, String>();
             properties.put("deviceId", device.getDeviceId());
 
@@ -635,9 +674,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 acceptedItemType = "Switch";
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
-                acceptedItemType = "Number";
-            } else if (device instanceof SwitchToggle) {
-                // ?
+                acceptedItemType = "Dimmer";
             } else if (device instanceof SwitchRGBW) {
                 id = SWITCH_COLOR_CHANNEL;
                 acceptedItemType = "Color";
@@ -647,8 +684,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchControl) {
                 id = SWITCH_CONTROL_CHANNEL;
                 acceptedItemType = "Switch";
-            } else if (device instanceof ToggleButton) {
-                // TODO
+            } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
+                id = SWITCH_CONTROL_CHANNEL;
+                acceptedItemType = "Switch";
+            } else if (device instanceof SensorDiscrete) {
+                id = SENSOR_DISCRETE_CHANNEL;
+                acceptedItemType = "Number";
             }
 
             // 2. Check if device information includes further information about sensor type

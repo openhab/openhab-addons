@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -74,7 +74,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing handler for Pioneer AVR @{}", connection.getConnectionName());
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
         // Start the status checker
         Runnable statusChecker = new Runnable() {
@@ -154,7 +154,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Send a command to the AVR based on the OpenHAB command received.
+     * Send a command to the AVR based on the openHAB command received.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -241,7 +241,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR power state update to OpenHAB
+     * Notify an AVR power state update to openHAB
      *
      * @param response
      */
@@ -259,21 +259,21 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR volume level update to OpenHAB
+     * Notify an AVR volume level update to openHAB
      *
      * @param response
      */
     private void manageVolumeLevelUpdate(AvrResponse response) {
 
-        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()),
-                new DecimalType(VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue())));
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()), new DecimalType(
+                VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue(), response.getZone())));
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, response.getZone()),
-                new PercentType(
-                        (int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue())));
+                new PercentType((int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue(),
+                        response.getZone())));
     }
 
     /**
-     * Notify an AVR mute state update to OpenHAB
+     * Notify an AVR mute state update to openHAB
      *
      * @param response
      */
@@ -283,7 +283,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR input source channel update to OpenHAB
+     * Notify an AVR input source channel update to openHAB
      *
      * @param response
      */
@@ -293,7 +293,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR displayed information update to OpenHAB
+     * Notify an AVR displayed information update to openHAB
      *
      * @param response
      */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,9 +9,9 @@
 package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -27,21 +27,18 @@ import org.slf4j.LoggerFactory;
  * @author Ivan F. Martinez, James Hewitt-Thomas - Implementation
  */
 public class RFXComTcpConnector extends RFXComBaseConnector {
+    private final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
+    private OutputStream out;
+    private Socket socket;
 
-    InputStream in = null;
-    OutputStream out = null;
-    Socket socket = null;
-    Thread readerThread = null;
-
-    public RFXComTcpConnector() {
-    }
+    private Thread readerThread;
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {
         logger.info("Connecting to RFXCOM at {}:{} over TCP/IP", device.host, device.port);
         socket = new Socket(device.host, device.port);
+        socket.setSoTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
         in = socket.getInputStream();
         out = socket.getOutputStream();
 
@@ -50,7 +47,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             in.reset();
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 
@@ -61,6 +58,10 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
         if (readerThread != null) {
             logger.debug("Interrupt stream listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -90,5 +91,15 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
         logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
         out.write(data);
         out.flush();
+    }
+
+    @Override
+    int read(byte[] buffer, int offset, int length) throws IOException {
+        try {
+            return super.read(buffer, offset, length);
+        } catch (SocketTimeoutException ignore) {
+            // ignore this exception, instead return 0 to behave like the serial read
+            return 0;
+        }
     }
 }

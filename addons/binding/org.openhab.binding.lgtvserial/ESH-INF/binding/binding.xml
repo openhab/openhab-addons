@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="lgtvserial"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>LG TV Serial Binding</name>
+    <description>Controlling LG TVs using serial (RS232C) protocol</description>
+    <author>Marius Bjoernstad</author>
+
+
+</binding:binding>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="cm11a"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Bridge which is the cm11a device -->
+    <bridge-type id="cm11a">
+        <label>CM11a controller for X10 devices</label>
+        <description>CM11 is a device that allows control of X10 devices for a computer. </description>
+
+        <config-description>
+            <parameter name="serialPort" type="text" required="true" >
+                <label>Serial port</label>
+                <context>serial-port</context>
+                <description>Serial port used to communicate with the CM11a</description>
+            </parameter>
+            <parameter name="refresh" type="integer" min="1">
+                <label>Refresh interval</label>
+                <description>Specifies the refresh interval in seconds.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <!-- For dimable X10 devices attached to the cm11a -->
+    <thing-type id="dimmer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="cm11a"/>
+        </supported-bridge-type-refs>
+
+        <label>X10 Dimmer</label>
+        <description>Controls dimmable loads</description>
+
+        <channels>
+            <channel id="lightlevel" typeId="lightDimmer"/>
+        </channels>
+
+        <config-description>
+            <parameter name="houseUnitCode" type="text" required="true">
+                <label>X10 House and Unit code</label>
+                <description>Address of dimmer in the X10 system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- For non-dimable X10 devices attached to the cm11a -->
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="cm11a"/>
+        </supported-bridge-type-refs>
+
+        <label>X10 Switch</label>
+        <description>On/off switch</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+
+        <config-description>
+            <parameter name="houseUnitCode" type="text" required="true">
+                <label>X10 House and Unit code</label>
+                <description>Address of switch in the X10 system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="lightDimmer">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%.0f %%"/>
+    </channel-type>
+
+    <channel-type id="switchState">
+        <item-type>Switch</item-type>
+        <label>Switch State</label>
+        <description>On/off status of the switch</description>
+        <category>Switch</category>
+    </channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zoneminder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Supported ZoneMinder devices and features -->
+    <thing-type id="monitor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+
+        <label>ZoneMinder Monitor</label>
+        <description>Camera in ZoneMinder</description>
+
+        <channels>
+            <channel id="online" typeId="monitor_online" />
+            <channel id="enabled" typeId="monitor_enabled" />
+            <channel id="force-alarm" typeId="monitor_force_alarm" />
+            <channel id="alarm" typeId="monitor_alarm" />
+            <channel id="recording" typeId="monitor_recording" />
+            <channel id="detailed-status" typeId="monitor_detailed_status" /> 
+            <channel id="function" typeId="monitor_function" />
+            <channel id="event-cause" typeId="monitor_event_cause" /> 
+            <channel id="capture-daemon" typeId="monitor_zmc_daemon" />
+            <channel id="analysis-daemon" typeId="monitor_zma_daemon" />
+            <channel id="frame-daemon" typeId="monitor_zmf_daemon" />
+        </channels>
+
+        <config-description-ref uri="thing-type:monitor-channels:config" />
+    </thing-type>
+
+    <!-- Channel definitions of ZoneMinder Server -->
+    <channel-type id="monitor_online">
+        <item-type>Switch</item-type>
+        <label>Online</label>
+        <description>Switch telling if the monitor is online</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="monitor_enabled">
+        <item-type>Switch</item-type>
+        <label>Enabled</label>
+        <description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor</description>
+        <state readOnly="false" />
+    </channel-type>
+
+    <channel-type id="monitor_force_alarm">
+        <item-type>Switch</item-type>
+        <label>Force Alarm</label>
+        <description>Will force an alarm from openHAB in ZoneMinder</description>
+        <state readOnly="false" />
+    </channel-type>
+
+
+    <channel-type id="monitor_alarm">
+        <item-type>Switch</item-type>
+        <label>Alarm status</label>
+        <description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF'</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="monitor_recording">
+        <item-type>Switch</item-type>
+        <label>Recording status</label>
+        <description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF'</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="monitor_detailed_status" advanced="true">
+        <item-type>String</item-type>
+        <label>Detailed Status</label>
+        <description>Current Monitor Status: 0=Idle, 1=Pre-alarm, 2=Alarm, 3=Alert, 4=Recording</description>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="Idle">Idle</option>
+                <option value="Pre-alarm">Pre-alarm</option>
+                <option value="Alarm">Alarm</option>
+                <option value="Alert">Alert</option>
+                <option value="Recording">Recording</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="monitor_function" advanced="true">
+        <item-type>String</item-type>
+        <label>Operating mode</label>
+        <description>Current Monitor Function: None, Monitor, Modect, Record, Mocord, Nodect</description>
+        <state pattern="%s" readOnly="false">
+            <options>
+                <option value="None">None</option>
+                <option value="Monitor">Monitor</option>
+                <option value="Modect">Modect</option>
+                <option value="Record">Record</option>
+                <option value="Mocord">Mocord</option>
+                <option value="Nodect">Nodect</option>
+            </options>
+        </state>
+        
+    </channel-type>
+    
+    <channel-type id="monitor_event_cause" advanced="true">
+        <item-type>String</item-type>
+        <label>Event Cause</label>
+        <description>Cause of event: None, Signal, Motion, Forced Web, openHAB, Other</description>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="none">None</option>
+                <option value="signal">Signal</option>
+                <option value="motion">Motion</option>
+                <option value="forced_web">Forced Web</option>
+                <option value="openhab">openHAB</option>
+                <option value="other">Other</option>
+            </options>
+        </state>    
+    </channel-type>    
+    
+    <channel-type id="monitor_zmc_daemon" advanced="true">
+        <item-type>Switch</item-type>
+        <label>zmc daemon Status</label>
+        <description>State of ZoneMinder Capture daemon for this monitor</description>
+        <state readOnly="true"/>
+    </channel-type>        
+    
+    <channel-type id="monitor_zma_daemon" advanced="true">
+        <item-type>Switch</item-type>
+        <label>zma daemon Status</label>
+        <description>State of ZoneMinder Analysis daemon for this monitor</description>
+        <state readOnly="true"/>
+    </channel-type>        
+
+    <channel-type id="monitor_zmf_daemon" advanced="true">
+        <item-type>Switch</item-type>
+        <label>zmf daemon Status</label>
+        <description>State of ZoneMinder Frame daemon for this monitor</description>
+        <state readOnly="true"/>
+    </channel-type>        
+            
+</thing:thing-descriptions>

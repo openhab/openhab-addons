@@ -1,9 +1,3 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # Mary Text-to-Speech
 
 ## Overview

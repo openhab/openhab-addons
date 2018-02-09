@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,12 +30,14 @@ public class HmDatapoint implements Cloneable {
     private HmParamsetType paramsetType;
     private Number minValue;
     private Number maxValue;
+    private Number step;
     private String[] options;
     private boolean readOnly;
     private boolean readable;
     private String info;
     private String unit;
     private boolean virtual;
+    private boolean trigger;
 
     public HmDatapoint() {
     }
@@ -132,7 +134,7 @@ public class HmDatapoint implements Cloneable {
      * Returns the index of the value in a option list.
      */
     public int getOptionIndex(String option) {
-        if (options != null) {
+        if (options != null && option != null) {
             for (int i = 0; i < options.length; i++) {
                 String value = options[i];
                 if (option.equalsIgnoreCase(value)) {
@@ -187,6 +189,20 @@ public class HmDatapoint implements Cloneable {
      */
     public void setMinValue(Number minValue) {
         this.minValue = minValue;
+    }
+
+    /**
+     * Returns the step size.
+     */
+    public Number getStep() {
+        return step;
+    }
+
+    /**
+     * Sets the step size.
+     */
+    public void setStep(Number step) {
+        this.step = step;
     }
 
     /**
@@ -351,6 +367,13 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
+     * Returns true, if the datapoint is a datetime (only for virtual datapoints).
+     */
+    public boolean isDateTimeType() {
+        return type == HmValueType.DATETIME;
+    }
+
+    /**
      * Returns true, if the datapoint is a variable.
      */
     public boolean isVariable() {
@@ -372,34 +395,44 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the trigger flag.
      */
+    public void setTrigger(boolean trigger) {
+        this.trigger = trigger;
+    }
+
+    /**
+     * Returns true, if the datapoint should be handled as a trigger.
+     */
+    public boolean isTrigger() {
+        return trigger;
+    }
+
     @Override
     public HmDatapoint clone() {
         HmDatapoint dp = new HmDatapoint(name, description, type, value, readOnly, paramsetType);
         dp.setChannel(channel);
         dp.setMinValue(minValue);
         dp.setMaxValue(maxValue);
+        dp.setStep(step);
         dp.setOptions(options);
         dp.setInfo(info);
         dp.setUnit(unit);
         dp.setVirtual(virtual);
         dp.setReadable(readable);
+        dp.setTrigger(trigger);
         dp.setDefaultValue(defaultValue);
         return dp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", name).append("value", value)
                 .append("defaultValue", defaultValue).append("type", type).append("minValue", minValue)
-                .append("maxValue", maxValue).append("options", StringUtils.join(options, ";"))
+                .append("maxValue", maxValue).append("step", step).append("options", StringUtils.join(options, ";"))
                 .append("readOnly", readOnly).append("readable", readable).append("unit", unit)
                 .append("description", description).append("info", info).append("paramsetType", paramsetType)
-                .append("virtual", virtual).toString();
+                .append("virtual", virtual).append("trigger", trigger).toString();
     }
 
 }

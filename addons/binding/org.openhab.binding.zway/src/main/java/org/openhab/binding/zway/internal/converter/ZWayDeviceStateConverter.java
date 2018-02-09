@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -21,6 +22,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorBinary;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorDiscrete;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
@@ -56,17 +58,22 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof SwitchBinary) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SwitchMultilevel) {
-            return getMultilevelState(level);
+            if (channel.getAcceptedItemType().equals("Rollershutter")
+                    || channel.getAcceptedItemType().equals("Dimmer")) {
+                return getPercentState(level);
+            } else {
+                return getMultilevelState(level);
+            }
         } else if (device instanceof SwitchRGBW) {
             return getColorState(device.getMetrics().getColor());
-        } else if (device instanceof SwitchToggle) {
-            // ?
         } else if (device instanceof Thermostat) {
             return getMultilevelState(level);
         } else if (device instanceof SwitchControl) {
             return getBinaryState(level.toLowerCase());
-        } else if (device instanceof ToggleButton) {
-            // TODO
+        } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
+            return getBinaryState(level.toLowerCase());
+        } else if (device instanceof SensorDiscrete) {
+            return getMultilevelState(level);
         }
 
         return UnDefType.UNDEF;
@@ -78,9 +85,16 @@ public class ZWayDeviceStateConverter {
      * @param multilevel sensor value
      * @return transformed openHAB state
      */
-    private static State getMultilevelState(String multilevelSensorValue) {
-        if (multilevelSensorValue != null) {
-            return new DecimalType(multilevelSensorValue);
+    private static State getMultilevelState(String multilevelValue) {
+        if (multilevelValue != null) {
+            return new DecimalType(multilevelValue);
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private static State getPercentState(String multilevelValue) {
+        if (multilevelValue != null) {
+            return new PercentType(multilevelValue);
         }
         return UnDefType.UNDEF;
     }

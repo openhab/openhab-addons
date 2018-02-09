@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
+import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,7 +18,10 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +31,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,7 +42,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.squeezebox.config.SqueezeBoxServerConfig;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,25 +56,38 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham (OH2 Port)
  * @author Daniel Walters - Fix player discovery when player name contains spaces
  * @author Mark Hilbush - Improve reconnect logic. Improve player status updates.
+ * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added duration channel
+ * @author Mark Hilbush - Added login/password authentication for LMS
+ * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
+ * @author Patrik Gfeller - Support for mixer volume message added
+ * @author Mark Hilbush - Get favorites from LMS; update channel and send to players
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXSERVER_THING_TYPE);
 
     // time in seconds to try to reconnect
     private int RECONNECT_TIME = 60;
+
+    // utf8 charset name
+    private static final String UTF8_NAME = StandardCharsets.UTF_8.name();
 
     // the value by which the volume is changed by each INCREASE or
     // DECREASE-Event
     private static final int VOLUME_CHANGE_SIZE = 5;
     private static final String NEW_LINE = System.getProperty("line.separator");
 
+    private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
+
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
             .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+
     private Map<String, SqueezeBoxPlayer> players = Collections
             .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+
     // client socket and listener thread
     private Socket clientSocket;
     private SqueezeServerListener listener;
@@ -79,13 +99,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     private int webport;
 
+    private String userId;
+
+    private String password;
+
     public SqueezeBoxServerHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void initialize() {
-        logger.debug("initializing server handler for thing {}", getThing());
+        logger.debug("initializing server handler for thing {}", getThing().getUID());
 
         scheduler.schedule(new Runnable() {
 
@@ -98,7 +122,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("disposing server handler for thing {}", getThing());
+        logger.debug("disposing server handler for thing {}", getThing().getUID());
         cancelReconnect();
         disconnect();
     }
@@ -212,12 +236,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void setVolume(String mac, int volume) {
-        if (0 > volume) {
-            volume = 0;
-        } else if (volume > 100) {
-            volume = 100;
-        }
-        sendCommand(mac + " mixer volume " + String.valueOf(volume));
+        int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        sendCommand(mac + " mixer volume " + String.valueOf(newVolume));
     }
 
     public void showString(String mac, String line) {
@@ -244,6 +266,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + String.valueOf(duration));
     }
 
+    public void playFavorite(String mac, String favorite) {
+        sendCommand(mac + " favorites playlist play item_id:" + favorite);
+    }
+
     /**
      * Send a generic command to a given player
      *
@@ -262,10 +288,27 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Ask for favorites list
+     */
+    public void requestFavorites() {
+        sendCommand("favorites items 0 100");
+    }
+
+    /**
+     * Login to server
+     */
+    public void login() {
+        if (StringUtils.isEmpty(userId)) {
+            return;
+        }
+        logger.debug("Logging into Squeeze Server using userId={}", userId);
+        sendCommand("login " + userId + " " + password);
+    }
+
+    /**
      * Send a command to the Squeeze Server.
      */
     private synchronized void sendCommand(String command) {
-
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
@@ -281,7 +324,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             writer.write(command + NEW_LINE);
             writer.flush();
         } catch (IOException e) {
-            logger.error("Error while sending command to Squeeze Server (" + command + ")", e);
+            logger.error("Error while sending command to Squeeze Server ({}) ", command, e);
         }
     }
 
@@ -295,6 +338,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.host = config.ipAddress;
         this.cliport = config.cliport;
         this.webport = config.webport;
+        this.userId = config.userId;
+        this.password = config.password;
 
         if (StringUtils.isEmpty(this.host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
@@ -363,8 +408,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             try {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                login();
                 updateStatus(ThingStatus.ONLINE);
                 requestPlayers();
+                requestFavorites();
                 sendCommand("listen 1");
 
                 String message = null;
@@ -378,6 +425,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
                     if (message.startsWith("players 0")) {
                         handlePlayersList(message);
+                    } else if (message.startsWith("favorites")) {
+                        handleFavorites(message);
                     } else {
                         handlePlayerUpdate(message);
                     }
@@ -403,7 +452,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
 
             // check for end of stream from readLine
-            if (endOfStream == true && !terminate) {
+            if (endOfStream && !terminate) {
                 logger.info("end of stream received from socket during readLine");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "end of stream on socket read");
@@ -415,15 +464,23 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String decode(String raw) {
             try {
-                return URLDecoder.decode(raw, "UTF-8");
+                return URLDecoder.decode(raw, UTF8_NAME);
             } catch (UnsupportedEncodingException e) {
-                logger.debug("Failed to decode '" + raw + "'", e);
+                logger.debug("Failed to decode '{}' ", raw, e);
+                return null;
+            }
+        }
+
+        private String encode(String raw) {
+            try {
+                return URLEncoder.encode(raw, UTF8_NAME);
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("Failed to encode '{}' ", raw, e);
                 return null;
             }
         }
 
         private void handlePlayersList(String message) {
-
             // Split out players
             String[] playersList = message.split("playerindex\\S*\\s");
             for (String playerParams : playersList) {
@@ -466,16 +523,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // Save player if we haven't seen it yet
                 if (!players.containsKey(macAddress)) {
                     players.put(macAddress, player);
-
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.playerAdded(player);
                         }
                     });
-
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlN");
+                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
             }
         }
@@ -491,41 +546,77 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // get the message type
             String messageType = messageParts[1];
+            switch (messageType) {
+                case "status":
+                    handleStatusMessage(mac, messageParts);
+                    break;
+                case "playlist":
+                    handlePlaylistMessage(mac, messageParts);
+                    break;
+                case "prefset":
+                    handlePrefsetMessage(mac, messageParts);
+                    break;
+                case "mixer":
+                    handleMixerMessage(mac, messageParts);
+                    break;
+                case "ir":
+                    final String ircode = messageParts[2];
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.irCodeChangeEvent(mac, ircode);
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled player update message type '{}'.", messageType);
 
-            if (messageType.equals("status")) {
-                handleStatusMessage(mac, messageParts);
-            } else if (messageType.equals("playlist")) {
-                handlePlaylistMessage(mac, messageParts);
-            } else if (messageType.equals("prefset")) {
-                handlePrefsetMessage(mac, messageParts);
-            } else if (messageType.equals("ir")) {
-                final String ircode = messageParts[2];
-                updatePlayer(new PlayerUpdateEvent() {
-                    @Override
-                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                        listener.irCodeChangeEvent(mac, ircode);
-                    }
-                });
-            } else if (messageType.equals("power")) {
-                // ignore these for now
-                // player.setPowered(messageParts[1].equals("1"));
-            } else if (messageType.equals("play") || messageType.equals("pause") || messageType.equals("stop")) {
-                // ignore these for now
-                // player.setMode(Mode.valueOf(messageType));
-            } else if (messageType.equals("mixer") || messageType.equals("menustatus")
-                    || messageType.equals("button")) {
-                // ignore these for now
-            } else {
-                logger.debug("Unhandled message type '{}'. Ignoring.", messageType);
+            }
+        }
+
+        private void handleMixerMessage(String mac, String[] messageParts) {
+            String action = messageParts[2];
+
+            switch (action) {
+                case "volume":
+                    String volumeStringValue = decode(messageParts[3]);
+
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            try {
+                                int volume = Integer.parseInt(volumeStringValue);
+
+                                // Check if we received a relative volume change, or an absolute
+                                // volume value.
+                                if (volumeStringValue.contains("+") || (volumeStringValue.contains("-"))) {
+                                    listener.relativeVolumeChangeEvent(mac, volume);
+                                } else {
+                                    listener.absoluteVolumeChangeEvent(mac, volume);
+                                }
+                            } catch (NumberFormatException e) {
+                                logger.warn("Unable to parse volume [{}] received from mixer message.",
+                                        volumeStringValue, e);
+                            }
+                        }
+                    });
+                    break;
+                default:
+                    logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
+
             }
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            boolean coverart = false;
+            String coverid = null;
+            String artworkUrl = null;
+
             for (String messagePart : messageParts) {
                 // Parameter Power
                 if (messagePart.startsWith("power%3A")) {
-                    String value = messagePart.substring("power%3A".length());
-                    final boolean power = value.matches("1");
+                    final boolean power = "1".matches(messagePart.substring("power%3A".length()));
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
@@ -540,8 +631,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.volumeChangeEvent(mac, volume);
-                            ;
+                            listener.absoluteVolumeChangeEvent(mac, volume);
                         }
                     });
                 }
@@ -566,11 +656,20 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         }
                     });
                 }
+                // Parameter duration
+                else if (messagePart.startsWith("duration%3A")) {
+                    String value = messagePart.substring("duration%3A".length());
+                    final int duration = (int) Double.parseDouble(value);
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.durationEvent(mac, duration);
+                        }
+                    });
+                }
                 // Parameter Playing Playlist Index
                 else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
-                    // player.setCurrentPlaylistIndex((int)
-                    // Integer.parseInt(value));
                     final int index = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -621,93 +720,121 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                             listener.titleChangeEvent(mac, decode(value));
                         }
                     });
-
                 }
                 // Parameter Remote Title (radio)
                 else if (messagePart.startsWith("remote_title%3A")) {
-                    final String value = messagePart.substring("remote_title%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.remoteTitleChangeEvent(mac, decode(value));
-                        }
-                    });
+                    remoteTitle = messagePart.substring("remote_title%3A".length());
                 }
                 // Parameter Artist
                 else if (messagePart.startsWith("artist%3A")) {
-                    final String value = messagePart.substring("artist%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.artistChangeEvent(mac, decode(value));
-                        }
-                    });
+                    artist = messagePart.substring("artist%3A".length());
                 }
                 // Parameter Album
                 else if (messagePart.startsWith("album%3A")) {
-                    final String value = messagePart.substring("album%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.albumChangeEvent(mac, decode(value));
-                        }
-                    });
+                    album = messagePart.substring("album%3A".length());
                 }
                 // Parameter Genre
                 else if (messagePart.startsWith("genre%3A")) {
-                    final String value = messagePart.substring("genre%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.genreChangeEvent(mac, decode(value));
-                        }
-                    });
+                    genre = messagePart.substring("genre%3A".length());
                 }
                 // Parameter Year
                 else if (messagePart.startsWith("year%3A")) {
-                    final String value = messagePart.substring("year%3A".length());
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.yearChangeEvent(mac, decode(value));
-                        }
-                    });
+                    year = messagePart.substring("year%3A".length());
                 }
-                // Parameter Artwork
-                else if (messagePart.startsWith("artwork_track_id%3A")) {
-                    String url = messagePart.substring("artwork_track_id%3A".length());
-                    // NOTE: what is returned if not an artwork id? i.e. if a
-                    // space?
-                    if (!url.startsWith(" ")) {
-                        url = "http://" + host + ":" + webport + "/music/" + url + "/cover.jpg";
-                    }
-                    final String value = url;
-                    updatePlayer(new PlayerUpdateEvent() {
-                        @Override
-                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.coverArtChangeEvent(mac, decode(value));
-                        }
-                    });
+                // Parameter artwork_url contains url to cover art
+                else if (messagePart.startsWith("artwork_url%3A")) {
+                    artworkUrl = messagePart.substring("artwork_url%3A".length());
+                }
+                // When coverart is "1" coverid will contain a unique coverart id
+                else if (messagePart.startsWith("coverart%3A")) {
+                    coverart = "1".matches(messagePart.substring("coverart%3A".length()));
+                }
+                // Id for covert art (only valid when coverart is "1")
+                else if (messagePart.startsWith("coverid%3A")) {
+                    coverid = messagePart.substring("coverid%3A".length());
+                } else {
+                    // Added to be able to see additional status message types
+                    logger.trace("Unhandled status message type '{}'", messagePart);
                 }
             }
+
+            final String finalUrl = constructCoverArtUrl(mac, coverart, coverid, artworkUrl);
+            final String finalRemoteTitle = remoteTitle;
+            final String finalArtist = artist;
+            final String finalAlbum = album;
+            final String finalGenre = genre;
+            final String finalYear = year;
+
+            updatePlayer(new PlayerUpdateEvent() {
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.coverArtChangeEvent(mac, finalUrl);
+                    listener.remoteTitleChangeEvent(mac, decode(finalRemoteTitle));
+                    listener.artistChangeEvent(mac, decode(finalArtist));
+                    listener.albumChangeEvent(mac, decode(finalAlbum));
+                    listener.genreChangeEvent(mac, decode(finalGenre));
+                    listener.yearChangeEvent(mac, decode(finalYear));
+                }
+            });
+        }
+
+        private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
+            String hostAndPort = "http://" + host + ":" + webport;
+
+            // Default to using the convenience artwork URL (should be rare)
+            String url = hostAndPort + "/music/current/cover.jpg?player=" + encode(mac);
+
+            // If additional artwork info provided, use that instead
+            if (coverart) {
+                if (coverid != null) {
+                    // Typically is used to access cover art of local music files
+                    url = hostAndPort + "/music/" + coverid + "/cover.jpg";
+                }
+            } else if (artwork_url != null) {
+                if (artwork_url.startsWith("http")) {
+                    // Typically indicates that cover art is not local to LMS
+                    url = decode(artwork_url);
+                } else if (artwork_url.startsWith("%2F")) {
+                    // Typically used for default coverart for plugins (e.g. Pandora, etc.)
+                    url = hostAndPort + decode(artwork_url);
+                } else {
+                    // Another variation of default coverart for plugins (e.g. Pandora, etc.)
+                    url = hostAndPort + "/" + decode(artwork_url);
+                }
+            }
+            logger.trace("{}: URL for cover art is {}", mac, url);
+            return url;
         }
 
         private void handlePlaylistMessage(final String mac, String[] messageParts) {
             String action = messageParts[2];
-            String mode = "play";
+            String mode;
             if (action.equals("newsong")) {
                 mode = "play";
+                // Set the track duration to 0
+                updatePlayer(new PlayerUpdateEvent() {
+                    @Override
+                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                        listener.durationEvent(mac, 0);
+                    }
+                });
             } else if (action.equals("pause")) {
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {
                 mode = "stop";
+            } else {
+                // Added so that actions (such as delete, index, jump, open) are not treated as "play"
+                logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
+                return;
             }
             final String value = mode;
             updatePlayer(new PlayerUpdateEvent() {
+
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
+
             });
         }
 
@@ -732,13 +859,100 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 } else if (function.equals("volume")) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
+
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                            listener.volumeChangeEvent(mac, volume);
-                            ;
+                            listener.absoluteVolumeChangeEvent(mac, volume);
                         }
+
                     });
                 }
+            }
+        }
+
+        private void handleFavorites(String message) {
+            logger.trace("Handle favorites message: {}", message);
+
+            String[] messageParts = message.split("\\s");
+            if (messageParts.length == 2 && "changed".equals(messageParts[1])) {
+                // LMS informing us that favorites have changed; request an update to the favorites list
+                requestFavorites();
+                return;
+            }
+            if (messageParts.length < 7) {
+                logger.trace("No favorites in message.");
+                return;
+            }
+
+            List<Favorite> favorites = new ArrayList<>();
+            Favorite f = null;
+            for (String part : messageParts) {
+                // Favorite ID (in form xxxxxxxxx.n)
+                if (part.startsWith("id%3A")) {
+                    String id = part.substring("id%3A".length());
+                    f = new Favorite(id);
+                    favorites.add(f);
+                }
+                // Favorite name
+                else if (part.startsWith("name%3A")) {
+                    String name = decode(part.substring("name%3A".length()));
+                    if (f != null) {
+                        f.name = name;
+                    }
+                }
+                // When "1", favorite is a submenu with additional favorites
+                else if (part.startsWith("hasitems%3A")) {
+                    boolean hasitems = "1".matches(part.substring("hasitems%3A".length()));
+                    if (f != null) {
+                        if (hasitems) {
+                            // Skip subfolders
+                            favorites.remove(f);
+                            f = null;
+                        }
+                    }
+                }
+            }
+            updatePlayersFavoritesList(favorites);
+            updateChannelFavoritesList(favorites);
+        }
+
+        private void updatePlayersFavoritesList(List<Favorite> favorites) {
+            updatePlayer(new PlayerUpdateEvent() {
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.updateFavoritesListEvent(favorites);
+                }
+            });
+        }
+
+        private void updateChannelFavoritesList(List<Favorite> favorites) {
+            final Channel channel = getThing().getChannel(CHANNEL_FAVORITES_LIST);
+            if (channel == null) {
+                logger.debug("Channel {} doesn't exist. Delete & add thing to get channel.", CHANNEL_FAVORITES_LIST);
+                return;
+            }
+
+            // Get channel config parameter indicating whether name should be wrapped with double quotes
+            Boolean includeQuotes = Boolean.FALSE;
+            if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_QUOTE_LIST)) {
+                includeQuotes = (Boolean) channel.getConfiguration().get(CHANNEL_CONFIG_QUOTE_LIST);
+            }
+
+            String quote = includeQuotes.booleanValue() ? "\"" : "";
+            StringBuilder sb = new StringBuilder();
+            for (Favorite favorite : favorites) {
+                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replaceAll(",", ""))
+                        .append(quote).append(",");
+            }
+
+            if (sb.length() == 0) {
+                updateState(CHANNEL_FAVORITES_LIST, UnDefType.NULL);
+            } else {
+                // Drop the last comma
+                sb.setLength(sb.length() - 1);
+                String favoritesList = sb.toString();
+                logger.trace("Updating favorites channel for {} to state {}", getThing().getUID(), favoritesList);
+                updateState(CHANNEL_FAVORITES_LIST, new StringType(favoritesList));
             }
         }
     }
@@ -760,7 +974,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * @param event
      */
     private void updatePlayer(PlayerUpdateEvent event) {
-
         // update listeners like disco services
         for (SqueezeBoxPlayerEventListener listener : squeezeBoxPlayerListeners) {
             event.updateListener(listener);
@@ -788,7 +1001,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean registerSqueezeBoxPlayerListener(SqueezeBoxPlayerEventListener squeezeBoxPlayerListener) {
-        logger.debug("registering player listener");
+        logger.trace("Registering player listener");
         return squeezeBoxPlayerListeners.add(squeezeBoxPlayerListener);
     }
 
@@ -799,7 +1012,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean unregisterSqueezeBoxPlayerListener(SqueezeBoxPlayerEventListener squeezeBoxPlayerListener) {
-        logger.debug("unregistering player listener");
+        logger.trace("Unregistering player listener");
         return squeezeBoxPlayerListeners.remove(squeezeBoxPlayerListener);
     }
 

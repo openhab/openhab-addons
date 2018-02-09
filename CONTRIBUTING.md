@@ -12,7 +12,7 @@ Do not worry, if you are not clear, which category your issue belongs to - we wi
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](https://github.com/openhab/openhab/wiki/IDE-Setup).
+see our dedicated [IDE setup guide](http://docs.openhab.org/developers/development/ide.html).
 
 ## Contribution guidelines
 
@@ -169,7 +169,7 @@ One way to automate this, is customise your get ``commit.template`` by adding
 a ``prepare-commit-msg`` hook to your openHAB checkout:
 
 ```
-curl -L -o .git/hooks/prepare-commit-msg https://raw.github.com/openhab/openhab2/master/contrib/prepare-commit-msg.hook && chmod +x .git/hooks/prepare-commit-msg
+curl -L -o .git/hooks/prepare-commit-msg https://raw.githubusercontent.com/openhab/openhab-core/master/contrib/prepare-commit-msg.hook && chmod +x .git/hooks/prepare-commit-msg
 ```
 
 * Note: the above script expects to find your GitHub user name in ``git config --get github.user``
@@ -185,7 +185,7 @@ There are several exceptions to the signing requirement. Currently these are:
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on [the discussion group] (https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open)
+* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!

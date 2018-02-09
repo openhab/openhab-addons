@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.onkyo.handler;
 
 import java.util.HashMap;
@@ -19,8 +18,10 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
+import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -41,11 +42,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements AudioSink, UpnpIOParticipant {
 
-    private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
+    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
+    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     static {
-        supportedFormats.add(AudioFormat.WAV);
-        supportedFormats.add(AudioFormat.MP3);
+        SUPPORTED_FORMATS.add(AudioFormat.WAV);
+        SUPPORTED_FORMATS.add(AudioFormat.MP3);
+
+        SUPPORTED_STREAMS.add(AudioStream.class);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -91,7 +95,12 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return supportedFormats;
+        return SUPPORTED_FORMATS;
+    }
+
+    @Override
+    public Set<Class<? extends AudioStream>> getSupportedStreams() {
+        return SUPPORTED_STREAMS;
     }
 
     private void stop() {
@@ -160,7 +169,8 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     @Override
-    public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
+    public void process(AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         String url = null;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
@@ -168,8 +178,13 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
             url = urlAudioStream.getURL();
         } else {
             if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl = audioHTTPServer.serve(audioStream);
+                String relativeUrl;
+                if (audioStream instanceof FixedLengthAudioStream) {
+                    // we serve it on our own HTTP server
+                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20);
+                } else {
+                    relativeUrl = audioHTTPServer.serve(audioStream);
+                }
                 url = callbackUrl + relativeUrl;
             } else {
                 logger.warn("We do not have any callback url, so onkyo cannot play the audio stream!");

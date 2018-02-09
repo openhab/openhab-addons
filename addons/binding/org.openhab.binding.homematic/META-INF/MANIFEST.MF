@@ -1,12 +1,16 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Homematic Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.homematic;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.collect,
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.homematic,
+ org.openhab.binding.homematic.handler
+Import-Package: 
+ com.google.common.collect,
  com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.io,
@@ -14,10 +18,10 @@ Import-Package: com.google.common.collect,
  javax.servlet,
  javax.servlet.http,
  javax.xml.bind,
- org.apache.commons.io,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,
  org.apache.commons.lang.math,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
@@ -35,10 +39,13 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.jupnp.model.meta,
+ org.openhab.binding.homematic,
+ org.openhab.binding.homematic.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

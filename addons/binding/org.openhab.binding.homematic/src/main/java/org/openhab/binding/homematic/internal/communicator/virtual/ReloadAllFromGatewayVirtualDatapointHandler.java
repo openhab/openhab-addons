@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,36 +27,30 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY;
+    }
+
+    @Override
+    public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
-            addDatapoint(device, HmChannel.CHANNEL_NUMBER_EXTRAS, VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY,
-                    HmValueType.BOOL, Boolean.FALSE, false);
+            addDatapoint(device, HmChannel.CHANNEL_NUMBER_EXTRAS, getName(), HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
         if (MiscUtils.isTrueValue(dp.getValue())) {
             try {
-                gateway.getEventListener().reloadAllDeviceValues();
+                gateway.getGatewayAdapter().reloadAllDeviceValues();
             } finally {
                 gateway.disableDatapoint(dp, AbstractHomematicGateway.DEFAULT_DISABLE_DELAY);
             }

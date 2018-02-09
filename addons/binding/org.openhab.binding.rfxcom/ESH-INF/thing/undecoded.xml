@@ -28,29 +28,29 @@
 				<label>Sub Type</label>
 				<description>Specifies device sub type.</description>
 				<options>
-			        <option value="AC">AC</option>
-			        <option value="ARC">ARC</option>
-			        <option value="ATI">ATI</option>
-			        <option value="HIDEKI_UPM">Hideki, UPM</option>
-			        <option value="LACROSSE_VIKING">La Crosse, Viking</option>
-			        <option value="AD">AD</option>
-			        <option value="MERTIK">Mertik Maxitrol Fireplace controllers</option>
-			        <option value="OREGON1">Oregon Scientific 1</option>
-			        <option value="OREGON2">Oregon Scientific 2</option>
-			        <option value="OREGON3">Oregon Scientific 3</option>
-			        <option value="PROGUARD">ProGuard</option>
-			        <option value="VISONIC">Visonic</option>
-			        <option value="NEC">NEC</option>
-			        <option value="FS20">FS20</option>
-			        <option value="RESERVED">Reserved</option>
-			        <option value="BLINDS">Blinds</option>
-			        <option value="RUBICSON">Rubicson</option>
-			        <option value="AE">AE</option>
-			        <option value="FINE_OFFSET">Fine Offset</option>
-			        <option value="RGB">RGB</option>
-			        <option value="RTS">RTS</option>
-			        <option value="SELECT_PLUS">Select Plus</option>
-			        <option value="HOME_CONFORT">Home Confort</option>
+					<option value="AC">AC</option>
+					<option value="ARC">ARC</option>
+					<option value="ATI">ATI</option>
+					<option value="HIDEKI_UPM">Hideki, UPM</option>
+					<option value="LACROSSE_VIKING">La Crosse, Viking</option>
+					<option value="AD">AD</option>
+					<option value="MERTIK">Mertik Maxitrol Fireplace controllers</option>
+					<option value="OREGON1">Oregon Scientific 1</option>
+					<option value="OREGON2">Oregon Scientific 2</option>
+					<option value="OREGON3">Oregon Scientific 3</option>
+					<option value="PROGUARD">ProGuard</option>
+					<option value="VISONIC">Visonic</option>
+					<option value="NEC">NEC</option>
+					<option value="FS20">FS20</option>
+					<option value="RESERVED">Reserved</option>
+					<option value="BLINDS">Blinds</option>
+					<option value="RUBICSON">Rubicson</option>
+					<option value="AE">AE</option>
+					<option value="FINE_OFFSET">Fine Offset</option>
+					<option value="RGB">RGB</option>
+					<option value="RTS">RTS</option>
+					<option value="SELECT_PLUS">Select Plus</option>
+					<option value="HOME_CONFORT">Home Confort</option>
 				</options>
 			</parameter>
 		</config-description>

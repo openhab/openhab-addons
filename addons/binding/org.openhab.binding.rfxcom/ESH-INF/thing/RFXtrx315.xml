@@ -11,6 +11,11 @@
 				<label>Serial number</label>
 				<description>Serial number of the RFXCOM (FTDI) device</description>
 			</parameter>
+			<parameter name="disableDiscovery" type="boolean" required="true">
+				<label>Disable discovery of unknown devices</label>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
@@ -31,6 +36,11 @@
 					<option value="310MHz">310MHz</option>
 					<option value="315MHz">315MHz</option>
 				</options>
+			</parameter>
+			<parameter name="transmitPower" type="integer" min="-18" max="10">
+				<label>Transmit power</label>
+				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
+				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>Undecoded messages</label>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,8 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -29,11 +26,12 @@ import com.google.gson.JsonParser;
  *
  * @author Dan Cunningham
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
+ * @author Mark Hilbush - Add support for LMS authentication
  */
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static int TIMEOUT = 5000;
+    private static final int TIMEOUT = 5000;
     private static HttpClient client = new HttpClient();
     /**
      * JSON request to get the CLI port from a Squeeze Server
@@ -47,7 +45,7 @@ public class HttpUtils {
      * @param timeout
      * @return
      */
-    public static String post(String url, String postData) throws Exception {
+    public static String post(String url, String postData) throws Exception, SqueezeBoxNotAuthorizedException {
         if (!client.isStarted()) {
             client.start();
         }
@@ -61,25 +59,19 @@ public class HttpUtils {
 
         int statusCode = response.getStatus();
 
+        if (statusCode == HttpStatus.UNAUTHORIZED_401) {
+            String statusLine = response.getStatus() + " " + response.getReason();
+            logger.error("Received '{}' from squeeze server", statusLine);
+            throw new SqueezeBoxNotAuthorizedException("Unauthorized: " + statusLine);
+        }
+
         if (statusCode != HttpStatus.OK_200) {
             String statusLine = response.getStatus() + " " + response.getReason();
-            logger.error("Method failed: {}", statusLine);
+            logger.error("HTTP POST method failed: {}", statusLine);
             throw new Exception("Method failed: " + statusLine);
         }
 
         return response.getContentAsString();
-    }
-
-    /**
-     * Returns a byte array from a URL string
-     *
-     * @param urlString
-     * @return byte array of data
-     */
-    public static byte[] getData(String urlString) throws Exception {
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
-        return IOUtils.toByteArray(connection.getInputStream());
     }
 
     /**

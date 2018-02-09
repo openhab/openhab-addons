@@ -13,6 +13,7 @@
         <config-description>
             <parameter name="port" type="text" required="true">
                 <label>@text/urtsiDevicePortLabel</label>
+                <context>serial-port</context>
                 <description>@text/urtsiDevicePortDescription</description>
             </parameter>
             <parameter name="commandInterval" type="integer" required="false" min="50" max="5000">

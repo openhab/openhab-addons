@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,46 +8,70 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
+
+import org.openhab.binding.squeezebox.internal.model.Favorite;
+
 /**
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
+ * @author Mark Hilbush added durationEvent
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public interface SqueezeBoxPlayerEventListener {
 
-	void playerAdded(SqueezeBoxPlayer player);
+    void playerAdded(SqueezeBoxPlayer player);
 
-	void powerChangeEvent(String mac, boolean power);
+    void powerChangeEvent(String mac, boolean power);
 
-	void modeChangeEvent(String mac, String mode);
+    void modeChangeEvent(String mac, String mode);
 
-	void volumeChangeEvent(String mac, int volume);
+    /**
+     * Reports a new absolute volume for a given player.
+     *
+     * @param mac
+     * @param volume
+     */
+    void absoluteVolumeChangeEvent(String mac, int volume);
 
-	void muteChangeEvent(String mac, boolean mute);
+    /**
+     * Reports a relative volume change for a given player.
+     *
+     * @param mac
+     * @param volumeChange
+     */
+    void relativeVolumeChangeEvent(String mac, int volumeChange);
 
-	void currentPlaylistIndexEvent(String mac, int index);
+    void muteChangeEvent(String mac, boolean mute);
 
-	void currentPlayingTimeEvent(String mac, int time);
+    void currentPlaylistIndexEvent(String mac, int index);
 
-	void numberPlaylistTracksEvent(String mac, int track);
+    void currentPlayingTimeEvent(String mac, int time);
 
-	void currentPlaylistShuffleEvent(String mac, int shuffle);
+    void durationEvent(String mac, int duration);
 
-	void currentPlaylistRepeatEvent(String mac, int repeat);
+    void numberPlaylistTracksEvent(String mac, int track);
 
-	void titleChangeEvent(String mac, String title);
+    void currentPlaylistShuffleEvent(String mac, int shuffle);
 
-	void albumChangeEvent(String mac, String album);
+    void currentPlaylistRepeatEvent(String mac, int repeat);
 
-	void artistChangeEvent(String mac, String artist);
+    void titleChangeEvent(String mac, String title);
 
-	void coverArtChangeEvent(String mac, String coverArtUrl);
+    void albumChangeEvent(String mac, String album);
 
-	void yearChangeEvent(String mac, String year);
+    void artistChangeEvent(String mac, String artist);
 
-	void genreChangeEvent(String mac, String genre);
+    void coverArtChangeEvent(String mac, String coverArtUrl);
 
-	void remoteTitleChangeEvent(String mac, String title);
+    void yearChangeEvent(String mac, String year);
 
-	void irCodeChangeEvent(String mac, String ircode);
+    void genreChangeEvent(String mac, String genre);
+
+    void remoteTitleChangeEvent(String mac, String title);
+
+    void irCodeChangeEvent(String mac, String ircode);
+
+    void updateFavoritesListEvent(List<Favorite> favorites);
 }

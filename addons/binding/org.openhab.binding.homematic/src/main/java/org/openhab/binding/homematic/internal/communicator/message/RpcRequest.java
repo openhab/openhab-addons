@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,7 @@ package org.openhab.binding.homematic.internal.communicator.message;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public interface RpcRequest {
+public interface RpcRequest<T> {
 
     /**
      * Adds arguments to the RPC method.
@@ -23,6 +23,10 @@ public interface RpcRequest {
     /**
      * Generates the RPC data.
      */
-    public byte[] createMessage();
+    public T createMessage();
 
+    /**
+     * Returns the name of the rpc method.
+     */
+    public String getMethodName();
 }

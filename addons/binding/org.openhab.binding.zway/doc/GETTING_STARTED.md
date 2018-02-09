@@ -4,7 +4,7 @@
 
 1. [Download](https://razberry.z-wave.me/z-way-server/) Z-Way v2.2.3 or newer (further information about installing Z-Way you can find [here](http://razberry.z-wave.me/index.php?id=24))
 2. Install openHAB Connector
-    - via "ZWave.Me App Store" use Token `sse_zwickau_beta`
+    - via "ZWave.Me App Store"
     - via Git
 
     ```shell
@@ -19,7 +19,7 @@
 
 1. [Download](http://www.openhab.org/getting-started/downloads.html) openHAB 2 (further information about installing openHAB you can find [here](http://docs.openhab.org/installation/index.html))
 2. Install Z-Way Binding
-    - via Extension Manager (not yet available for the Z-Way Binding)
+    - via Extension Manager
     - via Download
 
     ```shell

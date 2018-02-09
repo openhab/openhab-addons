@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,8 +35,8 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
-import org.openhab.binding.harmonyhub.config.HarmonyDeviceConfig;
 import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.openhab.binding.harmonyhub.internal.config.HarmonyDeviceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyDeviceHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
     HarmonyHubHandler bridge;
     HarmonyHubHandlerFactory factory;
@@ -72,11 +72,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command {}  for {}", command, channelUID);
+        logger.trace("Command {} for {}", command, channelUID);
         Channel channel = getThing().getChannel(channelUID.getId());
 
         if (channel == null) {
-            logger.warn("No such channel {] for device {}", channelUID, getThing());
+            logger.warn("No such channel {} for device {}", channelUID, getThing());
             return;
         }
 
@@ -94,9 +94,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
 
         if (id > 0) {
-            bridge.getClient().pressButton(id, command.toString());
+            bridge.pressButton(id, command.toString());
         } else {
-            bridge.getClient().pressButton(name, command.toString());
+            bridge.pressButton(name, command.toString());
         }
 
         // may need to ask the list if this can be set here?
@@ -144,22 +144,23 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
-            updateChannel();
-        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+            bridge.getConfigFuture().thenAcceptAsync(this::updateChannel, scheduler).exceptionally(e -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Getting config failed: " + e.getMessage());
+                return null;
+            });
+        } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
     /**
      * Updates our channel with the available buttons as option states
      */
-    private void updateChannel() {
+    private void updateChannel(HarmonyConfig config) {
         try {
             logger.debug("updateChannel for device {}", logName);
 
-            HarmonyConfig config = bridge.getCachedConfig();
             if (config == null) {
                 logger.debug("updateChannel: could not get config from bridge {}", logName);
                 return;
@@ -212,7 +213,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
             updateThing(thingBuilder.build());
         } catch (Exception e) {
-            logger.debug("Could not add button channels to device " + logName, e);
+            logger.debug("Could not add button channels to device {}", logName, e);
         }
     }
 }

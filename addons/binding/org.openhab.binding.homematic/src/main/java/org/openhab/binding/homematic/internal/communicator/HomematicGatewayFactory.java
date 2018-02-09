@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,15 +24,15 @@ public class HomematicGatewayFactory {
     /**
      * Creates the HomematicGateway.
      */
-    public static HomematicGateway createGateway(String id, HomematicConfig config, HomematicGatewayListener listener)
+    public static HomematicGateway createGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter)
             throws IOException {
         loadGatewayInfo(config, id);
         if (config.getGatewayInfo().isCCU()) {
-            return new CcuGateway(id, config, listener);
+            return new CcuGateway(id, config, gatewayAdapter);
         } else if (config.getGatewayInfo().isHomegear()) {
-            return new HomegearGateway(id, config, listener);
+            return new HomegearGateway(id, config, gatewayAdapter);
         } else {
-            return new DefaultGateway(id, config, listener);
+            return new DefaultGateway(id, config, gatewayAdapter);
         }
     }
 
@@ -40,7 +40,7 @@ public class HomematicGatewayFactory {
      * Loads some metadata about the type of the Homematic gateway.
      */
     private static void loadGatewayInfo(HomematicConfig config, String id) throws IOException {
-        RpcClient rpcClient = new XmlRpcClient(config);
+        RpcClient<String> rpcClient = new XmlRpcClient(config);
         try {
             config.setGatewayInfo(rpcClient.getGatewayInfo(id));
         } finally {

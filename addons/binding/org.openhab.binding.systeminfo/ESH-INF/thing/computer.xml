@@ -25,11 +25,11 @@
 		</channel-groups>
 
 		<properties>
-			<property name="cpu_logicalCores">CPU Logical Cores</property>
-			<property name="cpu_physicalCores">CPU Physical Cores</property>
-			<property name="os_manufacturer">OS Manufacturer</property>
-			<property name="os_version">OS Version</property>
-			<property name="os_family">OS Family</property>
+			<property name="CPU Logical Cores">Not available</property>
+			<property name="CPU Physical Cores">Not available</property>
+			<property name="OS Manufacturer">Not available</property>
+			<property name="OS Version">Not available</property>
+			<property name="OS Family">Not available</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:systeminfo:computerConfig" />

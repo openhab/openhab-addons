@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 
@@ -21,15 +22,12 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
  * @author Gerhard Riegler - Initial contribution
  */
 public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
-    private RpcRequest response;
+    private RpcRequest<?> request;
 
-    public RpcResponseParser(RpcRequest request) {
-        this.response = request;
+    public RpcResponseParser(RpcRequest<?> request) {
+        this.request = request;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Object[] parse(Object[] message) throws IOException {
@@ -40,9 +38,11 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
                 if (map.containsKey("faultCode")) {
                     Number faultCode = toNumber(map.get("faultCode"));
                     String faultString = toString(map.get("faultString"));
-                    String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, response);
+                    String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, request);
                     if (faultCode.intValue() == -1 && StringUtils.equals("Failure", faultString)) {
                         throw new UnknownRpcFailureException(faultMessage);
+                    } else if (faultCode.intValue() == -3 && StringUtils.equals("Unknown paramset", faultString)) {
+                        throw new UnknownParameterSetException(faultMessage);
                     }
                     throw new IOException(faultMessage);
                 }
@@ -51,5 +51,4 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
         }
         throw new IOException("Unknown Result: " + message);
     }
-
 }

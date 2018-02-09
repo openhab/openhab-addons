@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import static org.openhab.binding.allplay.AllPlayBindingConstants.*;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,7 +39,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.allplay.AllPlayBindingConstants;
-import org.openhab.binding.allplay.internal.CommonSpeakerProperties;
+import org.openhab.binding.allplay.internal.AllPlayBindingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
 import de.kaizencode.tchaikovsky.speaker.Speaker.LoopMode;
 import de.kaizencode.tchaikovsky.speaker.Speaker.ShuffleMode;
 import de.kaizencode.tchaikovsky.speaker.VolumeRange;
+import de.kaizencode.tchaikovsky.speaker.ZoneItem;
 
 /**
  * The {@link AllPlayHandler} is responsible for handling commands, which are
@@ -69,7 +71,7 @@ public class AllPlayHandler extends BaseThingHandler
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandler.class);
     private final AllPlay allPlay;
-    private final CommonSpeakerProperties speakerProperties;
+    private final AllPlayBindingProperties bindingProperties;
     private Speaker speaker;
     private VolumeRange volumeRange;
 
@@ -77,10 +79,10 @@ public class AllPlayHandler extends BaseThingHandler
     private ScheduledFuture<?> reconnectionJob;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(ALLPLAY_THREADPOOL_NAME);
 
-    public AllPlayHandler(Thing thing, AllPlay allPlay, CommonSpeakerProperties properties) {
+    public AllPlayHandler(Thing thing, AllPlay allPlay, AllPlayBindingProperties properties) {
         super(thing);
         this.allPlay = allPlay;
-        this.speakerProperties = properties;
+        this.bindingProperties = properties;
     }
 
     @Override
@@ -114,6 +116,10 @@ public class AllPlayHandler extends BaseThingHandler
         logger.debug("Speaker announcement received for speaker {}. Own id is {}", speaker, getDeviceId());
         if (isHandledSpeaker(speaker)) {
             logger.debug("Speaker announcement received for handled speaker {}", speaker);
+            if (this.speaker != null) {
+                // Make sure to disconnect first in case the speaker is re-announced
+                disconnectFromSpeaker(this.speaker);
+            }
             this.speaker = speaker;
             cancelReconnectionJob();
             try {
@@ -174,15 +180,21 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
+        allPlay.removeSpeakerAnnouncedListener(this);
         if (speaker != null) {
-            logger.debug("Disconnecting from speaker {}", speaker);
-            cancelReconnectionJob();
-            speaker.removeSpeakerChangedListener(this);
-            speaker.removeSpeakerConnectionListener(this);
-            allPlay.removeSpeakerAnnouncedListener(this);
-            speaker.disconnect();
+            disconnectFromSpeaker(speaker);
         }
         super.dispose();
+    }
+
+    private void disconnectFromSpeaker(Speaker speaker) {
+        logger.debug("Disconnecting from speaker {}", speaker);
+        speaker.removeSpeakerChangedListener(this);
+        speaker.removeSpeakerConnectionListener(this);
+        cancelReconnectionJob();
+        if (speaker.isConnected()) {
+            speaker.disconnect();
+        }
     }
 
     @Override
@@ -203,8 +215,16 @@ public class AllPlayHandler extends BaseThingHandler
 
     private void handleSpeakerCommand(String channelId, Command command) throws SpeakerException {
         switch (channelId) {
+            case CLEAR_ZONE:
+                if (OnOffType.ON.equals(command)) {
+                    speaker.zoneManager().releaseZone();
+                }
+                break;
             case CONTROL:
                 handleControlCommand(command);
+                break;
+            case INPUT:
+                speaker.input().setInput(command.toString());
                 break;
             case LOOP_MODE:
                 speaker.setLoopMode(LoopMode.parse(command.toString()));
@@ -225,6 +245,9 @@ public class AllPlayHandler extends BaseThingHandler
             case VOLUME:
                 handleVolumeCommand(command);
                 break;
+            case ZONE_MEMBERS:
+                handleZoneMembersCommand(command);
+                break;
             default:
                 logger.warn("Unable to handle command {} on unknown channel {}", command, channelId);
         }
@@ -243,6 +266,9 @@ public class AllPlayHandler extends BaseThingHandler
             case CONTROL:
                 updatePlayState(speaker.getPlayState());
                 break;
+            case INPUT:
+                onInputChanged(speaker.input().getActiveInput());
+                break;
             case LOOP_MODE:
                 onLoopModeChanged(speaker.getLoopMode());
                 break;
@@ -257,8 +283,7 @@ public class AllPlayHandler extends BaseThingHandler
                 onVolumeControlChanged(speaker.volume().isControlEnabled());
                 break;
             case ZONE_ID:
-                logger.debug("Refresh of ZoneID not yet implemented");
-                // TODO: Get ZoneID from speaker and update channel when implemented in allPlay library
+                updateState(ZONE_ID, new StringType(speaker.getPlayerInfo().getZoneInfo().getZoneId()));
                 break;
             default:
                 logger.debug("REFRESH command not implemented on channel {}", channelId);
@@ -280,9 +305,9 @@ public class AllPlayHandler extends BaseThingHandler
             }
         } else if (command instanceof RewindFastforwardType) {
             if (command == RewindFastforwardType.FASTFORWARD) {
-                changeTrackPosition(speakerProperties.getFastForwardSkipTimeInSec() * 1000);
+                changeTrackPosition(bindingProperties.getFastForwardSkipTimeInSec() * 1000);
             } else if (command == RewindFastforwardType.REWIND) {
-                changeTrackPosition(-speakerProperties.getRewindSkipTimeInSec() * 1000);
+                changeTrackPosition(-bindingProperties.getRewindSkipTimeInSec() * 1000);
             }
         } else {
             logger.warn("Unknown control command: {}", command);
@@ -302,7 +327,13 @@ public class AllPlayHandler extends BaseThingHandler
         speaker.setPosition(currentPosition + positionOffsetInMs);
     }
 
-    private void handleVolumeCommand(Command command) throws SpeakerException {
+    /**
+     * Uses the given {@link Command} to change the volume of the speaker.
+     *
+     * @param command The {@link Command} with the new volume
+     * @throws SpeakerException Exception if the volume change failed
+     */
+    public void handleVolumeCommand(Command command) throws SpeakerException {
         if (command instanceof PercentType) {
             speaker.volume().setVolume(convertPercentToAbsoluteVolume((PercentType) command));
         } else if (command instanceof IncreaseDecreaseType) {
@@ -317,6 +348,30 @@ public class AllPlayHandler extends BaseThingHandler
         } else if (OnOffType.OFF.equals(command)) {
             speaker.setShuffleMode(ShuffleMode.LINEAR);
         }
+    }
+
+    private void handleZoneMembersCommand(Command command) throws SpeakerException {
+        String[] memberNames = command.toString().split(bindingProperties.getZoneMemberSeparator());
+        logger.debug("{}: Creating new zone with members {}", speaker, String.join(", ", memberNames));
+        List<String> memberIds = new ArrayList<>();
+        for (String memberName : memberNames) {
+            memberIds.add(getHandlerIdByLabel(memberName.trim()));
+        }
+        createZoneInNewThread(memberIds);
+    }
+
+    private void createZoneInNewThread(List<String> memberIds) {
+        scheduler.execute(() -> {
+            try {
+                // This call blocks up to 10 seconds if one of the members is unreachable,
+                // therefore it is executed in a new thread
+                ZoneItem zone = speaker.zoneManager().createZone(memberIds);
+                logger.debug("{}: Zone {} with member ids {} has been created", speaker, zone.getZoneId(),
+                        String.join(", ", zone.getSlaves().keySet()));
+            } catch (SpeakerException e) {
+                logger.warn("{}: Cannot create zone", speaker, e);
+            }
+        });
     }
 
     @Override
@@ -371,6 +426,12 @@ public class AllPlayHandler extends BaseThingHandler
         updateState(ZONE_ID, new StringType(zoneId));
     }
 
+    @Override
+    public void onInputChanged(String input) {
+        logger.debug("{}: Input changed to {}", speaker.getName(), input);
+        updateState(INPUT, new StringType(input));
+    }
+
     private void updatePlayState(PlayState playState) {
         logger.debug("{}: PlayState changed to {}", speaker.getName(), playState);
         updateState(PLAY_STATE, new StringType(playState.getState().toString()));
@@ -412,7 +473,7 @@ public class AllPlayHandler extends BaseThingHandler
         } catch (SpeakerException e) {
             logger.warn("Unable to update current user data: {}", e.getMessage(), e);
         }
-        logger.debug("MediaType: " + currentItem.getMediaType());
+        logger.debug("MediaType: {}", currentItem.getMediaType());
     }
 
     private void updateDuration(long durationInMs) {
@@ -432,6 +493,33 @@ public class AllPlayHandler extends BaseThingHandler
             }
         } catch (Exception e) {
             logger.warn("Error getting cover art", e);
+        }
+    }
+
+    /**
+     * Starts streaming the audio at the given URL.
+     *
+     * @param url The URL to stream
+     * @throws SpeakerException Exception if the URL could not be streamed
+     */
+    public void playUrl(String url) throws SpeakerException {
+        if (isSpeakerReady()) {
+            speaker.playItem(url);
+        } else {
+            throw new SpeakerException(
+                    "Cannot play audio stream, speaker " + speaker + " is not discovered/connected!");
+        }
+    }
+
+    /**
+     * @return The current volume of the speaker
+     * @throws SpeakerException Exception if the volume could not be retrieved
+     */
+    public PercentType getVolume() throws SpeakerException {
+        if (isSpeakerReady()) {
+            return convertAbsoluteVolumeToPercent(speaker.volume().getVolume());
+        } else {
+            throw new SpeakerException("Cannot get volume, speaker " + speaker + " is not discovered/connected!");
         }
     }
 
@@ -500,6 +588,7 @@ public class AllPlayHandler extends BaseThingHandler
         logger.debug("Scheduling job to rediscover to speaker {}", speaker);
         // TODO: Check if it makes sense to repeat the discovery every x minutes or if the AllJoyn library is able to
         // handle re-discovery in _all_ cases.
+        cancelReconnectionJob();
         reconnectionJob = scheduler.scheduleWithFixedDelay(runnable, 5, 600, TimeUnit.SECONDS);
     }
 
@@ -512,4 +601,14 @@ public class AllPlayHandler extends BaseThingHandler
         }
     }
 
+    private String getHandlerIdByLabel(String thingLabel) throws IllegalStateException {
+        if (thingRegistry != null) {
+            for (Thing thing : thingRegistry.getAll()) {
+                if (thingLabel.equals(thing.getLabel())) {
+                    return thing.getUID().getId();
+                }
+            }
+        }
+        throw new IllegalStateException("Could not find thing with label " + thingLabel);
+    }
 }

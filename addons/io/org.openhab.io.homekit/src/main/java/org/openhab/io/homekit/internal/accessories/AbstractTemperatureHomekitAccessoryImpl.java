@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,10 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import com.beowulfe.hap.accessories.TemperatureSensor;
 import com.beowulfe.hap.accessories.properties.TemperatureUnit;
 
+/**
+ *
+ * @author Andy Lintner - Initial contribution
+ */
 abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> extends AbstractHomekitAccessoryImpl<T>
         implements TemperatureSensor {
 

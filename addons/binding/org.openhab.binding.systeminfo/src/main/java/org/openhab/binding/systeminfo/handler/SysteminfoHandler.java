@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,9 +30,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.systeminfo.model.DeviceNotFoundException;
-import org.openhab.binding.systeminfo.model.OshiSysteminfo;
-import org.openhab.binding.systeminfo.model.SysteminfoInterface;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * (CPU, Memory, Storage, Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Lyubomir Papzov - Separate the creation of the systeminfo object and its initialization
  */
 
 public class SysteminfoHandler extends BaseThingHandler {
@@ -87,8 +89,13 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
-    public SysteminfoHandler(Thing thing) {
+    public SysteminfoHandler(@NonNull Thing thing, SysteminfoInterface systeminfo) {
         super(thing);
+        if (systeminfo != null) {
+            this.systeminfo = systeminfo;
+        } else {
+            throw new IllegalArgumentException("No systeminfo service was provided");
+        }
     }
 
     @Override
@@ -109,8 +116,8 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private boolean instantiateSysteminfoLibrary() {
         try {
-            this.systeminfo = new OshiSysteminfo();
-            logger.debug("OSHI Systeminfo library is instatiated!");
+            systeminfo.initializeSysteminfo();
+            logger.debug("Systeminfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
             logger.error("Can not instantate Systeminfo object!", e);
@@ -148,6 +155,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
             properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
             properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
+            updateProperties(properties);
             logger.debug("Properties updated!");
             return true;
         } catch (Exception e) {
@@ -209,7 +217,7 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        highPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
+        highPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 publishData(highPriorityChannels);
@@ -217,7 +225,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        mediumPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
+        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 publishData(mediumPriorityChannels);
@@ -337,6 +345,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
                     state = systeminfo.getMemoryAvailablePercent();
                     break;
+                case CHANNEL_MEMORY_USED_PERCENT:
+                    state = systeminfo.getMemoryUsedPercent();
+                    break;
                 case CHANNEL_SWAP_AVAILABLE:
                     state = systeminfo.getSwapAvailable();
                     break;
@@ -348,6 +359,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_SWAP_AVAILABLE_PERCENT:
                     state = systeminfo.getSwapAvailablePercent();
+                    break;
+                case CHANNEL_SWAP_USED_PERCENT:
+                    state = systeminfo.getSwapUsedPercent();
                     break;
                 case CHANNEL_DRIVE_MODEL:
                     state = systeminfo.getDriveModel(deviceIndex);
@@ -379,6 +393,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
                     state = systeminfo.getStorageAvailablePercent(deviceIndex);
                     break;
+                case CHANNEL_STORAGE_USED_PERCENT:
+                    state = systeminfo.getStorageUsedPercent(deviceIndex);
+                    break;
                 case CHANNEL_NETWORK_IP:
                     state = systeminfo.getNetworkIp(deviceIndex);
                     break;
@@ -397,11 +414,11 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_NETWORK_DATA_RECEIVED:
                     state = systeminfo.getNetworkDataReceived(deviceIndex);
                     break;
-                case CHANNEL_NETWORK_PACKAGES_RECEIVED:
-                    state = systeminfo.getNetworkPackageReceived(deviceIndex);
+                case CHANNEL_NETWORK_PACKETS_RECEIVED:
+                    state = systeminfo.getNetworkPacketsReceived(deviceIndex);
                     break;
-                case CHANNEL_NETWORK_PACKAGES_SENT:
-                    state = systeminfo.getNetworkPackageSent(deviceIndex);
+                case CHANNEL_NETWORK_PACKETS_SENT:
+                    state = systeminfo.getNetworkPacketsSent(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_LOAD:
                     state = systeminfo.getProcessCpuUsage(deviceIndex);
@@ -422,13 +439,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                     logger.error("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
-            logger.error("No information for channel " + channelID + deviceIndex, e);
+            logger.error("No information for channel {} with device intex {} :", channelID, deviceIndex, e);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while getting system information!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Can not get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
-        return state;
+        return state != null ? state : UnDefType.UNDEF;
     }
 
     /**

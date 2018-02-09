@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,13 +23,15 @@ public class HomematicConfig {
     private static final String ISO_ENCODING = "ISO-8859-1";
     private static final String UTF_ENCODING = "UTF-8";
 
-    public static final String GATEWAY_TYPE_AUTO = "AUTO";
-    public static final String GATEWAY_TYPE_CCU = "CCU";
+    private static final String GATEWAY_TYPE_AUTO = "AUTO";
+    private static final String GATEWAY_TYPE_CCU = "CCU";
+    private static final String GATEWAY_TYPE_NOCCU = "NOCCU";
 
     private static final int DEFAULT_PORT_RF = 2001;
     private static final int DEFAULT_PORT_WIRED = 2000;
     private static final int DEFAULT_PORT_HMIP = 2010;
     private static final int DEFAULT_PORT_CUXD = 8701;
+    private static final int DEFAULT_PORT_GROUP = 9292;
 
     private String gatewayAddress;
     private String gatewayType = GATEWAY_TYPE_AUTO;
@@ -38,15 +40,14 @@ public class HomematicConfig {
     private int wiredPort;
     private int hmIpPort;
     private int cuxdPort;
+    private int groupPort;
 
     private String callbackHost;
     private int xmlCallbackPort;
     private int binCallbackPort;
 
-    private Integer aliveInterval = 300;
     private int socketMaxAlive = 900;
     private int timeout = 15;
-    private int reconnectInterval = 0;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -76,16 +77,6 @@ public class HomematicConfig {
      */
     public void setCallbackHost(String callbackHost) {
         this.callbackHost = callbackHost;
-    }
-
-    /**
-     * Returns the callback host port.
-     *
-     * @deprecated use getBinCallbackPort
-     */
-    @Deprecated
-    public int getCallbackPort() {
-        return binCallbackPort;
     }
 
     /**
@@ -124,20 +115,6 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
-    }
-
-    /**
-     * Returns the alive interval in seconds.
-     */
-    public Integer getAliveInterval() {
-        return aliveInterval;
-    }
-
-    /**
-     * Sets the alive interval in seconds.
-     */
-    public void setAliveInterval(Integer aliveInterval) {
-        this.aliveInterval = aliveInterval;
     }
 
     /**
@@ -183,20 +160,6 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the interval in seconds to reconnect to the Homematic gateway.
-     */
-    public int getReconnectInterval() {
-        return reconnectInterval;
-    }
-
-    /**
-     * Sets the interval in seconds to reconnect to the Homematic gateway.
-     */
-    public void setReconnectInterval(int reconnectInterval) {
-        this.reconnectInterval = reconnectInterval;
-    }
-
-    /**
      * Returns the HmGatewayType.
      */
     public String getGatewayType() {
@@ -234,25 +197,46 @@ public class HomematicConfig {
             return getHmIpPort();
         } else if (HmInterface.CUXD.equals(hmInterface)) {
             return getCuxdPort();
+        } else if (HmInterface.GROUP.equals(hmInterface)) {
+            return getGroupPort();
         } else {
             return getRfPort();
         }
     }
 
+    /**
+     * Returns the port of the RF daemon.
+     */
     private int getRfPort() {
         return rfPort == 0 ? DEFAULT_PORT_RF : rfPort;
     }
 
+    /**
+     * Returns the port of the wired daemon.
+     */
     private int getWiredPort() {
         return wiredPort == 0 ? DEFAULT_PORT_WIRED : wiredPort;
     }
 
+    /**
+     * Returns the port of the HmIp daemon.
+     */
     private int getHmIpPort() {
         return hmIpPort == 0 ? DEFAULT_PORT_HMIP : hmIpPort;
     }
 
+    /**
+     * Returns the port of the CUxD daemon.
+     */
     private int getCuxdPort() {
         return cuxdPort == 0 ? DEFAULT_PORT_CUXD : cuxdPort;
+    }
+
+    /**
+     * Returns the port of the group daemon.
+     */
+    public int getGroupPort() {
+        return groupPort == 0 ? DEFAULT_PORT_GROUP : groupPort;
     }
 
     /**
@@ -277,6 +261,13 @@ public class HomematicConfig {
     }
 
     /**
+     * Returns true, if a group port is configured.
+     */
+    public boolean hasGroupPort() {
+        return groupPort != 0;
+    }
+
+    /**
      * Returns the encoding of a Homematic gateway.
      */
     public String getEncoding() {
@@ -288,16 +279,26 @@ public class HomematicConfig {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns true, if the configured gatewayType is CCU.
      */
+    public boolean isCCUType() {
+        return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_CCU);
+    }
+
+    /**
+     * Returns true, if the configured gatewayType is NoCCU.
+     */
+    public boolean isNoCCUType() {
+        return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_NOCCU);
+    }
+
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
-                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort())
-                .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
+                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
                 .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }

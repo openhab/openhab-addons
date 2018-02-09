@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nikohomecontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Niko Home Control Gateway Bridge Type -->
+
+	<bridge-type id="bridge">
+		<label>Niko Home Control Bridge</label>
+		<description>This bridge represents a Niko Home Control IP-interface</description>
+		<channels>
+			<channel id="alarm" typeId="alarm" />
+			<channel id="notice" typeId="notice" />
+		</channels>
+		<config-description>
+			<parameter name="addr" type="text" required="true">
+				<label>IP or Host Name</label>
+				<description>IP Address of Niko Home Control IP-interface</description>
+				<advanced>false</advanced>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Bridge port</label>
+				<description>Port to communicate with Niko Home Control IP-interface, default 8000</description>
+				<default>8000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for connection with Niko Home Control IP-interface (min), default 300. If set to 0 or left empty, no refresh will be scheduled</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="onOff">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Switch</label>
+		<description>On/Off type action in Niko Home Control</description>
+		<channels>
+			<channel id="switch" typeId="switch" />
+		</channels>
+		<config-description>
+			<parameter name="actionId" type="integer" required="true">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Dimmer</label>
+		<description>Dimmer type actions in Niko Home Control</description>
+		<channels>
+			<channel id="brightness" typeId="brightness" />
+		</channels>
+		<config-description>
+			<parameter name="actionId" type="integer" required="true">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="step" type="integer" required="true">
+				<label>Step value</label>
+				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Shutter</label>
+		<description>Rollershutter type actions in Niko Home Control</description>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter" />
+		</channels>
+		<config-description>
+			<parameter name="actionId" type="integer" required="true">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch control for action in Niko Home Control</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness control for dimmer action in Niko Home Control</description>
+		<category>DimmableLight</category>
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter control for rollershutter action in Niko Home Control</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm from Niko Home Control</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-type id="notice">
+		<kind>trigger</kind>
+		<label>Notice</label>
+		<description>Notice from Niko Home Control</description>
+		<event>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

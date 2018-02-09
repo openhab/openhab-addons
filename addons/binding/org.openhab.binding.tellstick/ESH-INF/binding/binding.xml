@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="tellstick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>Tellstick Binding</name>
-	<description>This is the binding for Telldus Tellstick Basic, Duo, .Net and Z-Net Lite.</description>
-	<author>Jarle Hjortland</author>
+    <name>Tellstick Binding</name>
+    <description>This is the binding for Telldus Tellstick Basic, Duo, .Net and Z-Net Lite.</description>
+    <author>Jarle Hjortland</author>
 
 </binding:binding>

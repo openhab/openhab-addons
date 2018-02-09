@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,16 +33,20 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.matmaul.freeboxos.FreeboxException;
+import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
+import org.matmaul.freeboxos.airmedia.AirMediaReceiverRequest;
 import org.matmaul.freeboxos.call.CallEntry;
 import org.matmaul.freeboxos.lan.LanHostConfig;
 import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.matmaul.freeboxos.phone.PhoneStatus;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxNetDeviceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxNetInterfaceConfiguration;
-import org.openhab.binding.freebox.config.FreeboxPhoneConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxPhoneConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,23 +65,41 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private FreeboxHandler bridgeHandler;
     private Calendar lastPhoneCheck;
     private String netAddress;
+    private String airPlayName;
+    private String airPlayPassword;
 
     public FreeboxThingHandler(Thing thing) {
         super(thing);
-
-        phoneJob = null;
-        callsJob = null;
-        bridgeHandler = null;
-        netAddress = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if ((getThing().getStatus() == ThingStatus.OFFLINE)
+                && ((getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
+                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR))) {
+            return;
+        }
+        try {
+            if (command == null || command instanceof RefreshType) {
+                return;
+            } else if (command instanceof StringType && PLAYURL.equals(channelUID.getId())) {
+                playMedia(command.toString());
+            } else if (command instanceof OnOffType && STOP.equals(channelUID.getId())) {
+                stopMedia();
+            } else {
+                logger.debug("Thing {}: unexpected command {} from channel {}", getThing().getUID(), command,
+                        channelUID.getId());
+            }
+        } catch (FreeboxException e) {
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 
     @Override
     public void initialize() {
-        logger.debug("initialize");
+        logger.debug("initializing handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
         if (bridge == null) {
             initializeThing(null, null);
@@ -105,19 +127,19 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     lastPhoneCheck = Calendar.getInstance();
 
                     if (phoneJob == null || phoneJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
-                        if (polling_interval > 0) {
-                            logger.debug("Scheduling phone state job every {} seconds...", polling_interval);
-                            phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, polling_interval,
+                        long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
+                        if (pollingInterval > 0) {
+                            logger.debug("Scheduling phone state job every {} seconds...", pollingInterval);
+                            phoneJob = scheduler.scheduleWithFixedDelay(phoneRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
 
                     if (callsJob == null || callsJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
-                        if (polling_interval > 0) {
-                            logger.debug("Scheduling phone calls job every {} seconds...", polling_interval);
-                            callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, polling_interval,
+                        long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
+                        if (pollingInterval > 0) {
+                            logger.debug("Scheduling phone calls job every {} seconds...", pollingInterval);
+                            callsJob = scheduler.scheduleWithFixedDelay(callsRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
@@ -127,6 +149,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else if (getThing().getThingTypeUID()
                         .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
                     netAddress = getConfigAs(FreeboxNetInterfaceConfiguration.class).ipAddress;
+                } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+                    airPlayName = getConfigAs(FreeboxAirPlayDeviceConfiguration.class).name;
+                    airPlayPassword = getConfigAs(FreeboxAirPlayDeviceConfiguration.class).password;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -164,7 +189,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -201,7 +226,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -212,7 +237,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("dispose");
+        logger.debug("Disposing handler for thing {}", getThing().getUID());
         if (phoneJob != null && !phoneJob.isCancelled()) {
             phoneJob.cancel(true);
             phoneJob = null;
@@ -279,7 +304,6 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 && (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
                         || getThing().getThingTypeUID()
                                 .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE))) {
-            logger.debug("netAddress {}", netAddress);
             boolean found = false;
             boolean reachable = false;
             String vendor = null;
@@ -317,6 +341,59 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     updateProperty(Thing.PROPERTY_VENDOR, vendor);
                 }
             }
+        }
+    }
+
+    public void updateAirPlayDevice(List<AirMediaReceiver> receivers) {
+        if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+            // The Freebox API allows pushing media only to receivers with photo or video capabilities
+            // but not to receivers with only audio capability
+            boolean found = false;
+            boolean usable = false;
+            if (receivers != null) {
+                for (AirMediaReceiver receiver : receivers) {
+                    if (airPlayName.equals(receiver.getName())) {
+                        found = true;
+                        usable = Boolean.TRUE.equals(receiver.isVideoCapable());
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "AirPlay device not found");
+            } else if (!usable) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "AirPlay device without video capability");
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+
+    public void playMedia(String url) throws FreeboxException {
+        if (bridgeHandler != null && url != null) {
+            stopMedia();
+
+            AirMediaReceiverRequest request = new AirMediaReceiverRequest();
+            request.setAction("start");
+            request.setMediaType("video");
+            if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
+                request.setPassword(airPlayPassword);
+            }
+            request.setMedia(url);
+            bridgeHandler.getFbClient().getAirMediaManager().sendRequestToReceiver(airPlayName, request);
+        }
+    }
+
+    private void stopMedia() throws FreeboxException {
+        if (bridgeHandler != null) {
+            AirMediaReceiverRequest request = new AirMediaReceiverRequest();
+            request.setAction("stop");
+            request.setMediaType("video");
+            if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
+                request.setPassword(airPlayPassword);
+            }
+            bridgeHandler.getFbClient().getAirMediaManager().sendRequestToReceiver(airPlayName, request);
         }
     }
 

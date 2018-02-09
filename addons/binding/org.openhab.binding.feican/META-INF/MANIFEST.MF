@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Feican Binding
+Bundle-SymbolicName: org.openhab.binding.feican;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.feican,
+ org.openhab.binding.feican.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.feican,
+ org.openhab.binding.feican.handler
+Bundle-ActivationPolicy: lazy
