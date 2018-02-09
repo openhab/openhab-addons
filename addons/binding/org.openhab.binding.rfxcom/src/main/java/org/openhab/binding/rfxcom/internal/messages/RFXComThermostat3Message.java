@@ -11,10 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -154,8 +151,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
 	            switch (command) {
 	            	case OFF: return OnOffType.OFF;
 					case ON: return OnOffType.ON;
-					case UP: return OpenClosedType.CLOSED;
-					case DOWN: return OpenClosedType.OPEN;
+					case UP: return UpDownType.UP;
+					case DOWN: return UpDownType.DOWN;
 			        default:
 		                    throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
 	            }
