@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -77,7 +76,7 @@ public abstract class DenonMarantzConnector {
         internalSendCommand(cmd);
     }
 
-    public void sendSurroundProgramCommand(@NonNull Command command) throws UnsupportedCommandTypeException {
+    public void sendSurroundProgramCommand(Command command) throws UnsupportedCommandTypeException {
         String cmd = "MS";
         if (command instanceof RefreshType) {
             cmd += "?";

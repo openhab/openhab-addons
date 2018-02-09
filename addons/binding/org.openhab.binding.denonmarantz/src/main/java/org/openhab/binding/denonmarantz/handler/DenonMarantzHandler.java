@@ -126,11 +126,10 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     break;
 
                 default:
-                    logger.warn("Command for (read only) channel {} not supported.", channelUID.getId());
-                    break;
+                    throw new UnsupportedCommandTypeException();
             }
         } catch (UnsupportedCommandTypeException e) {
-            logger.warn("Unsupported command {} for channel {}", command, channelUID.getId());
+            logger.debug("Unsupported command {} for channel {}", command, channelUID.getId());
         }
     }
 
