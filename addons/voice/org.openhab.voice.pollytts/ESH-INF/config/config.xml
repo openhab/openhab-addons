@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:pollytts">
+		<parameter name="accessKey" type="text">
+			<label>Access Key</label>
+			<description>The Access Key to get access. You need to register to get a key.</description>
+		    <default>"accessKey"</default>
+		</parameter> 
+		
+		<parameter name="secretKey" type="text">
+			<label>Secret Key</label>
+			<description>The Secret Key to get access. You need to register to get a key.</description>
+		    <default>"secretKey"</default>
+		</parameter>
+		
+		<parameter name="serviceRegion" type="text">
+                    <label>Service Region</label>
+                    <description>The Service Region is need to select which region is closest to you.</description>
+                    <options>
+                       <option value="us-east-2">US East (Ohio)</option>
+                       <option value="us-east-1">US East (N. Virginia)</option>
+                       <option value="us-west-2">US West (Oregon)</option>
+                       <option value="eu-west-1">EU (Ireland)</option>
+                   </options>
+                  <default>"eu-west-1"</default>
+           </parameter>
+           
+	       <parameter name="audioFormat" type="text" >
+                  <label>Optional User specified audio format</label>
+                  <description>The user can override the system default audio format with their prefered option. 
+                   "MP3"" and "OGG" are the only audio formats that are supported. </description>
+                  <options>
+                      <option value="OGG">OGG audio format</option>
+                      <option value="MP3">MP3 format</option>
+                      <option value="default">Use system selected audio format</option>
+                  </options>
+                  <default>"default"</default>
+               </parameter>
+
+             <parameter name="cacheExpiration" type="text">
+                <label>Cache expiration life</label>
+                <description>Optional value, determines the age in days that cache files will be purged. 
+                 Default value set to 0 to disable functionality.</description>
+				<default>0</default>
+            </parameter>
+	</config-description>
+
+</config-description:config-descriptions>
