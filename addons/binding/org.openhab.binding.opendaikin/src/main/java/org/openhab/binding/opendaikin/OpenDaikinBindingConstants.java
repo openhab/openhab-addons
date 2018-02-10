@@ -36,6 +36,9 @@ public class OpenDaikinBindingConstants {
     public static final String CHANNEL_AC_MODE = "mode";
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    
+    // Name for the setting that determines if we use Fahrenheit or Celsius 
+    public static final String SETTING_USE_FAHRENHEIT = "useFahrenheit";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 

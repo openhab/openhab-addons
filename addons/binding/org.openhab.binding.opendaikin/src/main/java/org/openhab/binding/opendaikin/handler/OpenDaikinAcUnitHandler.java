@@ -104,11 +104,12 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         OpenDaikinConfiguration config = getConfigAs(OpenDaikinConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
-        }
-        webTargets = new OpenDaikinWebTargets(client, config.host);
-        refreshInterval = config.refresh;
+        } else {
+            webTargets = new OpenDaikinWebTargets(client, config.host);
+            refreshInterval = config.refresh;
 
-        schedulePoll();
+            schedulePoll();
+        }
     }
 
     @Override
@@ -216,8 +217,8 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
 
     private boolean useFahrenheitForChannel(String channel) {
         return this.getThing().getChannel(channel) != null
-                && this.getThing().getChannel(channel).getConfiguration().containsKey("useFahrenheit")
-                && this.getThing().getChannel(channel).getConfiguration().get("useFahrenheit").equals(true);
+                && Boolean.TRUE.equals(this.getThing().getChannel(channel).getConfiguration()
+                        .get(OpenDaikinBindingConstants.SETTING_USE_FAHRENHEIT));
     }
 
     private void changeMode(ControlInfo.Mode mode) throws OpenDaikinCommunicationException {
