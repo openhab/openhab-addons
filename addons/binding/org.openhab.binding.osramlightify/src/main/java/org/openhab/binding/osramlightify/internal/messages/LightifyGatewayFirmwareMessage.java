@@ -72,7 +72,6 @@ public final class LightifyGatewayFirmwareMessage extends LightifyBaseMessage im
         logger.info("{}: firmware version = {}", bridgeHandler.getThing().getUID(), fw);
         bridgeHandler.modifyProperty(Thing.PROPERTY_FIRMWARE_VERSION, fw);
 
-        bridgeHandler.setStatusOnline();
         return true;
     }
 }
