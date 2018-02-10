@@ -79,11 +79,11 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize SolarEdge");
+        logger.info("About to initialize SolarEdge");
         Thing thing = this.getThing();
         SolarEdgeConfiguration config = getConfiguration();
 
-        logger.debug("Discovered Solaredge initialized: {}", config);
+        logger.debug("Solaredge initialized with configuration: {}", config);
 
         this.webInterface = new WebInterface(config, this);
 

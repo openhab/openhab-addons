@@ -17,6 +17,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.solaredge.handler.GenericSolarEdgeHandler;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolarEdgeHandlerFactory} is responsible for creating things and thing
@@ -26,6 +28,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.solaredge")
 public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
+
+    private final Logger logger = LoggerFactory.getLogger(SolarEdgeHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,6 +42,8 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_GENERIC)) {
             return new GenericSolarEdgeHandler(thing);
+        } else {
+            logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }
 
         return null;
