@@ -23,6 +23,7 @@ Import-Package:
  org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -34,5 +35,6 @@ Import-Package:
  org.openhab.binding.avmfritz,
  org.openhab.binding.avmfritz.handler,
  org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
