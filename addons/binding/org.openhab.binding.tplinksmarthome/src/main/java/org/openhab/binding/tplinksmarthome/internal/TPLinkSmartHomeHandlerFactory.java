@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tplinksmarthome.handler.SmartHomeHandler;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.osgi.service.component.annotations.Component;
@@ -56,6 +57,8 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
             device = new SwitchDevice();
         } else if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID);
+        } else if (TPLinkSmartHomeThingType.isRangeExtenderDevice(thingTypeUID)) {
+            device = new RangeExtenderDevice();
         } else {
             return null;
         }

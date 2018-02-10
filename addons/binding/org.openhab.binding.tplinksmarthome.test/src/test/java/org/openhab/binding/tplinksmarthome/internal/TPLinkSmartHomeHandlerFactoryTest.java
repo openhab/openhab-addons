@@ -28,6 +28,7 @@ import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
 import org.openhab.binding.tplinksmarthome.handler.SmartHomeHandler;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 
 /**
@@ -51,7 +52,7 @@ public class TPLinkSmartHomeHandlerFactoryTest {
             { "lb120", BulbDevice.class },
             { "lb130", BulbDevice.class },
             { "lb230", BulbDevice.class },
-            { "re270", SwitchDevice.class },
+            { "re270", RangeExtenderDevice.class },
             { "unknown", null },
     });
     // @formatter:on

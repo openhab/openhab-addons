@@ -13,7 +13,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import com.google.gson.annotations.Expose;
 
 /**
- * Data class for setting the tp-Link Smart Plug state and retrieving the result.
+ * Data class for setting the TP-Link Smart Plug state and retrieving the result.
  * Only setter methods as the values are set by gson based on the retrieved json.
  *
  * @author Hilbrand Bouwkamp - Initial contribution

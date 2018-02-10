@@ -68,7 +68,7 @@ public class SmartHomeHandlerTest {
     public void setUp() throws IOException {
         initMocks(this);
         configuration.put(TPLinkSmartHomeBindingConstants.CONFIG_IP, "localhost");
-        configuration.put(TPLinkSmartHomeBindingConstants.CONFIG_REFRESH, 300);
+        configuration.put(TPLinkSmartHomeBindingConstants.CONFIG_REFRESH, 0);
         when(thing.getConfiguration()).thenReturn(configuration);
         when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         when(connection.sendCommand(Commands.getSysinfo()))
@@ -81,7 +81,6 @@ public class SmartHomeHandlerTest {
         };
         when(smartHomeDevice.handleCommand(eq(CHANNEL_SWITCH), eq(connection), any(), any())).thenReturn(true);
         handler.setCallback(callback);
-        handler.initialize();
     }
 
     @After
@@ -91,6 +90,7 @@ public class SmartHomeHandlerTest {
 
     @Test
     public void testInitializeShouldCallTheCallback() throws InterruptedException {
+        handler.initialize();
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
 
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -99,16 +99,31 @@ public class SmartHomeHandlerTest {
     }
 
     @Test
-    public void testHhandleCommandRefreshType() {
+    public void testHandleCommandRefreshType() {
+        handler.initialize();
+        assertHandleCommandRefreshType(-53);
+    }
+
+    @Test
+    public void testHandleCommandRefreshTypeRangeExtender() throws IOException {
+        when(connection.sendCommand(Commands.getSysinfo()))
+                .thenReturn(ModelTestUtil.readJson("rangeextender_get_sysinfo_response"));
+        handler.initialize();
+        assertHandleCommandRefreshType(-70);
+    }
+
+    private void assertHandleCommandRefreshType(int expectedRssi) {
+        handler.initialize();
         ChannelUID channelUID = new ChannelUID(CHANNEL_PREFIX + CHANNEL_RSSI);
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertEquals("State of RSSI channel should be set", new DecimalType(-53), stateCaptor.getValue());
+        assertEquals("State of RSSI channel should be set", new DecimalType(expectedRssi), stateCaptor.getValue());
     }
 
     @Test
-    public void testHhandleCommandOther() throws InterruptedException {
+    public void testHandleCommandOther() throws InterruptedException {
+        handler.initialize();
         ChannelUID channelUID = new ChannelUID(CHANNEL_PREFIX + CHANNEL_SWITCH);
         Mockito.doReturn(OnOffType.ON).when(smartHomeDevice).updateChannel(eq(channelUID.getId()), any());
         handler.handleCommand(channelUID, RefreshType.REFRESH);

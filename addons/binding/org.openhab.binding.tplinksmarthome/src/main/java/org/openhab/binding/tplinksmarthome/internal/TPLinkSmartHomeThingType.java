@@ -96,7 +96,18 @@ enum TPLinkSmartHomeThingType {
      */
     public static boolean isSwitchingDevice(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type != DeviceType.BULB);
+                .anyMatch(t -> t.type == DeviceType.PLUG || t.type == DeviceType.SWITCH);
+    }
+
+    /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a range extender
+     */
+    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
+                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
     }
 
     /**

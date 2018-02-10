@@ -51,13 +51,23 @@ public class PropertiesCollectorTest {
         assertProperties("plug_get_sysinfo_response", TPLinkSmartHomeThingType.HS100, 12);
     }
 
+    /**
+     * Tests if properties for a range extender device are correctly parsed.
+     *
+     * @throws IOException exception in case device not reachable
+     */
+    @Test
+    public void testRangeExtenderProperties() throws IOException {
+        assertProperties("rangeextender_get_sysinfo_response", TPLinkSmartHomeThingType.RE270K, 11);
+    }
+
     private void assertProperties(@NonNull String responseFile, @NonNull TPLinkSmartHomeThingType thingType,
             int expectedSize) throws IOException {
         ThingTypeUID thingTypeUID = thingType.thingTypeUID();
         Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
                 ModelTestUtil.toJson(gson, responseFile, GetSysinfo.class).getSysinfo());
 
-        assertEquals("Number of properties not as expected for properties", expectedSize, props.size());
+        assertEquals("Number of properties not as expected for properties: " + props, expectedSize, props.size());
         props.entrySet().stream().forEach(
                 entry -> assertNotNull("Property '" + entry.getKey() + "' should not be null", entry.getValue()));
     }
