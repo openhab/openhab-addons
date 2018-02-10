@@ -497,29 +497,17 @@ public class LightifyDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void setMinimumWhiteTemperature(int temperature) {
-        thing.setProperty(PROPERTY_MINIMUM_WHITE_TEMPERATURE, Integer.toString(temperature));
-
-        if (configuration.whiteTemperatureMin == null) {
-            configuration.whiteTemperatureMin = temperature;
-        }
-    }
-
-    public void setMaximumWhiteTemperature(int temperature) {
-        thing.setProperty(PROPERTY_MAXIMUM_WHITE_TEMPERATURE, Integer.toString(temperature));
-
-        if (configuration.whiteTemperatureMax == null) {
-            configuration.whiteTemperatureMax = temperature;
-        }
-    }
-
     public void updateFirmwareVersion(byte[] firmwareVersionBytes) {
         if (this.firmwareVersionBytes == null || !Arrays.equals(this.firmwareVersionBytes, firmwareVersionBytes)) {
             this.firmwareVersionBytes = firmwareVersionBytes.clone();
 
-            thing.setProperty(PROPERTY_FIRMWARE_VERSION, String.format("%02X%02X%02X%02X",
+            updateProperty(PROPERTY_FIRMWARE_VERSION, String.format("%02X%02X%02X%02X",
                 firmwareVersionBytes[0], firmwareVersionBytes[1],
                 firmwareVersionBytes[2], firmwareVersionBytes[3]));
         }
+    }
+
+    public void modifyProperty(String name, String value) {
+        updateProperty(name, value);
     }
 }

@@ -146,7 +146,7 @@ public final class LightifyConnector extends Thread implements LightifyTransmitQ
             socket = new Socket(addr, LIGHTIFY_GATEWAY_PORT);
             in = socket.getInputStream();
             out = socket.getOutputStream();
-            bridgeHandler.getThing().setProperty(PROPERTY_CURRENT_ADDRESS, addr.getHostAddress());
+            bridgeHandler.modifyProperty(PROPERTY_CURRENT_ADDRESS, addr.getHostAddress());
             return true;
         } catch (IOException ioe) {
             disconnect();

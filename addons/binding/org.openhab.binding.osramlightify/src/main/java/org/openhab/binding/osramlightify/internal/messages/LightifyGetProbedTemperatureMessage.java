@@ -73,7 +73,7 @@ public final class LightifyGetProbedTemperatureMessage extends LightifyBaseGetDe
                 state.temperature = MAX_TEMPERATURE;
             }
 
-            thing.setProperty(propertyName, Integer.toString(state.temperature));
+            ((LightifyDeviceHandler) thing.getHandler()).modifyProperty(propertyName, Integer.toString(state.temperature));
 
             return true;
         }

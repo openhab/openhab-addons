@@ -13,8 +13,6 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_WIFI_FIRMWARE_VERSION;
-
 import org.eclipse.smarthome.core.thing.Thing;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
@@ -72,8 +70,7 @@ public final class LightifyGatewayFirmwareMessage extends LightifyBaseMessage im
 
         String fw = firmwareVersion[0] + "." + firmwareVersion[1] + "." + firmwareVersion[2] + "." + firmwareVersion[3];
         logger.info("{}: firmware version = {}", bridgeHandler.getThing().getUID(), fw);
-        bridgeHandler.getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, fw);
-        bridgeHandler.getThing().setProperty(PROPERTY_WIFI_FIRMWARE_VERSION, null);
+        bridgeHandler.modifyProperty(Thing.PROPERTY_FIRMWARE_VERSION, fw);
 
         bridgeHandler.setStatusOnline();
         return true;

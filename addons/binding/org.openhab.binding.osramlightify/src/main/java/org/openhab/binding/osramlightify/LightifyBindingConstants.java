@@ -68,7 +68,6 @@ public final class LightifyBindingConstants {
     public static final String PROPERTY_CURRENT_ADDRESS = "Current address";
     public static final String PROPERTY_MINIMUM_WHITE_TEMPERATURE = "Minimum white temperature";
     public static final String PROPERTY_MAXIMUM_WHITE_TEMPERATURE = "Maximum white temperature";
-    public static final String PROPERTY_WIFI_FIRMWARE_VERSION = "Wifi firmware version";
     public static final String PROPERTY_IEEE_ADDRESS = "IEEE address";
 
     @SuppressWarnings("unchecked")

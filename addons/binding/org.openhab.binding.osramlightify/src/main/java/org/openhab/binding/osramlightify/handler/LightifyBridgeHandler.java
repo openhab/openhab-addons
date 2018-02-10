@@ -131,6 +131,10 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
         return thingRegistry.get(thingUID);
     }
 
+    public void modifyProperty(String name, String value) {
+        updateProperty(name, value);
+    }
+
     public LightifyDeviceDiscoveryService getDiscoveryService() {
         return discoveryService;
     }
