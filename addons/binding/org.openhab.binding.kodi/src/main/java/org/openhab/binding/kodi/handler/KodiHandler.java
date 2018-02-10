@@ -251,25 +251,25 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection.playURI(command.toString());
     }
 
-    public void playPVRChannel(final Command command, final String channelType, final String channelId) {
-        int channelGroupID = getPVRChannelGroupID(channelType, channelId);
-        int channelID = connection.getChannelID(channelGroupID, command.toString());
-        if (channelID > 0) {
-            connection.playPVRChannel(channelID);
+    public void playPVRChannel(final Command command, final String pvrChannelType, final String channelId) {
+        int pvrChannelGroupId = getPVRChannelGroupId(pvrChannelType, channelId);
+        int pvrChannelId = connection.getPVRChannelId(pvrChannelGroupId, command.toString());
+        if (pvrChannelId > 0) {
+            connection.playPVRChannel(pvrChannelId);
         } else {
             logger.debug("Received unknown PVR channel '{}'.", command);
         }
     }
 
-    private int getPVRChannelGroupID(final String channelType, final String channelId) {
+    private int getPVRChannelGroupId(final String pvrChannelType, final String channelId) {
         KodiChannelConfig config = getThing().getChannel(channelId).getConfiguration().as(KodiChannelConfig.class);
-        String channelGroupName = config.getGroup();
-        int channelGroupID = connection.getChannelGroupID(channelType, channelGroupName);
-        if (channelGroupID <= 0) {
-            logger.warn("Received unknown PVR channel group '{}'. Using default.", channelGroupName);
-            channelGroupID = PVR_TV.equals(channelType) ? 1 : 2;
+        String pvrChannelGroupName = config.getGroup();
+        int pvrChannelGroupId = connection.getPVRChannelGroupId(pvrChannelType, pvrChannelGroupName);
+        if (pvrChannelGroupId <= 0) {
+            logger.warn("Received unknown PVR channel group '{}'. Using default.", pvrChannelGroupName);
+            pvrChannelGroupId = PVR_TV.equals(pvrChannelType) ? 1 : 2;
         }
-        return channelGroupID;
+        return pvrChannelGroupId;
     }
 
     public void playNotificationSoundURI(Command command) {
@@ -315,13 +315,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
-    private void updatePVRChannelStateDescription(final String channelType, final String channelId) {
+    private void updatePVRChannelStateDescription(final String pvrChannelType, final String channelId) {
         if (isLinked(channelId)) {
-            int channelGroupID = getPVRChannelGroupID(channelType, channelId);
-            List<KodiPVRChannel> channels = connection.getChannels(channelGroupID);
+            int pvrChannelGroupId = getPVRChannelGroupId(pvrChannelType, channelId);
+            List<KodiPVRChannel> pvrChannels = connection.getPVRChannels(pvrChannelGroupId);
             List<StateOption> options = new ArrayList<>();
-            for (KodiPVRChannel channel : channels) {
-                options.add(new StateOption(channel.getLabel(), channel.getLabel()));
+            for (KodiPVRChannel pvrChannel : pvrChannels) {
+                options.add(new StateOption(pvrChannel.getLabel(), pvrChannel.getLabel()));
             }
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
         }
