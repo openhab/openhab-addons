@@ -22,7 +22,7 @@
 	<channel-type id="temperature">
 		<item-type>Dimmer</item-type>
 		<label>White Temperature (%)</label>
-		<description>White temperature from 0% (most yellow - lowest Kelvin) to 100% (most blue - highest Kelvin). The minimum and maximum Kelvin supported by this particular light can be configured in the thing's parameters. Commands on this channel auo-generate matching commands on the K temperature channel and vice-versa.</description>
+		<description>White temperature from 0% (most blue - highest Kelvin) to 100% (most yellow - lowest Kelvin). The minimum and maximum Kelvin supported by this particular light can be configured in the Thing's parameters. Commands on this channel auo-generate matching commands on the K temperature channel and vice-versa.</description>
 		<category>Temperature</category>
 	</channel-type>
 
