@@ -89,11 +89,10 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize NibeUplink");
-        Thing thing = this.getThing();
+        logger.info("About to initialize NibeUplink");
         NibeUplinkConfiguration config = getConfiguration();
 
-        logger.debug("Discovered NibeUplink initialized: {}", config);
+        logger.debug("NibeUplink initialized with configuration: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
         this.houseKeepingInterval = config.getHouseKeepingInterval();
