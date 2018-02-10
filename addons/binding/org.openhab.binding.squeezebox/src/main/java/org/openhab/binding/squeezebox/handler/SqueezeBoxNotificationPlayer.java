@@ -227,16 +227,20 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
         // Resume playing save playlist item if player wasn't stopped.
         // Note that setting the time doesn't work for remote streams.
-        if (!playerState.isStopped()) {
-            logger.debug("Resuming last item playing");
-            squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
-            squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
-        } else if (!playerState.isPlaying()) {
-            logger.debug("Pausing the player");
-            squeezeBoxServerHandler.pause(mac);
-        } else {
-            logger.debug("Stopping the player");
-            squeezeBoxServerHandler.stop(mac);
+        switch (playerState.getPlayState()) {
+            case PLAY:
+                logger.debug("Resuming last item playing");
+                squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
+                squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
+                break;
+            case PAUSE:
+                logger.debug("Pausing the player");
+                squeezeBoxServerHandler.pause(mac);
+                break;
+            case STOP:
+                logger.debug("Stopping the player");
+                squeezeBoxServerHandler.stop(mac);
+                break;
         }
 
         // We do not wait for the volume acknowledge to avoid exceptions during
