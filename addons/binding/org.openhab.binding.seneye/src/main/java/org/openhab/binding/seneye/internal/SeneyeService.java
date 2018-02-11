@@ -151,7 +151,6 @@ public class SeneyeService {
         String url = "https://api.seneye.com/v1/devices" + request;
 
         Request getMethod = httpClient.newRequest(url);
-        getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         getMethod.accept("application/json");
 
         try {
@@ -170,9 +169,6 @@ public class SeneyeService {
             return "";
         } catch (ExecutionException e) {
             logger.debug("Communication error", e.getCause());
-            return "";
-        } catch (Exception e) {
-            logger.debug("Error occured", e);
             return "";
         }
     }
