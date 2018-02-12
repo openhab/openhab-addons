@@ -44,6 +44,7 @@ enum TPLinkSmartHomeThingType {
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),
+    HS210("hs210", DeviceType.SWITCH),
 
     // Range Extender Thing Type UIDs
     RE270K("re270", DeviceType.RANGE_EXTENDER),
