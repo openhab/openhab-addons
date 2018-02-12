@@ -225,13 +225,14 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     private void restorePlayerState() {
         logger.debug("Restoring player state");
 
-        // Resume playing save playlist item if player wasn't stopped.
+        // Resume playing save playlist item.
         // Note that setting the time doesn't work for remote streams.
+        squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
+        squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
+
         switch (playerState.getPlayState()) {
             case PLAY:
                 logger.debug("Resuming last item playing");
-                squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
-                squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
                 break;
             case PAUSE:
                 logger.debug("Pausing the player");
