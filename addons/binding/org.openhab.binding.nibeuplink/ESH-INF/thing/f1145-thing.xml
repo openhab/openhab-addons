@@ -12,9 +12,10 @@
 			<channel-group typeId="f1145-hotwater" id="hotwater" />
 			<channel-group typeId="f1145-compressor" id="compressor" />
 			<channel-group typeId="f1145-airsupply" id="airsupply" />
+			<channel-group typeId="custom-custom" id="custom" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />
 	</thing-type>
-	
+
 </thing:thing-descriptions>

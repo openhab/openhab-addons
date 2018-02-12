@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
 /**
@@ -30,18 +30,16 @@ public class VVM320Handler extends GenericUplinkHandler {
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        return VVM320Channels.fromId(id);
+        Channel specific = VVM320Channels.fromId(id);
+        if (specific == null) {
+            return CustomChannels.fromId(id);
+        }
+        return specific;
     }
 
     @Override
     public List<Channel> getChannels() {
-        List<Channel> list = new ArrayList<>(VVM320Channels.values().length);
-
-        for (VVM320Channels channel : VVM320Channels.values()) {
-            list.add(channel);
-        }
-
-        return list;
+        return getChannels(VVM320Channels.values());
     }
 
 }

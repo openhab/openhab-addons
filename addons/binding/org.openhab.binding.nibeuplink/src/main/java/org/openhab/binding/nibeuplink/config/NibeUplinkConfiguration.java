@@ -27,6 +27,15 @@ public class NibeUplinkConfiguration {
     private Integer pollingInterval = 60;
     private Integer houseKeepingInterval = 3600;
 
+    private Integer customChannel01;
+    private Integer customChannel02;
+    private Integer customChannel03;
+    private Integer customChannel04;
+    private Integer customChannel05;
+    private Integer customChannel06;
+    private Integer customChannel07;
+    private Integer customChannel08;
+
     public String getUser() {
         return user;
     }
@@ -81,6 +90,70 @@ public class NibeUplinkConfiguration {
 
     public final void setHouseKeepingInterval(Integer houseKeepingInterval) {
         this.houseKeepingInterval = houseKeepingInterval;
+    }
+
+    public final Integer getCustomChannel01() {
+        return customChannel01;
+    }
+
+    public final void setCustomChannel01(Integer customChannel01) {
+        this.customChannel01 = customChannel01;
+    }
+
+    public final Integer getCustomChannel02() {
+        return customChannel02;
+    }
+
+    public final void setCustomChannel02(Integer customChannel02) {
+        this.customChannel02 = customChannel02;
+    }
+
+    public final Integer getCustomChannel03() {
+        return customChannel03;
+    }
+
+    public final void setCustomChannel03(Integer customChannel03) {
+        this.customChannel03 = customChannel03;
+    }
+
+    public final Integer getCustomChannel04() {
+        return customChannel04;
+    }
+
+    public final void setCustomChannel04(Integer customChannel04) {
+        this.customChannel04 = customChannel04;
+    }
+
+    public final Integer getCustomChannel05() {
+        return customChannel05;
+    }
+
+    public final void setCustomChannel05(Integer customChannel05) {
+        this.customChannel05 = customChannel05;
+    }
+
+    public final Integer getCustomChannel06() {
+        return customChannel06;
+    }
+
+    public final void setCustomChannel06(Integer customChannel06) {
+        this.customChannel06 = customChannel06;
+    }
+
+    public final Integer getCustomChannel07() {
+        return customChannel07;
+    }
+
+    public final void setCustomChannel07(Integer customChannel07) {
+        this.customChannel07 = customChannel07;
+    }
+
+    public final Integer getCustomChannel08() {
+        return customChannel08;
+    }
+
+    public final void setCustomChannel08(Integer customChannel08) {
+        this.customChannel08 = customChannel08;
     }
 
     @Override

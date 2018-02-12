@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +29,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,11 +97,28 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
 
         logger.debug("NibeUplink initialized with configuration: {}", config);
 
+        setupCustomChannels(config);
         this.refreshInterval = config.getPollingInterval();
         this.houseKeepingInterval = config.getHouseKeepingInterval();
         this.webInterface = new UplinkWebInterface(config, this);
 
         this.startPolling();
+    }
+
+    /**
+     * initialize the custom channels out of the configuration
+     *
+     * @param config
+     */
+    private void setupCustomChannels(NibeUplinkConfiguration config) {
+        CustomChannels.CH_CH01.setId(config.getCustomChannel01());
+        CustomChannels.CH_CH02.setId(config.getCustomChannel02());
+        CustomChannels.CH_CH03.setId(config.getCustomChannel03());
+        CustomChannels.CH_CH04.setId(config.getCustomChannel04());
+        CustomChannels.CH_CH05.setId(config.getCustomChannel05());
+        CustomChannels.CH_CH06.setId(config.getCustomChannel06());
+        CustomChannels.CH_CH07.setId(config.getCustomChannel07());
+        CustomChannels.CH_CH08.setId(config.getCustomChannel08());
     }
 
     /**
@@ -178,6 +198,26 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                         getThing().getThingTypeUID().getAsString());
             }
         }
+    }
+
+    /**
+     * internal method which composes the channel list out of the specific channels and the additional custom channels.
+     * custom channel implementation is the same for all models because it has a generic approach.
+     *
+     * @param specificChannels
+     * @return
+     */
+    protected List<Channel> getChannels(Channel[] specificChannels) {
+        List<Channel> list = new ArrayList<>(specificChannels.length + CustomChannels.values().length);
+
+        for (Channel channel : specificChannels) {
+            list.add(channel);
+        }
+        for (Channel channel : CustomChannels.values()) {
+            list.add(channel);
+        }
+
+        return list;
     }
 
     /**

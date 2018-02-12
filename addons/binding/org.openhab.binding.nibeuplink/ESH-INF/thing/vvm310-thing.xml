@@ -12,6 +12,7 @@
 			<channel-group typeId="vvm310-hotwater" id="hotwater" />
 			<channel-group typeId="vvm310-compressor" id="compressor" />
 			<channel-group typeId="vvm310-airsupply" id="airsupply" />
+			<channel-group typeId="custom-custom" id="custom" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />

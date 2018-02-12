@@ -51,6 +51,9 @@ interval (seconds) in which values are retrieved from NibeUplink. Setting less t
 - **houseKeepingInterval**  
 interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600). Usually this settings should not be changed.
 
+- **customChannel01 - customChannel08**  
+allows to define up to 8 custom channels which are not covered in the basic channel list of your model. Any number between 10000 and 50000 is allowed. 
+
 ### Examples
 
 - minimum configuration
@@ -92,12 +95,12 @@ The "all channels" lists have been generated automatically from Nibe Modbus Mana
 ### Thing
 
 ```
-nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300 ]
+nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300, customChannel01=47376, customChannel02=48009 ]
 ```
 
 ### Items
 
 ```
-Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f °C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
-Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f °C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
+Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f ï¿½C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
+Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f ï¿½C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
 ```

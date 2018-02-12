@@ -12,6 +12,7 @@
 			<channel-group typeId="f730-hotwater" id="hotwater" />
 			<channel-group typeId="f730-compressor" id="compressor" />
 			<channel-group typeId="f730-airsupply" id="airsupply" />
+			<channel-group typeId="custom-custom" id="custom" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:nibeuplink:web" />

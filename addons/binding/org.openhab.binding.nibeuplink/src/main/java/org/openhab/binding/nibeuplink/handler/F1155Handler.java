@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 import org.openhab.binding.nibeuplink.internal.model.F1155Channels;
 
 /**
@@ -30,18 +30,16 @@ public class F1155Handler extends GenericUplinkHandler {
 
     @Override
     protected Channel getThingSpecificChannel(String id) {
-        return F1155Channels.fromId(id);
+        Channel specific = F1155Channels.fromId(id);
+        if (specific == null) {
+            return CustomChannels.fromId(id);
+        }
+        return specific;
     }
 
     @Override
     public List<Channel> getChannels() {
-        List<Channel> list = new ArrayList<>(F1155Channels.values().length);
-
-        for (F1155Channels channel : F1155Channels.values()) {
-            list.add(channel);
-        }
-
-        return list;
+        return getChannels(F1155Channels.values());
     }
 
 }
