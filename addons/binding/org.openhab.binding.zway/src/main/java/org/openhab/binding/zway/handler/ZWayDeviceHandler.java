@@ -467,18 +467,16 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-    	
-    	// Deprecated since latest release, therefore deactivated
-    	// Refresh update time
-        //logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
-
-        //refreshLastUpdate();
+        // Deprecated, therefore deactivated
+        // Refresh update time
+        // logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
+        // refreshLastUpdate();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
-    	long startTime = System.currentTimeMillis();
-    	logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
+        long startTime = System.currentTimeMillis();
+        logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
         // Check Z-Way bridge handler
         ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
@@ -492,7 +490,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         final String deviceId = channel.getProperties().get("deviceId");
 
         if (deviceId != null) {
-            DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+            DeviceList deviceList = zwayBridgeHandler.getDeviceList();
             if (deviceList != null) {
                 Device device = deviceList.getDeviceById(deviceId);
                 if (device == null) {
