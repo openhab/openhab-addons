@@ -36,6 +36,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * The {@link ZWayDeviceDiscoveryService} is responsible for device discovery.
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - deviceList now stored within bridge
  */
 public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -69,6 +70,8 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
         LocationList locationList = mBridgeHandler.getZWayApi().getLocations();
 
         DeviceList deviceList = mBridgeHandler.getZWayApi().getDevices();
+        // Stores the device list within the BridgeHandler to reduce the amount of httpRequests
+        mBridgeHandler.setDeviceList(deviceList);
         if (deviceList != null) {
             Map<Integer, List<Device>> physicalDevices = deviceList.getDevicesGroupByNodeId();
             for (Map.Entry<Integer, List<Device>> entry : physicalDevices.entrySet()) {
