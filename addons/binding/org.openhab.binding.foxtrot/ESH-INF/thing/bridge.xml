@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Foxtrot PLC Bridge -->
+	<bridge-type id="plc">
+		<label>Foxtrot PLC</label>
+		<description>This bridge represents the gateway to Foxtrot PLC.</description>
+
+		<properties>
+			<property name="vendor">Tecomat, a.s.</property>
+			<property name="plccomsHost">Tecomat, a.s.</property>
+			<property name="plccomsPort">Tecomat, a.s.</property>
+			<property name="plccomsVersion">unknown</property>
+			<property name="plccomsEpsnetVersion">unknown</property>
+			<property name="plccomsIniVersion">unknown</property>
+			<property name="plcVersion">unknown</property>
+			<property name="plcIp">unknown</property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname or IP</label>
+				<description>Hostname or IP of the PLCComS</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="0">
+				<label>Port</label>
+				<description>Communication port of the PLCComS</description>
+				<default>5010</default>
+			</parameter>
+			<parameter name="lowRefreshInterval" type="integer" required="false" min="1">
+				<label>Low refresh interval</label>
+				<description>Refresh interval (in sec) for thing in LOW refresh group, default 5 min</description>
+				<default>300</default>
+			</parameter>
+			<parameter name="mediumRefreshInterval" type="integer" required="false" min="1">
+				<label>Medium refresh interval</label>
+				<description>Refresh interval (in sec) for thing in MEDIUM refresh group, default 1 min</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="highRefreshInterval" type="integer" required="false" min="1">
+				<label>High refresh interval</label>
+				<description>Refresh interval (in sec) for thing in HIGH refresh group, default 15 sec</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="realtimeRefreshInterval" type="integer" required="false" min="1">
+				<label>Realtime refresh interval</label>
+				<description>Refresh interval (in sec) for thing in REALTIME refresh group, default 1 sec</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

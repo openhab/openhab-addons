@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="variable">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="plc"/>
+		</supported-bridge-type-refs>
+
+		<label>Variable</label>
+		<description>Published Foxtrot PLC's variable</description>
+
+		<channels>
+			<channel typeId="number-channel" id="number"/>
+			<channel typeId="string-channel" id="string"/>
+			<channel typeId="bool-channel" id="bool"/>
+		</channels>
+
+		<config-description>
+			<parameter name="variableName" type="text" required="true">
+				<label>Variable name</label>
+				<description>Variable name defined in PLC PUB file</description>
+				<default>LOW</default>
+			</parameter>
+			<parameter name="refreshGroup" type="text">
+				<label>Refresh group</label>
+				<description>Refresh group define how frequently values will updated, default is LOW</description>
+				<default>LOW</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Numeric representation of Foxtrot INT or REAL variable</description>
+	</channel-type>
+
+	<channel-type id="string-channel">
+		<item-type>Text</item-type>
+		<label>Text</label>
+		<description>Textual representation of Foxtrot STRING variable</description>
+	</channel-type>
+
+	<channel-type id="bool-channel">
+		<item-type>Switch</item-type>
+		<label>Bool</label>
+		<description>Logical representation of Foxtrot BOOL variable</description>
+	</channel-type>
+</thing:thing-descriptions>

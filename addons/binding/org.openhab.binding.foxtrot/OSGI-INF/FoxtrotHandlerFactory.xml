@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.foxtrot" immediate="true"
+		name="org.openhab.binding.foxtrot.internal.FoxtrotHandlerFactory">
+
+	<scr:service>
+		<scr:provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+	</scr:service>
+
+	<scr:implementation class="org.openhab.binding.foxtrot.internal.FoxtrotHandlerFactory"/>
+</scr:component>
