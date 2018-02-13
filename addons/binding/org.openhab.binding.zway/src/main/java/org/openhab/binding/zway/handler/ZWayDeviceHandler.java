@@ -68,6 +68,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * sent to one of the channels.
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - handleUpdate deactivated (deprecated); handleCommand debug info added
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -466,15 +467,18 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Refresh update time
-        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
+    	
+    	// Deprecated since latest release, therefore deactivated
+    	// Refresh update time
+        //logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
 
-        refreshLastUpdate();
+        //refreshLastUpdate();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
-        logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
+    	long startTime = System.currentTimeMillis();
+    	logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
         // Check Z-Way bridge handler
         ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
@@ -634,6 +638,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 refreshChannel(channel);
             }
         }
+        logger.debug("Handeling of command took {} milliseconds", System.currentTimeMillis() - startTime);
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
