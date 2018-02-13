@@ -103,7 +103,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         }
     }
 
-    protected abstract DEVICE updateReadings() throws RetrofitError;
+    protected abstract DEVICE updateReadings();
 
     @Override
     protected void updateChannels() {
@@ -118,7 +118,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     newDeviceReading = updateReadings();
                 } catch (RetrofitError e) {
                     logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                 }
                 if (newDeviceReading != null) {

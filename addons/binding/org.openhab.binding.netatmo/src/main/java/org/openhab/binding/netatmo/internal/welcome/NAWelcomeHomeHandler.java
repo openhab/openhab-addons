@@ -32,7 +32,6 @@ import io.swagger.client.model.NAWelcomeEvent;
 import io.swagger.client.model.NAWelcomeHome;
 import io.swagger.client.model.NAWelcomeHomeData;
 import io.swagger.client.model.NAWelcomeSnapshot;
-import retrofit.RetrofitError;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -54,7 +53,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     @Override
-    protected NAWelcomeHome updateReadings() throws RetrofitError {
+    protected NAWelcomeHome updateReadings() {
         NAWelcomeHome result = null;
         NAWelcomeHomeData homeDataBody = getBridgeHandler().getWelcomeDataBody(getId());
         if (homeDataBody != null) {

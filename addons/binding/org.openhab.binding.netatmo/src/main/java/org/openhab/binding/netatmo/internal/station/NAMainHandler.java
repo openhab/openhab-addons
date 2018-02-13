@@ -21,7 +21,6 @@ import org.openhab.binding.netatmo.internal.WeatherUtils;
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAMain;
 import io.swagger.client.model.NAStationDataBody;
-import retrofit.RetrofitError;
 
 /**
  * {@link NAMainHandler} is the base class for all current Netatmo
@@ -37,7 +36,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
-    protected NAMain updateReadings() throws RetrofitError {
+    protected NAMain updateReadings() {
         NAMain result = null;
         NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
         if (stationDataBody != null) {
