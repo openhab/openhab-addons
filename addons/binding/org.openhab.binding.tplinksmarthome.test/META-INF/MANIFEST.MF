@@ -19,14 +19,15 @@ Import-Package: org.apache.commons.io,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
  org.junit,
+ org.junit.runner;version="4.12.0",
+ org.junit.runners;version="4.12.0",
  org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing,
  org.openhab.binding.tplinksmarthome,
  org.openhab.binding.tplinksmarthome.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.junit,
- org.mockito,
- org.hamcrest
 Export-Package: 
  org.openhab.binding.tplinksmarthome;uses:="org.eclipse.smarthome.test"
