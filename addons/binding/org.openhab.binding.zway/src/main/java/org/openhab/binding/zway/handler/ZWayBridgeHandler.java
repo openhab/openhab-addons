@@ -69,6 +69,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * - important: the configured devices not changed in openHAB Connector!
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - Bridge now stores DeviceList
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
@@ -84,6 +85,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
     private ZWayBridgeConfiguration mConfig = null;
     private IZWayApi mZWayApi = null;
+    
+    private DeviceList deviceList = null;
 
     /**
      * Initializer authenticate the Z-Way API instance with bridge configuration.
@@ -568,6 +571,14 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
      */
     public IZWayApi getZWayApi() {
         return mZWayApi;
+    }
+    
+    public DeviceList getDeviceList() {
+        return deviceList;
+    }
+
+    public void setDeviceList(DeviceList deviceList) {
+        this.deviceList = deviceList;
     }
 
     /********************************
