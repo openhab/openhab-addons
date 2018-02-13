@@ -173,7 +173,7 @@
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43066">
+	<channel-type id="f730-type-43066">
 		<item-type>Number</item-type>
 		<label>Defrosting time</label>
 		<description>Defrosting time, no defrosting heater in the product</description>
