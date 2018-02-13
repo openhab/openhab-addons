@@ -110,12 +110,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleTokenInitAndRefresh() {
-        refreshJob = scheduler.scheduleAtFixedRate(() -> {
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             logger.info("Initializing API Connection and scheduling token refresh every {}s",
                     configuration.reconnectInterval);
-            initializeApiClient();
-
             try {
+                initializeApiClient();
                 // I use a connection to Netatmo API using PartnerAPI to ensure that API is reachable
                 getPartnerApi().partnerdevices();
                 connectionSucceed();
