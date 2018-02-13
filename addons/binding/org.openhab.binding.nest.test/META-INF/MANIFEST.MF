@@ -18,12 +18,9 @@ Import-Package:
  org.hamcrest;core=split,
  org.junit,
  org.mockito,
+ org.mockito.stubbing,
  org.openhab.binding.nest,
  org.openhab.binding.nest.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: 
- org.hamcrest,
- org.junit,
- org.mockito
