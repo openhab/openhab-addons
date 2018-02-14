@@ -41,6 +41,7 @@ import org.openhab.binding.kodi.internal.KodiDynamicStateDescriptionProvider;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
+import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
@@ -162,6 +163,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
                 }
                 break;
+            case CHANNEL_PLAYFAVORITE:
+                if (command instanceof StringType) {
+                    playFavorite(command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PLAYFAVORITE, UnDefType.UNDEF);
+                }
+                break;
             case CHANNEL_PVR_OPEN_TV:
                 if (command instanceof StringType) {
                     playPVRChannel(command, PVR_TV, CHANNEL_PVR_OPEN_TV);
@@ -251,6 +259,15 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection.playURI(command.toString());
     }
 
+    public void playFavorite(Command command) {
+        String path = connection.getFavoritePath(command.toString());
+        if (StringUtils.isNotEmpty(path)) {
+            connection.playURI(path);
+        } else {
+            logger.debug("Received unknown favorite '{}'.", command);
+        }
+    }
+
     public void playPVRChannel(final Command command, final String pvrChannelType, final String channelId) {
         int pvrChannelGroupId = getPVRChannelGroupId(pvrChannelType, channelId);
         int pvrChannelId = connection.getPVRChannelId(pvrChannelGroupId, command.toString());
@@ -296,12 +313,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
                 connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
                     if (connection.checkConnection()) {
+                        updateFavoriteChannelStateDescription();
                         updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
-                }, 1, 10, TimeUnit.SECONDS);
+                }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
 
                 statusUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
                     if (KodiState.Play.equals(connection.getState())) {
@@ -312,6 +330,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        }
+    }
+
+    private void updateFavoriteChannelStateDescription() {
+        if (isLinked(CHANNEL_PLAYFAVORITE)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiFavorite favorite : connection.getFavorites()) {
+                options.add(new StateOption(favorite.getTitle(), favorite.getTitle()));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PLAYFAVORITE),
+                    options);
         }
     }
 
