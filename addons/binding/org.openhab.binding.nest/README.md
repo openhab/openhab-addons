@@ -213,8 +213,7 @@ String   Home_Time_Zone            "Time Zone [%s]"                             
 
 ## Known Issues
 
-1.   The binding uses Celsius as unit for all Themostat temperature channels.
-2.   Deletion of devices or structures from the connected Nest account is currently not properly handled. The channel and online states of affected Things keep their last known values.
+*   The binding uses Celsius as unit for all Themostat temperature channels.
 
 ## Attribution
 
