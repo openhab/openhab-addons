@@ -8,8 +8,13 @@
  */
 package org.openhab.binding.homematic.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -32,6 +37,7 @@ import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.internal.type.UidUtils;
 import org.osgi.framework.ServiceRegistration;
@@ -72,6 +78,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             try {
                 String id = getThing().getUID().getId();
                 gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                configureThingProperties();
                 gateway.initialize();
 
                 discoveryService.startScan(null);
@@ -92,6 +99,21 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 scheduleReinitialize();
             }
         });
+    }
+
+    private void configureThingProperties() {
+        final HmGatewayInfo info = config.getGatewayInfo();
+        final Map<String, String> properties = getThing().getProperties();
+
+        if (!properties.containsKey(PROPERTY_FIRMWARE_VERSION)) {
+            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info.getFirmware());
+        }
+        if (!properties.containsKey(PROPERTY_SERIAL_NUMBER)) {
+            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info.getAddress());
+        }
+        if (!properties.containsKey(PROPERTY_MODEL_ID)) {
+            getThing().setProperty(PROPERTY_MODEL_ID, info.getType());
+        }
     }
 
     /**
