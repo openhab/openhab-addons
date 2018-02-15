@@ -9,12 +9,12 @@
 package org.openhab.binding.foxtrot.internal;
 
 /**
- * ProcessCallback.
+ * Refreshable.
  *
  * @author Radovan Sninsky
- * @since 2018-02-12 23:15
+ * @since 2018-02-15 20:23
  */
-public interface ProcessCallback {
+public interface RefreshableHandler {
 
-    void process(String name);
+    void refreshFromPlc(PlcComSClient client);
 }

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.foxtrot.handler;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -20,9 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.foxtrot.internal.PlcComSClient;
 import org.openhab.binding.foxtrot.internal.RefreshGroup;
+import org.openhab.binding.foxtrot.internal.RefreshableHandler;
 import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
-import org.openhab.binding.foxtrot.internal.model.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Radovan Sninsky
  * @since 2018-02-10 23:56
  */
-public class VariableHandler extends BaseThingHandler {
+public class VariableHandler extends BaseThingHandler implements RefreshableHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VariableHandler.class);
 
@@ -46,21 +48,15 @@ public class VariableHandler extends BaseThingHandler {
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
+        logger.debug("Initializing Variable handler ...");
         VariableConfiguration config = getConfigAs(VariableConfiguration.class);
 
         try {
             variableName = config.variableName;
             group = RefreshGroup.valueOf(config.refreshGroup.toUpperCase());
 
-            group.add(new Variable(variableName, value -> {
-                updateState("number", isNumber(value) ? new DecimalType(value) : UnDefType.UNDEF);
-
-                updateState("string", new StringType(value));
-
-                if (isBool(value)) {
-                    updateState("bool", "1".equals(value) ? OnOffType.ON : OnOffType.OFF);
-                }
-            }));
+            logger.debug("Adding Variable handler {} into refresh group {}", this, group.name());
+            group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
@@ -70,14 +66,41 @@ public class VariableHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing Variable handler resources ...");
         if (group != null) {
-            group.remove(variableName);
+            logger.debug("Removing Variable handler {} from refresh group {} ...", this, group.name());
+            group.removeHandler(this);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("FoxtrotNumber handle: thing: {}, channel: {}, command: {}", thing, channelUID, command);
+        logger.trace("Handling command: {} for channel: {}", command, channelUID);
+        // todo handle sets
+    }
+
+    @Override
+    public void refreshFromPlc(PlcComSClient plcClient) {
+        logger.trace("Requesting value for Plc variable: {} ...", variableName);
+        try {
+            String newValue = plcClient.get(variableName);
+            // fixme handle asserts
+            // todo throws PlcXXXXException instead of IOException
+
+            // Updating channels
+            updateState("number", isNumber(newValue) ? new DecimalType(newValue) : UnDefType.UNDEF);
+
+            updateState("string", new StringType(newValue));
+
+            if (isBool(newValue)) {
+                updateState("bool", "1".equals(newValue) ? OnOffType.ON : OnOffType.OFF);
+            }
+        } catch (IOException e) {
+            logger.warn("Getting new value of variable: {} failed w error: {}", variableName, e.getMessage());
+            updateState("number", UnDefType.UNDEF);
+            updateState("string", UnDefType.UNDEF);
+            updateState("bool", UnDefType.UNDEF);
+        }
     }
 
     private boolean isNumber(String value) {

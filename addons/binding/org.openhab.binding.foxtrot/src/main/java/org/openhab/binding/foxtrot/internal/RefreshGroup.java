@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.foxtrot.internal;
 
-import org.openhab.binding.foxtrot.internal.model.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,36 +29,33 @@ public enum RefreshGroup {
 
     private final Logger logger = LoggerFactory.getLogger(RefreshGroup.class);
 
-    private final List<Variable> variables = new ArrayList<>(100);
+    private final List<RefreshableHandler> handlers = new ArrayList<>(100);
     private ScheduledFuture<?> job;
     private PlcComSClient plcClient;
 
-    public void init(ScheduledExecutorService scheduler, long interval, PlcComSClient client) {
+    public void init(ScheduledExecutorService scheduler, long interval, PlcComSClient client) throws IOException {
+        logger.debug("Initializing {} refresh group w interval: {} ...", this.name(), interval);
         this.plcClient = client;
+        this.plcClient.open();
         this.job = scheduler.scheduleWithFixedDelay(
-                () -> new ArrayList<>(variables).forEach(this::refreshVariable), 10, interval, TimeUnit.SECONDS);
+            () -> new ArrayList<>(handlers).forEach(h -> h.refreshFromPlc(plcClient)), 10, interval, TimeUnit.SECONDS);
     }
 
     public void dispose() {
+        logger.debug("Canceling {} refresh job", this.name());
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
-    }
-
-    public void add(Variable variable) {
-        variables.add(variable);
-    }
-
-    public void remove(final String variableName) {
-        variables.stream().filter(fv -> fv.getName().equals(variableName)).findFirst().ifPresent(variables::remove);
-    }
-
-    private void refreshVariable(Variable fv) {
-        try {
-            fv.getCallback().process(plcClient.get(fv.getName()));
-        } catch (IOException e) {
-            logger.warn("Getting value of variable: {} failed w error: {}", fv.getName(), e.getMessage());
-            fv.getCallback().process(null);
+        if (plcClient != null) {
+            plcClient.close();
         }
+    }
+
+    public void addHandler(RefreshableHandler handler) {
+        handlers.add(handler);
+    }
+
+    public void removeHandler(final RefreshableHandler handler) {
+        handlers.stream().filter(h -> h.equals(handler)).findFirst().ifPresent(handlers::remove);
     }
 }

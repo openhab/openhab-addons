@@ -44,6 +44,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
+        logger.debug("Initializing Foxtrot bridge handler ...");
         FoxtrotConfiguration conf = getConfigAs(FoxtrotConfiguration.class);
         updateProperty(PROPERTY_PLCCOMS_HOST, conf.hostname);
         updateProperty(PROPERTY_PLCCOMS_PORT, String.valueOf(conf.port));
@@ -51,7 +52,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         writeClient.setHost(conf.hostname);
         writeClient.setPort(conf.port);
 
-        logger.debug("Opening connections to Foxtrot PLCComS server at {}:{} ...", conf.hostname, conf.port);
+        logger.debug("Opening connections to PLCComS server at {}:{} ...", conf.hostname, conf.port);
         try {
             writeClient.open();
 
@@ -60,9 +61,9 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
             }
 
             RefreshGroup.LOW.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.MEDIUM.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.HIGH.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.REALTIME.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            RefreshGroup.MEDIUM.init(scheduler, conf.mediumRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            RefreshGroup.HIGH.init(scheduler, conf.highRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            RefreshGroup.REALTIME.init(scheduler, conf.realtimeRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
@@ -72,8 +73,8 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Foxtrot PLC bridge handler ...");
-
+        logger.debug("Disposing Foxtrot PLC bridge handler resources ...");
+        logger.debug("Closing connections to PLCComS server ...");
         RefreshGroup.LOW.dispose();
         RefreshGroup.MEDIUM.dispose();
         RefreshGroup.HIGH.dispose();
