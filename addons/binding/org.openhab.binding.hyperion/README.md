@@ -1,6 +1,6 @@
 # Hyperion Binding
 
-This binding integrates the Hyperion ambient lighting software with openHAB.
+This binding integrates openHAB with the Hyperion ambient lighting software.
 Further details on the Hyperion project can be found [here.](https://hyperion-project.org/)
 
 ## Supported Things
