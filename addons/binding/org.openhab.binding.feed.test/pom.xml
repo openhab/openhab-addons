@@ -60,11 +60,6 @@
 						</dependency>
 						<dependency>
 							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.preferences</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.osgi.services</artifactId>
 							<version>0.0.0</version>
 						</dependency>

@@ -278,20 +278,6 @@ public class FeedHandlerTest extends OSGiTest {
         initializeFeedHandler(mockServletURL,defaultTestRefreshInterval)
     }
 
-    @Test
-    public void 'assert that item\'s state is updated on refresh command if content changed' () {
-        boolean commandReceived= true;
-        boolean contentChanged = true;
-        testIfItemStateIsUpdated(commandReceived,contentChanged);
-    }
-
-    @Test
-    public void 'assert that item\'s state is not updated on refresh command if content is not changed' () {
-        boolean commandReceived= true;
-        boolean contentChanged = false;
-        testIfItemStateIsUpdated(commandReceived,contentChanged);
-    }
-
     @Category(SlowTests.class)
     @Test
     public void 'assert that item\'s state is not updated on auto refresh if content is not changed' () {
