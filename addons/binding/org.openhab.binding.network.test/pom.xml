@@ -23,7 +23,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.eclipse.tycho</groupId>
+        <groupId>${tycho-groupid}</groupId>
         <artifactId>target-platform-configuration</artifactId>
         <configuration>
           <environments combine.self="override"/>
@@ -59,7 +59,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.tycho</groupId>
+        <groupId>${tycho-groupid}</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
           <dependencies>
