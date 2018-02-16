@@ -126,7 +126,7 @@ class OpenHabToDeviceConverter {
 
         if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOBINDING_BINDING_ID, thing.getUID().getBindingId())) {
             final Map<String, String> properties = thing.getProperties();
-            /** The following properties have matches in neeo.binding: NeeoDeviceHandler.java */
+            /** The following properties have matches in org.openhab.binding.neeo.NeeoDeviceHandler.java */
             final String neeoType = StringUtils.isEmpty(properties.get("Type")) ? NeeoDeviceType.ACCESSOIRE.toString()
                     : properties.get("Type");
             final String manufacturer = StringUtils.isEmpty(properties.get("Manufacturer")) ? "openHAB"

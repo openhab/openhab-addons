@@ -286,12 +286,6 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         final List<ConfigDescriptionParameter> parms = new ArrayList<>();
         final List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
-        final ConfigDescriptionParameterBuilder roomKeyParmBuilder = ConfigDescriptionParameterBuilder
-                .create(NeeoConstants.CONFIG_ROOMKEY, Type.TEXT).withLabel("Room Key")
-                .withDescription("Unique key of the room of the device").withRequired(true);
-
-        parms.add(roomKeyParmBuilder.build());
-
         final ConfigDescriptionParameterBuilder keyParmBuilder = ConfigDescriptionParameterBuilder
                 .create(NeeoConstants.CONFIG_DEVICEKEY, Type.TEXT).withLabel("Device Key")
                 .withDescription("Unique key of the device").withRequired(true);

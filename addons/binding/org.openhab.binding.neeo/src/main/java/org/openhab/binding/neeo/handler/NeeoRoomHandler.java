@@ -31,7 +31,6 @@ import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.NeeoRoomProtocol;
-import org.openhab.binding.neeo.internal.StatefulHandlerCallback;
 import org.openhab.binding.neeo.internal.models.NeeoAction;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.openhab.binding.neeo.internal.type.UidUtils;
@@ -71,13 +70,6 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
         Objects.requireNonNull(bridge, "bridge cannot be null");
     }
 
-    /**
-     * Handles commands sent to the room
-     *
-     * @see
-     *      org.eclipse.smarthome.core.thing.binding.ThingHandler#handleCommand(org.eclipse.smarthome.core.thing.ChannelUID,
-     *      org.eclipse.smarthome.core.types.Command)
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Objects.requireNonNull(channelUID, "channelUID cannot be null");
@@ -98,8 +90,6 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
         final String channelSection = groupIds[0];
         final String channelKey = groupIds.length > 1 ? groupIds[1] : "";
         final String channelId = channelUID.getIdWithoutGroup();
-
-        ((StatefulHandlerCallback) protocol.getCallback()).removeState(channelUID.getId());
 
         if (command instanceof RefreshType) {
             refreshChannel(protocol, channelSection, channelKey, channelId);
@@ -179,11 +169,6 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
         }
     }
 
-    /**
-     * Simply cancels any existing initialization tasks and schedules a new task
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#initialize()
-     */
     @Override
     public void initialize() {
         NeeoUtil.cancel(initializationTask.getAndSet(scheduler.submit(() -> {
@@ -216,39 +201,38 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
             updateProperties(properties);
 
             NeeoUtil.checkInterrupt();
-            final NeeoRoomProtocol protocol = new NeeoRoomProtocol(
-                    new StatefulHandlerCallback(new NeeoHandlerCallback() {
+            final NeeoRoomProtocol protocol = new NeeoRoomProtocol(new NeeoHandlerCallback() {
 
-                        @Override
-                        public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                            updateStatus(status, detail, msg);
-                        }
+                @Override
+                public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
+                    updateStatus(status, detail, msg);
+                }
 
-                        @Override
-                        public void stateChanged(String channelId, State state) {
-                            updateState(channelId, state);
-                        }
+                @Override
+                public void stateChanged(String channelId, State state) {
+                    updateState(channelId, state);
+                }
 
-                        @Override
-                        public void setProperty(String propertyName, String propertyValue) {
-                            getThing().setProperty(propertyName, propertyValue);
-                        }
+                @Override
+                public void setProperty(String propertyName, String propertyValue) {
+                    getThing().setProperty(propertyName, propertyValue);
+                }
 
-                        @Override
-                        public void scheduleTask(Runnable task, long milliSeconds) {
-                            scheduler.schedule(task, milliSeconds, TimeUnit.MILLISECONDS);
-                        }
+                @Override
+                public void scheduleTask(Runnable task, long milliSeconds) {
+                    scheduler.schedule(task, milliSeconds, TimeUnit.MILLISECONDS);
+                }
 
-                        @Override
-                        public void triggerEvent(String channelID, String event) {
-                            triggerChannel(channelID, event);
-                        }
+                @Override
+                public void triggerEvent(String channelID, String event) {
+                    triggerChannel(channelID, event);
+                }
 
-                        @Override
-                        public NeeoBrainApi getApi() {
-                            return getNeeoBrainApi();
-                        }
-                    }), config.getRoomKey());
+                @Override
+                public NeeoBrainApi getApi() {
+                    return getNeeoBrainApi();
+                }
+            }, config.getRoomKey());
             roomProtocol.getAndSet(protocol);
 
             NeeoUtil.checkInterrupt();
@@ -302,11 +286,6 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
         }
     }
 
-    /**
-     * Cancels/removes the initialization and refresh task, closes/removes the room protocol
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         NeeoUtil.cancel(initializationTask.getAndSet(null));

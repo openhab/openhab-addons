@@ -100,7 +100,7 @@ public class NeeoDeviceProtocol {
      * Sets the macro status. If the status is true, the macro will be triggered. If false, nothing occurs
      *
      * @param macroKey the non-null macro key
-     * @param start whether to start (true) or stop (false) the recipe
+     * @param start whether to start (true) or stop (false) the macro
      */
     public void setMacroStatus(String macroKey, boolean start) {
         NeeoUtil.requireNotEmpty(macroKey, "macroKey cannot be empty");
@@ -112,8 +112,18 @@ public class NeeoDeviceProtocol {
             try {
                 if (start) {
                     api.triggerMacro(neeoRoom.getKey(), neeoDevice.getKey(), macroKey);
+
+                    // NEEO macros are not what we generally think of for macros
+                    // Trigger a NEEO macro is simply asking the brain to send an IR pulse
+                    // for whatever the macro is linked up to (POWER ON would send the IR
+                    // pulse for the specified device). Because of thise, the execution of the
+                    // macro will never take more than 100ms to complete. Since we get no
+                    // feedback from the brain whether the macro has executed or completed
+                    // AND it's impossible to tell if any macro is executing or not (no equivalent
+                    // API to poll for), we simply refresh the status back to OFF after 500ms
                     callback.scheduleTask(() -> {
-                        refreshMacroStatus(macroKey);
+                        callback.stateChanged(UidUtils.createChannelId(NeeoConstants.DEVICE_GROUP_MACROSID, macroKey),
+                                OnOffType.OFF);
                     }, 500);
                 }
             } catch (IOException e) {

@@ -41,7 +41,6 @@ import org.openhab.binding.neeo.internal.NeeoDeviceConfig;
 import org.openhab.binding.neeo.internal.NeeoDeviceProtocol;
 import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
-import org.openhab.binding.neeo.internal.StatefulHandlerCallback;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoDeviceDetails;
 import org.openhab.binding.neeo.internal.models.NeeoDeviceDetailsTiming;
@@ -52,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extension of {@link AbstractThingHandler} that is responsible for handling commands for a room
+ * An extension of {@link AbstractThingHandler} that is responsible for handling commands for a device
  *
  * @author Tim Roberts - Initial contribution
  */
@@ -75,7 +74,7 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
     private final AtomicReference<NeeoDeviceProtocol> deviceProtocol = new AtomicReference<>();
 
     /**
-     * Instantiates a new neeo room handler.
+     * Instantiates a new neeo device handler.
      *
      * @param typeGenerator the non-null type generator
      */
@@ -84,13 +83,6 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
         Objects.requireNonNull(thing, "thing cannot be null");
     }
 
-    /**
-     * Handles commands sent to the room
-     *
-     * @see
-     *      org.eclipse.smarthome.core.thing.binding.ThingHandler#handleCommand(org.eclipse.smarthome.core.thing.ChannelUID,
-     *      org.eclipse.smarthome.core.types.Command)
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Objects.requireNonNull(channelUID, "channelUID cannot be null");
@@ -104,8 +96,6 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
 
         final String groupId = channelUID.getGroupId();
         final String channelId = channelUID.getIdWithoutGroup();
-
-        ((StatefulHandlerCallback) protocol.getCallback()).removeState(channelUID.getId());
 
         if (command instanceof RefreshType) {
             refreshChannel(protocol, groupId, channelId);
@@ -142,11 +132,6 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
         }
     }
 
-    /**
-     * Simply cancels any existing initialization tasks and schedules a new task
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#initialize()
-     */
     @Override
     public void initialize() {
         NeeoUtil.cancel(initializationTask.getAndSet(scheduler.submit(() -> {
@@ -207,7 +192,7 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             final Map<String, String> properties = new HashMap<>();
             final NeeoDeviceDetails details = device.getDetails();
             if (details != null) {
-                /** The following properties have matches in neeo.io: OpenHabToDeviceConverter.java */
+                /** The following properties have matches in org.openhab.io.neeo.OpenHabToDeviceConverter.java */
                 properties.put("Source Name", details.getSourceName());
                 properties.put("Adapter Name", details.getAdapterName());
                 properties.put("Type", details.getType());
@@ -226,39 +211,38 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             updateProperties(properties);
 
             NeeoUtil.checkInterrupt();
-            final NeeoDeviceProtocol protocol = new NeeoDeviceProtocol(
-                    new StatefulHandlerCallback(new NeeoHandlerCallback() {
+            final NeeoDeviceProtocol protocol = new NeeoDeviceProtocol(new NeeoHandlerCallback() {
 
-                        @Override
-                        public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                            updateStatus(status, detail, msg);
-                        }
+                @Override
+                public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
+                    updateStatus(status, detail, msg);
+                }
 
-                        @Override
-                        public void stateChanged(String channelId, State state) {
-                            updateState(channelId, state);
-                        }
+                @Override
+                public void stateChanged(String channelId, State state) {
+                    updateState(channelId, state);
+                }
 
-                        @Override
-                        public void setProperty(String propertyName, String propertyValue) {
-                            getThing().setProperty(propertyName, propertyValue);
-                        }
+                @Override
+                public void setProperty(String propertyName, String propertyValue) {
+                    getThing().setProperty(propertyName, propertyValue);
+                }
 
-                        @Override
-                        public void scheduleTask(Runnable task, long milliSeconds) {
-                            scheduler.schedule(task, milliSeconds, TimeUnit.MILLISECONDS);
-                        }
+                @Override
+                public void scheduleTask(Runnable task, long milliSeconds) {
+                    scheduler.schedule(task, milliSeconds, TimeUnit.MILLISECONDS);
+                }
 
-                        @Override
-                        public void triggerEvent(String channelID, String event) {
-                            triggerChannel(channelID, event);
-                        }
+                @Override
+                public void triggerEvent(String channelID, String event) {
+                    triggerChannel(channelID, event);
+                }
 
-                        @Override
-                        public NeeoBrainApi getApi() {
-                            return getNeeoBrainApi();
-                        }
-                    }), roomKey, config.getDeviceKey());
+                @Override
+                public NeeoBrainApi getApi() {
+                    return getNeeoBrainApi();
+                }
+            }, roomKey, config.getDeviceKey());
             deviceProtocol.getAndSet(protocol);
 
             NeeoUtil.checkInterrupt();
@@ -290,11 +274,6 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
         return null;
     }
 
-    /**
-     * Cancels/removes the initialization and refresh task, closes/removes the room protocol
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         NeeoUtil.cancel(initializationTask.getAndSet(null));

@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;
@@ -82,8 +81,7 @@ class MetadataUtils {
         final List<ChannelType> channelTypes = new ArrayList<>();
         for (NeeoMacro macro : device.getMacros().getMacros()) {
             final ChannelType channelType = new ChannelType(UidUtils.createChannelType(macro), false, "Switch",
-                    macro.getName(), "Send ON to trigger the macro", null, null,
-                    new StateDescription(null, null, null, null, false, null), null);
+                    macro.getName(), "Send ON to trigger the macro", null, null, null, null);
 
             channelTypes.add(channelType);
         }
@@ -121,7 +119,7 @@ class MetadataUtils {
     /**
      * Gets the channel definitions from a {@link NeeoDevice}
      *
-     * @param devide the non-null device
+     * @param device the non-null device
      * @return the possibly empty, not-null list of {@link ChannelDefinition}
      */
     static List<ChannelGroupDefinition> getGroupDefinitions(NeeoDevice device) {
