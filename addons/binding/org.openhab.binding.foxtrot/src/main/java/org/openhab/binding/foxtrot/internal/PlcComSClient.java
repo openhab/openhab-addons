@@ -41,9 +41,6 @@ public class PlcComSClient {
     private SelectionKey wrKey = null;
     private final ByteBuffer buffer = ByteBuffer.allocateDirect(256);
 
-    public PlcComSClient() {
-    }
-
     public PlcComSClient(String host, int port) {
         this(host, port, DEF_SOCKET_TIMEOUT);
     }
@@ -52,14 +49,6 @@ public class PlcComSClient {
         this.host = host;
         this.port = port;
         this.timeout = timeout;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public void open() throws IOException {

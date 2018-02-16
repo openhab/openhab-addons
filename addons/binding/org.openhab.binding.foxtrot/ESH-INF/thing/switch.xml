@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="plc"/>
+		</supported-bridge-type-refs>
+
+		<label>Switch</label>
+		<description>...</description>
+
+		<channels>
+			<channel typeId="switch-channel" id="switch"/>
+		</channels>
+
+		<config-description>
+			<parameter name="stateVariableName" type="text" required="true">
+				<label>State variable name</label>
+				<description>...</description>
+			</parameter>
+			<parameter name="onVariableName" type="text" required="true">
+				<label>On command variable name</label>
+				<description>...</description>
+			</parameter>
+			<parameter name="offVariableName" type="text" required="true">
+				<label>Off command variable name</label>
+				<description>...</description>
+			</parameter>
+			<parameter name="refreshGroup" type="text">
+				<label>Refresh group</label>
+				<description>Refresh group define how frequently values will updated, default is LOW</description>
+				<default>REALTIME</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>...</description>
+	</channel-type>
+</thing:thing-descriptions>

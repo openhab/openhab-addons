@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.foxtrot.internal.CommandExecutor;
 import org.openhab.binding.foxtrot.internal.PlcComSClient;
 import org.openhab.binding.foxtrot.internal.config.FoxtrotConfiguration;
 import org.openhab.binding.foxtrot.internal.RefreshGroup;
@@ -35,7 +36,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxtrotBridgeHandler.class);
 
-    private final PlcComSClient writeClient = new PlcComSClient();
+    private CommandExecutor commandExecutor;
 
     public FoxtrotBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
@@ -49,21 +50,16 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         updateProperty(PROPERTY_PLCCOMS_HOST, conf.hostname);
         updateProperty(PROPERTY_PLCCOMS_PORT, String.valueOf(conf.port));
 
-        writeClient.setHost(conf.hostname);
-        writeClient.setPort(conf.port);
-
         logger.debug("Opening connections to PLCComS server at {}:{} ...", conf.hostname, conf.port);
         try {
-            writeClient.open();
-
-            if (writeClient.isOpen()) {
-                updateProperties();
-            }
+            updateProperties(new PlcComSClient(conf.hostname, conf.port));
 
             RefreshGroup.LOW.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
             RefreshGroup.MEDIUM.init(scheduler, conf.mediumRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
             RefreshGroup.HIGH.init(scheduler, conf.highRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
             RefreshGroup.REALTIME.init(scheduler, conf.realtimeRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+
+            commandExecutor = CommandExecutor.init(new PlcComSClient(conf.hostname, conf.port));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
@@ -73,26 +69,32 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Foxtrot PLC bridge handler resources ...");
-        logger.debug("Closing connections to PLCComS server ...");
+        logger.debug("Disposing Foxtrot PLC bridge handler connections to PLCComS server ...");
         RefreshGroup.LOW.dispose();
         RefreshGroup.MEDIUM.dispose();
         RefreshGroup.HIGH.dispose();
         RefreshGroup.REALTIME.dispose();
 
-        writeClient.close();
+        commandExecutor.dispose();
     }
 
-    private void updateProperties() throws IOException {
-        Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_PLCCOMS_VERSION, writeClient.getInfo("version"));
-        properties.put(PROPERTY_PLCCOM_EPSNET_VERSION, writeClient.getInfo("version_epsnet"));
-        properties.put(PROPERTY_PLCCOM_INI_VERSION, writeClient.getInfo("version_ini"));
-        properties.put(PROPERTY_PLC_VERSION, writeClient.getInfo("version_plc"));
-        properties.put(PROPERTY_PLC_IP, writeClient.getInfo("ipaddr_plc"));
+    private void updateProperties(PlcComSClient client) throws IOException {
+        try {
+            client.open();
+            if (client.isOpen()) {
+                Map<String, String> properties = editProperties();
+                properties.put(PROPERTY_PLCCOMS_VERSION, client.getInfo("version"));
+                properties.put(PROPERTY_PLCCOM_EPSNET_VERSION, client.getInfo("version_epsnet"));
+                properties.put(PROPERTY_PLCCOM_INI_VERSION, client.getInfo("version_ini"));
+                properties.put(PROPERTY_PLC_VERSION, client.getInfo("version_plc"));
+                properties.put(PROPERTY_PLC_IP, client.getInfo("ipaddr_plc"));
 
-        updateProperties(properties);
-        logger.debug("Properties succesfully updated!");
+                updateProperties(properties);
+                logger.debug("Properties succesfully updated!");
+            }
+        } finally {
+            client.close();
+        }
     }
 
     @Override

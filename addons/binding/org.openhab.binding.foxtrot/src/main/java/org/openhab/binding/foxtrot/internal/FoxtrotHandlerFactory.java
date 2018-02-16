@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.foxtrot.handler.FoxtrotBridgeHandler;
+import org.openhab.binding.foxtrot.handler.SwitchHandler;
 import org.openhab.binding.foxtrot.handler.VariableHandler;
 import org.osgi.service.component.annotations.Component;
 
@@ -37,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
 public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_PLC, THING_TYPE_VARIABLE).collect(Collectors.toSet());
+            .of(THING_TYPE_PLC, THING_TYPE_VARIABLE, THING_TYPE_SWITCH).collect(Collectors.toSet());
 
     /**
      * Called when new Thing is added, checks if ThingType is supported.
@@ -55,6 +56,8 @@ public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
             return new FoxtrotBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_VARIABLE.equals(thingTypeUID)) {
             return new VariableHandler(thing);
+        } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
+            return new SwitchHandler(thing);
         }
         return null;
     }

@@ -21,7 +21,6 @@
 			<parameter name="variableName" type="text" required="true">
 				<label>Variable name</label>
 				<description>Variable name defined in PLC PUB file</description>
-				<default>LOW</default>
 			</parameter>
 			<parameter name="refreshGroup" type="text">
 				<label>Refresh group</label>

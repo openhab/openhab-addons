@@ -35,10 +35,10 @@ public class FoxtrotBindingConstants {
     public static final ThingTypeUID THING_TYPE_PLC = new ThingTypeUID(BINDING_ID, "plc");
 
     public static final ThingTypeUID THING_TYPE_VARIABLE = new ThingTypeUID(BINDING_ID, "variable");
+    public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
 
     // List of all Channel ids
     public static final String CHANNEL_NUMBER = "number";
     public static final String CHANNEL_STRING = "string";
     public static final String CHANNEL_BOOL = "bool";
-
 }
