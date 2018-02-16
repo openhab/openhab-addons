@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -275,20 +276,6 @@ public class FeedHandlerTest extends OSGiTest {
         def String mockServletURL = generateURLString(MOCK_SERVLET_PROTOCOL,MOCK_SERVLET_HOSTNAME,MOCK_SERVLET_PORT,MOCK_SERVLET_PATH)
         def defaultTestRefreshInterval = new BigDecimal(-10)
         initializeFeedHandler(mockServletURL,defaultTestRefreshInterval)
-    }
-
-    @Test
-    public void 'assert that item\'s state is updated on refresh command if content changed' () {
-        boolean commandReceived= true;
-        boolean contentChanged = true;
-        testIfItemStateIsUpdated(commandReceived,contentChanged);
-    }
-
-    @Test
-    public void 'assert that item\'s state is not updated on refresh command if content is not changed' () {
-        boolean commandReceived= true;
-        boolean contentChanged = false;
-        testIfItemStateIsUpdated(commandReceived,contentChanged);
     }
 
     @Category(SlowTests.class)
