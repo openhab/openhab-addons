@@ -165,7 +165,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public InetAddress getIpAddress() {
-        return localInetAddressesOverride.orElse(getIpFromNetworkAddressService().orElse(null));
+        return localInetAddressesOverride.orElseGet(() -> getIpFromNetworkAddressService().orElse(null));
     }
 
     /**
