@@ -165,16 +165,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public InetAddress getIpAddress() {
-        if (localInetAddressesOverride.isPresent()) {
-            return localInetAddressesOverride.get();
-        }
-
-        Optional<InetAddress> inetAddressFromNetworkAddressService = getInetAddressFromNetworkAddressService();
-        if (inetAddressFromNetworkAddressService.isPresent()) {
-            return inetAddressFromNetworkAddressService.get();
-        }
-
-        return null;
+        return localInetAddressesOverride.orElse(getIpFromNetworkAddressService().orElse(null));
     }
 
     /**
@@ -201,7 +192,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
      *
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
-    private Optional<InetAddress> getInetAddressFromNetworkAddressService() {
+    private Optional<InetAddress> getIpFromNetworkAddressService() {
         String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
