@@ -75,15 +75,12 @@ public class LGWebOS {
 
     /** Sends a toast message to a WebOS device with custom icon. */
     public void showToast(String thingId, String icon, String text) throws IOException {
-        Optional<ToastControl> control = getControl(ToastControl.class, thingId);
-        if (control.isPresent()) {
-            BufferedImage bi = ImageIO.read(new URL(icon));
-            try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    OutputStream b64 = Base64.getEncoder().wrap(os);) {
-                ImageIO.write(bi, "png", b64);
-                control.get().showToast(text, os.toString(StandardCharsets.UTF_8.name()), "png",
-                        createResponseListener());
-            }
+        BufferedImage bi = ImageIO.read(new URL(icon));
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os);) {
+            ImageIO.write(bi, "png", b64);
+            String string = os.toString(StandardCharsets.UTF_8.name());
+            getControl(ToastControl.class, thingId)
+                    .ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
         }
     }
 
@@ -99,25 +96,22 @@ public class LGWebOS {
 
     /** Opens the application with given appId and passes additional parameters. */
     public void launchApplicationWithParam(String thingId, String appId, Object param) {
-        Optional<Launcher> control = getControl(Launcher.class, thingId);
-        if (control.isPresent()) {
-            control.get().getAppList(new Launcher.AppListListener() {
-                @Override
-                public void onError(ServiceCommandError error) {
-                    LOGGER.warn("error requesting application list: {}.", error.getMessage());
-                }
+        getControl(Launcher.class, thingId).ifPresent(control -> control.getAppList(new Launcher.AppListListener() {
+            @Override
+            public void onError(ServiceCommandError error) {
+                LOGGER.warn("error requesting application list: {}.", error.getMessage());
+            }
 
-                @Override
-                public void onSuccess(List<AppInfo> appInfos) {
-                    Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
-                    if (appInfo.isPresent()) {
-                        control.get().launchAppWithInfo(appInfo.get(), param, createResponseListener());
-                    } else {
-                        LOGGER.warn("TV does not support any app with id: {}.", appId);
-                    }
+            @Override
+            public void onSuccess(List<AppInfo> appInfos) {
+                Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
+                if (appInfo.isPresent()) {
+                    control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
+                } else {
+                    LOGGER.warn("TV does not support any app with id: {}.", appId);
                 }
-            });
-        }
+            }
+        }));
     }
 
     /** Sends a text input to a WebOS device. */
