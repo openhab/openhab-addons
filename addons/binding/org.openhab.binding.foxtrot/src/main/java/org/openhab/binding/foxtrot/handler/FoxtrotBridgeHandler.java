@@ -36,8 +36,6 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxtrotBridgeHandler.class);
 
-    private CommandExecutor commandExecutor;
-
     public FoxtrotBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
@@ -59,7 +57,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
             RefreshGroup.HIGH.init(scheduler, conf.highRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
             RefreshGroup.REALTIME.init(scheduler, conf.realtimeRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
 
-            commandExecutor = CommandExecutor.init(new PlcComSClient(conf.hostname, conf.port));
+            CommandExecutor.init(new PlcComSClient(conf.hostname, conf.port));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
@@ -75,7 +73,9 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         RefreshGroup.HIGH.dispose();
         RefreshGroup.REALTIME.dispose();
 
-        commandExecutor.dispose();
+        if (CommandExecutor.get() != null) {
+            CommandExecutor.get().dispose();
+        }
     }
 
     private void updateProperties(PlcComSClient client) throws IOException {

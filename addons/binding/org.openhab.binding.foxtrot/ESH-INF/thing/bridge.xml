@@ -10,8 +10,8 @@
 
 		<properties>
 			<property name="vendor">Tecomat, a.s.</property>
-			<property name="plccomsHost">Tecomat, a.s.</property>
-			<property name="plccomsPort">Tecomat, a.s.</property>
+			<property name="plccomsHost">unknown</property>
+			<property name="plccomsPort">unknown</property>
 			<property name="plccomsVersion">unknown</property>
 			<property name="plccomsEpsnetVersion">unknown</property>
 			<property name="plccomsIniVersion">unknown</property>

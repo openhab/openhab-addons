@@ -84,14 +84,14 @@ public class SwitchHandler extends BaseThingHandler implements RefreshableHandle
 
     @Override
     public void refreshFromPlc(PlcComSClient plcClient) {
-        logger.trace("Requesting value for Plc variable: {} ...", conf.stateVariableName);
+        //logger.trace("Requesting value for Plc variable: {} ...", conf.stateVariableName);
         try {
             String newValue = plcClient.get(conf.stateVariableName);
             // fixme handle asserts
             // todo throws PlcXXXXException instead of IOException
 
             if (isBool(newValue)) {
-                updateState("bool", "1".equals(newValue) ? OnOffType.ON : OnOffType.OFF);
+                updateState("switch", "1".equals(newValue) ? OnOffType.ON : OnOffType.OFF);
             }
         } catch (IOException e) {
             logger.warn("Getting new value of variable: {} failed w error: {}", conf.stateVariableName, e.getMessage());

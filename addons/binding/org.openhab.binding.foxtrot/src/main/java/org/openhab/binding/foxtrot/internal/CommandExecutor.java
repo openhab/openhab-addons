@@ -37,11 +37,13 @@ public class CommandExecutor {
         this.plcClient = plcClient;
 
         thread = new Thread(() -> {
+            logger.debug("Starting polling for commands (write requests to Plc) ...");
             try {
                 while (plcClient.isOpen()) {
                     CommandEntry ce = writeQueue.poll(1, TimeUnit.SECONDS);
 
                     if (ce != null && ce.value != null) {
+                        logger.trace("Setting Plc variable {} to {}", ce.commandVariable, ce.toString());
                         if (ce.value instanceof Boolean) {
                             plcClient.set(ce.commandVariable, (Boolean)ce.value);
                         } else if (ce.value instanceof Integer) {
@@ -58,6 +60,7 @@ public class CommandExecutor {
             } catch (InterruptedException e) {
                 logger.warn("Polling for command interuped");
             }
+            logger.debug("Polling for commands finished");
         });
     }
 

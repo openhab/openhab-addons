@@ -25,7 +25,6 @@ import org.openhab.binding.foxtrot.internal.CommandExecutor;
 import org.openhab.binding.foxtrot.internal.PlcComSClient;
 import org.openhab.binding.foxtrot.internal.RefreshGroup;
 import org.openhab.binding.foxtrot.internal.RefreshableHandler;
-import org.openhab.binding.foxtrot.internal.config.SwitchConfiguration;
 import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ public class VariableHandler extends BaseThingHandler implements RefreshableHand
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        logger.debug("Initializing Variable handler ...");
+        //logger.debug("Initializing Variable handler ...");
         VariableConfiguration config = getConfigAs(VariableConfiguration.class);
 
         try {
@@ -92,7 +91,7 @@ public class VariableHandler extends BaseThingHandler implements RefreshableHand
 
     @Override
     public void refreshFromPlc(PlcComSClient plcClient) {
-        logger.trace("Requesting value for Plc variable: {} ...", variableName);
+        //logger.trace("Requesting value for Plc variable: {} ...", variableName);
         try {
             String newValue = plcClient.get(variableName);
             // fixme handle asserts

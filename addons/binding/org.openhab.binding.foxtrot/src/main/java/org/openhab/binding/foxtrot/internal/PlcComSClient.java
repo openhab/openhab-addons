@@ -107,7 +107,7 @@ public class PlcComSClient {
         assertChannel();
         try {
             return Long.valueOf(get(var));
-        } catch (NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -115,8 +115,9 @@ public class PlcComSClient {
     public BigDecimal getReal(String var) throws IOException {
         assertChannel();
         try {
-            return new BigDecimal(get(var));
-        } catch (NumberFormatException | NullPointerException e) {
+            String v = get(var);
+            return v != null ? new BigDecimal(v) : null;
+        } catch (NumberFormatException e) {
             return null;
         }
     }
