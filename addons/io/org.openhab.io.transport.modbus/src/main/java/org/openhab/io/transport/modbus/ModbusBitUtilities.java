@@ -11,12 +11,14 @@ package org.openhab.io.transport.modbus;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
@@ -146,6 +148,62 @@ public class ModbusBitUtilities {
             default:
                 throw new IllegalArgumentException(type.getConfigValue());
         }
+    }
+
+    /**
+     * Read data from registers and convert the result to StringType
+     * Strings should start the the first byte of a register, but could
+     * have an odd number of characters.
+     * Raw byte array values are converted using the charset parameter
+     * and a maximum of length bytes are read. However reading stops at the first
+     * NUL byte encountered.
+     *
+     * @param registers
+     *            list of registers, each register represent 16bit of data
+     * @param index
+     *            zero based register index. Registers are handled as 16bit registers,
+     *            this parameter defines the starting register.
+     * @param length
+     *            maximum length of string in 8bit characters.
+     * @param charset
+     *            the character set used to construct the string.
+     *
+     * @return string representation queried value
+     * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
+     *
+     */
+    public static StringType extractStringFromRegisters(ModbusRegisterArray registers, int index, int length,
+            Charset charset) {
+        if (index * 2 + length > registers.size() * 2) {
+            throw new IllegalArgumentException(
+                    String.format("Index=%d with length=%d is out-of-bounds given registers of size %d", index, length,
+                            registers.size()));
+        }
+        if (index < 0) {
+            throw new IllegalArgumentException("Negative index values are not supported");
+        }
+        if (length < 0) {
+            throw new IllegalArgumentException("Negative string length is not supported");
+        }
+        byte[] buff = new byte[length];
+
+        int src = index;
+        int dest;
+        for (dest = 0; dest < length; dest++) {
+
+            byte chr;
+            if (dest % 2 == 0) {
+                chr = (byte) ((registers.getRegister(src).getValue() >> 8));
+            } else {
+                chr = (byte) (registers.getRegister(src).getValue() & 0xff);
+                src++;
+            }
+            if (chr == 0) {
+                break;
+            }
+            buff[dest] = chr;
+        }
+        return new StringType(new String(buff, 0, dest, charset));
     }
 
     /**
