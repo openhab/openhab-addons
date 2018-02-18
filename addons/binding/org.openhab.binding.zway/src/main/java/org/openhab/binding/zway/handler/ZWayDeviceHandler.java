@@ -467,10 +467,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Deprecated, therefore deactivated
-        // Refresh update time
-        // logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
-        // refreshLastUpdate();
+        // Deprecated, therefore deactivated        
     }
 
     @Override
@@ -636,7 +633,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 refreshChannel(channel);
             }
         }
-        logger.debug("Handeling of command took {} milliseconds", System.currentTimeMillis() - startTime);
+        logger.debug("Handling of command took {} milliseconds", System.currentTimeMillis() - startTime);
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
