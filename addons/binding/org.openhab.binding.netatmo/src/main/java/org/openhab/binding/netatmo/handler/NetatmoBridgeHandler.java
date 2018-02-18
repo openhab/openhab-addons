@@ -67,6 +67,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     public NetatmoBridgeConfiguration configuration;
     private ScheduledFuture<?> refreshJob;
     private APIMap apiMap;
+    private WelcomeWebHookServlet webHookServlet;
 
     @NonNullByDefault
     private class APIMap extends HashMap<Class<?>, Object> {
@@ -88,8 +89,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    public NetatmoBridgeHandler(@NonNull Bridge bridge) {
+    public NetatmoBridgeHandler(@NonNull Bridge bridge, WelcomeWebHookServlet webHookServlet) {
         super(bridge);
+        this.webHookServlet = webHookServlet;
     }
 
     @Override
@@ -102,8 +104,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private void connectionSucceed() {
         updateStatus(ThingStatus.ONLINE);
-        if (configuration.webHookUrl != null && configuration.readWelcome) {
-            String webHookURI = configuration.webHookUrl + WelcomeWebHookServlet.PATH;
+        String webHookURI = getWebHookURI();
+        if (webHookURI != null) {
+            webHookServlet.activate(this);
             logger.info("Setting up Netatmo Welcome WebHook to {}", webHookURI);
             getWelcomeApi().addwebhook(webHookURI, WEBHOOK_APP);
         }
@@ -216,8 +219,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Running dispose()");
 
-        if (configuration.webHookUrl != null) {
+        if (getWebHookURI() != null) {
             logger.info("Releasing Netatmo Welcome WebHook");
+            webHookServlet.deactivate();
             getWelcomeApi().dropwebhook(WEBHOOK_APP);
         }
 
@@ -309,6 +313,14 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 }
             });
         }
+    }
+
+    private String getWebHookURI() {
+        String webHookURI = null;
+        if (configuration.webHookUrl != null && configuration.readWelcome == Boolean.TRUE && webHookServlet != null) {
+            webHookURI = configuration.webHookUrl + webHookServlet.getPath();
+        }
+        return webHookURI;
     }
 
 }
