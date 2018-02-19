@@ -212,7 +212,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void addPlaylistItem(String mac, String url) {
-        sendCommand(mac + " playlist add " + url);
+        addPlaylistItem(mac, url, null);
+    }
+
+    public void addPlaylistItem(String mac, String url, String title) {
+        StringBuilder playlistCommand = new StringBuilder();
+        playlistCommand.append(mac).append(" playlist add ").append(url);
+        if (title != null) {
+            playlistCommand.append(" ").append(title);
+        }
+        sendCommand(playlistCommand.toString());
     }
 
     public void setPlayingTime(String mac, int time) {

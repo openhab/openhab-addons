@@ -60,20 +60,9 @@ class SqueezeBoxNotificationPlayer implements Closeable {
             logger.warn("Server handler is null");
             return;
         }
-
         setupPlayerForNotification();
-
-        try {
-            addNotificationMessageToPlaylist();
-            playNotification();
-        } finally {
-            if (playlistModified) {
-                // Mute the player to prevent any noise during the transition
-                // to previous state.
-                setVolume(0);
-                removeNotificationMessageFromPlaylist();
-            }
-        }
+        addNotificationMessageToPlaylist();
+        playNotification();
     }
 
     @Override
@@ -101,7 +90,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
         int notificationVolume = squeezeBoxPlayerHandler.getNotificationSoundVolume().intValue();
         if (notificationVolume == 0) {
-            logger.warn("Player notification volume is 0.");
+            logger.info("Player notification volume is 0.");
         }
         setVolume(notificationVolume);
     }
@@ -141,20 +130,23 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     }
 
     private void addNotificationMessageToPlaylist() throws InterruptedException, SqueezeBoxTimeoutException {
+        logger.debug("Adding notification message to playlist");
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         listener.resetPlaylistUpdated();
 
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-        squeezeBoxServerHandler.addPlaylistItem(mac, uri.toString());
+        squeezeBoxServerHandler.addPlaylistItem(mac, uri.toString(), "Notification");
 
         try {
             updatePlaylist(listener);
+            this.playlistModified = true;
         } finally {
             squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         }
     }
 
     private void removeNotificationMessageFromPlaylist() throws InterruptedException, SqueezeBoxTimeoutException {
+        logger.debug("Removing notification message from playlist");
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         listener.resetPlaylistUpdated();
 
@@ -186,11 +178,10 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         while (!listener.isPlaylistUpdated()) {
             Thread.sleep(100);
             if (timeoutCount++ > PLAYLIST_COMMAND_TIMEOUT * 10) {
+                logger.debug("Update playlist timed out after {} seconds", PLAYLIST_COMMAND_TIMEOUT);
                 throw new SqueezeBoxTimeoutException("Unable to update playlist.");
             }
         }
-
-        this.playlistModified = true;
     }
 
     private void playNotification() throws InterruptedException, SqueezeBoxTimeoutException {
@@ -211,6 +202,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
             while (!listener.isStopped()) {
                 Thread.sleep(100);
                 if (timeoutCount++ > notificationTimeout * 10) {
+                    logger.debug("Notification message timed out after {} seconds", notificationTimeout);
                     throw new SqueezeBoxTimeoutException("Notification message timed out");
                 }
             }
@@ -222,7 +214,20 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     private void restorePlayerState() {
         logger.debug("Restoring player state");
 
-        // Resume playing save playlist item.
+        // Mute the player to prevent any noise during the transition to saved state
+        // Don't wait for the volume acknowledge as there´s nothing to do about it at this point.
+        squeezeBoxServerHandler.setVolume(mac, 0);
+
+        if (playlistModified) {
+            try {
+                removeNotificationMessageFromPlaylist();
+            } catch (InterruptedException | SqueezeBoxTimeoutException e) {
+                // Not much we can do here except log it and continue on
+                logger.debug("Exception while removing notification from playlist: {}", e.getMessage());
+            }
+        }
+
+        // Resume playing saved playlist item.
         // Note that setting the time doesn't work for remote streams.
         squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
         squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
@@ -241,9 +246,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
                 break;
         }
 
-        // We do not wait for the volume acknowledge to avoid exceptions during
-        // clean up. If we are not able to set the volume there´s nothing we can
-        // do about it.
+        // Restore the saved volume level
         squeezeBoxServerHandler.setVolume(mac, playerState.getVolume());
 
         if (playerState.isShuffling()) {
