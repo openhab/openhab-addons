@@ -37,7 +37,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 /**
  *
- * This is the main handles for HomeWorks RS232 Processors.
+ * This is the main handler for HomeWorks RS232 Processors.
  *
  * @author Andrew Shilliday
  *
@@ -68,8 +68,12 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         logger.debug("Initializing the Lutron HomeWorks RS232 bridge handler");
         HwSerialBridgeConfig configuration = getConfigAs(HwSerialBridgeConfig.class);
         serialPortName = configuration.getSerialPort();
-        baudRate = configuration.getBaudRate().intValue();
         updateTime = configuration.getUpdateTime();
+        if (configuration.getBaudRate() == null) {
+            baudRate = HwSerialBridgeConfig.DEFAULT_BAUD;
+        } else {
+            baudRate = configuration.getBaudRate().intValue();
+        }
 
         this.discService = new HwDiscoveryService(this);
         this.discReg = bundleContext.registerService(DiscoveryService.class, discService, null);
