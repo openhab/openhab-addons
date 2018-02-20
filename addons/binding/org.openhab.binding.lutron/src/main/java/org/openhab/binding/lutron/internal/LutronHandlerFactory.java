@@ -42,7 +42,6 @@ import com.google.common.collect.ImmutableSet;
  */
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
-
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
