@@ -123,9 +123,8 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 if (e.getKind() == Kind.NETWORK) {
                     logger.warn("Network error while connecting to Netatmo API, will retry in {} s",
                             configuration.reconnectInterval);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Netatmo Access Failed, will retry in " + configuration.reconnectInterval.toString()
-                                    + " seconds.");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
                 } else {
                     switch (e.getResponse().getStatus()) {
                         case 404: // If no partner station has been associated - likely to happen - we'll have this
@@ -136,9 +135,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                         case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
                             logger.warn("Error 403 while connecting to Netatmo API, will retry in {} s",
                                     configuration.reconnectInterval);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                    "Netatmo Access Forbidden, will retry in "
-                                            + configuration.reconnectInterval.toString() + " seconds.");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Netatmo Access Forbidden, will retry in " + configuration.reconnectInterval
+                                            + " seconds.");
                             break;
                         default:
                             logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
