@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * The Discovery Service for Lutron HomeWorks processors. There is no great way to automatically
- * discovery modules in the legacy HomeWorks processor (that I know of) so this service simply iterates
+ * discover modules in the legacy HomeWorks processor (that I know of) so this service simply iterates
  * through possible addresses and asks for status on that address. If it's a valid module, the processor will return
  * with the dimmer status and it will be discovered.
  *
@@ -33,7 +33,7 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        new Thread(() -> {
+        scheduler.submit(() -> {
             try {
                 logger.debug("Starting scan for HW Dimmers");
                 for (int m = 1; m <= 8; m++) { // Modules
@@ -45,8 +45,10 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
                 }
             } catch (InterruptedException e) {
                 logger.warn("Scan interrupted");
+            } catch (Exception e) {
+                logger.error("Error occurred running discovery scanner", e);
             }
-        }).start();
+        });
     }
 
     /**

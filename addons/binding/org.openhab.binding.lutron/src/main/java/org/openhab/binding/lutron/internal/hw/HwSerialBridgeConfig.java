@@ -9,9 +9,10 @@ public class HwSerialBridgeConfig {
     public static final String SERIAL_PORT = "serialPort";
     public static final String BAUD = "baudRate";
     public static final String UPDATE_TIME = "updateTime";
+    public static final Integer DEFAULT_BAUD = 9600;
 
     private String serialPort;
-    private Integer baudRate;
+    private Integer baudRate = DEFAULT_BAUD;
     private Boolean updateTime;
 
     public String getSerialPort() {
