@@ -5,8 +5,12 @@
 
 	<bridge-type id="squeezeboxserver">
 		<label>SqueezeBox Server</label>
-		<description>This is a SqueezeBox Server instance.
-        </description>
+		<description>This is a SqueezeBox Server instance.</description>
+
+		<channels>
+			<channel id="favoritesList" typeId="favoritesList" />
+		</channels>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -28,6 +32,15 @@
 				<description>Language to use when using Google speech</description>
 				<default>en</default>
 			</parameter>
+			<parameter name="userId" type="text" required="false">
+				<label>User Id</label>
+				<description>User ID used to login to Squeeze Server</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Password</label>
+				<description>Password used to login to Squeeze Server</description>
+				<context>password</context>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -35,8 +48,10 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="squeezeboxserver" />
 		</supported-bridge-type-refs>
+
 		<label>SqueezeBox Player</label>
 		<description>This is a SqueezeBox Player instance</description>
+
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="mute" typeId="mute" />
@@ -64,7 +79,9 @@
 			<channel id="ircode" typeId="ircode" />
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
 			<channel id="notificationSoundVolume" typeId="notificationVolume" />
+			<channel id="playFavorite" typeId="playFavorite" />
 		</channels>
+
 		<properties>
 			<property name="vendor">Logitech</property>
 			<property name="modelId"></property>
@@ -72,6 +89,7 @@
 			<property name="uid"></property>
 			<property name="ip"></property>
 		</properties>
+
 		<config-description>
 			<parameter name="mac" type="text" required="true">
 				<label>MAC Address</label>
@@ -79,6 +97,27 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<!-- Favorites -->
+	<channel-type id="favoritesList">
+		<item-type>String</item-type>
+		<label>Favorites List</label>
+		<description>Comma-separated list of favorites of form favoriteId=favoriteName</description>
+		<state readOnly="true" pattern="%s"></state>
+		<config-description>
+			<parameter name="quoteList" type="boolean" required="true">
+				<label>Quote Favorites</label>
+				<description>Wrap the right hand side of the favorites in quotes</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="playFavorite">
+		<item-type>String</item-type>
+		<label>Play a Favorite</label>
+		<description>Play favorite by sending command with favoriteId</description>
+		<state pattern="%s"></state>
+	</channel-type>
 
 	<!-- Commands -->
 	<channel-type id="power" advanced="true">

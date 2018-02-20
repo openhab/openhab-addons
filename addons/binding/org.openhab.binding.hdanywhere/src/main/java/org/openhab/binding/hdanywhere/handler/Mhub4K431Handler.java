@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -66,7 +66,7 @@ public class Mhub4K431Handler extends BaseThingHandler {
 
         if (pollingJob == null || pollingJob.isCancelled()) {
             int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
         }
         updateStatus(ThingStatus.UNKNOWN);
     }

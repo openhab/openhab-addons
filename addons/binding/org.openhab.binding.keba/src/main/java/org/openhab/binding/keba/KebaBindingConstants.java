@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,17 +25,20 @@ public class KebaBindingConstants {
     public static final String BINDING_ID = "keba";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_KECONTACTP20 = new ThingTypeUID(BINDING_ID, "kecontactp20");
+    public static final ThingTypeUID THING_TYPE_KECONTACTP20 = new ThingTypeUID(BINDING_ID, "kecontact");
 
     // List of all Channel ids
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_FIRMWARE = "firmware";
     public static final String CHANNEL_STATE = "state";
-    public static final String CHANNEL_ERROR = "error";
+    public static final String CHANNEL_ERROR_1 = "error1";
+    public static final String CHANNEL_ERROR_2 = "error2";
     public static final String CHANNEL_WALLBOX = "wallbox";
     public static final String CHANNEL_VEHICLE = "vehicle";
     public static final String CHANNEL_PLUG_LOCKED = "locked";
     public static final String CHANNEL_ENABLED = "enabled";
+    public static final String CHANNEL_PILOT_CURRENT = "maxpilotcurrent";
+    public static final String CHANNEL_PILOT_PWM = "pwmpilotcurrent";
     public static final String CHANNEL_MAX_SYSTEM_CURRENT = "maxsystemcurrent";
     public static final String CHANNEL_MAX_PRESET_CURRENT_RANGE = "maxpresetcurrentrange";
     public static final String CHANNEL_MAX_PRESET_CURRENT = "maxpresetcurrent";
@@ -100,7 +103,8 @@ public class KebaBindingConstants {
         V25A3("2.5a3"),
         V3042A1("3.04.2a1"),
         V3062A5("3.06.2a5"),
-        V3071A1("3.07.1a1");
+        V3071A1("3.07.1a1"),
+        V3084("3.08.4");
 
         private final String id;
 

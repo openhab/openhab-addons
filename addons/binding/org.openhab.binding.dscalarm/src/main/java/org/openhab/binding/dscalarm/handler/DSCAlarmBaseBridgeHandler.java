@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,13 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
-import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageType;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -647,7 +647,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (password == null || password.length() < 1 || password.length() > 6) {
-                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars", password);
+                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars!");
                     break;
                 }
                 data = password;

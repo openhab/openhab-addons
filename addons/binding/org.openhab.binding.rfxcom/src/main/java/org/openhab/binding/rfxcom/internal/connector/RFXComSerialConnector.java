@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
 package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
@@ -37,7 +36,6 @@ import gnu.io.UnsupportedCommOperationException;
 public class RFXComSerialConnector extends RFXComBaseConnector implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComSerialConnector.class);
 
-    private InputStream in;
     private OutputStream out;
     private SerialPort serialPort;
 
@@ -72,7 +70,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         } catch (TooManyListenersException e) {
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 

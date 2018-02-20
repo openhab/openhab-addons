@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,9 +45,6 @@ public class XmlRpcClient extends RpcClient<String> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         if (httpClient != null) {
@@ -55,9 +52,6 @@ public class XmlRpcClient extends RpcClient<String> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RpcRequest<String> createRpcRequest(String methodName) {
         return new XmlRpcRequest(methodName);
@@ -71,9 +65,6 @@ public class XmlRpcClient extends RpcClient<String> {
         return "http://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected synchronized Object[] sendMessage(int port, RpcRequest<String> request) throws IOException {
         if (logger.isTraceEnabled()) {

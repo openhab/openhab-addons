@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
@@ -368,8 +369,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     updateState(CHANNEL_MUTEZONE2, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
                     break;
                 case ZONE2_VOLUME:
-                    updateState(CHANNEL_VOLUMEZONE2,
+                    volumeLevelZone2 = handleReceivedVolume(
                             convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                    updateState(CHANNEL_VOLUMEZONE2, volumeLevelZone2);
                     break;
                 case ZONE2_SOURCE:
                     updateState(CHANNEL_INPUTZONE2,
@@ -386,8 +388,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     updateState(CHANNEL_MUTEZONE3, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
                     break;
                 case ZONE3_VOLUME:
-                    updateState(CHANNEL_VOLUMEZONE3,
+                    volumeLevelZone3 = handleReceivedVolume(
                             convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                    updateState(CHANNEL_VOLUMEZONE3, volumeLevelZone3);
                     break;
                 case ZONE3_SOURCE:
                     updateState(CHANNEL_INPUTZONE3,
@@ -530,7 +533,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             try {
                 byte[] imgData = onkyoAlbumArt.getAlbumArt();
                 if (imgData != null && imgData.length > 0) {
-                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData));
+                    String mimeType = onkyoAlbumArt.getAlbumArtMimeType();
+                    if (mimeType.isEmpty()) {
+                        mimeType = guessMimeTypeFromData(imgData);
+                    }
+                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData, mimeType));
                 } else {
                     updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
                 }
@@ -736,11 +743,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private boolean isChannelAvailable(String channel) {
         List<Channel> channels = getThing().getChannels();
-        if (channels != null) {
-            for (Channel c : channels) {
-                if (c.getUID().getId().equals(channel)) {
-                    return true;
-                }
+        for (Channel c : channels) {
+            if (c.getUID().getId().equals(channel)) {
+                return true;
             }
         }
         return false;
@@ -813,5 +818,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     @Override
     public void setVolume(PercentType volume) throws IOException {
         handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
+    }
+
+    private String guessMimeTypeFromData(byte[] data) {
+        String mimeType = HttpUtil.guessContentTypeFromData(data);
+        logger.debug("Mime type guess from content: {}", mimeType);
+        if (mimeType == null) {
+            mimeType = RawType.DEFAULT_MIME_TYPE;
+        }
+        logger.debug("Mime type: {}", mimeType);
+        return mimeType;
     }
 }

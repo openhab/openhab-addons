@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,10 @@ public class SqueezeBoxBindingConstants {
     public static final ThingTypeUID SQUEEZEBOXPLAYER_THING_TYPE = new ThingTypeUID(BINDING_ID, "squeezeboxplayer");
     public static final ThingTypeUID SQUEEZEBOXSERVER_THING_TYPE = new ThingTypeUID(BINDING_ID, "squeezeboxserver");
 
-    // List of all Channel ids
+    // List of all Server Channel Ids
+    public static final String CHANNEL_FAVORITES_LIST = "favoritesList";
+
+    // List of all Player Channel Ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_VOLUME = "volume";
@@ -57,4 +60,5 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_NOTIFICATION_SOUND_VOLUME = "notificationSoundVolume";
+    public static final String CHANNEL_FAVORITES_PLAY = "playFavorite";
 }

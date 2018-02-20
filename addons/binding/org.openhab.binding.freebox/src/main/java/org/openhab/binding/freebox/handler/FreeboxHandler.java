@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -54,8 +54,8 @@ import org.matmaul.freeboxos.system.SystemConfiguration;
 import org.matmaul.freeboxos.upnpav.UPnPAVConfig;
 import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxServerConfiguration;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
+import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -297,7 +297,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 if (globalJob == null || globalJob.isCancelled()) {
                     long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
                     logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
-                    globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+                    globalJob = scheduler.scheduleWithFixedDelay(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
                 }
             }
 

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Lutron Binding</name>
-    <description>The Lutron binding controls Lutron lighting control systems such as RadioRA 2 and HomeWorks QS.</description>
+    <description>The Lutron binding controls Lutron lighting control systems such as RadioRA classic, RadioRA 2 and HomeWorks QS.</description>
     <author>Allan Tong</author>
 
 </binding:binding>

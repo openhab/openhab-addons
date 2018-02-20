@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +150,7 @@ public class OnkyoAlbumArt {
                     break;
                 case URL:
                     data = downloadAlbumArt(coverArtUrl);
-                    //Workaround firmware bug providing incorrect headers causing them to be seen as body instead.
+                    // Workaround firmware bug providing incorrect headers causing them to be seen as body instead.
                     if (data != null) {
                         int bodyLength = data.length;
                         int i = new String(data).indexOf("image/");
@@ -213,5 +214,23 @@ public class OnkyoAlbumArt {
         }
 
         return it;
+    }
+
+    public @NonNull String getAlbumArtMimeType() {
+        String mimeType = "";
+        switch (imageType) {
+            case BMP:
+                mimeType = "image/bmp";
+                break;
+            case JPEG:
+                mimeType = "image/jpeg";
+                break;
+            case UNKNOWN:
+            case URL:
+            case NONE:
+            default:
+                break;
+        }
+        return mimeType;
     }
 }

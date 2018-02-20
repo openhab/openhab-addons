@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * Slot handlers. The Slot handler exposes the status of a slot, and allows
  * users to start / stop folding.
  *
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class SlotHandler extends BaseThingHandler implements SlotUpdateListener {
 

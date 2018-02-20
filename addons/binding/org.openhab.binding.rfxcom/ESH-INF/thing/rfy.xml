@@ -16,7 +16,16 @@
 
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="program" typeId="command">
+				<label>Send Program Command</label>
+				<description>Sends a program command to pair with a device when switched from off to on.</description>
+			</channel>
 			<channel id="shutter" typeId="shutter" />
+			<channel id="venetianBlind" typeId="venetianBlind" />
+			<channel id="sunWindDetector" typeId="command">
+				<label>Sun+wind detector</label>
+				<description>Enable the sun+wind detector.</description>
+			</channel>
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
 
@@ -31,6 +40,7 @@
 				<options>
 					<option value="RFY">RFY</option>
 					<option value="RFY_EXT">RFY Ext</option>
+					<option value="ASA">ASA</option>
 				</options>
 			</parameter>
 		</config-description>

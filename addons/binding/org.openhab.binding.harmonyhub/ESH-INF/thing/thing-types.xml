@@ -9,6 +9,14 @@
         <description>A Logitech Harmony Hub</description>
           <channels>
             <channel id="currentActivity" typeId="currentActivity" />
+            <channel id="activityStarting" typeId="eventTrigger">
+                <label>Activity Starting Trigger</label>
+                <description>Triggered when an activity is starting</description>
+            </channel>
+            <channel id="activityStarted" typeId="eventTrigger">
+                <label>Activity Started Trigger</label>
+                <description>Triggered when an activity is started</description>
+            </channel>           
         </channels>
         <properties>
             <property name="name"></property>
@@ -53,6 +61,12 @@
         <item-type>String</item-type>
         <label>Current Activity</label>
         <description>The label/name of the current activity of a Harmony Hub</description>
+    </channel-type>
+    
+    <channel-type id="eventTrigger">
+        <kind>trigger</kind>
+        <label>Harmony Hub Event Trigger</label>
+        <description>Triggered when Harmony Hub sent an event with activity status</description>
     </channel-type>
     
      <channel-type id="buttonPress">

@@ -1,1 +1,2 @@
 target/
+OSGI-INF/*.xml

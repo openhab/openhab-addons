@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -74,7 +74,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing handler for Pioneer AVR @{}", connection.getConnectionName());
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
         // Start the status checker
         Runnable statusChecker = new Runnable() {
@@ -265,11 +265,11 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageVolumeLevelUpdate(AvrResponse response) {
 
-        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()),
-                new DecimalType(VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue())));
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()), new DecimalType(
+                VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue(), response.getZone())));
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, response.getZone()),
-                new PercentType(
-                        (int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue())));
+                new PercentType((int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue(),
+                        response.getZone())));
     }
 
     /**

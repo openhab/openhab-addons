@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -233,12 +233,12 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP, zone);
             } else if (command instanceof PercentType) {
                 String ipControlVolume = VolumeConverter
-                        .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue());
+                        .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue(), zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
             } else if (command instanceof DecimalType) {
                 String ipControlVolume = VolumeConverter
-                        .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue());
+                        .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue(), zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
             } else {

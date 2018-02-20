@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="feican"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="color">
+        <item-type>Color</item-type>
+        <label>Color</label>
+        <description>This channel supports adjusting the color of a light.
+        </description>
+        <category>ColorLight</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+
+    <channel-type id="color_temperature">
+        <item-type>Dimmer</item-type>
+        <label>Color Temperature</label>
+        <description>This channel supports adjusting the color temperature from cold (0%) to warm (100%).</description>
+        <category>ColorLight</category>
+    </channel-type>
+
+    <channel-type id="program" advanced="true">
+        <item-type>String</item-type>
+        <label>Program</label>
+        <description>This channel supports setting the bulb to a static, jumping, gradient or flashing light.</description>
+        <state readOnly="false">
+            <options>
+                <option value="1">Static red</option>
+                <option value="2">Static blue</option>
+                <option value="3">Static green</option>
+                <option value="4">Static cyan</option>
+                <option value="5">Static yellow</option>
+                <option value="6">Static purple</option>
+                <option value="7">Static white</option>
+                <option value="8">Tricolor jump</option>
+                <option value="9">7-color jump</option>
+                <option value="10">Tricolor gradient</option>
+                <option value="11">7-color gradient</option>
+                <option value="12">Red gradient</option>
+                <option value="13">Green gradient</option>
+                <option value="14">Blue gradient</option>
+                <option value="15">Yellow gradient</option>
+                <option value="16">Cyan gradient</option>
+                <option value="17">Purple gradient</option>
+                <option value="18">White gradient</option>
+                <option value="19">Red-Green gradient</option>
+                <option value="20">Red-Blue gradient</option>
+                <option value="21">Green-Blue gradient</option>
+                <option value="22">7-color flash</option>
+                <option value="23">Red flash</option>
+                <option value="24">Green flash</option>
+                <option value="25">Blue flash</option>
+                <option value="26">Yellow flash</option>
+                <option value="27">Cyan flash</option>
+                <option value="28">Purple flash</option>
+                <option value="29">White flash</option>
+            </options>
+       </state>
+    </channel-type>
+
+    <channel-type id="program_speed" advanced="true">
+        <item-type>Dimmer</item-type>
+        <label>Program speed</label>
+        <description>Speed of flash and gradient programs from 0 (slow) to 100 (fast).</description>
+    </channel-type>
+
+</thing:thing-descriptions>

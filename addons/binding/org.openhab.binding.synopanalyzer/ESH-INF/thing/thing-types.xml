@@ -18,6 +18,7 @@
             <channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
             <channel id="overcast" typeId="overcast" />
             <channel id="octa" typeId="octa" />
+            <channel id="attenuation-factor" typeId="attenuation-factor" />
             <channel id="horizontal-visibility" typeId="horizontal-visibility" />
             <channel id="time-utc" typeId="time-utc" />
         </channels>
@@ -78,6 +79,14 @@
         <label>Octa</label>
         <description>Octa</description>
         <state readOnly="true" pattern="%d/8">
+        </state>
+    </channel-type>
+    
+     <channel-type id="attenuation-factor">
+        <item-type>Number</item-type>
+        <label>Mitigation factor</label>
+        <description>Cloud layer mitigation factor</description>
+        <state readOnly="true" pattern="%.1f">
         </state>
     </channel-type>
 

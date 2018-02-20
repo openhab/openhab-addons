@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -98,28 +98,6 @@ public class OceanicThingHandler extends BaseThingHandler {
         port = (String) getConfig().get(PORT);
 
         if (serialPort == null && port != null && baud != 0) {
-
-            // Cfr. https://github.com/NeuronRobotics/nrjavaserial/issues/96
-            //
-            // On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the
-            // SerialPort. The solution is to implement a workaround with socat
-            // and pipe the data from the Serial Port to a pseudo tty, which has to be manipulated in a
-            // CommPortIdentifier.PORT_RAW manner.
-            //
-            // For example : /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
-            //
-            // The workaround can be implemented using a systemd system manager script, for example:
-            //
-            // [Install]
-            // WantedBy=multi-user.target
-            //
-            // [Service]
-            // #Type=forking
-            // ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
-            // #PIDFile=/var/run/socat.pid
-            // User=root
-            // Restart=always
-            // RestartSec=10
 
             if (portId == null) {
                 try {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -81,7 +81,7 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
         com.start();
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for session");
-        session = new MilightV6SessionManager(com, bridgeid, scheduler, this);
+        session = new MilightV6SessionManager(com, bridgeid, scheduler, this, addr);
     }
 
     @Override
@@ -89,8 +89,12 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
         return new Runnable() {
             @Override
             public void run() {
-                // logger.debug("Session keep alive");
-                session.keep_alive(refrehIntervalSec * 1000);
+                try {
+                    session.keep_alive(refrehIntervalSec * 1000);
+                } catch (InterruptedException e) {
+                    // Someone wants to end this thread
+                    return;
+                }
                 updateProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
                 updateProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
                         String.valueOf(session.getLastSessionValidConfirmation()));

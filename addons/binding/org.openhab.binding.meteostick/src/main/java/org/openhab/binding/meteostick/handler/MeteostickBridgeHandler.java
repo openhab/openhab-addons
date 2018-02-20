@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,9 +75,8 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MeteoStick Bridge handler.");
-        super.initialize();
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         Configuration config = getThing().getConfiguration();
 
@@ -98,7 +97,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        offlineTimerJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 60, TimeUnit.SECONDS);
+        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override

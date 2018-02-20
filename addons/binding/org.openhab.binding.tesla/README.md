@@ -11,22 +11,25 @@ Currently, the Tesla Model S is supported by this binding.
 
 ## Binding Configuration
 
-The binding uses a the owner's email address and password in order to access the Tesla Owners Remote API. This is the same email address and password as used in the Tesla smartphone app, that allows to remotely control the Tesla Model S
+The binding uses a the owner's email address and password in order to access the Tesla Owners Remote API.
+This is the same email address and password as used in the Tesla smartphone app, that allows to remotely control the Tesla Model S.
 
 ## Alternative secure configuration
 
-After a successful connection (Thing is online), you can clear the username and password field from the configuration, leaving only the VIN. Instead of using the username and password, from now on, only the access token will be stored and used (access token + refresh token). This is a better approach for many reasons, one being that you cannot start the car without the password.
+After a successful connection (Thing is online), you can clear the username and password field from the configuration, leaving only the VIN. Instead of using the username and password, from now on, only the access token will be stored and used (access token + refresh token).
+This is a better approach for many reasons, one being that you cannot start the car without the password.
 If you really don't like the thought of your username and password being stored temporarily, there is also a third option: Leave username/password blank, go into the openHAB console (ssh -p 8101 openhab@localhost), and run the following command:
 
 ```
 openhab> smarthome:tesla logon 1
 Username (email): ****@***.com
-Password: 
+Password:
 Attempting logon...
 Successfully logged on and stored token.
 ```
 
-This command will perform a single logon, store the auth tokens and forget it ever saw your username and password. In the second parameter to the logon comand above, "1" is the thing id.
+This command will perform a single logon, store the auth tokens and forget it ever saw your username and password.
+In the second parameter to the logon comand above, "1" is the thing id.
 
 ## Thing Configuration
 
@@ -41,16 +44,17 @@ Thing tesla:models:1 [ username="your.email@company.com", password="somepassword
 
 All devices support the following channels (non exhaustive):
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|----------------- |------------- |
-| charge | Switch       | This channel supports starting or stopping the charging process of the vehicle |
-| location | Location       | This channel indicates the actual location (latitude, longitude, elevation) of the vehicle |
-| doorlock | Switch       | This channel supports locking or unlocking the doors of the vehicle |
-| insidetemp | Number       | This channel indicates the inside temperature of the vehicle |
-| odometer | Number       | This channel indicates the actual state of the vehicle's odometer, in km or miles along the build of the vehicle (EU or US) |
-| batterylevel | Number       | This channel indicates the actual state of the vehicle's battery, in % |
+| Channel Type ID | Item Type | Description                                                                                                                 |   |   |
+|-----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------|---|---|
+| charge          | Switch    | This channel supports starting or stopping the charging process of the vehicle                                              |   |   |
+| location        | Location  | This channel indicates the actual location (latitude, longitude, elevation) of the vehicle                                  |   |   |
+| doorlock        | Switch    | This channel supports locking or unlocking the doors of the vehicle                                                         |   |   |
+| insidetemp      | Number    | This channel indicates the inside temperature of the vehicle                                                                |   |   |
+| odometer        | Number    | This channel indicates the actual state of the vehicle's odometer, in km or miles along the build of the vehicle (EU or US) |   |   |
+| batterylevel    | Number    | This channel indicates the actual state of the vehicle's battery, in %                                                      |   |   |
 
-## Full Example
+
+## Example
 
 demo.Things:
 

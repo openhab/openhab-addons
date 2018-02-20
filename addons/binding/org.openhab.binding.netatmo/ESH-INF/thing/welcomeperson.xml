@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="NAWelcomePerson">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Welcome Person</label>
+		<description>This represents a person at home</description>
+
+		<channels>
+			<channel id="welcomePersonLastSeen" typeId="last_seen"></channel>
+			<channel id="welcomePersonAtHome" typeId="person_athome"></channel>
+			<channel id="welcomePersonAvatarUrl" typeId="person_avatar_url"></channel>
+			<channel id="welcomePersonAvatar" typeId="person_avatar"></channel>
+			<channel id="welcomePersonLastEventMessage" typeId="person_eventmsg"></channel>
+			<channel id="welcomePersonLastEventTime" typeId="person_eventtime"></channel>
+			<channel id="welcomePersonLastEventUrl" typeId="person_event_url"></channel>
+			<channel id="welcomePersonLastEvent" typeId="person_event"></channel>
+			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
+		</channels>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:nawelcomeperson" />
+	</thing-type>
+
+	<channel-type id="last_seen">
+		<item-type>DateTime</item-type>
+		<label>Last seen</label>
+		<description>Time when the person was last seen</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_athome">
+		<item-type>Switch</item-type>
+		<label>At home</label>
+		<description>True if the person is at home (last seen in the defined timerange)</description>
+	</channel-type>
+
+	<channel-type id="person_eventmsg">
+		<item-type>String</item-type>
+		<label>Last Event message</label>
+		<description>Last Event message from this person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_eventtime">
+		<item-type>DateTime</item-type>
+		<label>Last Event time</label>
+		<description>Last Event message time for this person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_avatar_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Avatar URL </label>
+		<description>URL for the Avatar of the person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_avatar" >
+		<item-type>Image</item-type>
+		<label>Avatar</label>
+		<description>Avatar of the person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_event" >
+		<item-type>Image</item-type>
+		<label>Last Event Picture</label>
+		<description>Picture of the last event for this person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person_event_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Last event URL</label>
+		<description>URL for the picture of the last event for this person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

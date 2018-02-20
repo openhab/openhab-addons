@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,6 +31,7 @@ public class ActionRegistry {
         actions.put("setMode", new SetModeAction(eventPublisher, deviceRegistry));
         actions.put("setSetPoint", new SetSetPointAction(eventPublisher));
         actions.put("launchScene", new LaunchSceneAction(eventPublisher));
+        actions.put("stopShutter", new StopShutterAction(eventPublisher, deviceRegistry));
     }
 
     public Action get(String action) {

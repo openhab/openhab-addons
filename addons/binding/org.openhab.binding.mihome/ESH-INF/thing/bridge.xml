@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Xiaomi Mi Smart Home Bridge -->
+	<bridge-type id="bridge">
+		<label>Xiaomi Mi Smart Home Bridge</label>
+		<description>Multifunctional Gateway - a bridge for the sensors</description>
+
+		<properties>
+			<property name="vendor">Xiaomi</property>
+		</properties>
+        <config-description-ref uri="bridge-type:mihome:bridge"/>
+	</bridge-type>
+</thing:thing-descriptions>

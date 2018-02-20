@@ -20,6 +20,7 @@
         <config-description>
             <parameter name="port" type="text">
                 <label>Serial port</label>
+                <context>serial-port</context>
                 <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
                 <required>true</required>
             </parameter>

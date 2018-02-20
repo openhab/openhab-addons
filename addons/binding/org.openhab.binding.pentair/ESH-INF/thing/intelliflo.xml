@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pentair"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+        
+    <thing-type id="intelliflo">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ip_bridge" />
+            <bridge-type-ref id="pentair_serial_bridge" />
+        </supported-bridge-type-refs>
+        
+        <label>Intelliflo Pump</label>
+        <description>Pentair Intelliflo Pump</description>
+        
+       <channels>
+            <channel id="run" typeId="runswitch"/>
+            <channel id="mode" typeId="pumpmode"/>
+            <channel id="rpm" typeId="rpm"/>
+            <channel id="power" typeId="power"/>
+            <channel id="ppc" typeId="ppc"/>
+            <channel id="error" typeId="pumperror"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="id" type="integer" required="false">
+                <label>ID</label>
+                <description>The ID of the device (in decimal, not hex)</description>
+                <default>96</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="pumpmode">
+        <item-type>Number</item-type>
+        <label>Pump mode</label>
+        <description>Pump mode</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="runswitch">
+        <item-type>Switch</item-type>
+        <label>Pump running</label>
+        <description>Indicator on whether the pump is running or not.</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="rpm">
+        <item-type>Number</item-type>
+        <label>RPM</label>
+        <description>Pump RPM</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="power">
+        <item-type>Number</item-type>
+        <label>Power</label>
+        <description>Pump power</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="ppc">
+        <item-type>Number</item-type>
+        <label>PPC</label>
+        <description>Pump PPC</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="pumperror">
+        <item-type>Number</item-type>
+        <label>Pump Error</label>
+        <description>Pump Error</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+</thing:thing-descriptions>
+
+
+
