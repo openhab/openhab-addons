@@ -94,11 +94,13 @@ Switch TheaterScene2 { channel="lutron:keypad:theater:button2" }
 ```
 
 # Legacy HomeWorks RS232 (Serial) Processors
+
 The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection.  To connect to such a system, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).  
 
 Please see [HomeWorks RS232 Protocol Guide](http://www.lutron.com/TechnicalDocumentLibrary/HWI%20RS232%20Protocol.pdf) for information on the protocol.
 
 ## Supported Things
+
 * HomeWorks RS232-connected Processor Units
 * Dimmers
 
@@ -107,6 +109,7 @@ Supported in future updates:
 * Keypad LEDs
 
 ## Discovery
+
 This binding supports active and passive discovery.  It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
 
 ## Thing Configuration
