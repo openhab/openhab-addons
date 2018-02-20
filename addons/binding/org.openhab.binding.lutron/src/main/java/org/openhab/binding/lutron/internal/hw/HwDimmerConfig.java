@@ -18,8 +18,8 @@ public class HwDimmerConfig {
     private static final int DEFAULT_LEVEL = 100;
 
     private String address;
-    private Integer fadeTime = new Integer(DEFAULT_FADE);
-    private Integer defaultLevel = new Integer(DEFAULT_LEVEL);
+    private Integer fadeTime = DEFAULT_FADE;
+    private Integer defaultLevel = DEFAULT_LEVEL;
 
     public String getAddress() {
         return this.address;

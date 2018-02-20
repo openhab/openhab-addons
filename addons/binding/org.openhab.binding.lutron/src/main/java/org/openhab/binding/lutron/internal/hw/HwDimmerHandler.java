@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lutron.internal.hw;
 
 import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
@@ -19,8 +27,6 @@ import org.eclipse.smarthome.core.types.Command;
  *
  */
 public class HwDimmerHandler extends BaseThingHandler {
-    // private Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
-
     private String address;
     private Integer fadeTime = 1;
     private Integer defaultLevel = 100;

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
@@ -65,7 +73,6 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> props = new HashMap<>();
 
-        // TODO put this in a constant
         props.put("address", address);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(props)
                 .withRepresentationProperty("address").build();
