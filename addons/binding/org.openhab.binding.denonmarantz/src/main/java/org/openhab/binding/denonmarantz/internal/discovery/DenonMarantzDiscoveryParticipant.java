@@ -229,7 +229,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
             String serial = matcher.group(1).toLowerCase();
             return new ThingUID(THING_TYPE_AVR, serial);
         } else {
-            logger.debug("This discovered device is not supported by the DenonMarantz binding, ignoring..");
+            logger.trace("This discovered device is not supported by the DenonMarantz binding, ignoring..");
         }
         return null;
     }
