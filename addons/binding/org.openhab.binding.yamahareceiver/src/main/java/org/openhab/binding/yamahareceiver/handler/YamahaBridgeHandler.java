@@ -10,7 +10,6 @@ package org.openhab.binding.yamahareceiver.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
@@ -58,8 +57,9 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
     private ZoneDiscoveryService zoneDiscoveryService;
 
     private AbstractConnection connection;
-    private SystemControlState systemControlState = new SystemControlState();
-    private DeviceInformationState deviceInformationState = new DeviceInformationState();
+    // Package local for unit tests. DONT CHANGE THIS!
+    SystemControlState systemControlState = new SystemControlState();
+    DeviceInformationState deviceInformationState = new DeviceInformationState();
     private final CountDownLatch loadingDone = new CountDownLatch(1);
 
     public YamahaBridgeHandler(Bridge bridge) {
