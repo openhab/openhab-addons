@@ -185,7 +185,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 break;
             case CHANNEL_SETTEMP:
                 if (command instanceof DecimalType) {
-                    BigDecimal temperature = new BigDecimal(command.toString());
+                    BigDecimal temperature = ((DecimalType) command).toBigDecimal();
                     state.getHkr().setTsoll(temperature);
                     fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
