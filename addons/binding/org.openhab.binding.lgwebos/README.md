@@ -17,6 +17,16 @@ Under network settings allow "LG CONNECT APPS" to connect.
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available.
 In combination with the wake on LAN binding this will allow you to start the TV via openHAB.
 
+## Binding Configuration
+
+The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
+
+If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
+
 ## Discovery
 
 TVs are auto discovered through SSDP in the local network.

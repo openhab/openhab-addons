@@ -67,6 +67,7 @@ Gateway discovery is available:
 * CCU
 * RaspberryMatic >= 2.29.23.20171022
 * Homegear >= 0.6.x
+* piVCCU
 
 For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways. 
  
