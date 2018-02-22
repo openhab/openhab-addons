@@ -28,9 +28,8 @@ The thing has a few configuration parameters:
 | apikey    | API Key from https://api.foobot.io/apidoc/index.html. Mandatory.        |
 | username  | your UserName for the foobot App. Mandatory.                            |
 | MAC Id    | Unique ID of your foobot device. Mandatory.                             |
-| refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
+| refresh   | Refresh interval in minutes. Optional, the default value is 30 minutes. |
 
-For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
 ## Channels
 
