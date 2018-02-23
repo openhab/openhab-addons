@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -24,10 +26,16 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.etapu.SourceConfig;
 import org.openhab.binding.etapu.channels.ETAChannel;
+import org.openhab.binding.etapu.channels.ETAMenuChannel;
+import org.openhab.binding.etapu.channels.ETAVarChannel;
+import org.openhab.binding.etapu.internal.EtaPUHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,16 +51,52 @@ public class EtaPUHandler extends BaseThingHandler {
     private SourceConfig sourceConfig;
     // List of all Channel ids
     private final Set<ETAChannel> channels = new HashSet<>();
+    private Set<ETAVarChannel> varChannels = new HashSet<>();
+    private EtaPUHandlerFactory etaPUHandlerFactory;
 
     /**
      * Constructor
      *
      * @param thing
+     * @param etaPUHandlerFactory
      */
-    public EtaPUHandler(Thing thing) {
+    public EtaPUHandler(Thing thing, EtaPUHandlerFactory etaPUHandlerFactory) {
         super(thing);
+        this.etaPUHandlerFactory = etaPUHandlerFactory;
+        sourceConfig = getConfigAs(SourceConfig.class);
+        getChannels();
 
-        addReadOnlyChannels();
+    }
+
+    private void getChannels() {
+        ETAMenuChannel etaMenuChannel = new ETAMenuChannel();
+        sendRequest(etaMenuChannel);
+        varChannels = etaMenuChannel.getETAVarChannels();
+        List<Channel> newChannels = new ArrayList<Channel>();
+        List<Channel> currentChannels = getThing().getChannels();
+        varChannels.forEach(vc -> {
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(getThing().getUID().getAsString() + ":"
+                    + vc.getId().toUpperCase().replaceAll("[^a-zA-Z0-9_-]", "_").replace(" ", ""));
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(getThing().getUID(),
+                            vc.getId().toUpperCase().replaceAll("[^a-zA-Z0-9_-]", "_").replace(" ", "")), "String")
+                    .withType(channelTypeUID).build();
+            newChannels.add(channel);
+            etaPUHandlerFactory.addCh
+        });
+
+        currentChannels.forEach(ch -> {
+            if (!newChannels.stream().anyMatch(
+                    nc -> nc.getChannelTypeUID().getAsString().equals(ch.getChannelTypeUID().getAsString()))) {
+                newChannels.add(ch);
+            }
+        });
+
+        ThingBuilder thingBuilder = editThing();
+
+        thingBuilder.withChannels(newChannels);
+
+        updateThing(thingBuilder.build());
 
     }
 
@@ -96,7 +140,7 @@ public class EtaPUHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        sourceConfig = getConfigAs(SourceConfig.class);
+
         scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {

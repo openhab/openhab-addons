@@ -2,6 +2,7 @@ package org.openhab.binding.etapu.channels;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,11 +18,9 @@ import org.xml.sax.SAXException;
  * Class that represents a channel of an ETA thing.
  *
  * @author mh
- *
  */
-public class ETAChannel {
+public abstract class ETAChannel {
 
-    private Logger logger = LoggerFactory.getLogger(ETAChannel.class);
 
     private String id;
 
@@ -51,8 +50,8 @@ public class ETAChannel {
         this.response = r;
     }
 
-    public String getResponse() {
-        return response;
+    public Optional<String> getResponse() {
+        return Optional.ofNullable(response);
     }
 
     /**
@@ -68,28 +67,5 @@ public class ETAChannel {
         this.id = id;
     }
 
-    /**
-     * Parses the response string of the REST interface and returns the value as String
-     * 
-     * @return
-     */
-    public String getValue() {
-        String result = "";
-        try {
-            if (response != null) {
-                Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                        .parse(new InputSource(new StringReader(getResponse())));
-                NodeList nodeList = d.getElementsByTagName("value");
-                if (nodeList.getLength() > 0) {
-                    result = nodeList.item(0).getAttributes().getNamedItem("strValue").getNodeValue();
-                }
-            } else {
-                logger.warn("Channel " + id + " did not receive a result.");
-            }
-        } catch (SAXException | IOException | ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 
 }

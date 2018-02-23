@@ -8,29 +8,29 @@
 		<label>ETA PelletsUnit</label>
 		<description>EtaPU Binding das alle verfügbaren Daten der REST API ausliest.</description>
 
-		<channels>
-			<channel id="kesselstatus" typeId="kesselstatus"  />
-			<channel id="heizkreisstatus" typeId="heizkreisstatus" />
-			<channel id="stoermeldung" typeId="stoermeldung" />
-			<channel id="entaschentaste" typeId="entaschentaste" />
-			<channel id="entaschennachfruehestens" typeId="entaschennachfruehestens" />
-			<channel id="entaschennachspaetestens" typeId="entaschennachspaetestens" />
-			<channel id="kuebelleerennach" typeId="kuebelleerennach" />
-			<channel id="silovorrat" typeId="silovorrat" />
-			<channel id="kesselpelletsvorrat" typeId="kesselpelletsvorrat" />
-			<channel id="kesselpelletsfuellen" typeId="kesselpelletsfuellen" />
-			<channel id="betriebssekunden" typeId="betriebssekunden" />
-			<channel id="gesamtverbrauch" typeId="gesamtverbrauch" />
-			<channel id="kgseitwartung" typeId="kgseitwartung" />
-			<channel id="kgseitentaschung" typeId="kgseitentaschung" />
-			<channel id="hksolltemperatur" typeId="hksolltemperatur" />
-			<channel id="hkvorlaufminus10" typeId="hkvorlaufminus10" />
-			<channel id="hkvorlaufplus10" typeId="hkvorlaufplus10" />
-			<channel id="hkvorlaufabsenkung" typeId="hkvorlaufabsenkung" />
-			<channel id="heizgrenzetag" typeId="heizgrenzetag" />
-			<channel id="heizgrenzenacht" typeId="heizgrenzenacht" />
-			<channel id="aussentemperatur" typeId="aussentemperatur" />
-		</channels>
+<!-- 		<channels> -->
+<!-- 			<channel id="kesselstatus" typeId="kesselstatus"  /> -->
+<!-- 			<channel id="heizkreisstatus" typeId="heizkreisstatus" /> -->
+<!-- 			<channel id="stoermeldung" typeId="stoermeldung" /> -->
+<!-- 			<channel id="entaschentaste" typeId="entaschentaste" /> -->
+<!-- 			<channel id="entaschennachfruehestens" typeId="entaschennachfruehestens" /> -->
+<!-- 			<channel id="entaschennachspaetestens" typeId="entaschennachspaetestens" /> -->
+<!-- 			<channel id="kuebelleerennach" typeId="kuebelleerennach" /> -->
+<!-- 			<channel id="silovorrat" typeId="silovorrat" /> -->
+<!-- 			<channel id="kesselpelletsvorrat" typeId="kesselpelletsvorrat" /> -->
+<!-- 			<channel id="kesselpelletsfuellen" typeId="kesselpelletsfuellen" /> -->
+<!-- 			<channel id="betriebssekunden" typeId="betriebssekunden" /> -->
+<!-- 			<channel id="gesamtverbrauch" typeId="gesamtverbrauch" /> -->
+<!-- 			<channel id="kgseitwartung" typeId="kgseitwartung" /> -->
+<!-- 			<channel id="kgseitentaschung" typeId="kgseitentaschung" /> -->
+<!-- 			<channel id="hksolltemperatur" typeId="hksolltemperatur" /> -->
+<!-- 			<channel id="hkvorlaufminus10" typeId="hkvorlaufminus10" /> -->
+<!-- 			<channel id="hkvorlaufplus10" typeId="hkvorlaufplus10" /> -->
+<!-- 			<channel id="hkvorlaufabsenkung" typeId="hkvorlaufabsenkung" /> -->
+<!-- 			<channel id="heizgrenzetag" typeId="heizgrenzetag" /> -->
+<!-- 			<channel id="heizgrenzenacht" typeId="heizgrenzenacht" /> -->
+<!-- 			<channel id="aussentemperatur" typeId="aussentemperatur" /> -->
+<!-- 		</channels> -->
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
