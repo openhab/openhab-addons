@@ -318,9 +318,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private void updatePVRChannelStateDescription(final String pvrChannelType, final String channelId) {
         if (isLinked(channelId)) {
             int pvrChannelGroupId = getPVRChannelGroupId(pvrChannelType, channelId);
-            List<KodiPVRChannel> pvrChannels = connection.getPVRChannels(pvrChannelGroupId);
             List<StateOption> options = new ArrayList<>();
-            for (KodiPVRChannel pvrChannel : pvrChannels) {
+            for (KodiPVRChannel pvrChannel : connection.getPVRChannels(pvrChannelGroupId)) {
                 options.add(new StateOption(pvrChannel.getLabel(), pvrChannel.getLabel()));
             }
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);

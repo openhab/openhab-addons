@@ -595,8 +595,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public int getPVRChannelGroupId(final String channelType, final String pvrChannelGroupName) {
-        List<KodiPVRChannelGroup> pvrChannelGroups = getPVRChannelGroups(channelType);
-        for (KodiPVRChannelGroup pvrChannelGroup : pvrChannelGroups) {
+        for (KodiPVRChannelGroup pvrChannelGroup : getPVRChannelGroups(channelType)) {
             if (StringUtils.equalsIgnoreCase(pvrChannelGroup.getLabel(), pvrChannelGroupName)) {
                 return pvrChannelGroup.getId();
             }
@@ -631,8 +630,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public int getPVRChannelId(final int pvrChannelGroupId, final String pvrChannelName) {
-        List<KodiPVRChannel> pvrChannels = getPVRChannels(pvrChannelGroupId);
-        for (KodiPVRChannel pvrChannel : pvrChannels) {
+        for (KodiPVRChannel pvrChannel : getPVRChannels(pvrChannelGroupId)) {
             if (StringUtils.equalsIgnoreCase(pvrChannel.getLabel(), pvrChannelName)) {
                 return pvrChannel.getId();
             }
