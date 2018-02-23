@@ -75,6 +75,7 @@ Group    "iPhone" iCloud_Group
 String   iPhone_BatteryStatus             "Battery Status [%s %%]"             <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
 Number   iPhone_BatteryLevel              "Battery Level [%.0f]"               <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
 Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"                       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
+Switch   iPhone_Refresh                   "Force iPhone Refresh"                       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
 Location iPhone_Location                  "Coordinates"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
 Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
@@ -88,7 +89,8 @@ sitemap icloud label="iCloud" {
     Frame item=iCloud_Group {
         Text item=iPhone_BatteryStatus
         Text item=iPhone_BatteryLevel
-        Text item=iPhone_FindMyPhone  mappings=[ ON="Find!" ]
+        Switch item=iPhone_FindMyPhone  mappings=[ ON="Find!" ]
+        Switch item=iPhone_Refresh mappings=[ REFRESH='Refresh now' ]
         Text item=iPhone_LocationAccuracy
         Text item=iPhone_LocationLastUpdate
         // mapview for web UI, invisible in iOS client
