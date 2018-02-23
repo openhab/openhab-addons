@@ -50,9 +50,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final List<Integer> SPEEDS = Arrays
             .asList(new Integer[] { -32, -16, -8, -4, -2, 1, 2, 4, 8, 16, 32 });
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
-            TimeUnit.MINUTES.toMillis(15)); // 15min
+            TimeUnit.MINUTES.toMillis(15));
     private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
-            TimeUnit.MINUTES.toMillis(5)); // 5min
+            TimeUnit.MINUTES.toMillis(5));
 
     private URI wsUri;
     private URI imageUri;

@@ -17,7 +17,7 @@ public abstract class KodiBaseItem {
     /**
      * The label of the item
      */
-    protected String label;
+    private String label;
 
     public String getLabel() {
         return label;

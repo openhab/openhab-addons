@@ -64,7 +64,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private ScheduledFuture<?> statusUpdaterFuture;
 
-    private KodiDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
     public KodiHandler(@NonNull Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
