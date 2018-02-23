@@ -262,17 +262,20 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
                 String title = "";
                 if (item.has("title")) {
-                    title = convertToText(item.get("title"));
+                    title = item.get("title").getAsString();
+                }
+                if (title.isEmpty()) {
+                    title = item.get("label").getAsString();
                 }
 
                 String showTitle = "";
                 if (item.has("showtitle")) {
-                    showTitle = convertToText(item.get("showtitle"));
+                    showTitle = item.get("showtitle").getAsString();
                 }
 
                 String album = "";
                 if (item.has("album")) {
-                    album = convertToText(item.get("album"));
+                    album = item.get("album").getAsString();
                 }
 
                 String mediaType = item.get("type").getAsString();
@@ -333,27 +336,17 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private String convertFromArray(JsonArray data) {
         StringBuilder result = new StringBuilder();
-        for (JsonElement x : data) {
+        for (JsonElement element : data) {
             if (result.length() > 0) {
                 result.append(", ");
             }
-            result.append(convertToText(x));
+            result.append(element.getAsString());
         }
         return result.toString();
     }
 
-    private String convertToText(JsonElement element) {
-        String text = element.getAsString();
-        return text;
-        // try {
-        // return new String(text.getBytes("ISO-8859-1"));
-        // } catch (UnsupportedEncodingException e) {
-        // return text;
-        // }
-    }
-
     private String convertToImageUrl(JsonElement element) {
-        String text = convertToText(element);
+        String text = element.getAsString();
         if (!text.isEmpty()) {
             try {
                 // we have to strip ending "/" here because Kodi returns a not valid path and filename
