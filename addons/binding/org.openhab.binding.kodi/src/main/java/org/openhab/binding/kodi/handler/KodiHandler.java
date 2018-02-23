@@ -266,7 +266,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         String pvrChannelGroupName = config.getGroup();
         int pvrChannelGroupId = connection.getPVRChannelGroupId(pvrChannelType, pvrChannelGroupName);
         if (pvrChannelGroupId <= 0) {
-            logger.warn("Received unknown PVR channel group '{}'. Using default.", pvrChannelGroupName);
+            logger.debug("Received unknown PVR channel group '{}'. Using default.", pvrChannelGroupName);
             pvrChannelGroupId = PVR_TV.equals(pvrChannelType) ? 1 : 2;
         }
         return pvrChannelGroupId;
