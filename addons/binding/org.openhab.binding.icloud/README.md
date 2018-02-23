@@ -70,14 +70,56 @@ Bridge icloud:account:myaccount [appleId="abc@xyz.tld", password="secure", refre
 ### icloud.items
 
 ```php
-Group    iCloud_Group
+Group    "iPhone" iCloud_Group
 
-String   iPhone_BatteryStatus             "Battery Status [%s %%]"             <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
-Number   iPhone_BatteryLevel              "Battery Level [%.0f]"               <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
-Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"                       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone"}
-Location iPhone_Location                  "Coordinates"                                  (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
-Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
-DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
+String   iPhone_BatteryStatus             "Battery Status [%s %%]" <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
+Number   iPhone_BatteryLevel              "Battery Level [%.0f]"   <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
+Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"           (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
+Switch   iPhone_Refresh                   "Force iPhone Refresh"             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
+Location iPhone_Location                  "Coordinates"                      (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
+Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"    (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
+DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
+Switch   iPhone_Home                      "Phone Home"            <presence> (iCloud_Group)
+```
+
+### icloud.sitemap
+
+```php
+sitemap icloud label="iCloud" {
+    Frame item=iCloud_Group {
+        Text item=iPhone_BatteryStatus
+        Text item=iPhone_BatteryLevel
+        Text item=iPhone_Home
+        Text item=iPhone_LocationAccuracy
+        Text item=iPhone_LocationLastUpdate
+        Switch item=iPhone_FindMyPhone mappings=[ ON="Find!" ]
+        Switch item=iPhone_Refresh mappings=[ REFRESH='Refresh now' ]
+        // mapview for web UI, invisible in iOS client
+        Mapview item=iPhone_Location height=10
+    }
+}
+```
+
+### icloud.rules
+
+```php
+rule "iPhone Home"
+when
+    Item iPhone_Location changed
+then
+    // specify your home location
+    val PointType home_location  = new PointType(new DecimalType(51.0), new DecimalType(4.0))
+    val PointType phone_location = iPhone_Location.state as PointType
+    val int distance = phone_location.distanceFrom(home_location).intValue()
+    // specify your preferred radius (in meters)
+    if ( distance < 200) {
+        iPhone_Home.postUpdate(ON)
+        logInfo("iPhone Home", "iPhone is at home.")
+    } else {
+        iPhone_Home.postUpdate(OFF)
+        logInfo("iPhone Home", "iPhone is away.")
+    }
+end
 ```
 
 Apple, iPhone, and iCloud are registered trademarks of Apple Inc., registered in the U.S. and other countries.
