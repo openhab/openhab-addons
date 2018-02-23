@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Improvements on channels for opening PVR TV or Radio streams
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.kodi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class KodiHandlerFactory extends BaseThingHandlerFactory {
@@ -51,6 +52,8 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
     private String callbackUrl = null;
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+
+    private KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -69,7 +72,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
-            KodiHandler handler = new KodiHandler(thing);
+            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider);
 
             // register the Kodi as an audio sink
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
@@ -132,4 +135,12 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = null;
     }
 
+    @Reference
+    protected void setDynamicStateDescriptionProvider(KodiDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(KodiDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = null;
+    }
 }

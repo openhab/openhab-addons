@@ -138,4 +138,21 @@ class SqueezeBoxPlayerState {
         }
         return repeat;
     }
+
+    /***
+     * Return the player state as {@link SqueezeBoxPlayerPlayState}
+     *
+     * @return {@link SqueezeBoxPlayerPlayState}
+     */
+    SqueezeBoxPlayerPlayState getPlayState() {
+        if (!isPlaying() && !isStopped()) {
+            return SqueezeBoxPlayerPlayState.PAUSE;
+        }
+
+        if (isPlaying()) {
+            return SqueezeBoxPlayerPlayState.PLAY;
+        }
+
+        return SqueezeBoxPlayerPlayState.STOP;
+    }
 }
