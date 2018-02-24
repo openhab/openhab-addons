@@ -317,7 +317,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private String getWebHookURI() {
         String webHookURI = null;
-        if (configuration.webHookUrl != null && configuration.readWelcome == Boolean.TRUE && webHookServlet != null) {
+        if (configuration.webHookUrl != null && configuration.readWelcome && webHookServlet != null) {
             webHookURI = configuration.webHookUrl + webHookServlet.getPath();
         }
         return webHookURI;

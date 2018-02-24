@@ -104,8 +104,9 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof NetatmoBridgeHandler) {
-            unregisterDeviceDiscoveryService(thingHandler.getThing().getUID());
-            unregisterWebHookServlet(thingHandler.getThing().getUID());
+            ThingUID thingUID = thingHandler.getThing().getUID();
+            unregisterDeviceDiscoveryService(thingUID);
+            unregisterWebHookServlet(thingUID);
         }
         super.removeHandler(thingHandler);
     }
@@ -129,7 +130,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
         WelcomeWebHookServlet servlet = null;
         if (bundleContext != null) {
-            servlet = new WelcomeWebHookServlet(this.httpService, thingUID.getId());
+            servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
             webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
                     new Hashtable<String, Object>()));
         }

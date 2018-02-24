@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -45,8 +44,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
     private NetatmoBridgeHandler bridgeHandler;
     private String path;
 
-    public WelcomeWebHookServlet(@NonNull HttpService httpService, String id) {
-        super();
+    public WelcomeWebHookServlet(HttpService httpService, String id) {
         this.httpService = httpService;
         this.path = String.format(PATH, id);
     }
