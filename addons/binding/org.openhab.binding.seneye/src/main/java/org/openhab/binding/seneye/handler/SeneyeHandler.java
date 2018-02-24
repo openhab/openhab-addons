@@ -10,6 +10,8 @@ package org.openhab.binding.seneye.handler;
 
 import static org.openhab.binding.seneye.SeneyeBindingConstants.*;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -19,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.seneye.internal.CommunicationException;
 import org.openhab.binding.seneye.internal.InvalidConfigurationException;
 import org.openhab.binding.seneye.internal.ReadingsUpdate;
 import org.openhab.binding.seneye.internal.SeneyeConfigurationParameters;
@@ -49,12 +52,8 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
         }
 
         if (command instanceof RefreshType) {
-            try {
-                SeneyeDeviceReading readings = seneyeService.getDeviceReadings();
-                newState(readings);
-            } catch (InvalidConfigurationException invalidConfigurationException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            }
+            SeneyeDeviceReading readings = seneyeService.getDeviceReadings();
+            newState(readings);
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
         }
@@ -104,20 +103,44 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
 
         super.initialize();
 
-        if (seneyeService.initialize()) {
+        // contact Seneye API
+        scheduler.submit(new Runnable() {
+            @Override
+            public void run() {
+                initializeSeneyeService();
+            }
+        });
+    }
 
-            seneyeService.startAutomaticRefresh(scheduler, this);
+    private void initializeSeneyeService() {
+        try {
+            seneyeService.initialize();
+        } catch (CommunicationException ex) {
+            // try again in 30 secs
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    initializeSeneyeService();
+                }
+            }, 30, TimeUnit.SECONDS);
 
-            updateStatus(ThingStatus.ONLINE);
+            return;
+        } catch (InvalidConfigurationException ex) {
+            // bad configuration, stay offline until user corrects the configuration
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
 
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not find a seneye with configured aquarium name");
+            return;
         }
+
+        // ok, initialization succeeded
+        seneyeService.startAutomaticRefresh(scheduler, this);
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
         seneyeService.stopAutomaticRefresh();
+        seneyeService = null;
     }
 }

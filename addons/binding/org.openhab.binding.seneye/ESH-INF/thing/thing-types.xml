@@ -4,7 +4,7 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="seneye">
+    <thing-type id="monitor">
         <label>Seneye Monitor</label>
         <description>Seneye Monitor</description>
 
@@ -24,29 +24,25 @@
             <parameter name="aquarium_name" type="text" required="true">
                 <label>Aquarium Name</label>
                 <description>The name of your aquarium</description>
-                <advanced>false</advanced>
             </parameter>
 
             <parameter name="username" type="text" required="true">
                 <label>Username</label>
                 <description>The username of My Seneye</description>
-                <advanced>false</advanced>
             </parameter>
 
             <parameter name="password" type="text" required="true">
                 <label>Password</label>
                 <description>The password of My Seneye</description>
                 <context>password</context>
-                <advanced>false</advanced>
             </parameter>
             
-            <parameter name="poll_time" type="integer" required="true" min="1" max="1440">
-                <label>Polling time</label>
+            <parameter name="poll_time" type="integer" required="false" min="1" max="1440">
+                <label>Polling Time</label>
                 <description>How often (in minutes) does the seneye needs to be checked ?</description>
                 <default>5</default>
-                <advanced>false</advanced>
             </parameter>
-
+            
         </config-description>        
     </thing-type>
 
@@ -55,50 +51,60 @@
         <item-type>Number</item-type>
         <label>Temperature</label>
         <description>The water temperature</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="seneye-ph-channel">
         <item-type>Number</item-type>
         <label>PH</label>
         <description>The PH Level</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="seneye-nh3-channel">
         <item-type>Number</item-type>
         <label>NH3</label>
         <description>The NH3 Level</description>
+        <state readOnly="true" />
     </channel-type>    
     <channel-type id="seneye-nh4-channel">
         <item-type>Number</item-type>
         <label>NH4</label>
         <description>The NH4 Level</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="seneye-O2-channel">
         <item-type>Number</item-type>
         <label>O2</label>
         <description>The O2 Level</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="seneye-lux-channel">
         <item-type>Number</item-type>
         <label>LUX</label>
         <description>The LUX Light Level</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="seneye-par-channel">
         <item-type>Number</item-type>
         <label>PAR</label>
         <description>The PAR Light Level</description>
+        <state readOnly="true" />
     </channel-type>        
     <channel-type id="seneye-Kelvin-channel">
         <item-type>Number</item-type>
         <label>kelvin</label>
         <description>The Kelvin Light Level</description>
+        <state readOnly="true" />
     </channel-type>        
     <channel-type id="seneye-lastreading-channel">
         <item-type>DateTime</item-type>
         <label>Last reading</label>
         <description>The last time your seneye is checked</description>
+        <state readOnly="true" />
     </channel-type> 
     <channel-type id="seneye-slideexpires-channel">
         <item-type>DateTime</item-type>
         <label>Slide expiration</label>
         <description>The time your slide expires</description>
+        <state readOnly="true" />
     </channel-type>     
 </thing:thing-descriptions>

@@ -71,11 +71,7 @@ public class SeneyeService {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    readingsUpdate.newState(getDeviceReadings());
-                } catch (InvalidConfigurationException e) {
-                    readingsUpdate.invalidConfig();
-                }
+                readingsUpdate.newState(getDeviceReadings());
             }
         };
 
@@ -88,7 +84,7 @@ public class SeneyeService {
         scheduledJob.cancel(true);
     }
 
-    public SeneyeDeviceReading getDeviceReadings() throws InvalidConfigurationException {
+    public SeneyeDeviceReading getDeviceReadings() {
         int currentTry = 0;
         do {
             try {
@@ -103,6 +99,8 @@ public class SeneyeService {
                 return readings;
 
             } catch (Exception se) {
+                // ok, this readout failed, swallow this error, this is a scheduled task and this is in a retry loop,
+                // so it will be retried.
                 logger.debug("failed to read seneye '{}'", se.getMessage());
             }
         } while (currentTry++ < this.retry);
@@ -111,12 +109,8 @@ public class SeneyeService {
 
     }
 
-    public boolean initialize() {
+    public void initialize() throws CommunicationException, InvalidConfigurationException {
         String response = GetData("?" + GetCredentials());
-
-        if (response.isEmpty()) {
-            return false;
-        }
 
         Seneye[] seneyeDevices = gson.fromJson(response, Seneye[].class);
 
@@ -124,18 +118,18 @@ public class SeneyeService {
             if (seneye.description.equals(config.aquarium_name)) {
                 seneyeId = Integer.toString(seneye.id);
                 isInitialized = true;
-
-                return true;
+                return;
             }
         }
-        return false;
+        throw new InvalidConfigurationException(
+                "Could not find a seneye with aquarium name '" + config.aquarium_name + "'");
     }
 
     public boolean isInitialized() {
         return isInitialized;
     }
 
-    private String GetData(String request) {
+    private String GetData(String request) throws CommunicationException {
         // get devices
         // https://api.seneye.com/v1/devices?user=emailaddress&pwd=xxx
 
@@ -162,14 +156,11 @@ public class SeneyeService {
 
             return response.getContentAsString();
         } catch (InterruptedException e) {
-            logger.debug("Request aborted", e);
-            return "";
+            throw new CommunicationException("Request aborted", e);
         } catch (TimeoutException e) {
-            logger.debug("Timeout error", e);
-            return "";
+            throw new CommunicationException("Timeout error", e);
         } catch (ExecutionException e) {
-            logger.debug("Communication error", e.getCause());
-            return "";
+            throw new CommunicationException("Communication error", e.getCause());
         }
     }
 
