@@ -11,6 +11,7 @@ package org.openhab.binding.smappee.handler;
 import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
 
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -21,6 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.smappee.internal.CommunicationException;
+import org.openhab.binding.smappee.internal.InvalidConfigurationException;
 import org.openhab.binding.smappee.internal.ReadingsUpdate;
 import org.openhab.binding.smappee.internal.SmappeeConfigurationParameters;
 import org.openhab.binding.smappee.internal.SmappeeDeviceReading;
@@ -64,9 +67,11 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
     @Override
     public void newState(SmappeeDeviceReading readings) {
-        updateState(CHANNEL_CONSUMPTION, new DecimalType(readings.getLatestConsumption()));
-        updateState(CHANNEL_SOLAR, new DecimalType(readings.getLatestSolar()));
-        updateState(CHANNEL_ALWAYSON, new DecimalType(readings.getLatestAlwaysOn()));
+        if (readings != null) {
+            updateState(CHANNEL_CONSUMPTION, new DecimalType(readings.getLatestConsumption()));
+            updateState(CHANNEL_SOLAR, new DecimalType(readings.getLatestSolar()));
+            updateState(CHANNEL_ALWAYSON, new DecimalType(readings.getLatestAlwaysOn()));
+        }
     }
 
     @Override
@@ -103,18 +108,39 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
         smappeeService = new SmappeeService(config);
 
-        if (smappeeService.initialize()) {
+        // contact Smappee API
+        scheduler.submit(new Runnable() {
+            @Override
+            public void run() {
+                initializeSmappeeService();
+            }
+        });
+    }
 
-            smappeeService.startAutomaticRefresh(scheduler, this);
+    private void initializeSmappeeService() {
+        try {
+            smappeeService.initialize();
+        } catch (CommunicationException ex) {
+            // try again in 30 secs
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    initializeSmappeeService();
+                }
+            }, 30, TimeUnit.SECONDS);
 
-            updateStatus(ThingStatus.ONLINE);
+            return;
+        } catch (InvalidConfigurationException ex) {
+            // bad configuration, stay offline until user corrects the configuration
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
 
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not find a smappee with configured service location name '" + config.service_location_name
-                            + "'");
             return;
         }
+
+        // ok, initialization succeeded
+        smappeeService.startAutomaticRefresh(scheduler, this);
+
+        updateStatus(ThingStatus.ONLINE);
 
         logger.debug("Initialize discovery service.");
         registerDeviceDiscoveryService();

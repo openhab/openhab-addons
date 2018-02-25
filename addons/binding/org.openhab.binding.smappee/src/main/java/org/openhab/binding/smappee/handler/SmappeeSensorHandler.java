@@ -57,10 +57,12 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
     }
 
     public void newState(SmappeeSensorConsumptionRecord readings) {
-        if (channelid == "1") {
-            updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value1));
-        } else if (channelid == "2") {
-            updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value2));
+        if (readings != null) {
+            if (channelid == "1") {
+                updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value1));
+            } else if (channelid == "2") {
+                updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value2));
+            }
         }
     }
 

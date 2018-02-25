@@ -57,8 +57,10 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
     }
 
     public void newState(SmappeeApplianceEvent readings) {
-        updateState(CHANNEL_APPLIANCE_POWER, new DecimalType(readings.activePower));
-        updateState(CHANNEL_APPLIANCE_LASTUPDATE, new DateTimeType(readings.getTimestamp()));
+        if (readings != null) {
+            updateState(CHANNEL_APPLIANCE_POWER, new DecimalType(readings.activePower));
+            updateState(CHANNEL_APPLIANCE_LASTUPDATE, new DateTimeType(readings.getTimestamp()));
+        }
     }
 
     @Override

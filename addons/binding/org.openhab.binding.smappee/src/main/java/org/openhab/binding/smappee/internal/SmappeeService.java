@@ -246,8 +246,8 @@ public class SmappeeService {
                 return null;
 
             } catch (Exception se) {
-                logger.warn("failed to read smappee '{}' - sensorId '{}' : {}", this.serviceLocationId, sensorId,
-                        se.getMessage());
+                logger.warn("failed to read smappee '{}' - sensorId '{}' : {}, Retry ({}/{})", this.serviceLocationId,
+                        sensorId, se.getMessage(), currentTry + 1, this.retry);
             }
         } while (currentTry++ < this.retry);
 
@@ -268,14 +268,22 @@ public class SmappeeService {
         // sample API method to call :
         // https://app1pub.smappee.net/dev/v1/servicelocation/[SERVICELOCATIONID]/actuator/[ACTUATORID]/on
 
-        if (turnOn) {
-            setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on");
-        } else {
-            setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
-        }
+        int currentTry = 0;
+        do {
+            try {
+                if (turnOn) {
+                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on");
+                } else {
+                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
+                }
+            } catch (Exception se) {
+                logger.warn("failed to set smappee plug '{}' - sensorId '{}' : {}, Retry ({}/{})",
+                        this.serviceLocationId, actuatorID, se.getMessage(), currentTry + 1, this.retry);
+            }
+        } while (currentTry++ < this.retry);
     }
 
-    public boolean initialize() {
+    public boolean initialize() throws CommunicationException, InvalidConfigurationException {
         // get service locations
         String response = getData("/dev/v1/servicelocation");
 
@@ -306,7 +314,7 @@ public class SmappeeService {
         return initialized;
     }
 
-    private String getData(String request) {
+    private String getData(String request) throws CommunicationException {
         String url = "https://app1pub.smappee.net" + request;
 
         Request getMethod = httpClient.newRequest(url);
@@ -325,29 +333,22 @@ public class SmappeeService {
 
         try {
             ContentResponse response = getMethod.send();
-            int statusCode = response.getStatus();
-            if (statusCode != HttpStatus.OK_200) {
+            if (response.getStatus() != HttpStatus.OK_200) {
                 logger.warn("Get readings method failed: {}", response.getReason());
                 return "";
             }
 
             return response.getContentAsString();
         } catch (InterruptedException e) {
-            logger.warn("Request aborted", e);
-            return "";
+            throw new CommunicationException("Request aborted", e);
         } catch (TimeoutException e) {
-            logger.warn("Timeout error", e);
-            return "";
+            throw new CommunicationException("Timeout error", e);
         } catch (ExecutionException e) {
-            logger.warn("Communication error", e.getCause());
-            return "";
-        } catch (Exception e) {
-            logger.warn("Error occured", e);
-            return "";
+            throw new CommunicationException("Communication error", e.getCause());
         }
     }
 
-    private void setData(String request) {
+    private void setData(String request) throws CommunicationException {
         String url = "https://app1pub.smappee.net" + request;
 
         Request postMethod = httpClient.newRequest(url);
@@ -374,21 +375,15 @@ public class SmappeeService {
 
             return;
         } catch (InterruptedException e) {
-            logger.warn("Request aborted", e);
-            return;
+            throw new CommunicationException("Request aborted", e);
         } catch (TimeoutException e) {
-            logger.warn("Timeout error", e);
-            return;
+            throw new CommunicationException("Timeout error", e);
         } catch (ExecutionException e) {
-            logger.warn("Communication error", e.getCause());
-            return;
-        } catch (Exception e) {
-            logger.warn("Error occured", e);
-            return;
+            throw new CommunicationException("Communication error", e.getCause());
         }
     }
 
-    private String getAccessToken() {
+    private String getAccessToken() throws CommunicationException {
         if (accessToken != null && !accessToken.isEmpty() && accessTokenValidity != null
                 && accessTokenValidity.isBeforeNow()) {
             return accessToken;
