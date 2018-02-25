@@ -50,7 +50,9 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         for (Channel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                fields.add(DATA_API_FIELD_DATA, channel.getId());
+                if (channel.getId() != null && !channel.getId().equals("0")) {
+                    fields.add(DATA_API_FIELD_DATA, channel.getId());
+                }
             }
         }
 

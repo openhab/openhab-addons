@@ -65,7 +65,7 @@ public enum CustomChannels implements Channel {
     }
 
     public final void setId(Integer id) {
-        this.id = id.toString();
+        this.id = id == null ? null : id.toString();
     }
 
     @Override
