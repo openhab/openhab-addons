@@ -61,16 +61,18 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
 
     @Override
     public void newState(SeneyeDeviceReading readings) {
-        updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
-        updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
-        updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
-        updateState(CHANNEL_O2, new DecimalType(readings.o2.curr));
-        updateState(CHANNEL_PAR, new DecimalType(readings.par.curr));
-        updateState(CHANNEL_PH, new DecimalType(readings.ph.curr));
-        updateState(CHANNEL_LUX, new DecimalType(readings.lux.curr));
-        updateState(CHANNEL_KELVIN, new DecimalType(readings.kelvin.curr));
-        updateState(CHANNEL_LASTREADING, new DateTimeType(readings.status.getLast_experimentDate()));
-        updateState(CHANNEL_SLIDEEXPIRES, new DateTimeType(readings.status.getSlide_expiresDate()));
+        if (readings != null) {
+            updateState(CHANNEL_TEMPERATURE, new DecimalType(readings.temperature.curr));
+            updateState(CHANNEL_NH3, new DecimalType(readings.nh3.curr));
+            updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
+            updateState(CHANNEL_O2, new DecimalType(readings.o2.curr));
+            updateState(CHANNEL_PAR, new DecimalType(readings.par.curr));
+            updateState(CHANNEL_PH, new DecimalType(readings.ph.curr));
+            updateState(CHANNEL_LUX, new DecimalType(readings.lux.curr));
+            updateState(CHANNEL_KELVIN, new DecimalType(readings.kelvin.curr));
+            updateState(CHANNEL_LASTREADING, new DateTimeType(readings.status.getLast_experimentDate()));
+            updateState(CHANNEL_SLIDEEXPIRES, new DateTimeType(readings.status.getSlide_expiresDate()));
+        }
     }
 
     @Override
