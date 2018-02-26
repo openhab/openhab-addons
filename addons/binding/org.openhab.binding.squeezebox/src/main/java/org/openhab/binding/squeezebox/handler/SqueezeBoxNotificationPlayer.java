@@ -182,6 +182,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
                 throw new SqueezeBoxTimeoutException("Unable to update playlist.");
             }
         }
+        logger.debug("Playlist updated");
     }
 
     private void playNotification() throws InterruptedException, SqueezeBoxTimeoutException {
@@ -237,8 +238,14 @@ class SqueezeBoxNotificationPlayer implements Closeable {
                 logger.debug("Resuming last item playing");
                 break;
             case PAUSE:
-                logger.debug("Pausing the player");
-                squeezeBoxServerHandler.pause(mac);
+                /*
+                 * If the player was paused, stop it. We stop it because the LMS
+                 * doesn't respond to a pause command while it's processing the
+                 * above 'playPlaylist item' command. The consequence of this is
+                 * we lose the ability to resume local music from saved state.
+                 */
+                logger.debug("Stopping the player");
+                squeezeBoxServerHandler.stop(mac);
                 break;
             case STOP:
                 logger.debug("Stopping the player");
