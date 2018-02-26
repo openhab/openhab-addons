@@ -101,7 +101,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         @Override
         public void detached(DetachEvent e) {
-            logger.debug("The KNX network link was detached from the process communicator", e.getSource());
+            logger.debug("The KNX network link was detached from the process communicator");
         }
 
         @Override
