@@ -22,7 +22,6 @@ import tuwien.auto.calimero.IndividualAddress;
 public interface BusMessageListener {
 
     /**
-     *
      * Called when the KNX bridge receives a group write telegram
      *
      * @param bridge
@@ -32,7 +31,6 @@ public interface BusMessageListener {
     public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
-     *
      * Called when the KNX bridge receives a group read telegram
      *
      * @param bridge
@@ -42,13 +40,13 @@ public interface BusMessageListener {
     public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
-     *
      * Called when the KNX bridge receives a group read response telegram
      *
      * @param bridge
      * @param destination
      * @param asdu
      */
-    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
+            byte[] asdu);
 
 }

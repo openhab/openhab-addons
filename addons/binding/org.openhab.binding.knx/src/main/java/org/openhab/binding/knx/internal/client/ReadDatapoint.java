@@ -6,18 +6,26 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.knx.internal.handler;
+package org.openhab.binding.knx.internal.client;
 
 import tuwien.auto.calimero.datapoint.Datapoint;
 
 /**
+ * Information about a data point which is queued to be read from the KNX bus.
+ *
  * @author Karel Goderis - Initial contribution
  */
-public class RetryDatapoint {
+public class ReadDatapoint {
 
-    private Datapoint datapoint;
+    private final Datapoint datapoint;
     private int retries;
-    private int limit;
+    private final int limit;
+
+    public ReadDatapoint(Datapoint datapoint, int limit) {
+        this.datapoint = datapoint;
+        this.retries = 0;
+        this.limit = limit;
+    }
 
     public Datapoint getDatapoint() {
         return datapoint;
@@ -33,12 +41,6 @@ public class RetryDatapoint {
 
     public int getLimit() {
         return limit;
-    }
-
-    public RetryDatapoint(Datapoint datapoint, int limit) {
-        this.datapoint = datapoint;
-        this.retries = 0;
-        this.limit = limit;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class RetryDatapoint {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RetryDatapoint other = (RetryDatapoint) obj;
+        ReadDatapoint other = (ReadDatapoint) obj;
         if (datapoint == null) {
             if (other.datapoint != null) {
                 return false;

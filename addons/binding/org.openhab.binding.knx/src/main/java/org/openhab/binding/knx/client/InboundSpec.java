@@ -10,6 +10,8 @@ package org.openhab.binding.knx.client;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import tuwien.auto.calimero.GroupAddress;
 
 /**
@@ -18,10 +20,21 @@ import tuwien.auto.calimero.GroupAddress;
  * @author Simon Kaufmann - initial contribution and API
  *
  */
+@NonNullByDefault
 public interface InboundSpec {
 
+    /**
+     * Get the datapoint type.
+     *
+     * @return the datapoint type
+     */
     String getDPT();
 
+    /**
+     * Get the affected group addresses.
+     *
+     * @return a list of group addresses.
+     */
     List<GroupAddress> getGroupAddresses();
 
 }

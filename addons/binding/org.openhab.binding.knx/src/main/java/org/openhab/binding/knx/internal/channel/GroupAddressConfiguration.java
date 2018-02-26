@@ -28,10 +28,20 @@ public class GroupAddressConfiguration {
         this.read = read;
     }
 
+    /**
+     * The group address.
+     *
+     * @return the group address.
+     */
     public String getGA() {
         return ga;
     }
 
+    /**
+     * Denotes whether the group address is marked to be actively read from.
+     *
+     * @return {@code true} if read requests should be issued to this address
+     */
     public boolean isRead() {
         return read;
     }

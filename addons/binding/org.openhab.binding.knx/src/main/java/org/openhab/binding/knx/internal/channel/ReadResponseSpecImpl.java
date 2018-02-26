@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.client.OutboundSpec;
@@ -20,6 +21,7 @@ import tuwien.auto.calimero.GroupAddress;
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
+@NonNullByDefault
 public class ReadResponseSpecImpl extends AbstractSpec implements OutboundSpec {
 
     private final @Nullable GroupAddress groupAddress;

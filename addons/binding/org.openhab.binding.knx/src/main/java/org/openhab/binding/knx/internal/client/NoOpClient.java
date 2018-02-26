@@ -8,9 +8,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.knx.client.DeviceInfoClient;
 import org.openhab.binding.knx.client.KNXClient;
 import org.openhab.binding.knx.client.OutboundSpec;
@@ -25,7 +24,7 @@ import tuwien.auto.calimero.exception.KNXException;
  * @author Simon Kaufmann - initial contribution and API
  *
  */
-
+@NonNullByDefault
 public class NoOpClient implements KNXClient {
 
     @Override
@@ -39,7 +38,7 @@ public class NoOpClient implements KNXClient {
     }
 
     @Override
-    public @NonNull DeviceInfoClient getDeviceInfoClient() {
+    public DeviceInfoClient getDeviceInfoClient() {
         throw new IllegalStateException("KNX client not properly configured");
     }
 
@@ -49,25 +48,25 @@ public class NoOpClient implements KNXClient {
     }
 
     @Override
-    public boolean registerGroupAddressListener(@NonNull GroupAddressListener listener) {
+    public boolean registerGroupAddressListener(GroupAddressListener listener) {
         return false;
     }
 
     @Override
-    public boolean unregisterGroupAddressListener(@NonNull GroupAddressListener listener) {
+    public boolean unregisterGroupAddressListener(GroupAddressListener listener) {
         return false;
     }
 
     @Override
-    public void readDatapoint(@NonNull Datapoint datapoint) {
+    public void readDatapoint(Datapoint datapoint) {
     }
 
     @Override
-    public void writeToKNX(@NonNull OutboundSpec commandSpec) throws KNXException {
+    public void writeToKNX(OutboundSpec commandSpec) throws KNXException {
     }
 
     @Override
-    public void respondToKNX(@NonNull OutboundSpec responseSpec, @NonNull State state) throws KNXException {
+    public void respondToKNX(OutboundSpec responseSpec) throws KNXException {
     }
 
 }

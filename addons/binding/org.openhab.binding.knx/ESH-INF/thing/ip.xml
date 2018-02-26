@@ -5,8 +5,8 @@
 
 	<!-- Bridge Thing Type -->
 	<bridge-type id="ip">
-		<label>KNX/IP gateway</label>
-		<description>This Bridge is for IP based KNX gateways</description>
+		<label>KNX/IP Gateway</label>
+		<description>This is a KNX IP interface or router</description>
 
 		<config-description>
 			<parameter name="type" type="text">
@@ -63,7 +63,7 @@
 			<parameter name="autoReconnectPeriod" type="integer">
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry</description>
-				<default>0</default>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

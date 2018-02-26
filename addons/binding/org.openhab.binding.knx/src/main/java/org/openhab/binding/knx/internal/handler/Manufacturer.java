@@ -11,6 +11,8 @@ package org.openhab.binding.knx.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Enumeration containing all the KNX device manufactureres.
+ *
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault

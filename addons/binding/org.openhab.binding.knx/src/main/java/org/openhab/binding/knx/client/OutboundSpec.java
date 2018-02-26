@@ -23,11 +23,26 @@ import tuwien.auto.calimero.GroupAddress;
 @NonNullByDefault
 public interface OutboundSpec {
 
+    /**
+     * Get the datapoint type.
+     *
+     * @return the datapoint type
+     */
     String getDPT();
 
+    /**
+     * The group address to be used.
+     *
+     * @return the group address
+     */
     @Nullable
     GroupAddress getGroupAddress();
 
+    /**
+     * The command or state to be sent.
+     *
+     * @return the command/state
+     */
     Type getType();
 
 }

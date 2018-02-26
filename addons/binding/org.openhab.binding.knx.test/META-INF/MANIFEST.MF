@@ -25,7 +25,3 @@ Import-Package:
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: 
- org.hamcrest,
- org.junit,
- org.mockito

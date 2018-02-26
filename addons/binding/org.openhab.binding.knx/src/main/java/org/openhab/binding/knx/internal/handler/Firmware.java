@@ -9,6 +9,8 @@
 package org.openhab.binding.knx.internal.handler;
 
 /**
+ * Enumeration containing the firmware types.
+ *
  * @author Karel Goderis - Initial contribution
  */
 public enum Firmware {

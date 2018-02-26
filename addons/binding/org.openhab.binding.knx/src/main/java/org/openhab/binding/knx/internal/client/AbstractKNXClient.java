@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.client.DeviceInfoClient;
@@ -30,7 +29,6 @@ import org.openhab.binding.knx.client.OutboundSpec;
 import org.openhab.binding.knx.client.StatusUpdateCallback;
 import org.openhab.binding.knx.handler.GroupAddressListener;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
-import org.openhab.binding.knx.internal.handler.RetryDatapoint;
 import org.openhab.binding.knx.internal.logging.LogAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +89,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private @Nullable ScheduledFuture<?> connectJob;
 
     private final Set<GroupAddressListener> groupAddressListeners = new CopyOnWriteArraySet<>();
-    private final LinkedBlockingQueue<@Nullable RetryDatapoint> readDatapoints = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<ReadDatapoint> readDatapoints = new LinkedBlockingQueue<>();
 
     @FunctionalInterface
     private interface ListenerNotification {
@@ -269,11 +267,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     /**
      * Transforms a {@link Type} into a datapoint type value for the KNX bus.
      *
-     * @param type
-     *            the {@link Type} to transform
-     * @param dpt
-     *            the datapoint type to which should be converted
-     *
+     * @param type the {@link Type} to transform
+     * @param dpt the datapoint type to which should be converted
      * @return the corresponding KNX datapoint type value as a string
      */
     @Nullable
@@ -289,7 +284,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         if (processCommunicator == null) {
             return;
         }
-        RetryDatapoint datapoint = readDatapoints.poll();
+        ReadDatapoint datapoint = readDatapoints.poll();
         if (datapoint != null) {
             datapoint.incrementRetries();
             try {
@@ -378,7 +373,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     @Override
     public void readDatapoint(Datapoint datapoint) {
         synchronized (this) {
-            RetryDatapoint retryDatapoint = new RetryDatapoint(datapoint, readRetriesLimit);
+            ReadDatapoint retryDatapoint = new ReadDatapoint(datapoint, readRetriesLimit);
             if (!readDatapoints.contains(retryDatapoint)) {
                 readDatapoints.add(retryDatapoint);
             }
@@ -387,7 +382,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public final boolean registerGroupAddressListener(GroupAddressListener listener) {
-        return groupAddressListeners.contains(listener) ? true : groupAddressListeners.add(listener);
+        return groupAddressListeners.add(listener);
     }
 
     @Override
@@ -426,7 +421,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     @Override
-    public void respondToKNX(OutboundSpec responseSpec, State state) throws KNXException {
+    public void respondToKNX(OutboundSpec responseSpec) throws KNXException {
         ProcessCommunicationResponder responseCommunicator = this.responseCommunicator;
         KNXNetworkLink link = this.link;
         if (responseCommunicator == null || link == null) {
@@ -437,7 +432,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         GroupAddress groupAddress = responseSpec.getGroupAddress();
         if (groupAddress != null) {
-            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), state);
+            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getType());
         }
     }
 

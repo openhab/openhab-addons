@@ -114,6 +114,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
             attachToClient();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             detachFromClient();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -198,7 +199,6 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         }
         cancelReadFutures();
         getClient().unregisterGroupAddressListener(this);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
 }

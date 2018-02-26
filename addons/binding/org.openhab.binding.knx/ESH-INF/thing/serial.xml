@@ -5,11 +5,11 @@
 
 	<!-- Bridge Thing Type -->
 	<bridge-type id="serial">
-		<label>KNX serial gateway</label>
-		<description>This Bridge is for the serial KNX gateway running on the openHAB host</description>
+		<label>KNX FT1.2 Interface</label>
+		<description>This is a serial interface for accessing the KNX bus</description>
 		<config-description>
 			<parameter name="serialPort" type="text">
-			    <context>serial-port </context>
+				<context>serial-port </context>
 				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the KNX bus</description>
 				<required>true</required>

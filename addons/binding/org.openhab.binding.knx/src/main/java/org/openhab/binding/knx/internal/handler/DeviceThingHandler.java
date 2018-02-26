@@ -10,6 +10,7 @@ package org.openhab.binding.knx.internal.handler;
 
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +67,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
     private final Set<GroupAddress> groupAddresses = new HashSet<>();
     private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
+    private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
     private @Nullable IndividualAddress address;
     private int readInterval;
 
@@ -275,8 +277,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         }
     }
 
-    private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
-
     private void processDataReceived(GroupAddress destination, byte[] asdu, InboundSpec listenSpec,
             ChannelUID channelUID) {
         if (!isDPTSupported(listenSpec.getDPT())) {
@@ -289,9 +289,13 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
         if (type != null) {
             if (isControl(channelUID)) {
+                Channel channel = getThing().getChannel(channelUID.getId());
+                Object repeat = channel != null ? channel.getConfiguration().get(KNXBindingConstants.REPEAT_FREQUENCY)
+                        : null;
+                int frequency = repeat != null ? ((BigDecimal) repeat).intValue() : 0;
                 if (KNXBindingConstants.CHANNEL_DIMMER_CONTROL.equals(getChannelTypeUID(channelUID).getId())
-                        && (type instanceof UnDefType || type instanceof IncreaseDecreaseType)) {
-                    // special handling for dimmer-control
+                        && (type instanceof UnDefType || type instanceof IncreaseDecreaseType) && frequency > 0) {
+                    // continuous dimming by the binding
                     if (UnDefType.UNDEF.equals(type)) {
                         ScheduledFuture<?> future = channelFutures.remove(channelUID);
                         if (future != null) {
@@ -300,7 +304,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     } else if (type instanceof IncreaseDecreaseType) {
                         ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(() -> {
                             postCommand(channelUID, (Command) type);
-                        }, 0, 500, TimeUnit.MILLISECONDS);
+                        }, 0, frequency, TimeUnit.MILLISECONDS);
                         ScheduledFuture<?> previousFuture = channelFutures.put(channelUID, future);
                         if (previousFuture != null) {
                             previousFuture.cancel(true);

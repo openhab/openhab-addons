@@ -10,6 +10,8 @@ package org.openhab.binding.knx.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.client.InboundSpec;
+import org.openhab.binding.knx.client.OutboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -35,14 +37,27 @@ public abstract class AbstractSpec {
 
     }
 
-    protected final @Nullable GroupAddress toGroupAddress(GroupAddressConfiguration ga) {
+    /**
+     * Helper method to convert a {@link GroupAddressConfiguration} into a {@link GroupAddress}.
+     *
+     * @param ga the group address configuration
+     * @return a group address object
+     */
+    protected final GroupAddress toGroupAddress(GroupAddressConfiguration ga) {
         try {
             return new GroupAddress(ga.getGA());
         } catch (KNXFormatException e) {
-            return null;
+            throw new IllegalArgumentException(e);
         }
     }
 
+    /**
+     * Return the data point type.
+     * <p>
+     * See {@link InboundSpec#getDPT()} and {@link OutboundSpec#getDPT()}.
+     *
+     * @return the data point type.
+     */
     public final String getDPT() {
         return dpt;
     }

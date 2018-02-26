@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -36,6 +37,7 @@ import tuwien.auto.calimero.mgmt.Destination;
 public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implements StatusUpdateCallback {
 
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);
@@ -54,7 +56,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     public ScheduledExecutorService getScheduler() {
-        return scheduler;
+        return knxScheduler;
     }
 
     @Override

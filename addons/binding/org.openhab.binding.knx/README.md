@@ -24,8 +24,8 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | Required if type is ROUTER                           |
-| portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | Not required if type is ROUTER; 3671                 |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | -                                                    |
+| portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
 | localSourceAddr     | No           | The group address for identification of this KNX/IP gateway within the KNX bus                               | 0.0.0                                                |
 | useNAT              | No           | Whether there is network address translation between the server and the gateway                              | false                                                |
@@ -68,57 +68,103 @@ Standard channels are used most of the time. They are used in the common case wh
 
 ##### Switch
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| switch | Group address | 1.001 | 
+| Parameter | Description                         | Default DPT |
+|-----------|-------------------------------------|-------------|
+| switch    | Group address for the binary switch | 1.001       |
 
 
 ##### Dimmer
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| switch | Group address | 1.001 | 
-| position | Group address | 5.001 | 
-| increaseDecrease | Group address | 3.007 | 
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| switch           | Group address for the binary switch    | 1.001       |
+| position         | Group address of the absolute position | 5.001       |
+| increaseDecrease | Group address for relative movement    | 3.007       |
 
 ##### Rollershutter
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| upDown | Group address | 1.008 | 
-| stopMove | Group address | 1.010 | 
-| position | Group address | 5.001 | 
+| Parameter | Description                             | Default DPT |
+|-----------|-----------------------------------------|-------------|
+| upDown    | Group address for relative movement     | 1.008       |
+| stopMove  | Group address for stopping              | 1.010       |
+| position  | Group address for the relative position | 5.001       |
 
 ##### Contact
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| ga | Group address | 1.009 | 
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 1.009       |
 
 ##### Number
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| ga | Group address | 9.001 | 
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 9.001       |
 
 ##### String
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| ga | Group address | 16.001 | 
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 16.001      |
 
 ##### Datetime
 
-| Parameter | Description | Default DPT |
-|----|----|-----|
-| ga | Group address | 19.001 | 
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 19.001      |
 
 
 #### Control Channels
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 
-TODO
+##### Switch-Control
+
+| Parameter | Description                         | Default DPT |
+|-----------|-------------------------------------|-------------|
+| switch    | Group address for the binary switch | 1.001       |
+
+
+##### Dimmer-Control
+
+| Parameter        | Description                                                                                                                                   | Default DPT |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| switch           | Group address for the binary switch                                                                                                           | 1.001       |
+| position         | Group address of the absolute position                                                                                                        | 5.001       |
+| increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
+| frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
+
+##### Rollershutter-Control
+
+| Parameter | Description                             | Default DPT |
+|-----------|-----------------------------------------|-------------|
+| upDown    | Group address for relative movement     | 1.008       |
+| stopMove  | Group address for stopping              | 1.010       |
+| position  | Group address for the relative position | 5.001       |
+
+##### Contact-Control
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 1.009       |
+
+##### Number-Control
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 9.001       |
+
+##### String-Control
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 16.001      |
+
+##### Datetime-Control
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 19.001      |
 
 #### Group Address Notation
 
@@ -145,25 +191,23 @@ Bridge knx:ip:bridge [
     ipAddress="192.168.0.10", 
     portNumber=3671, 
     localIp="192.168.0.11", 
-    tape="TUNNEL", 
+    type="TUNNEL", 
     readingPause=50, 
     responseTimeout=10, 
     readRetriesLimit=3, 
     autoReconnectPeriod=1,
     localSourceAddr="0.0.0"
 ] {
-    Thing device magicActuator [
+    Thing device generic [
         address="1.2.3",
         fetch=true,
         pingInterval=300,
         readInterval=3600
     ] {
-        Type number : demoTemperature1            "Demo Temperature 1"       [ ga="9.001:<5/0/0" ]
-        Type number : demoTemperature2            "Demo Temperature 2"       [ ga="<5/0/0" ]
-        
-        Type rollershutter : demoRollershutter    "Demo Rollershutter"       [ upDown="4/3/50+<4/3/51",  stopMove="4/3/52+<4/3/53",  position="4/3/54+<4/3/55" ]
-        
-        /* TODO: complete */
+		Type switch        : demoSwitch        "Light"       [ switch="3/0/4+<3/0/5" ]
+        Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+<4/3/51", stopMove="4/3/52+<4/3/53", position="4/3/54+<4/3/55" ]
+		Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
+        Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
     }
 }
 ```
@@ -171,13 +215,24 @@ Bridge knx:ip:bridge [
 knx.items:
 
 ```xtend
-        /* TODO: complete */
+Switch        demoSwitch         "Light [%s]"            <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Rollershutter demoRollershutter  "Shade [%d %%]"         <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
+Contact       demoContact        "Front Door [%s]"       <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
+Number        demoTemperature    "Temperature [%.1f °C]" <temperature>    { channel="knx:device:bridge:generic:demoTemperature" }
 ```
 
 knx.sitemap:
 
 ```xtend
-        /* TODO: complete */
+sitemap knx label="KNX Demo Sitemap" {
+  Frame label="Demo Elements" {
+    Switch item=demoSwitch
+    Switch item=demoRollershutter
+    Text item=demoContact
+    Text item=demoTemperature
+  }                
+}
+
 ```
 
 ### Control Example
@@ -190,7 +245,7 @@ Bridge knx:ip:bridge [
     ipAddress="192.168.0.10", 
     portNumber=3671, 
     localIp="192.168.0.11", 
-    tape="TUNNEL", 
+    type="TUNNEL", 
     readingPause=50, 
     responseTimeout=10, 
     readRetriesLimit=3, 
@@ -199,9 +254,7 @@ Bridge knx:ip:bridge [
 ] {
     Thing device generic {
         Type switch-control : demoSwitch          "Control Switch"              [ switch="3/3/10+<3/3/11" ]
-        Type dimmer-control : controlSwitch       "Control Dimmer"              [ switch="3/3/50+3/3/48", increaseDecrease="3/3/49" ]
-
-        /* TODO: complete */
+        Type dimmer-control : controlSwitch       "Control Dimmer"              [ switch="3/3/50+3/3/48", increaseDecrease="3/3/49", frequency=300 ]
     }
 }
 ```

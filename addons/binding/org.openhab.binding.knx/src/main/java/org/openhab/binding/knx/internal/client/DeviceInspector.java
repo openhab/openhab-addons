@@ -32,7 +32,7 @@ import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.mgmt.PropertyAccess.PID;
 
 /**
- * Client dedicated to read device specifi information using the {@link DeviceInfoClient}.
+ * Client dedicated to read device specific information using the {@link DeviceInfoClient}.
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
