@@ -205,9 +205,12 @@ Bridge knx:ip:bridge [
         readInterval=3600
     ] {
 		Type switch        : demoSwitch        "Light"       [ switch="3/0/4+<3/0/5" ]
-        Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+<4/3/51", stopMove="4/3/52+<4/3/53", position="4/3/54+<4/3/55" ]
+        Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
 		Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
+        Type dimmer        : demoDimmer        "Dimmer"      [ switch="5/0/0+<5/0/1", position="5/0/2+<5/0/3", increaseDecrease="5/0/4" ]
+        Type string        : demoString        "Message"     [ ga="5/3/1" ]
+        Type datetime      : demoDatetime      "Alarm"       [ ga="5/5/42" ]
     }
 }
 ```
@@ -215,10 +218,13 @@ Bridge knx:ip:bridge [
 knx.items:
 
 ```xtend
-Switch        demoSwitch         "Light [%s]"            <light>          { channel="knx:device:bridge:generic:demoSwitch" }
-Rollershutter demoRollershutter  "Shade [%d %%]"         <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
-Contact       demoContact        "Front Door [%s]"       <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
-Number        demoTemperature    "Temperature [%.1f °C]" <temperature>    { channel="knx:device:bridge:generic:demoTemperature" }
+Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
+Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
+Contact       demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
+Number        demoTemperature    "Temperature [%.1f °C]"    <temperature>    { channel="knx:device:bridge:generic:demoTemperature" }
+String        demoString         "Message of the day [%s]"                   { channel="knx:device:bridge:generic:demoString" }
+DateTime      demoDatetime       "Alarm [%1$tH:%1$tM]"                       { channel="knx:device:bridge:generic:demoDatetime" }
 ```
 
 knx.sitemap:
@@ -228,8 +234,11 @@ sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
     Switch item=demoSwitch
     Switch item=demoRollershutter
-    Text item=demoContact
-    Text item=demoTemperature
+    Text   item=demoContact
+    Text   item=demoTemperature
+    Slider item=demoDimmer
+    Text   item=demoString
+    Text   item=demoDatetime
   }                
 }
 
@@ -241,32 +250,20 @@ sitemap knx label="KNX Demo Sitemap" {
 control.things:
 
 ```xtend
-Bridge knx:ip:bridge [ 
-    ipAddress="192.168.0.10", 
-    portNumber=3671, 
-    localIp="192.168.0.11", 
-    type="TUNNEL", 
+Bridge knx:serial:bridge [ 
+    serialPort="/dev/ttyAMA0", 
     readingPause=50, 
     responseTimeout=10, 
     readRetriesLimit=3, 
-    autoReconnectPeriod=1,
-    localSourceAddr="0.0.0"
+    autoReconnectPeriod=1
 ] {
     Thing device generic {
-        Type switch-control : demoSwitch          "Control Switch"              [ switch="3/3/10+<3/3/11" ]
-        Type dimmer-control : controlSwitch       "Control Dimmer"              [ switch="3/3/50+3/3/48", increaseDecrease="3/3/49", frequency=300 ]
+        Type switch-control        : demoSwitch           "Control Switch"        [ switch="3/3/10+<3/3/11" ]
+        Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
+        Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
+        Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
+        Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]
+        Type datetime-control      : controlDatetime      "Control Datetime"      [ ga="5/1/30" ]
     }
 }
-```
-
-control.items:
-
-```xtend
-        /* TODO: complete */
-```
-
-control.sitemap:
-
-```xtend
-        /* TODO: complete */
 ```
