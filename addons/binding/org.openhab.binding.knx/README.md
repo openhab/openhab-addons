@@ -258,7 +258,7 @@ Bridge knx:serial:bridge [
     autoReconnectPeriod=1
 ] {
     Thing device generic {
-        Type switch-control        : demoSwitch           "Control Switch"        [ switch="3/3/10+<3/3/11" ]
+        Type switch-control        : controlSwitch        "Control Switch"        [ switch="3/3/10+<3/3/11" ]
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
@@ -266,4 +266,18 @@ Bridge knx:serial:bridge [
         Type datetime-control      : controlDatetime      "Control Datetime"      [ ga="5/1/30" ]
     }
 }
+
+Bridge hue:bridge:bridge "Philips Hue Bridge" [ 
+    ipAddress="...", 
+    userName="..." 
+] {
+    Thing 0210 1 "Color Lamp" [ lightId="1" ]
+}
+```
+
+knx.items:
+
+```xtend
+Switch        demoSwitch         "Light [%s]"               <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlSwitch" }
+Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlDimmer" }
 ```
