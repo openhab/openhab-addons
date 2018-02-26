@@ -28,6 +28,8 @@ public interface OnkyoEventListener {
     /**
      * Procedure for connection error events from Onkyo AV receiver.
      *
+     * @param errorMsg
+     *            Reason for error.
      */
-    void connectionError(String ip);
+    void connectionError(String ip, String errorMsg);
 }
