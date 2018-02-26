@@ -83,9 +83,11 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         getThing().getChannels().stream().filter(channel -> channel.getKind() != ChannelKind.TRIGGER)
                 .forEach(channel -> {
                     String channelId = channel.getUID().getId();
-                    State state = getNAThingProperty(channelId);
-                    if (state != null) {
-                        updateState(channel.getUID(), state);
+                    if (isLinked(channelId)) {
+                        State state = getNAThingProperty(channelId);
+                        if (state != null) {
+                            updateState(channel.getUID(), state);
+                        }
                     }
                 });
     }
