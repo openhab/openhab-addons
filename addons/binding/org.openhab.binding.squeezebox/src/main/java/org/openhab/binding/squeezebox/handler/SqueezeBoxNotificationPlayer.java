@@ -242,7 +242,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
                  * If the player was paused, stop it. We stop it because the LMS
                  * doesn't respond to a pause command while it's processing the
                  * above 'playPlaylist item' command. The consequence of this is
-                 * we lose the ability to resume local music from saved state.
+                 * we lose the ability to resume local music from saved playing time.
                  */
                 logger.debug("Stopping the player");
                 squeezeBoxServerHandler.stop(mac);

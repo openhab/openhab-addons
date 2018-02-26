@@ -182,4 +182,4 @@ This bug has been fixed in squeezelite version 1.8.6-985, which is included in p
 Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
 
 -   There have been reports that the LMS does not play some WAV files reliably.
-If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP#-formatted TTS notification.
+If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
