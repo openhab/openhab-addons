@@ -38,6 +38,11 @@ public class LogAdapter extends LogWriter {
 
     @Override
     public void write(String logService, LogLevel logLevel, String msg, Throwable t) {
+        // calimero is a bit chatty, so let's stay silent unless explicitly debugging
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+
         // Unfortunately, calimero does not use package names for its loggers. So we cannot use "logService" and
         // we have to map all calimero-loggers to a single slf4j logger.
 
