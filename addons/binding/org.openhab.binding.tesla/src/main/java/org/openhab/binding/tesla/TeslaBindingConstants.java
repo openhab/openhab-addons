@@ -82,5 +82,7 @@ public class TeslaBindingConstants {
 
     // List of all Channels
     public static final String CHANNEL_CHARGE = "charge";
+    public static final String CHANNEL_ALLOWWAKEUP = "allowwakeup";
+    public static final String CHANNEL_ENABLEEVENTS = "enableevents";
 
 }
