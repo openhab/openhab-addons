@@ -139,7 +139,7 @@ Please follow the [openHAB multimedia documentation](http://docs.openhab.org/con
 
 You can set the default notification volume in the player thing configuration.
 
-You can override the default notification volume by supplying it as a parameter to *say* and *playSound*
+You can override the default notification volume by supplying it as a parameter to `say` and `playSound`.
 
 You can play notifications from within rules.
 
@@ -155,7 +155,7 @@ then
 end
 ```
 
-And, you can play sounds from the conf/sounds directory.
+And, you can play sounds from the `conf/sounds` directory.
 
 ```
 rule "Play Sounds"
@@ -163,9 +163,9 @@ when
     Item PlaySounds received command ON
 then
     // Play the sound on the default sink
-    playsound("doorbell.mp3")
+    playSound("doorbell.mp3")
     // Play the sound on a specific sink at a specified volume level
-    playsound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3", 45)
+    playSound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3", 45)
 end
 ```
 

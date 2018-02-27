@@ -87,12 +87,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         if (playerState.isPlaying()) {
             squeezeBoxServerHandler.stop(mac);
         }
-
-        int notificationVolume = squeezeBoxPlayerHandler.getNotificationSoundVolume().intValue();
-        if (notificationVolume == 0) {
-            logger.info("Player notification volume is 0.");
-        }
-        setVolume(notificationVolume);
+        setVolume(squeezeBoxPlayerHandler.getNotificationSoundVolume().intValue());
     }
 
     /**
