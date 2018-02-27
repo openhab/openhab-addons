@@ -127,6 +127,7 @@ public class TeslaHandler extends BaseThingHandler {
     protected ScheduledFuture<?> slowStateJob;
     protected QueueChannelThrottler stateThrottler;
 
+    protected boolean allowWakeUp = true;
     protected long lastTimeStamp;
     protected long intervalTimestamp = 0;
     protected int intervalErrors = 0;
@@ -347,6 +348,37 @@ public class TeslaHandler extends BaseThingHandler {
                                     autoConditioning(true);
                                 } else {
                                     autoConditioning(false);
+                                }
+                            }
+                            break;
+                        }
+                        case WAKEUP: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    wakeUp();
+                                }
+                            }
+                            break;
+                        }
+                        case ALLOWWAKEUP: {
+                            if (command instanceof OnOffType) {
+                                allowWakeUp = (((OnOffType) command) == OnOffType.ON);
+                            }
+                            break;
+                        }
+                        case ENABLEEVENTS: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    if (eventThread == null) {
+                                        eventThread = new Thread(eventRunnable,
+                                                "ESH-Tesla-Event Stream-" + getThing().getUID());
+                                        eventThread.start();
+                                    }
+                                } else {
+                                    if (eventThread != null) {
+                                        eventThread.interrupt();
+                                        eventThread = null;
+                                    }
                                 }
                             }
                             break;
@@ -600,7 +632,11 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected boolean isAwake() {
-        return (vehicle != null) ? (!"asleep".equals(vehicle.state) && vehicle.vehicle_id != null) : false;
+        return vehicle != null && !"asleep".equals(vehicle.state) && vehicle.vehicle_id != null;
+    }
+
+    protected boolean isOnline() {
+        return vehicle != null && "online".equals(vehicle.state) && vehicle.vehicle_id != null;
     }
 
     protected boolean isInMotion() {
@@ -690,6 +726,10 @@ public class TeslaHandler extends BaseThingHandler {
             sendCommand(TESLA_COMMAND_AUTO_COND_STOP, commandTarget);
         }
         requestData(TESLA_CLIMATE_STATE);
+    }
+
+    public void wakeUp() {
+        sendCommand(TESLA_COMMAND_WAKE_UP);
     }
 
     protected Vehicle queryVehicle() {
@@ -849,12 +889,24 @@ public class TeslaHandler extends BaseThingHandler {
                     requestData(TESLA_DRIVE_STATE);
                     requestData(TESLA_VEHICLE_STATE);
                 } else {
-                    if (vehicle != null) {
-                        sendCommand(TESLA_COMMAND_WAKE_UP);
+                    if (vehicle != null && allowWakeUp) {
+                        wakeUp();
                     } else {
                         vehicle = queryVehicle();
                     }
                 }
+            }
+
+            if (allowWakeUp) {
+                updateState(CHANNEL_ALLOWWAKEUP, OnOffType.ON);
+            } else {
+                updateState(CHANNEL_ALLOWWAKEUP, OnOffType.OFF);
+            }
+
+            if (eventThread != null) {
+                updateState(CHANNEL_ENABLEEVENTS, OnOffType.ON);
+            } else {
+                updateState(CHANNEL_ENABLEEVENTS, OnOffType.OFF);
             }
         }
     };
@@ -871,8 +923,8 @@ public class TeslaHandler extends BaseThingHandler {
                     queryVehicle(TESLA_MOBILE_ENABLED_STATE);
                     parseAndUpdate("queryVehicle", null, vehicleJSON);
                 } else {
-                    if (vehicle != null) {
-                        sendCommand(TESLA_COMMAND_WAKE_UP);
+                    if (vehicle != null && allowWakeUp) {
+                        wakeUp();
                     } else {
                         vehicle = queryVehicle();
                     }
@@ -961,7 +1013,6 @@ public class TeslaHandler extends BaseThingHandler {
                         eventBufferedReader = new BufferedReader(eventInputStreamReader);
                         isEstablished = true;
                     } else if (eventResponse.getStatus() == 401) {
-                        updateStatus(ThingStatus.OFFLINE);
                         isEstablished = false;
                     } else {
                         isEstablished = false;
@@ -1066,10 +1117,10 @@ public class TeslaHandler extends BaseThingHandler {
                             }
                         } else {
                             logger.debug("Event stream : The vehicle is not awake");
-                            if (vehicle != null) {
+                            if (vehicle != null && allowWakeUp) {
                                 // wake up the vehicle until streaming token <> 0
                                 logger.debug("Event stream : Waking up the vehicle");
-                                sendCommand(TESLA_COMMAND_WAKE_UP);
+                                wakeUp();
                             } else {
                                 logger.debug("Event stream : Querying the vehicle");
                                 vehicle = queryVehicle();
