@@ -116,14 +116,21 @@ public final class LightifyDeviceState {
         int bDelta = b - state.b;
         int aDelta = a - state.a;
 
+        // Lights come online with an RGB value of 1,255,255 and then the next
+        // gateway poll (which is every 30s at the time of writing) updates it
+        // to 255,255,255. If we see such changes we ignore them and force a
+        // white mode / temperature update instead.
+        if (g == 255 && b == 255 && (r == 255 || (r == 1 && deviceHandler.getThing().getStatus() != ThingStatus.ONLINE))) {
+            rDelta = gDelta = bDelta = aDelta = 0;
+            if (!state.whiteMode) {
+                temperatureDelta = 1;
+            }
+        }
+
         // There is no way to tell whether we are in white or colour mode. We just
         // have to track it ourselves as best we can. It only changes if temperature
-        // or colour change too. Under some circumstances (power on to white?) RGB
-        // changes to 255,255,255 too. (But only ~30s after the fact. Presumably the
-        // gateway gets state before the device finalizes it so the gateway only
-        // sees it after the next (internally) scheduled poll, which appears to be
-        // every 30s with firmware 1.1.3.53.)
-        if (temperatureDelta != 0 || (r == 255 && g == 255 && b == 255)) {
+        // or colour change too.
+        if (temperatureDelta != 0) {
             whiteMode = true;
         } else if (rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
             whiteMode = false;
@@ -287,16 +294,26 @@ public final class LightifyDeviceState {
                     }
 
                 } else {
-                    if (temperatureDelta != 0) {
-                        deviceHandler.changedTemperature(bridgeHandler, getTemperature());
-                    }
-
                     if (luminanceDelta != 0) {
                         deviceHandler.changedLuminance(getLuminance());
                     }
 
-                    if (luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
-                        deviceHandler.changedColor(getColor());
+                    if (whiteMode) {
+                        if (luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
+                            deviceHandler.changedColor(getColor());
+                        }
+
+                        if (temperatureDelta != 0 || luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0) {
+                            deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+                        }
+                    } else {
+                        if (temperatureDelta != 0) {
+                            deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+                        }
+
+                        if (luminanceDelta != 0 || rDelta != 0 || gDelta != 0 || bDelta != 0 || aDelta != 0 || temperatureDelta != 0) {
+                            deviceHandler.changedColor(getColor());
+                        }
                     }
                 }
 
@@ -322,9 +339,14 @@ public final class LightifyDeviceState {
             motionSensorHandler.changedEnabled(getEnabled());
             motionSensorHandler.changedTriggered(getTriggered());
         } else {
-            deviceHandler.changedTemperature(bridgeHandler, getTemperature());
-            deviceHandler.changedColor(getColor());
             deviceHandler.changedLuminance(getLuminance());
+            if (whiteMode) {
+                deviceHandler.changedColor(getColor());
+                deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+            } else {
+                deviceHandler.changedTemperature(bridgeHandler, getTemperature());
+                deviceHandler.changedColor(getColor());
+            }
         }
 
         if (power == 0) {
