@@ -103,4 +103,6 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 ```
 Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f �C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
 Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f �C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
+
+String      Nibe_Custom_01        "Custom Channel01" {channel="nibeuplink:vvm320:mynibe:custom#CH01"}
 ```
