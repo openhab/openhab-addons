@@ -338,9 +338,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 }
             }
         }
-        if (!parms.isEmpty()) {
-            configDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
-        }
+        
+        configDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
 
     }
 
