@@ -75,7 +75,7 @@ The sitemap could look like this:
 sitemap home label="My home" {
     Frame label="Aquarium" {
         Text item=mySeneye_Temperature label="Temperature [%.1f °C]" icon="temperature"
-        Text item=mySeneye_PH3 label="PH [%.1f]" icon="water"
+        Text item=mySeneye_PH label="PH [%.1f]" icon="water"
         Text item=mySeneye_NH3 label="NH3 [%.1f]" icon="water"
     }
 }

@@ -46,7 +46,7 @@ public class SeneyeService {
 
     private static HttpClient httpClient = new HttpClient(new SslContextFactory());
 
-    public SeneyeService(SeneyeConfigurationParameters config) {
+    public SeneyeService(SeneyeConfigurationParameters config) throws CommunicationException {
         this.config = config;
 
         this.retry = 1;
@@ -60,7 +60,7 @@ public class SeneyeService {
                 httpClient.setFollowRedirects(false);
                 httpClient.start();
             } catch (Exception e) {
-                logger.warn("Cannot start HttpClient!", e);
+                throw new CommunicationException("Cannot start HttpClient!", e);
             }
         }
 
@@ -81,7 +81,9 @@ public class SeneyeService {
     ScheduledFuture<?> scheduledJob;
 
     public void stopAutomaticRefresh() {
-        scheduledJob.cancel(true);
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+        }
     }
 
     public SeneyeDeviceReading getDeviceReadings() {

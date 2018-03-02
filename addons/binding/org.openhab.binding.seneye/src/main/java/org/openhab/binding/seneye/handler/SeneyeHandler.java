@@ -100,8 +100,13 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
             return;
         }
 
-        logger.debug("Initialize Network handler.");
-        this.seneyeService = new SeneyeService(config);
+        logger.debug("Initializing Seneye API service.");
+        try {
+            this.seneyeService = new SeneyeService(config);
+        } catch (CommunicationException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            return; // critical error
+        }
 
         super.initialize();
 
