@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Hyperion Binding</name>
-    <description>This is the binding for Hyperion.</description>
+    <description>This binding integrates openHAB with the Hyperion ambient lighting software.</description>
     <author>Daniel Walters</author>
 
 </binding:binding>
