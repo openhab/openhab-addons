@@ -18,12 +18,12 @@
 			<parameter name="host" type="text" required="true">
 				<label>Host address</label>
 				<context>network_address</context>
-				<description>The host address of the Hyperion server.</description>
+				<description>The host address of the Hyperion server JSON API.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
-				<description>The JSON port of the Hyperion server.</description>
+				<description>The port of the Hyperion server JSON API.</description>
 				<required>true</required>
 				<default>19444</default>
 			</parameter>
@@ -67,12 +67,12 @@
 			<parameter name="host" type="text" required="true">
 				<label>Host address</label>
 				<context>network_address</context>
-				<description>The host address of the Hyperion server.</description>
+				<description>The host address of the Hyperion server JSON API.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
-				<description>The JSON port of the Hyperion server.</description>
+				<description>The port of the Hyperion server JSON API.</description>
 				<required>true</required>
 				<default>19444</default>
 			</parameter>
@@ -106,7 +106,7 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Sets the color of the LEDs</description>
+		<description>Sets the color effect of the LEDs</description>
 	</channel-type>
 
 	<channel-type id="effect">
@@ -136,7 +136,7 @@
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
-		<description>Shows whether Hyperion is current enabled or not and allows enabling or disabling of Hyperion</description>
+		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
 	</channel-type>
 
 </thing:thing-descriptions>
