@@ -32,6 +32,7 @@ In order to use a Hyperion Server it must be properly configured.  You can do th
 To manually configure a Hyperion Server you must specify the following parameters: host, port, priority and polling frequency. 
  
 In the thing file, this looks for e.g. like
+
 ```
 Thing hyperion:serverV1:myServer [ host="192.168.0.10", port=19444, priority=50, poll_frequency=15]
 ```
@@ -51,6 +52,7 @@ In order to use a Hyperion.ng Server it must be properly configured.  You can do
 To manually configure a Hyperion.ng Server you must specify the following parameters: host, port, priority, polling frequency and origin.
  
 In the .things file, this looks for e.g. like
+
 ```
 Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50, poll_frequency=15, origin="openHAB"]
 ```
@@ -88,6 +90,7 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 | leddevice       | Switch | Enables or disables the led device component      | hyperion:serverNG:myServer:leddevice       |
 
 ## Items:
+
 ```
 Dimmer Brightness 			"Brightness [%s]" 	{ channel="hyperion:serverV1:myServer:brightness"}
 String Effect				"Current effect [%s]" 	{ channel="hyperion:serverV1:myServer:effect"}
@@ -113,6 +116,7 @@ Switch LedDeviceEnabled {channel="hyperion:serverNG:myServer:leddevice"}
 
 Using the above things channels and items 
 Sitemap:
+
 ```
 sitemap demo label="Main Menu" {
         Frame  {
