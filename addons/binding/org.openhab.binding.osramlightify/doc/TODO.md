@@ -1,32 +1,24 @@
 * Remove PROPERTY_FIRMWARE_VERSION in a few months when people are likely to have upgraded.
 
-* When we handle a LIST_PAIRED message we need to offline any devices that are no longer paired.
-  * Can we use bridge-agnostic thing UIDs and reparent existing things to different bridges?
-  * Yes. The thing can use getBridge().removeThing(this), setBridgeUID(<newUID>), bridge.addThing(thing).
-  * But first we need to get the thing and it is not on the current bridge...
-
 * Transition time: could we make it a rate? i.e. time given is for 0-100% so to go 0-50% we scale the transition time so the _rate_ is constant rather than the _time_.
   * what about ops on groups? If we perform an op on multiple things we may want them to complete at the same time?
   * so we can have absolute transition time or scale rates
     * we need toggles in the thing config to say which we want there
     * this will need to be handled in PolicyCommand framework probably. Policies attach to messages and are applied in the transmit queue (which becomes a priority queue) and/or encodedMessage (which sets transition time/rate)
 
-* Add a virtual all-paired-devices thing. (Address ff:ff:ff:ff:ff:ff:ff:ff)
-
 * Could we / should we attempt to maintain state for groups? We would have to merge each member item change into the group state.
 
 * When we remove a device should we remove any outstanding messages in the TX queue?
 
-* We do not really need to update the discovery inbox on _every_ poll. There is a lot of wasted cpu there.
-
 * I18n.
 
 * Add a switch channel that indicates whether we are in white mode or colour mode.
-  * But how do we tell initially? Do we just force it on start?
 
 * Map on/off to soft on/off (i.e. brightness changes) if transition time is non-zero as normal on/off commands do not allow a transition time.
   * For off, set device state power to off then do a luminance transition to 0. The state should ignore the luminance change.
   * For on, do a luminance transition to whatever the state says the current luminance is.
+  * Current firmware allows the Lightify app to set the fade on/off times for switch commands.
+    * Should we have a means to set them via openHAB? We know the messages.
 
 * Is it possible to have multiple outstanding requests if they are for different devices? If we have multiple connections?
 
@@ -69,8 +61,6 @@
     * But what about groups again? We might start a transition on a group but transitions on some of the devices in the set may have been interrupted.
   * Is a multicast GET_DEVICE_INFO possible? Do transitions on groups just work?
 
-* Add a firmware table detailing known firmware deficiencies and pairing requirements. Those who do not want to advertise their state to "approved" partners of OSRAM may not be getting prompted about availability of firmware updates and may not care.
-
 * Add a config switch to allow items to be updated during transitions. Sometimes, especially with long-preiod transitions you may want to have the current state reflected by items.
   * Might there be any way to make it a per-command option? Maybe a time threshold above which updates are done? Or maybe it is something that could be part of the (TBD) priority queuing framework?
 
@@ -84,3 +74,7 @@
   * We could record group membership and use that when starting transitions to start the transition on each member. Then they would suppress updates and force a GET_DEVICE_INFO on completion. Of course, that means there are potentially lots of GET_DEVICE_INFOs all at the same time...
   * Can we groupcast a GET_DEVICE_INFO? What would the response look like?
   * We should have a per-device option to switch update suppression on and off and should be able to override it from the group level.
+
+* Only set bridge status once it is online and we have received the first device states. Otherwise we will trigger item refreshes before we actually have anything to tell them.
+  * We do.
+  * The item refreshes seem to happen before then. Is it when they are linked? It seems the Things go UNKNOWN before the bridge is out of INTIALIZING. UNKNOWN is considered ok - does it trigger a refresh?

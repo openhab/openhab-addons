@@ -57,6 +57,7 @@ public final class LightifyBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_ALLPAIRED = new ThingTypeUID(BINDING_ID, "allpaired");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GROUP = new ThingTypeUID(BINDING_ID, "group");
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE = new ThingTypeUID(BINDING_ID, "dimmable");

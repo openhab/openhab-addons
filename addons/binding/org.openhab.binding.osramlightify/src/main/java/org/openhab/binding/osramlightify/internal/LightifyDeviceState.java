@@ -31,6 +31,7 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.LIGHTIF
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
+import org.openhab.binding.osramlightify.handler.LightifyGroupHandler;
 import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyGetDeviceInfoMessage;
@@ -79,7 +80,7 @@ public final class LightifyDeviceState {
                 }
             }
 
-            if (transitionTimeNanos > 0) {
+            if (transitionTimeNanos > 0 && !(deviceHandler instanceof LightifyGroupHandler)) {
                 transitionEndJobNanos[index] = transitionEndNanos;
 
                 int otherIndex = (index == 0 ? 1 : 0);
@@ -177,8 +178,8 @@ public final class LightifyDeviceState {
 
         // reachable can become 0 in a LIST_PAIRED state report if the device fails to respond
         // to the gateway's periodic poll. This is fairly easy to trigger by spamming a device
-        // which has poor connectivity with GET_DEVICE_INFO requests which we do when collecting
-        // transition stats. This is not an immediate problem so we'll wait and see.
+        // which has poor connectivity with GET_DEVICE_INFO requests. This is not an immediate
+        // problem so we'll wait and see.
         } else if (timeSinceSeen > 1 || (reachable != 2 && state.transitionEndJob[0] == null && state.transitionEndJob[1] == null)) {
             // Always save state if we go unreachable with a time since seen of zero. This is
             // either a reboot (firmware upgrade?) or a fast (<5mins) power off/on. We will

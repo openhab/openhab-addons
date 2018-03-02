@@ -51,8 +51,15 @@ Unlike the Hue hubs the Lightify gateway does not appear to have any rate limits
 
 ### Gateway Group Support
 
-If you have groups configured on your gateway these are presented as things to openHAB. OpenHAB has no knowledge of what devices are in the group however (and the devices themselves do not need to be added as things unless you want individual control as well) so a group always has all possible channels available and has a fixed white temperature range (see below) set in its properties.
+If you have groups configured on your gateway these are presented as Things to openHAB. OpenHAB has no knowledge of what devices are in the group however (and the devices themselves do not need to be added as things unless you want individual control as well) so a group always has all possible channels available and has a fixed white temperature range (see below) set in its properties.
 
+#### The All-Paired-Devices Group
+
+A special Thing is generated to represent all the devices paired with the gateway. It is not necessary to create a group on the gateway in order to use this. However, the "all-paired-devices" broadcasts to devices and (as of gateway firmware 1.2.2.0 at least) this only works for on/off and brightness changes. If you want all-device control of colour and/or temperature it will be necessary to create and maintain a group.
+
+### Scenes
+
+Scenes may be saved using the Lightify app and can be activated by writing the scene number to the "Scene" channel of the Thing representing the gateway. Unfortunately there is currently no way to extract a scene number to name mapping from the gateway so some experimentation is required to determine what numbers to use. It may help to know that the scene number starts at 1 with a factory reset gateway and is incremented each time a scene is saved.
 
 ### Dynamic Polling
 

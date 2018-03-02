@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="osramlightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="allpaired">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>All paired devices</label>
+		<description>A group representing all devices paired with the gateway.</description>
+
+		<!-- Currently, as of gateway firmware 1.2.2.0 only on/off and brightness can be controlled via
+		     broadcast commands. Therefore this allpaired device is the same as a dimmable. Perhaps in
+		     the future this will change in which case this allpaired device should become a tunable
+		     or possibly even an rgbw.
+		-->
+
+		<channels>
+			<channel id="dimmer" typeId="dimmer" />
+			<!--
+			<channel id="color" typeId="color" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="absTemperature" typeId="absTemperature" />
+			-->
+		</channels>
+
+		<!--
+		<properties>
+			<property name="Minimum white temperature">1800</property>
+			<property name="Maximum white temperature">6600</property>
+		</properties>
+		-->
+
+		<config-description>
+			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<label>Transition Time</label>
+				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="transitionToOffTime" type="decimal" required="false" min="0.0" max="6553.5">
+				<label>Transition To Off Time</label>
+				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+			</parameter>
+
+			<parameter name="increaseDecreaseStep" type="integer" required="false" min="0" max="100">
+				<label>Step size for INCREASE/DECREASE commands</label>
+				<description>How much to step brightness or temperature percentage in response to an INCREASE or DECREASE command. Leave blank to use the default for the gateway.</description>
+			</parameter>
+
+			<!--
+			<parameter name="whiteTemperatureMin" type="integer" min="1000" max="10000">
+				<default>1900</default>
+				<label>Minimum white temperature</label>
+				<description>Minimum white temperature in Kelvin supported by devices in this group.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="whiteTemperatureMax" type="integer" min="1000" max="10000">
+				<default>6500</default>
+				<label>Maximum white temperature</label>
+				<description>Maximum white temperature in Kelvin supported by devices in this group.</description>
+				<advanced>true</advanced>
+			</parameter>
+			-->
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

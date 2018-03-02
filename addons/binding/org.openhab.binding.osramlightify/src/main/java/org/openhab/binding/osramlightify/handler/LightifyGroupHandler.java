@@ -39,6 +39,17 @@ public final class LightifyGroupHandler extends LightifyDeviceHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        if (deviceAddress.isBroadcast()) {
+            // We don't actually exist on the gateway and will never show up in a
+            // LIST_GROUPS response so we just go straight online.
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    @Override
     public boolean setOnline(LightifyBridgeHandler bridgeHandler) {
         updateStatus(ThingStatus.ONLINE);
         return true;

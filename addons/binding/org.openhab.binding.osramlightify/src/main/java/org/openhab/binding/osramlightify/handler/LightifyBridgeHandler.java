@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,10 +23,15 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeConfiguration;
 import org.openhab.binding.osramlightify.internal.LightifyConnector;
 import org.openhab.binding.osramlightify.internal.discovery.LightifyDeviceDiscoveryService;
+
+import org.openhab.binding.osramlightify.internal.messages.LightifyActivateSceneMessage;
 
 import org.osgi.framework.ServiceRegistration;
 
@@ -117,6 +123,18 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("{}, Command: {} {}", channelUID, command.getClass().getSimpleName(), command);
+
+        if (command instanceof RefreshType) {
+            /* Ignore it - we have nothing useful to say. */
+
+        } else if (command instanceof DecimalType) {
+            DecimalType sceneNo = (DecimalType) command;
+
+            logger.debug("{}: activate scene: {}", channelUID, sceneNo);
+
+            sendMessage(new LightifyActivateSceneMessage(sceneNo));
+        }
     }
 
     public LightifyBridgeConfiguration getConfiguration() {

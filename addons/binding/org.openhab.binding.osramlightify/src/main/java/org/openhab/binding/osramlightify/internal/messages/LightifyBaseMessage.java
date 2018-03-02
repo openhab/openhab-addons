@@ -123,7 +123,7 @@ public abstract class LightifyBaseMessage {
             deviceAddress = deviceHandler.getDeviceAddress();
         }
 
-        if (deviceAddress != null && deviceAddress.isUnicast()) {
+        if (deviceAddress != null && !deviceAddress.isGroupcast()) {
             packetType = PacketType.UNICAST;
         } else {
             packetType = PacketType.GROUPCAST;

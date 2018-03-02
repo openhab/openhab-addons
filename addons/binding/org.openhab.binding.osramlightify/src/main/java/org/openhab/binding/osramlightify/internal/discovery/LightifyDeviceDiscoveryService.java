@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_IEEE_ADDRESS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_ALLPAIRED;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
 import org.openhab.binding.osramlightify.internal.messages.LightifyListPairedDevicesMessage;
@@ -50,6 +51,14 @@ public final class LightifyDeviceDiscoveryService extends AbstractDiscoveryServi
     @Override
     protected void startScan() {
         logger.trace("Start scanning for paired devices");
+
+        bridgeHandler.knownDevices.clear();
+        removeResults();
+
+        discoveryResult(new ThingUID(THING_TYPE_LIGHTIFY_ALLPAIRED, bridgeHandler.getThing().getUID().getId()),
+            THING_TYPE_LIGHTIFY_ALLPAIRED,
+            "Everything paired with " + bridgeHandler.getThing().getLabel(), "ff:ff:ff:ff:ff:ff:ff:ff");
+
         bridgeHandler.sendMessage(new LightifyListGroupsMessage());
         bridgeHandler.sendMessage(new LightifyListPairedDevicesMessage());
     }

@@ -7,6 +7,10 @@
 		<label>OSRAM/Sylvania Lightify Gateway</label>
 		<description>An OSRAM/Sylvania Lightify gateway</description>
 
+		<channels>
+			<channel id="scene" typeId="scene" />
+		</channels>
+
 		<config-description>
 			<parameter name="ipAddress" type="text">
 				<context>network-address</context>

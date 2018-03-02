@@ -3,6 +3,13 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Activates a scene defined on the gateway.</description>
+		<category>Party</category>
+	</channel-type>
+
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>

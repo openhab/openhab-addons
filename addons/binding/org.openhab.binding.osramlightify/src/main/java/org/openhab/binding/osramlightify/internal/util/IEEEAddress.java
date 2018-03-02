@@ -19,6 +19,8 @@ public final class IEEEAddress {
 
     public static final int ADDRESS_LENGTH = 8;
 
+    private static final byte[] allOnes = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+
     private final byte[] data;
     private String text;
 
@@ -75,15 +77,38 @@ public final class IEEEAddress {
     }
 
     /**
+     * Test if the IEEEAddress is broadcast.
+     *
+     * An IEEE address is considered broadcast if all bytes are 0xff.
+     *
+     * @return true if the IEEE address is broadcast.
+     */
+    public boolean isBroadcast() {
+        return Arrays.equals(data, allOnes);
+    }
+
+    /**
+     * Test if the IEEEAddress is groupcast.
+     *
+     * An IEEE address is considered groupcast if the highest 6 bytes
+     * are all 0x00.
+     *
+     * @return true if the IEEE address is groupcast.
+     */
+    public boolean isGroupcast() {
+        return data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 0 && data[6] == 0 && data[7] == 0;
+    }
+
+    /**
      * Test if the IEEEAddress is unicast.
      *
-     * An IEEE address is considered unicast if the highest 6 bytes of its value
-     * are all zero.
+     * An IEEE address is considered unicast if it is neither broadcast
+     * nor groupcast.
      *
      * @return true if the IEEE address is unicast.
      */
     public boolean isUnicast() {
-        return data[7] != 0 || data[6] != 0 || data[5] != 0 || data[4] != 0 || data[3] != 0 || data[2] != 0;
+        return !isBroadcast() && !isGroupcast();
     }
 
     /**
