@@ -11,11 +11,11 @@ Export-Package:
  org.openhab.binding.hyperion,
  org.openhab.binding.hyperion.handler
 Import-Package: 
+ org.eclipse.jdt.annotation,
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  javax.jmdns,
- org.eclipse.jdt.annotation,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -26,5 +26,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.config.discovery.mdns,
  org.osgi.service.component.annotations,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.hyperion,
+ org.openhab.binding.hyperion.handler
 Service-Component: OSGI-INF/*.xml
