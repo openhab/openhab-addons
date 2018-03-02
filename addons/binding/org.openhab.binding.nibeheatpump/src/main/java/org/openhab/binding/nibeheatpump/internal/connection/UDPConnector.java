@@ -48,7 +48,6 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     private DatagramSocket socket;
 
     public UDPConnector() {
-
         logger.debug("Nibe heatpump UDP message listener created");
     }
 
@@ -73,7 +72,6 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
 
     @Override
     public void disconnect() throws NibeHeatPumpException {
-
         if (readerThread != null) {
             logger.debug("Interrupt message listener");
             readerThread.interrupt();
@@ -97,11 +95,8 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
         logger.debug("Sending request: {}", msg.toHexString());
 
         try {
-
             DatagramSocket sock = new DatagramSocket();
-
             byte data[] = msg.decodeMessage();
-
             int port = -1;
 
             if (msg instanceof ModbusWriteRequestMessage) {
@@ -120,9 +115,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
                 sock.send(packet);
                 sock.close();
             }
-
         } catch (IOException e) {
-
             throw new NibeHeatPumpException(e);
         }
     }
@@ -141,23 +134,16 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
 
             logger.debug("Data listener started");
             while (!interrupted) {
-
                 final int packetSize = 255;
-
                 try {
-
                     if (socket == null) {
                         socket = new DatagramSocket(conf.port);
                     }
-
                     // Create a packet
                     DatagramPacket packet = new DatagramPacket(new byte[packetSize], packetSize);
-
                     // Receive a packet (blocking)
                     socket.receive(packet);
-
                     sendMsgToListeners(Arrays.copyOfRange(packet.getData(), 0, packet.getLength()));
-
                 } catch (InterruptedIOException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Interrupted via InterruptedIOException");

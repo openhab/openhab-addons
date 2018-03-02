@@ -134,13 +134,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         }
 
         if (connector != null) {
-
             VariableInformation variableInfo = VariableInformation.getVariableInfo(pumpModel, coilAddress);
-
             logger.debug("Usig variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
-
                 int value = convertStateToNibeValue(command);
                 value = value * variableInfo.factor;
 
@@ -154,7 +151,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     if (result != null) {
                         if (result.isSuccessfull()) {
                             logger.debug("Write message sending to heat pump succeeded");
-
                         } else {
                             logger.error("Message sending to heat pump failed, value not accepted by the heat pump");
                         }
@@ -162,16 +158,16 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                         logger.debug("Something weird happen, result for write command is null");
                     }
                 } catch (TimeoutException e) {
-                    logger.error("Message sending to heat pump failed, no response");
+                    logger.warn("Message sending to heat pump failed, no response");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No response received from the heat pump");
                 } catch (InterruptedException e) {
-                    logger.error("Message sending to heat pump failed, sending interrupted");
+                    logger.debug("Message sending to heat pump failed, sending interrupted");
                 } catch (NibeHeatPumpException e) {
-                    logger.error("Message sending to heat pump failed, exception {}", e.getMessage());
+                    logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 } catch (ExecutionException e) {
-                    logger.error("Message sending to heat pump failed, exception {}", e.getMessage());
+                    logger.debug("Message sending to heat pump failed, exception {}", e.getMessage(), e);
                 } finally {
                     writeResult = null;
                 }
@@ -180,12 +176,11 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 // We might not know if write message have succeed or not, so let's always refresh it.
                 logger.debug("Clearing cache value for channel '{}' to refresh channel data", channelUID);
                 clearCache(coilAddress);
-
             } else {
-                logger.error("Command to channel '{}' rejected, because item is read only parameter", channelUID);
+                logger.debug("Command to channel '{}' rejected, because item is read only parameter", channelUID);
             }
         } else {
-            logger.warn("No connection to heat pump");
+            logger.debug("No connection to heat pump");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
         }
     }
@@ -229,7 +224,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     public void initialize() {
         logger.debug("Initialized Nibe Heat Pump device handler for {}", getThing().getUID());
         configuration = getConfigAs(NibeHeatPumpConfiguration.class);
-        logger.info("Using configuration: {}", configuration.toString());
+        logger.debug("Using configuration: {}", configuration.toString());
 
         try {
             parseWriteEnabledItems();
@@ -243,7 +238,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         clearCache();
 
         if (connectorTask == null || connectorTask.isCancelled()) {
-            connectorTask = scheduler.scheduleAtFixedRate(new Runnable() {
+            connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
 
                 @Override
                 public void run() {
@@ -306,7 +301,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             try {
                 connector.disconnect();
             } catch (NibeHeatPumpException e) {
-                logger.error("Error occurred when disconnecting from heat pump, exception {}", e.getMessage());
+                logger.error("Error occurred when disconnecting from heat pump, exception {}", e.getMessage(), e);
             }
         }
     }
@@ -352,15 +347,15 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                                 handleVariableUpdate(pumpModel, result.getValueAsModbusValue());
                             }
                         } catch (TimeoutException e) {
-                            logger.error("Message sending to heat pump failed, no response");
+                            logger.debug("Message sending to heat pump failed, no response");
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         } catch (InterruptedException e) {
-                            logger.error("Message sending to heat pump failed, sending interrupted");
+                            logger.debug("Message sending to heat pump failed, sending interrupted");
                         } catch (NibeHeatPumpException e) {
-                            logger.error("Message sending to heat pump failed, exception {}", e.getMessage());
+                            logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         } catch (ExecutionException e) {
-                            logger.error("Message sending to heat pump failed, exception {}", e.getMessage());
+                            logger.debug("Message sending to heat pump failed, exception {}", e.getMessage(), e);
                         } finally {
                             readResult = null;
                         }
@@ -459,7 +454,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     @Override
     public void msgReceived(NibeHeatPumpMessage msg) {
         try {
-
             if (logger.isTraceEnabled()) {
                 logger.trace("Received raw data: {}", msg.toHexString());
             }

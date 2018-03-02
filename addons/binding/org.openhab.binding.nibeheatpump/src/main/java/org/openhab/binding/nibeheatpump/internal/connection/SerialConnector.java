@@ -59,7 +59,6 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     private List<byte[]> writeQueue = new ArrayList<byte[]>();
 
     public SerialConnector() {
-
         logger.debug("Nibe heatpump Serial Port message listener created");
     }
 
@@ -104,16 +103,12 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
     @Override
     public void disconnect() throws NibeHeatPumpException {
-
         logger.debug("Disconnecting");
-
         serialPort.removeEventListener();
-
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
         }
-
         if (out != null) {
             logger.debug("Close serial out stream");
             IOUtils.closeQuietly(out);
@@ -122,12 +117,10 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
             logger.debug("Close serial in stream");
             IOUtils.closeQuietly(in);
         }
-
         if (serialPort != null) {
             logger.debug("Close serial port");
             serialPort.close();
         }
-
         readerThread = null;
         serialPort = null;
         out = null;
@@ -138,7 +131,6 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
     @Override
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
-
         if (logger.isTraceEnabled()) {
             logger.trace("Add request to queue: {}", msg.toHexString());
         }
@@ -171,7 +163,6 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
         @Override
         public void run() {
-
             logger.debug("Data listener started");
 
             // RXTX serial port library causes high CPU load
