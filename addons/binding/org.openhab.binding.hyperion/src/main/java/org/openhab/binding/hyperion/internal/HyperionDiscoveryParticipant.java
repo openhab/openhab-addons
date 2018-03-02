@@ -46,7 +46,6 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-
         DiscoveryResult result = null;
 
         // return null if the service info is invalid / not fully formed
@@ -78,7 +77,6 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-
         String uid = service.getPropertyString("id");
         if (uid == null) {
             String longName = service.getName();

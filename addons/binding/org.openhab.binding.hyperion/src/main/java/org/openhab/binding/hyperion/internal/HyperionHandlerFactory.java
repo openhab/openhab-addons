@@ -39,7 +39,6 @@ public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_V1)) {

@@ -110,13 +110,11 @@ public class HyperionHandler extends BaseThingHandler {
 
     public HyperionHandler(Thing thing) {
         super(thing);
-
     }
 
     protected void handleServerInfoResponse(V1Response response) {
         V1Info info = response.getInfo();
         if (info != null) {
-
             // update Color
             List<ActiveLedColor> activeColors = info.getActiveLedColor();
             updateColor(activeColors);
@@ -180,7 +178,6 @@ public class HyperionHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Hyperion thing handler.");
         try {
-
             Configuration config = thing.getConfiguration();
             address = (String) config.get(PROP_HOST);
             port = ((BigDecimal) config.get(PROP_PORT)).intValue();
@@ -190,7 +187,6 @@ public class HyperionHandler extends BaseThingHandler {
             connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
-
         } catch (UnknownHostException e) {
             logger.error("Could not resolve host: {}", e.getMessage());
             updateOnlineStatus(ThingStatus.OFFLINE);
@@ -210,8 +206,7 @@ public class HyperionHandler extends BaseThingHandler {
             try {
                 connection.close();
             } catch (IOException e) {
-                // TODO: what should we do here? We want to get rid of of the handler but
-                // an exception occured whilst closing the connection
+                // do nothing
             }
         }
     }
@@ -250,22 +245,18 @@ public class HyperionHandler extends BaseThingHandler {
             Effect effect = new Effect(effectName);
             EffectCommand effectCommand = new EffectCommand(effect, priority);
             sendCommand(effectCommand);
-
         } else {
             logger.warn("Channel {} unable to process command {}", CHANNEL_EFFECT, command.toString());
         }
-
     }
 
     private void handleBrightness(Command command) throws IOException, CommandUnsuccessfulException {
         if (command instanceof PercentType) {
             PercentType percent = (PercentType) command;
-            //
             Transform transform = new Transform();
             transform.setLuminanceGain(percent.doubleValue() / 100);
             TransformCommand transformCommand = new TransformCommand(transform);
             sendCommand(transformCommand);
-
         } else if (command instanceof IncreaseDecreaseType) {
             logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
         } else {
@@ -283,7 +274,6 @@ public class HyperionHandler extends BaseThingHandler {
 
             ColorCommand colorCommand = new ColorCommand(r, g, b, priority);
             sendCommand(colorCommand);
-
         } else {
             logger.warn("Channel {} unable to process command {}", CHANNEL_COLOR, command.toString());
         }

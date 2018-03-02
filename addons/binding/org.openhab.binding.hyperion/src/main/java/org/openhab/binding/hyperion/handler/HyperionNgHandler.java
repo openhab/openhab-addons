@@ -131,7 +131,6 @@ public class HyperionNgHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Hyperion.ng thing handler.");
         try {
-
             Configuration config = thing.getConfiguration();
             address = (String) config.get(PROP_HOST);
             port = ((BigDecimal) config.get(PROP_PORT)).intValue();
@@ -142,7 +141,6 @@ public class HyperionNgHandler extends BaseThingHandler {
             connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
-
         } catch (UnknownHostException e) {
             logger.error("Could not resolve host: {}", e.getMessage());
             updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -162,8 +160,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             try {
                 connection.close();
             } catch (IOException e) {
-                // TODO: what should we do here? We want to get rid of of the handler but
-                // an exception occured whilst closing the connection
+                // do nothing
             }
         }
     }
@@ -201,7 +198,6 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void updatePriorities(List<Priority> priorities) {
-
         String regex = origin + ".*";
 
         // update color
@@ -235,7 +231,6 @@ public class HyperionNgHandler extends BaseThingHandler {
             StringType effect = new StringType(effectString);
             updateState(CHANNEL_EFFECT, effect);
         }
-
     }
 
     private void updateHyperion(Hyperion hyperion) {
@@ -294,7 +289,6 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         try {
             if (command instanceof RefreshType) {
                 if (refreshFuture.isDone()) {
