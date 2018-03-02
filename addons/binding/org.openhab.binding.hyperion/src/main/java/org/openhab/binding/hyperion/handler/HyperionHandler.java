@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -83,8 +84,8 @@ public class HyperionHandler extends BaseThingHandler {
                     handleServerInfoResponse(response);
                 }
             } catch (IOException e) {
-                logger.error("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE);
+                logger.warn("Could not connect to server.");
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } catch (JsonParseException e) {
                 logger.error("{}", e.getMessage(), e);
             } catch (CommandUnsuccessfulException e) {
@@ -99,11 +100,11 @@ public class HyperionHandler extends BaseThingHandler {
             try {
                 if (!connection.isConnected()) {
                     connection.connect();
-                    updateOnlineStatus(ThingStatus.ONLINE);
+                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 }
             } catch (IOException e) {
                 logger.error("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE);
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     };
@@ -189,7 +190,7 @@ public class HyperionHandler extends BaseThingHandler {
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
             logger.error("Could not resolve host: {}", e.getMessage());
-            updateOnlineStatus(ThingStatus.OFFLINE);
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -305,10 +306,11 @@ public class HyperionHandler extends BaseThingHandler {
         return response;
     }
 
-    private void updateOnlineStatus(ThingStatus status) {
+    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail) {
         ThingStatus current = thing.getStatus();
-        if (!current.equals(status)) {
-            updateStatus(status);
+        ThingStatusDetail currentDetail = thing.getStatusInfo().getStatusDetail();
+        if (!current.equals(status) || !currentDetail.equals(detail)) {
+            updateStatus(status, detail);
         }
     }
 }
