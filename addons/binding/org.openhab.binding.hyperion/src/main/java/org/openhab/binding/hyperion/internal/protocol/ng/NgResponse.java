@@ -11,7 +11,7 @@ package org.openhab.binding.hyperion.internal.protocol.ng;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Effect} is a POJO for a response from the Hyperion.ng server.
+ * The {@link NgResponse} is a POJO for a response from the Hyperion.ng server.
  *
  * @author Daniel Walters - Initial contribution
  */
@@ -29,6 +29,9 @@ public class NgResponse {
     @SerializedName("info")
     private NgInfo info;
 
+    @SerializedName("error")
+    private String error;
+
     public String getCommand() {
         return command;
     }
@@ -43,6 +46,10 @@ public class NgResponse {
 
     public NgInfo getInfo() {
         return info;
+    }
+
+    public String getError() {
+        return error;
     }
 
 }
