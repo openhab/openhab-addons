@@ -162,24 +162,26 @@ can be shown in the visu
 
 ```
 <diagram height="300px" series="day" refresh="600">
-<rrd consolidationFunction="AVERAGE">Weather_Temperature</rrd>
-<rrd consolidationFunction="AVERAGE">Weather_Temp_Max</rrd>
-<rrd consolidationFunction="AVERAGE">Weather_Temp_Min</rrd>
+    <rrd consolidationFunction="AVERAGE">Weather_Temperature</rrd>
+    <rrd consolidationFunction="AVERAGE">Weather_Temp_Max</rrd>
+    <rrd consolidationFunction="AVERAGE">Weather_Temp_Min</rrd>
 </diagram>
 ```
 
 some notes:
 
-*   `consolidationFunction` is only obeyed, when the item is persisted by the rrd4f persistence service
-*   Altough you have to define <rrd...>Item_name</rrd> for every line in the config, the used items doe not have to be persisted by the rrd4j persistence service, any other service will work too
+*   `consolidationFunction` is only obeyed, when the item is persisted by the rrd4j persistence service
+*   Altough you have to define <rrd...>Item_name</rrd> for every line in the config, the used items do not have to be persisted by the rrd4j persistence service, any other service will work too, but you have to specify the service name as prefix to the item name, e.g.
+`<rrd>mysql:Weather_Temp_Min</rrd>` to get the date from the mysql persistence service.
+*   Currently the CometVisu-Chart-Backend can only generate charts from persisted Number-Items. Other item types are not supported.
 
-###RSS-Log:
+### RSS-Log:
 
 *   Items: no special item needed
 *   Config:
 
 ```
-<rsslog src="plugins/rsslog/rsslog_pdo.php" refresh="60" mode="last">
+<rsslog src="plugins/rsslog/rsslog.php" refresh="60" mode="last">
 	<label>Events</label>
 	<layout colspan="12" rowspan="9"/>
 </rsslog>
@@ -190,10 +192,10 @@ some notes:
 ```
 var content = "Call recevied from 123456",encode("UTF-8")
 var tag = "Call".encode("UTF-8")
-sendHttpGetRequest("http://<openhab-server>:8080/<webAlias>/plugins/rsslog_pdo.php?c="+content+"&t="+tag)
+sendHttpGetRequest("http://<openhab-server>:8080/<webAlias>/plugins/rsslog.php?c="+content+"&t="+tag)
 ```
 
-###RSS-Log from persisted item:
+### RSS-Log from persisted item:
 
 *   Items:
 

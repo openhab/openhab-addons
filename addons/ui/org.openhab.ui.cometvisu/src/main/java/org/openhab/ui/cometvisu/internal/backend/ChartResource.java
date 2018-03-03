@@ -153,9 +153,13 @@ public class ChartResource implements RESTResource {
                         .iterator();
                 if (pit.hasNext()) {
                     persistenceService = pit.next().getValue();
+                    logger.debug("required persistence service ({}) not found, using {} instead", service,
+                            persistenceService.getId());
                 } else {
                     throw new IllegalArgumentException("No Persistence service found.");
                 }
+            } else {
+                logger.debug("using {} persistence for item {}", persistenceService.getId(), itemName);
             }
             Object data = null;
             if (persistenceService.getId().equals("rrd4j")) {
