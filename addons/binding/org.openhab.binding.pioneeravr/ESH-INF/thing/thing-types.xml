@@ -171,6 +171,15 @@
 				<option value="12">MULTI CH IN</option>
 				<option value="33">ADAPTER PORT</option>
 				<option value="27">SIRIUS</option>
+				<option value="38">Internet Radio</option>
+				<option value="44">M.Server</option>
+				<option value="45">Favorites</option>
+				<option value="51">Audio In</option>
+				<option value="52">Line1</option>
+				<option value="58">Line2</option>
+				<option value="56">BT Audio</option>
+				<option value="57">Spotify</option>
+				<option value="59">Digital In</option>
 			</options>
 		</state>
 	</channel-type>
