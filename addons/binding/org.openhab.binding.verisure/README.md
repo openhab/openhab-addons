@@ -43,10 +43,10 @@ Lock ([lock]) support the following channels:
 <table>
 <tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
 <tr><td>status</td><td>String</td><td>This channel reports the lock status.</td></tr>
-<tr><td>statusnumeric</td><td>Number</td><td>This channel reports the lock status as a number.</td></tr>
 <tr><td>timestamp</td><td>String</td><td>This channel reports the last time lock was changed (not a Date).</td></tr>
 <tr><td>changername</td><td>String</td><td>This channel reports the username that changed the state of the lock.</td></tr>
-<tr><td>setstatus</td><td>Number</td><td>This channel is used to arm/disarm the lock.</td></tr>
+<tr><td>location</td><td>String</td><td>This channel reports the location fo lock as setup in Verisure.</td></tr>
+<tr><td>doorlock</td><td>Switch</td><td>This channel is used to lock/unlock the lock.</td></tr>
 </table>
 
 ClimateSensor ([climatesensor]) support the following channels:
