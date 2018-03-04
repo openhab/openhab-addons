@@ -15,5 +15,5 @@
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>
-	
+
 </thing:thing-descriptions>
