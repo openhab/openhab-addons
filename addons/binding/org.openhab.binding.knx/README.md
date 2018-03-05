@@ -66,14 +66,14 @@ Different kinds of channels are defined and can be used to group together Group 
 
 Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
 
-##### Switch
+##### Channel Type "switch"
 
 | Parameter | Description                         | Default DPT |
 |-----------|-------------------------------------|-------------|
 | switch    | Group address for the binary switch | 1.001       |
 
 
-##### Dimmer
+##### Channel Type "dimmer"
 
 | Parameter        | Description                            | Default DPT |
 |------------------|----------------------------------------|-------------|
@@ -81,7 +81,7 @@ Standard channels are used most of the time. They are used in the common case wh
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
 
-##### Rollershutter
+##### Channel Type "rollershutter"
 
 | Parameter | Description                             | Default DPT |
 |-----------|-----------------------------------------|-------------|
@@ -89,25 +89,25 @@ Standard channels are used most of the time. They are used in the common case wh
 | stopMove  | Group address for stopping              | 1.010       |
 | position  | Group address for the relative position | 5.001       |
 
-##### Contact
+##### Channel Type "contact"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 1.009       |
 
-##### Number
+##### Channel Type "number"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
 
-##### String
+##### Channel Type "string"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 16.001      |
 
-##### Datetime
+##### Channel Type "datetime"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
@@ -118,14 +118,14 @@ Standard channels are used most of the time. They are used in the common case wh
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 
-##### Switch-Control
+##### Channel Type "switch-control"
 
 | Parameter | Description                         | Default DPT |
 |-----------|-------------------------------------|-------------|
 | switch    | Group address for the binary switch | 1.001       |
 
 
-##### Dimmer-Control
+##### Channel Type "dimmer-control"
 
 | Parameter        | Description                                                                                                                                   | Default DPT |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------------|
@@ -134,7 +134,7 @@ In contrast to the standard channels above, the control channel types are used f
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
 
-##### Rollershutter-Control
+##### Channel Type "rollershutter-control"
 
 | Parameter | Description                             | Default DPT |
 |-----------|-----------------------------------------|-------------|
@@ -142,25 +142,25 @@ In contrast to the standard channels above, the control channel types are used f
 | stopMove  | Group address for stopping              | 1.010       |
 | position  | Group address for the relative position | 5.001       |
 
-##### Contact-Control
+##### Channel Type "contact-control"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 1.009       |
 
-##### Number-Control
+##### Channel Type "number-control"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
 
-##### String-Control
+##### Channel Type "string-control"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 16.001      |
 
-##### Datetime-Control
+##### Channel Type "datetime-control"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
