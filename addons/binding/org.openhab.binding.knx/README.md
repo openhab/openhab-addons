@@ -204,9 +204,9 @@ Bridge knx:ip:bridge [
         pingInterval=300,
         readInterval=3600
     ] {
-		Type switch        : demoSwitch        "Light"       [ switch="3/0/4+<3/0/5" ]
+        Type switch        : demoSwitch        "Light"       [ switch="3/0/4+<3/0/5" ]
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
-		Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
+        Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
         Type dimmer        : demoDimmer        "Dimmer"      [ switch="5/0/0+<5/0/1", position="5/0/2+<5/0/3", increaseDecrease="5/0/4" ]
         Type string        : demoString        "Message"     [ ga="5/3/1" ]
