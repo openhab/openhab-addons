@@ -102,6 +102,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private boolean initialized;
     private boolean newDeviceEventsEnabled;
     private ScheduledFuture<?> enableNewDeviceFuture;
+    private ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
 
     static {
         // loads all virtual datapoints
@@ -179,7 +180,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (!config.getGatewayInfo().isHomegear()) {
             // delay the newDevice event handling at startup, reduces some API calls
             long delay = config.getGatewayInfo().isCCU1() ? 10 : 3;
-            ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
             enableNewDeviceFuture = scheduler.schedule(() -> {
                 newDeviceEventsEnabled = true;
             }, delay, TimeUnit.MINUTES);
@@ -267,8 +267,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
     @Override
     public void startWatchdogs() {
-        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
-
         logger.debug("Starting connection tracker for gateway with id '{}'", id);
         connectionTrackerThread = new ConnectionTrackerThread();
         connectionTrackerFuture = scheduler.scheduleWithFixedDelay(connectionTrackerThread, 30,
