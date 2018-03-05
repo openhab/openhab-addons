@@ -58,4 +58,5 @@ public class NikoHomeControlBindingConstants {
     // Thing config properties
     public static final String CONFIG_ACTION_ID = "actionId";
     public static final String CONFIG_STEP_VALUE = "step";
+    public static final String CONFIG_INVERT = "invert";
 }

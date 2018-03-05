@@ -71,7 +71,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Niko Home Control: cannot resolve bridge IP with hostname " + config.get(CONFIG_HOST_NAME));
         }
-
     }
 
     /**
@@ -148,7 +147,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.ONLINE);
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
-
     }
 
     /**
@@ -166,7 +164,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     public void bridgeOnline() {
         updateProperties();
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -188,7 +185,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         properties.put("connectionStartDate", this.nhcComm.getSystemInfo().getTime());
 
         thing.setProperties(properties);
-
     }
 
     @Override

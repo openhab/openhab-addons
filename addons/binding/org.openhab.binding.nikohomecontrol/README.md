@@ -2,11 +2,10 @@
 
 The Niko Home Control binding integrates with a [Niko Home Control](http://www.nikohomecontrol.be/) system through a Niko Home Control IP-interface.
 
-The binding has been tested with a Niko Home Control IP-interface (550-00508).
-This IP-interface provides access on the LAN.
-The binding does not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN.
-It will not make a remote connection.
+The binding has been tested with a Niko Home Control IP-interface (550-00508). This IP-interface provides access on the LAN.
+The binding does not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN. It will not make a remote connection.
 It has also been confirmed to work with the Niko Home Control Connected Controller (550-00003).
+The binding does not work for Niko Home Control II.
 
 The binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control programming software.
 
@@ -22,12 +21,11 @@ Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.
 
 The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI.
 A bridge can be auto-discovered or created manually.
-No bridge configuration is required when using auto-discovery.
+No bridge configuration is required when using auto-discovery. An auto-discovered bridge will have an IP-address parameter automatically filled with the current IP-address of the IP-interface.
 
 The IP-address and port can be set when manually creating the bridge.
 
-If the IP-address is set, no attempt will be made to discover the correct IP-address.
-ou are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server.
+If the IP-address is set on a manually created bridge, no attempt will be made to discover the correct IP-address. You are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server.
 
 The port is set to 8000 by default and should match the port used by the Niko Home Control IP-interface.
 
@@ -100,6 +98,9 @@ Open the file with an unzip tool to read it's content.
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
 
+The `invert` parameter is only available for rollershutters.
+It will invert the up/down direction of the rollerhutter and remap the position to the opposite position. The parameter is optional and false by default.
+
 ## Channels
 
 For thing type `onOff` the supported channel is `switch`.
@@ -119,11 +120,13 @@ It can be used as a trigger to rules. The event message is the alarm or notice t
 
 The binding has been tested with a Niko Home Control IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003).
 
+The binding has been developed for and tested with Niko Home Control I. It is not expected to work with Niko Home Control II, or with Niko Home Control I installations upgraded to Niko Home Control II.
+
 The action events implemented are limited to onOff, dimmer and rollershutter or blinds.
 Other actions have not been implemented.
 It is not possible to tilt the slats of venetian blinds.
 
-Beyond action events, the Niko Home Control communication also supports thermostats, electricity usage data and alarms.
+Beyond action events, the Niko Home Control communication also supports thermostats and electricity usage data.
 This has not been implemented.
 
 ## Example
@@ -140,7 +143,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
 Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
     onOff 11 @ "Upstairs"[ actionId=11 ]
     dimmer 12 [ actionId=12, step=5 ]
-    blind 13 [ actionId=13 ]
+    blind 13 [ actionId=13, invert=true ]
 }
 ```
 

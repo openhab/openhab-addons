@@ -321,6 +321,10 @@ public final class NikoHomeControlCommunication {
 
             int id = Integer.parseInt(action.get("id"));
             Integer state = Integer.valueOf(action.get("value1"));
+            String value2 = action.get("value2");
+            Integer openTime = (value2 == null ? null : Integer.valueOf(value2));
+            String value3 = action.get("value3");
+            Integer closeTime = (value3 == null ? null : Integer.valueOf(value3));
 
             if (!this.actions.containsKey(id)) {
                 // Initial instantiation of NhcAction class for action object
@@ -331,7 +335,7 @@ public final class NikoHomeControlCommunication {
                 if (locationId != null) {
                     location = this.locations.get(locationId).getName();
                 }
-                NhcAction nhcAction = new NhcAction(id, name, type, location);
+                NhcAction nhcAction = new NhcAction(id, name, type, location, openTime, closeTime);
                 nhcAction.setState(state);
                 nhcAction.setNhcComm(this);
                 this.actions.put(id, nhcAction);
@@ -357,7 +361,7 @@ public final class NikoHomeControlCommunication {
         for (Map<String, String> action : data) {
             int id = Integer.valueOf(action.get("id"));
             if (!this.actions.containsKey(id)) {
-                logger.warn("Niko Home Control: action in controller not known to openHab {}", id);
+                logger.warn("Niko Home Control: action in controller not known {}", id);
                 return;
             }
             Integer state = Integer.valueOf(action.get("value1"));

@@ -23,8 +23,6 @@ class NhcMessageCmd extends NhcMessageBase {
     private Integer value1;
     private Integer value2;
     private Integer value3;
-    private Integer startValue;
-    private Integer endValue;
 
     NhcMessageCmd(String cmd) {
         super.setCmd(cmd);
@@ -40,13 +38,5 @@ class NhcMessageCmd extends NhcMessageBase {
         this(cmd, id, value1);
         this.value2 = value2;
         this.value3 = value3;
-    }
-
-    void setStartValue(Integer startValue) {
-        this.startValue = startValue;
-    }
-
-    void setEndValue(Integer endValue) {
-        this.endValue = endValue;
     }
 }
