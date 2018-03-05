@@ -100,6 +100,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<VirtualDatapointHandler>();
     private boolean cancelLoadAllMetadata;
     private boolean initialized;
+    private boolean newDeviceEventsEnabled;
+    private ScheduledFuture<?> enableNewDeviceFuture;
+    private ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
 
     static {
         // loads all virtual datapoints
@@ -173,11 +176,25 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
+
+        if (!config.getGatewayInfo().isHomegear()) {
+            // delay the newDevice event handling at startup, reduces some API calls
+            long delay = config.getGatewayInfo().isCCU1() ? 10 : 3;
+            enableNewDeviceFuture = scheduler.schedule(() -> {
+                newDeviceEventsEnabled = true;
+            }, delay, TimeUnit.MINUTES);
+        } else {
+            newDeviceEventsEnabled = true;
+        }
     }
 
     @Override
     public void dispose() {
         initialized = false;
+        if (enableNewDeviceFuture != null) {
+            enableNewDeviceFuture.cancel(true);
+        }
+        newDeviceEventsEnabled = false;
         stopWatchdogs();
         sendDelayedExecutor.stop();
         receiveDelayedExecutor.stop();
@@ -250,8 +267,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
     @Override
     public void startWatchdogs() {
-        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
-
         logger.debug("Starting connection tracker for gateway with id '{}'", id);
         connectionTrackerThread = new ConnectionTrackerThread();
         connectionTrackerFuture = scheduler.scheduleWithFixedDelay(connectionTrackerThread, 30,
@@ -649,7 +664,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
     @Override
     public void newDevices(List<String> adresses) {
-        if (initialized) {
+        if (initialized && newDeviceEventsEnabled) {
             for (String address : adresses) {
                 try {
                     logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
