@@ -12,7 +12,8 @@ Each monitor is represented by one seneye thing.
 
 ## Supported Things
 
-This binding provides one thing type : 'seneye'. You can have multiple seneye devices in your home, just make sure that your aquarium_name is properly set for each seneye thing.
+This binding provides one thing type: 'seneye'. 
+You can have multiple seneye devices in your home, just make sure that your aquarium_name is properly set for each seneye thing.
 
 ## Discovery
 
@@ -20,29 +21,19 @@ Discovery is not supported, the seneye monitor must be configured manually
 
 ## Thing Configuration
 
-### Configuration in PaperUI
-
 The following settings must be configured in order to make your seneye binding work:
 
 | Setting              |                                                                                 |
 |----------------------|---------------------------------------------------------------------------------|
-| aquarium_name        | The name of the aquarium, as specified in [seneye.me] (https://www.seneye.me/). |
+| aquarium_name        | The name of the aquarium, as specified in [seneye.me](https://www.seneye.me/).  |
 |                      | Useful to distinguish multiple seneye installations.                            |
-| username             | Your login name for [seneye.me] (https://www.seneye.me/)                        |
-| password             | Your password for [seneye.me] (https://www.seneye.me/)                          |
+| username             | Your login name for [seneye.me](https://www.seneye.me/)                         |
+| password             | Your password for [seneye.me](https://www.seneye.me/)                           |
 | poll_time            | How often (in minutes) should the seneye account be checked.                    |
-
-### Configuration with config files
-
-A manual configuration through a `things/seneye.things` file could look like this:
-
-```
-Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="user@mail.com", password="xxx", poll_time=5]
-```
 
 ## Channels
 
-The following channels are supported :
+The following channels are supported:
 
 | Channel Type ID         | Item Type    | Description                                                      |
 |-------------------------|--------------|------------------------------------------------------------------|
@@ -57,9 +48,13 @@ The following channels are supported :
 | lastreading             | DateTime     | The moment when the last readings are received from the monitor  |
 | slideexpires            | DateTime     | The moment when the current slide will expire                    |
 
-## Item configuration
+## Full example
 
-### Configuration with config files
+A manual configuration through a `things/seneye.things` file could look like this:
+
+```
+Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="user@mail.com", password="xxx", poll_time=5]
+```
 
 A manual configuration through a `demo.items` file could look like this:
 

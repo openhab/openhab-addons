@@ -12,6 +12,7 @@ import static org.openhab.binding.seneye.SeneyeBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
+//import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,10 +37,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Niko Tanghe - Initial contribution
  */
-public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
+public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
+
+    // private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
     private Logger logger = LoggerFactory.getLogger(SeneyeHandler.class);
     private SeneyeService seneyeService;
+
+    // private final ExpiringCache<SeneyeDeviceReading> cachedSeneyeDeviceReading = new
+    // ExpiringCache<SeneyeDeviceReading>(
+    // CACHE_EXPIRY, () -> {
+    // if (seneyeService == null || seneyeService.isInitialized() == false) {
+    // return null;
+    // }
+    // return seneyeService.getDeviceReadings();
+    // });
 
     public SeneyeHandler(Thing thing) {
         super(thing);
@@ -52,6 +64,7 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
         }
 
         if (command instanceof RefreshType) {
+            // SeneyeDeviceReading readings = cachedSeneyeDeviceReading.getValue();
             SeneyeDeviceReading readings = seneyeService.getDeviceReadings();
             newState(readings);
         } else {
@@ -111,11 +124,8 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
         super.initialize();
 
         // contact Seneye API
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                initializeSeneyeService();
-            }
+        scheduler.submit(() -> {
+            initializeSeneyeService();
         });
     }
 
@@ -124,11 +134,8 @@ public class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
             seneyeService.initialize();
         } catch (CommunicationException ex) {
             // try again in 30 secs
-            scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    initializeSeneyeService();
-                }
+            scheduler.schedule(() -> {
+                initializeSeneyeService();
             }, 30, TimeUnit.SECONDS);
 
             return;

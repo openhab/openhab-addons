@@ -32,19 +32,14 @@ import com.google.gson.Gson;
 
 public class SeneyeService {
 
-    private static Logger logger = LoggerFactory.getLogger(SeneyeService.class);
-
+    private final Logger logger = LoggerFactory.getLogger(SeneyeService.class);
     private int retry;
-
     private SeneyeConfigurationParameters config;
-
     private String seneyeId;
-
     private boolean isInitialized;
-
     private final Gson gson;
-
-    private static HttpClient httpClient = new HttpClient(new SslContextFactory());
+    private HttpClient httpClient = new HttpClient(new SslContextFactory());
+    private ScheduledFuture<?> scheduledJob;
 
     public SeneyeService(SeneyeConfigurationParameters config) throws CommunicationException {
         this.config = config;
@@ -66,19 +61,22 @@ public class SeneyeService {
 
     }
 
-    public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
-            final ReadingsUpdate readingsUpdate) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                readingsUpdate.newState(getDeviceReadings());
-            }
-        };
-
-        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.poll_time, TimeUnit.MINUTES);
+    @Override
+    public void finalize() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            // swallow this
+        }
+        httpClient = null;
     }
 
-    ScheduledFuture<?> scheduledJob;
+    public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
+            final ReadingsUpdate readingsUpdate) {
+        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            readingsUpdate.newState(getDeviceReadings());
+        }, 0, config.poll_time, TimeUnit.MINUTES);
+    }
 
     public void stopAutomaticRefresh() {
         if (scheduledJob != null) {
@@ -90,8 +88,8 @@ public class SeneyeService {
         int currentTry = 0;
         do {
             try {
-                String responseState = GetData("/" + seneyeId + "/state?" + GetCredentials());
-                String responseReadings = GetData("/" + seneyeId + "/exps?" + GetCredentials());
+                String responseState = getData("/" + seneyeId + "/state?" + getCredentials());
+                String responseReadings = getData("/" + seneyeId + "/exps?" + getCredentials());
 
                 SeneyeDeviceReading readings = gson.fromJson(responseReadings, SeneyeDeviceReading.class);
                 readings.status = gson.fromJson(responseState, SeneyeStatus.class);
@@ -112,7 +110,7 @@ public class SeneyeService {
     }
 
     public void initialize() throws CommunicationException, InvalidConfigurationException {
-        String response = GetData("?" + GetCredentials());
+        String response = getData("?" + getCredentials());
 
         Seneye[] seneyeDevices = gson.fromJson(response, Seneye[].class);
 
@@ -131,7 +129,7 @@ public class SeneyeService {
         return isInitialized;
     }
 
-    private String GetData(String request) throws CommunicationException {
+    private String getData(String request) throws CommunicationException {
         // get devices
         // https://api.seneye.com/v1/devices?user=emailaddress&pwd=xxx
 
@@ -166,7 +164,7 @@ public class SeneyeService {
         }
     }
 
-    private String GetCredentials() {
+    private String getCredentials() {
         return "user=" + config.username + "&pwd=" + config.password;
     }
 }
