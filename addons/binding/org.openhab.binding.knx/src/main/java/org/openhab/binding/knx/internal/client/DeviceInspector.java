@@ -11,8 +11,8 @@ package org.openhab.binding.knx.internal.client;
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,68 +85,13 @@ public class DeviceInspector {
                 Map<String, String> properties = new HashMap<>();
                 properties.putAll(readDeviceDescription(address));
                 properties.putAll(readDeviceProperties(address));
-                Set<GroupAddress> groupAddresses = readDeviceMemory(address);
-
-                return new Result(properties, groupAddresses);
+                return new Result(properties, Collections.emptySet());
             }
         } catch (Exception e) {
             logger.error("An exception occurred while fetching the device description for a device '{}' : {}", address,
                     e.getMessage(), e);
         }
         return null;
-    }
-
-    private Set<GroupAddress> readDeviceMemory(IndividualAddress address) throws InterruptedException {
-        Thread.sleep(OPERATION_INTERVAL);
-        byte[] tableaddress = getClient().readDeviceProperties(address, ADDRESS_TABLE_OBJECT, PID.TABLE_REFERENCE, 1, 1,
-                false, OPERATION_TIMEOUT);
-        // According to the KNX specs, devices should expose the PID.IO_LIST property in the DEVICE
-        // object, but it seems that a lot, if not all, devices do not do this. In this list we can find out
-        // what other kind of objects the device is exposing. Most devices do implement some set of objects,
-        // we will just go ahead and try to read them out irrespective of what is in the IO_LIST
-
-        Set<GroupAddress> ret = new HashSet<>();
-        if (tableaddress != null) {
-            Thread.sleep(OPERATION_INTERVAL);
-            byte[] elements = getClient().readDeviceMemory(address, toUnsigned(tableaddress), 1, false,
-                    OPERATION_TIMEOUT);
-            if (elements != null) {
-                int numberOfElements = toUnsigned(elements);
-                logger.debug("The KNX device with address {} uses {} group addresses", address, numberOfElements - 1);
-
-                byte[] addressData = null;
-                while (addressData == null) {
-                    Thread.sleep(OPERATION_INTERVAL);
-                    addressData = getClient().readDeviceMemory(address, toUnsigned(tableaddress) + 1, 2, false,
-                            OPERATION_TIMEOUT);
-                    if (addressData != null) {
-                        IndividualAddress individualAddress = new IndividualAddress(addressData);
-                        logger.debug("The KNX device with address {} its real reported individual address is  {}",
-                                address, individualAddress);
-                    }
-                }
-
-                for (int i = 1; i < numberOfElements; i++) {
-                    addressData = null;
-                    while (addressData == null) {
-                        Thread.sleep(OPERATION_INTERVAL);
-                        addressData = getClient().readDeviceMemory(address, toUnsigned(tableaddress) + 1 + i * 2, 2,
-                                false, OPERATION_TIMEOUT);
-                        if (addressData != null) {
-                            GroupAddress groupAddress = new GroupAddress(addressData);
-                            ret.add(groupAddress);
-                        }
-                    }
-                }
-
-                for (GroupAddress anAddress : ret) {
-                    logger.debug("The KNX device with address {} uses Group Address {}", address, anAddress);
-                }
-            }
-        } else {
-            logger.warn("The KNX device with address {} does not expose a Group Address table", address);
-        }
-        return ret;
     }
 
     private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
