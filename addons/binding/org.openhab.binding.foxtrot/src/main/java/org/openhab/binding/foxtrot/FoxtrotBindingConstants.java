@@ -36,9 +36,13 @@ public class FoxtrotBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_VARIABLE = new ThingTypeUID(BINDING_ID, "variable");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
+    public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
     // List of all Channel ids
     public static final String CHANNEL_NUMBER = "number";
     public static final String CHANNEL_STRING = "string";
     public static final String CHANNEL_BOOL = "bool";
+    public static final String CHANNEL_SWITCH = "switch";
+    public static final String CHANNEL_DIMMER = "dimmer";
 }

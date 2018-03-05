@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="plc"/>
+		</supported-bridge-type-refs>
+
+		<label>Blind</label>
+		<description>todo ...</description>
+
+		<channels>
+			<channel typeId="blind-channel" id="blind"/>
+		</channels>
+
+		<config-description>
+			<parameter name="up" type="text" required="true">
+				<label>Up command variable name</label>
+				<description>todo ...</description>
+			</parameter>
+			<parameter name="down" type="text" required="true">
+				<label>Down command variable name</label>
+				<description>todo ...</description>
+			</parameter>
+			<parameter name="stop" type="text" required="true">
+				<label>Stop command variable name</label>
+				<description>todo ...</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="blind-channel">
+		<item-type>Rollershutter</item-type>
+		<label>Blind</label>
+		<description>todo ...</description>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,6 +1,9 @@
-# <bindingName> Binding
+# Foxtrot Binding
 
 _Give some details about what this binding is meant for - a protocol, system, specific device._
+
+The Foxtrot binding allows interaction with [PLC Tecomat Foxtrot](https://www.tecomat.com/products/cat/cz/plc-tecomat-foxtrot-3/) system from Czech company [Teco](https://www.tecomat.com).
+Tecomat Foxtrot is a compact modular control and regulation system with powerful processor, mature communications, original two-wires and wireless connection with intelligent electroinstallation elements and peripherals. 
 
 _If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 

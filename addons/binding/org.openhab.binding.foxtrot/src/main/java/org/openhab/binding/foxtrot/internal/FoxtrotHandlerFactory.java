@@ -22,9 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.foxtrot.handler.FoxtrotBridgeHandler;
-import org.openhab.binding.foxtrot.handler.SwitchHandler;
-import org.openhab.binding.foxtrot.handler.VariableHandler;
+import org.openhab.binding.foxtrot.handler.*;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -38,7 +36,8 @@ import org.osgi.service.component.annotations.Component;
 public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_PLC, THING_TYPE_VARIABLE, THING_TYPE_SWITCH).collect(Collectors.toSet());
+            .of(THING_TYPE_PLC, THING_TYPE_VARIABLE, THING_TYPE_SWITCH, THING_TYPE_BLIND, THING_TYPE_DIMMER)
+            .collect(Collectors.toSet());
 
     /**
      * Called when new Thing is added, checks if ThingType is supported.
@@ -58,6 +57,10 @@ public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
             return new VariableHandler(thing);
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
             return new SwitchHandler(thing);
+        } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {
+            return new BlindHandler(thing);
+        } else if (THING_TYPE_DIMMER.equals(thingTypeUID)) {
+            return new DimmerHandler(thing);
         }
         return null;
     }
