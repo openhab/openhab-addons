@@ -118,6 +118,8 @@ Standard channels are used most of the time. They are used in the common case wh
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 
+As per the nature of this channels the state is not owned by any device on the KNX bus, there will be no read requests sent to the bus even if there are "read" symbols (i.e. `<`) configured for the channel.
+
 ##### Channel Type "switch-control"
 
 | Parameter | Description                         | Default DPT |
