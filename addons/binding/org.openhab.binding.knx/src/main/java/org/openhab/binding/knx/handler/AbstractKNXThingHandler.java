@@ -166,6 +166,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         try {
             if (config.getAddress() != null && !config.getAddress().isEmpty()) {
+                updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
                 long pingInterval = config.getPingInterval().longValue();
