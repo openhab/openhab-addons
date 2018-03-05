@@ -80,6 +80,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
         }
     }
 
+    @Override
     public synchronized byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType,
             boolean authenticate, long timeout) {
         String task = "read the device description";
@@ -89,6 +90,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
         });
     }
 
+    @Override
     public synchronized byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes,
             boolean authenticate, long timeout) {
         String task = MessageFormat.format("read {0} bytes at memory location {1}", bytes, startAddress);
@@ -98,6 +100,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
         });
     }
 
+    @Override
     public synchronized byte @Nullable [] readDeviceProperties(IndividualAddress address,
             final int interfaceObjectIndex, final int propertyId, final int start, final int elements,
             boolean authenticate, long timeout) {
@@ -108,6 +111,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
         });
     }
 
+    @Override
     public boolean isConnected() {
         return managementClient.isOpen();
     }
