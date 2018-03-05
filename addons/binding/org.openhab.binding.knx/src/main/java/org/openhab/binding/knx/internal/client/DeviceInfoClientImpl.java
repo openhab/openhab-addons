@@ -101,7 +101,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
     public synchronized byte @Nullable [] readDeviceProperties(IndividualAddress address,
             final int interfaceObjectIndex, final int propertyId, final int start, final int elements,
             boolean authenticate, long timeout) {
-        String task = MessageFormat.format("read device property {} at index {}", propertyId, interfaceObjectIndex);
+        String task = MessageFormat.format("read device property {0} at index {1}", propertyId, interfaceObjectIndex);
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);
             return managementClient.readProperty(destination, interfaceObjectIndex, propertyId, start, elements);
