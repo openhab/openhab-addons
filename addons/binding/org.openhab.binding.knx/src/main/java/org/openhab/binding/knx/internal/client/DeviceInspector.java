@@ -106,18 +106,22 @@ public class DeviceInspector {
             String ManufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
                     DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
             Thread.sleep(OPERATION_INTERVAL);
-            String serialNo = DataUnitBuilder.toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT,
-                    PID.SERIAL_NUMBER, 1, 1, false, OPERATION_TIMEOUT), "");
+            String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1, 1,
+                    false, OPERATION_TIMEOUT), "");
             Thread.sleep(OPERATION_INTERVAL);
-            String hardwareType = DataUnitBuilder.toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT,
-                    HARDWARE_TYPE, 1, 1, false, OPERATION_TIMEOUT), " ");
+            String hardwareType = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, HARDWARE_TYPE, 1, 1,
+                    false, OPERATION_TIMEOUT), " ");
             Thread.sleep(OPERATION_INTERVAL);
             String firmwareRevision = Integer.toString(toUnsigned(getClient().readDeviceProperties(address,
                     DEVICE_OBJECT, PID.FIRMWARE_REVISION, 1, 1, false, OPERATION_TIMEOUT)));
 
             ret.put(MANUFACTURER_NAME, ManufacturerID);
-            ret.put(MANUFACTURER_SERIAL_NO, serialNo);
-            ret.put(MANUFACTURER_HARDWARE_TYPE, hardwareType);
+            if (serialNo != null) {
+                ret.put(MANUFACTURER_SERIAL_NO, serialNo);
+            }
+            if (hardwareType != null) {
+                ret.put(MANUFACTURER_HARDWARE_TYPE, hardwareType);
+            }
             ret.put(MANUFACTURER_FIRMWARE_REVISION, firmwareRevision);
             logger.info("Identified device {} as a {}, type {}, revision {}, serial number {}", address, ManufacturerID,
                     hardwareType, firmwareRevision, serialNo);
@@ -125,6 +129,10 @@ public class DeviceInspector {
             logger.warn("The KNX device with address {} does not expose a Device Object", address);
         }
         return ret;
+    }
+
+    private @Nullable String toHex(byte @Nullable [] input, String separator) {
+        return input == null ? null : DataUnitBuilder.toHex(input, separator);
     }
 
     private Map<String, String> readDeviceDescription(IndividualAddress address) {
