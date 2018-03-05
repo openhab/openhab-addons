@@ -44,6 +44,7 @@ import tuwien.auto.calimero.exception.KNXFormatException;
 @NonNullByDefault
 public abstract class AbstractKNXThingHandler extends BaseThingHandler implements GroupAddressListener {
 
+    private static final int INITIAL_PING_DELAY = 5;
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXThingHandler.class);
 
     private @Nullable IndividualAddress address;
@@ -143,9 +144,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                     if (!filledDescription && config.getFetch()) {
                         Future<?> descriptionJob = this.descriptionJob;
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
-                            this.descriptionJob = getScheduler().submit(() -> {
+                            long initialDelay = Math.round(config.getPingInterval().longValue() * random.nextFloat());
+                            this.descriptionJob = getScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
-                            });
+                            }, initialDelay, TimeUnit.SECONDS);
                         }
                     }
                 } else {
@@ -170,7 +172,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 address = new IndividualAddress(config.getAddress());
 
                 long pingInterval = config.getPingInterval().longValue();
-                long initialPingDelay = Math.round(pingInterval * random.nextFloat());
+                long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
                 ScheduledFuture<?> pollingJob = this.pollingJob;
                 if ((pollingJob == null || pollingJob.isCancelled())) {
