@@ -31,8 +31,8 @@ Following models (indoor / main units) are currently supported:
 | VVM320 / 325      | vvm320            | reduced set of channels based on NibeUplink website   |
 | F730              | f730              | reduced set of channels based on NibeUplink website   |
 | F750              | f750              | reduced set of channels based on NibeUplink website   |
-| F1145 / 1245      | f1145             | all channels                                          |
-| F1155 / 1255      | f1155             | all channels                                          |
+| F1145 / 1245      | f1145             | reduced set of channels based on NibeUplink website   |
+| F1155 / 1255      | f1155             | reduced set of channels based on NibeUplink website   |
 
 There are a few settings this thing:
 
