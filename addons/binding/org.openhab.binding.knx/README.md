@@ -118,8 +118,6 @@ Standard channels are used most of the time. They are used in the common case wh
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 
-As per the nature of this channels the state is not owned by any device on the KNX bus, there will be no read requests sent to the bus even if there are "read" symbols (i.e. `<`) configured for the channel.
-
 ##### Channel Type "switch-control"
 
 | Parameter | Description                         | Default DPT |
@@ -177,6 +175,7 @@ As per the nature of this channels the state is not owned by any device on the K
 where parts in brackets `[]` denote optional information.
 
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
+With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
 Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.
 
