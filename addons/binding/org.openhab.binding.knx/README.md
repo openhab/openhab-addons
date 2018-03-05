@@ -62,7 +62,7 @@ The *serial* bridge accepts the following configuration parameters:
 
 Different kinds of channels are defined and can be used to group together Group Addresses. All channel types share two configuration parameters: *read*, an optional parameter to indicate if the 'readable' group addresses of that Channel should be read at startup (default: false), and *interval*, an optional parameter that defines an interval between attempts to read the status group address on the bus, in seconds. When defined and set to 0, the interval is ignored (default: 0)
 
-#### Standard Channels
+#### Standard Channel Types
 
 Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
 
@@ -114,7 +114,7 @@ Standard channels are used most of the time. They are used in the common case wh
 | ga        | Group address | 19.001      |
 
 
-#### Control Channels
+#### Control Channel Types
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 
