@@ -460,7 +460,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 } else {
                     logger.warn("Value '{}' could not be sent to the KNX bus using datapoint '{}': {}. Giving up now.",
                             type, datapoint, e.getLocalizedMessage());
-                    disconnect(e);
                     throw e;
                 }
             }
