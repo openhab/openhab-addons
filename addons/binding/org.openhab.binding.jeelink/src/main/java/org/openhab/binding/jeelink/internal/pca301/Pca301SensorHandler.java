@@ -37,12 +37,12 @@ import org.slf4j.LoggerFactory;
 public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     private final Logger logger = LoggerFactory.getLogger(Pca301SensorHandler.class);
 
-    private JeeLinkHandler fBridge;
-    private OnOffType fState;
-    private final AtomicInteger fChannel = new AtomicInteger(-1);
+    private JeeLinkHandler bridge;
+    private OnOffType state;
+    private final AtomicInteger channel = new AtomicInteger(-1);
 
-    private ScheduledFuture<?> fRetry;
-    private int fSendCount;
+    private ScheduledFuture<?> retry;
+    private int sendCount;
 
     public Pca301SensorHandler(Thing thing) {
         super(thing);
@@ -57,13 +57,13 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     public void initialize() {
         super.initialize();
 
-        fBridge = (JeeLinkHandler) getBridge().getHandler();
+        bridge = (JeeLinkHandler) getBridge().getHandler();
 
         Pca301SensorConfig cfg = getConfigAs(Pca301SensorConfig.class);
-        fSendCount = cfg.sendCount;
+        sendCount = cfg.sendCount;
 
         logger.debug("initilized handler for thing {} ({}): sendCount = {}", getThing().getLabel(),
-                getThing().getUID().getId(), fSendCount);
+                getThing().getUID().getId(), sendCount);
     }
 
     @Override
@@ -94,17 +94,17 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
             @Override
             public void publish(Pca301Reading reading) {
                 if (reading != null) {
-                    fChannel.set(reading.getChannel());
+                    channel.set(reading.getChannel());
 
                     BigDecimal current = new BigDecimal(reading.getCurrent()).setScale(1, RoundingMode.HALF_UP);
-                    fState = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
+                    state = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
 
                     updateState(CURRENT_WATT_CHANNEL, new DecimalType(current));
                     updateState(CONSUMPTION_CHANNEL, new DecimalType(reading.getTotal()));
-                    updateState(SWITCHING_STATE_CHANNEL, fState);
+                    updateState(SWITCHING_STATE_CHANNEL, state);
 
                     logger.debug("updated states for thing {} ({}): state={}, current={}, total={}",
-                            getThing().getLabel(), getThing().getUID().getId(), fState, current, reading.getTotal());
+                            getThing().getLabel(), getThing().getUID().getId(), state, current, reading.getTotal());
                 }
             }
 
@@ -117,13 +117,13 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     }
 
     private void sendCommand(Command command) {
-        int channel = fChannel.get();
+        int chan = channel.get();
 
-        if (channel != -1) {
+        if (chan != -1) {
             if (command == RefreshType.REFRESH) {
-                fBridge.getConnection().sendCommands(channel + ",4," + id.replaceAll("-", ",") + ",0,255,255,255,255s");
+                bridge.getConnection().sendCommands(chan + ",4," + id.replaceAll("-", ",") + ",0,255,255,255,255s");
             } else if (command instanceof OnOffType) {
-                fBridge.getConnection().sendCommands(channel + ",5," + id.replaceAll("-", ",") + ","
+                bridge.getConnection().sendCommands(chan + ",5," + id.replaceAll("-", ",") + ","
                         + (command == OnOffType.ON ? "1" : "2") + ",255,255,255,255s");
             } else {
                 logger.warn("Unsupported command {} for sensor with id {}.", command, this.id);
@@ -136,21 +136,21 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     private synchronized void sendCommandRetry(OnOffType command) {
         cancelRetry();
 
-        fRetry = scheduler.scheduleWithFixedDelay(new Runnable() {
-            int remainingRetries = fSendCount;
+        retry = scheduler.scheduleWithFixedDelay(new Runnable() {
+            int remainingRetries = sendCount;
 
             @Override
             public void run() {
-                if (fState == null) {
+                if (state == null) {
                     logger.debug("skip sending of command (current state not yet known) for thing {} ({}): {}",
                             getThing().getLabel(), getThing().getUID().getId(), command);
-                } else if ((fState != command && remainingRetries > 0)) {
+                } else if ((state != command && remainingRetries > 0)) {
                     logger.debug("sending command for thing {} ({}) attempt {}/{}: {}", getThing().getLabel(),
-                            getThing().getUID().getId(), (fSendCount - remainingRetries + 1), fSendCount, command);
+                            getThing().getUID().getId(), (sendCount - remainingRetries + 1), sendCount, command);
 
                     sendCommand(command);
                     remainingRetries--;
-                } else if (fState != command) {
+                } else if (state != command) {
                     logger.debug("giving up command for thing {} ({}): {}", getThing().getLabel(),
                             getThing().getUID().getId(), command);
 
@@ -161,9 +161,9 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     }
 
     private synchronized void cancelRetry() {
-        if (fRetry != null) {
-            fRetry.cancel(true);
-            fRetry = null;
+        if (retry != null) {
+            retry.cancel(true);
+            retry = null;
         }
     }
 }

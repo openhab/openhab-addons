@@ -16,21 +16,21 @@ import org.openhab.binding.jeelink.internal.ReadingPublisher;
  * @author Volker Bier - Initial contribution
  */
 public class DiscardConfigReadingsPublisher implements ReadingPublisher<Pca301Reading> {
-    private ReadingPublisher<Pca301Reading> fDelegate;
+    private ReadingPublisher<Pca301Reading> delegate;
 
     public DiscardConfigReadingsPublisher(ReadingPublisher<Pca301Reading> publisher) {
-        fDelegate = publisher;
+        delegate = publisher;
     }
 
     @Override
     public void publish(Pca301Reading reading) {
         if (!reading.isConfigReading()) {
-            fDelegate.publish(reading);
+            delegate.publish(reading);
         }
     }
 
     @Override
     public void dispose() {
-        fDelegate.dispose();
+        delegate.dispose();
     }
 }

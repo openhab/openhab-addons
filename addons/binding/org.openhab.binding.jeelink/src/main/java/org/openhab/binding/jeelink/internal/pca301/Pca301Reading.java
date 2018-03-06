@@ -16,56 +16,54 @@ import org.openhab.binding.jeelink.internal.Reading;
  * @author Volker Bier - Initial contribution
  */
 public class Pca301Reading implements Reading {
-    private final String fSensorId;
-    private final int fChannel;
-    private final boolean fConfigReading;
-    private final boolean fOn;
-    private final float fCurrent;
-    private final long fTotal;
+    private final String sensorId;
+    private final int channel;
+    private final boolean configReading;
+    private final boolean on;
+    private final float current;
+    private final long total;
 
     public Pca301Reading(String sensorId, int channel) {
-        fSensorId = sensorId;
-        fChannel = channel;
-        fConfigReading = true;
-
-        fOn = false;
-        fCurrent = 0;
-        fTotal = 0;
+        this(sensorId, channel, false, 0, 0, true);
     }
 
     public Pca301Reading(String sensorId, int channel, boolean deviceOn, float consumptionCurrent,
             long consumptionTotal) {
-        fSensorId = sensorId;
-        fChannel = channel;
-        fOn = deviceOn;
-        fConfigReading = false;
+        this(sensorId, channel, deviceOn, consumptionCurrent, consumptionTotal, false);
+    }
 
-        fCurrent = consumptionCurrent;
-        fTotal = consumptionTotal;
+    private Pca301Reading(String sensorId, int channel, boolean deviceOn, float consumptionCurrent,
+            long consumptionTotal, boolean configReading) {
+        this.sensorId = sensorId;
+        this.channel = channel;
+        on = deviceOn;
+        current = consumptionCurrent;
+        total = consumptionTotal;
+        this.configReading = configReading;
     }
 
     @Override
     public String getSensorId() {
-        return fSensorId;
+        return sensorId;
     }
 
     public int getChannel() {
-        return fChannel;
+        return channel;
     }
 
     public boolean isOn() {
-        return fOn;
+        return on;
     }
 
     public float getCurrent() {
-        return fCurrent;
+        return current;
     }
 
     public long getTotal() {
-        return fTotal;
+        return total;
     }
 
     public boolean isConfigReading() {
-        return fConfigReading;
+        return configReading;
     }
 }
