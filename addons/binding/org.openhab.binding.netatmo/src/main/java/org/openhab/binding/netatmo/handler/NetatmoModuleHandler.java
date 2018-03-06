@@ -43,7 +43,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        requestParentRefresh();
+        requestParentRefresh(false);
     }
 
     protected String getParentId() {
@@ -83,9 +83,14 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
         }
     }
 
-    protected void requestParentRefresh() {
+    protected void requestParentRefresh(boolean forceRead) {
         Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
-        parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
+        parent.ifPresent(handler -> {
+            if (forceRead) {
+                ((NetatmoDeviceHandler<?>) handler).expireData();
+            }
+            handler.updateChannels();
+        });
     }
 
 }
