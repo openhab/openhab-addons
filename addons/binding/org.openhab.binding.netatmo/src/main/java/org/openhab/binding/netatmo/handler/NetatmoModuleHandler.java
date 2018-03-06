@@ -65,7 +65,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            logger.error("The module has no method to access {} property ", channelId);
+            logger.debug("The module has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 

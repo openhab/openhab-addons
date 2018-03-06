@@ -117,7 +117,12 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 try {
                     newDeviceReading = updateReadings();
                 } catch (RetrofitError e) {
-                    logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                    if (logger.isDebugEnabled()) {
+                        // we also attach the stack trace
+                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                    } else {
+                        logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                    }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                 }
@@ -170,7 +175,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("The device has no method to access {} property ", channelId);
+            logger.debug("The device has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 
