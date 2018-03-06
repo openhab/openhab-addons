@@ -16,5 +16,5 @@ package org.openhab.binding.jeelink.internal;
 public interface ReadingHandler<R extends Reading> {
     public void handleReading(R r);
 
-    public String getSketchName();
+    public Class<R> getReadingClass();
 }

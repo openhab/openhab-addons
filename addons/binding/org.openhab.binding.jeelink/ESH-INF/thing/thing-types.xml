@@ -151,6 +151,40 @@
 		</config-description>
 	</thing-type>
 
+    <!-- PCA301 power monitoring wireless socket Thing Type -->
+    <thing-type id="pca301">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="jeelinkTcp" />
+            <bridge-type-ref id="jeelinkUsb" />
+        </supported-bridge-type-refs>
+
+        <label>@text/thing-type.pca301.label</label>
+        <description>@text/thing-type.pca301.description</description>
+
+        <channels>
+            <channel id="switchingState" typeId="switching-state" />
+            <channel id="currentWatt" typeId="current-watt" />
+            <channel id="consumptionTotal" typeId="consumption-total" />
+        </channels>
+
+        <config-description>
+            <parameter name="sensorId" type="text" required="true">
+                <label>@text/parameter.sensorid.label</label>
+                <description>@text/parameter.sensorid.description</description>
+            </parameter>
+            <parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+                <label>@text/parameter.sensortimeout.label</label>
+                <description>@text/parameter.sensortimeout.description</description>
+                <default>600</default>
+            </parameter>
+            <parameter name="sendCount" type="integer" required="false" min="1" max="300">
+                <label>@text/parameter.sendCount.label</label>
+                <description>@text/parameter.sendCount.description</description>
+                <default>10</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
 	<!-- Current Watt Channel Type -->
 	<channel-type id="current-watt">
 		<item-type>Number</item-type>
@@ -225,4 +259,11 @@
 		<description>@text/channel-type.battery-new.description</description>
 		<state readOnly="true" />
 	</channel-type>
+
+    <!-- PCA301 Socket On Type -->
+    <channel-type id="switching-state">
+        <item-type>Switch</item-type>
+        <label>@text/channel-type.switching-state.label</label>
+        <description>@text/channel-type.switching-state.description</description>
+    </channel-type>
 </thing:thing-descriptions>

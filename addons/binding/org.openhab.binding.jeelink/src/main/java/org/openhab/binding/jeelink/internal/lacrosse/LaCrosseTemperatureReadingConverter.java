@@ -27,11 +27,6 @@ public class LaCrosseTemperatureReadingConverter implements JeeLinkReadingConver
     private final Logger logger = LoggerFactory.getLogger(LaCrosseTemperatureReadingConverter.class);
 
     @Override
-    public String getSketchName() {
-        return "LaCrosseITPlusReader";
-    }
-
-    @Override
     public LaCrosseTemperatureReading createReading(String inputLine) {
         // parse lines only if we have registered listeners
         if (inputLine != null) {
