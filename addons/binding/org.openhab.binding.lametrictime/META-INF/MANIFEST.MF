@@ -38,7 +38,6 @@ Import-Package:
  org.openhab.binding.lametrictime.config,
  org.openhab.binding.lametrictime.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.lametrictime,

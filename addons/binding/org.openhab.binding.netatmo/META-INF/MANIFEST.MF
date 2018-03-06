@@ -34,7 +34,6 @@ Import-Package:
  org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
