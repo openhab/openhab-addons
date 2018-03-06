@@ -143,7 +143,12 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                                             + " seconds.");
                             break;
                         default:
-                            logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                            if (logger.isDebugEnabled()) {
+                                // we also attach the stack trace
+                                logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                            } else {
+                                logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                            }
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                             return;
