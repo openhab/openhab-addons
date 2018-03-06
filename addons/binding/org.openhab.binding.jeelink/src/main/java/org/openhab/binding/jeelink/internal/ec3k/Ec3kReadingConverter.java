@@ -25,11 +25,6 @@ public class Ec3kReadingConverter implements JeeLinkReadingConverter<Ec3kReading
                     + "\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
 
     @Override
-    public String getSketchName() {
-        return "ec3kSerial";
-    }
-
-    @Override
     public Ec3kReading createReading(String inputLine) {
         if (inputLine != null) {
             Matcher matcher = LINE_P.matcher(inputLine);
