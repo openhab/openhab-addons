@@ -17,67 +17,82 @@ package org.openhab.binding.nibeuplink.internal.model;
 public enum F1145Channels implements Channel {
 
     // General
-    CH_40004("40004", "BT1 Outdoor Temperature", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_40067("40067", "BT1 Average", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_43005("43005", "Degree Minutes (16 bit)", ChannelType.SETTING, ChannelGroup.GENERAL, Double.class),
-    CH_43009("43009", "Calc. Supply S1", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_40071("40071", "BT25 Ext. Supply", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_40033("40033", "BT50 Room Temp S1", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_43161("43161", "External adjustment activated via input S1", ChannelType.SENSOR, ChannelGroup.GENERAL,
-            String.class),
-    CH_40008("40008", "BT2 Supply temp S1", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_40072("40072", "BF1 EP14 Flow", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
+    CH_40004("40004", "BT1 Outdoor Temperature", ChannelGroup.GENERAL, Double.class),
+    CH_40067("40067", "BT1 Average", ChannelGroup.GENERAL, Double.class),
+    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, Double.class),
+    CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, Double.class),
+    CH_40071("40071", "BT25 Ext. Supply", ChannelGroup.GENERAL, Double.class),
+    CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, Double.class),
+    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, String.class),
+    CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, Double.class),
+    CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, Double.class),
+    CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, Double.class),
 
-    CH_43081("43081", "Tot. op.time add.", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_43084("43084", "Int. el.add. Power", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_47212("47212", "Max int add. power", ChannelType.SETTING, ChannelGroup.GENERAL, Double.class),
+    CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, Double.class),
+    CH_43084("43084", "Int. el.add. Power", ChannelGroup.GENERAL, Double.class),
+    CH_47212("47212", "Max int add. power", ChannelGroup.GENERAL, Double.class),
 
-    CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
-    CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelType.SENSOR, ChannelGroup.GENERAL, Double.class),
+    CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.GENERAL, Double.class),
+    CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, Double.class),
+    CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL, Double.class),
+    CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, Double.class),
     // Hotwater
-    CH_40013("40013", "BT7 HW Top", ChannelType.SENSOR, ChannelGroup.HOTWATER, Double.class),
-    CH_40014("40014", "BT6 HW Load", ChannelType.SENSOR, ChannelGroup.HOTWATER, Double.class),
-    CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelType.SENSOR, ChannelGroup.HOTWATER, Double.class),
-    CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelType.SENSOR, ChannelGroup.HOTWATER, Double.class),
-    CH_48132("48132", "Temporary Lux", ChannelType.SETTING, ChannelGroup.HOTWATER, String.class),
-    CH_47041("47041", "Hot water mode", ChannelType.SETTING, ChannelGroup.HOTWATER, String.class),
+    CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, Double.class),
+    CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
+    CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, Double.class),
+    CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
     // Compressor
-    CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_43420("43420", "EB100-EP14 Tot. op.time compr", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_43416("43416", "EB100-EP14 Compressor starts", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_40022("40022", "EB100-EP14-BT17 Suction", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_40019("40019", "EB100-EP14-BT15 Liquid Line", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_40018("40018", "EB100-EP14-BT14 Hot Gas Temp", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
-    CH_40017("40017", "EB100-EP14-BT12 Condensor Out", ChannelType.SENSOR, ChannelGroup.COMPRESSOR, Double.class),
+    CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, Double.class),
+    CH_43420("43420", "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, Double.class),
+    CH_43416("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR, Double.class),
+    CH_40022("40022", "EB100-EP14-BT17 Suction", ChannelGroup.COMPRESSOR, Double.class),
+    CH_40019("40019", "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, Double.class),
+    CH_40018("40018", "EB100-EP14-BT14 Hot Gas Temp", ChannelGroup.COMPRESSOR, Double.class),
+    CH_40017("40017", "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, Double.class),
     // Airsupply
-    CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
-    CH_40026("40026", "BT21 Vented air temp. 1", ChannelType.SENSOR, ChannelGroup.AIRSUPPLY, Double.class),
+    CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
+    CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
 
     /* END */
     ;
 
     private final String id;
     private final String name;
-    private final ChannelType channelType;
     private final ChannelGroup channelGroup;
     private final Class<?> javaType;
+    private final String writeApiUrl;
 
     /**
-     * Constructor
+     * constructor for channels with wrote access enabled
      *
      * @param id
      * @param name
-     * @param type
+     * @param channelType
+     * @param channelGroup
+     * @param javaType
+     * @param writeApiUrl
      */
-    F1145Channels(String id, String name, ChannelType channelType, ChannelGroup channelGroup, Class<?> javaType) {
+    F1145Channels(String id, String name, ChannelGroup channelGroup, Class<?> javaType, String writeApiUrl) {
         this.id = id;
         this.name = name;
-        this.channelType = channelType;
         this.channelGroup = channelGroup;
         this.javaType = javaType;
+        this.writeApiUrl = writeApiUrl;
+    }
+
+    /**
+     * constructor for channels without write access
+     *
+     * @param id
+     * @param name
+     * @param channelType
+     * @param channelGroup
+     * @param javaType
+     */
+    F1145Channels(String id, String name, ChannelGroup channelGroup, Class<?> javaType) {
+        this(id, name, channelGroup, javaType, null);
     }
 
     public static F1145Channels fromId(String id) {
@@ -100,11 +115,6 @@ public enum F1145Channels implements Channel {
     }
 
     @Override
-    public final ChannelType getChannelType() {
-        return channelType;
-    }
-
-    @Override
     public ChannelGroup getChannelGroup() {
         return channelGroup;
     }
@@ -116,8 +126,17 @@ public enum F1145Channels implements Channel {
 
     @Override
     public String getFQName() {
-        String fQName = getChannelGroup().toString().toLowerCase() + "#" + getId();
-        return fQName;
+        return getChannelGroup().toString().toLowerCase() + "#" + getId();
+    }
+
+    @Override
+    public String getWriteApiUrlSuffix() {
+        return writeApiUrl;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return writeApiUrl == null || writeApiUrl.isEmpty();
     }
 
 }

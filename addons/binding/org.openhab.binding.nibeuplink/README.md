@@ -1,7 +1,7 @@
 # NibeUplink Binding
 
 The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump. This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
-Currently only read access is supported. Ability to modify heat pump configuration might be added in a future version.
+In general read access is supported for all channels. Write access is only supported for a small subset of channels.
 
 ## Supported Things
 
@@ -101,8 +101,8 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 ### Items
 
 ```
-Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f �C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
-Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f �C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
+Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f °C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
+Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f °C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
 
 String      Nibe_Custom_01        "Custom Channel01" {channel="nibeuplink:vvm320:mynibe:custom#CH01"}
 ```

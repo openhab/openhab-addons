@@ -25,8 +25,10 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
+import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
@@ -85,9 +87,13 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("command for {}: {}", channelUID, command);
-
-        // TODO: necessary??? will be read only in the first place
+        if (!(command instanceof RefreshType)) {
+            logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
+            Channel channel = getThingSpecificChannel(channelUID.getIdWithoutGroup());
+            if (!channel.isReadOnly()) {
+                webInterface.executeCommand(new UpdateSetting(this, channel, command.toString()));
+            }
+        }
     }
 
     @Override

@@ -22,9 +22,19 @@ public interface Channel {
 
     String getId();
 
-    ChannelType getChannelType();
-
     ChannelGroup getChannelGroup();
+
+    default String getWriteApiUrlSuffix() {
+        return null;
+    }
+
+    default boolean isReadOnly() {
+        return true;
+    }
+
+    default String getValidationExpression() {
+        return null;
+    }
 
     Class<?> getJavaType();
 
