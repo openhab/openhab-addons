@@ -162,7 +162,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 try {
                     url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
                 } catch (MalformedURLException e) {
-                    logger.error("An exception occurred while defining an URL :'{}'", e.getMessage());
+                    logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
                     return;
                 }
@@ -173,8 +173,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 onUpdate();
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.error("Invalid IP address for the Miele@Home gateway or multicast interface : '{}'/'{}'",
-                        getConfig().get(HOST), getConfig().get(INTERFACE));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
+                                + "/" + getConfig().get(INTERFACE));
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -261,7 +262,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                                     listener.onApplianceStateChanged(UID, dco);
                                                 }
                                             } catch (Exception e) {
-                                                logger.error("An exception occurred while quering an appliance : '{}'",
+                                                logger.debug("An exception occurred while quering an appliance : '{}'",
                                                         e.getMessage());
                                             }
                                         }
@@ -272,10 +273,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     }
 
                 } catch (Exception e) {
-                    logger.error("An exception occurred while polling an appliance :'{}'", e.getMessage());
+                    logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
                 }
             } else {
-                logger.error("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
+                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
             }
         }
 
@@ -315,7 +316,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     devices.add(hd);
                 }
             } catch (Exception e) {
-                logger.error("An exception occurred while getting the home devices :'{}'", e.getMessage());
+                logger.debug("An exception occurred while getting the home devices :'{}'", e.getMessage());
             }
         }
         return devices;
@@ -334,7 +335,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
                         address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
                     } catch (UnknownHostException e) {
-                        logger.error("An exception occurred while setting up the multicast receiver : '{}'",
+                        logger.debug("An exception occurred while setting up the multicast receiver : '{}'",
                                 e.getMessage());
                     }
 
@@ -390,7 +391,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 }
                             }
                         } catch (Exception ex) {
-                            logger.error("An exception occurred while receiving multicast packets : '{}'",
+                            logger.debug("An exception occurred while receiving multicast packets : '{}'",
                                     ex.getMessage());
                         }
 
@@ -401,7 +402,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 clientSocket.leaveGroup(address2);
                             }
                         } catch (IOException e) {
-                            logger.error("An exception occurred while leaving multicast group : '{}'", e.getMessage());
+                            logger.debug("An exception occurred while leaving multicast group : '{}'", e.getMessage());
                         }
                         if (clientSocket != null) {
                             clientSocket.close();
@@ -409,7 +410,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } else {
-                logger.error("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
+                logger.debug("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
             }
 
         }
@@ -424,7 +425,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             args[3] = null;
             return invokeRPC("HDAccess/invokeDCOOperation", args);
         } else {
-            logger.warn("The Bridge is offline - operations can not be invoked.");
+            logger.debug("The Bridge is offline - operations can not be invoked.");
             return null;
         }
     }
@@ -453,7 +454,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         try {
             responseData = post(url, headers, requestData);
         } catch (Exception e) {
-            logger.error("An exception occurred while posting data : '{}'", e.getMessage());
+            logger.debug("An exception occurred while posting data : '{}'", e.getMessage());
         }
 
         if (responseData != null) {
@@ -466,16 +467,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
             if (error != null && !error.isJsonNull()) {
                 if (error.isJsonPrimitive()) {
-                    logger.error("A remote exception occurred : '{}'", error.getAsString());
+                    logger.debug("A remote exception occurred: '{}'", error.getAsString());
                 } else if (error.isJsonObject()) {
                     JsonObject o = error.getAsJsonObject();
                     Integer code = (o.has("code") ? o.get("code").getAsInt() : null);
                     String message = (o.has("message") ? o.get("message").getAsString() : null);
                     String data = (o.has("data") ? (o.get("data") instanceof JsonObject ? o.get("data").toString()
                             : o.get("data").getAsString()) : null);
-                    logger.error("A remote exception occurred : '{}':'{}':'{}'", new Object[] { code, message, data });
+                    logger.debug("A remote exception occurred: '{}':'{}':'{}'", new Object[] { code, message, data });
                 } else {
-                    logger.error("An unknown remote exception occurred : '{}'", error.toString());
+                    logger.debug("An unknown remote exception occurred: '{}'", error.toString());
                 }
             }
         }
@@ -509,7 +510,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
             int statusCode = connection.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                logger.error("An unexpected status code was returned : '{}'", statusCode);
+                logger.debug("An unexpected status code was returned: '{}'", statusCode);
             }
         } finally {
             if (out != null) {
