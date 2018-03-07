@@ -304,8 +304,6 @@ public class HyperionNgHandler extends BaseThingHandler {
                 handleHyperionEnabled(command);
             } else if (CHANNEL_EFFECT.equals(channelUID.getId())) {
                 handleEffect(command);
-            } else if (CHANNEL_CLEAR_ALL.equals(channelUID.getId())) {
-                handleClearAll(command);
             } else if (CHANNEL_CLEAR.equals(channelUID.getId())) {
                 handleClear(command);
             } else if (CHANNEL_BLACKBORDER.equals(channelUID.getId())) {
@@ -437,19 +435,17 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     }
 
-    private void handleClearAll(Command command) throws IOException, CommandUnsuccessfulException {
-        if (OnOffType.ON.equals(command)) {
-            ClearAllCommand clearAllCommand = new ClearAllCommand();
-            sendCommand(clearAllCommand);
-            updateState(CHANNEL_CLEAR_ALL, OnOffType.OFF);
-        }
-    }
-
     private void handleClear(Command command) throws IOException, CommandUnsuccessfulException {
-        if (OnOffType.ON.equals(command)) {
-            ClearCommand clearCommand = new ClearCommand(priority);
-            sendCommand(clearCommand);
-            updateState(CHANNEL_CLEAR, OnOffType.OFF);
+        if (command instanceof StringType) {
+            String cmd = command.toString();
+            if ("ALL".equals(cmd)) {
+                ClearAllCommand clearCommand = new ClearAllCommand();
+                sendCommand(clearCommand);
+            } else {
+                int priority = Integer.parseInt(cmd);
+                ClearCommand clearCommand = new ClearCommand(priority);
+                sendCommand(clearCommand);
+            }
         }
     }
 

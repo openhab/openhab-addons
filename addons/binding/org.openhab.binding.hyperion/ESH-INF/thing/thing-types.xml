@@ -11,7 +11,6 @@
 			<channel id="color" typeId="color" />
 			<channel id="effect" typeId="effect" />
 			<channel id="clear" typeId="clear" />
-			<channel id="clear_all" typeId="clear_all" />
 		</channels>
 
 		<config-description>
@@ -50,7 +49,6 @@
 			<channel id="brightness" typeId="brightness" />
 			<channel id="effect" typeId="effect" />
 			<channel id="clear" typeId="clear" />
-			<channel id="clear_all" typeId="clear_all" />
 			<channel id="color" typeId="color" />
 			<channel id="blackborder" typeId="component" />
 			<channel id="smoothing" typeId="component" />
@@ -116,15 +114,9 @@
 	</channel-type>
 
 	<channel-type id="clear" advanced="true">
-		<item-type>Switch</item-type>
+	   <item-type>String</item-type>
 		<label>Clear priority</label>
-		<description>Clears the priority using the thing's priority setting</description>
-	</channel-type>
-
-	<channel-type id="clear_all" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Clear all priorities</label>
-		<description>Clears all priorities settings</description>
+		<description>Clears the given Hyperion priority</description>
 	</channel-type>
 
 	<channel-type id="component" advanced="true">

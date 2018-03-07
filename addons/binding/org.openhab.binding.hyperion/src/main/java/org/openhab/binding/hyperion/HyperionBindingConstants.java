@@ -28,7 +28,6 @@ public class HyperionBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
-    public static final String CHANNEL_CLEAR_ALL = "clear_all";
     public static final String CHANNEL_CLEAR = "clear";
     public static final String CHANNEL_EFFECT = "effect";
     public static final String CHANNEL_BLACKBORDER = "blackborder";

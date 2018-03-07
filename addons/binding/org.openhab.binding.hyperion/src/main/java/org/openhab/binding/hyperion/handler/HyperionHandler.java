@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -225,8 +224,6 @@ public class HyperionHandler extends BaseThingHandler {
                 handleBrightness(command);
             } else if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 handleColor(command);
-            } else if (CHANNEL_CLEAR_ALL.equals(channelUID.getId())) {
-                handleClearAll(command);
             } else if (CHANNEL_CLEAR.equals(channelUID.getId())) {
                 handleClear(command);
             } else if (CHANNEL_EFFECT.equals(channelUID.getId())) {
@@ -280,19 +277,17 @@ public class HyperionHandler extends BaseThingHandler {
         }
     }
 
-    private void handleClearAll(Command command) throws IOException, CommandUnsuccessfulException {
-        if (OnOffType.ON.equals(command)) {
-            ClearAllCommand clearAllCommand = new ClearAllCommand();
-            sendCommand(clearAllCommand);
-            updateState(CHANNEL_CLEAR_ALL, OnOffType.OFF);
-        }
-    }
-
     private void handleClear(Command command) throws IOException, CommandUnsuccessfulException {
-        if (OnOffType.ON.equals(command)) {
-            ClearCommand clearCommand = new ClearCommand(priority);
-            sendCommand(clearCommand);
-            updateState(CHANNEL_CLEAR, OnOffType.OFF);
+        if (command instanceof StringType) {
+            String cmd = command.toString();
+            if ("ALL".equals(cmd)) {
+                ClearAllCommand clearCommand = new ClearAllCommand();
+                sendCommand(clearCommand);
+            } else {
+                int priority = Integer.parseInt(cmd);
+                ClearCommand clearCommand = new ClearCommand(priority);
+                sendCommand(clearCommand);
+            }
         }
     }
 
