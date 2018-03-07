@@ -87,7 +87,7 @@ Standard channels are used most of the time. They are used in the common case wh
 |-----------|-----------------------------------------|-------------|
 | upDown    | Group address for relative movement     | 1.008       |
 | stopMove  | Group address for stopping              | 1.010       |
-| position  | Group address for the relative position | 5.001       |
+| position  | Group address for the absolute position | 5.001       |
 
 ##### Channel Type "contact"
 
@@ -140,7 +140,7 @@ In contrast to the standard channels above, the control channel types are used f
 |-----------|-----------------------------------------|-------------|
 | upDown    | Group address for relative movement     | 1.008       |
 | stopMove  | Group address for stopping              | 1.010       |
-| position  | Group address for the relative position | 5.001       |
+| position  | Group address for the absolute position | 5.001       |
 
 ##### Channel Type "contact-control"
 
