@@ -23,6 +23,7 @@
 		</parameter>
 		<parameter name="password" type="text" required="true" groupName="authentication">
 			<label>Password</label>
+			<context>password</context>
 			<description>The Password to login at NibeIplink.</description>
 		</parameter>
 		<parameter name="nibeId" type="text" required="true" groupName="general">
