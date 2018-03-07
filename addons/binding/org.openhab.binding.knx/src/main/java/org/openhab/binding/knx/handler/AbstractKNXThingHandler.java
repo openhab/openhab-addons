@@ -205,7 +205,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
             descriptionJob = null;
         }
         cancelReadFutures();
-        getClient().unregisterGroupAddressListener(this);
+        KNXBridgeBaseThingHandler handler = (KNXBridgeBaseThingHandler) getBridge().getHandler();
+        if (handler != null) {
+            handler.getClient().unregisterGroupAddressListener(this);
+        }
     }
 
 }
