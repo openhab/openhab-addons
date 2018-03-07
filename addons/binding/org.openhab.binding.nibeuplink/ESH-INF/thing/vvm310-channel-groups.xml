@@ -4,82 +4,82 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 
-    <channel-group-type id="vvm310-general">
-        <label>General Sensors</label>
-        <channels>
-            <channel id="40004" typeId="vvm310-type-40004" />
-            <channel id="40067" typeId="vvm310-type-40067" />
-            <channel id="43005" typeId="vvm310-type-43005" />
-            <channel id="43009" typeId="vvm310-type-43009" />
-            <channel id="40033" typeId="vvm310-type-40033" />
-            <channel id="43161" typeId="vvm310-type-43161" />
-            <channel id="40008" typeId="vvm310-type-40008" />
-            <channel id="40012" typeId="vvm310-type-40012" />
-            <channel id="40072" typeId="vvm310-type-40072" />
+	<channel-group-type id="vvm310-general">
+		<label>General Sensors</label>
+		<channels>
+			<channel id="40004" typeId="vvm310-type-40004" />
+			<channel id="40067" typeId="vvm310-type-40067" />
+			<channel id="43005" typeId="vvm310-type-43005" />
+			<channel id="43009" typeId="vvm310-type-43009" />
+			<channel id="40033" typeId="vvm310-type-40033" />
+			<channel id="43161" typeId="vvm310-type-43161" />
+			<channel id="40008" typeId="vvm310-type-40008" />
+			<channel id="40012" typeId="vvm310-type-40012" />
+			<channel id="40072" typeId="vvm310-type-40072" />
 
-            <channel id="44270" typeId="vvm310-type-44270" />
-            <channel id="43081" typeId="vvm310-type-43081" />
-            <channel id="43084" typeId="vvm310-type-43084" />
-            <channel id="47212" typeId="vvm310-type-47212" />
-            <channel id="48914" typeId="vvm310-type-48914" />
-            <channel id="40121" typeId="vvm310-type-40121" />
+			<channel id="44270" typeId="vvm310-type-44270" />
+			<channel id="43081" typeId="vvm310-type-43081" />
+			<channel id="43084" typeId="vvm310-type-43084" />
+			<channel id="47212" typeId="vvm310-type-47212" />
+			<channel id="48914" typeId="vvm310-type-48914" />
+			<channel id="40121" typeId="vvm310-type-40121" />
 
 
-            <channel id="44308" typeId="vvm310-type-44308" />
-            <channel id="44304" typeId="vvm310-type-44304" />
-            <channel id="44302" typeId="vvm310-type-44302" />
-            <channel id="44300" typeId="vvm310-type-44300" />
-        </channels>
-    </channel-group-type>
+			<channel id="44308" typeId="vvm310-type-44308" />
+			<channel id="44304" typeId="vvm310-type-44304" />
+			<channel id="44302" typeId="vvm310-type-44302" />
+			<channel id="44300" typeId="vvm310-type-44300" />
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="vvm310-hotwater">
-        <label>Hot water Sensors</label>
-        <channels>
-            <channel id="40013" typeId="vvm310-type-40013" />
-            <channel id="40014" typeId="vvm310-type-40014" />
-            <channel id="44306" typeId="vvm310-type-44306" />
-            <channel id="44298" typeId="vvm310-type-44298" />
-            <channel id="48132" typeId="vvm310-type-48132" />
-            <channel id="47041" typeId="vvm310-type-47041" />
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="vvm310-hotwater">
+		<label>Hot water Sensors</label>
+		<channels>
+			<channel id="40013" typeId="vvm310-type-40013" />
+			<channel id="40014" typeId="vvm310-type-40014" />
+			<channel id="44306" typeId="vvm310-type-44306" />
+			<channel id="44298" typeId="vvm310-type-44298" />
+			<channel id="48132" typeId="vvm310-type-48132" />
+			<channel id="47041" typeId="vvm310-type-47041" />
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="vvm310-compressor">
-        <label>Compressor Sensors</label>
-        <channels>
-            <channel id="44362" typeId="vvm310-type-44362" />
-            <channel id="44396" typeId="vvm310-type-44396" />
-            <channel id="44703" typeId="vvm310-type-44703" />
-            <channel id="44073" typeId="vvm310-type-44073" />
-            <channel id="40737" typeId="vvm310-type-40737" />
-            <channel id="44071" typeId="vvm310-type-44071" />
-            <channel id="44069" typeId="vvm310-type-44069" />
-            <channel id="44061" typeId="vvm310-type-44061" />
-            <channel id="44060" typeId="vvm310-type-44060" />
-            <channel id="44059" typeId="vvm310-type-44059" />
-            <channel id="44058" typeId="vvm310-type-44058" />
-            <channel id="44055" typeId="vvm310-type-44055" />
-            <channel id="44363" typeId="vvm310-type-44363" />
-            <channel id="44699" typeId="vvm310-type-44699" />
-            <channel id="40782" typeId="vvm310-type-40782" />
-            <channel id="44701" typeId="vvm310-type-44701" />
-            <channel id="44702" typeId="vvm310-type-44702" />
-            <channel id="44700" typeId="vvm310-type-44700" />
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="vvm310-compressor">
+		<label>Compressor Sensors</label>
+		<channels>
+			<channel id="44362" typeId="vvm310-type-44362" />
+			<channel id="44396" typeId="vvm310-type-44396" />
+			<channel id="44703" typeId="vvm310-type-44703" />
+			<channel id="44073" typeId="vvm310-type-44073" />
+			<channel id="40737" typeId="vvm310-type-40737" />
+			<channel id="44071" typeId="vvm310-type-44071" />
+			<channel id="44069" typeId="vvm310-type-44069" />
+			<channel id="44061" typeId="vvm310-type-44061" />
+			<channel id="44060" typeId="vvm310-type-44060" />
+			<channel id="44059" typeId="vvm310-type-44059" />
+			<channel id="44058" typeId="vvm310-type-44058" />
+			<channel id="44055" typeId="vvm310-type-44055" />
+			<channel id="44363" typeId="vvm310-type-44363" />
+			<channel id="44699" typeId="vvm310-type-44699" />
+			<channel id="40782" typeId="vvm310-type-40782" />
+			<channel id="44701" typeId="vvm310-type-44701" />
+			<channel id="44702" typeId="vvm310-type-44702" />
+			<channel id="44700" typeId="vvm310-type-44700" />
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="vvm310-airsupply">
-        <label>Air Supply/Exhaust Sensors</label>
-        <channels>
-            <channel id="40025" typeId="vvm310-type-40025" />
-            <channel id="40026" typeId="vvm310-type-40026" />
-            <channel id="40075" typeId="vvm310-type-40075" />
-            <channel id="40183" typeId="vvm310-type-40183" />
-            <channel id="40311" typeId="vvm310-type-40311" />
-            <channel id="40312" typeId="vvm310-type-40312" />
-            <channel id="40942" typeId="vvm310-type-40942" />
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="vvm310-airsupply">
+		<label>Air Supply/Exhaust Sensors</label>
+		<channels>
+			<channel id="40025" typeId="vvm310-type-40025" />
+			<channel id="40026" typeId="vvm310-type-40026" />
+			<channel id="40075" typeId="vvm310-type-40075" />
+			<channel id="40183" typeId="vvm310-type-40183" />
+			<channel id="40311" typeId="vvm310-type-40311" />
+			<channel id="40312" typeId="vvm310-type-40312" />
+			<channel id="40942" typeId="vvm310-type-40942" />
+		</channels>
+	</channel-group-type>
 
 
 </thing:thing-descriptions>
