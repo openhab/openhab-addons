@@ -46,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Kuba Wolanin - Initial contribution
- * @author Łukasz Dywicki
+ * @author Łukasz Dywicki - Initial contribution
  */
 public class AirQualityHandler extends BaseThingHandler {
 
@@ -58,7 +58,7 @@ public class AirQualityHandler extends BaseThingHandler {
 
     private ScheduledFuture<?> refreshJob;
 
-    AirQualityJsonResponse aqiResponse;
+    private AirQualityJsonResponse aqiResponse;
 
     private Gson gson;
 
@@ -203,7 +203,6 @@ public class AirQualityHandler extends BaseThingHandler {
      *
      * @param location geo-coordinates from config
      * @param stationId station ID from config
-     *
      * @return the air quality data object mapping the JSON response or null in case of error
      */
     private AirQualityJsonResponse getAirQualityData(String location, Integer stationId) {
@@ -212,7 +211,6 @@ public class AirQualityHandler extends BaseThingHandler {
         String errorMsg = null;
 
         try {
-
             // Build a valid URL for the aqicn.org service
             AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
 
@@ -254,7 +252,6 @@ public class AirQualityHandler extends BaseThingHandler {
             if (!resultOk) {
                 logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
             }
-
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
             logger.warn("Constructed url is not valid: {}", errorMsg);
