@@ -62,6 +62,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         return getBridgeHandler().getScheduler();
     }
 
+    protected final ScheduledExecutorService getBackgroundScheduler() {
+        return getBridgeHandler().getBackgroundScheduler();
+    }
+
     protected final KNXBridgeBaseThingHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -145,7 +149,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                         Future<?> descriptionJob = this.descriptionJob;
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
                             long initialDelay = Math.round(config.getPingInterval().longValue() * random.nextFloat());
-                            this.descriptionJob = getScheduler().schedule(() -> {
+                            this.descriptionJob = getBackgroundScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
                             }, initialDelay, TimeUnit.SECONDS);
                         }
@@ -177,8 +181,8 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 ScheduledFuture<?> pollingJob = this.pollingJob;
                 if ((pollingJob == null || pollingJob.isCancelled())) {
                     logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(), initialPingDelay,
-                            pingInterval, TimeUnit.SECONDS);
+                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(),
+                            initialPingDelay, pingInterval, TimeUnit.SECONDS);
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);

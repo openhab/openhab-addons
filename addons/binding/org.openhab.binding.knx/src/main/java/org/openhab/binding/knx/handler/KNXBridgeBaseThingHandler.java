@@ -9,6 +9,7 @@
 package org.openhab.binding.knx.handler;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +39,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
 
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
+    private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);
@@ -57,6 +59,10 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
 
     public ScheduledExecutorService getScheduler() {
         return knxScheduler;
+    }
+
+    public ScheduledExecutorService getBackgroundScheduler() {
+        return backgroundScheduler;
     }
 
     @Override
