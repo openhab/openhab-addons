@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * {@link PulseaudioBridgeHandler} is the handler for a Pulseaudio server and
  * connects it to the framework.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  *
  */
 public class PulseaudioBridgeHandler extends BaseBridgeHandler {
