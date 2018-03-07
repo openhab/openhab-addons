@@ -19,7 +19,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 
 /**
  * switch channel type description
- * 
+ *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
@@ -32,7 +32,7 @@ class TypeSwitch extends KNXChannelType {
 
     @Override
     protected Set<String> getAllGAKeys() {
-        return Collections.singleton(SWITCH_GA);
+        return Collections.singleton(GA);
     }
 
     @Override

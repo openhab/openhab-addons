@@ -70,7 +70,7 @@ Standard channels are used most of the time. They are used in the common case wh
 
 | Parameter | Description                         | Default DPT |
 |-----------|-------------------------------------|-------------|
-| switch    | Group address for the binary switch | 1.001       |
+| ga        | Group address for the binary switch | 1.001       |
 
 
 ##### Channel Type "dimmer"
@@ -205,7 +205,7 @@ Bridge knx:ip:bridge [
         pingInterval=300,
         readInterval=3600
     ] {
-        Type switch        : demoSwitch        "Light"       [ switch="3/0/4+<3/0/5" ]
+        Type switch        : demoSwitch        "Light"       [ ga="3/0/4+<3/0/5" ]
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
         Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
@@ -259,7 +259,7 @@ Bridge knx:serial:bridge [
     autoReconnectPeriod=1
 ] {
     Thing device generic {
-        Type switch-control        : controlSwitch        "Control Switch"        [ switch="3/3/10+<3/3/11" ]
+        Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
