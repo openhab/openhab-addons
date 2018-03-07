@@ -78,57 +78,58 @@ public class DeviceInspector {
 
     @Nullable
     public Result readDeviceInfo() {
-        try {
-            if (getClient().isConnected()) {
-                logger.debug("Fetching device information for address {}", address);
-
-                Map<String, String> properties = new HashMap<>();
-                properties.putAll(readDeviceDescription(address));
-                properties.putAll(readDeviceProperties(address));
-                return new Result(properties, Collections.emptySet());
-            }
-        } catch (Exception e) {
-            logger.error("An exception occurred while fetching the device description for a device '{}' : {}", address,
-                    e.getMessage(), e);
+        if (!getClient().isConnected()) {
+            return null;
         }
-        return null;
+
+        logger.debug("Fetching device information for address {}", address);
+        Map<String, String> properties = new HashMap<>();
+        properties.putAll(readDeviceDescription(address));
+        properties.putAll(readDeviceProperties(address));
+        return new Result(properties, Collections.emptySet());
     }
 
-    private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
+    private Map<String, String> readDeviceProperties(IndividualAddress address) {
         Map<String, String> ret = new HashMap<>();
-        Thread.sleep(OPERATION_INTERVAL);
-        // check if there is a Device Object in the KNX device
-        byte[] elements = getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.OBJECT_TYPE, 0, 1, false,
-                OPERATION_TIMEOUT);
-        if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
+        try {
+            Thread.sleep(OPERATION_INTERVAL);
+            // check if there is a Device Object in the KNX device
+            byte[] elements = getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.OBJECT_TYPE, 0, 1, false,
+                    OPERATION_TIMEOUT);
+            if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
 
-            Thread.sleep(OPERATION_INTERVAL);
-            String ManufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
-                    DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
-            Thread.sleep(OPERATION_INTERVAL);
-            String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1, 1,
-                    false, OPERATION_TIMEOUT), "");
-            Thread.sleep(OPERATION_INTERVAL);
-            String hardwareType = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, HARDWARE_TYPE, 1, 1,
-                    false, OPERATION_TIMEOUT), " ");
-            Thread.sleep(OPERATION_INTERVAL);
-            String firmwareRevision = Integer.toString(toUnsigned(getClient().readDeviceProperties(address,
-                    DEVICE_OBJECT, PID.FIRMWARE_REVISION, 1, 1, false, OPERATION_TIMEOUT)));
+                Thread.sleep(OPERATION_INTERVAL);
+                String ManufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
+                        DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
+                Thread.sleep(OPERATION_INTERVAL);
+                String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1,
+                        1, false, OPERATION_TIMEOUT), "");
+                Thread.sleep(OPERATION_INTERVAL);
+                String hardwareType = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, HARDWARE_TYPE, 1,
+                        1, false, OPERATION_TIMEOUT), " ");
+                Thread.sleep(OPERATION_INTERVAL);
+                String firmwareRevision = Integer.toString(toUnsigned(getClient().readDeviceProperties(address,
+                        DEVICE_OBJECT, PID.FIRMWARE_REVISION, 1, 1, false, OPERATION_TIMEOUT)));
 
-            ret.put(MANUFACTURER_NAME, ManufacturerID);
-            if (serialNo != null) {
-                ret.put(MANUFACTURER_SERIAL_NO, serialNo);
+                ret.put(MANUFACTURER_NAME, ManufacturerID);
+                if (serialNo != null) {
+                    ret.put(MANUFACTURER_SERIAL_NO, serialNo);
+                }
+                if (hardwareType != null) {
+                    ret.put(MANUFACTURER_HARDWARE_TYPE, hardwareType);
+                }
+                ret.put(MANUFACTURER_FIRMWARE_REVISION, firmwareRevision);
+                logger.debug("Identified device {} as a {}, type {}, revision {}, serial number {}", address,
+                        ManufacturerID, hardwareType, firmwareRevision, serialNo);
+            } else {
+                logger.debug("The KNX device with address {} does not expose a Device Object", address);
             }
-            if (hardwareType != null) {
-                ret.put(MANUFACTURER_HARDWARE_TYPE, hardwareType);
-            }
-            ret.put(MANUFACTURER_FIRMWARE_REVISION, firmwareRevision);
-            logger.info("Identified device {} as a {}, type {}, revision {}, serial number {}", address, ManufacturerID,
-                    hardwareType, firmwareRevision, serialNo);
-        } else {
-            logger.warn("The KNX device with address {} does not expose a Device Object", address);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while fetching the device description for a device '{}' : {}", address,
+                    e.getMessage());
         }
         return ret;
+
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
@@ -144,11 +145,11 @@ public class DeviceInspector {
             ret.put(FIRMWARE_TYPE, Firmware.getName(dd.getFirmwareType()));
             ret.put(FIRMWARE_VERSION, Firmware.getName(dd.getFirmwareVersion()));
             ret.put(FIRMWARE_SUBVERSION, Firmware.getName(dd.getSubcode()));
-            logger.info("The device with address {} is of type {}, version {}, subversion {}", address,
+            logger.debug("The device with address {} is of type {}, version {}, subversion {}", address,
                     Firmware.getName(dd.getFirmwareType()), Firmware.getName(dd.getFirmwareVersion()),
                     Firmware.getName(dd.getSubcode()));
         } else {
-            logger.warn("The KNX device with address {} does not expose a Device Descriptor", address);
+            logger.debug("The KNX device with address {} does not expose a Device Descriptor", address);
         }
         return ret;
     }

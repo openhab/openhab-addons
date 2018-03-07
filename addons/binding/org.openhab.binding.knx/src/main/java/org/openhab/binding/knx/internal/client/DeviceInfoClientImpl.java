@@ -51,18 +51,15 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
         while ((System.nanoTime() - start) < TimeUnit.MILLISECONDS.toNanos(timeout)) {
             Destination destination = null;
             try {
-                logger.debug("Going to {} of {} ", task, address);
+                logger.trace("Going to {} of {} ", task, address);
                 destination = managementClient.createDestination(address, true);
                 byte[] result = function.apply(destination);
-                logger.debug("Finished to {} of {}, result: {}", task, address, result == null ? null : result.length);
+                logger.trace("Finished to {} of {}, result: {}", task, address, result == null ? null : result.length);
                 return result;
             } catch (KNXException e) {
-                logger.error("Could not {} of {}: {}", task, address, e.getMessage());
-                if (logger.isDebugEnabled()) {
-                    logger.error("", e);
-                }
+                logger.debug("Could not {} of {}: {}", task, address, e.getMessage());
             } catch (InterruptedException e) {
-                logger.debug("Interrupted to {}", task);
+                logger.trace("Interrupted to {}", task);
                 return null;
             } finally {
                 if (destination != null) {
