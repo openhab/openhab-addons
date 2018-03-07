@@ -23,6 +23,7 @@
 			<description>The username to login</description>
 		</parameter>
 		<parameter name="password" type="text" required="true" groupName="authentication">
+			<context>password</context>
 			<label>Password</label>
 			<description>The password to login</description>
 		</parameter>
@@ -48,6 +49,6 @@
 			<default>300</default>
 		</parameter>
 	</config-description>
-	
-	
+
+
 </config-description:config-descriptions>
