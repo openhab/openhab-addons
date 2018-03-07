@@ -12,7 +12,7 @@ import static org.openhab.binding.seneye.SeneyeBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
-//import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -39,19 +39,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpdate {
 
-    // private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
-
-    private Logger logger = LoggerFactory.getLogger(SeneyeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SeneyeHandler.class);
     private SeneyeService seneyeService;
-
-    // private final ExpiringCache<SeneyeDeviceReading> cachedSeneyeDeviceReading = new
-    // ExpiringCache<SeneyeDeviceReading>(
-    // CACHE_EXPIRY, () -> {
-    // if (seneyeService == null || seneyeService.isInitialized() == false) {
-    // return null;
-    // }
-    // return seneyeService.getDeviceReadings();
-    // });
+    private ExpiringCache<SeneyeDeviceReading> cachedSeneyeDeviceReading;
 
     public SeneyeHandler(Thing thing) {
         super(thing);
@@ -64,8 +54,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         }
 
         if (command instanceof RefreshType) {
-            // SeneyeDeviceReading readings = cachedSeneyeDeviceReading.getValue();
-            SeneyeDeviceReading readings = seneyeService.getDeviceReadings();
+            SeneyeDeviceReading readings = cachedSeneyeDeviceReading.getValue();
             newState(readings);
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
@@ -147,6 +136,10 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         }
 
         // ok, initialization succeeded
+        cachedSeneyeDeviceReading = new ExpiringCache<SeneyeDeviceReading>(TimeUnit.SECONDS.toMillis(10), () -> {
+            return seneyeService.getDeviceReadings();
+        });
+
         seneyeService.startAutomaticRefresh(scheduler, this);
 
         updateStatus(ThingStatus.ONLINE);

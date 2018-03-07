@@ -9,16 +9,16 @@
         <description>Seneye Monitor</description>
 
         <channels>
-            <channel id="temperature" typeId="seneye-temperature-channel"/>
-            <channel id="ph" typeId="seneye-ph-channel"/>
-            <channel id="nh3" typeId="seneye-nh3-channel"/>
-            <channel id="nh4" typeId="seneye-nh4-channel"/>
-            <channel id="O2" typeId="seneye-O2-channel"/>
-            <channel id="lux" typeId="seneye-lux-channel"/>
-            <channel id="par" typeId="seneye-par-channel"/>
-            <channel id="kelvin" typeId="seneye-Kelvin-channel"/>
-            <channel id="lastreading" typeId="seneye-lastreading-channel"/>
-            <channel id="slideexpires" typeId="seneye-slideexpires-channel"/>
+            <channel id="temperature" typeId="temperature"/>
+            <channel id="ph" typeId="ph"/>
+            <channel id="nh3" typeId="nh3"/>
+            <channel id="nh4" typeId="nh4"/>
+            <channel id="O2" typeId="o2"/>
+            <channel id="lux" typeId="lux"/>
+            <channel id="par" typeId="par"/>
+            <channel id="kelvin" typeId="kelvin"/>
+            <channel id="lastreading" typeId="lastreading"/>
+            <channel id="slideexpires" typeId="slideexpires"/>
         </channels>
         <config-description>
             <parameter name="aquarium_name" type="text" required="true">
@@ -47,61 +47,61 @@
     </thing-type>
 
     <!-- Channels -->
-    <channel-type id="seneye-temperature-channel">
+    <channel-type id="temperature">
         <item-type>Number</item-type>
         <label>Temperature</label>
         <description>The water temperature</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="seneye-ph-channel">
+    <channel-type id="ph">
         <item-type>Number</item-type>
         <label>PH</label>
         <description>The PH Level</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="seneye-nh3-channel">
+    <channel-type id="nh3">
         <item-type>Number</item-type>
         <label>NH3</label>
         <description>The NH3 Level</description>
         <state readOnly="true" />
     </channel-type>    
-    <channel-type id="seneye-nh4-channel">
+    <channel-type id="nh4">
         <item-type>Number</item-type>
         <label>NH4</label>
         <description>The NH4 Level</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="seneye-O2-channel">
+    <channel-type id="o2">
         <item-type>Number</item-type>
         <label>O2</label>
         <description>The O2 Level</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="seneye-lux-channel">
+    <channel-type id="lux">
         <item-type>Number</item-type>
         <label>LUX</label>
         <description>The LUX Light Level</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="seneye-par-channel">
+    <channel-type id="par">
         <item-type>Number</item-type>
         <label>PAR</label>
         <description>The PAR Light Level</description>
         <state readOnly="true" />
     </channel-type>        
-    <channel-type id="seneye-Kelvin-channel">
+    <channel-type id="kelvin">
         <item-type>Number</item-type>
         <label>kelvin</label>
         <description>The Kelvin Light Level</description>
         <state readOnly="true" />
     </channel-type>        
-    <channel-type id="seneye-lastreading-channel">
+    <channel-type id="lastreading">
         <item-type>DateTime</item-type>
         <label>Last reading</label>
         <description>The last time your seneye is checked</description>
         <state readOnly="true" />
     </channel-type> 
-    <channel-type id="seneye-slideexpires-channel">
+    <channel-type id="slideexpires">
         <item-type>DateTime</item-type>
         <label>Slide expiration</label>
         <description>The time your slide expires</description>
