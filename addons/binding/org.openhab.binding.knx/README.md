@@ -122,7 +122,7 @@ In contrast to the standard channels above, the control channel types are used f
 
 | Parameter | Description                         | Default DPT |
 |-----------|-------------------------------------|-------------|
-| switch    | Group address for the binary switch | 1.001       |
+| ga        | Group address for the binary switch | 1.001       |
 
 
 ##### Channel Type "dimmer-control"
