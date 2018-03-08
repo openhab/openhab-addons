@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 import tuwien.auto.calimero.link.medium.KNXMediumSettings;
@@ -21,6 +21,9 @@ import tuwien.auto.calimero.link.medium.KNXMediumSettings;
  *
  */
 public class CustomKNXNetworkLinkIP extends KNXNetworkLinkIP {
+
+    public static final int TUNNELING = KNXNetworkLinkIP.TUNNELING;
+    public static final int ROUTING = KNXNetworkLinkIP.ROUTING;
 
     CustomKNXNetworkLinkIP(final int serviceMode, KNXnetIPConnection conn, KNXMediumSettings settings)
             throws KNXException, InterruptedException {

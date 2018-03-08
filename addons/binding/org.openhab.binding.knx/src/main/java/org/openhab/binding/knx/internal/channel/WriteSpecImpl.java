@@ -13,7 +13,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.client.OutboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.exception.KNXFormatException;
+import tuwien.auto.calimero.KNXFormatException;
 
 /**
  * Command meta-data

@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.exception.KNXFormatException;
+import tuwien.auto.calimero.KNXFormatException;
 
 /**
  * Meta-data abstraction for the KNX channel configurations.

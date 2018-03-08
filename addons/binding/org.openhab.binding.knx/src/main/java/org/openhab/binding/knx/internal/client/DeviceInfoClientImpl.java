@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.mgmt.ManagementClient;
 

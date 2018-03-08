@@ -48,10 +48,10 @@ import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
+import tuwien.auto.calimero.KNXException;
+import tuwien.auto.calimero.KNXFormatException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.exception.KNXFormatException;
 
 /**
  * The {@link DeviceThingHandler} is responsible for handling commands and state updates sent to and received from the

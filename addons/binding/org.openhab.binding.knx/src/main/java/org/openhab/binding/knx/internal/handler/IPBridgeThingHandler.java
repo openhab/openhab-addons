@@ -20,11 +20,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.client.KNXClient;
 import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
+import org.openhab.binding.knx.internal.client.CustomKNXNetworkLinkIP;
 import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
-
-import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
@@ -63,13 +62,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         int ipConnectionType;
         if (MODE_TUNNEL.equalsIgnoreCase(connectionTypeString)) {
             useNAT = config.getUseNAT() != null ? config.getUseNAT() : false;
-            ipConnectionType = KNXNetworkLinkIP.TUNNELING;
+            ipConnectionType = CustomKNXNetworkLinkIP.TUNNELING;
         } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
             useNAT = false;
             if (ip == null || ip.isEmpty()) {
                 ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
-            ipConnectionType = KNXNetworkLinkIP.ROUTING;
+            ipConnectionType = CustomKNXNetworkLinkIP.ROUTING;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     MessageFormat.format("Unknown IP connection type {0}. Known types are either 'TUNNEL' or 'ROUTER'",

@@ -23,11 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
+import tuwien.auto.calimero.KNXException;
+import tuwien.auto.calimero.KNXIllegalArgumentException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
 import tuwien.auto.calimero.knxnetip.KNXnetIPRouting;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
+import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel.TunnelingLayer;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 import tuwien.auto.calimero.link.medium.KNXMediumSettings;
@@ -78,7 +79,7 @@ public class IPClient extends AbstractKNXClient {
     }
 
     private String connectionTypeToString() {
-        return ipConnectionType == KNXNetworkLinkIP.ROUTING ? MODE_ROUTER : MODE_TUNNEL;
+        return ipConnectionType == CustomKNXNetworkLinkIP.ROUTING ? MODE_ROUTER : MODE_TUNNEL;
     }
 
     private KNXNetworkLinkIP createKNXNetworkLinkIP(int serviceMode, @Nullable InetSocketAddress localEP,
@@ -94,7 +95,7 @@ public class IPClient extends AbstractKNXClient {
             @Nullable InetSocketAddress remoteEP, boolean useNAT) throws KNXException, InterruptedException {
         KNXnetIPConnection conn;
         switch (serviceMode) {
-            case KNXNetworkLinkIP.TUNNELING:
+            case CustomKNXNetworkLinkIP.TUNNELING:
                 InetSocketAddress local = localEP;
                 if (local == null) {
                     try {
@@ -103,9 +104,9 @@ public class IPClient extends AbstractKNXClient {
                         throw new KNXException("no local host available");
                     }
                 }
-                conn = new KNXnetIPTunnel(KNXnetIPTunnel.LINK_LAYER, local, remoteEP, useNAT);
+                conn = new KNXnetIPTunnel(TunnelingLayer.LinkLayer, local, remoteEP, useNAT);
                 break;
-            case KNXNetworkLinkIP.ROUTING:
+            case CustomKNXNetworkLinkIP.ROUTING:
                 NetworkInterface netIf = null;
                 if (localEP != null && !localEP.isUnresolved()) {
                     try {

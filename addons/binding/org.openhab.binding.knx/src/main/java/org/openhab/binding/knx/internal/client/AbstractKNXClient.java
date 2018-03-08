@@ -29,7 +29,6 @@ import org.openhab.binding.knx.client.OutboundSpec;
 import org.openhab.binding.knx.client.StatusUpdateCallback;
 import org.openhab.binding.knx.handler.GroupAddressListener;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
-import org.openhab.binding.knx.internal.logging.LogAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +37,12 @@ import tuwien.auto.calimero.DetachEvent;
 import tuwien.auto.calimero.FrameEvent;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
+import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
 import tuwien.auto.calimero.device.ProcessCommunicationResponder;
-import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.NetworkLinkListener;
-import tuwien.auto.calimero.log.LogManager;
 import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.mgmt.ManagementClient;
 import tuwien.auto.calimero.mgmt.ManagementClientImpl;
@@ -54,7 +52,7 @@ import tuwien.auto.calimero.process.ProcessCommunicationBase;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
-import tuwien.auto.calimero.process.ProcessListenerEx;
+import tuwien.auto.calimero.process.ProcessListener;
 
 /**
  * KNX Client which encapsulates the communication with the KNX bus via the calimero libary.
@@ -68,7 +66,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private static final int MAX_SEND_ATTEMPTS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXClient.class);
-    private final LogAdapter logAdapter = new LogAdapter();
     private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
 
     private final ThingUID thingUID;
@@ -97,7 +94,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     @NonNullByDefault({})
-    private final ProcessListenerEx processListener = new ProcessListenerEx() {
+    private final ProcessListener processListener = new ProcessListener() {
 
         @Override
         public void detached(DetachEvent e) {
@@ -138,7 +135,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     public void initialize() {
-        registerLogAdapter();
         if (!scheduleReconnectJob()) {
             connect();
         }
@@ -159,14 +155,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             currentReconnectJob.cancel(kill);
             connectJob = null;
         }
-    }
-
-    private void registerLogAdapter() {
-        LogManager.getManager().addWriter(null, logAdapter);
-    }
-
-    private void unregisterLogAdapter() {
-        LogManager.getManager().removeWriter(null, logAdapter);
     }
 
     protected abstract KNXNetworkLink establishConnection() throws KNXException, InterruptedException;
@@ -309,7 +297,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     public void dispose() {
         cancelReconnectJob(true);
         disconnect(null);
-        unregisterLogAdapter();
     }
 
     @Override

@@ -37,6 +37,9 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tuwien.auto.calimero.KNXException;
+import tuwien.auto.calimero.KNXFormatException;
+import tuwien.auto.calimero.KNXIllegalArgumentException;
 import tuwien.auto.calimero.datapoint.Datapoint;
 import tuwien.auto.calimero.dptxlator.DPT;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
@@ -60,9 +63,6 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorUtf8;
 import tuwien.auto.calimero.dptxlator.TranslatorTypes;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.exception.KNXFormatException;
-import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
 
 /**
  * This class provides type mapping between all openHAB core types and KNX data point types.

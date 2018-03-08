@@ -31,7 +31,7 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.knx,
  org.openhab.binding.knx.client,
  org.openhab.binding.knx.handler
-Bundle-ClassPath: lib/calimero-rxtx-2.3.jar,
- lib/calimero-core-2.3.jar,
- lib/calimero-device-2.3.jar,
+Bundle-ClassPath: lib/calimero-core-2.4-e9975c01.jar,
+ lib/calimero-device-2.4-a03cd243.jar,
+ lib/calimero-rxtx-2.4-883497d1.jar,
  .

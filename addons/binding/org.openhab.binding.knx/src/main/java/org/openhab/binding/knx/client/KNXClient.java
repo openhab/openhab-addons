@@ -13,8 +13,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.handler.GroupAddressListener;
 
 import tuwien.auto.calimero.IndividualAddress;
+import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.exception.KNXException;
 
 /**
  * Client for communicating with the KNX bus.

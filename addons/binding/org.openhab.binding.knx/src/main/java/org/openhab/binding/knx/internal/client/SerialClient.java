@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.RXTXVersion;
-import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
 import tuwien.auto.calimero.link.medium.TPSettings;
