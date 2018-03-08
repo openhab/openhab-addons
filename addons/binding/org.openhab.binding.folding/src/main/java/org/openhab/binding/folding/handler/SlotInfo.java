@@ -16,7 +16,7 @@ import java.util.Map;
  * This class specifies the format of the Json-compatible data received from
  * the Folding client process.
  *
- * @author Marius Bjoernstad
+ * @author Marius Bjoernstad - Initial contribution
  */
 public class SlotInfo {
 
