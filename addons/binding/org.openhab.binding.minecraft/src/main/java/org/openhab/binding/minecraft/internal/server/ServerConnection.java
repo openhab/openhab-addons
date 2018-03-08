@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.minecraft.internal.discovery.MinecraftDiscoveryService;
 import org.openhab.binding.minecraft.internal.message.OHMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +30,11 @@ import rx.subscriptions.Subscriptions;
 /**
  * Holds information about connection to Minecraft server.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class ServerConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServerConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerConnection.class);
 
     private String host;
     private int port;
@@ -123,17 +122,13 @@ public class ServerConnection {
      * Reconnects when connection is lost
      */
     public static Observable<ServerConnection> create(final ThingUID thingUID, final String host, final int port) {
-
         final String serverUrl = String.format("ws://%s:%d/stream", host, port);
 
-        return Observable.<ServerConnection>create(new OnSubscribe<ServerConnection>() {
-
+        return Observable.<ServerConnection> create(new OnSubscribe<ServerConnection>() {
             @Override
             public void call(final Subscriber<? super ServerConnection> subscriber) {
-
-                logger.info("Start connecting to Minecraft server at: {}", serverUrl);
+                LOGGER.info("Start connecting to Minecraft server at: {}", serverUrl);
                 if (!subscriber.isUnsubscribed()) {
-
                     ServerConnection serverConnection = new ServerConnection(thingUID, host, port);
                     MinecraftSocketHandler socketHandler = new MinecraftSocketHandler() {
                         @Override
@@ -143,7 +138,7 @@ public class ServerConnection {
 
                         @Override
                         public void onClose() {
-                            logger.info("Connection to Minecraft server stopped");
+                            LOGGER.info("Connection to Minecraft server stopped");
                             subscriber.onCompleted();
                         };
                     };

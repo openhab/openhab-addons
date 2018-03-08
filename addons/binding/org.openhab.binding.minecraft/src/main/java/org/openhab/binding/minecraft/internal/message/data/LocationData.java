@@ -11,7 +11,7 @@ package org.openhab.binding.minecraft.internal.message.data;
 /**
  * Holds location data for Minecraft objects.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class LocationData {
     private double x;

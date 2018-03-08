@@ -16,7 +16,7 @@ import rx.functions.Func1;
 /**
  * RX operator subscribing to observable with a delay after it has finished.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class RetryWithDelay implements Func1<Observable<? extends Throwable>, Observable<?>> {
 

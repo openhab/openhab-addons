@@ -8,14 +8,16 @@
  */
 package org.openhab.binding.minecraft;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link MinecraftBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
+@NonNullByDefault
 public class MinecraftBindingConstants {
 
     public static final String BINDING_ID = "minecraft";

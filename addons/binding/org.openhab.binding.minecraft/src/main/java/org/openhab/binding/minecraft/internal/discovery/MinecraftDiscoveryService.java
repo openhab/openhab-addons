@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
 import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
@@ -24,6 +27,8 @@ import org.openhab.binding.minecraft.internal.message.data.PlayerData;
 import org.openhab.binding.minecraft.internal.message.data.SignData;
 import org.openhab.binding.minecraft.internal.server.ServerConnection;
 import org.openhab.binding.minecraft.internal.util.Pair;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +41,9 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Handles discovery of Minecraft server, players and signs.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.minecraft")
 public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);
@@ -76,6 +82,12 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
         subscription.add(playerSubscription);
         subscription.add(signsSubscription);
+    }
+
+    @Modified
+    @Override
+    protected void modified(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+        super.modified(configProperties);
     }
 
     /**
@@ -150,11 +162,8 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(MinecraftBindingConstants.PARAMETER_PLAYER_NAME, name);
-        thingDiscovered(DiscoveryResultBuilder.create(uid)
-                .withProperties(properties)
-                .withBridge(bridgeUID)
-                .withLabel(name)
-                .build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withBridge(bridgeUID)
+                .withLabel(name).build());
     }
 
     /**
@@ -169,11 +178,8 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(MinecraftBindingConstants.PARAMETER_SIGN_NAME, sign.getName());
-        thingDiscovered(DiscoveryResultBuilder.create(uid)
-                .withProperties(properties)
-                .withBridge(bridgeUID)
-                .withLabel(sign.getName())
-                .build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withBridge(bridgeUID)
+                .withLabel(sign.getName()).build());
     }
 
     /**
