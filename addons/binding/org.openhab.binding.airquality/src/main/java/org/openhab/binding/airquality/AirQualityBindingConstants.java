@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableSet;
  * used across the whole binding.
  *
  * @author Kuba Wolanin - Initial contribution
- * @author Łukasz Dywicki
+ * @author Łukasz Dywicki - Initial contribution
  */
 public class AirQualityBindingConstants {
 
