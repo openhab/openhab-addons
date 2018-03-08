@@ -67,6 +67,16 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
 /**
  * This class provides type mapping between all openHAB core types and KNX data point types.
  *
+ * Each 'MainType' delivered from calimero, has a default mapping
+ * for all it's children to a openHAB Typeclass.
+ * All these 'MainType' mapping's are put into 'dptMainTypeMap'.
+ *
+ * Default 'MainType' mapping's we can override by a specific mapping.
+ * All specific mapping's are put into 'dptTypeMap'.
+ *
+ * If for a 'MainType' there is currently no specific mapping registered,
+ * you can find a commented example line, with it's correct 'DPTXlator' class.
+ *
  * @author Kai Kreuzer
  * @author Volker Daube
  * @author Jan N. Klug
@@ -180,6 +190,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         dptMainTypeMap.put(5, DecimalType.class);
         /** Exceptions Types "8-Bit Unsigned Value", Main number 5 */
         dptTypeMap.put(DPTXlator8BitUnsigned.DPT_SCALING.getID(), PercentType.class);
+        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_PERCENT_U8.getID(), PercentType.class);
 
         /**
          * MainType: 6
@@ -189,6 +200,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          */
         dptMainTypeMap.put(6, DecimalType.class);
         /** Exceptions Datapoint Types "8-Bit Signed Value", Main number 6 */
+        dptTypeMap.put(DPTXlator8BitSigned.DPT_PERCENT_V8.getID(), PercentType.class);
         dptTypeMap.put(DPTXlator8BitSigned.DPT_STATUS_MODE3.getID(), StringType.class);
 
         /**
@@ -207,7 +219,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          */
         dptMainTypeMap.put(7, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Unsigned Value", Main number 7 */
-        // Example: dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID(), DecimalType.class);
+        dptTypeMap.put(DPTXlator2ByteFloat.DPT_HUMIDITY.getID(), PercentType.class);
 
         /**
          * MainType: 9
