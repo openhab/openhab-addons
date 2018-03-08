@@ -4,15 +4,6 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<!-- Switch -->
-	<config-description uri="channel-type:knx:switch">
-		<parameter name="switch" type="text">
-			<label>Address</label>
-			<description>The group address(es) in Group Address Notation</description>
-			<required>true</required>
-		</parameter>
-	</config-description>
-
 	<!-- Dimmer -->
 	<config-description uri="channel-type:knx:dimmer">
 		<parameter name="switch" type="text">

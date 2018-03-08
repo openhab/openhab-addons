@@ -41,13 +41,13 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Switch Items</description>
-		<config-description-ref uri="channel-type:knx:switch" />
+		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="switch-control">
 		<item-type>Switch</item-type>
 		<label>Switch Control</label>
 		<description>Control a switch item via KNX (i.e. the status is not owned by KNX)</description>
-		<config-description-ref uri="channel-type:knx:switch" />
+		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 
 	<!-- Dimmer -->
