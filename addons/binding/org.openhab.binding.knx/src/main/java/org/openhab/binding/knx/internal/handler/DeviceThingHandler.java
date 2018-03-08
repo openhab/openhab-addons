@@ -164,12 +164,12 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         if (readInterval > 0) {
             ScheduledFuture<?> future = readFutures.get(groupAddress);
             if (future == null || future.isDone() || future.isCancelled()) {
-                future = getBackgroundScheduler().scheduleWithFixedDelay(() -> readDatapoint(groupAddress, dpt), 0,
-                        readInterval, TimeUnit.SECONDS);
+                future = getScheduler().scheduleWithFixedDelay(() -> readDatapoint(groupAddress, dpt), 0, readInterval,
+                        TimeUnit.SECONDS);
                 readFutures.put(groupAddress, future);
             }
         } else {
-            getBackgroundScheduler().submit(() -> readDatapoint(groupAddress, dpt));
+            getScheduler().submit(() -> readDatapoint(groupAddress, dpt));
         }
     }
 
