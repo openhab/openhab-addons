@@ -38,10 +38,12 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
         this.type = type;
     }
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
     }
