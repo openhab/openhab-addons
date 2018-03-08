@@ -21,13 +21,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.handler.PulseaudioHandler;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Sets;
 
@@ -37,13 +38,13 @@ import com.google.common.collect.Sets;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pulseaudio", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
 
     private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<ThingHandler, ServiceRegistration<?>>();
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -73,7 +74,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
             ThingUID bridgeUID) {
         if (thingUID == null) {
             String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME);
-            thingUID = new ThingUID(thingTypeUID, name, bridgeUID.getId());
+            return new ThingUID(thingTypeUID, name, bridgeUID.getId());
         }
         return thingUID;
     }

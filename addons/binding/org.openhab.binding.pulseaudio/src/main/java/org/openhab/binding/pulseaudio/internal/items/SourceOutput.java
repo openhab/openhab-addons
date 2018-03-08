@@ -11,7 +11,7 @@ package org.openhab.binding.pulseaudio.internal.items;
 /**
  * A SourceOutput is the audio stream which is produced by a (@link Source}
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class SourceOutput extends AbstractAudioDeviceConfig {
