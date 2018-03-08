@@ -346,6 +346,13 @@
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="vvm320-type-47011">
+		<item-type>Number</item-type>
+		<label>Heat Offset S1</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="vvm320-type-47041">
 		<item-type>String</item-type>
 		<label>Hot water mode</label>

@@ -40,6 +40,9 @@ public enum VVM320Channels implements Channel {
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, Double.class),
+
+    CH_47011("47011", "Heat Offset S1", ChannelGroup.GENERAL, Double.class, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"),
+
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, Double.class),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
@@ -47,6 +50,7 @@ public enum VVM320Channels implements Channel {
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
     CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class, "/Manage/2.1", "[0-9]+"),
     CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
+
     // Compressor
     CH_44362("44362", "EB101-EP14-BT28 Outdoor Temp", ChannelGroup.COMPRESSOR, Double.class),
     CH_44396("44396", "EB101 Speed charge pump", ChannelGroup.COMPRESSOR, Double.class),
@@ -67,6 +71,7 @@ public enum VVM320Channels implements Channel {
     CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, String.class),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelGroup.COMPRESSOR, Double.class),
     CH_44457("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR, Double.class),
+
     // Airsupply
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
     CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),

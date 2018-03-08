@@ -21,6 +21,7 @@
 | general#44304 | Number | 0 | 9999999 | No | Heat Meter - Pool Cpr EP14 |  |
 | general#44302 | Number | 0 | 9999999 | No | Heat Meter - Cooling Cpr EP14 |  |
 | general#44300 | Number | 0 | 9999999 | No | Heat Meter - Heat Cpr and Add EP14 |  |
+| general#47011 | Number | -10 | 10 | Yes | Heat Offset S1 | values between -10 and 10 |
 | hotwater#40013 | Number | -32767 | 32767 | No | BT7 HW Top |  |
 | hotwater#40014 | Number | -32767 | 32767 | No | BT6 HW Load |  |
 | hotwater#44306 | Number | 0 | 9999999 | No | Heat Meter - HW Cpr EP14 |  |
