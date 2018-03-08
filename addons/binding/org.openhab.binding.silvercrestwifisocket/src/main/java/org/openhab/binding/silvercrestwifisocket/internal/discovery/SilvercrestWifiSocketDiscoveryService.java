@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Jaime Vaz - Initial contribution
  *
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.silvercrestwifisocket")
 public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketDiscoveryService.class);
@@ -39,6 +42,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
      *
      * @param mediator the mediator
      */
+    @Reference
     public void setMediator(final SilvercrestWifiSocketMediator mediator) {
         logger.debug("Mediator has been injected on discovery service.");
         this.mediator = mediator;
