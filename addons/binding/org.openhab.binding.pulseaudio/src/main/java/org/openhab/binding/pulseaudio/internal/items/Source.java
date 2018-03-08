@@ -12,7 +12,7 @@ package org.openhab.binding.pulseaudio.internal.items;
  * A Source is a device which is the source of an audio stream (recording
  * device) For example microphones or line-in jacks.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class Source extends AbstractAudioDeviceConfig {

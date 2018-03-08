@@ -13,7 +13,7 @@ package org.openhab.binding.pulseaudio.internal.items;
  * load a corresponding module. Current Module objects are needed to
  * be able to remove sinks from the pulseaudio server.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class Module extends AbstractDeviceConfig {
