@@ -11,17 +11,17 @@ package org.openhab.binding.milight.internal.protocol;
 import org.openhab.binding.milight.internal.MilightThingState;
 
 /**
- * Implements the iBox led bulb. The bulb is integrated into the iBox and does not include a white channel, so no
- * saturation or colour temperature available.
+ * Implements the RGB white bulb. Both leds cannot be on at the same time, so no saturation or colour temperature
+ * control. It still allows more colours than the old v3 rgbw bulb (16320 (255*64) vs 4080 (255*16) colors).
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
-public class MilightV6RGB_IBOX extends MilightV6 {
-    private final byte ADDR = 0x00;
+public class MilightV6RGBW extends MilightV6 {
+    private static final int ADDR = 0x07;
 
-    public MilightV6RGB_IBOX(QueuedSend sendQueue, MilightV6SessionManager session) {
-        super(0, sendQueue, session, 1);
+    public MilightV6RGBW(QueuedSend sendQueue, MilightV6SessionManager session, int zone) {
+        super(20, sendQueue, session, zone);
     }
 
     @Override
@@ -37,9 +37,9 @@ public class MilightV6RGB_IBOX extends MilightV6 {
         }
 
         if (on) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), make_command(3, 3));
+            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(3, 1));
         } else {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), make_command(3, 4));
+            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(3, 2));
         }
     }
 
@@ -50,22 +50,23 @@ public class MilightV6RGB_IBOX extends MilightV6 {
             return;
         }
 
-        sendQueue.queueRepeatable(uidc(CAT_WHITEMODE), make_command(3, 5));
+        sendQueue.queueRepeatable(uidc(CAT_WHITEMODE), makeCommand(3, 5));
     }
 
     @Override
     public void nightMode(MilightThingState state) {
-        logger.info("Night mode not supported by iBox led!");
+        if (!session.isValid()) {
+            logger.error("Bridge communication session not valid yet!");
+            return;
+        }
+
+        setPower(true, state);
+        sendQueue.queueRepeatable(uidc(CAT_NIGHTMODE), makeCommand(3, 6));
     }
 
     @Override
-    public void setColorTemperature(int color_temp, MilightThingState state) {
-        logger.info("Color temperature not supported by iBox led!");
-    }
-
-    @Override
-    public void changeColorTemperature(int color_temp_relative, MilightThingState state) {
-        logger.info("Color temperature not supported by iBox led!");
+    public void setColorTemperature(int colorTemp, MilightThingState state) {
+        logger.info("Color temperature not supported by RGBW led!");
     }
 
     @Override
@@ -75,7 +76,7 @@ public class MilightV6RGB_IBOX extends MilightV6 {
 
     @Override
     public void setSaturation(int value, MilightThingState state) {
-        logger.info("Saturation not supported by iBox led!");
+        logger.info("Saturation not supported by RGBW led!");
     }
 
     @Override
@@ -87,25 +88,16 @@ public class MilightV6RGB_IBOX extends MilightV6 {
 
         mode = Math.min(mode, 9);
         mode = Math.max(mode, 1);
-        sendQueue.queueRepeatable(uidc(CAT_MODE_SET), make_command(4, mode));
+        sendQueue.queueRepeatable(uidc(CAT_MODE_SET), makeCommand(6, mode));
         state.animationMode = mode;
     }
 
     @Override
-    public void changeSpeed(int relative_speed, MilightThingState state) {
-        if (relative_speed > 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(make_command(3, 2)));
-        } else if (relative_speed < 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(make_command(3, 1)));
+    public void changeSpeed(int relativeSpeed, MilightThingState state) {
+        if (relativeSpeed > 1) {
+            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(4, 3)));
+        } else if (relativeSpeed < 1) {
+            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(4, 4)));
         }
     }
-
-    @Override
-    public void link(int zone) {
-    }
-
-    @Override
-    public void unlink(int zone) {
-    }
-
 }

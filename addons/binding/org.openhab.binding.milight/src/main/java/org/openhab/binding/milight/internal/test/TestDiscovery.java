@@ -9,7 +9,9 @@
 package org.openhab.binding.milight.internal.test;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.openhab.binding.milight.MilightBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +19,10 @@ import org.slf4j.LoggerFactory;
  * A simple discovery service that will make the emulated V6 bridge visible to the Inbox of OH.
  * Enable this in OSGI-INF/TestDiscovery.xml with enabled="true".
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
+@Component(service = DiscoveryService.class, immediate = true, enabled = false)
 public class TestDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(TestDiscovery.class);
 
