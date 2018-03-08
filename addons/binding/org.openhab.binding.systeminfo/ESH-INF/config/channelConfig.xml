@@ -2,7 +2,7 @@
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated. 
 		High priority should be channels, which change its state dynamically at few seconds interval. Medium priority channels usually 

@@ -270,7 +270,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
      * multiple devices, for reference see {@link #getDeviceIndex(String)}})
      *
-     * @param channelUID - the UID of the channel
+     * @param channelUID the UID of the channel
      * @return State object or null, if there is no information for the device with this index
      */
     private State getInfoForChannel(ChannelUID channelUID) {
@@ -454,7 +454,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
-     * @param channelID - the ID of the channel
+     * @param channelID the ID of the channel
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
@@ -479,7 +479,7 @@ public class SysteminfoHandler extends BaseThingHandler {
     /**
      * This method gets the process identifier (PID) for specific process
      *
-     * @param channelUID - channel unique identifier
+     * @param channelUID channel unique identifier
      * @return natural number
      */
     private int getPID(ChannelUID channelUID) {
