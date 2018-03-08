@@ -1,53 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="toon"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="toon" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- start  -->
-    <thing-type id="main" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="toonapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Toon display unit</label>
-        <description>This represents the Toon display unit.</description>
+	<!-- start -->
+	<thing-type id="main" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="toonapi" />
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="Temperature" typeId="temperature" />
-            <channel id="Setpoint" typeId="setpoint" />   
-            <channel id="SetpointMode" typeId="setpointMode" />   
-            <channel id="GasMeterReading" typeId="gasMeterReading" />     
-            <channel id="PowerMeterReading" typeId="currentMeterReading" >
-                <label>Energy, high rate</label>
-            </channel>     
-            <channel id="PowerMeterReadingLow" typeId="currentMeterReading" >
-                <label>Energy, low rate</label>
-            </channel>
-            <channel id="PowerConsumption" typeId="powerConsumption" />
-            
-            <channel id="ModulationLevel" typeId="modulationLevel" />
-            <channel id="Heating" typeId="heating" />
-            <channel id="Tapwater" typeId="tapwater" />
-            <channel id="Preheat" typeId="preheat" />
-                 
-        </channels>
-    </thing-type>
+		<label>Toon display unit</label>
+		<description>This represents the Toon display unit.</description>
 
-    <thing-type id="plug" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="toonapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Toon plug</label>
-        <description>A Wall plug controlled via Toon.</description>
+		<channels>
+			<channel id="Temperature" typeId="temperature" />
+			<channel id="Setpoint" typeId="setpoint" />
+			<channel id="SetpointMode" typeId="setpointMode" />
+			<channel id="GasMeterReading" typeId="gasMeterReading" />
+			<channel id="PowerMeterReading" typeId="currentMeterReading">
+				<label>Energy, high rate</label>
+			</channel>
+			<channel id="PowerMeterReadingLow" typeId="currentMeterReading">
+				<label>Energy, low rate</label>
+			</channel>
+			<channel id="PowerConsumption" typeId="powerConsumption" />
 
-        <channels>
-            <channel id="SwitchBinary" typeId="switch_binary" />
-            <channel id="PowerConsumption" typeId="powerConsumption" />
-        </channels>
-    
-    </thing-type>
+			<channel id="ModulationLevel" typeId="modulationLevel" />
+			<channel id="Heating" typeId="heating" />
+			<channel id="Tapwater" typeId="tapwater" />
+			<channel id="Preheat" typeId="preheat" />
 
+		</channels>
+	</thing-type>
+
+	<thing-type id="plug" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="toonapi" />
+		</supported-bridge-type-refs>
+
+		<label>Toon plug</label>
+		<description>A Wall plug controlled via Toon.</description>
+
+		<channels>
+			<channel id="SwitchBinary" typeId="switch_binary" />
+			<channel id="PowerConsumption" typeId="powerConsumption" />
+		</channels>
+
+	</thing-type>
 
 </thing:thing-descriptions>

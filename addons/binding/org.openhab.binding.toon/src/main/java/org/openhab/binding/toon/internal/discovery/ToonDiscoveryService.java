@@ -111,7 +111,6 @@ public class ToonDiscoveryService extends AbstractDiscoveryService {
             String uid = supportedThingTypeUID.getId();
 
             if (uid.equalsIgnoreCase(thingType)) {
-
                 return new ThingUID(supportedThingTypeUID, toonBridgeHandler.getThing().getUID(),
                         thingId.replaceAll("[^a-zA-Z0-9_]", ""));
             }
