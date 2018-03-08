@@ -11,7 +11,7 @@ package org.openhab.binding.airquality.json;
 /**
  * Attribute representation.
  *
- * @author Łukasz Dywicki
+ * @author Łukasz Dywicki - Initial contribution
  */
 public class Attribute {
 

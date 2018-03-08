@@ -24,7 +24,6 @@ public class AirQualityJsonCity {
     private List<Double> geo;
 
     public AirQualityJsonCity() {
-
     }
 
     public String getName() {

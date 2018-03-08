@@ -48,8 +48,10 @@ public class AirQualityJsonTime {
      */
     public Calendar getDateString() throws Exception {
         Calendar calendar = Calendar.getInstance();
-        Date date = SDF.parse(dateString + timeZone.replace(":", ""));
-        calendar.setTime(date);
+        synchronized (SDF) {
+            Date date = SDF.parse(dateString + timeZone.replace(":", ""));
+            calendar.setTime(date);
+        }
         return calendar;
     }
 

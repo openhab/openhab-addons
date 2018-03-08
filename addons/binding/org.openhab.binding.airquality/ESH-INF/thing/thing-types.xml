@@ -9,7 +9,7 @@
 		<description>
 		Provides various air quality data from the World Air Quality Project.
 		In order to receive the data, you must register an account on http://aqicn.org/data-platform/token/ and get your API token.
-        </description>
+		</description>
 
 		<channels>
 			<channel id="aqiLevel" typeId="aqiLevel" />

@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Wrapper type around values reported by aqicn index values.
  *
- * @author Łukasz Dywicki
+ * @author Łukasz Dywicki - Initial contribution
  */
 public class AirQualityValue<T extends Number> {
 
