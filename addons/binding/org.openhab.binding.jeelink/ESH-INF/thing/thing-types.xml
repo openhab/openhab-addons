@@ -294,7 +294,7 @@
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
 		<state readOnly="true" pattern="%d h" />
-		
+
 	</channel-type>
 
 	<!-- Sensor On Time Channel Type -->

@@ -1,10 +1,10 @@
 # Jeelink Binding
 
-This binding integrates JeeLink USB RF receivers and LaCrosseGateways (LGW).
+This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers and LGWs. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
+Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
 
 ## Supported Things
 
@@ -24,35 +24,35 @@ Configuration of the binding is not needed.
 
 ## Thing discovery
 
-Only sensor discovery is supported, the thing for the USB receiver / LGW has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
+Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
-Afterwards, discovery reads from the USB receiver / LGW to find out which sensors are currently connected.
+Afterwards, discovery reads from the USB receiver / LaCrosseGateways to find out which sensors are currently connected.
 It then creates a thing for every unknown sensor and puts it in the Inbox.
 
 Discovery only creates things for sensors that actually send a value during discovery. LaCrosse temperature sensors send values every few seconds, so that they are normally caught by the discovery. In rare cases, a second discovery run is needed.
 
-PCA301 sockets are polled every 120 seconds by default. This results in sockets not being found by the discovery. In order to make sure the socket is discovered, press the button on the socket during discovery (and make sure you have paired the socket to the USB stick / LGW before by pressing the button for 3 seconds while the receiver is powered).
+PCA301 sockets are polled every 120 seconds by default. This results in sockets not being found by the discovery. In order to make sure the socket is discovered, press the button on the socket during discovery (and make sure you have paired the socket to the USB stick / LaCrosseGateway before by pressing the button for 3 seconds while the receiver is powered).
 
 ## Thing configuration
 
-#### JeeLink / LGW (connected to USB)
+#### JeeLink / LaCrosseGateway (connected to USB)
 
-| Parameter     | Item Type | Description                                                                                                                      |
-|---------------|-----------|----------------------------------------------------------------------------------------------------------------------------------|
-| Serial Port   | String    | The serial port name for the USB receiver / LGW. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux |
-| Baud Rate     | Number    | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200                              |
-| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LGW, e.g. "0a" for disabling the LED              |
+| Parameter     | Item Type | Description                                                                                                                                  |
+|---------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Serial Port   | String    | The serial port name for the USB receiver / LaCrosseGateway. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux |
+| Baud Rate     | Number    | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200                                          |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED              |
 
-The available init commands depend on the sketch that is running on the USB stick / LGW.
+The available init commands depend on the sketch that is running on the USB stick / LaCrosseGateway.
 
 
-#### JeeLink / LGW (connected over TCP)
+#### JeeLink / LaCrosseGateway (connected over TCP)
 
-| Parameter     | Item Type | Description                                                                                                           |
-|---------------|-----------|-----------------------------------------------------------------------------------------------------------------------|
-| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LGW                     |
-| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LGW port (which usually is 81)                      |
-| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LGW, e.g. "0a" for disabling the LED   |
+| Parameter     | Item Type | Description                                                                                                                       |
+|---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------|
+| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LaCrosseGateway                     |
+| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LaCrosseGateway port (which usually is 81)                      |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED   |
 
 
 #### LaCrosse temperature sensors
