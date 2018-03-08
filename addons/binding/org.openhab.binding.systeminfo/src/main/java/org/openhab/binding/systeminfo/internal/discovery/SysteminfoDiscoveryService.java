@@ -18,9 +18,11 @@ import java.util.Set;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +30,9 @@ import org.slf4j.LoggerFactory;
  * Discovery service implementation for the Systeminfo binding. It creates {@link DiscoveryResult} with
  * {@link #DEFAULT_THING_LABEL}. The discovered Thing will have id - the hostname or {@link #DEFAULT_THING_ID}'
  *
- * @author Svilen Valkanov
+ * @author Svilen Valkanov - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.systeminfo")
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
