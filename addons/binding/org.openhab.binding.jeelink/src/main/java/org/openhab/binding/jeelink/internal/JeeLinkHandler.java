@@ -221,9 +221,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         synchronized (sensorTypeConvertersMap) {
             sensorTypeConvertersMap.clear();
         }
-        synchronized (readingClassHandlerMap) {
-            readingClassHandlerMap.clear();
-        }
 
         super.dispose();
     }
