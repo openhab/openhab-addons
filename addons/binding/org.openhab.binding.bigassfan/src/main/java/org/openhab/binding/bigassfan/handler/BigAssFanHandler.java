@@ -66,6 +66,13 @@ import org.slf4j.LoggerFactory;
 public class BigAssFanHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BigAssFanHandler.class);
 
+    private static final StringType LIGHT_COLOR = new StringType("COLOR");
+    private static final StringType LIGHT_PRESENT = new StringType("PRESENT");
+
+    private static final StringType OFF = new StringType("OFF");
+    private static final StringType COOLING = new StringType("COOLING");
+    private static final StringType HEATING = new StringType("HEATING");
+
     private BigAssFanConfig config;
     private String label = null;
     private String ipAddress = null;
@@ -74,10 +81,6 @@ public class BigAssFanHandler extends BaseThingHandler {
     private FanListener fanListener;
 
     protected Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<String, State>());
-
-    private final StringType OFF = new StringType("OFF");
-    private final StringType COOLING = new StringType("COOLING");
-    private final StringType HEATING = new StringType("HEATING");
 
     public BigAssFanHandler(@NonNull Thing thing, String ipv4Address) {
         super(thing);
@@ -450,26 +453,13 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
     }
 
-    private static final StringType LIGHT_PRESENT = new StringType("PRESENT");
-
     private boolean isLightPresent() {
-        if (fanStateMap.containsKey(CHANNEL_LIGHT_PRESENT)) {
-            if (fanStateMap.get(CHANNEL_LIGHT_PRESENT).equals(LIGHT_PRESENT)) {
-                return true;
-            }
-        }
-        return false;
+        return fanStateMap.containsKey(CHANNEL_LIGHT_PRESENT)
+                && LIGHT_PRESENT.equals(fanStateMap.get(CHANNEL_LIGHT_PRESENT));
     }
 
-    private static final StringType LIGHT_COLOR = new StringType("COLOR");
-
     private boolean isLightColor() {
-        if (fanStateMap.containsKey(CHANNEL_LIGHT_COLOR)) {
-            if (fanStateMap.get(CHANNEL_LIGHT_COLOR).equals(LIGHT_COLOR)) {
-                return true;
-            }
-        }
-        return false;
+        return fanStateMap.containsKey(CHANNEL_LIGHT_COLOR) && LIGHT_COLOR.equals(fanStateMap.get(CHANNEL_LIGHT_COLOR));
     }
 
     /*
