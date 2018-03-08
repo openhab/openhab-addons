@@ -231,6 +231,10 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             pc.removeProcessListener(processListener);
             pc.detach();
         });
+        responseCommunicator = nullify(responseCommunicator, rc -> {
+            rc.removeProcessListener(processListener);
+            rc.detach();
+        });
     }
 
     private <T> T nullify(T target, @Nullable Consumer<T> lastWill) {
