@@ -15,10 +15,9 @@ package org.openhab.binding.amazonechocontrol.internal;
  * @author Michael Geramb - Initial Contribution
  */
 public class AccountConfiguration {
-
     public String email;
     public String password;
     public String amazonSite;
     public Integer pollingIntervalInSeconds;
-
+    public Boolean discoverSmartHomeDevices;
 }

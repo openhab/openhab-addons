@@ -6,13 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazonechocontrol.internal.discovery;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 /**
- * The {@link AmazonEcIAmazonEchoDiscoveryhoDiscovery} is responsible connection between account and discovery service
+ * The {@link JsonStartRoutineRequest} encapsulate the GSON for starting a routine
  *
  * @author Michael Geramb - Initial contribution
  */
-public interface IAmazonEchoDiscovery {
-    void updateDeviceList(boolean manual);
+public class JsonStartRoutineRequest {
+    public String behaviorId;
+    public String sequenceJson;
+    public String status = "ENABLED";
 }

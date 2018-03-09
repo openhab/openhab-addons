@@ -39,6 +39,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo;
@@ -71,6 +72,9 @@ public class EchoHandler extends BaseThingHandler {
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
     private boolean updateAlarm = true;
+    private boolean updateRoutine = true;
+    private @Nullable JsonNotificationResponse currentNotification;
+    private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
 
     public EchoHandler(Thing thing) {
         super(thing);
@@ -95,6 +99,7 @@ public class EchoHandler extends BaseThingHandler {
         synchronized (instances) {
             instances.remove(this.getThing().getUID());
         }
+        stopCurrentNotification();
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
@@ -135,9 +140,9 @@ public class EchoHandler extends BaseThingHandler {
 
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
-            ScheduledFuture<?> updateStateJob = this.updateStateJob;
             String lastKnownBluetoothId = this.lastKnownBluetoothId;
 
+            ScheduledFuture<?> updateStateJob = this.updateStateJob;
             this.updateStateJob = null;
             if (updateStateJob != null) {
                 updateStateJob.cancel(false);
@@ -285,7 +290,6 @@ public class EchoHandler extends BaseThingHandler {
             // radio commands
             if (channelId.equals(CHANNEL_RADIO_STATION_ID)) {
                 if (command instanceof StringType) {
-
                     String stationId = ((StringType) command).toFullString();
                     if (stationId != null && !stationId.isEmpty()) {
                         waitForUpdate = 3000;
@@ -303,23 +307,27 @@ public class EchoHandler extends BaseThingHandler {
                 } else if (command == OnOffType.OFF) {
                     temp.playRadio(device, "");
                 }
-
             }
             // notification
             if (channelId.equals(CHANNEL_REMIND)) {
                 if (command instanceof StringType) {
 
+                    stopCurrentNotification();
                     String reminder = ((StringType) command).toFullString();
                     if (reminder != null && !reminder.isEmpty()) {
                         waitForUpdate = 3000;
                         updateRemind = true;
-                        temp.notification(device, "Reminder", reminder, null);
+                        currentNotification = temp.notification(device, "Reminder", reminder, null);
+                        currentNotifcationUpdateTimer = scheduler.scheduleWithFixedDelay(() -> {
+                            updateNotificationTimerState();
+                        }, 1, 1, TimeUnit.SECONDS);
                     }
                 }
             }
             if (channelId.equals(CHANNEL_PLAY_ALARM_SOUND)) {
                 if (command instanceof StringType) {
 
+                    stopCurrentNotification();
                     String alarmSound = ((StringType) command).toFullString();
                     if (alarmSound != null && !alarmSound.isEmpty()) {
                         waitForUpdate = 3000;
@@ -333,10 +341,49 @@ public class EchoHandler extends BaseThingHandler {
                             sound.providerId = "ECHO";
                             sound.id = alarmSound;
                         }
-                        temp.notification(device, "Alarm", null, sound);
+                        currentNotification = temp.notification(device, "Alarm", null, sound);
+                        currentNotifcationUpdateTimer = scheduler.scheduleWithFixedDelay(() -> {
+                            updateNotificationTimerState();
+                        }, 1, 1, TimeUnit.SECONDS);
+
                     }
                 }
             }
+
+            // routine commands
+            if (channelId.equals(CHANNEL_PLAY_FLASH_BRIEFING)) {
+
+                if (command == OnOffType.ON) {
+                    waitForUpdate = 1000;
+                    temp.executeSequenceCommand(device, "Alexa.FlashBriefing.Play");
+                }
+            }
+            if (channelId.equals(CHANNEL_PLAY_TRAFFIC_NEWS)) {
+
+                if (command == OnOffType.ON) {
+                    waitForUpdate = 1000;
+                    temp.executeSequenceCommand(device, "Alexa.Traffic.Play");
+                }
+            }
+            if (channelId.equals(CHANNEL_PLAY_WEATER_REPORT)) {
+
+                if (command == OnOffType.ON) {
+                    waitForUpdate = 1000;
+                    temp.executeSequenceCommand(device, "Alexa.Weather.Play");
+                }
+            }
+
+            if (channelId.equals(CHANNEL_START_ROUTINE)) {
+                if (command instanceof StringType) {
+                    String utterance = ((StringType) command).toFullString();
+                    if (utterance != null && !utterance.isEmpty()) {
+                        waitForUpdate = 1000;
+                        updateRoutine = true;
+                        temp.startRoutine(device, utterance);
+                    }
+                }
+            }
+
             // force update of the state
             this.disableUpdate = true;
             final boolean bluetoothRefresh = needBluetoothRefresh;
@@ -366,6 +413,57 @@ public class EchoHandler extends BaseThingHandler {
 
         } catch (Exception e) {
             logger.info("handleCommand fails: {}", e);
+        }
+    }
+
+    private void stopCurrentNotification() {
+        ScheduledFuture<?> tempCurrentNotifcationUpdateTimer = currentNotifcationUpdateTimer;
+        if (tempCurrentNotifcationUpdateTimer != null) {
+            currentNotifcationUpdateTimer = null;
+            tempCurrentNotifcationUpdateTimer.cancel(true);
+        }
+        JsonNotificationResponse tempCurrentNotification = currentNotification;
+        if (tempCurrentNotification != null) {
+            currentNotification = null;
+            Connection tempConnection = this.connection;
+            if (tempConnection != null) {
+                try {
+                    tempConnection.stopNotification(tempCurrentNotification);
+                } catch (Exception e) {
+                    logger.warn("Stop notification failed: {}", e);
+                }
+            }
+        }
+    }
+
+    private void updateNotificationTimerState() {
+        boolean stopCurrentNotifcation = true;
+        JsonNotificationResponse tempCurrentNotification = currentNotification;
+        try {
+            if (tempCurrentNotification != null) {
+                Connection tempConnection = connection;
+                if (tempConnection != null) {
+                    JsonNotificationResponse newState = tempConnection.getNotificationState(tempCurrentNotification);
+                    if (newState.status != null && newState.status.equals("ON")) {
+                        stopCurrentNotifcation = false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("update notification state fails: {}", e);
+        }
+        if (stopCurrentNotifcation) {
+            if (tempCurrentNotification != null && tempCurrentNotification.type != null) {
+                if (tempCurrentNotification.type.equals("Reminder")) {
+                    updateState(CHANNEL_REMIND, new StringType(""));
+                    updateRemind = false;
+                }
+                if (tempCurrentNotification.type.equals("Alarm")) {
+                    updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+                    updateAlarm = false;
+                }
+            }
+            stopCurrentNotification();
         }
     }
 
@@ -552,12 +650,21 @@ public class EchoHandler extends BaseThingHandler {
         }
 
         // Update states
-        if (updateRemind) {
+        if (updateRemind && currentNotifcationUpdateTimer == null) {
+            updateRemind = false;
             updateState(CHANNEL_REMIND, new StringType(""));
         }
-        if (updateAlarm) {
+        if (updateAlarm && currentNotifcationUpdateTimer == null) {
+            updateAlarm = false;
             updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
         }
+        if (updateRoutine) {
+            updateRoutine = false;
+            updateState(CHANNEL_START_ROUTINE, new StringType(""));
+        }
+        updateState(CHANNEL_PLAY_FLASH_BRIEFING, OnOffType.OFF);
+        updateState(CHANNEL_PLAY_WEATER_REPORT, OnOffType.OFF);
+        updateState(CHANNEL_PLAY_TRAFFIC_NEWS, OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
         updateState(CHANNEL_AMAZON_MUSIC, playing && amazonMusic ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));

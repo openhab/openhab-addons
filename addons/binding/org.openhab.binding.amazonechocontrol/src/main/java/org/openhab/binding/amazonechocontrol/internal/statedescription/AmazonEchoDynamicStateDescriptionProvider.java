@@ -11,6 +11,7 @@ package org.openhab.binding.amazonechocontrol.internal.statedescription;
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,7 +20,9 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
+import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
+import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
@@ -161,8 +164,34 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
+        } else if (CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE.equals(channel.getChannelTypeUID())) {
+            FlashBriefingProfileHandler handler = FlashBriefingProfileHandler.find(channel.getUID().getThingUID());
+            if (handler == null) {
+                return originalStateDescription;
+            }
+
+            AccountHandler accountHandler = handler.findAccountHandler();
+            if (accountHandler == null) {
+                return originalStateDescription;
+            }
+            Device[] devices = accountHandler.getLastKnownDevices();
+            if (devices.length == 0) {
+                return originalStateDescription;
+            }
+
+            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            options.add(new StateOption("", ""));
+            for (Device device : devices) {
+                if (device.capabilities != null && Arrays.asList(device.capabilities).contains("FLASH_BRIEFING")) {
+                    options.add(new StateOption(device.serialNumber, device.accountName));
+                }
+            }
+            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
+                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
+                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            return result;
+
         }
         return originalStateDescription;
     }
-
 }

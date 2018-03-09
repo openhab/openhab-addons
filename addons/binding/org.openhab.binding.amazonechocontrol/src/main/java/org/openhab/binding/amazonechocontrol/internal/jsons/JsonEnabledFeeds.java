@@ -6,13 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazonechocontrol.internal.discovery;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 /**
- * The {@link AmazonEcIAmazonEchoDiscoveryhoDiscovery} is responsible connection between account and discovery service
+ * The {@link JsonEnabledFeeds} encapsulate the GSON data of the enabled feeds list
  *
  * @author Michael Geramb - Initial contribution
  */
-public interface IAmazonEchoDiscovery {
-    void updateDeviceList(boolean manual);
+public class JsonEnabledFeeds {
+    public JsonFeed[] enabledFeeds;
+
 }

@@ -6,13 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazonechocontrol.internal.discovery;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 /**
- * The {@link AmazonEcIAmazonEchoDiscoveryhoDiscovery} is responsible connection between account and discovery service
+ * The {@link JsonSmartHomeDevice} encapsulate the GSON-part data of a network query
  *
  * @author Michael Geramb - Initial contribution
  */
-public interface IAmazonEchoDiscovery {
-    void updateDeviceList(boolean manual);
+public class JsonSmartHomeDevice {
+    public String entityId;
+    public String friendlyName;
+    public String[] actions;
+    public String manufacturerName;
 }

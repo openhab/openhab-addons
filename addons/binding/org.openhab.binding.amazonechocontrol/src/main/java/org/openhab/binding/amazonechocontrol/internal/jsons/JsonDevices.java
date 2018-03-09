@@ -24,6 +24,7 @@ public class JsonDevices {
         public String deviceType;
         public String softwareVersion;
         public boolean online;
+        public String[] capabilities;
 
     }
 

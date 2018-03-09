@@ -30,13 +30,18 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
+import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * Handles the connection to the amazon server.
@@ -46,18 +51,37 @@ import org.slf4j.LoggerFactory;
 public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDiscovery {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
+    private StateStorage stateStorage;
     private AccountConfiguration config;
     private Connection connection;
-    private List<EchoHandler> childs = new ArrayList<>();
+    private List<EchoHandler> echoHandlers = new ArrayList<>();
+    private List<SmartHomeBaseHandler> smartHomeHandlers = new ArrayList<>();
+    private List<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new ArrayList<>();
     private Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private ScheduledFuture<?> refreshJob;
     private ScheduledFuture<?> refreshLogin;
+    private boolean updateSmartHomeDeviceList;
+    private boolean discoverFlashProfiles;
+    private boolean smartHodeDeviceListEnabled;
+    private String currentFlashBriefingJson = "";
 
     public AccountHandler(@NonNull Bridge bridge) {
         super(bridge);
+
+        stateStorage = new StateStorage(bridge);
         AmazonEchoDiscovery.setHandlerExist();
 
+    }
+
+    public Device[] getLastKnownDevices() {
+        Map<String, Device> temp = jsonSerialNumberDeviceMapping;
+        if (temp == null) {
+            return new Device[0];
+        }
+        Device[] devices = new Device[temp.size()];
+        temp.values().toArray(devices);
+        return devices;
     }
 
     @Override
@@ -71,26 +95,53 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void initialize() {
+
         start();
     }
 
     @Override
     public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
+
         if (childHandler instanceof EchoHandler) {
             EchoHandler echoHandler = (EchoHandler) childHandler;
-            synchronized (childs) {
-                childs.add(echoHandler);
+            synchronized (echoHandlers) {
+                echoHandlers.add(echoHandler);
+            }
+            Connection temp = connection;
+            if (temp != null) {
+                initializeEchoHandler(echoHandler, temp);
+            }
 
-                Connection temp = connection;
-                if (temp != null) {
-                    initializeChild(echoHandler, temp);
+        }
+        if (childHandler instanceof FlashBriefingProfileHandler) {
+            FlashBriefingProfileHandler flashBriefingProfileHandler = (FlashBriefingProfileHandler) childHandler;
+            synchronized (flashBriefingProfileHandlers) {
+                flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
+            }
+            Connection temp = connection;
+            if (temp != null) {
+                if (currentFlashBriefingJson.isEmpty()) {
+                    updateFlashBriefingProfiles(temp);
                 }
+
+                flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
             }
         }
+        if (childHandler instanceof SmartHomeBaseHandler) {
+            SmartHomeBaseHandler smartHomeHandler = (SmartHomeBaseHandler) childHandler;
+            synchronized (smartHomeHandlers) {
+                smartHomeHandlers.add(smartHomeHandler);
+            }
+            Connection temp = connection;
+            if (temp != null) {
+                smartHomeHandler.initialize(temp);
+            }
+        }
+
     }
 
-    private void initializeChild(@NonNull EchoHandler echoHandler, @NonNull Connection temp) {
+    private void initializeEchoHandler(@NonNull EchoHandler echoHandler, @NonNull Connection temp) {
         intializeChildDevice(temp, echoHandler);
 
         Device device = findDeviceJson(echoHandler);
@@ -114,13 +165,28 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     @Override
     public void childHandlerDisposed(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
         if (childHandler instanceof EchoHandler) {
-            synchronized (childs) {
-                childs.remove(childHandler);
+            synchronized (echoHandlers) {
+                echoHandlers.remove(childHandler);
             }
 
             AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
             if (instance != null) {
-                instance.removeExisting(childThing.getUID());
+                instance.removeExistingEchoHandler(childThing.getUID());
+            }
+        }
+        if (childHandler instanceof FlashBriefingProfileHandler) {
+            synchronized (flashBriefingProfileHandlers) {
+                flashBriefingProfileHandlers.remove(childHandler);
+            }
+        }
+        if (childHandler instanceof SmartHomeBaseHandler) {
+            synchronized (smartHomeHandlers) {
+                smartHomeHandlers.remove(childHandler);
+            }
+
+            AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
+            if (instance != null) {
+                instance.removeExistingSmartHomeHandler(childThing.getUID());
             }
         }
         super.childHandlerDisposed(childHandler, childThing);
@@ -179,6 +245,15 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             cleanup();
             return;
         }
+        if (config.discoverSmartHomeDevices != null && config.discoverSmartHomeDevices) {
+            if (!smartHodeDeviceListEnabled) {
+                updateSmartHomeDeviceList = true;
+            }
+            smartHodeDeviceListEnabled = true;
+        } else {
+            smartHodeDeviceListEnabled = false;
+        }
+
         if (config.pollingIntervalInSeconds < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval less than 10 seconds not allowed");
@@ -193,10 +268,16 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+        if (refreshLogin != null) {
+            refreshLogin.cancel(false);
+        }
         refreshLogin = scheduler.scheduleWithFixedDelay(() -> {
             checkLogin();
         }, 0, 60, TimeUnit.SECONDS);
 
+        if (refreshJob != null) {
+            refreshJob.cancel(false);
+        }
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
         }, 4, config.pollingIntervalInSeconds, TimeUnit.SECONDS);
@@ -229,7 +310,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
             {
                 // Recreate session
-                this.updateProperty("sessionStorage", "");
+                this.stateStorage.storeState("sessionStorage", "");
                 temp = new Connection(temp.getEmail(), temp.getPassword(), temp.getAmazonSite());
             }
             boolean loginIsValid = true;
@@ -237,7 +318,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 try {
 
                     // read session data from property
-                    String sessionStore = this.thing.getProperties().get("sessionStorage");
+                    String sessionStore = this.stateStorage.findState("sessionStorage");
 
                     // try use the session data
                     if (!temp.tryRestoreLogin(sessionStore)) {
@@ -263,8 +344,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                         if (serializedStorage == null) {
                             serializedStorage = "";
                         }
-                        this.updateProperty("sessionStorage", serializedStorage);
+                        this.stateStorage.storeState("sessionStorage", serializedStorage);
                     }
+                    updateSmartHomeDeviceList = true;
                     connection = temp;
                 } catch (UnknownHostException e) {
                     loginIsValid = false;
@@ -276,7 +358,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 }
                 if (loginIsValid) {
                     // update the device list
-                    updateDeviceList();
+                    updateDeviceList(false);
                     updateStatus(ThingStatus.ONLINE);
                     AmazonEchoDiscovery.addDiscoveryHandler(this);
                 }
@@ -300,28 +382,27 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (temp == null) {
                 return;
             }
-            synchronized (childs) {
 
-                updateDeviceList();
+            updateDeviceList(false);
 
-                JsonBluetoothStates states = null;
-                if (temp.getIsLoggedIn()) {
-                    try {
-                        states = temp.getBluetoothConnectionStates();
-                    } catch (Exception e) {
-                        logger.info("getBluetoothConnectionStates failed: {}", e);
-                    }
-                }
-
-                for (EchoHandler child : childs) {
-                    Device device = findDeviceJson(child);
-                    BluetoothState state = null;
-                    if (states != null) {
-                        state = states.findStateByDevice(device);
-                    }
-                    child.updateState(device, state);
+            JsonBluetoothStates states = null;
+            if (temp.getIsLoggedIn()) {
+                try {
+                    states = temp.getBluetoothConnectionStates();
+                } catch (Exception e) {
+                    logger.info("getBluetoothConnectionStates failed: {}", e);
                 }
             }
+
+            for (EchoHandler child : echoHandlers) {
+                Device device = findDeviceJson(child);
+                BluetoothState state = null;
+                if (states != null) {
+                    state = states.findStateByDevice(device);
+                }
+                child.updateState(device, state);
+            }
+
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
@@ -332,6 +413,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     public Device findDeviceJson(EchoHandler echoHandler) {
         String serialNumber = echoHandler.findSerialNumber();
+        return findDeviceJson(serialNumber);
+    }
+
+    public Device findDeviceJson(String serialNumber) {
         Device result = null;
         if (!serialNumber.isEmpty()) {
             Map<String, Device> temp = jsonSerialNumberDeviceMapping;
@@ -343,12 +428,36 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         return result;
     }
 
+    public Device findDeviceJsonBySerialOrName(String serialOrName) {
+        if (!serialOrName.isEmpty()) {
+            String serialOrNameLowerCase = serialOrName.toLowerCase();
+            Map<String, Device> temp = jsonSerialNumberDeviceMapping;
+            for (Device device : temp.values()) {
+                if (device.serialNumber != null && device.serialNumber.toLowerCase().equals(serialOrNameLowerCase)) {
+                    return device;
+                }
+            }
+            for (Device device : temp.values()) {
+                if (device.accountName != null && device.accountName.toLowerCase().equals(serialOrNameLowerCase)) {
+                    return device;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
-    synchronized public void updateDeviceList() {
+    public void updateDeviceList(boolean manualScan) {
+        if (manualScan) {
+            updateSmartHomeDeviceList = true;
+            discoverFlashProfiles = true;
+        }
+
         Connection temp = connection;
         if (temp == null) {
             return;
         }
+        AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
 
         Device[] devices = null;
         try {
@@ -365,18 +474,119 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
 
-            AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
             if (discoveryService != null) {
                 discoveryService.setDevices(getThing().getUID(), devices);
             }
         }
-        synchronized (childs) {
-            for (EchoHandler child : childs) {
+        synchronized (echoHandlers) {
+            for (EchoHandler child : echoHandlers) {
                 if (child != null) {
-                    initializeChild(child, temp);
+                    initializeEchoHandler(child, temp);
                 }
             }
         }
+        synchronized (smartHomeHandlers) {
+            for (SmartHomeBaseHandler child : smartHomeHandlers) {
+                if (child != null) {
+                    child.initialize(temp);
+                }
+            }
+        }
+        updateFlashBriefingHandlers(temp);
+
+        if (discoveryService != null && updateSmartHomeDeviceList && smartHodeDeviceListEnabled) {
+            updateSmartHomeDeviceList = false;
+            List<JsonSmartHomeDevice> smartHomeDevices = null;
+            try {
+                smartHomeDevices = temp.getSmartHomeDevices();
+            } catch (Exception e) {
+                logger.warn("Update smart home list failed {}", e);
+            }
+            if (smartHomeDevices != null) {
+                discoveryService.setSmartHomeDevices(getThing().getUID(), smartHomeDevices);
+            }
+        }
+
+    }
+
+    public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
+        Connection temp = connection;
+        Gson gson = new Gson();
+        JsonFeed[] feeds = gson.fromJson(flashBriefingJson, JsonFeed[].class);
+        if (temp != null) {
+            try {
+                temp.setEnabledFlashBriefings(feeds);
+            } catch (Exception e) {
+                logger.warn("Set flashbriefing profile failed {}", e);
+            }
+        }
+        updateFlashBriefingHandlers();
+    }
+
+    public void updateFlashBriefingHandlers() {
+        Connection temp = connection;
+        if (temp != null) {
+            updateFlashBriefingHandlers(temp);
+        }
+    }
+
+    private void updateFlashBriefingHandlers(Connection temp) {
+        synchronized (smartHomeHandlers) {
+            if (!flashBriefingProfileHandlers.isEmpty() || currentFlashBriefingJson.isEmpty()) {
+                updateFlashBriefingProfiles(temp);
+            }
+
+            for (FlashBriefingProfileHandler child : flashBriefingProfileHandlers) {
+                if (child != null) {
+                    child.initialize(this, currentFlashBriefingJson);
+                }
+            }
+            if (flashBriefingProfileHandlers.isEmpty()) {
+                discoverFlashProfiles = true; // discover at least one device
+            }
+            AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
+            if (discoveryService != null) {
+                if (discoverFlashProfiles) {
+                    discoverFlashProfiles = false;
+                    discoveryService.discoverFlashBriefingProfiles(getThing().getUID(), this.currentFlashBriefingJson);
+                }
+            }
+        }
+    }
+
+    public Connection findConnection() {
+        return this.connection;
+    }
+
+    public String getEnabledFlashBriefingsJson() {
+        Connection temp = this.connection;
+        if (temp == null) {
+            return "";
+        }
+        updateFlashBriefingProfiles(temp);
+        return this.currentFlashBriefingJson;
+    }
+
+    private void updateFlashBriefingProfiles(Connection temp) {
+        try {
+            JsonFeed[] feeds = temp.getEnabledFlashBriefings();
+            // Make a copy and remove changeable parts
+            JsonFeed[] forSerializer = new JsonFeed[feeds.length];
+            for (int i = 0; i < feeds.length; i++) {
+                JsonFeed source = feeds[i];
+                JsonFeed copy = new JsonFeed();
+                copy.feedId = source.feedId;
+                copy.skillId = source.skillId;
+                // Do not copy imageUrl here, because it will change
+                forSerializer[i] = copy;
+            }
+            Gson gson = new Gson();
+            this.currentFlashBriefingJson = gson.toJson(forSerializer);
+
+        } catch (Exception e) {
+            logger.warn("get flash briefing profiles fails {}", e);
+        }
+
     }
 
     private void intializeChildDevice(@NonNull Connection connection, @NonNull EchoHandler child) {

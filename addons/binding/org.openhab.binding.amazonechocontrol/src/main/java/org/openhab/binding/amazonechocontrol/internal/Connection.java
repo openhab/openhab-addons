@@ -18,6 +18,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +28,28 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNetworkDetails;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -445,6 +454,7 @@ public class Connection {
     public boolean verifyLogin() throws Exception {
         String response = makeRequestAndReturnString(m_alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
+
         return result;
     }
 
@@ -572,6 +582,100 @@ public class Connection {
         }
     }
 
+    // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play
+    public void executeSequenceCommand(Device device, String command) throws Exception {
+        String json = "{ \"behaviorId\": \"amzn1.alexa.automation.00000000-0000-0000-0000-000000000000\", "
+                + "    \"sequenceJson\": \"{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.Sequence\\\",\\\"startNode\\\":{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode\\\",\\\"type\\\":\\\""
+                + command + "\\\",\\\"operationPayload\\\":{\\\"deviceType\\\":\\\"" + device.deviceType
+                + "\\\",\\\"deviceSerialNumber\\\":\\\"" + device.serialNumber + "\\\",\\\"customerId\\\":\\\""
+                + device.deviceOwnerCustomerId + "\\\",\\\"locale\\\":\\\"\\\"}}}\",\n" + " \"status\": \"ENABLED\" }";
+
+        makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, json, true);
+    }
+
+    public void startRoutine(Device device, String utterance) throws Exception {
+        JsonAutomation found = null;
+        String deviceLocale = null;
+        for (JsonAutomation routine : getRoutines()) {
+            if (routine.triggers != null && routine.sequence != null) {
+                for (JsonAutomation.Trigger trigger : routine.triggers) {
+                    if (trigger.payload != null && trigger.payload.utterance != null
+                            && trigger.payload.utterance.equalsIgnoreCase(utterance)) {
+                        found = routine;
+                        deviceLocale = trigger.payload.locale;
+                        break;
+                    }
+                }
+            }
+        }
+        if (found != null) {
+            Gson gson = new Gson();
+            String sequenceJson = gson.toJson(found.sequence);
+
+            JsonStartRoutineRequest request = new JsonStartRoutineRequest();
+            request.behaviorId = found.automationId;
+
+            // replace tokens
+
+            // "deviceType":"ALEXA_CURRENT_DEVICE_TYPE"
+            String deviceType = "\"deviceType\":\"ALEXA_CURRENT_DEVICE_TYPE\"";
+            String newDeviceType = "\"deviceType\":\"" + device.deviceType + "\"";
+            sequenceJson = sequenceJson.replace(deviceType.subSequence(0, deviceType.length()),
+                    newDeviceType.subSequence(0, newDeviceType.length()));
+
+            // "deviceSerialNumber":"ALEXA_CURRENT_DSN"
+            String deviceSerial = "\"deviceSerialNumber\":\"ALEXA_CURRENT_DSN\"";
+            String newDeviceSerial = "\"deviceSerialNumber\":\"" + device.serialNumber + "\"";
+            sequenceJson = sequenceJson.replace(deviceSerial.subSequence(0, deviceSerial.length()),
+                    newDeviceSerial.subSequence(0, newDeviceSerial.length()));
+
+            // "customerId": "ALEXA_CUSTOMER_ID"
+            String customerId = "\"customerId\":\"ALEXA_CUSTOMER_ID\"";
+            String newCustomerId = "\"customerId\":\"" + device.deviceOwnerCustomerId + "\"";
+            sequenceJson = sequenceJson.replace(customerId.subSequence(0, customerId.length()),
+                    newCustomerId.subSequence(0, newCustomerId.length()));
+
+            // "locale": "ALEXA_CURRENT_LOCALE"
+            String locale = "\"locale\":\"ALEXA_CURRENT_LOCALE\"";
+            String newlocale = deviceLocale != null ? "\"locale\":\"" + deviceLocale + "\"" : "\"locale\":null";
+            sequenceJson = sequenceJson.replace(locale.subSequence(0, locale.length()),
+                    newlocale.subSequence(0, newlocale.length()));
+
+            request.sequenceJson = sequenceJson;
+
+            String requestJson = gson.toJson(request);
+            makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, requestJson, true);
+        } else {
+            logger.warn("Routine {} not found", utterance);
+        }
+    }
+
+    public JsonAutomation[] getRoutines() throws Exception {
+        String json = makeRequestAndReturnString("GET", m_alexaServer + "/api/behaviors/automations", null, null, true);
+        JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
+        return result;
+    }
+
+    public JsonFeed[] getEnabledFlashBriefings() throws Exception {
+        String json = makeRequestAndReturnString("GET", m_alexaServer + "/api/content-skills/enabled-feeds", null, null,
+                true);
+        JsonEnabledFeeds result = parseJson(json, JsonEnabledFeeds.class);
+        if (result.enabledFeeds != null) {
+            return result.enabledFeeds;
+        }
+        return new JsonFeed[0];
+    }
+
+    public void setEnabledFlashBriefings(JsonFeed[] enabledFlashBriefing) throws Exception {
+        JsonEnabledFeeds enabled = new JsonEnabledFeeds();
+        enabled.enabledFeeds = enabledFlashBriefing;
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+        String json = gson.toJson(enabled);
+        makeRequest("POST", m_alexaServer + "/api/content-skills/enabled-feeds", null, json, true);
+    }
+
     public JsonNotificationSound[] getNotificationSounds(Device device) throws Exception {
         String json = makeRequestAndReturnString(
                 "GET", m_alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber
@@ -584,7 +688,8 @@ public class Connection {
         return new JsonNotificationSound[0];
     }
 
-    public void notification(Device device, String type, String label, JsonNotificationSound sound) throws Exception {
+    public JsonNotificationResponse notification(Device device, String type, String label, JsonNotificationSound sound)
+            throws Exception {
 
         Date date = new Date(new Date().getTime());
         long createdDate = date.getTime();
@@ -610,8 +715,70 @@ public class Connection {
         Gson gson = gsonBuilder.create();
 
         String data = gson.toJson(request);
-        makeRequestAndReturnString("PUT", m_alexaServer + "/api/notifications/createReminder", null, data, true);
+        String response = makeRequestAndReturnString("PUT", m_alexaServer + "/api/notifications/createReminder", null,
+                data, true);
+        JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
+        return result;
 
+    }
+
+    public void stopNotification(JsonNotificationResponse notification) throws Exception {
+        makeRequestAndReturnString("DELETE", m_alexaServer + "/api/notifications/" + notification.id, null, null, true);
+    }
+
+    public JsonNotificationResponse getNotificationState(JsonNotificationResponse notification) throws Exception {
+        String response = makeRequestAndReturnString("GET", m_alexaServer + "/api/notifications/" + notification.id,
+                null, null, true);
+        JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
+        return result;
+    }
+
+    public List<JsonSmartHomeDevice> getSmartHomeDevices() throws Exception {
+        try {
+            String json = makeRequestAndReturnString("GET", m_alexaServer + "/api/phoenix", null, null, true);
+            logger.debug("getSmartHomeDevices result: {}", json);
+
+            JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
+            Gson gson = new Gson();
+            Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
+            List<JsonSmartHomeDevice> result = new ArrayList<JsonSmartHomeDevice>();
+            searchSmartHomeDevicesRecursive(gson, jsonObject, result);
+            return result;
+        } catch (Exception e) {
+            logger.error("getSmartHomeDevices fails: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    private void searchSmartHomeDevicesRecursive(Gson gson, Object jsonNode, List<JsonSmartHomeDevice> result) {
+
+        if (jsonNode instanceof Map) {
+            @SuppressWarnings("rawtypes")
+            Map map = (Map) jsonNode;
+            if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
+                // device node found, create type element and add it to the results
+                JsonElement element = gson.toJsonTree(jsonNode);
+                JsonSmartHomeDevice device = gson.fromJson(element, JsonSmartHomeDevice.class);
+                result.add(device);
+            } else {
+                for (Object key : map.keySet()) {
+                    Object value = map.get(key);
+                    searchSmartHomeDevicesRecursive(gson, value, result);
+                }
+            }
+        }
+    }
+
+    public void sendSmartHomeDeviceCommand(String entityId, String action, String parameterName, String parameter)
+            throws Exception {
+
+        String command = "{" + "\"controlRequests\": [{" + "\"entityId\": \"" + entityId + "\", "
+                + "\"entityType\": \"APPLIANCE\", " + "\"parameters\": {" + "\"action\": \"" + action + "\""
+                + (parameterName != null ? ", \"" + parameterName + "\": \"" + parameter + "\"" : "") + "   }" + "}]"
+                + "}";
+
+        String json = makeRequestAndReturnString("PUT", m_alexaServer + "/api/phoenix/state", null, command, true);
+        json.toString();
     }
 
 }

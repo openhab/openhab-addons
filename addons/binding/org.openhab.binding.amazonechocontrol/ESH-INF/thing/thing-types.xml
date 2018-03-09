@@ -42,8 +42,13 @@
                 <description>Refresh state interval in seconds. Lower time causes more network traffic.</description>
                 <unitLabel>Seconds</unitLabel>
             </parameter>
-            
-       
+            <!-- the smart home support is dropped currently because there are very less skills with work
+            <parameter name="discoverSmartHomeDevices" type="boolean" required="false" >
+                <default></default>
+                <label>Discover smart home devices</label>
+                <description>Discover smart home devices connected with a Smart Home Alexa Skill. The OpenHAB Alexa Smart Home Skill will be ignored.</description>
+            </parameter>
+            -->
         </config-description>
         
     </bridge-type>
@@ -77,6 +82,10 @@
             <channel id="amazonMusic" typeId="amazonMusic" />
             <channel id="remind" typeId="remind" />
             <channel id="playAlarmSound" typeId="playAlarmSound" />
+            <channel id="playFlashBriefing" typeId="playFlashBriefing" />
+            <channel id="playTrafficNews" typeId="playTrafficNews" />
+            <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="startRoutine" typeId="startRoutine" />           
         </channels>
         
         <representation-property>serialNumber</representation-property>
@@ -119,6 +128,10 @@
             <channel id="amazonMusic" typeId="amazonMusic" />
             <channel id="remind" typeId="remind" />
             <channel id="playAlarmSound" typeId="playAlarmSound" />
+            <channel id="playFlashBriefing" typeId="playFlashBriefing" />
+            <channel id="playTrafficNews" typeId="playTrafficNews" />
+            <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="startRoutine" typeId="startRoutine" />           
         </channels>
         
         <representation-property>serialNumber</representation-property>
@@ -132,7 +145,7 @@
      
     </thing-type>
     
-        <thing-type id="echoshow">
+    <thing-type id="echoshow">
         <supported-bridge-type-refs>
             <bridge-type-ref id="account" />
         </supported-bridge-type-refs>
@@ -161,6 +174,10 @@
             <channel id="amazonMusic" typeId="amazonMusic" />
             <channel id="remind" typeId="remind" />
             <channel id="playAlarmSound" typeId="playAlarmSound" />
+            <channel id="playFlashBriefing" typeId="playFlashBriefing" />
+            <channel id="playTrafficNews" typeId="playTrafficNews" />
+            <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="startRoutine" typeId="startRoutine" />
         </channels>
         
         <representation-property>serialNumber</representation-property>
@@ -238,6 +255,10 @@
             <channel id="amazonMusic" typeId="amazonMusic" />
             <channel id="remind" typeId="remind" />
             <channel id="playAlarmSound" typeId="playAlarmSound" />
+            <channel id="playFlashBriefing" typeId="playFlashBriefing" />
+            <channel id="playTrafficNews" typeId="playTrafficNews" />
+            <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="startRoutine" typeId="startRoutine" />
         </channels>
         
         <representation-property>serialNumber</representation-property>
@@ -249,7 +270,101 @@
             </parameter>
         </config-description>
      
+     </thing-type>
+     
+     <thing-type id="flashbriefingprofile">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+        
+        <label>Flash Briefing Profile</label>
+        <description>Store and load a flash briefing configuration</description>
+
+        <channels>
+            <channel id="save" typeId="save"/>
+            <channel id="active" typeId="active"/>
+            <channel id="playOnDevice" typeId="playOnDevice"/>
+        </channels>   
+          
+     </thing-type>
+     
+     <thing-type id="smarthomeswitch" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+        
+        <label>Switch</label>
+        <description>Smart Home Switch</description>
+
+        <channels>
+            <channel id="switch" typeId="switch"/>
+        </channels>
+        
+        <representation-property>entityId</representation-property>
+
+        <config-description>
+            <parameter name="entityId" type="text" required="true">
+                <label>Entity ID</label>
+                <description>Use the search feature of openHAB to get the id</description>
+            </parameter>
+        </config-description>
+     
     </thing-type>
+    
+    <thing-type id="smarthomedimmer" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+        
+        <label>Dimmer</label>
+        <description>Smart Home Dimmer</description>
+
+        <channels>
+            <channel id="switch" typeId="switch"/>
+            <channel id="dimmer" typeId="dimmer"/>
+        </channels>
+        
+        <representation-property>entityId</representation-property>
+
+        <config-description>
+            <parameter name="entityId" type="text" required="true">
+                <label>Entity ID</label>
+                <description>Let discover the device to get the id</description>
+            </parameter>
+        </config-description>
+     
+    </thing-type>
+  
+    
+    <channel-type id="save">
+        <item-type>Switch</item-type>
+        <label>Save</label>
+        <description>Save the current flash briefing configuration (Write only)</description> 
+    </channel-type>
+    
+    <channel-type id="active">
+        <item-type>Switch</item-type>
+        <label>Active</label>
+        <description>Activate this flash briefing configuration</description> 
+    </channel-type>
+    
+     <channel-type id="playOnDevice">
+        <item-type>String</item-type>
+        <label>Play On Device</label>
+        <description>Plays the briefing on the device (serial number or name, write only)</description> 
+    </channel-type>
+    
+    <channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Turns the device on or off</description> 
+    </channel-type>
+    
+    <channel-type id="dimmer">
+        <item-type>Dimmer</item-type>
+        <label>Dimmer</label>
+        <description>Dimmer control</description> 
+    </channel-type>
 
     <channel-type id="bluetoothDeviceName">
         <item-type>String</item-type>
@@ -267,13 +382,37 @@
     <channel-type id="remind">
         <item-type>String</item-type>
         <label>Remind</label>
-        <description>Speak the reminder and send a notification to the Alexa app (Write Only)</description>   
+        <description>Speak the reminder and send a notification to the Alexa app</description>   
+    </channel-type>
+
+    <channel-type id="playFlashBriefing">
+        <item-type>Switch</item-type>
+        <label>Flash Briefing</label>
+        <description>Starts the flash briefing (Write Only)</description>   
+    </channel-type>
+
+    <channel-type id="playWeatherReport">
+        <item-type>Switch</item-type>
+        <label>Weather Report</label>
+        <description>Starts the weather report (Write Only)</description>   
+    </channel-type>
+    
+    <channel-type id="playTrafficNews">
+        <item-type>Switch</item-type>
+        <label>Traffic News</label>
+        <description>Starts the traffic news (Write Only)</description>   
+    </channel-type>
+
+    <channel-type id="startRoutine">
+        <item-type>String</item-type>
+        <label>Start a routine</label>
+        <description>Type in what you normally say to Alexa without the preceding "Alexa," (Write Only)</description>   
     </channel-type>
 
     <channel-type id="playAlarmSound">
         <item-type>String</item-type>
         <label>Alarm Sound</label>
-        <description>Plays an alarm sound (Write Only)</description>   
+        <description>Plays an alarm sound</description>   
     </channel-type>
  
     <channel-type id="amazonMusicTrackId">

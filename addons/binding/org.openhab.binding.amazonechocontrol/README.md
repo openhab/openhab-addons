@@ -15,6 +15,11 @@ The binding provide features to control and view the current state of echo dot d
 - show album art image in sitemap
 - speak a reminder message
 - plays an alarm sound
+- start traffic news
+- start daily briefing
+- start weather report
+- start automation routine
+- have multiple configurations of flash briefings
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -22,7 +27,11 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - If the amplifier was turned of, the echo stop playing and disconnect the bluetooth
 - The echo starts playing radio if the light was turned on
 - The echo starts playing radio at specified time 
-- Remind you we a voice message, that a window is open for a long time and it is winter
+- Remind you with a voice message, that a window is open for a long time and it is winter
+- Start a routine which welcome you, if you come home
+- Start a routine which switch a smart home device connected to alexa
+- Start your briefing if you turn on the light first time in the morning
+- Have different flash briefing in the morning and evening
 
 ## Note ##
 
@@ -41,16 +50,17 @@ All the display options are updated by polling the amazon server. The polling ti
 
 ## Supported Things
 
-| Thing type id       | Name                                  |
-|---------------------|---------------------------------------|
-| account             | Amazon Account                        |
-| echo                | Amazon Echo Device                    |
-| echospot            | Amazon Echo Spot Device               |
-| echoshow            | Amazon Echo Show Device               |
-| wha                 | Amazon Echo Whole House Audio Control |
-| unknown             | Unknown Echo Device or App            |
+| Thing type id        | Name                                  |
+|----------------------|---------------------------------------|
+| account              | Amazon Account                        |
+| echo                 | Amazon Echo Device                    |
+| echospot             | Amazon Echo Spot Device               |
+| echoshow             | Amazon Echo Show Device               |
+| wha                  | Amazon Echo Whole House Audio Control |
+| flashbriefingprofile | Flash briefing profile                |
+| unknown              | Unknown Echo Device or App\*          |
 
-The unknown device will provide all channels, but maybe not all of them supported by your device.
+\* The unknown device will provide all channels, but maybe not all of them supported by your device.
 
 ## Discovery
 
@@ -73,13 +83,19 @@ The Amazon Account device need the following configurations:
 
 2 factor authentication is not supported!
 
-All Amazon devices needs the following configurations:
+### Amazon devices
+
+All Amazon devices (echo, echospot, echoshow, wha, unknown) needs the following configurations:
 
 | Configuration name       | Description                                        |
 |--------------------------|----------------------------------------------------|
 | serialNumber             | Serial number of the amazon echo in the Alexa app  |
 
 You will find the serial number in the alexa app.
+
+### Flash briefing profile
+
+The flashbriefingprofile thing has no configuration parameters. It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
 
 ## Channels
 
@@ -103,25 +119,33 @@ You will find the serial number in the alexa app.
 | amazonMusicPlayListId      | String    | W         | echo, echoshow, echospot, wha, unknown | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
 | amazonMusicPlayListIdLastUsed   | String    | R  | echo, echoshow, echospot, wha, unknown | The last play list id started from openHAB
 | amazonMusic               | Switch    | R/W         | echo, echoshow, echospot, wha, unknown | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
-| remind               | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the amazon software)
-| playAlarmSound          | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Plays an alarm sound. In PaperUI will be a selection box available. For rules use the value shown in the square brackets
+| remind               | String    | R/W         | echo, echoshow, echospot, unknown      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the amazon software)
+| playAlarmSound          | String    | R/W         | echo, echoshow, echospot, unknown      | Write Only! Plays an alarm sound. In PaperUI will be a selection box available. For rules use the value shown in the square brackets
+| playFlashBriefing          | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the flash briefing
+| playWeatherReport          | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the weather report
+| playTrafficNews            | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the traffic news
+| startRoutine               | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| save            | Switch    | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
+| active          | Switch    | R/W       | flashbriefingprofile     | Active the profile
+| playOnDevice    | String    | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
 
 ## Full Example
 
 ### amzonechocontrol.things
 
 ```
-Bridge amazonechocontrol:account:account1 [amazonSite="amazon.de", email="myaccountemail@myprovider.com", password="secure", pollingIntervalInSeconds=60]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonSite="amazon.de", email="myaccountemail@myprovider.com", password="secure", pollingIntervalInSeconds=60]
 {
-    Thing echo     echo1 "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
-    Thing echoshow echo2 "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]
-    Thing echospot echo3 "Alexa" @ "Sleeping Room" [serialNumber="SERIAL_NUMBER"]
-    Thing wha      echo4 "Alexa" @ "Ground Floor Music Group" [serialNumber="SERIAL_NUMBER"]
-    Thing unknown      echo4 "Alexa" @ "Very new echo device" [serialNumber="SERIAL_NUMBER"]
+    Thing echo                 echo1 "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
+    Thing echoshow             echo2 "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]
+    Thing echospot             echo3 "Alexa" @ "Sleeping Room" [serialNumber="SERIAL_NUMBER"]
+    Thing wha                  echo4 "Alexa" @ "Ground Floor Music Group" [serialNumber="SERIAL_NUMBER"]
+    Thing unknown              echo5 "Alexa" @ "Very new echo device" [serialNumber="SERIAL_NUMBER"]
+    Thing flashbriefingprofile flashbriefing1 "Flash Briefing" @ "Flash Briefings" 
 }
 ```
 
-You will find the serial number in the Alexa app.
+You will find the serial number in the Alexa app. 
 
 ### amzonechocontrol.items:
 
@@ -150,6 +174,14 @@ String Echo_Living_Room_AmazonMusicPlayListIdLastUsed "Amazon Music Playlist Id 
 Switch Echo_Living_Room_AmazonMusic           "Amazon Music"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusic"}
 String Echo_Living_Room_Remind                "Remind"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
 String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
+Switch Echo_Living_Room_PlayFlashBriefing         "Play Flash Briefing"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playFlashBriefing"}
+Switch Echo_Living_Room_PlayWeatherReport         "Play Weather Report"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playWeatherReport"}
+Switch Echo_Living_Room_PlayTrafficNews        "Play Traffic News"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playTrafficNews"}
+String Echo_Living_Room_StartRoutine         "Start Routine"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+
+Switch FlashBriefing_Technical_Save  "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
+String FlashBriefing_Technical_Play "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 ```
 
 ### amzonechocontrol.sitemap:
@@ -177,6 +209,16 @@ sitemap amzonechocontrol label="Echo Devices"
             Switch  item=Echo_Living_Room_AmazonMusic
             Text    item=Echo_Living_Room_Remind
             Text    item=Echo_Living_Room_PlayAlarmSound
+            Switch  item=Echo_Living_Room_PlayFlashBriefing
+            Switch  item=Echo_Living_Room_PlayWeatherReport
+            Switch  item=Echo_Living_Room_PlayTrafficNews
+            Text    item=Echo_Living_Room_StartRoutine
+        }
+        
+        Frame label="Flash Briefing 1" {
+            Switch  item=FlashBriefing_Technical_Save
+            Switch  item=FlashBriefing_Technical_Active
+            Text  item=FlashBriefing_Technical_Play
         }
 }
 ```

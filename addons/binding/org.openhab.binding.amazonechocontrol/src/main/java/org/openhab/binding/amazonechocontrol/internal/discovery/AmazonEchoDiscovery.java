@@ -11,11 +11,13 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +29,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
+import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
+import org.openhab.binding.amazonechocontrol.handler.SmartHomeBaseHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -47,6 +52,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     private final @NonNull Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
     private final @NonNull Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
+    private final @NonNull Map<String, ThingUID> lastSmartHomeDeviceInformations = new HashMap<>();
+    private final @NonNull HashSet<String> discoverdFlashBriefings = new HashSet<String>();
 
     public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
         synchronized (discoveryServices) {
@@ -80,6 +87,11 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        startScan(true);
+    }
+
+    protected void startScan(boolean manual) {
+
         if (startScanStateJob != null) {
             startScanStateJob.cancel(false);
             startScanStateJob = null;
@@ -105,7 +117,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         }
 
         for (IAmazonEchoDiscovery discovery : accounts) {
-            discovery.updateDeviceList();
+            discovery.updateDeviceList(manual);
         }
 
     }
@@ -122,7 +134,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
         startScanStateJob = scheduler.schedule(() -> {
 
-            startScan();
+            startScan(false);
         }, 3000, TimeUnit.MILLISECONDS);
 
     }
@@ -145,6 +157,52 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             modified(config);
         }
     };
+
+    public synchronized void setSmartHomeDevices(ThingUID brigdeThingUID,
+            List<JsonSmartHomeDevice> deviceInformations) {
+        Set<String> toRemove = new HashSet<String>(lastSmartHomeDeviceInformations.keySet());
+        for (JsonSmartHomeDevice deviceInformation : deviceInformations) {
+            if (deviceInformation.manufacturerName != null && deviceInformation.manufacturerName.equals("openHAB")) {
+                // Ignore devices provided by the openHAB skill
+                continue;
+            }
+            String entityId = deviceInformation.entityId;
+            if (entityId != null) {
+                boolean alreadyfound = toRemove.remove(entityId);
+                if (!alreadyfound && deviceInformation.actions != null) {
+                    List<String> actions = Arrays.asList(deviceInformation.actions);
+                    if (actions.contains("turnOn") && actions.contains("turnOff")) {
+
+                        ThingTypeUID thingTypeId;
+                        if (actions.contains("setPercentage")) {
+                            thingTypeId = THING_TYPE_SMART_HOME_DIMMER;
+                        } else {
+                            thingTypeId = THING_TYPE_SMART_HOME_SWITCH;
+                        }
+
+                        ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, entityId);
+
+                        // Check if already created
+                        if (SmartHomeBaseHandler.find(thingUID) == null) {
+
+                            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                    .withLabel(deviceInformation.friendlyName)
+                                    .withProperty(DEVICE_PROPERTY_ENTITY_ID, entityId)
+                                    .withRepresentationProperty(DEVICE_PROPERTY_ENTITY_ID).withBridge(brigdeThingUID)
+                                    .build();
+
+                            logger.debug("Device [{}: {}] found. Mapped to thing type {}",
+                                    deviceInformation.friendlyName, entityId, thingTypeId.getAsString());
+
+                            thingDiscovered(result);
+                            lastSmartHomeDeviceInformations.put(entityId, thingUID);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 
     public synchronized void setDevices(ThingUID brigdeThingUID, Device[] deviceInformations) {
 
@@ -191,11 +249,49 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    public synchronized void removeExisting(@NonNull ThingUID uid) {
+    public synchronized void discoverFlashBriefingProfiles(ThingUID brigdeThingUID, String currentFlashBriefingJson) {
+        if (currentFlashBriefingJson.isEmpty()) {
+            return;
+        }
+        if (discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
+            return;
+        }
+        if (!FlashBriefingProfileHandler.exist(currentFlashBriefingJson)) {
+            if (!discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
+
+                String id = UUID.randomUUID().toString();
+                ThingUID thingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID, id);
+
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("FlashBriefing")
+                        .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
+                        .withBridge(brigdeThingUID).build();
+                logger.debug("Flash Briefing {} discovered", currentFlashBriefingJson);
+
+                thingDiscovered(result);
+                discoverdFlashBriefings.add(currentFlashBriefingJson);
+            }
+        }
+    }
+
+    public synchronized void removeExistingEchoHandler(@NonNull ThingUID uid) {
         for (String id : lastDeviceInformations.keySet()) {
             if (lastDeviceInformations.get(id).equals(uid)) {
                 lastDeviceInformations.remove(id);
             }
+        }
+    }
+
+    public synchronized void removeExistingSmartHomeHandler(@NonNull ThingUID uid) {
+        for (String id : lastSmartHomeDeviceInformations.keySet()) {
+            if (lastSmartHomeDeviceInformations.get(id).equals(uid)) {
+                lastSmartHomeDeviceInformations.remove(id);
+            }
+        }
+    }
+
+    public synchronized void removeExistingFlashBriefingProfile(String currentFlashBriefingJson) {
+        if (currentFlashBriefingJson != null) {
+            discoverdFlashBriefings.remove(currentFlashBriefingJson);
         }
     }
 
