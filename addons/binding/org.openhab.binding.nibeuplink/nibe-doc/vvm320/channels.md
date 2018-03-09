@@ -27,7 +27,7 @@
 | hotwater#44306 | Number | 0 | 9999999 | No | Heat Meter - HW Cpr EP14 |  |
 | hotwater#44298 | Number | 0 | 9999999 | No | Heat Meter - HW Cpr and Add EP14 |  |
 | hotwater#48132 | String | --- | --- | Yes | Temporary Lux | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
-| hotwater#47041 | String | --- | --- | No | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
+| hotwater#47041 | String | --- | --- | Yes | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
 | compressor#44362 | Number | -32767 | 32767 | No | EB101-EP14-BT28 Outdoor Temp |  |
 | compressor#44396 | Number | 0 | 255 | No | EB101 Speed charge pump |  |
 | compressor#44703 | String | --- | --- | No | EB101-EP14 Defrosting Outdoor Unit | 0=No, 1=Active, 2=Passive |
@@ -54,3 +54,4 @@
 | airsupply#40311 | Number | 0 | 255 | No | External ERS accessory GQ2 speed |  |
 | airsupply#40312 | Number | 0 | 255 | No | External ERS accessory GQ3 speed |  |
 | airsupply#40942 | String | --- | --- | No | External ERS accessory block status |  |
+| airsupply#47260 | String | --- | --- | Yes | Selected fan speed | 0=normal, 1=speed 1, 2=speed 2, 3=speed 3, 4=speed 4 |

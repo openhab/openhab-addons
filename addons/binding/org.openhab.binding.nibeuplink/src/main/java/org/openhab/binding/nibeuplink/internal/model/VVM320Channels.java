@@ -19,7 +19,7 @@ public enum VVM320Channels implements Channel {
     // General
     CH_40004("40004", "BT1 Outdoor Temperature", ChannelGroup.GENERAL, Double.class),
     CH_40067("40067", "BT1 Average", ChannelGroup.GENERAL, Double.class),
-    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, Double.class, "/Manage/4.9.3", "[01234]"),
+    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, Double.class, "/Manage/4.9.3", "[0-9]+"),
     CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, Double.class),
     CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, Double.class),
     CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, String.class),
@@ -48,8 +48,8 @@ public enum VVM320Channels implements Channel {
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
     CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, Double.class),
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class, "/Manage/2.1", "[0-9]+"),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class, "/Manage/2.1", "[01234]"),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class, "/Manage/2.2", "[012]"),
 
     // Compressor
     CH_44362("44362", "EB101-EP14-BT28 Outdoor Temp", ChannelGroup.COMPRESSOR, Double.class),
@@ -80,6 +80,7 @@ public enum VVM320Channels implements Channel {
     CH_40311("40311", "External ERS accessory GQ2 speed", ChannelGroup.AIRSUPPLY, Double.class),
     CH_40312("40312", "External ERS accessory GQ3 speed", ChannelGroup.AIRSUPPLY, Double.class),
     CH_40942("40942", "External ERS accessory block status", ChannelGroup.AIRSUPPLY, String.class),
+    CH_47260("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, String.class, "/Manage/1.2", "[01234]"),
 
     /* END */
     ;

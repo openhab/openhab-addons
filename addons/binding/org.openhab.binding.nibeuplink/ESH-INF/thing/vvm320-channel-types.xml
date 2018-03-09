@@ -357,11 +357,11 @@
 		<item-type>String</item-type>
 		<label>Hot water mode</label>
 		<description> 0=Economy 1=Normal 2=Luxury</description>
-		<state min="0" max="2" step="1" pattern="%s" readOnly="false">
+		<state pattern="%s" readOnly="false">
 			<options>
-				<option value="economy">Economy</option>
-				<option value="normal">Normal</option>
-				<option value="luxury">Luxury</option>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
 			</options>
 		</state>
 	</channel-type>
@@ -372,17 +372,31 @@
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="vvm320-type-47260">
+		<item-type>String</item-type>
+		<label>Selected Fan speed</label>
+		<description></description>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">normal</option>
+				<option value="1">speed 1</option>
+				<option value="2">speed 2</option>
+				<option value="3">speed 3</option>
+				<option value="4">speed 4</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="vvm320-type-48132">
 		<item-type>String</item-type>
 		<label>Temporary Lux</label>
 		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
-		<state min="-128" max="127" step="1" pattern="%s" readOnly="false">
+		<state pattern="%s" readOnly="false">
 			<options>
-				<option value="off">Off</option>
-				<option value="3h">3h</option>
-				<option value="6h">6h</option>
-				<option value="12h">12h</option>
-				<option value="one time increase">One time increase</option>
+				<option value="0">Off</option>
+				<option value="1">3h</option>
+				<option value="2">6h</option>
+				<option value="3">12h</option>
+				<option value="4">One time increase</option>
 			</options>
 		</state>
 	</channel-type>
