@@ -17,7 +17,7 @@ Import-Package:
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
- com.google.gson.internal;resolution:=optional,
+ com.google.gson.internal,
  com.google.gson.reflect,
  com.google.gson.stream,
  org.apache.commons.net.util,
