@@ -16,8 +16,19 @@ import org.apache.commons.lang.StringUtils;
  * @author Mark Hilbush - Initial contribution
  */
 public class BigAssFanConfig {
+    /**
+     * Name of the device
+     */
     private String label;
+
+    /**
+     * IP address of the device
+     */
     private String ipAddress;
+
+    /**
+     * MAC address of the device
+     */
     private String macAddress;
 
     public String getLabel() {
