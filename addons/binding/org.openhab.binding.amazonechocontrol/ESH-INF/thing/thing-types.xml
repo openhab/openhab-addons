@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing-descriptions bindingId="amazonechocontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="amazonechocontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
-		<label>
-			Amazon Account
-		</label>
-		<description>
-			Amazon Account where your amazon echo is registered.
-		</description>
+		<label>Amazon Account</label>
+		<description>Amazon Account where your amazon echo is registered.</description>
 		<config-description>
 			<parameter name="amazonSite" type="text" required="true">
 				<default>
@@ -740,4 +736,4 @@
 			Volume of the sound
 		</description>
 	</channel-type>
-</thing-descriptions>
+</thing:thing-descriptions>

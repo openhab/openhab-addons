@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding id="amazonechocontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+<binding:binding id="amazonechocontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 	<name>
 		Amazon Echo Control Binding
 	</name>
@@ -9,4 +9,4 @@
 	<author>
 		Michael Geramb
 	</author>
-</binding>
+</binding:binding>
