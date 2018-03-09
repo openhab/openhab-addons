@@ -75,7 +75,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updatePlayOnDevice = true;
-        logger.info(getClass().getSimpleName() + " initialized");
+        logger.info("{} initialized", getClass().getSimpleName());
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);
         }

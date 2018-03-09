@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
     private static HashMap<ThingUID, SmartHomeBaseHandler> instances = new HashMap<ThingUID, SmartHomeBaseHandler>();
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeDimmerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeBaseHandler.class);
 
     private Connection connection;
 
@@ -47,7 +47,7 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.info(getClass().getSimpleName() + " initialized");
+        logger.info("{} initialized", getClass().getSimpleName());
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);
         }
@@ -88,7 +88,7 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         try {
             handleCommand(temp, entityId, channelId, command);
         } catch (Exception e) {
-            logger.warn("handle command {} for {} failed: {}", command, channelUID, e);
+            logger.warn("handle command {} for {} failed", command, channelUID, e);
         }
     }
 

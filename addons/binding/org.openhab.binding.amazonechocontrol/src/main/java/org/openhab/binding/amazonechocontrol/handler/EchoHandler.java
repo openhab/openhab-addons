@@ -277,6 +277,7 @@ public class EchoHandler extends BaseThingHandler {
             if (channelId.equals(CHANNEL_AMAZON_MUSIC)) {
 
                 if (command == OnOffType.ON) {
+                    String lastKnownAmazonMusicId = this.lastKnownAmazonMusicId;
                     if (lastKnownAmazonMusicId != null && !lastKnownAmazonMusicId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
@@ -300,6 +301,7 @@ public class EchoHandler extends BaseThingHandler {
             if (channelId.equals(CHANNEL_RADIO)) {
 
                 if (command == OnOffType.ON) {
+                    String lastKnownRadioStationId = this.lastKnownRadioStationId;
                     if (lastKnownRadioStationId != null && !lastKnownRadioStationId.isEmpty()) {
                         waitForUpdate = 3000;
                     }

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
         AmazonEchoDynamicStateDescriptionProvider.class }, immediate = true)
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AmazonEchoDynamicStateDescriptionProvider.class);
 
     public AmazonEchoDynamicStateDescriptionProvider() {
 

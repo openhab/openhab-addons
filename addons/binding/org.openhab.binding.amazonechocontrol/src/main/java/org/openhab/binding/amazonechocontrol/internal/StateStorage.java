@@ -42,6 +42,9 @@ public class StateStorage {
 
     public void storeState(String key, String value) {
         synchronized (this) {
+            if (key == null) {
+                return;
+            }
             initProperties();
             if (value == null || value.isEmpty()) {
                 properties.remove(key);
@@ -54,6 +57,7 @@ public class StateStorage {
         }
     }
 
+    @SuppressWarnings("null")
     public String findState(String key) {
         synchronized (this) {
             initProperties();

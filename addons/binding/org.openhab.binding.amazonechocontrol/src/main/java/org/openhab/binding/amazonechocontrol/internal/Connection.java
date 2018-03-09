@@ -339,7 +339,7 @@ public class Connection {
                     continue;
                 }
             } catch (Exception e) {
-                logger.warn("Request to url '{}' fails with unkown error: {}", url, e);
+                logger.warn("Request to url '{}' fails with unkown error", url, e);
                 throw e;
             }
             if (code != 200) {
