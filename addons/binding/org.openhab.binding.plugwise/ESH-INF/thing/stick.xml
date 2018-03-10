@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <bridge-type id="stick">
-        <label>Plugwise Stick</label>
-        <description>A ZigBee USB controller used for communicating with the Circle+</description>
-        <representation-property>macAddress</representation-property>
-        <config-description-ref uri="bridge-type:plugwise:stick" />
-    </bridge-type>
+	<bridge-type id="stick">
+		<label>Plugwise Stick</label>
+		<description>A ZigBee USB controller used for communicating with the Circle+</description>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="bridge-type:plugwise:stick" />
+	</bridge-type>
 
 </thing:thing-descriptions>

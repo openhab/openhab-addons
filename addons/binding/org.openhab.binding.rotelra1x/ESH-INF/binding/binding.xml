@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="rotelra1x"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Rotel RA1x Binding</name>
-    <description>Binding for Rotal RA11 and RA12 stereo amplifiers connected via RS232.</description>
-    <author>Marius Bjørnstad</author>
+	<name>Rotel RA1x Binding</name>
+	<description>Binding for Rotal RA11 and RA12 stereo amplifiers connected via RS232.</description>
+	<author>Marius Bjørnstad</author>
 
 </binding:binding>
