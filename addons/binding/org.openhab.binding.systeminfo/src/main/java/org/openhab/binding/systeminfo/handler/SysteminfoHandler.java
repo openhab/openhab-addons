@@ -80,7 +80,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
      * links have to be created before the thing state is updated, otherwise item state will not be updated.
      */
-    private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
+    public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
     private SysteminfoInterface systeminfo;
 
@@ -263,6 +263,18 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.warn("Channel with ID {} can not be updated! No information available for the selected device.",
                     channelID);
         }
+    }
+
+    public Set<ChannelUID> getHighPriorityChannels() {
+        return highPriorityChannels;
+    }
+
+    public Set<ChannelUID> getMediumPriorityChannels() {
+        return mediumPriorityChannels;
+    }
+
+    public Set<ChannelUID> getLowPriorityChannels() {
+        return lowPriorityChannels;
     }
 
     /**
